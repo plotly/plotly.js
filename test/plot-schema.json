@@ -3720,13 +3720,13 @@
      ]
     },
     "legend": {
-     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "description": "Sets the reference to a legend to show new shape in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "none",
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for new shape. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -3763,13 +3763,13 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for new shape. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "none",
      "valType": "number"
     },
     "legendwidth": {
-     "description": "Sets the width (in px or fraction) of the legend for this trace.",
+     "description": "Sets the width (in px or fraction) of the legend for new shape.",
      "editType": "none",
      "min": 0,
      "valType": "number"
@@ -3820,7 +3820,7 @@
      "valType": "boolean"
     },
     "visible": {
-     "description": "Determines whether or not this trace is visible. If *legendonly*, the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).",
+     "description": "Determines whether or not new shape is visible. If *legendonly*, the shape is not drawn, but can appear as a legend item (provided that the legend itself is visible).",
      "dflt": true,
      "editType": "none",
      "valType": "enumerated",
@@ -7449,13 +7449,13 @@
        ]
       },
       "legend": {
-       "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+       "description": "Sets the reference to a legend to show this shape in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
        "dflt": "legend",
        "editType": "calc+arraydraw",
        "valType": "subplotid"
       },
       "legendgroup": {
-       "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+       "description": "Sets the legend group for this shape. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
        "dflt": "",
        "editType": "calc+arraydraw",
        "valType": "string"
@@ -7492,13 +7492,13 @@
        }
       },
       "legendrank": {
-       "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+       "description": "Sets the legend rank for this shape. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
        "dflt": 1000,
        "editType": "calc+arraydraw",
        "valType": "number"
       },
       "legendwidth": {
-       "description": "Sets the width (in px or fraction) of the legend for this trace.",
+       "description": "Sets the width (in px or fraction) of the legend for this shape.",
        "editType": "calc+arraydraw",
        "min": 0,
        "valType": "number"
@@ -7577,7 +7577,7 @@
        ]
       },
       "visible": {
-       "description": "Determines whether or not this trace is visible. If *legendonly*, the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).",
+       "description": "Determines whether or not this shape is visible. If *legendonly*, the shape is not drawn, but can appear as a legend item (provided that the legend itself is visible).",
        "dflt": true,
        "editType": "calc+arraydraw",
        "valType": "enumerated",
@@ -13090,7 +13090,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -14639,7 +14639,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -15967,7 +15967,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -17317,7 +17317,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -19719,7 +19719,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -20740,7 +20740,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -21790,7 +21790,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -23016,7 +23016,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -24288,7 +24288,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -25271,7 +25271,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -25814,7 +25814,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -27269,7 +27269,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -28466,7 +28466,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -30424,7 +30424,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -32432,7 +32432,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -33726,7 +33726,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -37763,7 +37763,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -39074,7 +39074,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -39708,7 +39708,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -42427,7 +42427,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -43122,7 +43122,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -44806,7 +44806,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -47185,7 +47185,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -49224,7 +49224,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -51139,7 +51139,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -53221,7 +53221,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -55246,7 +55246,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -56445,7 +56445,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -58382,7 +58382,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -60250,7 +60250,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -62185,7 +62185,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -64122,7 +64122,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -66354,7 +66354,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -69131,7 +69131,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -71905,7 +71905,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -73742,7 +73742,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -74593,7 +74593,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"

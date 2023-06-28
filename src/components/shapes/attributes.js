@@ -13,7 +13,13 @@ var shapeLabelTexttemplateVars = require('./label_texttemplate');
 
 module.exports = templatedArray('shape', {
     visible: extendFlat({}, basePlotAttributes.visible, {
-        editType: 'calc+arraydraw'
+        editType: 'calc+arraydraw',
+        description: [
+            'Determines whether or not this shape is visible.',
+            'If *legendonly*, the shape is not drawn,',
+            'but can appear as a legend item',
+            '(provided that the legend itself is visible).'
+        ].join(' ')
     }),
 
     showlegend: {
@@ -27,11 +33,22 @@ module.exports = templatedArray('shape', {
     },
 
     legend: extendFlat({}, basePlotAttributes.legend, {
-        editType: 'calc+arraydraw'
+        editType: 'calc+arraydraw',
+        description: [
+            'Sets the reference to a legend to show this shape in.',
+            'References to these legends are *legend*, *legend2*, *legend3*, etc.',
+            'Settings for these legends are set in the layout, under',
+            '`layout.legend`, `layout.legend2`, etc.'
+        ].join(' ')
     }),
 
     legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {
-        editType: 'calc+arraydraw'
+        editType: 'calc+arraydraw',
+        description: [
+            'Sets the legend group for this shape.',
+            'Traces and shapes part of the same legend group hide/show at the same time',
+            'when toggling legend items.'
+        ].join(' ')
     }),
 
     legendgrouptitle: {
@@ -48,11 +65,20 @@ module.exports = templatedArray('shape', {
     },
 
     legendrank: extendFlat({}, basePlotAttributes.legendrank, {
-        editType: 'calc+arraydraw'
+        editType: 'calc+arraydraw',
+        description: [
+            'Sets the legend rank for this shape.',
+            'Items and groups with smaller ranks are presented on top/left side while',
+            'with *reversed* `legend.traceorder` they are on bottom/right side.',
+            'The default legendrank is 1000,',
+            'so that you can use ranks less than 1000 to place certain items before all unranked items,',
+            'and ranks greater than 1000 to go after all unranked items.'
+        ].join(' ')
     }),
 
     legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {
-        editType: 'calc+arraydraw'
+        editType: 'calc+arraydraw',
+        description: 'Sets the width (in px or fraction) of the legend for this shape.',
     }),
 
     type: {

@@ -50,7 +50,7 @@ module.exports = {
         editType: 'style',
         description: [
             'Sets the legend group for this trace.',
-            'Traces part of the same legend group hide/show at the same time',
+            'Traces and shapes part of the same legend group hide/show at the same time',
             'when toggling legend items.'
         ].join(' ')
     },

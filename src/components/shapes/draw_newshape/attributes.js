@@ -11,7 +11,13 @@ var shapeLabelTexttemplateVars = require('../label_texttemplate');
 module.exports = {
     newshape: {
         visible: extendFlat({}, basePlotAttributes.visible, {
-            editType: 'none'
+            editType: 'none',
+            description: [
+                'Determines whether or not new shape is visible.',
+                'If *legendonly*, the shape is not drawn,',
+                'but can appear as a legend item',
+                '(provided that the legend itself is visible).'
+            ].join(' ')
         }),
 
         showlegend: {
@@ -25,11 +31,22 @@ module.exports = {
         },
 
         legend: extendFlat({}, basePlotAttributes.legend, {
-            editType: 'none'
+            editType: 'none',
+            description: [
+                'Sets the reference to a legend to show new shape in.',
+                'References to these legends are *legend*, *legend2*, *legend3*, etc.',
+                'Settings for these legends are set in the layout, under',
+                '`layout.legend`, `layout.legend2`, etc.'
+            ].join(' ')
         }),
 
         legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {
-            editType: 'none'
+            editType: 'none',
+            description: [
+                'Sets the legend group for new shape.',
+                'Traces and shapes part of the same legend group hide/show at the same time',
+                'when toggling legend items.'
+            ].join(' ')
         }),
 
         legendgrouptitle: {
@@ -46,11 +63,20 @@ module.exports = {
         },
 
         legendrank: extendFlat({}, basePlotAttributes.legendrank, {
-            editType: 'none'
+            editType: 'none',
+            description: [
+                'Sets the legend rank for new shape.',
+                'Items and groups with smaller ranks are presented on top/left side while',
+                'with *reversed* `legend.traceorder` they are on bottom/right side.',
+                'The default legendrank is 1000,',
+                'so that you can use ranks less than 1000 to place certain items before all unranked items,',
+                'and ranks greater than 1000 to go after all unranked items.'
+            ].join(' ')
         }),
 
         legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {
-            editType: 'none'
+            editType: 'none',
+            description: 'Sets the width (in px or fraction) of the legend for new shape.',
         }),
 
         line: {
