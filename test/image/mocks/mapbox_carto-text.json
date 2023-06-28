@@ -3,21 +3,21 @@
       {
         "type": "scattermapbox",
         "name": "carto-positron",
-        "lon": [ 10, 20 ],
+        "lon": [ 10, 5 ],
         "lat": [ 20, 10 ],
         "text":["pt1","pt2"],
-        "mode":"text+markers"
+        "mode":"text"
 
       },
       {
         "type": "scattermapbox",
         "name": "carto-darkmatter",
-        "lon": [ 10, 20 ],
+        "lon": [ 10, 5 ],
         "lat": [ 20, 10 ],
         "subplot": "mapbox2",
-        "mode":"text+markers",
+        "mode":"text",
         "text":["pt1","pt2"],
-        "textfont":{"family":"Metropolis Medium Italic","color":"#fff"}
+        "textfont":{"family":"Metropolis Extra Bold Italic","color":"#fff"}
       }
     ],
     "layout": {
