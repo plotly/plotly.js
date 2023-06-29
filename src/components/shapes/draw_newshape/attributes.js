@@ -1,5 +1,6 @@
 'use strict';
 
+var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 var basePlotAttributes = require('../../../plots/attributes');
 var fontAttrs = require('../../../plots/font_attributes');
 var dash = require('../../drawing/attributes').dash;
@@ -7,11 +8,9 @@ var extendFlat = require('../../../lib/extend').extendFlat;
 var shapeTexttemplateAttrs = require('../../../plots/template_attributes').shapeTexttemplateAttrs;
 var shapeLabelTexttemplateVars = require('../label_texttemplate');
 
-
-module.exports = {
+module.exports = overrideAll({
     newshape: {
         visible: extendFlat({}, basePlotAttributes.visible, {
-            editType: 'none',
             description: [
                 'Determines whether or not new shape is visible.',
                 'If *legendonly*, the shape is not drawn,',
@@ -23,7 +22,6 @@ module.exports = {
         showlegend: {
             valType: 'boolean',
             dflt: false,
-            editType: 'none',
             description: [
                 'Determines whether or not new',
                 'shape is shown in the legend.'
@@ -31,7 +29,6 @@ module.exports = {
         },
 
         legend: extendFlat({}, basePlotAttributes.legend, {
-            editType: 'none',
             description: [
                 'Sets the reference to a legend to show new shape in.',
                 'References to these legends are *legend*, *legend2*, *legend3*, etc.',
@@ -41,7 +38,6 @@ module.exports = {
         }),
 
         legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {
-            editType: 'none',
             description: [
                 'Sets the legend group for new shape.',
                 'Traces and shapes part of the same legend group hide/show at the same time',
@@ -51,19 +47,15 @@ module.exports = {
 
         legendgrouptitle: {
             text: extendFlat({}, basePlotAttributes.legendgrouptitle.text, {
-                editType: 'none'
             }),
             font: fontAttrs({
-                editType: 'none',
                 description: [
                     'Sets this legend group\'s title font.'
                 ].join(' '),
-            }),
-            editType: 'none',
+            })
         },
 
         legendrank: extendFlat({}, basePlotAttributes.legendrank, {
-            editType: 'none',
             description: [
                 'Sets the legend rank for new shape.',
                 'Items and groups with smaller ranks are presented on top/left side while',
@@ -75,14 +67,12 @@ module.exports = {
         }),
 
         legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {
-            editType: 'none',
             description: 'Sets the width (in px or fraction) of the legend for new shape.',
         }),
 
         line: {
             color: {
                 valType: 'color',
-                editType: 'none',
                 description: [
                     'Sets the line color.',
                     'By default uses either dark grey or white',
@@ -93,19 +83,15 @@ module.exports = {
                 valType: 'number',
                 min: 0,
                 dflt: 4,
-                editType: 'none',
                 description: 'Sets the line width (in px).'
             },
             dash: extendFlat({}, dash, {
                 dflt: 'solid',
-                editType: 'none'
-            }),
-            editType: 'none'
+            })
         },
         fillcolor: {
             valType: 'color',
             dflt: 'rgba(0,0,0,0)',
-            editType: 'none',
             description: [
                 'Sets the color filling new shapes\' interior.',
                 'Please note that if using a fillcolor with alpha greater than half,',
@@ -117,7 +103,6 @@ module.exports = {
             valType: 'enumerated',
             values: ['evenodd', 'nonzero'],
             dflt: 'evenodd',
-            editType: 'none',
             description: [
                 'Determines the path\'s interior.',
                 'For more info please visit https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-rule'
@@ -128,21 +113,18 @@ module.exports = {
             min: 0,
             max: 1,
             dflt: 1,
-            editType: 'none',
             description: 'Sets the opacity of new shapes.'
         },
         layer: {
             valType: 'enumerated',
             values: ['below', 'above'],
             dflt: 'above',
-            editType: 'none',
             description: 'Specifies whether new shapes are drawn below or above traces.'
         },
         drawdirection: {
             valType: 'enumerated',
             values: ['ortho', 'horizontal', 'vertical', 'diagonal'],
             dflt: 'diagonal',
-            editType: 'none',
             description: [
                 'When `dragmode` is set to *drawrect*, *drawline* or *drawcircle*',
                 'this limits the drag to be horizontal, vertical or diagonal.',
@@ -156,12 +138,10 @@ module.exports = {
             text: {
                 valType: 'string',
                 dflt: '',
-                editType: 'none',
                 description: 'Sets the text to display with the new shape.'
             },
-            texttemplate: shapeTexttemplateAttrs({newshape: true, editType: 'none'}, {keys: Object.keys(shapeLabelTexttemplateVars)}),
+            texttemplate: shapeTexttemplateAttrs({newshape: true}, {keys: Object.keys(shapeLabelTexttemplateVars)}),
             font: fontAttrs({
-                editType: 'none',
                 description: 'Sets the new shape label text font.'
             }),
             textposition: {
@@ -172,7 +152,6 @@ module.exports = {
                     'bottom left', 'bottom center', 'bottom right',
                     'start', 'middle', 'end',
                 ],
-                editType: 'none',
                 description: [
                     'Sets the position of the label text relative to the new shape.',
                     'Supported values for rectangles, circles and paths are',
@@ -186,7 +165,6 @@ module.exports = {
             textangle: {
                 valType: 'angle',
                 dflt: 'auto',
-                editType: 'none',
                 description: [
                     'Sets the angle at which the label text is drawn',
                     'with respect to the horizontal. For lines, angle *auto*',
@@ -198,7 +176,6 @@ module.exports = {
                 valType: 'enumerated',
                 values: ['auto', 'left', 'center', 'right'],
                 dflt: 'auto',
-                editType: 'none',
                 description: [
                     'Sets the label\'s horizontal position anchor',
                     'This anchor binds the specified `textposition` to the *left*, *center*',
@@ -212,7 +189,6 @@ module.exports = {
             yanchor: {
                 valType: 'enumerated',
                 values: ['top', 'middle', 'bottom'],
-                editType: 'none',
                 description: [
                     'Sets the label\'s vertical position anchor',
                     'This anchor binds the specified `textposition` to the *top*, *middle*',
@@ -227,19 +203,15 @@ module.exports = {
                 valType: 'number',
                 dflt: 3,
                 min: 0,
-                editType: 'none',
                 description: 'Sets padding (in px) between edge of label and edge of new shape.'
-            },
-            editType: 'none'
-        },
-        editType: 'none'
+            }
+        }
     },
 
     activeshape: {
         fillcolor: {
             valType: 'color',
             dflt: 'rgb(255,0,255)',
-            editType: 'none',
             description: 'Sets the color filling the active shape\' interior.'
         },
         opacity: {
@@ -247,9 +219,7 @@ module.exports = {
             min: 0,
             max: 1,
             dflt: 0.5,
-            editType: 'none',
             description: 'Sets the opacity of the active shape.'
-        },
-        editType: 'none'
+        }
     }
-};
+}, 'none', 'from-root');
