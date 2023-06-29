@@ -60,26 +60,28 @@ module.exports = function makeColorMap(trace) {
             range.push(range[range.length - 1]);
         }
     } else {
+        var zRangeInput = trace._input && (
+            typeof trace._input.zmin === 'number' && typeof trace._input.zmax === 'number'
+        );
+
+        // If zmin/zmax are explicitly set, consider case where user specifies a
+        // narrower z range than that of the contours start/end.
+        if(zRangeInput && (start <= zmin0 || end >= zmax0)) {
+            if(start <= zmin0) start = zmin0;
+            if(end >= zmax0) end = zmax0;
+            nc = Math.floor((end - start) / cs) + 1;
+            extra = 0;
+        }
+
         for(i = 0; i < len; i++) {
             si = scl[i];
             domain[i] = (si[0] * (nc + extra - 1) - (extra / 2)) * cs + start;
             range[i] = si[1];
         }
 
-        // If zmin/zmax are explicitly set
-        if(typeof trace._input.zmin === 'number' && typeof trace._input.zmax === 'number') {
-            // Consider case where user specifies a narrower z range than that
-            // of the contours start/end.
-            if(start <= zmin0) {
-                domain = domain.filter(function(z) { return z >= zmin0; });
-                range.splice(0, range.length - domain.length);
-            }
-            if(end >= zmax0) {
-                domain = domain.filter(function(z) { return z <= zmax0; });
-                range.splice(domain.length, range.length - domain.length);
-            }
-
-            // Make the colorscale fit the z range
+        // Make the colorscale fit the z range except if contours are explicitly
+        // set BUT NOT zmin/zmax.
+        if(zRangeInput || trace.autocontour) {
             if(domain[0] > zmin0) {
                 domain.unshift(zmin0);
                 range.unshift(range[0]);
