@@ -101,8 +101,12 @@ function drawOne(gd, opts) {
                 marker: {
                     line: shape.line,
                     color: shape.fillcolor,
-                    symbol: shape.type === 'rect' ? 'square' : 'circle',
-                    size: 12
+                    size: 12,
+                    symbol:
+                        shape.type === 'rect' ? 'square' :
+                        shape.type === 'circle' ? 'circle' :
+                        // case of path
+                        'hexagon2'
                 },
             };
 
