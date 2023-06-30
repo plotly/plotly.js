@@ -1,6 +1,6 @@
 /**
 * plotly.js (geo) v2.14.0
-* Copyright 2012-2022, Plotly, Inc.
+* Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
@@ -32848,6 +32848,284 @@ assign(main.baseCalendar.prototype, {
 },{"./main":97,"object-assign":68}],99:[function(_dereq_,module,exports){
 'use strict';
 
+var annAttrs = _dereq_('../annotations/attributes');
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
+
+module.exports = overrideAll(templatedArray('annotation', {
+    visible: annAttrs.visible,
+    x: {
+        valType: 'any',
+    },
+    y: {
+        valType: 'any',
+    },
+    z: {
+        valType: 'any',
+    },
+    ax: {
+        valType: 'number',
+    },
+    ay: {
+        valType: 'number',
+    },
+
+    xanchor: annAttrs.xanchor,
+    xshift: annAttrs.xshift,
+    yanchor: annAttrs.yanchor,
+    yshift: annAttrs.yshift,
+
+    text: annAttrs.text,
+    textangle: annAttrs.textangle,
+    font: annAttrs.font,
+    width: annAttrs.width,
+    height: annAttrs.height,
+    opacity: annAttrs.opacity,
+    align: annAttrs.align,
+    valign: annAttrs.valign,
+    bgcolor: annAttrs.bgcolor,
+    bordercolor: annAttrs.bordercolor,
+    borderpad: annAttrs.borderpad,
+    borderwidth: annAttrs.borderwidth,
+    showarrow: annAttrs.showarrow,
+    arrowcolor: annAttrs.arrowcolor,
+    arrowhead: annAttrs.arrowhead,
+    startarrowhead: annAttrs.startarrowhead,
+    arrowside: annAttrs.arrowside,
+    arrowsize: annAttrs.arrowsize,
+    startarrowsize: annAttrs.startarrowsize,
+    arrowwidth: annAttrs.arrowwidth,
+    standoff: annAttrs.standoff,
+    startstandoff: annAttrs.startstandoff,
+    hovertext: annAttrs.hovertext,
+    hoverlabel: annAttrs.hoverlabel,
+    captureevents: annAttrs.captureevents,
+
+    // maybes later?
+    // clicktoshow: annAttrs.clicktoshow,
+    // xclick: annAttrs.xclick,
+    // yclick: annAttrs.yclick,
+
+    // not needed!
+    // axref: 'pixel'
+    // ayref: 'pixel'
+    // xref: 'x'
+    // yref: 'y
+    // zref: 'z'
+}), 'calc', 'from-root');
+
+},{"../../plot_api/edit_types":290,"../../plot_api/plot_template":297,"../annotations/attributes":105}],100:[function(_dereq_,module,exports){
+'use strict';
+
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+
+module.exports = function convert(scene) {
+    var fullSceneLayout = scene.fullSceneLayout;
+    var anns = fullSceneLayout.annotations;
+
+    for(var i = 0; i < anns.length; i++) {
+        mockAnnAxes(anns[i], scene);
+    }
+
+    scene.fullLayout._infolayer
+        .selectAll('.annotation-' + scene.id)
+        .remove();
+};
+
+function mockAnnAxes(ann, scene) {
+    var fullSceneLayout = scene.fullSceneLayout;
+    var domain = fullSceneLayout.domain;
+    var size = scene.fullLayout._size;
+
+    var base = {
+        // this gets fill in on render
+        pdata: null,
+
+        // to get setConvert to not execute cleanly
+        type: 'linear',
+
+        // don't try to update them on `editable: true`
+        autorange: false,
+
+        // set infinite range so that annotation draw routine
+        // does not try to remove 'outside-range' annotations,
+        // this case is handled in the render loop
+        range: [-Infinity, Infinity]
+    };
+
+    ann._xa = {};
+    Lib.extendFlat(ann._xa, base);
+    Axes.setConvert(ann._xa);
+    ann._xa._offset = size.l + domain.x[0] * size.w;
+    ann._xa.l2p = function() {
+        return 0.5 * (1 + ann._pdata[0] / ann._pdata[3]) * size.w * (domain.x[1] - domain.x[0]);
+    };
+
+    ann._ya = {};
+    Lib.extendFlat(ann._ya, base);
+    Axes.setConvert(ann._ya);
+    ann._ya._offset = size.t + (1 - domain.y[1]) * size.h;
+    ann._ya.l2p = function() {
+        return 0.5 * (1 - ann._pdata[1] / ann._pdata[3]) * size.h * (domain.y[1] - domain.y[0]);
+    };
+}
+
+},{"../../lib":260,"../../plots/cartesian/axes":308}],101:[function(_dereq_,module,exports){
+'use strict';
+
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
+var handleAnnotationCommonDefaults = _dereq_('../annotations/common_defaults');
+var attributes = _dereq_('./attributes');
+
+module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
+    handleArrayContainerDefaults(sceneLayoutIn, sceneLayoutOut, {
+        name: 'annotations',
+        handleItemDefaults: handleAnnotationDefaults,
+        fullLayout: opts.fullLayout
+    });
+};
+
+function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(annIn, annOut, attributes, attr, dflt);
+    }
+
+    function coercePosition(axLetter) {
+        var axName = axLetter + 'axis';
+
+        // mock in such way that getFromId grabs correct 3D axis
+        var gdMock = { _fullLayout: {} };
+        gdMock._fullLayout[axName] = sceneLayout[axName];
+
+        return Axes.coercePosition(annOut, gdMock, coerce, axLetter, axLetter, 0.5);
+    }
+
+
+    var visible = coerce('visible');
+    if(!visible) return;
+
+    handleAnnotationCommonDefaults(annIn, annOut, opts.fullLayout, coerce);
+
+    coercePosition('x');
+    coercePosition('y');
+    coercePosition('z');
+
+    // if you have one coordinate you should all three
+    Lib.noneOrAll(annIn, annOut, ['x', 'y', 'z']);
+
+    // hard-set here for completeness
+    annOut.xref = 'x';
+    annOut.yref = 'y';
+    annOut.zref = 'z';
+
+    coerce('xanchor');
+    coerce('yanchor');
+    coerce('xshift');
+    coerce('yshift');
+
+    if(annOut.showarrow) {
+        annOut.axref = 'pixel';
+        annOut.ayref = 'pixel';
+
+        // TODO maybe default values should be bigger than the 2D case?
+        coerce('ax', -10);
+        coerce('ay', -30);
+
+        // if you have one part of arrow length you should have both
+        Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
+    }
+}
+
+},{"../../lib":260,"../../plots/array_container_defaults":303,"../../plots/cartesian/axes":308,"../annotations/common_defaults":108,"./attributes":99}],102:[function(_dereq_,module,exports){
+'use strict';
+
+var drawRaw = _dereq_('../annotations/draw').drawRaw;
+var project = _dereq_('../../plots/gl3d/project');
+var axLetters = ['x', 'y', 'z'];
+
+module.exports = function draw(scene) {
+    var fullSceneLayout = scene.fullSceneLayout;
+    var dataScale = scene.dataScale;
+    var anns = fullSceneLayout.annotations;
+
+    for(var i = 0; i < anns.length; i++) {
+        var ann = anns[i];
+        var annotationIsOffscreen = false;
+
+        for(var j = 0; j < 3; j++) {
+            var axLetter = axLetters[j];
+            var pos = ann[axLetter];
+            var ax = fullSceneLayout[axLetter + 'axis'];
+            var posFraction = ax.r2fraction(pos);
+
+            if(posFraction < 0 || posFraction > 1) {
+                annotationIsOffscreen = true;
+                break;
+            }
+        }
+
+        if(annotationIsOffscreen) {
+            scene.fullLayout._infolayer
+                .select('.annotation-' + scene.id + '[data-index="' + i + '"]')
+                .remove();
+        } else {
+            ann._pdata = project(scene.glplot.cameraParams, [
+                fullSceneLayout.xaxis.r2l(ann.x) * dataScale[0],
+                fullSceneLayout.yaxis.r2l(ann.y) * dataScale[1],
+                fullSceneLayout.zaxis.r2l(ann.z) * dataScale[2]
+            ]);
+
+            drawRaw(scene.graphDiv, ann, i, scene.id, ann._xa, ann._ya);
+        }
+    }
+};
+
+},{"../../plots/gl3d/project":345,"../annotations/draw":111}],103:[function(_dereq_,module,exports){
+'use strict';
+
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+
+module.exports = {
+    moduleType: 'component',
+    name: 'annotations3d',
+
+    schema: {
+        subplots: {
+            scene: {annotations: _dereq_('./attributes')}
+        }
+    },
+
+    layoutAttributes: _dereq_('./attributes'),
+    handleDefaults: _dereq_('./defaults'),
+    includeBasePlot: includeGL3D,
+
+    convert: _dereq_('./convert'),
+    draw: _dereq_('./draw')
+};
+
+function includeGL3D(layoutIn, layoutOut) {
+    var GL3D = Registry.subplotsRegistry.gl3d;
+    if(!GL3D) return;
+
+    var attrRegex = GL3D.attrRegex;
+
+    var keys = Object.keys(layoutIn);
+    for(var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        if(attrRegex.test(k) && (layoutIn[k].annotations || []).length) {
+            Lib.pushUnique(layoutOut._basePlotModules, GL3D);
+            Lib.pushUnique(layoutOut._subplots.gl3d, k);
+        }
+    }
+}
+
+},{"../../lib":260,"../../registry":351,"./attributes":99,"./convert":100,"./defaults":101,"./draw":102}],104:[function(_dereq_,module,exports){
+'use strict';
+
 /**
  * All paths are tuned for maximum scalability of the arrowhead,
  * ie throughout arrowwidth=0.3..3 the head is joined smoothly
@@ -32908,7 +33186,7 @@ module.exports = [
     }
 ];
 
-},{}],100:[function(_dereq_,module,exports){
+},{}],105:[function(_dereq_,module,exports){
 'use strict';
 
 var ARROWPATHS = _dereq_('./arrow_paths');
@@ -33196,7 +33474,7 @@ module.exports = templatedArray('annotation', {
     }
 });
 
-},{"../../constants/axis_placeable_objects":234,"../../plot_api/plot_template":297,"../../plots/cartesian/constants":315,"../../plots/font_attributes":336,"./arrow_paths":99}],101:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":234,"../../plot_api/plot_template":297,"../../plots/cartesian/constants":315,"../../plots/font_attributes":336,"./arrow_paths":104}],106:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -33278,7 +33556,7 @@ function calcAxisExpansion(ann, ax) {
     ann._extremes[axId] = extremes;
 }
 
-},{"../../lib":260,"../../plots/cartesian/axes":308,"./draw":106}],102:[function(_dereq_,module,exports){
+},{"../../lib":260,"../../plots/cartesian/axes":308,"./draw":111}],107:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -33408,7 +33686,7 @@ function clickData2r(d, ax) {
     return ax.type === 'log' ? ax.l2r(d) : ax.d2r(d);
 }
 
-},{"../../lib":260,"../../plot_api/plot_template":297,"../../registry":351}],103:[function(_dereq_,module,exports){
+},{"../../lib":260,"../../plot_api/plot_template":297,"../../registry":351}],108:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -33479,7 +33757,7 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
     coerce('captureevents', !!hoverText);
 };
 
-},{"../../lib":260,"../color":117}],104:[function(_dereq_,module,exports){
+},{"../../lib":260,"../color":117}],109:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -33533,7 +33811,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":285,"fast-isnumeric":30}],105:[function(_dereq_,module,exports){
+},{"../../lib/to_log_range":285,"fast-isnumeric":30}],110:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -33632,7 +33910,7 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
     }
 }
 
-},{"../../lib":260,"../../plots/array_container_defaults":303,"../../plots/cartesian/axes":308,"./attributes":100,"./common_defaults":103}],106:[function(_dereq_,module,exports){
+},{"../../lib":260,"../../plots/array_container_defaults":303,"../../plots/cartesian/axes":308,"./attributes":105,"./common_defaults":108}],111:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -34385,7 +34663,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     } else annText.call(textLayout);
 }
 
-},{"../../lib":260,"../../lib/setcursor":280,"../../lib/svg_text_utils":283,"../../plot_api/plot_template":297,"../../plots/cartesian/axes":308,"../../plots/plots":348,"../../registry":351,"../color":117,"../dragelement":136,"../drawing":139,"../fx":157,"./draw_arrow_head":107,"@plotly/d3":11}],107:[function(_dereq_,module,exports){
+},{"../../lib":260,"../../lib/setcursor":280,"../../lib/svg_text_utils":283,"../../plot_api/plot_template":297,"../../plots/cartesian/axes":308,"../../plots/plots":348,"../../registry":351,"../color":117,"../dragelement":136,"../drawing":139,"../fx":157,"./draw_arrow_head":112,"@plotly/d3":11}],112:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -34532,7 +34810,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
     if(doEnd) drawhead(headStyle, end, endRot, scale);
 };
 
-},{"../../lib":260,"../color":117,"./arrow_paths":99,"@plotly/d3":11}],108:[function(_dereq_,module,exports){
+},{"../../lib":260,"../color":117,"./arrow_paths":104,"@plotly/d3":11}],113:[function(_dereq_,module,exports){
 'use strict';
 
 var drawModule = _dereq_('./draw');
@@ -34557,285 +34835,7 @@ module.exports = {
     convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":319,"./attributes":100,"./calc_autorange":101,"./click":102,"./convert_coords":104,"./defaults":105,"./draw":106}],109:[function(_dereq_,module,exports){
-'use strict';
-
-var annAttrs = _dereq_('../annotations/attributes');
-var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
-var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
-
-module.exports = overrideAll(templatedArray('annotation', {
-    visible: annAttrs.visible,
-    x: {
-        valType: 'any',
-    },
-    y: {
-        valType: 'any',
-    },
-    z: {
-        valType: 'any',
-    },
-    ax: {
-        valType: 'number',
-    },
-    ay: {
-        valType: 'number',
-    },
-
-    xanchor: annAttrs.xanchor,
-    xshift: annAttrs.xshift,
-    yanchor: annAttrs.yanchor,
-    yshift: annAttrs.yshift,
-
-    text: annAttrs.text,
-    textangle: annAttrs.textangle,
-    font: annAttrs.font,
-    width: annAttrs.width,
-    height: annAttrs.height,
-    opacity: annAttrs.opacity,
-    align: annAttrs.align,
-    valign: annAttrs.valign,
-    bgcolor: annAttrs.bgcolor,
-    bordercolor: annAttrs.bordercolor,
-    borderpad: annAttrs.borderpad,
-    borderwidth: annAttrs.borderwidth,
-    showarrow: annAttrs.showarrow,
-    arrowcolor: annAttrs.arrowcolor,
-    arrowhead: annAttrs.arrowhead,
-    startarrowhead: annAttrs.startarrowhead,
-    arrowside: annAttrs.arrowside,
-    arrowsize: annAttrs.arrowsize,
-    startarrowsize: annAttrs.startarrowsize,
-    arrowwidth: annAttrs.arrowwidth,
-    standoff: annAttrs.standoff,
-    startstandoff: annAttrs.startstandoff,
-    hovertext: annAttrs.hovertext,
-    hoverlabel: annAttrs.hoverlabel,
-    captureevents: annAttrs.captureevents,
-
-    // maybes later?
-    // clicktoshow: annAttrs.clicktoshow,
-    // xclick: annAttrs.xclick,
-    // yclick: annAttrs.yclick,
-
-    // not needed!
-    // axref: 'pixel'
-    // ayref: 'pixel'
-    // xref: 'x'
-    // yref: 'y
-    // zref: 'z'
-}), 'calc', 'from-root');
-
-},{"../../plot_api/edit_types":290,"../../plot_api/plot_template":297,"../annotations/attributes":100}],110:[function(_dereq_,module,exports){
-'use strict';
-
-var Lib = _dereq_('../../lib');
-var Axes = _dereq_('../../plots/cartesian/axes');
-
-module.exports = function convert(scene) {
-    var fullSceneLayout = scene.fullSceneLayout;
-    var anns = fullSceneLayout.annotations;
-
-    for(var i = 0; i < anns.length; i++) {
-        mockAnnAxes(anns[i], scene);
-    }
-
-    scene.fullLayout._infolayer
-        .selectAll('.annotation-' + scene.id)
-        .remove();
-};
-
-function mockAnnAxes(ann, scene) {
-    var fullSceneLayout = scene.fullSceneLayout;
-    var domain = fullSceneLayout.domain;
-    var size = scene.fullLayout._size;
-
-    var base = {
-        // this gets fill in on render
-        pdata: null,
-
-        // to get setConvert to not execute cleanly
-        type: 'linear',
-
-        // don't try to update them on `editable: true`
-        autorange: false,
-
-        // set infinite range so that annotation draw routine
-        // does not try to remove 'outside-range' annotations,
-        // this case is handled in the render loop
-        range: [-Infinity, Infinity]
-    };
-
-    ann._xa = {};
-    Lib.extendFlat(ann._xa, base);
-    Axes.setConvert(ann._xa);
-    ann._xa._offset = size.l + domain.x[0] * size.w;
-    ann._xa.l2p = function() {
-        return 0.5 * (1 + ann._pdata[0] / ann._pdata[3]) * size.w * (domain.x[1] - domain.x[0]);
-    };
-
-    ann._ya = {};
-    Lib.extendFlat(ann._ya, base);
-    Axes.setConvert(ann._ya);
-    ann._ya._offset = size.t + (1 - domain.y[1]) * size.h;
-    ann._ya.l2p = function() {
-        return 0.5 * (1 - ann._pdata[1] / ann._pdata[3]) * size.h * (domain.y[1] - domain.y[0]);
-    };
-}
-
-},{"../../lib":260,"../../plots/cartesian/axes":308}],111:[function(_dereq_,module,exports){
-'use strict';
-
-var Lib = _dereq_('../../lib');
-var Axes = _dereq_('../../plots/cartesian/axes');
-var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
-var handleAnnotationCommonDefaults = _dereq_('../annotations/common_defaults');
-var attributes = _dereq_('./attributes');
-
-module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
-    handleArrayContainerDefaults(sceneLayoutIn, sceneLayoutOut, {
-        name: 'annotations',
-        handleItemDefaults: handleAnnotationDefaults,
-        fullLayout: opts.fullLayout
-    });
-};
-
-function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(annIn, annOut, attributes, attr, dflt);
-    }
-
-    function coercePosition(axLetter) {
-        var axName = axLetter + 'axis';
-
-        // mock in such way that getFromId grabs correct 3D axis
-        var gdMock = { _fullLayout: {} };
-        gdMock._fullLayout[axName] = sceneLayout[axName];
-
-        return Axes.coercePosition(annOut, gdMock, coerce, axLetter, axLetter, 0.5);
-    }
-
-
-    var visible = coerce('visible');
-    if(!visible) return;
-
-    handleAnnotationCommonDefaults(annIn, annOut, opts.fullLayout, coerce);
-
-    coercePosition('x');
-    coercePosition('y');
-    coercePosition('z');
-
-    // if you have one coordinate you should all three
-    Lib.noneOrAll(annIn, annOut, ['x', 'y', 'z']);
-
-    // hard-set here for completeness
-    annOut.xref = 'x';
-    annOut.yref = 'y';
-    annOut.zref = 'z';
-
-    coerce('xanchor');
-    coerce('yanchor');
-    coerce('xshift');
-    coerce('yshift');
-
-    if(annOut.showarrow) {
-        annOut.axref = 'pixel';
-        annOut.ayref = 'pixel';
-
-        // TODO maybe default values should be bigger than the 2D case?
-        coerce('ax', -10);
-        coerce('ay', -30);
-
-        // if you have one part of arrow length you should have both
-        Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
-    }
-}
-
-},{"../../lib":260,"../../plots/array_container_defaults":303,"../../plots/cartesian/axes":308,"../annotations/common_defaults":103,"./attributes":109}],112:[function(_dereq_,module,exports){
-'use strict';
-
-var drawRaw = _dereq_('../annotations/draw').drawRaw;
-var project = _dereq_('../../plots/gl3d/project');
-var axLetters = ['x', 'y', 'z'];
-
-module.exports = function draw(scene) {
-    var fullSceneLayout = scene.fullSceneLayout;
-    var dataScale = scene.dataScale;
-    var anns = fullSceneLayout.annotations;
-
-    for(var i = 0; i < anns.length; i++) {
-        var ann = anns[i];
-        var annotationIsOffscreen = false;
-
-        for(var j = 0; j < 3; j++) {
-            var axLetter = axLetters[j];
-            var pos = ann[axLetter];
-            var ax = fullSceneLayout[axLetter + 'axis'];
-            var posFraction = ax.r2fraction(pos);
-
-            if(posFraction < 0 || posFraction > 1) {
-                annotationIsOffscreen = true;
-                break;
-            }
-        }
-
-        if(annotationIsOffscreen) {
-            scene.fullLayout._infolayer
-                .select('.annotation-' + scene.id + '[data-index="' + i + '"]')
-                .remove();
-        } else {
-            ann._pdata = project(scene.glplot.cameraParams, [
-                fullSceneLayout.xaxis.r2l(ann.x) * dataScale[0],
-                fullSceneLayout.yaxis.r2l(ann.y) * dataScale[1],
-                fullSceneLayout.zaxis.r2l(ann.z) * dataScale[2]
-            ]);
-
-            drawRaw(scene.graphDiv, ann, i, scene.id, ann._xa, ann._ya);
-        }
-    }
-};
-
-},{"../../plots/gl3d/project":345,"../annotations/draw":106}],113:[function(_dereq_,module,exports){
-'use strict';
-
-var Registry = _dereq_('../../registry');
-var Lib = _dereq_('../../lib');
-
-module.exports = {
-    moduleType: 'component',
-    name: 'annotations3d',
-
-    schema: {
-        subplots: {
-            scene: {annotations: _dereq_('./attributes')}
-        }
-    },
-
-    layoutAttributes: _dereq_('./attributes'),
-    handleDefaults: _dereq_('./defaults'),
-    includeBasePlot: includeGL3D,
-
-    convert: _dereq_('./convert'),
-    draw: _dereq_('./draw')
-};
-
-function includeGL3D(layoutIn, layoutOut) {
-    var GL3D = Registry.subplotsRegistry.gl3d;
-    if(!GL3D) return;
-
-    var attrRegex = GL3D.attrRegex;
-
-    var keys = Object.keys(layoutIn);
-    for(var i = 0; i < keys.length; i++) {
-        var k = keys[i];
-        if(attrRegex.test(k) && (layoutIn[k].annotations || []).length) {
-            Lib.pushUnique(layoutOut._basePlotModules, GL3D);
-            Lib.pushUnique(layoutOut._subplots.gl3d, k);
-        }
-    }
-}
-
-},{"../../lib":260,"../../registry":351,"./attributes":109,"./convert":110,"./defaults":111,"./draw":112}],114:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":319,"./attributes":105,"./calc_autorange":106,"./click":107,"./convert_coords":109,"./defaults":110,"./draw":111}],114:[function(_dereq_,module,exports){
 'use strict';
 
 // a trimmed down version of:
@@ -49717,7 +49717,7 @@ module.exports = overrideAll(templatedArray('selection', {
     },
 }), 'arraydraw', 'from-root');
 
-},{"../../constants/axis_placeable_objects":234,"../../lib/extend":252,"../../plot_api/edit_types":290,"../../plot_api/plot_template":297,"../../traces/scatter/attributes":373,"../annotations/attributes":100,"../drawing/attributes":138}],198:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":234,"../../lib/extend":252,"../../plot_api/edit_types":290,"../../plot_api/plot_template":297,"../../traces/scatter/attributes":373,"../annotations/attributes":105,"../drawing/attributes":138}],198:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -51798,6 +51798,7 @@ function computeRectAndRanges(poly) {
 function makeFillRangeItems(allAxes) {
     return function(eventData, poly) {
         var range;
+        var value;
         var lassoPoints;
 
         for(var i = 0; i < allAxes.length; i++) {
@@ -51815,6 +51816,10 @@ function makeFillRangeItems(allAxes) {
                         p2r(ax, min),
                         p2r(ax, max)
                     ].sort(ascending);
+                    value[id] = [
+                        ax.getCategoryAtIndex(range[id][0]),
+                        ax.getCategoryAtIndex(range[id][1]),
+                    ].sort(ascending);
                 }
             } else {
                 if(!lassoPoints) lassoPoints = {};
@@ -51824,6 +51829,7 @@ function makeFillRangeItems(allAxes) {
 
         if(range) {
             eventData.range = range;
+            eventData.value = value;
         }
 
         if(lassoPoints) {
@@ -51975,7 +51981,7 @@ module.exports = templatedArray('shape', {
     editType: 'arraydraw'
 });
 
-},{"../../constants/axis_placeable_objects":234,"../../lib/extend":252,"../../plot_api/plot_template":297,"../../traces/scatter/attributes":373,"../annotations/attributes":100,"../drawing/attributes":138}],208:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":234,"../../lib/extend":252,"../../plot_api/plot_template":297,"../../traces/scatter/attributes":373,"../annotations/attributes":105,"../drawing/attributes":138}],208:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -57296,7 +57302,7 @@ exports.Fx = {
 exports.Snapshot = _dereq_('./snapshot');
 exports.PlotSchema = _dereq_('./plot_api/plot_schema');
 
-},{"../build/plotcss":1,"./components/annotations":108,"./components/annotations3d":113,"./components/colorbar":123,"./components/colorscale":129,"./components/errorbars":145,"./components/fx":157,"./components/grid":161,"./components/images":166,"./components/legend":174,"./components/modebar":180,"./components/rangeselector":188,"./components/rangeslider":195,"./components/selections":205,"./components/shapes":220,"./components/sliders":225,"./components/updatemenus":231,"./fonts/ploticon":241,"./locale-en":288,"./locale-en-us":287,"./plot_api":292,"./plot_api/plot_schema":296,"./plots/plots":348,"./registry":351,"./snapshot":356,"./traces/scatter":385,"./version":416,"native-promise-only":67}],241:[function(_dereq_,module,exports){
+},{"../build/plotcss":1,"./components/annotations":113,"./components/annotations3d":103,"./components/colorbar":123,"./components/colorscale":129,"./components/errorbars":145,"./components/fx":157,"./components/grid":161,"./components/images":166,"./components/legend":174,"./components/modebar":180,"./components/rangeselector":188,"./components/rangeslider":195,"./components/selections":205,"./components/shapes":220,"./components/sliders":225,"./components/updatemenus":231,"./fonts/ploticon":241,"./locale-en":288,"./locale-en-us":287,"./plot_api":292,"./plot_api/plot_schema":296,"./plots/plots":348,"./registry":351,"./snapshot":356,"./traces/scatter":385,"./version":416,"native-promise-only":67}],241:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -68234,7 +68240,7 @@ function guiEdit(func) {
 // Ordered by most common edits first, to minimize our search time
 var layoutUIControlPatterns = [
     {pattern: /^hiddenlabels/, attr: 'legend.uirevision'},
-    {pattern: /^((x|y)axis\d*)\.((auto)?range|title\.text)/},
+    {pattern: /^((x|y)axis\d*)\.((auto)?range|value|title\.text)/},
 
     // showspikes and modes include those nested inside scenes
     {pattern: /axis\d*\.showspikes$/, attr: 'modebar.uirevision'},
@@ -80057,13 +80063,39 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var yfrac = (gbb.bottom - e.clientY) / gbb.height;
         var i;
 
-        function zoomWheelOneAxis(ax, centerFraction, zoom) {
+        function zoomWheelOneAxis(ax, centerFraction, zoom, max, xAxis, checkForViolation) {
             if(ax.fixedrange) return;
 
+            var axisBoundViolated = false;
             var axRange = Lib.simpleMap(ax.range, ax.r2l);
             var v0 = axRange[0] + (axRange[1] - axRange[0]) * centerFraction;
-            function doZoom(v) { return ax.l2r(v0 + (v - v0) * zoom); }
-            ax.range = axRange.map(doZoom);
+            function doZoom(v) { 
+                return ax.l2r(v0 + (v - v0) * zoom); 
+            }
+            let rangeMinValue = doZoom(axRange[0]);
+            if (rangeMinValue < 0 && xAxis && zoom > 1 && checkForViolation)
+            {
+                axisBoundViolated = true;
+                ax.range[0] = 0;
+            }
+            else if (rangeMinValue < -0.5 && !xAxis && zoom > 1 && checkForViolation)
+            {
+                axisBoundViolated = true;
+                ax.range[0] = -0.5;
+            }
+            else 
+                ax.range[0] = rangeMinValue;
+
+            let rangeMaxValue = doZoom(axRange[1]);
+            if (rangeMaxValue > max && zoom > 1 && checkForViolation)
+            {
+                axisBoundViolated = true;                   
+                ax.range[1] = max;
+            }
+            else
+                ax.range[1] = rangeMaxValue;
+
+            return axisBoundViolated;
         }
 
         if(editX) {
@@ -80071,24 +80103,60 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             // zoom it about the center
             if(!ew) xfrac = 0.5;
 
+            let xAxisBoundViolated = false;
             for(i = 0; i < xaxes.length; i++) {
-                zoomWheelOneAxis(xaxes[i], xfrac, zoom);
+                let xMin = xaxes[i].range[0];
+                let xMax = xaxes[i].range[1];
+
+                if (xMax - xMin < 15 && zoom < 1)
+                    xAxisBoundViolated = true;
+                else
+                {
+                    let categoryArrayLength = 0;
+                    if (xaxes[i].categoryarray)
+                        categoryArrayLength = xaxes[i].categoryarray.length;
+
+                    if (categoryArrayLength == 0)
+                        zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, false);
+                    else
+                        xAxisBoundViolated = zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, true);
+                }
             }
             updateMatchedAxRange('x');
 
-            scrollViewBox[2] *= zoom;
-            scrollViewBox[0] += scrollViewBox[2] * xfrac * (1 / zoom - 1);
+            if (!xAxisBoundViolated)
+            {
+                scrollViewBox[2] *= zoom;
+                scrollViewBox[0] += scrollViewBox[2] * xfrac * (1 / zoom - 1); 
+            }
         }
         if(editY) {
             if(!ns) yfrac = 0.5;
 
+            let yAxisBoundViolated = false;
             for(i = 0; i < yaxes.length; i++) {
-                zoomWheelOneAxis(yaxes[i], yfrac, zoom);
+                let yMin = yaxes[i].range[0];
+                let yMax = yaxes[i].range[1];
+
+                let hasCategoryArray = yaxes[i].categoryarray;
+
+                if (yMax - yMin < 10 && zoom < 1 && hasCategoryArray)
+                    yAxisBoundViolated = true;
+                else
+                {
+                    if (hasCategoryArray)
+                        yAxisBoundViolated = zoomWheelOneAxis(yaxes[i], yfrac, zoom, yaxes[i].categoryarray.length - 0.5, false, true);
+                    else
+                        zoomWheelOneAxis(yaxes[i], yfrac, zoom, 0, false, false); 
+                }
             }
             updateMatchedAxRange('y');
 
-            scrollViewBox[3] *= zoom;
-            scrollViewBox[1] += scrollViewBox[3] * (1 - yfrac) * (1 / zoom - 1);
+            if (!yAxisBoundViolated)
+            {
+                scrollViewBox[3] *= zoom;
+                scrollViewBox[1] += scrollViewBox[3] * (1 - yfrac) * (1 / zoom - 1);
+            }
         }
 
         // viewbox redraw at first
@@ -80307,8 +80375,34 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var axId = activeAxIds[i];
             var ax = getFromId(gd, axId);
             Axes.drawOne(gd, ax, {skipTitle: true});
+            let lowRange = ax.range[0];
+            let highRange = ax.range[1];
+
+            if (lowRange < 0)
+                lowRange = 0;
+
+            let categoryArrayLength = 0;
+            if (ax.categoryarray)
+                categoryArrayLength = ax.categoryarray.length;
+
+            if (highRange > categoryArrayLength)
+                highRange = categoryArrayLength - 1;
+
+            let lowIdxInt = Math.round(lowRange);
+            let highIdxInt = Math.round(highRange);
+
+            let lowIdxCategory = null;
+            let highIdxCategory = null;
+
+            if (lowIdxInt >= 0 && lowIdxInt < categoryArrayLength)
+                lowIdxCategory = ax.categoryarray[lowIdxInt];
+            if (highIdxInt >= 0 && highIdxInt < categoryArrayLength)
+                highIdxCategory = ax.categoryarray[highIdxInt];
+            
             updates[ax._name + '.range[0]'] = ax.range[0];
             updates[ax._name + '.range[1]'] = ax.range[1];
+            updates[ax._name + '.value[0]'] = lowIdxCategory;
+            updates[ax._name + '.value[1]'] = highIdxCategory;
         }
 
         Axes.redrawComponents(gd, activeAxIds);
@@ -80617,8 +80711,18 @@ function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes) {
         } else {
             var axRangeLinear0 = axi._rl[0];
             var axRangeLinearSpan = axi._rl[1] - axRangeLinear0;
-            updates[axi._name + '.range[0]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction);
-            updates[axi._name + '.range[1]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction);
+            var updatedR0 = axRangeLinear0 + axRangeLinearSpan * r0Fraction;
+            var updatedR1 = axRangeLinear0 + axRangeLinearSpan * r1Fraction;
+            if (updatedR1 - updatedR0 > 8)
+            {
+                updates[axi._name + '.range[0]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction);
+                updates[axi._name + '.range[1]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction);
+            }
+            else
+            {
+                updates[axi._name + '.range[0]'] = axi._rl[0];
+                updates[axi._name + '.range[1]'] = axi._rl[1];
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 /**
 * plotly.js (cartesian) v2.14.0
-* Copyright 2012-2022, Plotly, Inc.
+* Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
@@ -119,17 +119,17 @@ module.exports = _dereq_('../src/traces/heatmap');
 
 module.exports = _dereq_('../src/traces/histogram');
 
-},{"../src/traces/histogram":475}],12:[function(_dereq_,module,exports){
+},{"../src/traces/histogram":484}],12:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/histogram2d');
 
-},{"../src/traces/histogram2d":481}],13:[function(_dereq_,module,exports){
+},{"../src/traces/histogram2d":468}],13:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/histogram2dcontour');
 
-},{"../src/traces/histogram2dcontour":485}],14:[function(_dereq_,module,exports){
+},{"../src/traces/histogram2dcontour":472}],14:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/image');
@@ -28265,6 +28265,284 @@ assign(main.baseCalendar.prototype, {
 },{"./main":138,"object-assign":73}],140:[function(_dereq_,module,exports){
 'use strict';
 
+var annAttrs = _dereq_('../annotations/attributes');
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
+
+module.exports = overrideAll(templatedArray('annotation', {
+    visible: annAttrs.visible,
+    x: {
+        valType: 'any',
+    },
+    y: {
+        valType: 'any',
+    },
+    z: {
+        valType: 'any',
+    },
+    ax: {
+        valType: 'number',
+    },
+    ay: {
+        valType: 'number',
+    },
+
+    xanchor: annAttrs.xanchor,
+    xshift: annAttrs.xshift,
+    yanchor: annAttrs.yanchor,
+    yshift: annAttrs.yshift,
+
+    text: annAttrs.text,
+    textangle: annAttrs.textangle,
+    font: annAttrs.font,
+    width: annAttrs.width,
+    height: annAttrs.height,
+    opacity: annAttrs.opacity,
+    align: annAttrs.align,
+    valign: annAttrs.valign,
+    bgcolor: annAttrs.bgcolor,
+    bordercolor: annAttrs.bordercolor,
+    borderpad: annAttrs.borderpad,
+    borderwidth: annAttrs.borderwidth,
+    showarrow: annAttrs.showarrow,
+    arrowcolor: annAttrs.arrowcolor,
+    arrowhead: annAttrs.arrowhead,
+    startarrowhead: annAttrs.startarrowhead,
+    arrowside: annAttrs.arrowside,
+    arrowsize: annAttrs.arrowsize,
+    startarrowsize: annAttrs.startarrowsize,
+    arrowwidth: annAttrs.arrowwidth,
+    standoff: annAttrs.standoff,
+    startstandoff: annAttrs.startstandoff,
+    hovertext: annAttrs.hovertext,
+    hoverlabel: annAttrs.hoverlabel,
+    captureevents: annAttrs.captureevents,
+
+    // maybes later?
+    // clicktoshow: annAttrs.clicktoshow,
+    // xclick: annAttrs.xclick,
+    // yclick: annAttrs.yclick,
+
+    // not needed!
+    // axref: 'pixel'
+    // ayref: 'pixel'
+    // xref: 'x'
+    // yref: 'y
+    // zref: 'z'
+}), 'calc', 'from-root');
+
+},{"../../plot_api/edit_types":328,"../../plot_api/plot_template":335,"../annotations/attributes":146}],141:[function(_dereq_,module,exports){
+'use strict';
+
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+
+module.exports = function convert(scene) {
+    var fullSceneLayout = scene.fullSceneLayout;
+    var anns = fullSceneLayout.annotations;
+
+    for(var i = 0; i < anns.length; i++) {
+        mockAnnAxes(anns[i], scene);
+    }
+
+    scene.fullLayout._infolayer
+        .selectAll('.annotation-' + scene.id)
+        .remove();
+};
+
+function mockAnnAxes(ann, scene) {
+    var fullSceneLayout = scene.fullSceneLayout;
+    var domain = fullSceneLayout.domain;
+    var size = scene.fullLayout._size;
+
+    var base = {
+        // this gets fill in on render
+        pdata: null,
+
+        // to get setConvert to not execute cleanly
+        type: 'linear',
+
+        // don't try to update them on `editable: true`
+        autorange: false,
+
+        // set infinite range so that annotation draw routine
+        // does not try to remove 'outside-range' annotations,
+        // this case is handled in the render loop
+        range: [-Infinity, Infinity]
+    };
+
+    ann._xa = {};
+    Lib.extendFlat(ann._xa, base);
+    Axes.setConvert(ann._xa);
+    ann._xa._offset = size.l + domain.x[0] * size.w;
+    ann._xa.l2p = function() {
+        return 0.5 * (1 + ann._pdata[0] / ann._pdata[3]) * size.w * (domain.x[1] - domain.x[0]);
+    };
+
+    ann._ya = {};
+    Lib.extendFlat(ann._ya, base);
+    Axes.setConvert(ann._ya);
+    ann._ya._offset = size.t + (1 - domain.y[1]) * size.h;
+    ann._ya.l2p = function() {
+        return 0.5 * (1 - ann._pdata[1] / ann._pdata[3]) * size.h * (domain.y[1] - domain.y[0]);
+    };
+}
+
+},{"../../lib":299,"../../plots/cartesian/axes":346}],142:[function(_dereq_,module,exports){
+'use strict';
+
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
+var handleAnnotationCommonDefaults = _dereq_('../annotations/common_defaults');
+var attributes = _dereq_('./attributes');
+
+module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
+    handleArrayContainerDefaults(sceneLayoutIn, sceneLayoutOut, {
+        name: 'annotations',
+        handleItemDefaults: handleAnnotationDefaults,
+        fullLayout: opts.fullLayout
+    });
+};
+
+function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(annIn, annOut, attributes, attr, dflt);
+    }
+
+    function coercePosition(axLetter) {
+        var axName = axLetter + 'axis';
+
+        // mock in such way that getFromId grabs correct 3D axis
+        var gdMock = { _fullLayout: {} };
+        gdMock._fullLayout[axName] = sceneLayout[axName];
+
+        return Axes.coercePosition(annOut, gdMock, coerce, axLetter, axLetter, 0.5);
+    }
+
+
+    var visible = coerce('visible');
+    if(!visible) return;
+
+    handleAnnotationCommonDefaults(annIn, annOut, opts.fullLayout, coerce);
+
+    coercePosition('x');
+    coercePosition('y');
+    coercePosition('z');
+
+    // if you have one coordinate you should all three
+    Lib.noneOrAll(annIn, annOut, ['x', 'y', 'z']);
+
+    // hard-set here for completeness
+    annOut.xref = 'x';
+    annOut.yref = 'y';
+    annOut.zref = 'z';
+
+    coerce('xanchor');
+    coerce('yanchor');
+    coerce('xshift');
+    coerce('yshift');
+
+    if(annOut.showarrow) {
+        annOut.axref = 'pixel';
+        annOut.ayref = 'pixel';
+
+        // TODO maybe default values should be bigger than the 2D case?
+        coerce('ax', -10);
+        coerce('ay', -30);
+
+        // if you have one part of arrow length you should have both
+        Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
+    }
+}
+
+},{"../../lib":299,"../../plots/array_container_defaults":341,"../../plots/cartesian/axes":346,"../annotations/common_defaults":149,"./attributes":140}],143:[function(_dereq_,module,exports){
+'use strict';
+
+var drawRaw = _dereq_('../annotations/draw').drawRaw;
+var project = _dereq_('../../plots/gl3d/project');
+var axLetters = ['x', 'y', 'z'];
+
+module.exports = function draw(scene) {
+    var fullSceneLayout = scene.fullSceneLayout;
+    var dataScale = scene.dataScale;
+    var anns = fullSceneLayout.annotations;
+
+    for(var i = 0; i < anns.length; i++) {
+        var ann = anns[i];
+        var annotationIsOffscreen = false;
+
+        for(var j = 0; j < 3; j++) {
+            var axLetter = axLetters[j];
+            var pos = ann[axLetter];
+            var ax = fullSceneLayout[axLetter + 'axis'];
+            var posFraction = ax.r2fraction(pos);
+
+            if(posFraction < 0 || posFraction > 1) {
+                annotationIsOffscreen = true;
+                break;
+            }
+        }
+
+        if(annotationIsOffscreen) {
+            scene.fullLayout._infolayer
+                .select('.annotation-' + scene.id + '[data-index="' + i + '"]')
+                .remove();
+        } else {
+            ann._pdata = project(scene.glplot.cameraParams, [
+                fullSceneLayout.xaxis.r2l(ann.x) * dataScale[0],
+                fullSceneLayout.yaxis.r2l(ann.y) * dataScale[1],
+                fullSceneLayout.zaxis.r2l(ann.z) * dataScale[2]
+            ]);
+
+            drawRaw(scene.graphDiv, ann, i, scene.id, ann._xa, ann._ya);
+        }
+    }
+};
+
+},{"../../plots/gl3d/project":377,"../annotations/draw":152}],144:[function(_dereq_,module,exports){
+'use strict';
+
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+
+module.exports = {
+    moduleType: 'component',
+    name: 'annotations3d',
+
+    schema: {
+        subplots: {
+            scene: {annotations: _dereq_('./attributes')}
+        }
+    },
+
+    layoutAttributes: _dereq_('./attributes'),
+    handleDefaults: _dereq_('./defaults'),
+    includeBasePlot: includeGL3D,
+
+    convert: _dereq_('./convert'),
+    draw: _dereq_('./draw')
+};
+
+function includeGL3D(layoutIn, layoutOut) {
+    var GL3D = Registry.subplotsRegistry.gl3d;
+    if(!GL3D) return;
+
+    var attrRegex = GL3D.attrRegex;
+
+    var keys = Object.keys(layoutIn);
+    for(var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        if(attrRegex.test(k) && (layoutIn[k].annotations || []).length) {
+            Lib.pushUnique(layoutOut._basePlotModules, GL3D);
+            Lib.pushUnique(layoutOut._subplots.gl3d, k);
+        }
+    }
+}
+
+},{"../../lib":299,"../../registry":387,"./attributes":140,"./convert":141,"./defaults":142,"./draw":143}],145:[function(_dereq_,module,exports){
+'use strict';
+
 /**
  * All paths are tuned for maximum scalability of the arrowhead,
  * ie throughout arrowwidth=0.3..3 the head is joined smoothly
@@ -28325,7 +28603,7 @@ module.exports = [
     }
 ];
 
-},{}],141:[function(_dereq_,module,exports){
+},{}],146:[function(_dereq_,module,exports){
 'use strict';
 
 var ARROWPATHS = _dereq_('./arrow_paths');
@@ -28613,7 +28891,7 @@ module.exports = templatedArray('annotation', {
     }
 });
 
-},{"../../constants/axis_placeable_objects":275,"../../plot_api/plot_template":335,"../../plots/cartesian/constants":353,"../../plots/font_attributes":374,"./arrow_paths":140}],142:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":275,"../../plot_api/plot_template":335,"../../plots/cartesian/constants":353,"../../plots/font_attributes":374,"./arrow_paths":145}],147:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -28695,7 +28973,7 @@ function calcAxisExpansion(ann, ax) {
     ann._extremes[axId] = extremes;
 }
 
-},{"../../lib":299,"../../plots/cartesian/axes":346,"./draw":147}],143:[function(_dereq_,module,exports){
+},{"../../lib":299,"../../plots/cartesian/axes":346,"./draw":152}],148:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -28825,7 +29103,7 @@ function clickData2r(d, ax) {
     return ax.type === 'log' ? ax.l2r(d) : ax.d2r(d);
 }
 
-},{"../../lib":299,"../../plot_api/plot_template":335,"../../registry":387}],144:[function(_dereq_,module,exports){
+},{"../../lib":299,"../../plot_api/plot_template":335,"../../registry":387}],149:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -28896,7 +29174,7 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
     coerce('captureevents', !!hoverText);
 };
 
-},{"../../lib":299,"../color":158}],145:[function(_dereq_,module,exports){
+},{"../../lib":299,"../color":158}],150:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -28950,7 +29228,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":324,"fast-isnumeric":33}],146:[function(_dereq_,module,exports){
+},{"../../lib/to_log_range":324,"fast-isnumeric":33}],151:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -29049,7 +29327,7 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
     }
 }
 
-},{"../../lib":299,"../../plots/array_container_defaults":341,"../../plots/cartesian/axes":346,"./attributes":141,"./common_defaults":144}],147:[function(_dereq_,module,exports){
+},{"../../lib":299,"../../plots/array_container_defaults":341,"../../plots/cartesian/axes":346,"./attributes":146,"./common_defaults":149}],152:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -29802,7 +30080,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     } else annText.call(textLayout);
 }
 
-},{"../../lib":299,"../../lib/setcursor":319,"../../lib/svg_text_utils":322,"../../plot_api/plot_template":335,"../../plots/cartesian/axes":346,"../../plots/plots":380,"../../registry":387,"../color":158,"../dragelement":177,"../drawing":180,"../fx":198,"./draw_arrow_head":148,"@plotly/d3":20}],148:[function(_dereq_,module,exports){
+},{"../../lib":299,"../../lib/setcursor":319,"../../lib/svg_text_utils":322,"../../plot_api/plot_template":335,"../../plots/cartesian/axes":346,"../../plots/plots":380,"../../registry":387,"../color":158,"../dragelement":177,"../drawing":180,"../fx":198,"./draw_arrow_head":153,"@plotly/d3":20}],153:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -29949,7 +30227,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
     if(doEnd) drawhead(headStyle, end, endRot, scale);
 };
 
-},{"../../lib":299,"../color":158,"./arrow_paths":140,"@plotly/d3":20}],149:[function(_dereq_,module,exports){
+},{"../../lib":299,"../color":158,"./arrow_paths":145,"@plotly/d3":20}],154:[function(_dereq_,module,exports){
 'use strict';
 
 var drawModule = _dereq_('./draw');
@@ -29974,285 +30252,7 @@ module.exports = {
     convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":357,"./attributes":141,"./calc_autorange":142,"./click":143,"./convert_coords":145,"./defaults":146,"./draw":147}],150:[function(_dereq_,module,exports){
-'use strict';
-
-var annAttrs = _dereq_('../annotations/attributes');
-var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
-var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
-
-module.exports = overrideAll(templatedArray('annotation', {
-    visible: annAttrs.visible,
-    x: {
-        valType: 'any',
-    },
-    y: {
-        valType: 'any',
-    },
-    z: {
-        valType: 'any',
-    },
-    ax: {
-        valType: 'number',
-    },
-    ay: {
-        valType: 'number',
-    },
-
-    xanchor: annAttrs.xanchor,
-    xshift: annAttrs.xshift,
-    yanchor: annAttrs.yanchor,
-    yshift: annAttrs.yshift,
-
-    text: annAttrs.text,
-    textangle: annAttrs.textangle,
-    font: annAttrs.font,
-    width: annAttrs.width,
-    height: annAttrs.height,
-    opacity: annAttrs.opacity,
-    align: annAttrs.align,
-    valign: annAttrs.valign,
-    bgcolor: annAttrs.bgcolor,
-    bordercolor: annAttrs.bordercolor,
-    borderpad: annAttrs.borderpad,
-    borderwidth: annAttrs.borderwidth,
-    showarrow: annAttrs.showarrow,
-    arrowcolor: annAttrs.arrowcolor,
-    arrowhead: annAttrs.arrowhead,
-    startarrowhead: annAttrs.startarrowhead,
-    arrowside: annAttrs.arrowside,
-    arrowsize: annAttrs.arrowsize,
-    startarrowsize: annAttrs.startarrowsize,
-    arrowwidth: annAttrs.arrowwidth,
-    standoff: annAttrs.standoff,
-    startstandoff: annAttrs.startstandoff,
-    hovertext: annAttrs.hovertext,
-    hoverlabel: annAttrs.hoverlabel,
-    captureevents: annAttrs.captureevents,
-
-    // maybes later?
-    // clicktoshow: annAttrs.clicktoshow,
-    // xclick: annAttrs.xclick,
-    // yclick: annAttrs.yclick,
-
-    // not needed!
-    // axref: 'pixel'
-    // ayref: 'pixel'
-    // xref: 'x'
-    // yref: 'y
-    // zref: 'z'
-}), 'calc', 'from-root');
-
-},{"../../plot_api/edit_types":328,"../../plot_api/plot_template":335,"../annotations/attributes":141}],151:[function(_dereq_,module,exports){
-'use strict';
-
-var Lib = _dereq_('../../lib');
-var Axes = _dereq_('../../plots/cartesian/axes');
-
-module.exports = function convert(scene) {
-    var fullSceneLayout = scene.fullSceneLayout;
-    var anns = fullSceneLayout.annotations;
-
-    for(var i = 0; i < anns.length; i++) {
-        mockAnnAxes(anns[i], scene);
-    }
-
-    scene.fullLayout._infolayer
-        .selectAll('.annotation-' + scene.id)
-        .remove();
-};
-
-function mockAnnAxes(ann, scene) {
-    var fullSceneLayout = scene.fullSceneLayout;
-    var domain = fullSceneLayout.domain;
-    var size = scene.fullLayout._size;
-
-    var base = {
-        // this gets fill in on render
-        pdata: null,
-
-        // to get setConvert to not execute cleanly
-        type: 'linear',
-
-        // don't try to update them on `editable: true`
-        autorange: false,
-
-        // set infinite range so that annotation draw routine
-        // does not try to remove 'outside-range' annotations,
-        // this case is handled in the render loop
-        range: [-Infinity, Infinity]
-    };
-
-    ann._xa = {};
-    Lib.extendFlat(ann._xa, base);
-    Axes.setConvert(ann._xa);
-    ann._xa._offset = size.l + domain.x[0] * size.w;
-    ann._xa.l2p = function() {
-        return 0.5 * (1 + ann._pdata[0] / ann._pdata[3]) * size.w * (domain.x[1] - domain.x[0]);
-    };
-
-    ann._ya = {};
-    Lib.extendFlat(ann._ya, base);
-    Axes.setConvert(ann._ya);
-    ann._ya._offset = size.t + (1 - domain.y[1]) * size.h;
-    ann._ya.l2p = function() {
-        return 0.5 * (1 - ann._pdata[1] / ann._pdata[3]) * size.h * (domain.y[1] - domain.y[0]);
-    };
-}
-
-},{"../../lib":299,"../../plots/cartesian/axes":346}],152:[function(_dereq_,module,exports){
-'use strict';
-
-var Lib = _dereq_('../../lib');
-var Axes = _dereq_('../../plots/cartesian/axes');
-var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
-var handleAnnotationCommonDefaults = _dereq_('../annotations/common_defaults');
-var attributes = _dereq_('./attributes');
-
-module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
-    handleArrayContainerDefaults(sceneLayoutIn, sceneLayoutOut, {
-        name: 'annotations',
-        handleItemDefaults: handleAnnotationDefaults,
-        fullLayout: opts.fullLayout
-    });
-};
-
-function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(annIn, annOut, attributes, attr, dflt);
-    }
-
-    function coercePosition(axLetter) {
-        var axName = axLetter + 'axis';
-
-        // mock in such way that getFromId grabs correct 3D axis
-        var gdMock = { _fullLayout: {} };
-        gdMock._fullLayout[axName] = sceneLayout[axName];
-
-        return Axes.coercePosition(annOut, gdMock, coerce, axLetter, axLetter, 0.5);
-    }
-
-
-    var visible = coerce('visible');
-    if(!visible) return;
-
-    handleAnnotationCommonDefaults(annIn, annOut, opts.fullLayout, coerce);
-
-    coercePosition('x');
-    coercePosition('y');
-    coercePosition('z');
-
-    // if you have one coordinate you should all three
-    Lib.noneOrAll(annIn, annOut, ['x', 'y', 'z']);
-
-    // hard-set here for completeness
-    annOut.xref = 'x';
-    annOut.yref = 'y';
-    annOut.zref = 'z';
-
-    coerce('xanchor');
-    coerce('yanchor');
-    coerce('xshift');
-    coerce('yshift');
-
-    if(annOut.showarrow) {
-        annOut.axref = 'pixel';
-        annOut.ayref = 'pixel';
-
-        // TODO maybe default values should be bigger than the 2D case?
-        coerce('ax', -10);
-        coerce('ay', -30);
-
-        // if you have one part of arrow length you should have both
-        Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
-    }
-}
-
-},{"../../lib":299,"../../plots/array_container_defaults":341,"../../plots/cartesian/axes":346,"../annotations/common_defaults":144,"./attributes":150}],153:[function(_dereq_,module,exports){
-'use strict';
-
-var drawRaw = _dereq_('../annotations/draw').drawRaw;
-var project = _dereq_('../../plots/gl3d/project');
-var axLetters = ['x', 'y', 'z'];
-
-module.exports = function draw(scene) {
-    var fullSceneLayout = scene.fullSceneLayout;
-    var dataScale = scene.dataScale;
-    var anns = fullSceneLayout.annotations;
-
-    for(var i = 0; i < anns.length; i++) {
-        var ann = anns[i];
-        var annotationIsOffscreen = false;
-
-        for(var j = 0; j < 3; j++) {
-            var axLetter = axLetters[j];
-            var pos = ann[axLetter];
-            var ax = fullSceneLayout[axLetter + 'axis'];
-            var posFraction = ax.r2fraction(pos);
-
-            if(posFraction < 0 || posFraction > 1) {
-                annotationIsOffscreen = true;
-                break;
-            }
-        }
-
-        if(annotationIsOffscreen) {
-            scene.fullLayout._infolayer
-                .select('.annotation-' + scene.id + '[data-index="' + i + '"]')
-                .remove();
-        } else {
-            ann._pdata = project(scene.glplot.cameraParams, [
-                fullSceneLayout.xaxis.r2l(ann.x) * dataScale[0],
-                fullSceneLayout.yaxis.r2l(ann.y) * dataScale[1],
-                fullSceneLayout.zaxis.r2l(ann.z) * dataScale[2]
-            ]);
-
-            drawRaw(scene.graphDiv, ann, i, scene.id, ann._xa, ann._ya);
-        }
-    }
-};
-
-},{"../../plots/gl3d/project":377,"../annotations/draw":147}],154:[function(_dereq_,module,exports){
-'use strict';
-
-var Registry = _dereq_('../../registry');
-var Lib = _dereq_('../../lib');
-
-module.exports = {
-    moduleType: 'component',
-    name: 'annotations3d',
-
-    schema: {
-        subplots: {
-            scene: {annotations: _dereq_('./attributes')}
-        }
-    },
-
-    layoutAttributes: _dereq_('./attributes'),
-    handleDefaults: _dereq_('./defaults'),
-    includeBasePlot: includeGL3D,
-
-    convert: _dereq_('./convert'),
-    draw: _dereq_('./draw')
-};
-
-function includeGL3D(layoutIn, layoutOut) {
-    var GL3D = Registry.subplotsRegistry.gl3d;
-    if(!GL3D) return;
-
-    var attrRegex = GL3D.attrRegex;
-
-    var keys = Object.keys(layoutIn);
-    for(var i = 0; i < keys.length; i++) {
-        var k = keys[i];
-        if(attrRegex.test(k) && (layoutIn[k].annotations || []).length) {
-            Lib.pushUnique(layoutOut._basePlotModules, GL3D);
-            Lib.pushUnique(layoutOut._subplots.gl3d, k);
-        }
-    }
-}
-
-},{"../../lib":299,"../../registry":387,"./attributes":150,"./convert":151,"./defaults":152,"./draw":153}],155:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":357,"./attributes":146,"./calc_autorange":147,"./click":148,"./convert_coords":150,"./defaults":151,"./draw":152}],155:[function(_dereq_,module,exports){
 'use strict';
 
 // a trimmed down version of:
@@ -45134,7 +45134,7 @@ module.exports = overrideAll(templatedArray('selection', {
     },
 }), 'arraydraw', 'from-root');
 
-},{"../../constants/axis_placeable_objects":275,"../../lib/extend":293,"../../plot_api/edit_types":328,"../../plot_api/plot_template":335,"../../traces/scatter/attributes":509,"../annotations/attributes":141,"../drawing/attributes":179}],239:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":275,"../../lib/extend":293,"../../plot_api/edit_types":328,"../../plot_api/plot_template":335,"../../traces/scatter/attributes":509,"../annotations/attributes":146,"../drawing/attributes":179}],239:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -47215,6 +47215,7 @@ function computeRectAndRanges(poly) {
 function makeFillRangeItems(allAxes) {
     return function(eventData, poly) {
         var range;
+        var value;
         var lassoPoints;
 
         for(var i = 0; i < allAxes.length; i++) {
@@ -47232,6 +47233,10 @@ function makeFillRangeItems(allAxes) {
                         p2r(ax, min),
                         p2r(ax, max)
                     ].sort(ascending);
+                    value[id] = [
+                        ax.getCategoryAtIndex(range[id][0]),
+                        ax.getCategoryAtIndex(range[id][1]),
+                    ].sort(ascending);
                 }
             } else {
                 if(!lassoPoints) lassoPoints = {};
@@ -47241,6 +47246,7 @@ function makeFillRangeItems(allAxes) {
 
         if(range) {
             eventData.range = range;
+            eventData.value = value;
         }
 
         if(lassoPoints) {
@@ -47392,7 +47398,7 @@ module.exports = templatedArray('shape', {
     editType: 'arraydraw'
 });
 
-},{"../../constants/axis_placeable_objects":275,"../../lib/extend":293,"../../plot_api/plot_template":335,"../../traces/scatter/attributes":509,"../annotations/attributes":141,"../drawing/attributes":179}],249:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":275,"../../lib/extend":293,"../../plot_api/plot_template":335,"../../traces/scatter/attributes":509,"../annotations/attributes":146,"../drawing/attributes":179}],249:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -52713,7 +52719,7 @@ exports.Fx = {
 exports.Snapshot = _dereq_('./snapshot');
 exports.PlotSchema = _dereq_('./plot_api/plot_schema');
 
-},{"../build/plotcss":1,"./components/annotations":149,"./components/annotations3d":154,"./components/colorbar":164,"./components/colorscale":170,"./components/errorbars":186,"./components/fx":198,"./components/grid":202,"./components/images":207,"./components/legend":215,"./components/modebar":221,"./components/rangeselector":229,"./components/rangeslider":236,"./components/selections":246,"./components/shapes":261,"./components/sliders":266,"./components/updatemenus":272,"./fonts/ploticon":282,"./locale-en":326,"./locale-en-us":325,"./plot_api":330,"./plot_api/plot_schema":334,"./plots/plots":380,"./registry":387,"./snapshot":392,"./traces/scatter":521,"./version":561,"native-promise-only":72}],282:[function(_dereq_,module,exports){
+},{"../build/plotcss":1,"./components/annotations":154,"./components/annotations3d":144,"./components/colorbar":164,"./components/colorscale":170,"./components/errorbars":186,"./components/fx":198,"./components/grid":202,"./components/images":207,"./components/legend":215,"./components/modebar":221,"./components/rangeselector":229,"./components/rangeslider":236,"./components/selections":246,"./components/shapes":261,"./components/sliders":266,"./components/updatemenus":272,"./fonts/ploticon":282,"./locale-en":326,"./locale-en-us":325,"./plot_api":330,"./plot_api/plot_schema":334,"./plots/plots":380,"./registry":387,"./snapshot":392,"./traces/scatter":521,"./version":561,"native-promise-only":72}],282:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -63140,7 +63146,7 @@ function guiEdit(func) {
 // Ordered by most common edits first, to minimize our search time
 var layoutUIControlPatterns = [
     {pattern: /^hiddenlabels/, attr: 'legend.uirevision'},
-    {pattern: /^((x|y)axis\d*)\.((auto)?range|title\.text)/},
+    {pattern: /^((x|y)axis\d*)\.((auto)?range|value|title\.text)/},
 
     // showspikes and modes include those nested inside scenes
     {pattern: /axis\d*\.showspikes$/, attr: 'modebar.uirevision'},
@@ -74963,13 +74969,39 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var yfrac = (gbb.bottom - e.clientY) / gbb.height;
         var i;
 
-        function zoomWheelOneAxis(ax, centerFraction, zoom) {
+        function zoomWheelOneAxis(ax, centerFraction, zoom, max, xAxis, checkForViolation) {
             if(ax.fixedrange) return;
 
+            var axisBoundViolated = false;
             var axRange = Lib.simpleMap(ax.range, ax.r2l);
             var v0 = axRange[0] + (axRange[1] - axRange[0]) * centerFraction;
-            function doZoom(v) { return ax.l2r(v0 + (v - v0) * zoom); }
-            ax.range = axRange.map(doZoom);
+            function doZoom(v) { 
+                return ax.l2r(v0 + (v - v0) * zoom); 
+            }
+            let rangeMinValue = doZoom(axRange[0]);
+            if (rangeMinValue < 0 && xAxis && zoom > 1 && checkForViolation)
+            {
+                axisBoundViolated = true;
+                ax.range[0] = 0;
+            }
+            else if (rangeMinValue < -0.5 && !xAxis && zoom > 1 && checkForViolation)
+            {
+                axisBoundViolated = true;
+                ax.range[0] = -0.5;
+            }
+            else 
+                ax.range[0] = rangeMinValue;
+
+            let rangeMaxValue = doZoom(axRange[1]);
+            if (rangeMaxValue > max && zoom > 1 && checkForViolation)
+            {
+                axisBoundViolated = true;                   
+                ax.range[1] = max;
+            }
+            else
+                ax.range[1] = rangeMaxValue;
+
+            return axisBoundViolated;
         }
 
         if(editX) {
@@ -74977,24 +75009,60 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             // zoom it about the center
             if(!ew) xfrac = 0.5;
 
+            let xAxisBoundViolated = false;
             for(i = 0; i < xaxes.length; i++) {
-                zoomWheelOneAxis(xaxes[i], xfrac, zoom);
+                let xMin = xaxes[i].range[0];
+                let xMax = xaxes[i].range[1];
+
+                if (xMax - xMin < 15 && zoom < 1)
+                    xAxisBoundViolated = true;
+                else
+                {
+                    let categoryArrayLength = 0;
+                    if (xaxes[i].categoryarray)
+                        categoryArrayLength = xaxes[i].categoryarray.length;
+
+                    if (categoryArrayLength == 0)
+                        zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, false);
+                    else
+                        xAxisBoundViolated = zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, true);
+                }
             }
             updateMatchedAxRange('x');
 
-            scrollViewBox[2] *= zoom;
-            scrollViewBox[0] += scrollViewBox[2] * xfrac * (1 / zoom - 1);
+            if (!xAxisBoundViolated)
+            {
+                scrollViewBox[2] *= zoom;
+                scrollViewBox[0] += scrollViewBox[2] * xfrac * (1 / zoom - 1); 
+            }
         }
         if(editY) {
             if(!ns) yfrac = 0.5;
 
+            let yAxisBoundViolated = false;
             for(i = 0; i < yaxes.length; i++) {
-                zoomWheelOneAxis(yaxes[i], yfrac, zoom);
+                let yMin = yaxes[i].range[0];
+                let yMax = yaxes[i].range[1];
+
+                let hasCategoryArray = yaxes[i].categoryarray;
+
+                if (yMax - yMin < 10 && zoom < 1 && hasCategoryArray)
+                    yAxisBoundViolated = true;
+                else
+                {
+                    if (hasCategoryArray)
+                        yAxisBoundViolated = zoomWheelOneAxis(yaxes[i], yfrac, zoom, yaxes[i].categoryarray.length - 0.5, false, true);
+                    else
+                        zoomWheelOneAxis(yaxes[i], yfrac, zoom, 0, false, false); 
+                }
             }
             updateMatchedAxRange('y');
 
-            scrollViewBox[3] *= zoom;
-            scrollViewBox[1] += scrollViewBox[3] * (1 - yfrac) * (1 / zoom - 1);
+            if (!yAxisBoundViolated)
+            {
+                scrollViewBox[3] *= zoom;
+                scrollViewBox[1] += scrollViewBox[3] * (1 - yfrac) * (1 / zoom - 1);
+            }
         }
 
         // viewbox redraw at first
@@ -75213,8 +75281,34 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var axId = activeAxIds[i];
             var ax = getFromId(gd, axId);
             Axes.drawOne(gd, ax, {skipTitle: true});
+            let lowRange = ax.range[0];
+            let highRange = ax.range[1];
+
+            if (lowRange < 0)
+                lowRange = 0;
+
+            let categoryArrayLength = 0;
+            if (ax.categoryarray)
+                categoryArrayLength = ax.categoryarray.length;
+
+            if (highRange > categoryArrayLength)
+                highRange = categoryArrayLength - 1;
+
+            let lowIdxInt = Math.round(lowRange);
+            let highIdxInt = Math.round(highRange);
+
+            let lowIdxCategory = null;
+            let highIdxCategory = null;
+
+            if (lowIdxInt >= 0 && lowIdxInt < categoryArrayLength)
+                lowIdxCategory = ax.categoryarray[lowIdxInt];
+            if (highIdxInt >= 0 && highIdxInt < categoryArrayLength)
+                highIdxCategory = ax.categoryarray[highIdxInt];
+            
             updates[ax._name + '.range[0]'] = ax.range[0];
             updates[ax._name + '.range[1]'] = ax.range[1];
+            updates[ax._name + '.value[0]'] = lowIdxCategory;
+            updates[ax._name + '.value[1]'] = highIdxCategory;
         }
 
         Axes.redrawComponents(gd, activeAxIds);
@@ -75523,8 +75617,18 @@ function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes) {
         } else {
             var axRangeLinear0 = axi._rl[0];
             var axRangeLinearSpan = axi._rl[1] - axRangeLinear0;
-            updates[axi._name + '.range[0]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction);
-            updates[axi._name + '.range[1]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction);
+            var updatedR0 = axRangeLinear0 + axRangeLinearSpan * r0Fraction;
+            var updatedR1 = axRangeLinear0 + axRangeLinearSpan * r1Fraction;
+            if (updatedR1 - updatedR0 > 8)
+            {
+                updates[axi._name + '.range[0]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction);
+                updates[axi._name + '.range[1]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction);
+            }
+            else
+            {
+                updates[axi._name + '.range[0]'] = axi._rl[0];
+                updates[axi._name + '.range[1]'] = axi._rl[1];
+            }
         }
     }
 
@@ -93702,7 +93806,7 @@ function dropZonBreaks(x, y, z) {
     return newZ;
 }
 
-},{"../../components/colorscale/calc":166,"../../constants/numerical":279,"../../lib":299,"../../plots/cartesian/align_period":343,"../../plots/cartesian/axes":346,"../../registry":387,"../histogram2d/calc":478,"./clean_2d_array":450,"./convert_column_xyz":452,"./find_empties":454,"./interp2d":457,"./make_bound_array":459}],450:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":166,"../../constants/numerical":279,"../../lib":299,"../../plots/cartesian/align_period":343,"../../plots/cartesian/axes":346,"../../registry":387,"../histogram2d/calc":465,"./clean_2d_array":450,"./convert_column_xyz":452,"./find_empties":454,"./interp2d":457,"./make_bound_array":459}],450:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -95088,6 +95192,512 @@ function isValidZ(z) {
 },{"../../lib":299,"../../registry":387,"fast-isnumeric":33}],464:[function(_dereq_,module,exports){
 'use strict';
 
+var histogramAttrs = _dereq_('../histogram/attributes');
+var makeBinAttrs = _dereq_('../histogram/bin_attributes');
+var heatmapAttrs = _dereq_('../heatmap/attributes');
+var baseAttrs = _dereq_('../../plots/attributes');
+var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
+var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = _dereq_('../../plots/template_attributes').texttemplateAttrs;
+var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
+
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
+
+module.exports = extendFlat(
+    {
+        x: histogramAttrs.x,
+        y: histogramAttrs.y,
+
+        z: {
+            valType: 'data_array',
+            editType: 'calc',
+        },
+        marker: {
+            color: {
+                valType: 'data_array',
+                editType: 'calc',
+            },
+            editType: 'calc'
+        },
+
+        histnorm: histogramAttrs.histnorm,
+        histfunc: histogramAttrs.histfunc,
+        nbinsx: histogramAttrs.nbinsx,
+        xbins: makeBinAttrs('x'),
+        nbinsy: histogramAttrs.nbinsy,
+        ybins: makeBinAttrs('y'),
+        autobinx: histogramAttrs.autobinx,
+        autobiny: histogramAttrs.autobiny,
+
+        bingroup: extendFlat({}, histogramAttrs.bingroup, {
+        }),
+        xbingroup: extendFlat({}, histogramAttrs.bingroup, {
+        }),
+        ybingroup: extendFlat({}, histogramAttrs.bingroup, {
+        }),
+
+        xgap: heatmapAttrs.xgap,
+        ygap: heatmapAttrs.ygap,
+        zsmooth: heatmapAttrs.zsmooth,
+        xhoverformat: axisHoverFormat('x'),
+        yhoverformat: axisHoverFormat('y'),
+        zhoverformat: axisHoverFormat('z', 1),
+        hovertemplate: hovertemplateAttrs({}, {keys: 'z'}),
+        texttemplate: texttemplateAttrs({
+            arrayOk: false,
+            editType: 'plot'
+        }, {
+            keys: 'z'
+        }),
+        textfont: heatmapAttrs.textfont,
+        showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
+    },
+    colorScaleAttrs('', {cLetter: 'z', autoColorDflt: false})
+);
+
+},{"../../components/colorscale/attributes":165,"../../lib/extend":293,"../../plots/attributes":342,"../../plots/cartesian/axis_format_attributes":349,"../../plots/template_attributes":382,"../heatmap/attributes":448,"../histogram/attributes":473,"../histogram/bin_attributes":475}],465:[function(_dereq_,module,exports){
+'use strict';
+
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+
+var binFunctions = _dereq_('../histogram/bin_functions');
+var normFunctions = _dereq_('../histogram/norm_functions');
+var doAvg = _dereq_('../histogram/average');
+var getBinSpanLabelRound = _dereq_('../histogram/bin_label_vals');
+var calcAllAutoBins = _dereq_('../histogram/calc').calcAllAutoBins;
+
+module.exports = function calc(gd, trace) {
+    var xa = Axes.getFromId(gd, trace.xaxis);
+    var ya = Axes.getFromId(gd, trace.yaxis);
+
+    var xcalendar = trace.xcalendar;
+    var ycalendar = trace.ycalendar;
+    var xr2c = function(v) { return xa.r2c(v, 0, xcalendar); };
+    var yr2c = function(v) { return ya.r2c(v, 0, ycalendar); };
+    var xc2r = function(v) { return xa.c2r(v, 0, xcalendar); };
+    var yc2r = function(v) { return ya.c2r(v, 0, ycalendar); };
+
+    var i, j, n, m;
+
+    // calculate the bins
+    var xBinsAndPos = calcAllAutoBins(gd, trace, xa, 'x');
+    var xBinSpec = xBinsAndPos[0];
+    var xPos0 = xBinsAndPos[1];
+    var yBinsAndPos = calcAllAutoBins(gd, trace, ya, 'y');
+    var yBinSpec = yBinsAndPos[0];
+    var yPos0 = yBinsAndPos[1];
+
+    var serieslen = trace._length;
+    if(xPos0.length > serieslen) xPos0.splice(serieslen, xPos0.length - serieslen);
+    if(yPos0.length > serieslen) yPos0.splice(serieslen, yPos0.length - serieslen);
+
+    // make the empty bin array & scale the map
+    var z = [];
+    var onecol = [];
+    var zerocol = [];
+    var nonuniformBinsX = typeof xBinSpec.size === 'string';
+    var nonuniformBinsY = typeof yBinSpec.size === 'string';
+    var xEdges = [];
+    var yEdges = [];
+    var xbins = nonuniformBinsX ? xEdges : xBinSpec;
+    var ybins = nonuniformBinsY ? yEdges : yBinSpec;
+    var total = 0;
+    var counts = [];
+    var inputPoints = [];
+    var norm = trace.histnorm;
+    var func = trace.histfunc;
+    var densitynorm = norm.indexOf('density') !== -1;
+    var extremefunc = func === 'max' || func === 'min';
+    var sizeinit = extremefunc ? null : 0;
+    var binfunc = binFunctions.count;
+    var normfunc = normFunctions[norm];
+    var doavg = false;
+    var xinc = [];
+    var yinc = [];
+
+    // set a binning function other than count?
+    // for binning functions: check first for 'z',
+    // then 'mc' in case we had a colored scatter plot
+    // and want to transfer these colors to the 2D histo
+    // TODO: axe this, make it the responsibility of the app changing type? or an impliedEdit?
+    var rawCounterData = ('z' in trace) ?
+        trace.z :
+        (('marker' in trace && Array.isArray(trace.marker.color)) ?
+            trace.marker.color : '');
+    if(rawCounterData && func !== 'count') {
+        doavg = func === 'avg';
+        binfunc = binFunctions[func];
+    }
+
+    // decrease end a little in case of rounding errors
+    var xBinSize = xBinSpec.size;
+    var xBinStart = xr2c(xBinSpec.start);
+    var xBinEnd = xr2c(xBinSpec.end) +
+        (xBinStart - Axes.tickIncrement(xBinStart, xBinSize, false, xcalendar)) / 1e6;
+
+    for(i = xBinStart; i < xBinEnd; i = Axes.tickIncrement(i, xBinSize, false, xcalendar)) {
+        onecol.push(sizeinit);
+        xEdges.push(i);
+        if(doavg) zerocol.push(0);
+    }
+    xEdges.push(i);
+
+    var nx = onecol.length;
+    var dx = (i - xBinStart) / nx;
+    var x0 = xc2r(xBinStart + dx / 2);
+
+    var yBinSize = yBinSpec.size;
+    var yBinStart = yr2c(yBinSpec.start);
+    var yBinEnd = yr2c(yBinSpec.end) +
+        (yBinStart - Axes.tickIncrement(yBinStart, yBinSize, false, ycalendar)) / 1e6;
+
+    for(i = yBinStart; i < yBinEnd; i = Axes.tickIncrement(i, yBinSize, false, ycalendar)) {
+        z.push(onecol.slice());
+        yEdges.push(i);
+        var ipCol = new Array(nx);
+        for(j = 0; j < nx; j++) ipCol[j] = [];
+        inputPoints.push(ipCol);
+        if(doavg) counts.push(zerocol.slice());
+    }
+    yEdges.push(i);
+
+    var ny = z.length;
+    var dy = (i - yBinStart) / ny;
+    var y0 = yc2r(yBinStart + dy / 2);
+
+    if(densitynorm) {
+        xinc = makeIncrements(onecol.length, xbins, dx, nonuniformBinsX);
+        yinc = makeIncrements(z.length, ybins, dy, nonuniformBinsY);
+    }
+
+    // for date axes we need bin bounds to be calcdata. For nonuniform bins
+    // we already have this, but uniform with start/end/size they're still strings.
+    if(!nonuniformBinsX && xa.type === 'date') xbins = binsToCalc(xr2c, xbins);
+    if(!nonuniformBinsY && ya.type === 'date') ybins = binsToCalc(yr2c, ybins);
+
+    // put data into bins
+    var uniqueValsPerX = true;
+    var uniqueValsPerY = true;
+    var xVals = new Array(nx);
+    var yVals = new Array(ny);
+    var xGapLow = Infinity;
+    var xGapHigh = Infinity;
+    var yGapLow = Infinity;
+    var yGapHigh = Infinity;
+    for(i = 0; i < serieslen; i++) {
+        var xi = xPos0[i];
+        var yi = yPos0[i];
+        n = Lib.findBin(xi, xbins);
+        m = Lib.findBin(yi, ybins);
+        if(n >= 0 && n < nx && m >= 0 && m < ny) {
+            total += binfunc(n, i, z[m], rawCounterData, counts[m]);
+            inputPoints[m][n].push(i);
+
+            if(uniqueValsPerX) {
+                if(xVals[n] === undefined) xVals[n] = xi;
+                else if(xVals[n] !== xi) uniqueValsPerX = false;
+            }
+            if(uniqueValsPerY) {
+                if(yVals[m] === undefined) yVals[m] = yi;
+                else if(yVals[m] !== yi) uniqueValsPerY = false;
+            }
+
+            xGapLow = Math.min(xGapLow, xi - xEdges[n]);
+            xGapHigh = Math.min(xGapHigh, xEdges[n + 1] - xi);
+            yGapLow = Math.min(yGapLow, yi - yEdges[m]);
+            yGapHigh = Math.min(yGapHigh, yEdges[m + 1] - yi);
+        }
+    }
+    // normalize, if needed
+    if(doavg) {
+        for(m = 0; m < ny; m++) total += doAvg(z[m], counts[m]);
+    }
+    if(normfunc) {
+        for(m = 0; m < ny; m++) normfunc(z[m], total, xinc, yinc[m]);
+    }
+
+    return {
+        x: xPos0,
+        xRanges: getRanges(xEdges, uniqueValsPerX && xVals, xGapLow, xGapHigh, xa, xcalendar),
+        x0: x0,
+        dx: dx,
+        y: yPos0,
+        yRanges: getRanges(yEdges, uniqueValsPerY && yVals, yGapLow, yGapHigh, ya, ycalendar),
+        y0: y0,
+        dy: dy,
+        z: z,
+        pts: inputPoints
+    };
+};
+
+function makeIncrements(len, bins, dv, nonuniform) {
+    var out = new Array(len);
+    var i;
+    if(nonuniform) {
+        for(i = 0; i < len; i++) out[i] = 1 / (bins[i + 1] - bins[i]);
+    } else {
+        var inc = 1 / dv;
+        for(i = 0; i < len; i++) out[i] = inc;
+    }
+    return out;
+}
+
+function binsToCalc(r2c, bins) {
+    return {
+        start: r2c(bins.start),
+        end: r2c(bins.end),
+        size: bins.size
+    };
+}
+
+function getRanges(edges, uniqueVals, gapLow, gapHigh, ax, calendar) {
+    var i;
+    var len = edges.length - 1;
+    var out = new Array(len);
+    var roundFn = getBinSpanLabelRound(gapLow, gapHigh, edges, ax, calendar);
+
+    for(i = 0; i < len; i++) {
+        var v = (uniqueVals || [])[i];
+        out[i] = v === undefined ?
+            [roundFn(edges[i]), roundFn(edges[i + 1], true)] :
+            [v, v];
+    }
+    return out;
+}
+
+},{"../../lib":299,"../../plots/cartesian/axes":346,"../histogram/average":474,"../histogram/bin_functions":476,"../histogram/bin_label_vals":477,"../histogram/calc":478,"../histogram/norm_functions":485}],466:[function(_dereq_,module,exports){
+'use strict';
+
+var Lib = _dereq_('../../lib');
+
+var handleSampleDefaults = _dereq_('./sample_defaults');
+var handleStyleDefaults = _dereq_('../heatmap/style_defaults');
+var colorscaleDefaults = _dereq_('../../components/colorscale/defaults');
+var handleHeatmapLabelDefaults = _dereq_('../heatmap/label_defaults');
+var attributes = _dereq_('./attributes');
+
+
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+    }
+
+    handleSampleDefaults(traceIn, traceOut, coerce, layout);
+    if(traceOut.visible === false) return;
+
+    handleStyleDefaults(traceIn, traceOut, coerce, layout);
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
+    coerce('hovertemplate');
+
+    handleHeatmapLabelDefaults(coerce, layout);
+
+    coerce('xhoverformat');
+    coerce('yhoverformat');
+};
+
+},{"../../components/colorscale/defaults":168,"../../lib":299,"../heatmap/label_defaults":458,"../heatmap/style_defaults":462,"./attributes":464,"./sample_defaults":469}],467:[function(_dereq_,module,exports){
+'use strict';
+
+var heatmapHover = _dereq_('../heatmap/hover');
+var hoverLabelText = _dereq_('../../plots/cartesian/axes').hoverLabelText;
+
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
+    var pts = heatmapHover(pointData, xval, yval, hovermode, opts);
+
+    if(!pts) return;
+
+    pointData = pts[0];
+    var indices = pointData.index;
+    var ny = indices[0];
+    var nx = indices[1];
+    var cd0 = pointData.cd[0];
+    var trace = cd0.trace;
+    var xRange = cd0.xRanges[nx];
+    var yRange = cd0.yRanges[ny];
+
+    pointData.xLabel = hoverLabelText(pointData.xa, [xRange[0], xRange[1]], trace.xhoverformat);
+    pointData.yLabel = hoverLabelText(pointData.ya, [yRange[0], yRange[1]], trace.yhoverformat);
+
+    return pts;
+};
+
+},{"../../plots/cartesian/axes":346,"../heatmap/hover":455}],468:[function(_dereq_,module,exports){
+'use strict';
+
+module.exports = {
+    attributes: _dereq_('./attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    crossTraceDefaults: _dereq_('../histogram/cross_trace_defaults'),
+    calc: _dereq_('../heatmap/calc'),
+    plot: _dereq_('../heatmap/plot'),
+    layerName: 'heatmaplayer',
+    colorbar: _dereq_('../heatmap/colorbar'),
+    style: _dereq_('../heatmap/style'),
+    hoverPoints: _dereq_('./hover'),
+    eventData: _dereq_('../histogram/event_data'),
+
+    moduleType: 'trace',
+    name: 'histogram2d',
+    basePlotModule: _dereq_('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', '2dMap', 'histogram', 'showLegend'],
+    meta: {
+    }
+};
+
+},{"../../plots/cartesian":358,"../heatmap/calc":449,"../heatmap/colorbar":451,"../heatmap/plot":460,"../heatmap/style":461,"../histogram/cross_trace_defaults":480,"../histogram/event_data":482,"./attributes":464,"./defaults":466,"./hover":467}],469:[function(_dereq_,module,exports){
+'use strict';
+
+var Registry = _dereq_('../../registry');
+var Lib = _dereq_('../../lib');
+
+module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
+    var x = coerce('x');
+    var y = coerce('y');
+    var xlen = Lib.minRowLength(x);
+    var ylen = Lib.minRowLength(y);
+
+    // we could try to accept x0 and dx, etc...
+    // but that's a pretty weird use case.
+    // for now require both x and y explicitly specified.
+    if(!xlen || !ylen) {
+        traceOut.visible = false;
+        return;
+    }
+
+    traceOut._length = Math.min(xlen, ylen);
+
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
+
+    // if marker.color is an array, we can use it in aggregation instead of z
+    var hasAggregationData = coerce('z') || coerce('marker.color');
+
+    if(hasAggregationData) coerce('histfunc');
+    coerce('histnorm');
+
+    // Note: bin defaults are now handled in Histogram2D.crossTraceDefaults
+    // autobin(x|y) are only included here to appease Plotly.validate
+    coerce('autobinx');
+    coerce('autobiny');
+};
+
+},{"../../lib":299,"../../registry":387}],470:[function(_dereq_,module,exports){
+'use strict';
+
+var histogram2dAttrs = _dereq_('../histogram2d/attributes');
+var contourAttrs = _dereq_('../contour/attributes');
+var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
+var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
+
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
+
+module.exports = extendFlat({
+    x: histogram2dAttrs.x,
+    y: histogram2dAttrs.y,
+    z: histogram2dAttrs.z,
+    marker: histogram2dAttrs.marker,
+
+    histnorm: histogram2dAttrs.histnorm,
+    histfunc: histogram2dAttrs.histfunc,
+    nbinsx: histogram2dAttrs.nbinsx,
+    xbins: histogram2dAttrs.xbins,
+    nbinsy: histogram2dAttrs.nbinsy,
+    ybins: histogram2dAttrs.ybins,
+    autobinx: histogram2dAttrs.autobinx,
+    autobiny: histogram2dAttrs.autobiny,
+
+    bingroup: histogram2dAttrs.bingroup,
+    xbingroup: histogram2dAttrs.xbingroup,
+    ybingroup: histogram2dAttrs.ybingroup,
+
+    autocontour: contourAttrs.autocontour,
+    ncontours: contourAttrs.ncontours,
+    contours: contourAttrs.contours,
+    line: {
+        color: contourAttrs.line.color,
+        width: extendFlat({}, contourAttrs.line.width, {
+            dflt: 0.5,
+        }),
+        dash: contourAttrs.line.dash,
+        smoothing: contourAttrs.line.smoothing,
+        editType: 'plot'
+    },
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z', 1),
+    hovertemplate: histogram2dAttrs.hovertemplate,
+    texttemplate: contourAttrs.texttemplate,
+    textfont: contourAttrs.textfont
+},
+    colorScaleAttrs('', {
+        cLetter: 'z',
+        editTypeOverride: 'calc'
+    })
+);
+
+},{"../../components/colorscale/attributes":165,"../../lib/extend":293,"../../plots/cartesian/axis_format_attributes":349,"../contour/attributes":426,"../histogram2d/attributes":464}],471:[function(_dereq_,module,exports){
+'use strict';
+
+var Lib = _dereq_('../../lib');
+
+var handleSampleDefaults = _dereq_('../histogram2d/sample_defaults');
+var handleContoursDefaults = _dereq_('../contour/contours_defaults');
+var handleStyleDefaults = _dereq_('../contour/style_defaults');
+var handleHeatmapLabelDefaults = _dereq_('../heatmap/label_defaults');
+var attributes = _dereq_('./attributes');
+
+
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+    }
+
+    function coerce2(attr) {
+        return Lib.coerce2(traceIn, traceOut, attributes, attr);
+    }
+
+    handleSampleDefaults(traceIn, traceOut, coerce, layout);
+    if(traceOut.visible === false) return;
+
+    handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
+    handleStyleDefaults(traceIn, traceOut, coerce, layout);
+    coerce('xhoverformat');
+    coerce('yhoverformat');
+    coerce('hovertemplate');
+    if(
+        traceOut.contours &&
+        traceOut.contours.coloring === 'heatmap'
+    ) {
+        handleHeatmapLabelDefaults(coerce, layout);
+    }
+};
+
+},{"../../lib":299,"../contour/contours_defaults":433,"../contour/style_defaults":447,"../heatmap/label_defaults":458,"../histogram2d/sample_defaults":469,"./attributes":470}],472:[function(_dereq_,module,exports){
+'use strict';
+
+module.exports = {
+    attributes: _dereq_('./attributes'),
+    supplyDefaults: _dereq_('./defaults'),
+    crossTraceDefaults: _dereq_('../histogram/cross_trace_defaults'),
+    calc: _dereq_('../contour/calc'),
+    plot: _dereq_('../contour/plot').plot,
+    layerName: 'contourlayer',
+    style: _dereq_('../contour/style'),
+    colorbar: _dereq_('../contour/colorbar'),
+    hoverPoints: _dereq_('../contour/hover'),
+
+    moduleType: 'trace',
+    name: 'histogram2dcontour',
+    basePlotModule: _dereq_('../../plots/cartesian'),
+    categories: ['cartesian', 'svg', '2dMap', 'contour', 'histogram', 'showLegend'],
+    meta: {
+    }
+};
+
+},{"../../plots/cartesian":358,"../contour/calc":427,"../contour/colorbar":429,"../contour/hover":439,"../contour/plot":444,"../contour/style":446,"../histogram/cross_trace_defaults":480,"./attributes":470,"./defaults":471}],473:[function(_dereq_,module,exports){
+'use strict';
+
 var barAttrs = _dereq_('../bar/attributes');
 var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
@@ -95235,7 +95845,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":293,"../../plots/cartesian/axis_format_attributes":349,"../../plots/font_attributes":374,"../../plots/template_attributes":382,"../bar/attributes":397,"./bin_attributes":466,"./constants":470}],465:[function(_dereq_,module,exports){
+},{"../../lib/extend":293,"../../plots/cartesian/axis_format_attributes":349,"../../plots/font_attributes":374,"../../plots/template_attributes":382,"../bar/attributes":397,"./bin_attributes":475,"./constants":479}],474:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -95251,7 +95861,7 @@ module.exports = function doAvg(size, counts) {
     return total;
 };
 
-},{}],466:[function(_dereq_,module,exports){
+},{}],475:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function makeBinAttrs(axLetter, match) {
@@ -95272,7 +95882,7 @@ module.exports = function makeBinAttrs(axLetter, match) {
     };
 };
 
-},{}],467:[function(_dereq_,module,exports){
+},{}],476:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -95337,7 +95947,7 @@ module.exports = {
     }
 };
 
-},{"fast-isnumeric":33}],468:[function(_dereq_,module,exports){
+},{"fast-isnumeric":33}],477:[function(_dereq_,module,exports){
 'use strict';
 
 var numConstants = _dereq_('../../constants/numerical');
@@ -95504,7 +96114,7 @@ function dateParts(v, pa, calendar) {
     return parts;
 }
 
-},{"../../constants/numerical":279,"../../plots/cartesian/axes":346}],469:[function(_dereq_,module,exports){
+},{"../../constants/numerical":279,"../../plots/cartesian/axes":346}],478:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -96076,14 +96686,14 @@ module.exports = {
     calcAllAutoBins: calcAllAutoBins
 };
 
-},{"../../lib":299,"../../plots/cartesian/axes":346,"../../registry":387,"../bar/arrays_to_calcdata":396,"./average":465,"./bin_functions":467,"./bin_label_vals":468,"./norm_functions":476,"fast-isnumeric":33}],470:[function(_dereq_,module,exports){
+},{"../../lib":299,"../../plots/cartesian/axes":346,"../../registry":387,"../bar/arrays_to_calcdata":396,"./average":474,"./bin_functions":476,"./bin_label_vals":477,"./norm_functions":485,"fast-isnumeric":33}],479:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
     eventDataKeys: ['binNumber']
 };
 
-},{}],471:[function(_dereq_,module,exports){
+},{}],480:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -96352,7 +96962,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
     }
 };
 
-},{"../../lib":299,"../../plots/cartesian/axis_ids":350,"../../plots/cartesian/constraints":354,"../../registry":387,"../bar/defaults":401}],472:[function(_dereq_,module,exports){
+},{"../../lib":299,"../../plots/cartesian/axis_ids":350,"../../plots/cartesian/constraints":354,"../../registry":387,"../bar/defaults":401}],481:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -96431,7 +97041,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/color":158,"../../lib":299,"../../registry":387,"../bar/defaults":401,"../bar/style_defaults":412,"./attributes":464}],473:[function(_dereq_,module,exports){
+},{"../../components/color":158,"../../lib":299,"../../registry":387,"../bar/defaults":401,"../bar/style_defaults":412,"./attributes":473}],482:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function eventData(out, pt, trace, cd, pointNumber) {
@@ -96472,7 +97082,7 @@ module.exports = function eventData(out, pt, trace, cd, pointNumber) {
     return out;
 };
 
-},{}],474:[function(_dereq_,module,exports){
+},{}],483:[function(_dereq_,module,exports){
 'use strict';
 
 var barHover = _dereq_('../bar/hover').hoverPoints;
@@ -96496,7 +97106,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
     return pts;
 };
 
-},{"../../plots/cartesian/axes":346,"../bar/hover":404}],475:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axes":346,"../bar/hover":404}],484:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -96537,7 +97147,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian":358,"../bar/cross_trace_calc":400,"../bar/layout_attributes":406,"../bar/layout_defaults":407,"../bar/plot":408,"../bar/select":409,"../bar/style":411,"../scatter/marker_colorbar":527,"./attributes":464,"./calc":469,"./cross_trace_defaults":471,"./defaults":472,"./event_data":473,"./hover":474}],476:[function(_dereq_,module,exports){
+},{"../../plots/cartesian":358,"../bar/cross_trace_calc":400,"../bar/layout_attributes":406,"../bar/layout_defaults":407,"../bar/plot":408,"../bar/select":409,"../bar/style":411,"../scatter/marker_colorbar":527,"./attributes":473,"./calc":478,"./cross_trace_defaults":480,"./defaults":481,"./event_data":482,"./hover":483}],485:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -96563,513 +97173,7 @@ module.exports = {
     }
 };
 
-},{}],477:[function(_dereq_,module,exports){
-'use strict';
-
-var histogramAttrs = _dereq_('../histogram/attributes');
-var makeBinAttrs = _dereq_('../histogram/bin_attributes');
-var heatmapAttrs = _dereq_('../heatmap/attributes');
-var baseAttrs = _dereq_('../../plots/attributes');
-var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = _dereq_('../../plots/template_attributes').texttemplateAttrs;
-var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
-
-var extendFlat = _dereq_('../../lib/extend').extendFlat;
-
-module.exports = extendFlat(
-    {
-        x: histogramAttrs.x,
-        y: histogramAttrs.y,
-
-        z: {
-            valType: 'data_array',
-            editType: 'calc',
-        },
-        marker: {
-            color: {
-                valType: 'data_array',
-                editType: 'calc',
-            },
-            editType: 'calc'
-        },
-
-        histnorm: histogramAttrs.histnorm,
-        histfunc: histogramAttrs.histfunc,
-        nbinsx: histogramAttrs.nbinsx,
-        xbins: makeBinAttrs('x'),
-        nbinsy: histogramAttrs.nbinsy,
-        ybins: makeBinAttrs('y'),
-        autobinx: histogramAttrs.autobinx,
-        autobiny: histogramAttrs.autobiny,
-
-        bingroup: extendFlat({}, histogramAttrs.bingroup, {
-        }),
-        xbingroup: extendFlat({}, histogramAttrs.bingroup, {
-        }),
-        ybingroup: extendFlat({}, histogramAttrs.bingroup, {
-        }),
-
-        xgap: heatmapAttrs.xgap,
-        ygap: heatmapAttrs.ygap,
-        zsmooth: heatmapAttrs.zsmooth,
-        xhoverformat: axisHoverFormat('x'),
-        yhoverformat: axisHoverFormat('y'),
-        zhoverformat: axisHoverFormat('z', 1),
-        hovertemplate: hovertemplateAttrs({}, {keys: 'z'}),
-        texttemplate: texttemplateAttrs({
-            arrayOk: false,
-            editType: 'plot'
-        }, {
-            keys: 'z'
-        }),
-        textfont: heatmapAttrs.textfont,
-        showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
-    },
-    colorScaleAttrs('', {cLetter: 'z', autoColorDflt: false})
-);
-
-},{"../../components/colorscale/attributes":165,"../../lib/extend":293,"../../plots/attributes":342,"../../plots/cartesian/axis_format_attributes":349,"../../plots/template_attributes":382,"../heatmap/attributes":448,"../histogram/attributes":464,"../histogram/bin_attributes":466}],478:[function(_dereq_,module,exports){
-'use strict';
-
-var Lib = _dereq_('../../lib');
-var Axes = _dereq_('../../plots/cartesian/axes');
-
-var binFunctions = _dereq_('../histogram/bin_functions');
-var normFunctions = _dereq_('../histogram/norm_functions');
-var doAvg = _dereq_('../histogram/average');
-var getBinSpanLabelRound = _dereq_('../histogram/bin_label_vals');
-var calcAllAutoBins = _dereq_('../histogram/calc').calcAllAutoBins;
-
-module.exports = function calc(gd, trace) {
-    var xa = Axes.getFromId(gd, trace.xaxis);
-    var ya = Axes.getFromId(gd, trace.yaxis);
-
-    var xcalendar = trace.xcalendar;
-    var ycalendar = trace.ycalendar;
-    var xr2c = function(v) { return xa.r2c(v, 0, xcalendar); };
-    var yr2c = function(v) { return ya.r2c(v, 0, ycalendar); };
-    var xc2r = function(v) { return xa.c2r(v, 0, xcalendar); };
-    var yc2r = function(v) { return ya.c2r(v, 0, ycalendar); };
-
-    var i, j, n, m;
-
-    // calculate the bins
-    var xBinsAndPos = calcAllAutoBins(gd, trace, xa, 'x');
-    var xBinSpec = xBinsAndPos[0];
-    var xPos0 = xBinsAndPos[1];
-    var yBinsAndPos = calcAllAutoBins(gd, trace, ya, 'y');
-    var yBinSpec = yBinsAndPos[0];
-    var yPos0 = yBinsAndPos[1];
-
-    var serieslen = trace._length;
-    if(xPos0.length > serieslen) xPos0.splice(serieslen, xPos0.length - serieslen);
-    if(yPos0.length > serieslen) yPos0.splice(serieslen, yPos0.length - serieslen);
-
-    // make the empty bin array & scale the map
-    var z = [];
-    var onecol = [];
-    var zerocol = [];
-    var nonuniformBinsX = typeof xBinSpec.size === 'string';
-    var nonuniformBinsY = typeof yBinSpec.size === 'string';
-    var xEdges = [];
-    var yEdges = [];
-    var xbins = nonuniformBinsX ? xEdges : xBinSpec;
-    var ybins = nonuniformBinsY ? yEdges : yBinSpec;
-    var total = 0;
-    var counts = [];
-    var inputPoints = [];
-    var norm = trace.histnorm;
-    var func = trace.histfunc;
-    var densitynorm = norm.indexOf('density') !== -1;
-    var extremefunc = func === 'max' || func === 'min';
-    var sizeinit = extremefunc ? null : 0;
-    var binfunc = binFunctions.count;
-    var normfunc = normFunctions[norm];
-    var doavg = false;
-    var xinc = [];
-    var yinc = [];
-
-    // set a binning function other than count?
-    // for binning functions: check first for 'z',
-    // then 'mc' in case we had a colored scatter plot
-    // and want to transfer these colors to the 2D histo
-    // TODO: axe this, make it the responsibility of the app changing type? or an impliedEdit?
-    var rawCounterData = ('z' in trace) ?
-        trace.z :
-        (('marker' in trace && Array.isArray(trace.marker.color)) ?
-            trace.marker.color : '');
-    if(rawCounterData && func !== 'count') {
-        doavg = func === 'avg';
-        binfunc = binFunctions[func];
-    }
-
-    // decrease end a little in case of rounding errors
-    var xBinSize = xBinSpec.size;
-    var xBinStart = xr2c(xBinSpec.start);
-    var xBinEnd = xr2c(xBinSpec.end) +
-        (xBinStart - Axes.tickIncrement(xBinStart, xBinSize, false, xcalendar)) / 1e6;
-
-    for(i = xBinStart; i < xBinEnd; i = Axes.tickIncrement(i, xBinSize, false, xcalendar)) {
-        onecol.push(sizeinit);
-        xEdges.push(i);
-        if(doavg) zerocol.push(0);
-    }
-    xEdges.push(i);
-
-    var nx = onecol.length;
-    var dx = (i - xBinStart) / nx;
-    var x0 = xc2r(xBinStart + dx / 2);
-
-    var yBinSize = yBinSpec.size;
-    var yBinStart = yr2c(yBinSpec.start);
-    var yBinEnd = yr2c(yBinSpec.end) +
-        (yBinStart - Axes.tickIncrement(yBinStart, yBinSize, false, ycalendar)) / 1e6;
-
-    for(i = yBinStart; i < yBinEnd; i = Axes.tickIncrement(i, yBinSize, false, ycalendar)) {
-        z.push(onecol.slice());
-        yEdges.push(i);
-        var ipCol = new Array(nx);
-        for(j = 0; j < nx; j++) ipCol[j] = [];
-        inputPoints.push(ipCol);
-        if(doavg) counts.push(zerocol.slice());
-    }
-    yEdges.push(i);
-
-    var ny = z.length;
-    var dy = (i - yBinStart) / ny;
-    var y0 = yc2r(yBinStart + dy / 2);
-
-    if(densitynorm) {
-        xinc = makeIncrements(onecol.length, xbins, dx, nonuniformBinsX);
-        yinc = makeIncrements(z.length, ybins, dy, nonuniformBinsY);
-    }
-
-    // for date axes we need bin bounds to be calcdata. For nonuniform bins
-    // we already have this, but uniform with start/end/size they're still strings.
-    if(!nonuniformBinsX && xa.type === 'date') xbins = binsToCalc(xr2c, xbins);
-    if(!nonuniformBinsY && ya.type === 'date') ybins = binsToCalc(yr2c, ybins);
-
-    // put data into bins
-    var uniqueValsPerX = true;
-    var uniqueValsPerY = true;
-    var xVals = new Array(nx);
-    var yVals = new Array(ny);
-    var xGapLow = Infinity;
-    var xGapHigh = Infinity;
-    var yGapLow = Infinity;
-    var yGapHigh = Infinity;
-    for(i = 0; i < serieslen; i++) {
-        var xi = xPos0[i];
-        var yi = yPos0[i];
-        n = Lib.findBin(xi, xbins);
-        m = Lib.findBin(yi, ybins);
-        if(n >= 0 && n < nx && m >= 0 && m < ny) {
-            total += binfunc(n, i, z[m], rawCounterData, counts[m]);
-            inputPoints[m][n].push(i);
-
-            if(uniqueValsPerX) {
-                if(xVals[n] === undefined) xVals[n] = xi;
-                else if(xVals[n] !== xi) uniqueValsPerX = false;
-            }
-            if(uniqueValsPerY) {
-                if(yVals[m] === undefined) yVals[m] = yi;
-                else if(yVals[m] !== yi) uniqueValsPerY = false;
-            }
-
-            xGapLow = Math.min(xGapLow, xi - xEdges[n]);
-            xGapHigh = Math.min(xGapHigh, xEdges[n + 1] - xi);
-            yGapLow = Math.min(yGapLow, yi - yEdges[m]);
-            yGapHigh = Math.min(yGapHigh, yEdges[m + 1] - yi);
-        }
-    }
-    // normalize, if needed
-    if(doavg) {
-        for(m = 0; m < ny; m++) total += doAvg(z[m], counts[m]);
-    }
-    if(normfunc) {
-        for(m = 0; m < ny; m++) normfunc(z[m], total, xinc, yinc[m]);
-    }
-
-    return {
-        x: xPos0,
-        xRanges: getRanges(xEdges, uniqueValsPerX && xVals, xGapLow, xGapHigh, xa, xcalendar),
-        x0: x0,
-        dx: dx,
-        y: yPos0,
-        yRanges: getRanges(yEdges, uniqueValsPerY && yVals, yGapLow, yGapHigh, ya, ycalendar),
-        y0: y0,
-        dy: dy,
-        z: z,
-        pts: inputPoints
-    };
-};
-
-function makeIncrements(len, bins, dv, nonuniform) {
-    var out = new Array(len);
-    var i;
-    if(nonuniform) {
-        for(i = 0; i < len; i++) out[i] = 1 / (bins[i + 1] - bins[i]);
-    } else {
-        var inc = 1 / dv;
-        for(i = 0; i < len; i++) out[i] = inc;
-    }
-    return out;
-}
-
-function binsToCalc(r2c, bins) {
-    return {
-        start: r2c(bins.start),
-        end: r2c(bins.end),
-        size: bins.size
-    };
-}
-
-function getRanges(edges, uniqueVals, gapLow, gapHigh, ax, calendar) {
-    var i;
-    var len = edges.length - 1;
-    var out = new Array(len);
-    var roundFn = getBinSpanLabelRound(gapLow, gapHigh, edges, ax, calendar);
-
-    for(i = 0; i < len; i++) {
-        var v = (uniqueVals || [])[i];
-        out[i] = v === undefined ?
-            [roundFn(edges[i]), roundFn(edges[i + 1], true)] :
-            [v, v];
-    }
-    return out;
-}
-
-},{"../../lib":299,"../../plots/cartesian/axes":346,"../histogram/average":465,"../histogram/bin_functions":467,"../histogram/bin_label_vals":468,"../histogram/calc":469,"../histogram/norm_functions":476}],479:[function(_dereq_,module,exports){
-'use strict';
-
-var Lib = _dereq_('../../lib');
-
-var handleSampleDefaults = _dereq_('./sample_defaults');
-var handleStyleDefaults = _dereq_('../heatmap/style_defaults');
-var colorscaleDefaults = _dereq_('../../components/colorscale/defaults');
-var handleHeatmapLabelDefaults = _dereq_('../heatmap/label_defaults');
-var attributes = _dereq_('./attributes');
-
-
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
-    }
-
-    handleSampleDefaults(traceIn, traceOut, coerce, layout);
-    if(traceOut.visible === false) return;
-
-    handleStyleDefaults(traceIn, traceOut, coerce, layout);
-    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
-    coerce('hovertemplate');
-
-    handleHeatmapLabelDefaults(coerce, layout);
-
-    coerce('xhoverformat');
-    coerce('yhoverformat');
-};
-
-},{"../../components/colorscale/defaults":168,"../../lib":299,"../heatmap/label_defaults":458,"../heatmap/style_defaults":462,"./attributes":477,"./sample_defaults":482}],480:[function(_dereq_,module,exports){
-'use strict';
-
-var heatmapHover = _dereq_('../heatmap/hover');
-var hoverLabelText = _dereq_('../../plots/cartesian/axes').hoverLabelText;
-
-module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
-    var pts = heatmapHover(pointData, xval, yval, hovermode, opts);
-
-    if(!pts) return;
-
-    pointData = pts[0];
-    var indices = pointData.index;
-    var ny = indices[0];
-    var nx = indices[1];
-    var cd0 = pointData.cd[0];
-    var trace = cd0.trace;
-    var xRange = cd0.xRanges[nx];
-    var yRange = cd0.yRanges[ny];
-
-    pointData.xLabel = hoverLabelText(pointData.xa, [xRange[0], xRange[1]], trace.xhoverformat);
-    pointData.yLabel = hoverLabelText(pointData.ya, [yRange[0], yRange[1]], trace.yhoverformat);
-
-    return pts;
-};
-
-},{"../../plots/cartesian/axes":346,"../heatmap/hover":455}],481:[function(_dereq_,module,exports){
-'use strict';
-
-module.exports = {
-    attributes: _dereq_('./attributes'),
-    supplyDefaults: _dereq_('./defaults'),
-    crossTraceDefaults: _dereq_('../histogram/cross_trace_defaults'),
-    calc: _dereq_('../heatmap/calc'),
-    plot: _dereq_('../heatmap/plot'),
-    layerName: 'heatmaplayer',
-    colorbar: _dereq_('../heatmap/colorbar'),
-    style: _dereq_('../heatmap/style'),
-    hoverPoints: _dereq_('./hover'),
-    eventData: _dereq_('../histogram/event_data'),
-
-    moduleType: 'trace',
-    name: 'histogram2d',
-    basePlotModule: _dereq_('../../plots/cartesian'),
-    categories: ['cartesian', 'svg', '2dMap', 'histogram', 'showLegend'],
-    meta: {
-    }
-};
-
-},{"../../plots/cartesian":358,"../heatmap/calc":449,"../heatmap/colorbar":451,"../heatmap/plot":460,"../heatmap/style":461,"../histogram/cross_trace_defaults":471,"../histogram/event_data":473,"./attributes":477,"./defaults":479,"./hover":480}],482:[function(_dereq_,module,exports){
-'use strict';
-
-var Registry = _dereq_('../../registry');
-var Lib = _dereq_('../../lib');
-
-module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
-    var x = coerce('x');
-    var y = coerce('y');
-    var xlen = Lib.minRowLength(x);
-    var ylen = Lib.minRowLength(y);
-
-    // we could try to accept x0 and dx, etc...
-    // but that's a pretty weird use case.
-    // for now require both x and y explicitly specified.
-    if(!xlen || !ylen) {
-        traceOut.visible = false;
-        return;
-    }
-
-    traceOut._length = Math.min(xlen, ylen);
-
-    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
-
-    // if marker.color is an array, we can use it in aggregation instead of z
-    var hasAggregationData = coerce('z') || coerce('marker.color');
-
-    if(hasAggregationData) coerce('histfunc');
-    coerce('histnorm');
-
-    // Note: bin defaults are now handled in Histogram2D.crossTraceDefaults
-    // autobin(x|y) are only included here to appease Plotly.validate
-    coerce('autobinx');
-    coerce('autobiny');
-};
-
-},{"../../lib":299,"../../registry":387}],483:[function(_dereq_,module,exports){
-'use strict';
-
-var histogram2dAttrs = _dereq_('../histogram2d/attributes');
-var contourAttrs = _dereq_('../contour/attributes');
-var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
-var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-
-var extendFlat = _dereq_('../../lib/extend').extendFlat;
-
-module.exports = extendFlat({
-    x: histogram2dAttrs.x,
-    y: histogram2dAttrs.y,
-    z: histogram2dAttrs.z,
-    marker: histogram2dAttrs.marker,
-
-    histnorm: histogram2dAttrs.histnorm,
-    histfunc: histogram2dAttrs.histfunc,
-    nbinsx: histogram2dAttrs.nbinsx,
-    xbins: histogram2dAttrs.xbins,
-    nbinsy: histogram2dAttrs.nbinsy,
-    ybins: histogram2dAttrs.ybins,
-    autobinx: histogram2dAttrs.autobinx,
-    autobiny: histogram2dAttrs.autobiny,
-
-    bingroup: histogram2dAttrs.bingroup,
-    xbingroup: histogram2dAttrs.xbingroup,
-    ybingroup: histogram2dAttrs.ybingroup,
-
-    autocontour: contourAttrs.autocontour,
-    ncontours: contourAttrs.ncontours,
-    contours: contourAttrs.contours,
-    line: {
-        color: contourAttrs.line.color,
-        width: extendFlat({}, contourAttrs.line.width, {
-            dflt: 0.5,
-        }),
-        dash: contourAttrs.line.dash,
-        smoothing: contourAttrs.line.smoothing,
-        editType: 'plot'
-    },
-    xhoverformat: axisHoverFormat('x'),
-    yhoverformat: axisHoverFormat('y'),
-    zhoverformat: axisHoverFormat('z', 1),
-    hovertemplate: histogram2dAttrs.hovertemplate,
-    texttemplate: contourAttrs.texttemplate,
-    textfont: contourAttrs.textfont
-},
-    colorScaleAttrs('', {
-        cLetter: 'z',
-        editTypeOverride: 'calc'
-    })
-);
-
-},{"../../components/colorscale/attributes":165,"../../lib/extend":293,"../../plots/cartesian/axis_format_attributes":349,"../contour/attributes":426,"../histogram2d/attributes":477}],484:[function(_dereq_,module,exports){
-'use strict';
-
-var Lib = _dereq_('../../lib');
-
-var handleSampleDefaults = _dereq_('../histogram2d/sample_defaults');
-var handleContoursDefaults = _dereq_('../contour/contours_defaults');
-var handleStyleDefaults = _dereq_('../contour/style_defaults');
-var handleHeatmapLabelDefaults = _dereq_('../heatmap/label_defaults');
-var attributes = _dereq_('./attributes');
-
-
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
-    }
-
-    function coerce2(attr) {
-        return Lib.coerce2(traceIn, traceOut, attributes, attr);
-    }
-
-    handleSampleDefaults(traceIn, traceOut, coerce, layout);
-    if(traceOut.visible === false) return;
-
-    handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
-    handleStyleDefaults(traceIn, traceOut, coerce, layout);
-    coerce('xhoverformat');
-    coerce('yhoverformat');
-    coerce('hovertemplate');
-    if(
-        traceOut.contours &&
-        traceOut.contours.coloring === 'heatmap'
-    ) {
-        handleHeatmapLabelDefaults(coerce, layout);
-    }
-};
-
-},{"../../lib":299,"../contour/contours_defaults":433,"../contour/style_defaults":447,"../heatmap/label_defaults":458,"../histogram2d/sample_defaults":482,"./attributes":483}],485:[function(_dereq_,module,exports){
-'use strict';
-
-module.exports = {
-    attributes: _dereq_('./attributes'),
-    supplyDefaults: _dereq_('./defaults'),
-    crossTraceDefaults: _dereq_('../histogram/cross_trace_defaults'),
-    calc: _dereq_('../contour/calc'),
-    plot: _dereq_('../contour/plot').plot,
-    layerName: 'contourlayer',
-    style: _dereq_('../contour/style'),
-    colorbar: _dereq_('../contour/colorbar'),
-    hoverPoints: _dereq_('../contour/hover'),
-
-    moduleType: 'trace',
-    name: 'histogram2dcontour',
-    basePlotModule: _dereq_('../../plots/cartesian'),
-    categories: ['cartesian', 'svg', '2dMap', 'contour', 'histogram', 'showLegend'],
-    meta: {
-    }
-};
-
-},{"../../plots/cartesian":358,"../contour/calc":427,"../contour/colorbar":429,"../contour/hover":439,"../contour/plot":444,"../contour/style":446,"../histogram/cross_trace_defaults":471,"./attributes":483,"./defaults":484}],486:[function(_dereq_,module,exports){
+},{}],486:[function(_dereq_,module,exports){
 'use strict';
 
 var baseAttrs = _dereq_('../../plots/attributes');
