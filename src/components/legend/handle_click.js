@@ -191,9 +191,10 @@ module.exports = function handleClick(g, gd, numClicks) {
                 }
             }
 
+            var thisLegend = fullTrace.legend;
             for(i = 0; i < fullData.length; i++) {
-                // False is sticky; we don't change it.
-                if(fullData[i].visible === false) continue;
+                // False is sticky; we don't change it. Also ensure we don't change states of itmes in other legend
+                if(fullData[i].visible === false || fullData[i].legend !== thisLegend) continue;
 
                 if(Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
                     continue;

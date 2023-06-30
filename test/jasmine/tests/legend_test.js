@@ -1789,6 +1789,62 @@ describe('legend interaction', function() {
             });
         });
 
+        describe('traces in different legends', function() {
+            beforeEach(function(done) {
+                Plotly.newPlot(gd, [
+                    {x: [1, 2], y: [0, 1], visible: false},
+                    {x: [1, 2], y: [1, 2], visible: 'legendonly'},
+                    {x: [1, 2], y: [2, 3]},
+                    {x: [1, 2], y: [0, 1], yaxis: 'y2', legend: 'legend2', visible: false},
+                    {x: [1, 2], y: [1, 2], yaxis: 'y2', legend: 'legend2', visible: 'legendonly'},
+                    {x: [1, 2], y: [2, 3], yaxis: 'y2', legend: 'legend2'}
+                ], {
+                    yaxis: {
+                        domain: [0.55, 1]
+                    },
+                    yaxis2: {
+                        anchor: 'x',
+                        domain: [0, 0.45]
+                    },
+                    legend2: {
+                        y: 0.5
+                    }
+                }).then(done);
+            });
+
+            it('clicking once toggles legendonly -> true', function(done) {
+                Promise.resolve()
+                    .then(assertVisible([false, 'legendonly', true, false, 'legendonly', true]))
+                    .then(click(0))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+
+            it('clicking once toggles true -> legendonly', function(done) {
+                Promise.resolve()
+                    .then(assertVisible([false, 'legendonly', true, false, 'legendonly', true]))
+                    .then(click(1))
+                    .then(assertVisible([false, 'legendonly', 'legendonly', false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+
+            it('double-clicking isolates a visible trace ', function(done) {
+                Promise.resolve()
+                    .then(click(0))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, 'legendonly', false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+
+            it('double-clicking an isolated trace shows all non-hidden traces', function(done) {
+                Promise.resolve()
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+        });
+
         describe('click shape legends', function() {
             beforeEach(function(done) {
                 Plotly.newPlot(gd, [], {
