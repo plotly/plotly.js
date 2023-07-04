@@ -41,8 +41,12 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     var legendReallyHasATrace = false;
     var defaultOrder = 'normal';
 
-    for(var i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
+    var allLegendItems = fullData.filter(function(d) {
+        return legendId === (d.legend || 'legend');
+    });
+
+    for(var i = 0; i < allLegendItems.length; i++) {
+        trace = allLegendItems[i];
 
         if(!trace.visible) continue;
 
