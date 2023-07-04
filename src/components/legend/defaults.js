@@ -91,7 +91,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
     var showLegend = Lib.coerce(layoutIn, layoutOut,
         basePlotLayoutAttributes, 'showlegend',
-        legendReallyHasATrace && legendTraceCount > 1);
+        legendReallyHasATrace && (legendTraceCount > (legendId === 'legend' ? 1 : 0)));
 
     // delete legend
     if(showLegend === false) layoutOut[legendId] = undefined;
