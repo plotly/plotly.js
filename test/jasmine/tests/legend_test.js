@@ -123,6 +123,31 @@ describe('legend defaults', function() {
         expect(layoutOut.legend.traceorder).toEqual('reversed');
     });
 
+    it('should default traceorder to reversed for stack bar charts | multi-legend case', function() {
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'bar', visible: 'legendonly'},
+            {legend: 'legend2', type: 'bar', visible: 'legendonly'},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'}
+        ]);
+
+        layoutOut.legend2 = {};
+        layoutOut.legend3 = {};
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('normal');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+
+        layoutOut.barmode = 'stack';
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('reversed');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+    });
+
     it('should default traceorder to reversed for filled tonext scatter charts', function() {
         fullData = allShown([
             {type: 'scatter'},
@@ -148,6 +173,30 @@ describe('legend defaults', function() {
         expect(layoutOut.legend.traceorder).toEqual('grouped+reversed');
     });
 
+    it('should default traceorder to grouped when a group is present | multi-legend case', function() {
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'scatter', legendgroup: 'group'},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'}
+        ]);
+
+        layoutOut.legend2 = {};
+        layoutOut.legend3 = {};
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('grouped');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+
+        fullData[1].fill = 'tonextx';
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('reversed+grouped');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+    });
+
     it('does not consider invisible traces for traceorder default', function() {
         fullData = allShown([
             {type: 'bar', visible: false},
@@ -167,6 +216,38 @@ describe('legend defaults', function() {
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('normal');
+    });
+
+    it('does not consider invisible traces for traceorder default | multi-legend case', function() {
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'bar', visible: false},
+            {legend: 'legend2', type: 'bar', visible: false},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'},
+        ]);
+
+        layoutOut.legend2 = {};
+        layoutOut.legend3 = {};
+
+        layoutOut.barmode = 'stack';
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('normal');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'scatter', legendgroup: 'group', visible: false},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'}
+        ]);
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('normal');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
     });
 
     it('should default orientation to vertical', function() {
