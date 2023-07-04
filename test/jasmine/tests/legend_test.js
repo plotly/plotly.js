@@ -1789,7 +1789,7 @@ describe('legend interaction', function() {
             });
         });
 
-        describe('traces in different legends', function() {
+        describe('for regular traces in different legends', function() {
             beforeEach(function(done) {
                 Plotly.newPlot(gd, [
                     {x: [1, 2], y: [0, 1], visible: false},
@@ -2368,6 +2368,78 @@ describe('legend interaction', function() {
                     labels: ['A', 'B', 'C'],
                     values: [1, 2, 3]
                 }])
+                .then(run)
+                .then(done, done.fail);
+            }, 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+        });
+
+        describe('should honor *itemclick* and *itemdoubleclick* settings | case of pie in multiple legends', function() {
+            var _assert;
+
+            function run() {
+                return Promise.resolve()
+                    .then(click(0, 1)).then(_assert(['legendonly', true, true, true, true, true]))
+                    .then(click(0, 1)).then(_assert([true, true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, 'legendonly', 'legendonly', true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, true, true, true, true, true]))
+                    .then(function() {
+                        return Plotly.relayout(gd, {
+                            'legend.itemclick': false,
+                            'legend.itemdoubleclick': false
+                        });
+                    })
+                    .then(delay(100))
+                    .then(click(0, 1)).then(_assert([true, true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, true, true, true, true, true]))
+                    .then(function() {
+                        return Plotly.relayout(gd, {
+                            'legend.itemclick': 'toggleothers',
+                            'legend.itemdoubleclick': 'toggle'
+                        });
+                    })
+                    .then(delay(100))
+                    .then(click(0, 1)).then(_assert([true, 'legendonly', 'legendonly', true, true, true]))
+                    .then(click(0, 1)).then(_assert([true, true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert(['legendonly', true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, true, true, true, true, true]));
+            }
+
+            _assert = function(_exp) {
+                return function() {
+                    var exp = [];
+                    if(_exp[0] === 'legendonly') exp.push('F');
+                    if(_exp[1] === 'legendonly') exp.push('E');
+                    if(_exp[2] === 'legendonly') exp.push('D');
+                    if(_exp[3] === 'legendonly') exp.push('C');
+                    if(_exp[4] === 'legendonly') exp.push('B');
+                    if(_exp[5] === 'legendonly') exp.push('A');
+                    expect(gd._fullLayout.hiddenlabels || []).toEqual(exp);
+                };
+            };
+
+            it('- pie case | multiple legends', function(done) {
+                Plotly.newPlot(gd, [{
+                    legend: 'legend2',
+                    type: 'pie',
+                    labels: ['A', 'B', 'C'],
+                    values: [1, 2, 3],
+                    domain: {
+                        y: [0, 0.45]
+                    }
+                }, {
+                    type: 'pie',
+                    labels: ['D', 'E', 'F'],
+                    values: [1, 2, 3],
+                    domain: {
+                        y: [0.55, 1]
+                    }
+                }], {
+                    legend2: {
+                        y: 0.35
+                    },
+                    width: 500,
+                    height: 500
+                })
                 .then(run)
                 .then(done, done.fail);
             }, 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
