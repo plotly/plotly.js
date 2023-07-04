@@ -94,7 +94,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
         legendReallyHasATrace && legendTraceCount > 1);
 
     // delete legend
-    if(showLegend === false) layoutOut.legend = undefined;
+    if(showLegend === false) layoutOut[legendId] = undefined;
 
     if(showLegend === false && !containerIn.uirevision) return;
 
@@ -170,7 +170,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     }, 'y');
 
     coerce('traceorder', defaultOrder);
-    if(helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
+    if(helpers.isGrouped(layoutOut[legendId])) coerce('tracegroupgap');
 
     coerce('entrywidth');
     coerce('entrywidthmode');
