@@ -43,21 +43,21 @@ module.exports = function handleClick(g, gd, numClicks) {
     var legendgroup = fullTrace.legendgroup;
 
     var i, j, kcont, key, keys, val;
-    var attrUpdate = {};
-    var attrIndices = [];
+    var dataUpdate = {};
+    var dataIndices = [];
     var carrs = [];
     var carrIdx = [];
 
     function insertUpdate(traceIndex, key, value) {
-        var attrIndex = attrIndices.indexOf(traceIndex);
-        var valueArray = attrUpdate[key];
+        var attrIndex = dataIndices.indexOf(traceIndex);
+        var valueArray = dataUpdate[key];
         if(!valueArray) {
-            valueArray = attrUpdate[key] = [];
+            valueArray = dataUpdate[key] = [];
         }
 
-        if(attrIndices.indexOf(traceIndex) === -1) {
-            attrIndices.push(traceIndex);
-            attrIndex = attrIndices.length - 1;
+        if(dataIndices.indexOf(traceIndex) === -1) {
+            dataIndices.push(traceIndex);
+            attrIndex = dataIndices.length - 1;
         }
 
         valueArray[attrIndex] = value;
@@ -244,7 +244,7 @@ module.exports = function handleClick(g, gd, numClicks) {
             var updateKeys = Object.keys(update);
             for(j = 0; j < updateKeys.length; j++) {
                 key = updateKeys[j];
-                val = attrUpdate[key] = attrUpdate[key] || [];
+                val = dataUpdate[key] = dataUpdate[key] || [];
                 val[carrIdx[i]] = update[key];
             }
         }
@@ -253,17 +253,17 @@ module.exports = function handleClick(g, gd, numClicks) {
         // values should be explicitly undefined for them to get properly culled
         // as updates and not accidentally reset to the default value. This fills
         // out sparse arrays with the required number of undefined values:
-        keys = Object.keys(attrUpdate);
+        keys = Object.keys(dataUpdate);
         for(i = 0; i < keys.length; i++) {
             key = keys[i];
-            for(j = 0; j < attrIndices.length; j++) {
+            for(j = 0; j < dataIndices.length; j++) {
                 // Use hasOwnProperty to protect against falsy values:
-                if(!attrUpdate[key].hasOwnProperty(j)) {
-                    attrUpdate[key][j] = undefined;
+                if(!dataUpdate[key].hasOwnProperty(j)) {
+                    dataUpdate[key][j] = undefined;
                 }
             }
         }
 
-        Registry.call('_guiRestyle', gd, attrUpdate, attrIndices);
+        Registry.call('_guiRestyle', gd, dataUpdate, dataIndices);
     }
 };
