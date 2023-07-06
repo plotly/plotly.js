@@ -48,11 +48,11 @@ module.exports = function handleClick(g, gd, numClicks) {
     var carrs = [];
     var carrIdx = [];
 
-    function insertUpdate(traceIndex, key, value) {
+    function insertDataUpdate(traceIndex, value) {
         var attrIndex = dataIndices.indexOf(traceIndex);
-        var valueArray = dataUpdate[key];
+        var valueArray = dataUpdate.visible;
         if(!valueArray) {
-            valueArray = dataUpdate[key] = [];
+            valueArray = dataUpdate.visible = [];
         }
 
         if(dataIndices.indexOf(traceIndex) === -1) {
@@ -63,6 +63,17 @@ module.exports = function handleClick(g, gd, numClicks) {
         valueArray[attrIndex] = value;
 
         return attrIndex;
+    }
+
+    var updatedShapes = (fullLayout.shapes || []).map(function(d) {
+        return d._input;
+    });
+
+    var shapesUpdated = false;
+
+    function insertShapesUpdate(shapeIndex, value) {
+        updatedShapes[shapeIndex].visible = value;
+        shapesUpdated = true;
     }
 
     function setVisibility(fullTrace, visibility) {
@@ -97,7 +108,7 @@ module.exports = function handleClick(g, gd, numClicks) {
                 // true -> legendonly. All others toggle to true:
                 kcont.set(fullTrace._group, visibility);
             }
-            carrIdx[index] = insertUpdate(index, 'visible', fullInput.visible === false ? false : true);
+            carrIdx[index] = insertDataUpdate(index, fullInput.visible === false ? false : true);
         } else {
             // false -> false (not possible since will not be visible in legend)
             // true -> legendonly
@@ -105,9 +116,9 @@ module.exports = function handleClick(g, gd, numClicks) {
             var nextVisibility = fullInput.visible === false ? false : visibility;
 
             if(isShape) {
-                Registry.call('_guiRelayout', gd, 'shapes[' + index + '].visible', nextVisibility);
+                insertShapesUpdate(index, nextVisibility);
             } else {
-                insertUpdate(index, 'visible', nextVisibility);
+                insertDataUpdate(index, nextVisibility);
             }
         }
     }
@@ -183,9 +194,16 @@ module.exports = function handleClick(g, gd, numClicks) {
 
             if(hasLegendgroup) {
                 if(toggleGroup) {
-                    for(i = 0; i < fullData.length; i++) {
-                        if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
-                            setVisibility(fullData[i], nextVisibility);
+                    var allLegendItems = fullData.concat(fullLayout.shapes || []);
+                    for(i = 0; i < allLegendItems.length; i++) {
+                        var item = allLegendItems[i];
+                        if(item.visible !== false && item.legendgroup === legendgroup) {
+                            if(i > fullData.length) { // case of shapes
+                                item.index = i - fullData.length;
+                                item._isShape = true;
+                                item._fullInput = item;
+                            }
+                            setVisibility(item, nextVisibility);
                         }
                     }
                 } else {
@@ -264,6 +282,10 @@ module.exports = function handleClick(g, gd, numClicks) {
             }
         }
 
-        Registry.call('_guiRestyle', gd, dataUpdate, dataIndices);
+        Registry.call('_guiRestyle', gd, dataUpdate, dataIndices).then(function() {
+            if(shapesUpdated) {
+                Registry.call('_guiRelayout', gd, {shapes: updatedShapes});
+            }
+        });
     }
 };
