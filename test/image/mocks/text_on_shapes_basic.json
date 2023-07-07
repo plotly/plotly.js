@@ -37,7 +37,7 @@
                 "label":{"text":"position auto, yanchor top", "yanchor": "top"}, "yref":"paper","type":"line","x0":1.1,"x1":2.4,"y0":0.1,"y1":0.4,"line":{"color":"#039","dash":"dot","width":2}
             },
             {
-                "showlegend": true, "legendgroup":"g2",
+                "showlegend": true, "legendgroup":"g2", "legendrank": 1,
                 "label":{"text":"position auto, xanchor center", "xanchor":"center"}, "xref":"paper","x0":0.8,"x1":0.9,"y0":1,"y1":3,"fillcolor":"#ccc"
             },
             {
