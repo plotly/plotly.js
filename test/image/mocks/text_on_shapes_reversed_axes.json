@@ -98,6 +98,8 @@
             },
             {
                 "showlegend": true,
+                "legendgroup": "group 1",
+                "legendgrouptitle": { "text": "group 1" },
                 "label": {"text": "label 5"},
                 "editable": true,
                 "layer": "below",
@@ -109,6 +111,7 @@
             },
             {
                 "showlegend": true,
+                "legendgroup": "group 1",
                 "label": {"text": "label 6"},
                 "editable": true,
                 "line": {
@@ -120,6 +123,7 @@
             },
             {
                 "showlegend": true,
+                "legend": "legend2",
                 "label": {"text": "label 7"},
                 "editable": true,
                 "line": {
@@ -137,7 +141,17 @@
             "line": {
                 "color": "pink"
             },
-            "showlegend": true
+            "showlegend": true,
+            "legend": "legend2",
+            "legendgroup": "group 2",
+            "legendgrouptitle": { "text": "new shapes group" }
+        },
+        "legend2": {
+            "y": 0,
+            "bgcolor": "lightblue",
+            "title": {
+                "text": "Legend 2"
+            }
         }
     },
     "config": {
