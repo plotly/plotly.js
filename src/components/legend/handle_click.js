@@ -126,7 +126,7 @@ module.exports = function handleClick(g, gd, numClicks) {
     var thisLegend = fullTrace.legend;
 
     var fullInput = fullTrace._fullInput;
-    var isShape = fullInput._isShape;
+    var isShape = fullInput && fullInput._isShape;
 
     if(!isShape && Registry.traceIs(fullTrace, 'pie-like')) {
         var thisLabel = legendItem.label;
