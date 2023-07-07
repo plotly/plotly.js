@@ -81,7 +81,9 @@ module.exports = {
             'with *reversed* `legend.traceorder` they are on bottom/right side.',
             'The default legendrank is 1000,',
             'so that you can use ranks less than 1000 to place certain items before all unranked items,',
-            'and ranks greater than 1000 to go after all unranked items.'
+            'and ranks greater than 1000 to go after all unranked items.',
+            'When having unranked or equal rank items shapes would be displayed after traces',
+            'i.e. according to their order in data and layout.'
         ].join(' ')
     },
     legendwidth: {
