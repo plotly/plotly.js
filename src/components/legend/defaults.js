@@ -52,6 +52,8 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
         if(!trace.visible) continue;
 
+        var isShape = trace._isShape;
+
         // Note that we explicitly count any trace that is either shown or
         // *would* be shown by default, toward the two traces you need to
         // ensure the legend is shown by default, because this can still help
@@ -69,7 +71,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
                 legendReallyHasATrace = true;
                 // Always show the legend by default if there's a pie,
                 // or if there's only one trace but it's explicitly shown
-                if(Registry.traceIs(trace, 'pie-like') ||
+                if(!isShape && Registry.traceIs(trace, 'pie-like') ||
                     trace._input.showlegend === true
                 ) {
                     legendTraceCount++;
@@ -79,7 +81,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
             Lib.coerceFont(traceCoerce, 'legendgrouptitle.font', grouptitlefont);
         }
 
-        if((Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
+        if((!isShape && Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
                 ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
             defaultOrder = helpers.isGrouped({traceorder: defaultOrder}) ?
                 'grouped+reversed' : 'reversed';

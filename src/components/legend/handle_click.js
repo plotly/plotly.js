@@ -125,7 +125,10 @@ module.exports = function handleClick(g, gd, numClicks) {
 
     var thisLegend = fullTrace.legend;
 
-    if(Registry.traceIs(fullTrace, 'pie-like')) {
+    var fullInput = fullTrace._fullInput;
+    var isShape = fullInput._isShape;
+
+    if(!isShape && Registry.traceIs(fullTrace, 'pie-like')) {
         var thisLabel = legendItem.label;
         var thisLabelIndex = hiddenSlices.indexOf(thisLabel);
 
