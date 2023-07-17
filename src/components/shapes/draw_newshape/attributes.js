@@ -134,11 +134,22 @@ module.exports = overrideAll({
                 '*vertical* allows vertical extend.'
             ].join(' ')
         },
+
+        name: extendFlat({}, basePlotAttributes.name, {
+            description: [
+                'Sets new shape name.',
+                'The name appear as the legend item.'
+            ].join(' ')
+        }),
+
         label: {
             text: {
                 valType: 'string',
                 dflt: '',
-                description: 'Sets the text to display with the new shape.'
+                description: [
+                    'Sets the text to display with the new shape.',
+                    'It is also used for legend item if `name` is not provided.'
+                ].join(' ')
             },
             texttemplate: shapeTexttemplateAttrs({newshape: true}, {keys: Object.keys(shapeLabelTexttemplateVars)}),
             font: fontAttrs({

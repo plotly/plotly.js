@@ -3650,7 +3650,7 @@
      },
      "role": "object",
      "text": {
-      "description": "Sets the text to display with the new shape.",
+      "description": "Sets the text to display with the new shape. It is also used for legend item if `name` is not provided.",
       "dflt": "",
       "editType": "none",
       "valType": "string"
@@ -3803,6 +3803,11 @@
       "min": 0,
       "valType": "number"
      }
+    },
+    "name": {
+     "description": "Sets new shape name. The name appear as the legend item.",
+     "editType": "none",
+     "valType": "string"
     },
     "opacity": {
      "description": "Sets the opacity of new shapes.",
@@ -7379,7 +7384,7 @@
        },
        "role": "object",
        "text": {
-        "description": "Sets the text to display with shape.",
+        "description": "Sets the text to display with shape. It is also used for legend item if `name` is not provided.",
         "dflt": "",
         "editType": "arraydraw",
         "valType": "string"

@@ -295,7 +295,10 @@ module.exports = templatedArray('shape', {
             valType: 'string',
             dflt: '',
             editType: 'arraydraw',
-            description: 'Sets the text to display with shape.'
+            description: [
+                'Sets the text to display with shape.',
+                'It is also used for legend item if `name` is not provided.'
+            ].join(' ')
         },
         texttemplate: shapeTexttemplateAttrs({}, {keys: Object.keys(shapeLabelTexttemplateVars)}),
         font: fontAttrs({
