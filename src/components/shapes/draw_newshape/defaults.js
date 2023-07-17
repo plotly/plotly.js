@@ -15,7 +15,7 @@ function dfltLabelYanchor(isLine, labelTextPosition) {
 
 module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce) {
     coerce('newshape.visible');
-
+    coerce('newshape.name');
     coerce('newshape.showlegend');
     coerce('newshape.legend');
     coerce('newshape.legendwidth');
