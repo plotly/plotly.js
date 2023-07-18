@@ -126,7 +126,7 @@ function createShapeObj(outlines, dragOptions, dragmode) {
         editable: true,
 
         visible: newStyle.visible,
-
+        name: newStyle.name,
         showlegend: newStyle.showlegend,
         legend: newStyle.legend,
         legendwidth: newStyle.legendwidth,

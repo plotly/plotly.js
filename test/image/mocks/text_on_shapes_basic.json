@@ -49,8 +49,9 @@
             "line": {
                 "color": "pink"
             },
+            "name": "A New Shape",
             "label": {
-                "text": "new shape"
+                "text": "new shape label"
             },
             "showlegend": true
         },
