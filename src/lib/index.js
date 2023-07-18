@@ -698,10 +698,12 @@ lib.getTargetArray = function(trace, transformOpts) {
  * because extend-like algorithms are hella slow
  * obj2 is assumed to already be clean of these things (including no arrays)
  */
-lib.minExtend = function(obj1, obj2) {
+function minExtend(obj1, obj2, opt) {
     var objOut = {};
     if(typeof obj2 !== 'object') obj2 = {};
-    var arrayLen = 3;
+
+    var arrayLen = opt === 'pieLike' ? -1 : 3;
+
     var keys = Object.keys(obj1);
     var i, k, v;
 
@@ -711,14 +713,18 @@ lib.minExtend = function(obj1, obj2) {
         if(k.charAt(0) === '_' || typeof v === 'function') continue;
         else if(k === 'module') objOut[k] = v;
         else if(Array.isArray(v)) {
-            if(k === 'colorscale') {
+            if(k === 'colorscale' || arrayLen === -1) {
                 objOut[k] = v.slice();
             } else {
                 objOut[k] = v.slice(0, arrayLen);
             }
         } else if(lib.isTypedArray(v)) {
-            objOut[k] = v.subarray(0, arrayLen);
-        } else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
+            if(arrayLen === -1) {
+                objOut[k] = v.subarray();
+            } else {
+                objOut[k] = v.subarray(0, arrayLen);
+            }
+        } else if(v && (typeof v === 'object')) objOut[k] = minExtend(obj1[k], obj2[k], opt);
         else objOut[k] = v;
     }
 
@@ -732,7 +738,8 @@ lib.minExtend = function(obj1, obj2) {
     }
 
     return objOut;
-};
+}
+lib.minExtend = minExtend;
 
 lib.titleCase = function(s) {
     return s.charAt(0).toUpperCase() + s.substr(1);
@@ -1074,6 +1081,26 @@ lib.texttemplateString = function() {
     return templateFormatString.apply(texttemplateWarnings, arguments);
 };
 
+// Regex for parsing multiplication and division operations applied to a template key
+// Used for shape.label.texttemplate
+// Matches a key name (non-whitespace characters), followed by a * or / character, followed by a number
+// For example, the following strings are matched: `x0*2`, `slope/1.60934`, `y1*2.54`
+var MULT_DIV_REGEX = /^(\S+)([\*\/])(-?\d+(\.\d+)?)$/;
+function multDivParser(inputStr) {
+    var match = inputStr.match(MULT_DIV_REGEX);
+    if(match) return { key: match[1], op: match[2], number: Number(match[3]) };
+    return { key: inputStr, op: null, number: null };
+}
+var texttemplateWarningsForShapes = {
+    max: 10,
+    count: 0,
+    name: 'texttemplate',
+    parseMultDiv: true,
+};
+lib.texttemplateStringForShapes = function() {
+    return templateFormatString.apply(texttemplateWarningsForShapes, arguments);
+};
+
 var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
 /**
  * Substitute values from an object into a string and optionally formats them using d3-format,
@@ -1122,6 +1149,17 @@ function templateFormatString(string, labels, d3locale) {
         if(isSpaceOther || isSpaceOtherSpace) key = key.substring(1);
         if(isOtherSpace || isSpaceOtherSpace) key = key.substring(0, key.length - 1);
 
+        // Shape labels support * and / operators in template string
+        // Parse these if the parseMultDiv param is set to true
+        var parsedOp = null;
+        var parsedNumber = null;
+        if(opts.parseMultDiv) {
+            var _match = multDivParser(key);
+            key = _match.key;
+            parsedOp = _match.op;
+            parsedNumber = _match.number;
+        }
+
         var value;
         if(hasOther) {
             value = labels[key];
@@ -1143,6 +1181,12 @@ function templateFormatString(string, labels, d3locale) {
                 }
                 if(value !== undefined) break;
             }
+        }
+
+        // Apply mult/div operation (if applicable)
+        if(value !== undefined) {
+            if(parsedOp === '*') value *= parsedNumber;
+            if(parsedOp === '/') value /= parsedNumber;
         }
 
         if(value === undefined && opts) {
@@ -1329,6 +1373,11 @@ lib.getTextTransform = function(transform) {
             ')' : ''
         )
     );
+};
+
+lib.setTransormAndDisplay = function(s, transform) {
+    s.attr('transform', lib.getTextTransform(transform));
+    s.style('display', transform.scale ? null : 'none');
 };
 
 lib.ensureUniformFontSize = function(gd, baseFont) {

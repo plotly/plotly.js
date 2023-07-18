@@ -1,7 +1,7 @@
 var parseSvgPath = require('parse-svg-path');
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -103,7 +103,7 @@ describe('Draw new selections to layout', function() {
     var allMocks = [
         {
             name: 'heatmap',
-            json: require('@mocks/13'),
+            json: require('../../image/mocks/13'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -112,17 +112,17 @@ describe('Draw new selections to layout', function() {
                 },
                 function(pos) {
                     return assertPos(pos, {
-                        'x0': 3.590909090909091,
-                        'y0': 14.990196078431373,
-                        'x1': 6.621212121212121,
-                        'y1': 11.068627450980392
+                        x0: 3.590909090909091,
+                        y0: 14.990196078431373,
+                        x1: 6.621212121212121,
+                        y1: 11.068627450980392
                     });
                 },
             ]
         },
         {
             name: 'log axis',
-            json: require('@mocks/12'),
+            json: require('../../image/mocks/12'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -131,17 +131,17 @@ describe('Draw new selections to layout', function() {
                 },
                 function(pos) {
                     return assertPos(pos, {
-                        'x0': 7298.717849422755,
-                        'y0': 76.05794710315374,
-                        'x1': 16398.089355274074,
-                        'y1': 66.10207614768017
+                        x0: 7298.717849422755,
+                        y0: 76.05794710315374,
+                        x1: 16398.089355274074,
+                        y1: 66.10207614768017
                     });
                 }
             ]
         },
         {
             name: 'date axis',
-            json: require('@mocks/29'),
+            json: require('../../image/mocks/29'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -150,17 +150,17 @@ describe('Draw new selections to layout', function() {
                 },
                 function(pos) {
                     return assertPos(pos, {
-                        'x0': '2014-04-13 03:43:39.7686',
-                        'y0': 99.06934640522876,
-                        'x1': '2014-04-13 12:53:22.5602',
-                        'y1': 86.14124183006535
+                        x0: '2014-04-13 03:43:39.7686',
+                        y0: 99.06934640522876,
+                        x1: '2014-04-13 12:53:22.5602',
+                        y1: 86.14124183006535
                     });
                 }
             ]
         },
         {
             name: 'date and log axes together',
-            json: require('@mocks/cliponaxis_false-dates-log'),
+            json: require('../../image/mocks/cliponaxis_false-dates-log'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -169,17 +169,17 @@ describe('Draw new selections to layout', function() {
                 },
                 function(pos) {
                     return assertPos(pos, {
-                        'x0': 5297.12825356843,
-                        'y0': '2017-11-18 23:49:45.0534',
-                        'x1': 5939.235726280437,
-                        'y1': '2017-11-17 13:39:55.7295'
+                        x0: 5297.12825356843,
+                        y0: '2017-11-18 23:49:45.0534',
+                        x1: 5939.235726280437,
+                        y1: '2017-11-17 13:39:55.7295'
                     });
                 }
             ]
         },
         {
             name: 'axes with rangebreaks',
-            json: require('@mocks/axes_breaks-gridlines'),
+            json: require('../../image/mocks/axes_breaks-gridlines'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -188,17 +188,17 @@ describe('Draw new selections to layout', function() {
                 },
                 function(pos) {
                     return assertPos(pos, {
-                        'x0': '2015-06-01 11:36:29.5216',
-                        'y0': 127.7994602248062,
-                        'x1': '2015-09-20 08:12:01.6401',
-                        'y1': 117.92127506423034
+                        x0: '2015-06-01 11:36:29.5216',
+                        y0: 127.7994602248062,
+                        x1: '2015-09-20 08:12:01.6401',
+                        y1: 117.92127506423034
                     });
                 }
             ]
         },
         {
             name: 'subplot',
-            json: require('@mocks/18'),
+            json: require('../../image/mocks/18'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -207,17 +207,17 @@ describe('Draw new selections to layout', function() {
                 },
                 function(pos) {
                     return assertPos(pos, {
-                        'x0': 4.933775889537972,
-                        'y0': 7.216279069767443,
-                        'x1': 5.571056824216676,
-                        'y1': 6.418936877076413
+                        x0: 4.933775889537972,
+                        y0: 7.216279069767443,
+                        x1: 5.571056824216676,
+                        y1: 6.418936877076413
                     });
                 }
             ]
         },
         {
             name: 'cheater',
-            json: require('@mocks/cheater'),
+            json: require('../../image/mocks/cheater'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -226,17 +226,17 @@ describe('Draw new selections to layout', function() {
                 },
                 function(pos) {
                     return assertPos(pos, {
-                        'x0': 0.08104371867979952,
-                        'y0': 9.199782135076253,
-                        'x1': 0.3056851563850008,
-                        'y1': 7.557080610021787
+                        x0: 0.08104371867979952,
+                        y0: 9.199782135076253,
+                        x1: 0.3056851563850008,
+                        y1: 7.557080610021787
                     });
                 }
             ]
         },
         {
             name: 'box plot',
-            json: require('@mocks/1'),
+            json: require('../../image/mocks/1'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -245,10 +245,10 @@ describe('Draw new selections to layout', function() {
                 },
                 function(pos) {
                     return assertPos(pos, {
-                        'x0': 492.3071748878924,
-                        'y0': 6.112541076871603,
-                        'x1': 526.2384155455904,
-                        'y1': 3.572701812772542
+                        x0: 492.3071748878924,
+                        y0: 6.112541076871603,
+                        x1: 526.2384155455904,
+                        y1: 3.572701812772542
                     });
                 }
             ]
@@ -279,7 +279,7 @@ describe('Draw new selections to layout', function() {
                     data: fig.data,
                     layout: fig.layout,
                     config: {
-                        mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+                        mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
                     }
                 })
                 .then(function() {
@@ -340,10 +340,10 @@ describe('Draw new selections to layout', function() {
 
 describe('Activate and edit selections', function() {
     var fig = {
-        'data': [
+        data: [
             {
-                'mode': 'markers',
-                'x': [
+                mode: 'markers',
+                x: [
                     0, 50, 100, 150, 200, 250, 300, 350,
                     0, 50, 100, 150, 200, 250, 300, 350,
                     0, 50, 100, 150, 200, 250, 300, 350,
@@ -351,7 +351,7 @@ describe('Activate and edit selections', function() {
                     0, 50, 100, 150, 200, 250, 300, 350,
                     0, 50, 100, 150, 200, 250, 300, 350
                 ],
-                'y': [
+                y: [
                     0, 0, 0, 0, 0, 0, 0, 0,
                     50, 50, 50, 50, 50, 50, 50, 50,
                     100, 100, 100, 100, 100, 100, 100, 100,
@@ -361,58 +361,58 @@ describe('Activate and edit selections', function() {
                 ]
             }
         ],
-        'layout': {
-            'width': 800,
-            'height': 600,
-            'margin': {
-                't': 100,
-                'b': 50,
-                'l': 100,
-                'r': 50
+        layout: {
+            width: 800,
+            height: 600,
+            margin: {
+                t: 100,
+                b: 50,
+                l: 100,
+                r: 50
             },
-            'xaxis': {
-                'range': [-22.48062015503876, 380.62015503875966]
+            xaxis: {
+                range: [-22.48062015503876, 380.62015503875966]
             },
-            'yaxis': {
-                'range': [301.78041543026706, -18.694362017804156]
+            yaxis: {
+                range: [301.78041543026706, -18.694362017804156]
             },
-            'template': {
-                'layout': {
-                    'selections': [
+            template: {
+                layout: {
+                    selections: [
                         {
-                            'name': 'myPath',
-                            'line': {
-                                'width': 0
+                            name: 'myPath',
+                            line: {
+                                width: 0
                             },
-                            'opacity': 0.5,
-                            'path': 'M0.5,0.3C0.5,0.9 0.9,0.9 0.9,0.3C0.9,0.1 0.5,0.1 0.5,0.3ZM0.6,0.4C0.6,0.5 0.66,0.5 0.66,0.4ZM0.74,0.4C0.74,0.5 0.8,0.5 0.8,0.4ZM0.6,0.3C0.63,0.2 0.77,0.2 0.8,0.3Z'
+                            opacity: 0.5,
+                            path: 'M0.5,0.3C0.5,0.9 0.9,0.9 0.9,0.3C0.9,0.1 0.5,0.1 0.5,0.3ZM0.6,0.4C0.6,0.5 0.66,0.5 0.66,0.4ZM0.74,0.4C0.74,0.5 0.8,0.5 0.8,0.4ZM0.6,0.3C0.63,0.2 0.77,0.2 0.8,0.3Z'
                         }
                     ]
                 }
             },
-            'selections': [
+            selections: [
                 {
-                    'type': 'rect',
-                    'line': {
-                        'width': 5
+                    type: 'rect',
+                    line: {
+                        width: 5
                     },
-                    'opacity': 0.5,
-                    'xref': 'xaxis',
-                    'yref': 'yaxis',
-                    'x0': 25,
-                    'y0': 25,
-                    'x1': 75,
-                    'y1': 75
+                    opacity: 0.5,
+                    xref: 'xaxis',
+                    yref: 'yaxis',
+                    x0: 25,
+                    y0: 25,
+                    x1: 75,
+                    y1: 75
                 },
                 {
-                    'line': {
-                        'width': 5
+                    line: {
+                        width: 5
                     },
-                    'path': 'M250,25L225,75L275,75Z'
+                    path: 'M250,25L225,75L275,75Z'
                 }
             ]
         },
-        'config': {}
+        config: {}
     };
 
     var gd;
@@ -459,15 +459,15 @@ describe('Activate and edit selections', function() {
                 expect(obj.type).toEqual('rect');
                 print(obj);
                 assertPos({
-                    'x0': obj.x0,
-                    'y0': obj.y0,
-                    'x1': obj.x1,
-                    'y1': obj.y1
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
                 }, {
-                    'x0': 25,
-                    'y0': 25,
-                    'x1': 75,
-                    'y1': 75
+                    x0: 25,
+                    y0: 25,
+                    x1: 75,
+                    y1: 75
                 });
 
                 expect(selectedCnt).toEqual(0);
@@ -482,15 +482,15 @@ describe('Activate and edit selections', function() {
                 expect(obj.type).toEqual('rect');
                 print(obj);
                 assertPos({
-                    'x0': obj.x0,
-                    'y0': obj.y0,
-                    'x1': obj.x1,
-                    'y1': obj.y1
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
                 }, {
-                    'x0': 52.905426356589146,
-                    'y0': 3.6320474777448033,
-                    'x1': 102.90852713178295,
-                    'y1': 53.63323442136499
+                    x0: 52.905426356589146,
+                    y0: 3.6320474777448033,
+                    x1: 102.90852713178295,
+                    y1: 53.63323442136499
                 });
 
                 expect(selectedCnt).toEqual(1);
@@ -509,15 +509,15 @@ describe('Activate and edit selections', function() {
                 expect(obj.type).toEqual('rect');
                 print(obj);
                 assertPos({
-                    'x0': obj.x0,
-                    'y0': obj.y0,
-                    'x1': obj.x1,
-                    'y1': obj.y1
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
                 }, {
-                    'x0': 25,
-                    'y0': 25,
-                    'x1': 75,
-                    'y1': 75
+                    x0: 25,
+                    y0: 25,
+                    x1: 75,
+                    y1: 75
                 });
 
                 expect(selectedCnt).toEqual(2);
@@ -536,15 +536,15 @@ describe('Activate and edit selections', function() {
                 expect(obj.type).toEqual('rect');
                 print(obj);
                 assertPos({
-                    'x0': obj.x0,
-                    'y0': obj.y0,
-                    'x1': obj.x1,
-                    'y1': obj.y1
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
                 }, {
-                    'x0': 77.71162790697674,
-                    'y0': 24.997032640949552,
-                    'x1': 127.71472868217053,
-                    'y1': 74.99821958456974
+                    x0: 77.71162790697674,
+                    y0: 24.997032640949552,
+                    x1: 127.71472868217053,
+                    y1: 74.99821958456974
                 });
 
                 expect(selectedCnt).toEqual(3);
@@ -563,15 +563,15 @@ describe('Activate and edit selections', function() {
                 expect(obj.type).toEqual('rect');
                 print(obj);
                 assertPos({
-                    'x0': obj.x0,
-                    'y0': obj.y0,
-                    'x1': obj.x1,
-                    'y1': obj.y1
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
                 }, {
-                    'x0': 25,
-                    'y0': 25,
-                    'x1': 75,
-                    'y1': 75
+                    x0: 25,
+                    y0: 25,
+                    x1: 75,
+                    y1: 75
                 });
 
                 expect(selectedCnt).toEqual(4);

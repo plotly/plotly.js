@@ -1,5 +1,5 @@
 var constants = require('./util/constants');
-var _bundle = require('./util/browserify_wrapper');
+var _bundle = require('./util/bundle_wrapper');
 
 /*
  * Trimmed down version of ./bundle.js for CI testing
@@ -11,14 +11,13 @@ var _bundle = require('./util/browserify_wrapper');
  *  - plotly.min.js bundle in build/ (for minified_bundle test)
  */
 
-// Browserify plotly.js and plotly.min.js
+// Bundle plotly.js and plotly.min.js
 _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuild, {
-    standalone: 'Plotly',
-    debug: true,
+    noCompress: true,
     pathToMinBundle: constants.pathToPlotlyBuildMin
-});
-
-// Browserify the geo assets
-_bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
-    standalone: 'PlotlyGeoAssets'
+}, function() {
+    // Bundle the geo assets
+    _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
+        standalone: 'PlotlyGeoAssets'
+    });
 });

@@ -30,7 +30,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     if(traceOut.hoveron !== 'fills') coerce('hovertemplate');
 
     if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {backoff: true});
         handleLineShapeDefaults(traceIn, traceOut, coerce);
         coerce('connectgaps');
     }

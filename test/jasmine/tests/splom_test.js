@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
-var Axes = require('@src/plots/cartesian/axes');
-var SUBPLOT_PATTERN = require('@src/plots/cartesian/constants').SUBPLOT_PATTERN;
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
+var Axes = require('../../../src/plots/cartesian/axes');
+var SUBPLOT_PATTERN = require('../../../src/plots/cartesian/constants').SUBPLOT_PATTERN;
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -687,7 +687,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should destroy gl objects on Plots.cleanPlot', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
 
         _newPlot(gd, fig).then(function() {
             expect(gd._fullLayout._splomGrid).toBeDefined();
@@ -704,7 +704,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl when hasOnlyLargeSploms, should create correct regl-line2d data for grid', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
         var cnt = 1;
 
         function _assert(dims) {
@@ -757,7 +757,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should update properly in-and-out of hasOnlyLargeSploms regime', function(done) {
-        var figLarge = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var figLarge = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
         var dimsLarge = figLarge.data[0].dimensions;
         var dimsSmall = dimsLarge.slice(0, 5);
         var cnt = 1;
@@ -867,7 +867,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should correctly move axis layers when relayouting *grid.(x|y)side*', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_upper-nodiag.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_upper-nodiag.json'));
 
         function _assert(exp) {
             var g = d3Select(gd).select('g.cartesianlayer');
@@ -922,7 +922,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should toggle trace correctly', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_iris.json'));
 
         function _assert(msg, exp) {
             var splomScenes = gd._fullLayout._splomScenes;
@@ -958,7 +958,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@noCI @gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_iris.json'));
         fig.layout.showlegend = false;
 
         function assertDims(msg, w, h) {
@@ -1066,7 +1066,7 @@ describe('Test splom interactions:', function() {
             });
 
             return Plotly.restyle(gd, {
-                'showupperhalf': true,
+                showupperhalf: true,
                 'diagonal.visible': true
             });
         })
@@ -1079,7 +1079,7 @@ describe('Test splom interactions:', function() {
             });
 
             return Plotly.restyle(gd, {
-                'showlowerhalf': false,
+                showlowerhalf: false,
                 'diagonal.visible': false
             });
         })
@@ -1175,7 +1175,7 @@ describe('Test splom update switchboard:', function() {
     }
 
     it('@gl should trigger minimal sequence for axis range updates (large splom case)', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
         var matrix, regl, splomGrid;
 
         _newPlot(gd, fig).then(function() {
@@ -1218,7 +1218,7 @@ describe('Test splom update switchboard:', function() {
     });
 
     it('@gl should trigger minimal sequence for marker style updates', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_0.json'));
         var scene, matrix, regl;
 
         _newPlot(gd, fig).then(function() {
@@ -1374,7 +1374,7 @@ describe('Test splom hover:', function() {
         gd = createGraphDiv();
 
         var fig = Lib.extendDeep({},
-            s.mock || require('@mocks/splom_iris.json')
+            s.mock || require('../../image/mocks/splom_iris.json')
         );
 
         if(s.patch) {
@@ -1442,7 +1442,7 @@ describe('Test splom hover:', function() {
         evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
     }, {
         desc: 'on log axes',
-        mock: require('@mocks/splom_log.json'),
+        mock: require('../../image/mocks/splom_log.json'),
         patch: function(fig) {
             fig.layout.margin = {t: 0, l: 0, b: 0, r: 0};
             fig.layout.width = 400;
@@ -1456,7 +1456,7 @@ describe('Test splom hover:', function() {
         evtPts: [{x: 10, y: 100, pointNumber: 0}]
     }, {
         desc: 'on date axes',
-        mock: require('@mocks/splom_dates.json'),
+        mock: require('../../image/mocks/splom_dates.json'),
         patch: function(fig) {
             fig.layout = {
                 hovermode: 'x',
@@ -1522,7 +1522,7 @@ describe('Test splom drag:', function() {
     }
 
     it('@gl should update scattermatrix ranges on pan', function(done) {
-        var fig = require('@mocks/splom_iris.json');
+        var fig = require('../../image/mocks/splom_iris.json');
         fig.layout.dragmode = 'pan';
 
         var xaxes = ['xaxis', 'xaxis2', 'xaxis3'];
@@ -1620,7 +1620,7 @@ describe('Test splom select:', function() {
     }
 
     it('@gl should emit correct event data and draw selection outlines', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_0.json'));
         fig.layout = {
             dragmode: 'select',
             width: 400,
@@ -1688,7 +1688,7 @@ describe('Test splom select:', function() {
     });
 
     it('@gl should redraw splom traces before scattergl trace (if any)', function(done) {
-        var fig = require('@mocks/splom_with-cartesian.json');
+        var fig = require('../../image/mocks/splom_with-cartesian.json');
         fig.layout.dragmode = 'select';
         fig.layout.width = 400;
         fig.layout.height = 400;
@@ -1728,7 +1728,7 @@ describe('Test splom select:', function() {
     });
 
     it('@gl should behave correctly during select->dblclick->pan scenarios', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_0.json'));
         fig.layout = {
             width: 400,
             height: 400,

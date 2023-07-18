@@ -312,6 +312,8 @@ module.exports = {
             {arrayOk: false, editType: 'plot'}),
         opacity: extendFlat({}, scatterMarkerAttrs.opacity,
             {arrayOk: false, dflt: 1, editType: 'style'}),
+        angle: extendFlat({}, scatterMarkerAttrs.angle,
+            {arrayOk: false, editType: 'calc'}),
         size: extendFlat({}, scatterMarkerAttrs.size,
             {arrayOk: false, editType: 'calc'}),
         color: extendFlat({}, scatterMarkerAttrs.color,

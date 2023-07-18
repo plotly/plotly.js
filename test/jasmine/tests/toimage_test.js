@@ -1,12 +1,12 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-var subplotMock = require('@mocks/multiple_subplots.json');
-var pieAutoMargin = require('@mocks/pie_automargin');
+var subplotMock = require('../../image/mocks/multiple_subplots.json');
+var pieAutoMargin = require('../../image/mocks/pie_automargin');
 
 var FORMATS = ['png', 'jpeg', 'webp', 'svg'];
 

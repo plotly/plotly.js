@@ -1,4 +1,4 @@
-var Lib = require('@src/lib');
+var Lib = require('../../../src/lib');
 
 describe('isPlainObject', function() {
     'use strict';
@@ -9,7 +9,7 @@ describe('isPlainObject', function() {
 
     var shouldPass = [
         {},
-        {a: 'A', 'B': 'b'}
+        {a: 'A', B: 'b'}
     ];
 
     var shouldFail = [

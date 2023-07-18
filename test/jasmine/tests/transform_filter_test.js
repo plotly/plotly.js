@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Filter = require('@src/transforms/filter');
+var Plotly = require('../../../lib/index');
+var Filter = require('../../../src/transforms/filter');
 
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -1365,7 +1365,7 @@ describe('filter resulting in empty coordinate arrays', function() {
         var mockList = require('../assets/mock_lists').mapbox;
 
         Plotly.setPlotConfig({
-            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
         });
 
         mockList.forEach(function(d) {

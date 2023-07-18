@@ -1,5 +1,5 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -10,7 +10,7 @@ var click = require('../assets/click');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
-var rgb = require('@src/components/color').rgb;
+var rgb = require('../../../src/components/color').rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -600,9 +600,9 @@ describe('Funnelarea traces', function() {
               _verifyTitle(true, false, true, false, false);
 
               return Plotly.restyle(gd, {
-                  'title': 'oy',
+                  title: 'oy',
                   'titlefont.color': 'red',
-                  'titleposition': 'top right'
+                  titleposition: 'top right'
               });
           })
           .then(function() {
@@ -640,7 +640,7 @@ describe('Funnelarea traces', function() {
     });
 
     it('should be able to toggle visibility', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/funnelarea_title_multiple.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/funnelarea_title_multiple.json'));
 
         function _assert(msg, exp) {
             return function() {
@@ -672,7 +672,7 @@ describe('Funnelarea traces', function() {
 });
 
 describe('funnelarea hovering', function() {
-    var mock = require('@mocks/funnelarea_simple.json');
+    var mock = require('../../image/mocks/funnelarea_simple.json');
 
     describe('with hoverinfo set to none', function() {
         var mockCopy = Lib.extendDeep({}, mock);
@@ -988,8 +988,8 @@ describe('funnelarea hovering', function() {
                 );
 
                 return Plotly.restyle(gd, {
-                    'text': [['E', 'D', 'C', 'B', 'A']],
-                    'hovertemplate': '%{text}<extra></extra>'
+                    text: [['E', 'D', 'C', 'B', 'A']],
+                    hovertemplate: '%{text}<extra></extra>'
                 });
             })
             .then(_hover)
@@ -1053,7 +1053,7 @@ describe('funnelarea hovering', function() {
 
 
 describe('Test event data of interactions on a funnelarea plot:', function() {
-    var mock = require('@mocks/funnelarea_simple.json');
+    var mock = require('../../image/mocks/funnelarea_simple.json');
 
     var mockCopy, gd;
 
@@ -1326,7 +1326,7 @@ describe('Test funnelarea interactions edge cases:', function() {
     }
 
     it('should keep tracking hover labels and hover events after *calc* edits', function(done) {
-        var mock = Lib.extendFlat({}, require('@mocks/funnelarea_simple.json'));
+        var mock = Lib.extendFlat({}, require('../../image/mocks/funnelarea_simple.json'));
         var hoverCnt = 0;
         var unhoverCnt = 0;
 

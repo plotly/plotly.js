@@ -14,6 +14,9 @@
     "gauge": {
       "shape": "bullet",
       "axis": {
+        "labelalias": {
+          "0": "ZERO<sup>2</sup>"
+        },
         "range": [null, 300]
       },
       "threshold": {

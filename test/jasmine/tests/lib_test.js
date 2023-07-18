@@ -1,12 +1,12 @@
-var Lib = require('@src/lib');
-var setCursor = require('@src/lib/setcursor');
-var overrideCursor = require('@src/lib/override_cursor');
-var config = require('@src/plot_api/plot_config').dfltConfig;
+var Lib = require('../../../src/lib');
+var setCursor = require('../../../src/lib/setcursor');
+var overrideCursor = require('../../../src/lib/override_cursor');
+var config = require('../../../src/plot_api/plot_config').dfltConfig;
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -2172,7 +2172,7 @@ describe('Test lib.js:', function() {
         });
 
         it('should work with the number *0* (nested case)', function() {
-            expect(Lib.templateString('%{x.y}', {'x': {y: 0}})).toEqual('0');
+            expect(Lib.templateString('%{x.y}', {x: {y: 0}})).toEqual('0');
         });
     });
 
@@ -2199,7 +2199,7 @@ describe('Test lib.js:', function() {
         });
 
         it('should work with the number *0* (nested case)', function() {
-            expect(Lib.hovertemplateString('%{x.y}', {}, locale, {'x': {y: 0}})).toEqual('0');
+            expect(Lib.hovertemplateString('%{x.y}', {}, locale, {x: {y: 0}})).toEqual('0');
         });
 
         it('subtitutes multiple matches', function() {

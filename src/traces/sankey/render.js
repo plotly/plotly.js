@@ -804,6 +804,8 @@ function switchToSankeyFormat(nodes) {
 
 // scene graph
 module.exports = function(gd, svg, calcData, layout, callbacks) {
+    var isStatic = gd._context.staticPlot;
+
     // To prevent animation on first render
     var firstRender = false;
     Lib.ensureSingle(gd._fullLayout._infolayer, 'g', 'first-render', function() {
@@ -830,7 +832,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .style('position', 'absolute')
         .style('left', 0)
         .style('shape-rendering', 'geometricPrecision')
-        .style('pointer-events', 'auto')
+        .style('pointer-events', isStatic ? 'none' : 'auto')
         .attr('transform', sankeyTransform);
 
     sankey.each(function(d, i) {
@@ -843,7 +845,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
         // Style dragbox
         gd._fullData[i]._bgRect
-          .style('pointer-events', 'all')
+          .style('pointer-events', isStatic ? 'none' : 'all')
           .attr('width', d.width)
           .attr('height', d.height)
           .attr('x', d.translateX)

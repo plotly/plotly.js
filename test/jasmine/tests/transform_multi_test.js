@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Filter = require('@src/transforms/filter');
+var Plotly = require('../../../lib/index');
+var Filter = require('../../../src/transforms/filter');
 
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');

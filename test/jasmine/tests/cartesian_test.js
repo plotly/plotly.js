@@ -1,9 +1,9 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Drawing = require('../../../src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -22,7 +22,7 @@ describe('restyle', function() {
 
         it('reuses SVG fills', function(done) {
             var fills, firstToZero, secondToZero, firstToNext, secondToNext;
-            var mock = Lib.extendDeep({}, require('@mocks/basic_area.json'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/basic_area.json'));
             function getFills() {
                 return d3SelectAll('g.trace.scatter .fills>g');
             }
@@ -68,7 +68,7 @@ describe('restyle', function() {
 
         it('reuses SVG lines', function(done) {
             var lines, firstLine1, secondLine1, firstLine2, secondLine2;
-            var mock = Lib.extendDeep({}, require('@mocks/basic_line.json'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/basic_line.json'));
 
             Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
                 lines = d3SelectAll('g.scatter.trace .js-line');
@@ -106,7 +106,7 @@ describe('restyle', function() {
         });
 
         it('can change scatter mode', function(done) {
-            var mock = Lib.extendDeep({}, require('@mocks/text_chart_basic.json'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_basic.json'));
 
             function assertScatterModeSizes(lineSize, pointSize, textSize) {
                 var gd3 = d3Select(gd);
@@ -204,7 +204,7 @@ describe('restyle', function() {
 
 describe('relayout', function() {
     describe('axis category attributes', function() {
-        var mock = require('@mocks/basic_bar.json');
+        var mock = require('../../image/mocks/basic_bar.json');
 
         var gd, mockCopy;
 
@@ -594,8 +594,8 @@ describe('subplot creation / deletion:', function() {
 
             // change bg colors to same semi-transparent color
             return Plotly.relayout(gd, {
-                'paper_bgcolor': 'rgba(255,0,0,0.2)',
-                'plot_bgcolor': 'rgba(255,0,0,0.2)'
+                paper_bgcolor: 'rgba(255,0,0,0.2)',
+                plot_bgcolor: 'rgba(255,0,0,0.2)'
             });
         })
         .then(function() {
@@ -606,7 +606,7 @@ describe('subplot creation / deletion:', function() {
     });
 
     it('should clear overlaid subplot trace layers on restyle', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/overlaying-axis-lines.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/overlaying-axis-lines.json'));
 
         function _assert(xyCnt, x2y2Cnt) {
             expect(d3Select('.subplot.xy').select('.plot').selectAll('.trace').size())
@@ -634,7 +634,7 @@ describe('subplot creation / deletion:', function() {
     });
 
     it('should clear obsolete content out of axis layers when relayout\'ing *layer*', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/overlaying-axis-lines.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/overlaying-axis-lines.json'));
 
         function assertPathDatum(sel, expected, msg) {
             expect(sel.attr('d') === null ? false : true).toBe(expected, msg);

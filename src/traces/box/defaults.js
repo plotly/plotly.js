@@ -4,7 +4,7 @@ var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
 var handlePeriodDefaults = require('../scatter/period_defaults');
-var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
+var handleGroupingDefaults = require('../scatter/grouping_defaults');
 var autoType = require('../../plots/cartesian/axis_autotype');
 var attributes = require('./attributes');
 
@@ -251,6 +251,8 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
         coerce('marker.symbol');
         coerce('marker.opacity');
         coerce('marker.size');
+        coerce('marker.angle');
+
         coerce('marker.color', traceOut.line.color);
         coerce('marker.line.color');
         coerce('marker.line.width');

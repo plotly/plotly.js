@@ -10,8 +10,8 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     var overlayableAxes = options.overlayableAxes || [];
     var letter = options.letter;
     var grid = options.grid;
-
-    var dfltAnchor, dfltDomain, dfltSide, dfltPosition;
+    var overlayingDomain = options.overlayingDomain;
+    var dfltAnchor, dfltDomain, dfltSide, dfltPosition, dfltShift, dfltAutomargin;
 
     if(grid) {
         dfltDomain = grid._domains[letter][grid._axisMap[containerOut._id]];
@@ -27,6 +27,8 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     dfltAnchor = dfltAnchor || (isNumeric(containerIn.position) ? 'free' : (counterAxes[0] || 'free'));
     dfltSide = dfltSide || (letter === 'x' ? 'bottom' : 'left');
     dfltPosition = dfltPosition || 0;
+    dfltShift = 0;
+    dfltAutomargin = false;
 
     var anchor = Lib.coerce(containerIn, containerOut, {
         anchor: {
@@ -36,15 +38,27 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         }
     }, 'anchor');
 
-    if(anchor === 'free') coerce('position', dfltPosition);
-
-    Lib.coerce(containerIn, containerOut, {
+    var side = Lib.coerce(containerIn, containerOut, {
         side: {
             valType: 'enumerated',
             values: letter === 'x' ? ['bottom', 'top'] : ['left', 'right'],
             dflt: dfltSide
         }
     }, 'side');
+
+    if(anchor === 'free') {
+        if(letter === 'y') {
+            var autoshift = coerce('autoshift');
+            if(autoshift) {
+                dfltPosition = side === 'left' ? overlayingDomain[0] : overlayingDomain[1];
+                dfltAutomargin = containerOut.automargin ? containerOut.automargin : true;
+                dfltShift = side === 'left' ? -3 : 3;
+            }
+            coerce('shift', dfltShift);
+        }
+        coerce('position', dfltPosition);
+    }
+    coerce('automargin', dfltAutomargin);
 
     var overlaying = false;
     if(overlayableAxes.length) {
@@ -69,6 +83,12 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         // which applied in the calculation below:
         if(domain[0] > domain[1] - 1 / 4096) containerOut.domain = dfltDomain;
         Lib.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
+
+        // tickmode sync needs an overlaying axis, otherwise
+        // we should default it to 'auto'
+        if(containerOut.tickmode === 'sync') {
+            containerOut.tickmode = 'auto';
+        }
     }
 
     coerce('layer');

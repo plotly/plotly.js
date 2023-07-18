@@ -28,7 +28,7 @@ jobs:
 
   install-and-cibuild: # main cibuild using node 16 & npm 7
     docker:
-      - image: cimg/node:16.8.0
+      - image: cimg/node:16.17.1
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -52,11 +52,11 @@ jobs:
   timezone-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.8.0-browsers
+      - image: cimg/node:16.17.1-browsers
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 93.0.4577.63
+          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -85,7 +85,7 @@ jobs:
   no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.8.0-browsers
+      - image: cimg/node:16.17.1-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -93,7 +93,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 93.0.4577.63
+          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -105,7 +105,7 @@ jobs:
   webgl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.8.0-browsers
+      - image: cimg/node:16.17.1-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -113,7 +113,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 93.0.4577.63
+          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -125,14 +125,14 @@ jobs:
   flaky-no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.8.0-browsers
+      - image: cimg/node:16.17.1-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 93.0.4577.63
+          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -144,14 +144,14 @@ jobs:
   bundle-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.8.0-browsers
+      - image: cimg/node:16.17.1-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 93.0.4577.63
+          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -163,7 +163,7 @@ jobs:
   mathjax-firefox81:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.8.0-browsers
+      - image: cimg/node:16.17.1-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -182,7 +182,7 @@ jobs:
   mathjax-firefox82:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.8.0-browsers
+      - image: cimg/node:16.17.1-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -201,7 +201,7 @@ jobs:
   mathjax-firefoxLatest:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.8.0-browsers
+      - image: cimg/node:16.17.1-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -255,7 +255,7 @@ jobs:
 
   test-baselines:
     docker:
-      - image: circleci/node:16.8.0
+      - image: circleci/node:16.9.0
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -269,7 +269,7 @@ jobs:
 
   test-baselines-mathjax3:
     docker:
-      - image: circleci/node:16.8.0
+      - image: circleci/node:16.9.0
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -306,7 +306,7 @@ jobs:
 
   test-exports:
     docker:
-      - image: circleci/node:16.8.0
+      - image: circleci/node:16.9.0
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -320,7 +320,7 @@ jobs:
 
   mock-validation:
     docker:
-      - image: cimg/node:16.8.0
+      - image: cimg/node:16.17.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -334,7 +334,7 @@ jobs:
 
   source-syntax:
     docker:
-      - image: cimg/node:16.8.0
+      - image: cimg/node:16.17.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -345,7 +345,7 @@ jobs:
 
   publish-dist:
     docker:
-      - image: cimg/node:16.8.0
+      - image: cimg/node:16.17.1
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -401,20 +401,17 @@ jobs:
           name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
           command: diff --unified --color dist/plot-schema.json test/plot-schema.json
       - run:
+          name: Test plotly.min.js import using amdefine
+          command: npm run test-amdefine
+      - run:
           name: Test plotly.min.js import using requirejs
           command: npm run test-requirejs
       - run:
-          name: Test plotly bundles againt unexpected characters
-          command: npm run no-bad-char
-      - run:
-          name: Display function constructors in plotly.js bundle
-          command: npm run log-new-func
-      - run:
-          name: Test certain bundles against function constructors
-          command: npm run no-new-func
-      - run:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
+      - run:
+          name: Display function constructors in all bundles
+          command: npm run no-new-func
 
 workflows:
   version: 2

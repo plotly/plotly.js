@@ -162,7 +162,7 @@ exports.toSVG = function(gd) {
           .attr({
               'font-size': 12,
               'font-family': 'Arial',
-              'color': 'rgba(0, 0, 0, 0.75)',
+              color: 'rgba(0, 0, 0, 0.75)',
               'text-anchor': 'end',
               'data-unformatted': attributions
           });

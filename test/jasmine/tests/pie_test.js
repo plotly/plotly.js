@@ -1,5 +1,5 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -10,7 +10,7 @@ var click = require('../assets/click');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
-var rgb = require('@src/components/color').rgb;
+var rgb = require('../../../src/components/color').rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -846,9 +846,9 @@ describe('Pie traces', function() {
               _verifyTitle(true, false, true, false, false);
 
               return Plotly.restyle(gd, {
-                  'title': 'oy',
+                  title: 'oy',
                   'titlefont.color': 'red',
-                  'titleposition': 'bottom right'
+                  titleposition: 'bottom right'
               });
           })
           .then(function() {
@@ -891,7 +891,7 @@ describe('Pie traces', function() {
     });
 
     it('should be able to toggle visibility', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/pie_title_multiple.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/pie_title_multiple.json'));
 
         function _assert(msg, exp) {
             return function() {
@@ -1010,7 +1010,7 @@ describe('Pie texttemplate:', function() {
 });
 
 describe('pie hovering', function() {
-    var mock = require('@mocks/pie_simple.json');
+    var mock = require('../../image/mocks/pie_simple.json');
 
     describe('with hoverinfo set to none', function() {
         var mockCopy = Lib.extendDeep({}, mock);
@@ -1326,8 +1326,8 @@ describe('pie hovering', function() {
                 );
 
                 return Plotly.restyle(gd, {
-                    'text': [['A', 'B', 'C', 'D', 'E']],
-                    'hovertemplate': '%{text}<extra></extra>'
+                    text: [['A', 'B', 'C', 'D', 'E']],
+                    hovertemplate: '%{text}<extra></extra>'
                 });
             })
             .then(_hover)
@@ -1494,7 +1494,7 @@ describe('pie hovering', function() {
 
 
 describe('Test event data of interactions on a pie plot:', function() {
-    var mock = require('@mocks/pie_simple.json');
+    var mock = require('../../image/mocks/pie_simple.json');
 
     var mockCopy, gd;
 
@@ -1767,7 +1767,7 @@ describe('Test pie interactions edge cases:', function() {
     }
 
     it('should keep tracking hover labels and hover events after *calc* edits', function(done) {
-        var mock = Lib.extendFlat({}, require('@mocks/pie_simple.json'));
+        var mock = Lib.extendFlat({}, require('../../image/mocks/pie_simple.json'));
         var hoverCnt = 0;
         var unhoverCnt = 0;
 

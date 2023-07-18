@@ -1,10 +1,10 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var setConvert = require('@src/plots/cartesian/set_convert');
-var name2id = require('@src/plots/cartesian/axis_ids').name2id;
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var setConvert = require('../../../src/plots/cartesian/set_convert');
+var name2id = require('../../../src/plots/cartesian/axis_ids').name2id;
 
-var RangeSlider = require('@src/components/rangeslider');
-var constants = require('@src/components/rangeslider/constants');
+var RangeSlider = require('../../../src/components/rangeslider');
+var constants = require('../../../src/components/rangeslider/constants');
 var mock = require('../../image/mocks/range_slider.json');
 
 var d3Select = require('../../strict-d3').select;
@@ -75,8 +75,8 @@ describe('Visible rangesliders', function() {
             expect(+bg.getAttribute('width')).toEqual(expectedWidth);
             expect(+bg.getAttribute('height')).toEqual(66);
 
-            expect(bg.getAttribute('fill')).toBe('#fafafa');
-            expect(bg.getAttribute('stroke')).toBe('black');
+            expect(bg.style.fill).toBe('rgb(250, 250, 250)');
+            expect(bg.style.stroke).toBe('rgb(0, 0, 0)');
             expect(+bg.getAttribute('stroke-width')).toBe(2);
 
             return Plotly.relayout(gd, {
@@ -91,8 +91,8 @@ describe('Visible rangesliders', function() {
 
             expect(+bg.getAttribute('height')).toEqual(32);
 
-            expect(bg.getAttribute('fill')).toBe('#ffff80');
-            expect(bg.getAttribute('stroke')).toBe('#404040');
+            expect(bg.style.fill).toBe('rgb(255, 255, 128)');
+            expect(bg.style.stroke).toBe('rgb(64, 64, 64)');
             expect(+bg.getAttribute('stroke-width')).toBe(1);
         })
         .then(done, done.fail);
@@ -185,12 +185,46 @@ describe('Visible rangesliders', function() {
             return slide(start, sliderY, end, sliderY);
         })
         .then(function() {
-            var maskMax = getRangeSliderChild(3);
-            var handleMax = getRangeSliderChild(6);
+            var maskMin = getRangeSliderChild(3);
+            var handleMin = getRangeSliderChild(6);
 
             expect(gd.layout.xaxis.range).toBeCloseToArray([0, 45.04], -0.5);
-            expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
-            testTranslate1D(handleMax, dataMaxStart + diff);
+            expect(+maskMin.getAttribute('width')).toBeCloseTo(-diff);
+            testTranslate1D(handleMin, dataMaxStart + diff);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should not exceed slider bounds left to right', function(done) {
+        var start = 940;
+        var end = 990;
+
+        plotMock().then(function() {
+            gd._fullLayout.xaxis.d2p(49);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
+
+            return slide(start, sliderY, end, sliderY);
+        })
+        .then(function() {
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49], -0.5);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should not exceed slider bounds right to left', function(done) {
+        var start = 0;
+        var end = -50;
+
+        plotMock().then(function() {
+            gd._fullLayout.xaxis.d2p(-49);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
+
+            return slide(start, sliderY, end, sliderY);
+        })
+        .then(function() {
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49], -0.5);
         })
         .then(done, done.fail);
     });
@@ -366,8 +400,8 @@ describe('Visible rangesliders', function() {
             expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
             expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
 
-            expect(bg.getAttribute('fill')).toBe('red');
-            expect(bg.getAttribute('stroke')).toBe('black');
+            expect(bg.style.fill).toBe('rgb(255, 0, 0)');
+            expect(bg.style.stroke).toBe('rgb(0, 0, 0)');
             expect(bg.getAttribute('stroke-width')).toBe('2');
 
             return Plotly.relayout(gd, 'xaxis.rangeslider.bordercolor', 'blue');
@@ -376,8 +410,8 @@ describe('Visible rangesliders', function() {
             expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
             expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
 
-            expect(bg.getAttribute('fill')).toBe('red');
-            expect(bg.getAttribute('stroke')).toBe('blue');
+            expect(bg.style.fill).toBe('rgb(255, 0, 0)');
+            expect(bg.style.stroke).toBe('rgb(0, 0, 255)');
             expect(bg.getAttribute('stroke-width')).toBe('2');
 
             return Plotly.relayout(gd, 'xaxis.rangeslider.borderwidth', 3);
@@ -386,8 +420,8 @@ describe('Visible rangesliders', function() {
             expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
             expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
 
-            expect(bg.getAttribute('fill')).toBe('red');
-            expect(bg.getAttribute('stroke')).toBe('blue');
+            expect(bg.style.fill).toBe('rgb(255, 0, 0)');
+            expect(bg.style.stroke).toBe('rgb(0, 0, 255)');
             expect(bg.getAttribute('stroke-width')).toBe('3');
         })
         .then(done, done.fail);
@@ -428,7 +462,7 @@ describe('Visible rangesliders', function() {
     });
 
     it('should automargin correctly with a top or bottom x axis', function(done) {
-        var topMock = require('@mocks/range_slider_top_axis');
+        var topMock = require('../../image/mocks/range_slider_top_axis');
 
         function assertTop(hasExtra) {
             var op = hasExtra ? 'toBeGreaterThan' : 'toBeLessThan';

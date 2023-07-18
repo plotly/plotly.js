@@ -8,21 +8,19 @@ global.DOMParser = global.window.DOMParser;
 global.getComputedStyle = global.window.getComputedStyle;
 global.window.URL.createObjectURL = function() {};
 
-// see: Building node modules with AMD or RequireJS https://requirejs.org/docs/node.html
-if(typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
+var requirejs = require('requirejs');
 
-define(function(require) {
-    var plotly = require('../dist/plotly.min.js');
+requirejs.config({
+    paths: {
+        'plotly': '../dist/plotly.min'
+    }
+});
 
+requirejs(['plotly'],
+function(plotly) {
     if(plotly) {
         console.log(plotly);
     } else {
         throw 'Error: loading with requirejs';
     }
-
-    // The value returned from the function is
-    // used as the module export visible to Node.
-    return function() {};
 });

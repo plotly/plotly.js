@@ -127,7 +127,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
 
         d3.select(el.parentNode).append('path')
             .attr({
-                'class': el3.attr('class'),
+                class: el3.attr('class'),
                 d: arrowHeadStyle.path,
                 transform:
                     strTranslate(p.x, p.y) +

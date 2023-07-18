@@ -1,16 +1,16 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Registry = require('@src/registry');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Registry = require('../../../src/registry');
 function _doPlot(gd, fig) {
     return Registry.call('_doPlot', gd, fig.data, fig.layout);
 }
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-var Plots = require('@src/plots/plots');
-var Parcoords = require('@src/traces/parcoords');
-var attributes = require('@src/traces/parcoords/attributes');
-var PC = require('@src/traces/parcoords/constants');
+var Plots = require('../../../src/plots/plots');
+var Parcoords = require('../../../src/traces/parcoords');
+var attributes = require('../../../src/traces/parcoords/attributes');
+var PC = require('../../../src/traces/parcoords/constants');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var delay = require('../assets/delay');
@@ -21,19 +21,19 @@ var click = require('../assets/click');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var readPixel = require('../assets/read_pixel');
 
-var mock3 = require('@mocks/gl2d_parcoords_style_labels.json');
+var mock3 = require('../../image/mocks/gl2d_parcoords_style_labels.json');
 
 // mock with two dimensions (one panel); special case, e.g. left and right panel is obv. the same
-var mock2 = require('@mocks/gl2d_parcoords_2.json');
+var mock2 = require('../../image/mocks/gl2d_parcoords_2.json');
 
 // mock with one dimension (zero panels); special case, as no panel can be rendered
-var mock1 = require('@mocks/gl2d_parcoords_1.json');
+var mock1 = require('../../image/mocks/gl2d_parcoords_1.json');
 
 // mock with zero dimensions; special case, as no dimension can be rendered
 var mock0 = Lib.extendDeep({}, mock1);
 mock0.data[0].dimensions = [];
 
-var mock = Lib.extendDeep({}, require('@mocks/gl2d_parcoords_large.json'));
+var mock = Lib.extendDeep({}, require('../../image/mocks/gl2d_parcoords_large.json'));
 var lineStart = 30;
 var lineCount = 10;
 mock.data[0].dimensions.forEach(function(d) {

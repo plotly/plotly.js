@@ -1,11 +1,14 @@
 'use strict';
 
+var d3 = require('@plotly/d3');
+
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 
 var readPaths = require('./draw_newshape/helpers').readPaths;
 var displayOutlines = require('./display_outlines');
+var drawLabel = require('./display_labels');
 
 var clearOutlineControllers = require('./handle_outline').clearOutlineControllers;
 
@@ -33,7 +36,8 @@ var getPathString = helpers.getPathString;
 module.exports = {
     draw: draw,
     drawOne: drawOne,
-    eraseActiveShape: eraseActiveShape
+    eraseActiveShape: eraseActiveShape,
+    drawLabel: drawLabel,
 };
 
 function draw(gd) {
@@ -42,10 +46,15 @@ function draw(gd) {
     // Remove previous shapes before drawing new in shapes in fullLayout.shapes
     fullLayout._shapeUpperLayer.selectAll('path').remove();
     fullLayout._shapeLowerLayer.selectAll('path').remove();
+    fullLayout._shapeUpperLayer.selectAll('text').remove();
+    fullLayout._shapeLowerLayer.selectAll('text').remove();
 
     for(var k in fullLayout._plots) {
         var shapelayer = fullLayout._plots[k].shapelayer;
-        if(shapelayer) shapelayer.selectAll('path').remove();
+        if(shapelayer) {
+            shapelayer.selectAll('path').remove();
+            shapelayer.selectAll('text').remove();
+        }
     }
 
     for(var i = 0; i < fullLayout.shapes.length; i++) {
@@ -129,21 +138,28 @@ function drawOne(gd, index) {
             opacity = gd._fullLayout.activeshape.opacity;
         }
 
-        var path = shapeLayer.append('path')
+        var shapeGroup = shapeLayer.append('g')
+            .classed('shape-group', true)
+            .attr({ 'data-index': index });
+
+        var path = shapeGroup.append('path')
             .attr(attrs)
             .style('opacity', opacity)
             .call(Color.stroke, lineColor)
             .call(Color.fill, fillColor)
             .call(Drawing.dashLine, lineDash, lineWidth);
 
-        setClipPath(path, gd, options);
+        setClipPath(shapeGroup, gd, options);
+
+        // Draw or clear the label
+        drawLabel(gd, index, options, shapeGroup);
 
         var editHelpers;
         if(isActiveShape || gd._context.edits.shapePosition) editHelpers = arrayEditor(gd.layout, 'shapes', options);
 
         if(isActiveShape) {
             path.style({
-                'cursor': 'move',
+                cursor: 'move',
             });
 
             var dragOptions = {
@@ -151,6 +167,7 @@ function drawOne(gd, index) {
                 plotinfo: plotinfo,
                 gd: gd,
                 editHelpers: editHelpers,
+                hasText: options.label.text || options.label.texttemplate,
                 isActiveShape: true // i.e. to enable controllers
             };
 
@@ -166,7 +183,6 @@ function drawOne(gd, index) {
                 );
             }
         }
-
         path.node().addEventListener('click', function() { return activateShape(gd, path); });
     }
 }
@@ -201,6 +217,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     var x0, y0, x1, y1, xAnchor, yAnchor;
     var n0, s0, w0, e0, optN, optS, optW, optE;
     var pathIn;
+
+    var shapeGroup = d3.select(shapePath.node().parentNode);
 
     // setup conversion functions
     var xa = Axes.getFromId(gd, shapeOptions.xref);
@@ -238,13 +256,14 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         // Note that by setting the `data-index` attr, it is ensured that
         // the helper group is purged in this modules `draw` function
         var g = shapeLayer.append('g')
-          .attr('data-index', index);
+            .attr('data-index', index)
+            .attr('drag-helper', true);
 
         // Helper path for moving
         g.append('path')
           .attr('d', shapePath.attr('d'))
           .style({
-              'cursor': 'move',
+              cursor: 'move',
               'stroke-width': sensoryWidth,
               'stroke-opacity': '0' // ensure not visible
           });
@@ -258,9 +277,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         g.append('circle')
           .attr({
               'data-line-point': 'start-point',
-              'cx': xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x0 : x2p(shapeOptions.x0),
-              'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0),
-              'r': circleRadius
+              cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x0 : x2p(shapeOptions.x0),
+              cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0),
+              r: circleRadius
           })
           .style(circleStyle)
           .classed('cursor-grab', true);
@@ -268,9 +287,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         g.append('circle')
           .attr({
               'data-line-point': 'end-point',
-              'cx': xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x1 : x2p(shapeOptions.x1),
-              'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1),
-              'r': circleRadius
+              cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x1 : x2p(shapeOptions.x1),
+              cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1),
+              r: circleRadius
           })
           .style(circleStyle)
           .classed('cursor-grab', true);
@@ -423,6 +442,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
         shapePath.attr('d', getPathString(gd, shapeOptions));
         renderVisualCues(shapeLayer, shapeOptions);
+        drawLabel(gd, index, shapeOptions, shapeGroup);
     }
 
     function resizeShape(dx, dy) {
@@ -495,6 +515,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
         shapePath.attr('d', getPathString(gd, shapeOptions));
         renderVisualCues(shapeLayer, shapeOptions);
+        drawLabel(gd, index, shapeOptions, shapeGroup);
     }
 
     function renderVisualCues(shapeLayer, shapeOptions) {
@@ -513,9 +534,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
             visualCues.enter()
               .append('path')
               .attr({
-                  'fill': '#fff',
+                  fill: '#fff',
                   'fill-rule': 'evenodd',
-                  'stroke': '#000',
+                  stroke: '#000',
                   'stroke-width': strokeWidth
               })
               .classed('visual-cue', true);

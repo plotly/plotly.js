@@ -11,7 +11,7 @@
       "hovertemplate": "day=%{y}<br>total_bill=%{x}",
       "legendgroup": "day=Fri",
       "marker": {
-        "color": "#636efa"
+        "color": "#636efa", "symbol": "arrow", "angle": 180, "size": 20
       },
       "name": "day=Fri",
       "offsetgroup": "day=Fri",
@@ -80,7 +80,7 @@
       "hovertemplate": "day=%{y}<br>total_bill=%{x}",
       "legendgroup": "day=Sat",
       "marker": {
-        "color": "#EF553B"
+        "color": "#EF553B", "symbol": "arrow", "angle": 45, "size": 20
       },
       "name": "day=Sat",
       "offsetgroup": "day=Sat",
@@ -285,7 +285,7 @@
       "hovertemplate": "day=%{y}<br>total_bill=%{x}",
       "legendgroup": "day=Sun",
       "marker": {
-        "color": "#00cc96"
+        "color": "#00cc96", "symbol": "arrow", "angle": 0, "size": 20
       },
       "name": "day=Sun",
       "offsetgroup": "day=Sun",
@@ -468,7 +468,7 @@
       "hovertemplate": "day=%{y}<br>total_bill=%{x}",
       "legendgroup": "day=Thur",
       "marker": {
-        "color": "#ab63fa"
+        "color": "#ab63fa", "symbol": "arrow", "angle": -45, "size": 20
       },
       "name": "day=Thur",
       "offsetgroup": "day=Thur",

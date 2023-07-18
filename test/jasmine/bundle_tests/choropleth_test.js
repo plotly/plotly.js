@@ -1,7 +1,7 @@
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/core');
-var PlotlyChoropleth = require('@lib/choropleth');
+var Plotly = require('../../../lib/core');
+var PlotlyChoropleth = require('../../../lib/choropleth');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -17,7 +17,7 @@ describe('Bundle with choropleth', function() {
 
     var gd;
 
-    var mock = require('@mocks/geo_multiple-usa-choropleths.json');
+    var mock = require('../../image/mocks/geo_multiple-usa-choropleths.json');
 
     beforeEach(function() {
         gd = createGraphDiv();

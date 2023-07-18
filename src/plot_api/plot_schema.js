@@ -548,6 +548,13 @@ function getLayoutAttributes() {
                     delete layoutAttributes.yaxis[xkey];
                 }
             }
+
+            /*
+             * Also some attributes e.g. shift & autoshift only implemented on the yaxis
+             * at the moment. Remove them from the xaxis.
+            */
+            delete layoutAttributes.xaxis.shift;
+            delete layoutAttributes.xaxis.autoshift;
         } else if(_module.name === 'colorscale') {
             extendDeepAll(layoutAttributes, _module.layoutAttributes);
         } else if(_module.layoutAttributes) {

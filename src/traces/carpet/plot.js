@@ -12,6 +12,7 @@ var strTranslate = Lib.strTranslate;
 var alignmentConstants = require('../../constants/alignment');
 
 module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
+    var isStatic = gd._context.staticPlot;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
@@ -31,15 +32,15 @@ module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
 
         axisLayer.style('opacity', trace.opacity);
 
-        drawGridLines(xa, ya, majorLayer, aax, 'a', aax._gridlines, true);
-        drawGridLines(xa, ya, majorLayer, bax, 'b', bax._gridlines, true);
-        drawGridLines(xa, ya, minorLayer, aax, 'a', aax._minorgridlines, true);
-        drawGridLines(xa, ya, minorLayer, bax, 'b', bax._minorgridlines, true);
+        drawGridLines(xa, ya, majorLayer, aax, 'a', aax._gridlines, true, isStatic);
+        drawGridLines(xa, ya, majorLayer, bax, 'b', bax._gridlines, true, isStatic);
+        drawGridLines(xa, ya, minorLayer, aax, 'a', aax._minorgridlines, true, isStatic);
+        drawGridLines(xa, ya, minorLayer, bax, 'b', bax._minorgridlines, true, isStatic);
 
         // NB: These are not omitted if the lines are not active. The joins must be executed
         // in order for them to get cleaned up without a full redraw
-        drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
-        drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);
+        drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines, isStatic);
+        drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines, isStatic);
 
         var labelOrientationA = drawAxisLabels(gd, xa, ya, trace, cd0, labelLayer, aax._labels, 'a-label');
         var labelOrientationB = drawAxisLabels(gd, xa, ya, trace, cd0, labelLayer, bax._labels, 'b-label');
@@ -79,13 +80,13 @@ function drawClipPath(trace, t, layer, xaxis, yaxis) {
     path.attr('d', clipPathData);
 }
 
-function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
+function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines, isStatic) {
     var lineClass = 'const-' + axisLetter + '-lines';
     var gridJoin = layer.selectAll('.' + lineClass).data(gridlines);
 
     gridJoin.enter().append('path')
         .classed(lineClass, true)
-        .style('vector-effect', 'non-scaling-stroke');
+        .style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke');
 
     gridJoin.each(function(d) {
         var gridline = d;

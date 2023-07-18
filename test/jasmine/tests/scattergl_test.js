@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
-var ScatterGl = require('@src/traces/scattergl');
-var TOO_MANY_POINTS = require('@src/traces/scattergl/constants').TOO_MANY_POINTS;
+var ScatterGl = require('../../../src/traces/scattergl');
+var TOO_MANY_POINTS = require('../../../src/traces/scattergl/constants').TOO_MANY_POINTS;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -111,11 +111,11 @@ describe('end-to-end scattergl tests', function() {
         it('@gl should handle a plot with less ' + attr + ' labels than data points', function(done) {
             expect(function() {
                 var mock = {
-                    'type': 'scattergl',
-                    'mode': 'markers+text',
-                    'x': [3, 2, 1, 0],
-                    'y': [0, 1, 4, 9],
-                    'textposition': 'top center'
+                    type: 'scattergl',
+                    mode: 'markers+text',
+                    x: [3, 2, 1, 0],
+                    y: [0, 1, 4, 9],
+                    textposition: 'top center'
                 };
                 mock[attr] = ['1', '2', '3'];
                 Plotly.newPlot(gd, [mock])
@@ -129,7 +129,7 @@ describe('end-to-end scattergl tests', function() {
     });
 
     it('@gl should be able to toggle visibility', function(done) {
-        var mock = require('@mocks/gl2d_10.json');
+        var mock = require('../../image/mocks/gl2d_10.json');
         var _mock = Lib.extendDeep({}, mock);
         _mock.data[0].line.width = 5;
 
@@ -236,17 +236,17 @@ describe('end-to-end scattergl tests', function() {
         spyOn(ScatterGl, 'calc').and.callThrough();
 
         var dat = [{
-            'x': [1, 2, 3],
-            'y': [1, 2, 3],
-            'type': 'scattergl',
-            'mode': 'markers'
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            type: 'scattergl',
+            mode: 'markers'
         }];
 
         Plotly.newPlot(gd, dat, {width: 500, height: 500})
         .then(function() {
             expect(ScatterGl.calc).toHaveBeenCalledTimes(1);
 
-            return Plotly.restyle(gd, {'opacity': 0.1});
+            return Plotly.restyle(gd, {opacity: 0.1});
         })
         .then(function() {
             expect(ScatterGl.calc).toHaveBeenCalledTimes(2);
@@ -257,11 +257,11 @@ describe('end-to-end scattergl tests', function() {
     it('@gl should update selected points', function(done) {
         // #2298
         var dat = [{
-            'x': [1],
-            'y': [1],
-            'type': 'scattergl',
-            'mode': 'markers',
-            'selectedpoints': [0]
+            x: [1],
+            y: [1],
+            type: 'scattergl',
+            mode: 'markers',
+            selectedpoints: [0]
         }];
 
         Plotly.newPlot(gd, dat, {
@@ -341,7 +341,7 @@ describe('end-to-end scattergl tests', function() {
     });
 
     it('@gl should remove fill2d', function(done) {
-        var mock = require('@mocks/gl2d_axes_labels2.json');
+        var mock = require('../../image/mocks/gl2d_axes_labels2.json');
 
         Plotly.newPlot(gd, mock.data, mock.layout)
         .then(delay(1000))
@@ -626,11 +626,11 @@ describe('Test scattergl autorange:', function() {
         });
 
         var specs = [
-            {name: 'lines+markers', fig: require('@mocks/gl2d_10.json')},
-            {name: 'bubbles', fig: require('@mocks/gl2d_12.json')},
-            {name: 'line on log axes', fig: require('@mocks/gl2d_14.json')},
-            {name: 'fill to zero', fig: require('@mocks/gl2d_axes_labels2.json')},
-            {name: 'annotations', fig: require('@mocks/gl2d_annotations.json')}
+            {name: 'lines+markers', fig: require('../../image/mocks/gl2d_10.json')},
+            {name: 'bubbles', fig: require('../../image/mocks/gl2d_12.json')},
+            {name: 'line on log axes', fig: require('../../image/mocks/gl2d_14.json')},
+            {name: 'fill to zero', fig: require('../../image/mocks/gl2d_axes_labels2.json')},
+            {name: 'annotations', fig: require('../../image/mocks/gl2d_annotations.json')}
         ];
 
         specs.forEach(function(s) {

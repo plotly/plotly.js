@@ -9,6 +9,8 @@
       "label": "B"
     }],
     "marker": {
+      "symbol": "arrow",
+      "angle": 180,
       "size": 20,
       "line": {"width": 2, "color": "#444"},
       "color": [10, 40, 100],

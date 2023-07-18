@@ -1,7 +1,8 @@
 'use strict';
 
-var Lib = require('../../lib');
 var Registry = require('../../registry');
+var Lib = require('../../lib');
+var pushUnique = Lib.pushUnique;
 
 var SHOWISOLATETIP = true;
 
@@ -103,6 +104,8 @@ module.exports = function handleClick(g, gd, numClicks) {
         }
     }
 
+    var thisLegend = fullTrace.legend;
+
     if(Registry.traceIs(fullTrace, 'pie-like')) {
         var thisLabel = legendItem.label;
         var thisLabelIndex = hiddenSlices.indexOf(thisLabel);
@@ -111,14 +114,32 @@ module.exports = function handleClick(g, gd, numClicks) {
             if(thisLabelIndex === -1) hiddenSlices.push(thisLabel);
             else hiddenSlices.splice(thisLabelIndex, 1);
         } else if(mode === 'toggleothers') {
-            hiddenSlices = [];
-            gd.calcdata[0].forEach(function(d) {
-                if(thisLabel !== d.label) {
-                    hiddenSlices.push(d.label);
+            var changed = thisLabelIndex !== -1;
+            var unhideList = [];
+            for(i = 0; i < gd.calcdata.length; i++) {
+                var cdi = gd.calcdata[i];
+                for(j = 0; j < cdi.length; j++) {
+                    var d = cdi[j];
+                    var dLabel = d.label;
+
+                    // ensure we toggle slices that are in this legend)
+                    if(thisLegend === cdi[0].trace.legend) {
+                        if(thisLabel !== dLabel) {
+                            if(hiddenSlices.indexOf(dLabel) === -1) changed = true;
+                            pushUnique(hiddenSlices, dLabel);
+                            unhideList.push(dLabel);
+                        }
+                    }
                 }
-            });
-            if(gd._fullLayout.hiddenlabels && gd._fullLayout.hiddenlabels.length === hiddenSlices.length && thisLabelIndex === -1) {
-                hiddenSlices = [];
+            }
+
+            if(!changed) {
+                for(var q = 0; q < unhideList.length; q++) {
+                    var pos = hiddenSlices.indexOf(unhideList[q]);
+                    if(pos !== -1) {
+                        hiddenSlices.splice(pos, 1);
+                    }
+                }
             }
         }
 
@@ -184,8 +205,8 @@ module.exports = function handleClick(g, gd, numClicks) {
             }
 
             for(i = 0; i < fullData.length; i++) {
-                // False is sticky; we don't change it.
-                if(fullData[i].visible === false) continue;
+                // False is sticky; we don't change it. Also ensure we don't change states of itmes in other legend
+                if(fullData[i].visible === false || fullData[i].legend !== thisLegend) continue;
 
                 if(Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
                     continue;
