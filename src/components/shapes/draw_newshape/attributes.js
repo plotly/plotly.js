@@ -138,7 +138,7 @@ module.exports = overrideAll({
         name: extendFlat({}, basePlotAttributes.name, {
             description: [
                 'Sets new shape name.',
-                'The name appear as the legend item.'
+                'The name appears as the legend item.'
             ].join(' ')
         }),
 
