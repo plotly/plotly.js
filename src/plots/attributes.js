@@ -105,7 +105,7 @@ module.exports = {
         editType: 'style',
         description: [
             'Sets the trace name.',
-            'The trace name appear as the legend item and on hover.'
+            'The trace name appears as the legend item and on hover.'
         ].join(' ')
     },
     uid: {

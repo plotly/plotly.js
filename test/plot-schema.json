@@ -3805,7 +3805,7 @@
      }
     },
     "name": {
-     "description": "Sets new shape name. The name appear as the legend item.",
+     "description": "Sets new shape name. The name appears as the legend item.",
      "editType": "none",
      "valType": "string"
     },
@@ -13942,7 +13942,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -15490,7 +15490,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -16644,7 +16644,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover. For box traces, the name will also be used for the position coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are missing and the position axis is categorical",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover. For box traces, the name will also be used for the position coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are missing and the position axis is categorical",
      "editType": "calc+clearAxisTypes",
      "valType": "string"
     },
@@ -17403,7 +17403,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -18902,7 +18902,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -19853,7 +19853,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -20862,7 +20862,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -21943,7 +21943,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -23118,7 +23118,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -24390,7 +24390,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -25346,7 +25346,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -26572,7 +26572,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -27470,7 +27470,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -28531,7 +28531,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -29690,7 +29690,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -31275,7 +31275,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -32511,7 +32511,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -33843,7 +33843,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -35277,7 +35277,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -35890,7 +35890,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -36778,7 +36778,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -37916,7 +37916,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -39227,7 +39227,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -39808,7 +39808,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -40878,7 +40878,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -41922,7 +41922,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -42628,7 +42628,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -43245,7 +43245,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -43936,7 +43936,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -46267,7 +46267,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -48614,7 +48614,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -50666,7 +50666,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -52576,7 +52576,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -54581,7 +54581,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -56020,7 +56020,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -57886,7 +57886,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -59742,7 +59742,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -61691,7 +61691,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -63627,7 +63627,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -65426,7 +65426,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -66514,7 +66514,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -67854,7 +67854,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -69268,7 +69268,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -70101,7 +70101,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -71287,7 +71287,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -72573,7 +72573,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover. For violin traces, the name will also be used for the position coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are missing and the position axis is categorical. Note that the trace name is also used as a default value for attribute `scalegroup` (please see its description for details).",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover. For violin traces, the name will also be used for the position coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are missing and the position axis is categorical. Note that the trace name is also used as a default value for attribute `scalegroup` (please see its description for details).",
      "editType": "calc+clearAxisTypes",
      "valType": "string"
     },
@@ -73895,7 +73895,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -74669,7 +74669,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
