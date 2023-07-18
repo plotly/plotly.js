@@ -32,6 +32,18 @@ module.exports = {
             'trace is shown in the legend.'
         ].join(' ')
     },
+    legend: {
+        valType: 'subplotid',
+        dflt: 'legend',
+        editType: 'style',
+
+        description: [
+            'Sets the reference to a legend to show this trace in.',
+            'References to these legends are *legend*, *legend2*, *legend3*, etc.',
+            'Settings for these legends are set in the layout, under',
+            '`layout.legend`, `layout.legend2`, etc.'
+        ].join(' ')
+    },
     legendgroup: {
         valType: 'string',
         dflt: '',
@@ -66,11 +78,17 @@ module.exports = {
         description: [
             'Sets the legend rank for this trace.',
             'Items and groups with smaller ranks are presented on top/left side while',
-            'with `*reversed* `legend.traceorder` they are on bottom/right side.',
+            'with *reversed* `legend.traceorder` they are on bottom/right side.',
             'The default legendrank is 1000,',
             'so that you can use ranks less than 1000 to place certain items before all unranked items,',
             'and ranks greater than 1000 to go after all unranked items.'
         ].join(' ')
+    },
+    legendwidth: {
+        valType: 'number',
+        min: 0,
+        editType: 'style',
+        description: 'Sets the width (in px or fraction) of the legend for this trace.',
     },
     opacity: {
         valType: 'number',

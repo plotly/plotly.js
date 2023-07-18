@@ -1,7 +1,7 @@
 'use strict';
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 var d3Select = require('../../strict-d3').select;
 
 // Test utilities
@@ -12,136 +12,136 @@ var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 var readPixel = require('../assets/read_pixel');
 
-var multipleScatter2dMock = require('@mocks/gl2d_scatter2d-multiple-colors.json');
+var multipleScatter2dMock = require('../../image/mocks/gl2d_scatter2d-multiple-colors.json');
 
 var plotData = {
-    'data': [
+    data: [
         {
-            'type': 'pointcloud',
-            'mode': 'markers',
-            'marker': {
-                'sizemin': 0.5,
-                'sizemax': 100,
-                'arearatio': 0,
-                'color': 'rgba(255, 0, 0, 0.6)'
+            type: 'pointcloud',
+            mode: 'markers',
+            marker: {
+                sizemin: 0.5,
+                sizemax: 100,
+                arearatio: 0,
+                color: 'rgba(255, 0, 0, 0.6)'
             },
-            'x': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            'y': [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+            x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            y: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
         },
         {
-            'type': 'pointcloud',
-            'mode': 'markers',
-            'marker': {
-                'sizemin': 0.5,
-                'sizemax': 100,
-                'arearatio': 0,
-                'color': 'rgba(0, 0, 255, 0.9)',
-                'opacity': 0.8,
-                'blend': true
+            type: 'pointcloud',
+            mode: 'markers',
+            marker: {
+                sizemin: 0.5,
+                sizemax: 100,
+                arearatio: 0,
+                color: 'rgba(0, 0, 255, 0.9)',
+                opacity: 0.8,
+                blend: true
             },
-            'opacity': 0.7,
-            'x': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            'y': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            opacity: 0.7,
+            x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            y: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         },
         {
-            'type': 'pointcloud',
-            'mode': 'markers',
-            'marker': {
-                'sizemin': 0.5,
-                'sizemax': 100,
-                'border': {
-                    'color': 'rgb(0, 0, 0)',
-                    'arearatio': 0.7071
+            type: 'pointcloud',
+            mode: 'markers',
+            marker: {
+                sizemin: 0.5,
+                sizemax: 100,
+                border: {
+                    color: 'rgb(0, 0, 0)',
+                    arearatio: 0.7071
                 },
-                'color': 'green',
-                'opacity': 0.8,
-                'blend': true
+                color: 'green',
+                opacity: 0.8,
+                blend: true
             },
-            'opacity': 0.7,
-            'x': [3, 4.5, 6],
-            'y': [9, 9, 9]
+            opacity: 0.7,
+            x: [3, 4.5, 6],
+            y: [9, 9, 9]
         },
         {
-            'type': 'pointcloud',
-            'mode': 'markers',
-            'marker': {
-                'sizemin': 0.5,
-                'sizemax': 100,
-                'color': 'yellow',
-                'opacity': 0.8,
-                'blend': true
+            type: 'pointcloud',
+            mode: 'markers',
+            marker: {
+                sizemin: 0.5,
+                sizemax: 100,
+                color: 'yellow',
+                opacity: 0.8,
+                blend: true
             },
-            'opacity': 0.7,
-            'xy': new Float32Array([1, 3, 9, 3]),
-            'indices': new Int32Array([0, 1]),
-            'xbounds': [1, 9],
-            'ybounds': [3, 3]
+            opacity: 0.7,
+            xy: new Float32Array([1, 3, 9, 3]),
+            indices: new Int32Array([0, 1]),
+            xbounds: [1, 9],
+            ybounds: [3, 3]
         },
         {
-            'type': 'pointcloud',
-            'mode': 'markers',
-            'marker': {
-                'sizemin': 0.5,
-                'sizemax': 100,
-                'color': 'orange',
-                'opacity': 0.8,
-                'blend': true
+            type: 'pointcloud',
+            mode: 'markers',
+            marker: {
+                sizemin: 0.5,
+                sizemax: 100,
+                color: 'orange',
+                opacity: 0.8,
+                blend: true
             },
-            'opacity': 0.7,
-            'xy': new Float32Array([1, 4, 9, 4]),
-            'indices': new Int32Array([0, 1])
+            opacity: 0.7,
+            xy: new Float32Array([1, 4, 9, 4]),
+            indices: new Int32Array([0, 1])
         },
         {
-            'type': 'pointcloud',
-            'mode': 'markers',
-            'marker': {
-                'sizemin': 0.5,
-                'sizemax': 100,
-                'color': 'darkorange',
-                'opacity': 0.8,
-                'blend': true
+            type: 'pointcloud',
+            mode: 'markers',
+            marker: {
+                sizemin: 0.5,
+                sizemax: 100,
+                color: 'darkorange',
+                opacity: 0.8,
+                blend: true
             },
-            'opacity': 0.7,
-            'xy': new Float32Array([1, 5, 9, 5]),
-            'xbounds': [1, 9],
-            'ybounds': [5, 5]
+            opacity: 0.7,
+            xy: new Float32Array([1, 5, 9, 5]),
+            xbounds: [1, 9],
+            ybounds: [5, 5]
         },
         {
-            'type': 'pointcloud',
-            'mode': 'markers',
-            'marker': {
-                'sizemin': 0.5,
-                'sizemax': 100,
-                'color': 'red',
-                'opacity': 0.8,
-                'blend': true
+            type: 'pointcloud',
+            mode: 'markers',
+            marker: {
+                sizemin: 0.5,
+                sizemax: 100,
+                color: 'red',
+                opacity: 0.8,
+                blend: true
             },
-            'opacity': 0.7,
-            'xy': new Float32Array([1, 6, 9, 6])
+            opacity: 0.7,
+            xy: new Float32Array([1, 6, 9, 6])
         }
     ],
-    'layout': {
-        'title': 'Point Cloud - basic',
-        'xaxis': {
-            'type': 'linear',
-            'range': [
+    layout: {
+        title: 'Point Cloud - basic',
+        xaxis: {
+            type: 'linear',
+            range: [
                 -2.501411175139456,
                 43.340777299865266
             ],
-            'autorange': true
+            autorange: true
         },
-        'yaxis': {
-            'type': 'linear',
-            'range': [
+        yaxis: {
+            type: 'linear',
+            range: [
                 4,
                 6
             ],
-            'autorange': true
+            autorange: true
         },
-        'height': 598,
-        'width': 1080,
-        'autosize': true,
-        'showlegend': false
+        height: 598,
+        width: 1080,
+        autosize: true,
+        showlegend: false
     }
 };
 

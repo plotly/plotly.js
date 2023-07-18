@@ -307,7 +307,7 @@ module.exports = {
                 dflt: true
             }),
             // tick and title properties named and function exactly as in axes
-            tickmode: axesAttrs.tickmode,
+            tickmode: axesAttrs.minor.tickmode,
             nticks: axesAttrs.nticks,
             tick0: axesAttrs.tick0,
             dtick: axesAttrs.dtick,
@@ -319,6 +319,7 @@ module.exports = {
             tickcolor: axesAttrs.tickcolor,
             ticklabelstep: axesAttrs.ticklabelstep,
             showticklabels: axesAttrs.showticklabels,
+            labelalias: axesAttrs.labelalias,
             tickfont: fontAttrs({
                 description: 'Sets the color bar\'s tick label font'
             }),

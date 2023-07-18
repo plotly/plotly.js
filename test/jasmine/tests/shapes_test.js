@@ -1,11 +1,11 @@
-var Shapes = require('@src/components/shapes');
-var helpers = require('@src/components/shapes/helpers');
-var constants = require('@src/components/shapes/constants');
+var Shapes = require('../../../src/components/shapes');
+var helpers = require('../../../src/components/shapes/helpers');
+var constants = require('../../../src/components/shapes/constants');
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
-var Axes = require('@src/plots/cartesian/axes');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
+var Axes = require('../../../src/plots/cartesian/axes');
 
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -33,17 +33,17 @@ var dyToEnlargeHeight = { n: -10, s: 10, w: 0, e: 0, nw: -10, se: 10, ne: -10, s
 // Helper functions
 function getMoveLineDragElement(index) {
     index = index || 0;
-    return d3SelectAll('.shapelayer g[data-index="' + index + '"] path').node();
+    return d3SelectAll('.shapelayer g[drag-helper][data-index="' + index + '"] path').node();
 }
 
 function getResizeLineOverStartPointElement(index) {
     index = index || 0;
-    return d3SelectAll('.shapelayer g[data-index="' + index + '"] circle[data-line-point="start-point"]').node();
+    return d3SelectAll('.shapelayer g[drag-helper][data-index="' + index + '"] circle[data-line-point="start-point"]').node();
 }
 
 function getResizeLineOverEndPointElement(index) {
     index = index || 0;
-    return d3SelectAll('.shapelayer g[data-index="' + index + '"] circle[data-line-point="end-point"]').node();
+    return d3SelectAll('.shapelayer g[drag-helper][data-index="' + index + '"] circle[data-line-point="end-point"]').node();
 }
 
 describe('Test shapes defaults:', function() {
@@ -201,21 +201,21 @@ function countSubplots(gd) {
 }
 
 function countShapePathsInLowerLayer() {
-    return d3SelectAll('.layer-below > .shapelayer > path').size();
+    return d3SelectAll('.layer-below > .shapelayer > .shape-group > path').size();
 }
 
 function countShapePathsInUpperLayer() {
-    return d3SelectAll('.layer-above > .shapelayer > path').size();
+    return d3SelectAll('.layer-above > .shapelayer > .shape-group > path').size();
 }
 
 function countShapePathsInSubplots() {
-    return d3SelectAll('.layer-subplot > .shapelayer > path').size();
+    return d3SelectAll('.layer-subplot > .shapelayer > .shape-group > path').size();
 }
 
 describe('Test shapes:', function() {
     'use strict';
 
-    var mock = require('@mocks/shapes.json');
+    var mock = require('../../image/mocks/shapes.json');
     var gd;
 
     beforeEach(function(done) {
@@ -488,7 +488,7 @@ describe('shapes axis reference changes', function() {
     afterEach(destroyGraphDiv);
 
     function getShape(index) {
-        var s = d3SelectAll('path[data-index="' + index + '"]');
+        var s = d3SelectAll('.shape-group[data-index="' + index + '"]');
         expect(s.size()).toBe(1);
         return s;
     }
@@ -721,7 +721,7 @@ describe('Test shapes: a plot with shapes and an overlaid axis', function() {
 });
 
 function getFirstShapeNode() {
-    return d3SelectAll('.shapelayer path').node();
+    return d3SelectAll('.shapelayer .shape-group path').node();
 }
 
 function assertShapeSize(shapeNode, w, h) {
@@ -1479,7 +1479,7 @@ describe('Test shapes', function() {
     }
 
     function getShapeNode(index) {
-        return d3SelectAll('.shapelayer path').filter(function() {
+        return d3SelectAll('.shapelayer .shape-group path').filter(function() {
             return +this.getAttribute('data-index') === index;
         }).node();
     }

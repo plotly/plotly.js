@@ -26,7 +26,7 @@ function styleTrace(gd, calcTrace) {
             .style('opacity', marker.opacity);
     });
 
-    Drawing.selectedPointStyle(locs, trace, gd);
+    Drawing.selectedPointStyle(locs, trace);
 }
 
 function styleOnSelect(gd, calcTrace) {
@@ -34,7 +34,7 @@ function styleOnSelect(gd, calcTrace) {
     var trace = calcTrace[0].trace;
 
     if(trace.selectedpoints) {
-        Drawing.selectedPointStyle(s.selectAll('.choroplethlocation'), trace, gd);
+        Drawing.selectedPointStyle(s.selectAll('.choroplethlocation'), trace);
     } else {
         styleTrace(gd, calcTrace);
     }

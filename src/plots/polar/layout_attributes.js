@@ -23,7 +23,7 @@ var axisLineGridAttr = overrideAll({
 }, 'plot', 'from-root');
 
 var axisTickAttrs = overrideAll({
-    tickmode: axesAttrs.tickmode,
+    tickmode: axesAttrs.minor.tickmode,
     nticks: axesAttrs.nticks,
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
@@ -35,6 +35,7 @@ var axisTickAttrs = overrideAll({
     tickcolor: axesAttrs.tickcolor,
     ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
+    labelalias: axesAttrs.labelalias,
     showtickprefix: axesAttrs.showtickprefix,
     tickprefix: axesAttrs.tickprefix,
     showticksuffix: axesAttrs.showticksuffix,

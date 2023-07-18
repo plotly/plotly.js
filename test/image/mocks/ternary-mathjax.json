@@ -31,6 +31,8 @@
         "title": {
           "text": "$B^2$"
         },
+        "tickprefix": "$\\sqrt",
+        "ticksuffix": "^2$",
         "showline": true,
         "showgrid": true
       },
@@ -39,7 +41,11 @@
           "text": "$C^2$"
         },
         "showline": true,
-        "showgrid": true
+        "showgrid": true,
+        "labelalias": {
+          "20": "$(\\sqrt20)^2$",
+          "60": "<i><b>Sixty<b><i>"
+        }
       }
     },
     "annotations": [

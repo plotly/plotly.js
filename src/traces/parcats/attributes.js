@@ -197,6 +197,7 @@ module.exports = {
     customdata: undefined,
     hoverlabel: undefined,
     ids: undefined,
+    legend: undefined,
     legendgroup: undefined,
     legendrank: undefined,
     opacity: undefined,

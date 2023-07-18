@@ -1,4 +1,4 @@
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -26,10 +26,10 @@ describe('Plotly w/o WebGL support:', function() {
     }
 
     it('gl3d subplots', function(done) {
-        Plotly.react(gd, require('@mocks/gl3d_autocolorscale.json'))
+        Plotly.react(gd, require('../../image/mocks/gl3d_autocolorscale.json'))
         .then(function() {
             checkNoWebGLMsg(true);
-            return Plotly.react(gd, require('@mocks/10.json'));
+            return Plotly.react(gd, require('../../image/mocks/10.json'));
         })
         .then(function() {
             checkNoWebGLMsg(false);
@@ -38,10 +38,10 @@ describe('Plotly w/o WebGL support:', function() {
     });
 
     it('gl2d subplots', function(done) {
-        Plotly.react(gd, require('@mocks/gl2d_pointcloud-basic.json'))
+        Plotly.react(gd, require('../../image/mocks/gl2d_pointcloud-basic.json'))
         .then(function() {
             checkNoWebGLMsg(true);
-            return Plotly.react(gd, require('@mocks/10.json'));
+            return Plotly.react(gd, require('../../image/mocks/10.json'));
         })
         .then(function() {
             checkNoWebGLMsg(false);
@@ -50,10 +50,10 @@ describe('Plotly w/o WebGL support:', function() {
     });
 
     it('scattergl subplots', function(done) {
-        Plotly.react(gd, require('@mocks/gl2d_12.json'))
+        Plotly.react(gd, require('../../image/mocks/gl2d_12.json'))
         .then(function() {
             checkNoWebGLMsg(true);
-            return Plotly.react(gd, require('@mocks/10.json'));
+            return Plotly.react(gd, require('../../image/mocks/10.json'));
         })
         .then(function() {
             checkNoWebGLMsg(false);
@@ -70,7 +70,7 @@ describe('Plotly w/o WebGL support:', function() {
         })
         .then(function() {
             checkNoWebGLMsg(true);
-            return Plotly.react(gd, require('@mocks/10.json'));
+            return Plotly.react(gd, require('../../image/mocks/10.json'));
         })
         .then(function() {
             checkNoWebGLMsg(false);
@@ -79,10 +79,10 @@ describe('Plotly w/o WebGL support:', function() {
     });
 
     it('scatterpolargl subplots', function(done) {
-        Plotly.react(gd, require('@mocks/glpolar_scatter.json'))
+        Plotly.react(gd, require('../../image/mocks/glpolar_scatter.json'))
         .then(function() {
             checkNoWebGLMsg(true);
-            return Plotly.react(gd, require('@mocks/10.json'));
+            return Plotly.react(gd, require('../../image/mocks/10.json'));
         })
         .then(function() {
             checkNoWebGLMsg(false);
@@ -91,10 +91,10 @@ describe('Plotly w/o WebGL support:', function() {
     });
 
     it('splom subplots', function(done) {
-        Plotly.react(gd, require('@mocks/splom_0.json'))
+        Plotly.react(gd, require('../../image/mocks/splom_0.json'))
         .then(function() {
             checkNoWebGLMsg(true);
-            return Plotly.react(gd, require('@mocks/10.json'));
+            return Plotly.react(gd, require('../../image/mocks/10.json'));
         })
         .then(function() {
             checkNoWebGLMsg(false);
@@ -103,10 +103,10 @@ describe('Plotly w/o WebGL support:', function() {
     });
 
     it('parcoords subplots', function(done) {
-        Plotly.react(gd, require('@mocks/gl2d_parcoords_2.json'))
+        Plotly.react(gd, require('../../image/mocks/gl2d_parcoords_2.json'))
         .then(function() {
             checkNoWebGLMsg(true);
-            return Plotly.react(gd, require('@mocks/10.json'));
+            return Plotly.react(gd, require('../../image/mocks/10.json'));
         })
         .then(function() {
             checkNoWebGLMsg(false);

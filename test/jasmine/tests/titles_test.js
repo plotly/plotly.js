@@ -1,11 +1,11 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var alignmentConstants = require('@src/constants/alignment');
-var interactConstants = require('@src/constants/interactions');
-var Lib = require('@src/lib');
-var rgb = require('@src/components/color').rgb;
+var Plotly = require('../../../lib/index');
+var alignmentConstants = require('../../../src/constants/alignment');
+var interactConstants = require('../../../src/constants/interactions');
+var Lib = require('../../../src/lib');
+var rgb = require('../../../src/components/color').rgb;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -641,7 +641,7 @@ describe('Titles can be updated', function() {
             desc: 'despite passing title only as a string using string attributes ' +
             '(backwards-compatibility)',
             update: {
-                'title': NEW_TITLE,
+                title: NEW_TITLE,
                 'xaxis.title': NEW_XTITLE,
                 'yaxis.title': NEW_YTITLE
             }
@@ -944,7 +944,7 @@ describe('Title fonts can be updated', function() {
             desc: 'despite using string attributes replacing deprecated `titlefont` attributes ' +
             '(backwards-compatibility)',
             update: {
-                'titlefont': NEW_TITLE_FONT,
+                titlefont: NEW_TITLE_FONT,
                 'xaxis.titlefont': NEW_XTITLE_FONT,
                 'yaxis.titlefont': NEW_YTITLE_FONT
             }
@@ -1063,6 +1063,119 @@ describe('Titles for multiple axes', function() {
             expect(y2Style.fontSize).toBe('5px');
         })
         .then(done, done.fail);
+    });
+});
+
+// TODO: Add in tests for interactions with other automargined elements
+describe('Title automargining', function() {
+    'use strict';
+
+    var data = [{x: [1, 1, 3], y: [1, 2, 3]}];
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should avoid overlap with container for yref=paper and allow padding', function(done) {
+        Plotly.newPlot(gd, data, {
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            height: 300,
+            width: 400,
+            title: {
+                text: 'Basic title',
+                font: {size: 24},
+                yref: 'paper'
+            }
+        }).then(function() {
+            expect(gd._fullLayout._size.t).toBe(0);
+            expect(gd._fullLayout._size.h).toBe(300);
+            return Plotly.relayout(gd, 'title.automargin', true);
+        }).then(function() {
+            expect(gd._fullLayout.title.automargin).toBe(true);
+            expect(gd._fullLayout.title.y).toBe(1);
+            expect(gd._fullLayout.title.yanchor).toBe('bottom');
+            expect(gd._fullLayout._size.t).toBeCloseTo(27, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(273, -1);
+            return Plotly.relayout(gd, 'title.pad.t', 10);
+        }).then(function() {
+            expect(gd._fullLayout._size.t).toBeCloseTo(37, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(263, -1);
+            return Plotly.relayout(gd, 'title.pad.b', 10);
+        }).then(function() {
+            expect(gd._fullLayout._size.h).toBeCloseTo(253, -1);
+            expect(gd._fullLayout._size.t).toBeCloseTo(47, -1);
+            return Plotly.relayout(gd, 'title.yanchor', 'top');
+        }).then(function() {
+            expect(gd._fullLayout._size.t).toBe(0);
+        }).then(done, done.fail);
+    });
+
+
+    it('should automargin and position title at the bottom of the plot if title.y=0', function(done) {
+        Plotly.newPlot(gd, data, {
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            height: 300,
+            width: 400,
+            title: {
+                text: 'Basic title',
+                font: {size: 24},
+                yref: 'paper'
+            }
+        }).then(function() {
+            return Plotly.relayout(gd, {'title.automargin': true, 'title.y': 0});
+        }).then(function() {
+            expect(gd._fullLayout._size.b).toBeCloseTo(27, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(273, -1);
+            expect(gd._fullLayout.title.yanchor).toBe('top');
+        }).then(done, done.fail);
+    });
+
+    it('should avoid overlap with container and plot area for yref=container and allow padding', function(done) {
+        Plotly.newPlot(gd, data, {
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            height: 300,
+            width: 400,
+            title: {
+                text: 'Basic title',
+                font: {size: 24},
+                yref: 'container',
+                automargin: true
+            }
+        }).then(function() {
+            expect(gd._fullLayout._size.t).toBeCloseTo(27, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(273, -1);
+            expect(gd._fullLayout.title.y).toBe(1);
+            expect(gd._fullLayout.title.yanchor).toBe('top');
+            return Plotly.relayout(gd, 'title.y', 0.6);
+        }).then(function() {
+            expect(gd._fullLayout._size.t).toBeCloseTo(147, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(153, -1);
+        }).then(done, done.fail);
+    });
+
+    it('should make space for multiple container-referenced components on the same side of the plot', function(done) {
+        Plotly.newPlot(gd, data, {
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            xaxis: {
+                automargin: true,
+                title: {text: 'x-axis title'}
+            },
+            height: 300,
+            width: 400,
+            title: {
+                text: 'Basic title',
+                font: {size: 24},
+                yref: 'container',
+                automargin: true,
+                y: 0
+            }
+        }).then(function() {
+            expect(gd._fullLayout._size.b).toBeCloseTo(57, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(243, -1);
+        }).then(done, done.fail);
     });
 });
 

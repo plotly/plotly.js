@@ -1,20 +1,20 @@
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var utcFormat = require('d3-time-format').utcFormat;
 
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Loggers = require('@src/lib/loggers');
-var Color = require('@src/components/color');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Loggers = require('../../../src/lib/loggers');
+var Color = require('../../../src/components/color');
 var tinycolor = require('tinycolor2');
 
-var handleTickValueDefaults = require('@src/plots/cartesian/tick_value_defaults');
-var Cartesian = require('@src/plots/cartesian');
-var Axes = require('@src/plots/cartesian/axes');
-var Fx = require('@src/components/fx');
-var supplyLayoutDefaults = require('@src/plots/cartesian/layout_defaults');
-var numerical = require('@src/constants/numerical');
+var handleTickValueDefaults = require('../../../src/plots/cartesian/tick_value_defaults');
+var Cartesian = require('../../../src/plots/cartesian');
+var Axes = require('../../../src/plots/cartesian/axes');
+var Fx = require('../../../src/components/fx');
+var supplyLayoutDefaults = require('../../../src/plots/cartesian/layout_defaults');
+var numerical = require('../../../src/constants/numerical');
 var BADNUM = numerical.BADNUM;
 var ONEDAY = numerical.ONEDAY;
 var ONEWEEK = numerical.ONEWEEK;
@@ -1432,6 +1432,66 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis10.rangebreaks[0].enabled).toBe(false, 'reject false');
             expect(layoutOut.xaxis11.rangebreaks[0].enabled).toBe(false, 'reject true');
         });
+
+        it('should coerce autoshift and shift only if anchor is *free*', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {anchor: 'free'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.autoshift).toBe(false);
+            expect(layoutOut.yaxis.shift).toEqual(0);
+
+            layoutIn.yaxis.autoshift = true;
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.autoshift).toBe(true);
+            expect(layoutOut.yaxis.shift).toEqual(-3);
+
+            layoutIn.yaxis.anchor = 'x';
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.autoshift).toBeUndefined();
+            expect(layoutOut.yaxis.shift).toBeUndefined();
+        });
+
+        it('should set automargin to *true* when shift is *true*', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {autoshift: true, anchor: 'free'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.automargin).toBe(true);
+        });
+
+        it('should set automargin to *false* when shift is numeric', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {shift: 100, anchor: 'free'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.automargin).toBe(false);
+        });
+
+        it('should set default axis position if shift is *true* according to overlaying domain', function() {
+            layoutIn = {
+                xaxis: {domain: [0.2, 0.5]},
+                yaxis: {},
+                yaxis2: {autoshift: true, anchor: 'free', overlaying: 'y'}
+            };
+
+            layoutOut._subplots.cartesian.push('xy2');
+            layoutOut._subplots.yaxis.push('y2');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis2.position).toBe(0.2);
+
+            layoutIn.yaxis2.side = 'right';
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis2.position).toBe(0.5);
+
+            // Same should apply if shift is numeric
+            layoutIn.yaxis2.shift = 100;
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis2.position).toBe(0.5);
+        });
     });
 
     describe('autorange relayout', function() {
@@ -1581,7 +1641,7 @@ describe('Test axes', function() {
                     height: 300,
                     margin: {l: 100, r: 100, t: 100, b: 100},
                     xaxis: {constrain: 'domain'},
-                    yaxis: {constraintoward: 'top', 'scaleanchor': 'x'}
+                    yaxis: {constraintoward: 'top', scaleanchor: 'x'}
                 }
             )
             .then(function() {
@@ -3479,7 +3539,7 @@ describe('Test axes', function() {
             var ax = {
                 type: 'category',
                 _categories: ['a', 'b', 'c', 'd'],
-                _categoriesMap: {'a': 0, 'b': 1, 'c': 2, 'd': 3},
+                _categoriesMap: {a: 0, b: 1, c: 2, d: 3},
                 tickmode: 'array',
                 tickvals: ['a', 1, 1.5, 'c', 2.7, 3, 'e', 4, 5, -2],
                 ticktext: ['A!', 'B?', 'B->C'],
@@ -3512,7 +3572,7 @@ describe('Test axes', function() {
             var ax = {
                 type: 'category',
                 _categories: ['a', 'b', 'c', 'd'],
-                _categoriesMap: {'a': 0, 'b': 1, 'c': 2, 'd': 3},
+                _categoriesMap: {a: 0, b: 1, c: 2, d: 3},
                 tickmode: 'linear',
                 tick0: 0,
                 dtick: 1,
@@ -4373,6 +4433,31 @@ describe('Test axes', function() {
                 // N.B. no '.automargin.mirror'
                 expect(Object.keys(gd._fullLayout._pushmargin))
                     .toEqual(['x.automargin', 'y.automargin', 'base']);
+            })
+            .then(done, done.fail);
+        });
+        it('should respect axis title placement on relayout', function(done) {
+            function getPos(gd, sel) {
+                return d3Select(gd).select(sel).node().getBoundingClientRect();
+            }
+
+            // Tick position is < title position since 0 is at the top of the graph,
+            // rather than at the bottom. We're checking that the ticks and title don't overlap
+            function assertLayout() {
+                var titleTop = getPos(gd, '.xtitle').top;
+                var tickBottom = getPos(gd, '.xtick').bottom;
+                expect(tickBottom).toBeLessThan(titleTop + 2); // allow two pixels tolerance
+            }
+
+            var fig = require('../../image/mocks/automargin-zoom.json');
+            Plotly.newPlot(gd, fig)
+
+            .then(assertLayout)
+            .then(function() {
+                return Plotly.relayout(gd, {'xaxis.range': [6, 14]});
+            })
+            .then(function() {
+                assertLayout();
             })
             .then(done, done.fail);
         });
@@ -7486,7 +7571,7 @@ describe('Test Axes.getTickformat', function() {
 describe('Test tickformatstops:', function() {
     'use strict';
 
-    var mock = require('@mocks/tickformatstops.json');
+    var mock = require('../../image/mocks/tickformatstops.json');
 
     var mockCopy, gd;
 
@@ -7869,5 +7954,41 @@ describe('more matching axes tests', function() {
             }
         })
         .then(done, done.fail);
+    });
+});
+
+describe('shift tests', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    function checkLine(selector, position) {
+        var path = d3Select(gd).select(selector);
+        var pos = (path.split('d="M')[1]).split(',')[0];
+        expect(Number(pos)).toBeCloseTo(position, 2);
+    }
+
+    afterEach(destroyGraphDiv);
+
+    it('should set y-axis shifts correctly on first draw when shift=true', function() {
+        var fig = require('../../image/mocks/mult-yaxes-simple.json');
+        Plotly.newPlot(gd, fig).then(function() {
+            checkLine('path.xy3-y.crisp', 550);
+            checkLine('path.xy4-y.crisp', 691);
+            expect(gd._fullLayout.yaxis3._shift).toBeCloseTo(97, 2);
+            expect(gd._fullLayout.yaxis4._shift).toBeCloseTo(243, 2);
+        });
+    });
+
+    it('should set y-axis shifts correctly on first draw when shift=<numeric>', function() {
+        var fig = require('../../image/mocks/mult-yaxes-manual-shift.json');
+        Plotly.newPlot(gd, fig).then(function() {
+            checkLine('path.xy3-y.crisp', 97);
+            checkLine('path.xy4-y.crisp', 616);
+            expect(gd._fullLayout.yaxis3._shift).toBeCloseTo(-100, 2);
+            expect(gd._fullLayout.yaxis4._shift).toBeCloseTo(100, 2);
+        });
     });
 });

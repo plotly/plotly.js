@@ -10,6 +10,7 @@ var v7 = require('../../generated/regl-codegen/49e82bba439f1d9d441c17ba252d05640
 var v8 = require('../../generated/regl-codegen/6a5d6bd29c15cf7614221b94c3f384df47c2c46fbe4456e8c57b5cd14c84d923');
 var v9 = require('../../generated/regl-codegen/8902aff2b23b600f8103bcc84a8af2999d28795208aedadc2db06f921f9c7034');
 
+/* eslint-disable quote-props */
 module.exports = {
     '3e771157d23b4793771f65d83e6387262ed73d488209157f19a7fa027bddd71b': v0,
     'cbf700f001fff25b649fba9c37fa0dc6631c1cdee318ad49473d28ec10dcee81': v1,

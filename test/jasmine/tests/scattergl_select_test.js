@@ -1,5 +1,5 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -79,7 +79,7 @@ describe('Test gl2d lasso/select:', function() {
         });
     }
 
-    var mockFancy = require('@mocks/gl2d_14.json');
+    var mockFancy = require('../../image/mocks/gl2d_14.json');
     delete mockFancy.layout.xaxis.autorange;
     delete mockFancy.layout.yaxis.autorange;
     mockFancy.layout.xaxis.range = [-2.951309064136961, 2.0954721318818916];
@@ -186,7 +186,7 @@ describe('Test gl2d lasso/select:', function() {
     });
 
     it('@gl should work on trace with enabled transforms', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl2d_transforms.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl2d_transforms.json'));
         fig.layout.dragmode = 'select';
         fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
         fig.layout.height = 500;
@@ -208,7 +208,7 @@ describe('Test gl2d lasso/select:', function() {
     });
 
     it('@gl should work on gl text charts', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl2d_text_chart_basic.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl2d_text_chart_basic.json'));
         fig.layout.dragmode = 'select';
         fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
         fig.layout.height = 500;
@@ -290,7 +290,7 @@ describe('Test gl2d lasso/select:', function() {
     });
 
     it('@gl should work on gl text charts with array textfont.color', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl2d_text_chart_arrays.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl2d_text_chart_arrays.json'));
         fig.layout.dragmode = 'select';
         fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
         fig.layout.height = 500;

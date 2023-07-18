@@ -123,6 +123,29 @@ module.exports = {
     xhoverformat: axisHoverFormat('x'),
     yhoverformat: axisHoverFormat('y'),
 
+    offsetgroup: {
+        valType: 'string',
+        dflt: '',
+        editType: 'calc',
+        description: [
+            'Set several traces linked to the same position axis',
+            'or matching axes to the same',
+            'offsetgroup where bars of the same position coordinate will line up.'
+        ].join(' ')
+    },
+
+    alignmentgroup: {
+        valType: 'string',
+        dflt: '',
+        editType: 'calc',
+        description: [
+            'Set several traces linked to the same position axis',
+            'or matching axes to the same',
+            'alignmentgroup. This controls whether bars compute their positional',
+            'range dependently or independently.'
+        ].join(' ')
+    },
+
     stackgroup: {
         valType: 'string',
         dflt: '',
@@ -146,7 +169,9 @@ module.exports = {
         values: ['v', 'h'],
         editType: 'calc',
         description: [
-            'Only relevant when `stackgroup` is used, and only the first',
+            'Only relevant in the following cases:',
+            '1. when `scattermode` is set to *group*.',
+            '2. when `stackgroup` is used, and only the first',
             '`orientation` found in the `stackgroup` will be used - including',
             'if `visible` is *legendonly* but not if it is `false`. Sets the',
             'stacking direction. With *v* (*h*), the y (x) values of subsequent',
@@ -292,6 +317,18 @@ module.exports = {
             ].join(' ')
         },
         dash: extendFlat({}, dash, {editType: 'style'}),
+        backoff: { // we want to have a similar option for the start of the line
+            valType: 'number',
+            min: 0,
+            dflt: 'auto',
+            arrayOk: true,
+            editType: 'plot',
+            description: [
+                'Sets the line back off from the end point of the nth line segment (in px).',
+                'This option is useful e.g. to avoid overlap with arrowhead markers.',
+                'With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.'
+            ].join(' ')
+        },
         simplify: {
             valType: 'boolean',
             dflt: true,
@@ -388,6 +425,41 @@ module.exports = {
             editType: 'style',
             anim: true,
             description: 'Sets the marker opacity.'
+        },
+        angle: {
+            valType: 'angle',
+            dflt: 0,
+            arrayOk: true,
+            editType: 'plot',
+            anim: false, // TODO: possibly set to true in future
+            description: [
+                'Sets the marker angle in respect to `angleref`.'
+            ].join(' ')
+        },
+        angleref: {
+            valType: 'enumerated',
+            values: ['previous', 'up'],
+            dflt: 'up',
+            editType: 'plot',
+            anim: false,
+            description: [
+                'Sets the reference for marker angle.',
+                'With *previous*, angle 0 points along the line from the previous point to this one.',
+                'With *up*, angle 0 points toward the top of the screen.'
+            ].join(' ')
+        },
+        standoff: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            arrayOk: true,
+            editType: 'plot',
+            anim: true,
+            description: [
+                'Moves the marker away from the data point in the direction of `angle` (in px).',
+                'This can be useful for example if you have another marker at this',
+                'location and you want to point an arrowhead marker at it.'
+            ].join(' ')
         },
         size: {
             valType: 'number',

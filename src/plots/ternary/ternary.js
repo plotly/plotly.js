@@ -594,7 +594,7 @@ proto.initInteractions = function() {
             .attr('class', 'zoombox')
             .attr('transform', strTranslate(_this.x0, _this.y0))
             .style({
-                'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+                fill: lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
             })
             .attr('d', path0);

@@ -26,7 +26,14 @@
         "values": [
             10, 20, 30, 40, 50, 60, 70, 80
         ],
-        "marker": {"colors": ["", "", "#ccc"]},
+        "marker": {
+          "colors": ["", "", "#ccc"],
+          "pattern": {
+            "fillmode": "replace",
+            "shape": ".",
+            "size": 3
+          }
+        },
         "type": "pie",
         "domain": {"x": [0.5, 1]},
         "textinfo": "label+value+percent"

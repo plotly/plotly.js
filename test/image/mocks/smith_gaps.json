@@ -10,6 +10,7 @@
         0, 0.2, 0.4, null, 0.8, 1, null, 2, 3, null, 5
       ],
       "mode": "markers+lines",
+      "marker": { "size": 10, "symbol": "arrow-wide", "angleref": "previous" },
       "line": { "shape": "spline" }
     },
     {
@@ -23,6 +24,7 @@
         0, 0.2, 0.4, null, 0.8, 1, null, 2, 3, null, 5
       ],
       "mode": "markers+lines",
+      "marker": { "size": 20, "symbol": "arrow", "angleref": "previous", "angle": -90 },
       "line": { "shape": "spline" },
       "subplot": "smith2"
     }

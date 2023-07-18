@@ -1,10 +1,10 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Drawing = require('../../../src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -191,7 +191,7 @@ describe('Test gl plot side effects', function() {
     });
 
     it('@gl should be able to resize canvas properly', function(done) {
-        var _mock = Lib.extendDeep({}, require('@mocks/gl2d_10.json'));
+        var _mock = Lib.extendDeep({}, require('../../image/mocks/gl2d_10.json'));
         _mock.data[0].line.width = 5;
 
         _mock.layout.width = 600;
@@ -209,7 +209,7 @@ describe('Test gl plot side effects', function() {
     });
 
     it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
-        var _mock = Lib.extendDeep({}, require('@mocks/gl2d_12.json'));
+        var _mock = Lib.extendDeep({}, require('../../image/mocks/gl2d_12.json'));
 
         function _trigger(name) {
             var ev = new window.WebGLContextEvent('webglcontextlost');
@@ -331,7 +331,7 @@ describe('Test gl plot side effects', function() {
     });
 
     it('@gl should create two WebGL contexts per graph', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl2d_stacked_subplots.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl2d_stacked_subplots.json'));
 
         Plotly.newPlot(gd, fig).then(function() {
             var cnt = 0;
@@ -379,7 +379,7 @@ describe('Test gl plot side effects', function() {
 
 describe('Test gl2d plot interactions:', function() {
     var gd;
-    var mock = require('@mocks/gl2d_10.json');
+    var mock = require('../../image/mocks/gl2d_10.json');
 
     beforeEach(function() {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;

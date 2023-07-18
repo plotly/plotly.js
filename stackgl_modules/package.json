@@ -5,7 +5,7 @@
     ]
   },
   "scripts": {
-    "bundle-stackgl": "../node_modules/browserify/bin/cmd.js main.js --standalone stackgl | ../node_modules/derequire/bin/cmd.js --from require --to _glvis_ > index.js",
+    "bundle-stackgl": "webpack --mode production",
     "postshrinkwrap": "chttps ."
   },
   "dependencies": {
@@ -30,6 +30,7 @@
     "gl-surface3d": "^1.6.0",
     "glslify": "^7.1.1",
     "incremental-convex-hull": "plotly/incremental-convex-hull#v1.1.0",
+    "is-mobile": "^4.0.0",
     "matrix-camera-controller": "^2.1.4",
     "ndarray": "plotly/ndarray#v1.1.0",
     "ndarray-extract-contour": "plotly/ndarray-extract-contour#v1.1.0",

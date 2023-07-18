@@ -25,7 +25,7 @@ var newShapeHelpers = require('../shapes/draw_newshape/helpers');
 var handleEllipse = newShapeHelpers.handleEllipse;
 var readPaths = newShapeHelpers.readPaths;
 
-var newShapes = require('../shapes/draw_newshape/newshapes');
+var newShapes = require('../shapes/draw_newshape/newshapes').newShapes;
 
 var newSelections = require('./draw_newselection/newselections');
 var activateLastSelection = require('./draw').activateLastSelection;
@@ -112,21 +112,29 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         fullLayout.newshape :
         fullLayout.newselection;
 
+    if(isDrawMode) {
+        dragOptions.hasText = newStyle.label.text || newStyle.label.texttemplate;
+    }
+
+    var fillC = (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'rgba(0,0,0,0)';
+
+    var strokeC = newStyle.line.color || (
+        isCartesian ?
+            Color.contrast(gd._fullLayout.plot_bgcolor) :
+            '#7f7f7f' // non-cartesian subplot
+    );
+
     outlines.enter()
         .append('path')
         .attr('class', 'select-outline select-outline-' + plotinfo.id)
         .style({
             opacity: isDrawMode ? newStyle.opacity / 2 : 1,
-            fill: (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'none',
-            stroke: newStyle.line.color || (
-                isCartesian ?
-                    Color.contrast(gd._fullLayout.plot_bgcolor) :
-                    '#7f7f7f' // non-cartesian subplot
-            ),
             'stroke-dasharray': dashStyle(newStyle.line.dash, newStyle.line.width),
             'stroke-width': newStyle.line.width + 'px',
             'shape-rendering': 'crispEdges'
         })
+        .call(Color.stroke, strokeC)
+        .call(Color.fill, fillC)
         .attr('fill-rule', 'evenodd')
         .classed('cursor-move', isDrawMode ? true : false)
         .attr('transform', transform)
@@ -142,6 +150,16 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         .attr('transform', transform)
         .attr('d', 'M0,0Z');
 
+    // create & style group for text label
+    if(isDrawMode && dragOptions.hasText) {
+        var shapeGroup = zoomLayer.select('.label-temp');
+        if(shapeGroup.empty()) {
+            shapeGroup = zoomLayer.append('g')
+                .classed('label-temp', true)
+                .classed('select-outline', true)
+                .style({ opacity: 0.8 });
+        }
+    }
 
     var throttleID = fullLayout._uid + constants.SELECTID;
     var selection = [];
@@ -1155,13 +1173,13 @@ function reselect(gd, mayEmitSelected, selectionTesters, searchTraces, dragOptio
         if(_selectionTesters) {
             var _searchTraces = searchTraces;
             if(!hadSearchTraces) {
-                var _xaxis = getFromId(gd, _xRef, 'x');
-                var _yaxis = getFromId(gd, _yRef, 'y');
+                var _xA = getFromId(gd, _xRef, 'x');
+                var _yA = getFromId(gd, _yRef, 'y');
 
                 _searchTraces = determineSearchTraces(
                     gd,
-                    [_xaxis],
-                    [_yaxis],
+                    [_xA],
+                    [_yA],
                     subplot
                 );
 
@@ -1178,8 +1196,8 @@ function reselect(gd, mayEmitSelected, selectionTesters, searchTraces, dragOptio
                         cd0.t.xpx = [];
                         cd0.t.ypx = [];
                         for(var j = 0; j < len; j++) {
-                            cd0.t.xpx[j] = _xaxis.c2p(x[j]);
-                            cd0.t.ypx[j] = _yaxis.c2p(y[j]);
+                            cd0.t.xpx[j] = _xA.c2p(x[j]);
+                            cd0.t.ypx[j] = _yA.c2p(y[j]);
                         }
                     }
 

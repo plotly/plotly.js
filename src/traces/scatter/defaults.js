@@ -31,6 +31,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('yhoverformat');
 
     var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
+    if(
+        layout.scattermode === 'group' &&
+        traceOut.orientation === undefined
+    ) {
+        coerce('orientation', 'v');
+    }
 
     var defaultMode = !stackGroupOpts && (len < constants.PTS_LINESONLY) ?
         'lines+markers' : 'lines';
@@ -39,7 +45,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('mode', defaultMode);
 
     if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {backoff: true});
         handleLineShapeDefaults(traceIn, traceOut, coerce);
         coerce('connectgaps');
         coerce('line.simplify');

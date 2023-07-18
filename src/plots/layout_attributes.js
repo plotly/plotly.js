@@ -125,6 +125,21 @@ module.exports = {
                 'Padding is muted if the respective anchor value is *middle*/*center*.'
             ].join(' ')
         }),
+        automargin: {
+            valType: 'boolean',
+            dflt: false,
+            editType: 'plot',
+            description: [
+                'Determines whether the title can automatically push the figure margins.',
+                'If `yref=\'paper\'` then the margin will expand to ensure that the title doesn\’t',
+                'overlap with the edges of the container. If `yref=\'container\'` then the margins',
+                'will ensure that the title doesn\’t overlap with the plot area, tick labels,',
+                'and axis titles. If `automargin=true` and the margins need to be expanded,',
+                'then y will be set to a default 1 and yanchor will be set to an appropriate',
+                'default to ensure that minimal margin space is needed. Note that when `yref=\'paper\'`,',
+                'only 1 or 0 are allowed y values. Invalid values will be reset to the default 1.'
+            ].join(' ')
+        },
         editType: 'layoutstyle'
     },
     uniformtext: {
@@ -188,6 +203,20 @@ module.exports = {
         description: [
             'Sets the plot\'s height (in px).'
         ].join(' ')
+    },
+    minreducedwidth: {
+        valType: 'number',
+        min: 2,
+        dflt: 64,
+        editType: 'plot',
+        description: 'Minimum width of the plot with margin.automargin applied (in px)'
+    },
+    minreducedheight: {
+        valType: 'number',
+        min: 2,
+        dflt: 64,
+        editType: 'plot',
+        description: 'Minimum height of the plot with margin.automargin applied (in px)'
     },
     margin: {
         l: {

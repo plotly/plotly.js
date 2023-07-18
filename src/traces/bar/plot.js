@@ -79,6 +79,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
+    var isStatic = gd._context.staticPlot;
 
     if(!opts) {
         opts = {
@@ -233,7 +234,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
 
             var sel = transition(Lib.ensureSingle(bar, 'path'), fullLayout, opts, makeOnCompleteCallback);
             sel
-                .style('vector-effect', 'non-scaling-stroke')
+                .style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke')
                 .attr('d', (isNaN((x1 - x0) * (y1 - y0)) || (isBlank && gd._context.staticPlot)) ? 'M0,0Z' : 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
@@ -270,7 +271,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
         var textSelection = Lib.ensureSingle(bar, 'text')
             .text(text)
             .attr({
-                'class': 'bartext bartext-' + textPosition,
+                class: 'bartext bartext-' + textPosition,
                 'text-anchor': 'middle',
                 // prohibit tex interpretation until we can handle
                 // tex and regular text together
@@ -431,8 +432,8 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     recordMinTextSize(trace.type === 'histogram' ? 'bar' : trace.type, transform, fullLayout);
     calcBar.transform = transform;
 
-    transition(textSelection, fullLayout, opts, makeOnCompleteCallback)
-        .attr('transform', Lib.getTextTransform(transform));
+    var s = transition(textSelection, fullLayout, opts, makeOnCompleteCallback);
+    Lib.setTransormAndDisplay(s, transform);
 }
 
 function getRotateFromAngle(angle) {

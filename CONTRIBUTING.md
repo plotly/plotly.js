@@ -116,11 +116,7 @@ npm run pretest
 npm start
 ```
 
-This command bundles up the source files with source maps using
-[browserify](https://github.com/substack/node-browserify), starts a
-[watchify](https://github.com/substack/watchify) file watcher (making your
-dev plotly.js bundle update every time a source file is saved) and opens up a
-tab in your browser.
+This command bundles up the source files and opens up a tab in your browser.
 
 #### Step 6: Open up the console and start developing
 
