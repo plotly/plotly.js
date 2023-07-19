@@ -85,6 +85,7 @@ function drawOne(gd, opts) {
             if(!shape.showlegend) continue;
 
             var shapeLegend = {
+                _isShape: true,
                 _fullInput: shape,
                 index: shape._index,
                 name: shape.name || shape.label.text || ('shape ' + shape._index),

@@ -38,11 +38,28 @@ module.exports = function handleClick(g, gd, numClicks) {
     var legendItem = g.data()[0][0];
     if(legendItem.groupTitle && legendItem.noClick) return;
 
+    var i, j;
     var fullData = gd._fullData;
+    var allLegendItems = fullData.slice();
+    if(fullLayout.shapes) {
+        for(i = 0; i < fullLayout.shapes.length; i++) {
+            var shapeLegend = fullLayout.shapes[i]; // TODO: make a copy instead!
+            if(shapeLegend.visible) {
+                shapeLegend.index = i;
+                shapeLegend._fullInput = shapeLegend;
+                allLegendItems.push(shapeLegend);
+            }
+        }
+    }
+
     var fullTrace = legendItem.trace;
+    if(fullTrace._isShape) {
+        fullTrace = fullTrace._fullInput;
+    }
+
     var legendgroup = fullTrace.legendgroup;
 
-    var i, j, kcont, key, keys, val;
+    var kcont, key, keys, val;
     var dataUpdate = {};
     var dataIndices = [];
     var carrs = [];
@@ -81,7 +98,6 @@ module.exports = function handleClick(g, gd, numClicks) {
 
         var fullInput = fullTrace._fullInput;
         var isShape = fullInput._isShape;
-        if(isShape) fullInput = fullTrace;
         var index = fullInput.index;
 
         if(Registry.hasTransform(fullInput, 'groupby')) {
@@ -171,8 +187,8 @@ module.exports = function handleClick(g, gd, numClicks) {
         var traceIndicesInGroup = [];
         var tracei;
         if(hasLegendgroup) {
-            for(i = 0; i < fullData.length; i++) {
-                tracei = fullData[i];
+            for(i = 0; i < allLegendItems.length; i++) {
+                tracei = allLegendItems[i];
                 if(!tracei.visible) continue;
                 if(tracei.legendgroup === legendgroup) {
                     traceIndicesInGroup.push(i);
@@ -197,15 +213,9 @@ module.exports = function handleClick(g, gd, numClicks) {
 
             if(hasLegendgroup) {
                 if(toggleGroup) {
-                    var allLegendItems = fullData.concat(fullLayout.shapes || []);
                     for(i = 0; i < allLegendItems.length; i++) {
                         var item = allLegendItems[i];
                         if(item.visible !== false && item.legendgroup === legendgroup) {
-                            if(i > fullData.length) { // case of shapes
-                                item.index = i - fullData.length;
-                                item._isShape = true;
-                                item._fullInput = item;
-                            }
                             setVisibility(item, nextVisibility);
                         }
                     }
@@ -218,40 +228,43 @@ module.exports = function handleClick(g, gd, numClicks) {
         } else if(mode === 'toggleothers') {
             // Compute the clicked index. expandedIndex does what we want for expanded traces
             // but also culls hidden traces. That means we have some work to do.
-            var isClicked, isInGroup, notInLegend, otherState;
+            var isClicked, isInGroup, notInLegend, otherState, _item;
             var isIsolated = true;
-            for(i = 0; i < fullData.length; i++) {
-                isClicked = fullData[i] === fullTrace;
-                notInLegend = fullData[i].showlegend !== true;
+            for(i = 0; i < allLegendItems.length; i++) {
+                _item = allLegendItems[i];
+                isClicked = _item === fullTrace;
+                notInLegend = _item.showlegend !== true;
                 if(isClicked || notInLegend) continue;
 
-                isInGroup = (hasLegendgroup && fullData[i].legendgroup === legendgroup);
+                isInGroup = (hasLegendgroup && _item.legendgroup === legendgroup);
 
-                if(!isInGroup && fullData[i].visible === true && !Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
+                if(!isInGroup && _item.visible === true && !Registry.traceIs(_item, 'notLegendIsolatable')) {
                     isIsolated = false;
                     break;
                 }
             }
 
-            for(i = 0; i < fullData.length; i++) {
-                // False is sticky; we don't change it. Also ensure we don't change states of itmes in other legend
-                if(fullData[i].visible === false || fullData[i].legend !== thisLegend) continue;
+            for(i = 0; i < allLegendItems.length; i++) {
+                _item = allLegendItems[i];
 
-                if(Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
+                // False is sticky; we don't change it. Also ensure we don't change states of itmes in other legend
+                if(_item.visible === false || _item.legend !== thisLegend) continue;
+
+                if(Registry.traceIs(_item, 'notLegendIsolatable')) {
                     continue;
                 }
 
                 switch(fullTrace.visible) {
                     case 'legendonly':
-                        setVisibility(fullData[i], true);
+                        setVisibility(_item, true);
                         break;
                     case true:
                         otherState = isIsolated ? true : 'legendonly';
-                        isClicked = fullData[i] === fullTrace;
+                        isClicked = _item === fullTrace;
                         // N.B. consider traces that have a set legendgroup as toggleable
-                        notInLegend = (fullData[i].showlegend !== true && !fullData[i].legendgroup);
-                        isInGroup = isClicked || (hasLegendgroup && fullData[i].legendgroup === legendgroup);
-                        setVisibility(fullData[i], (isInGroup || notInLegend) ? true : otherState);
+                        notInLegend = (_item.showlegend !== true && !_item.legendgroup);
+                        isInGroup = isClicked || (hasLegendgroup && _item.legendgroup === legendgroup);
+                        setVisibility(_item, (isInGroup || notInLegend) ? true : otherState);
                         break;
                 }
             }

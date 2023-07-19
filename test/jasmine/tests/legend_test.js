@@ -1952,6 +1952,22 @@ describe('legend interaction', function() {
                     .then(assertVisibleShapes([false, 'legendonly', 'legendonly']))
                     .then(done, done.fail);
             });
+
+            it('double-clicking isolates a visible trace ', function(done) {
+                Promise.resolve()
+                    .then(click(0))
+                    .then(assertVisibleShapes([false, true, true]))
+                    .then(click(0, 2))
+                    .then(assertVisibleShapes([false, true, 'legendonly']))
+                    .then(done, done.fail);
+            });
+
+            it('double-clicking an isolated trace shows all non-hidden traces', function(done) {
+                Promise.resolve()
+                    .then(click(0, 2))
+                    .then(assertVisibleShapes([false, true, true]))
+                    .then(done, done.fail);
+            });
         });
 
         describe('legendgroup visibility', function() {
