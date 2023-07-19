@@ -698,10 +698,12 @@ lib.getTargetArray = function(trace, transformOpts) {
  * because extend-like algorithms are hella slow
  * obj2 is assumed to already be clean of these things (including no arrays)
  */
-lib.minExtend = function(obj1, obj2) {
+function minExtend(obj1, obj2, opt) {
     var objOut = {};
     if(typeof obj2 !== 'object') obj2 = {};
-    var arrayLen = 3;
+
+    var arrayLen = opt === 'pieLike' ? -1 : 3;
+
     var keys = Object.keys(obj1);
     var i, k, v;
 
@@ -711,14 +713,18 @@ lib.minExtend = function(obj1, obj2) {
         if(k.charAt(0) === '_' || typeof v === 'function') continue;
         else if(k === 'module') objOut[k] = v;
         else if(Array.isArray(v)) {
-            if(k === 'colorscale') {
+            if(k === 'colorscale' || arrayLen === -1) {
                 objOut[k] = v.slice();
             } else {
                 objOut[k] = v.slice(0, arrayLen);
             }
         } else if(lib.isTypedArray(v)) {
-            objOut[k] = v.subarray(0, arrayLen);
-        } else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
+            if(arrayLen === -1) {
+                objOut[k] = v.subarray();
+            } else {
+                objOut[k] = v.subarray(0, arrayLen);
+            }
+        } else if(v && (typeof v === 'object')) objOut[k] = minExtend(obj1[k], obj2[k], opt);
         else objOut[k] = v;
     }
 
@@ -732,7 +738,8 @@ lib.minExtend = function(obj1, obj2) {
     }
 
     return objOut;
-};
+}
+lib.minExtend = minExtend;
 
 lib.titleCase = function(s) {
     return s.charAt(0).toUpperCase() + s.substr(1);

@@ -123,6 +123,31 @@ describe('legend defaults', function() {
         expect(layoutOut.legend.traceorder).toEqual('reversed');
     });
 
+    it('should default traceorder to reversed for stack bar charts | multi-legend case', function() {
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'bar', visible: 'legendonly'},
+            {legend: 'legend2', type: 'bar', visible: 'legendonly'},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'}
+        ]);
+
+        layoutOut.legend2 = {};
+        layoutOut.legend3 = {};
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('normal');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+
+        layoutOut.barmode = 'stack';
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('reversed');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+    });
+
     it('should default traceorder to reversed for filled tonext scatter charts', function() {
         fullData = allShown([
             {type: 'scatter'},
@@ -148,6 +173,30 @@ describe('legend defaults', function() {
         expect(layoutOut.legend.traceorder).toEqual('grouped+reversed');
     });
 
+    it('should default traceorder to grouped when a group is present | multi-legend case', function() {
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'scatter', legendgroup: 'group'},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'}
+        ]);
+
+        layoutOut.legend2 = {};
+        layoutOut.legend3 = {};
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('grouped');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+
+        fullData[1].fill = 'tonextx';
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('reversed+grouped');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+    });
+
     it('does not consider invisible traces for traceorder default', function() {
         fullData = allShown([
             {type: 'bar', visible: false},
@@ -167,6 +216,38 @@ describe('legend defaults', function() {
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('normal');
+    });
+
+    it('does not consider invisible traces for traceorder default | multi-legend case', function() {
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'bar', visible: false},
+            {legend: 'legend2', type: 'bar', visible: false},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'},
+        ]);
+
+        layoutOut.legend2 = {};
+        layoutOut.legend3 = {};
+
+        layoutOut.barmode = 'stack';
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('normal');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'scatter', legendgroup: 'group', visible: false},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'}
+        ]);
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('normal');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
     });
 
     it('should default orientation to vertical', function() {
@@ -1782,6 +1863,62 @@ describe('legend interaction', function() {
             });
         });
 
+        describe('for regular traces in different legends', function() {
+            beforeEach(function(done) {
+                Plotly.newPlot(gd, [
+                    {x: [1, 2], y: [0, 1], visible: false},
+                    {x: [1, 2], y: [1, 2], visible: 'legendonly'},
+                    {x: [1, 2], y: [2, 3]},
+                    {x: [1, 2], y: [0, 1], yaxis: 'y2', legend: 'legend2', visible: false},
+                    {x: [1, 2], y: [1, 2], yaxis: 'y2', legend: 'legend2', visible: 'legendonly'},
+                    {x: [1, 2], y: [2, 3], yaxis: 'y2', legend: 'legend2'}
+                ], {
+                    yaxis: {
+                        domain: [0.55, 1]
+                    },
+                    yaxis2: {
+                        anchor: 'x',
+                        domain: [0, 0.45]
+                    },
+                    legend2: {
+                        y: 0.5
+                    }
+                }).then(done);
+            });
+
+            it('clicking once toggles legendonly -> true', function(done) {
+                Promise.resolve()
+                    .then(assertVisible([false, 'legendonly', true, false, 'legendonly', true]))
+                    .then(click(0))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+
+            it('clicking once toggles true -> legendonly', function(done) {
+                Promise.resolve()
+                    .then(assertVisible([false, 'legendonly', true, false, 'legendonly', true]))
+                    .then(click(1))
+                    .then(assertVisible([false, 'legendonly', 'legendonly', false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+
+            it('double-clicking isolates a visible trace ', function(done) {
+                Promise.resolve()
+                    .then(click(0))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, 'legendonly', false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+
+            it('double-clicking an isolated trace shows all non-hidden traces', function(done) {
+                Promise.resolve()
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+        });
+
         describe('legendgroup visibility', function() {
             beforeEach(function(done) {
                 Plotly.newPlot(gd, [{
@@ -2277,6 +2414,78 @@ describe('legend interaction', function() {
                     labels: ['A', 'B', 'C'],
                     values: [1, 2, 3]
                 }])
+                .then(run)
+                .then(done, done.fail);
+            }, 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+        });
+
+        describe('should honor *itemclick* and *itemdoubleclick* settings | case of pie in multiple legends', function() {
+            var _assert;
+
+            function run() {
+                return Promise.resolve()
+                    .then(click(0, 1)).then(_assert(['legendonly', true, true, true, true, true]))
+                    .then(click(0, 1)).then(_assert([true, true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, 'legendonly', 'legendonly', true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, true, true, true, true, true]))
+                    .then(function() {
+                        return Plotly.relayout(gd, {
+                            'legend.itemclick': false,
+                            'legend.itemdoubleclick': false
+                        });
+                    })
+                    .then(delay(100))
+                    .then(click(0, 1)).then(_assert([true, true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, true, true, true, true, true]))
+                    .then(function() {
+                        return Plotly.relayout(gd, {
+                            'legend.itemclick': 'toggleothers',
+                            'legend.itemdoubleclick': 'toggle'
+                        });
+                    })
+                    .then(delay(100))
+                    .then(click(0, 1)).then(_assert([true, 'legendonly', 'legendonly', true, true, true]))
+                    .then(click(0, 1)).then(_assert([true, true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert(['legendonly', true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, true, true, true, true, true]));
+            }
+
+            _assert = function(_exp) {
+                return function() {
+                    var exp = [];
+                    if(_exp[0] === 'legendonly') exp.push('F');
+                    if(_exp[1] === 'legendonly') exp.push('E');
+                    if(_exp[2] === 'legendonly') exp.push('D');
+                    if(_exp[3] === 'legendonly') exp.push('C');
+                    if(_exp[4] === 'legendonly') exp.push('B');
+                    if(_exp[5] === 'legendonly') exp.push('A');
+                    expect(gd._fullLayout.hiddenlabels || []).toEqual(exp);
+                };
+            };
+
+            it('- pie case | multiple legends', function(done) {
+                Plotly.newPlot(gd, [{
+                    legend: 'legend2',
+                    type: 'pie',
+                    labels: ['A', 'B', 'C'],
+                    values: [1, 2, 3],
+                    domain: {
+                        y: [0, 0.45]
+                    }
+                }, {
+                    type: 'pie',
+                    labels: ['D', 'E', 'F'],
+                    values: [1, 2, 3],
+                    domain: {
+                        y: [0.55, 1]
+                    }
+                }], {
+                    legend2: {
+                        y: 0.35
+                    },
+                    width: 500,
+                    height: 500
+                })
                 .then(run)
                 .then(done, done.fail);
             }, 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL);

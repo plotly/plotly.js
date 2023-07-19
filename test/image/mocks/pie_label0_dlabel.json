@@ -10,7 +10,14 @@
       ],
       "label0": 20,
       "dlabel": 5,
-      "type": "pie"
+      "type": "pie",
+      "marker": {
+        "pattern": {
+          "fillmode": "replace",
+          "shape": ".",
+          "size": 3
+        }
+      }
     }
   ],
   "layout": {

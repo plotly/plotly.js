@@ -128,7 +128,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
                 isTransitioning: gd._transitioning
             });
 
-        slicePath.call(styleOne, pt, trace, {
+        slicePath.call(styleOne, pt, trace, gd, {
             hovered: false
         });
 

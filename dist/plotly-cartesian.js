@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.23.2
+* plotly.js (cartesian) v2.24.3
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -5439,16 +5439,17 @@ drawing.getPatternAttr = function (mp, i, dflt) {
   }
   return mp;
 };
-drawing.pointStyle = function (s, trace, gd) {
+drawing.pointStyle = function (s, trace, gd, pt) {
   if (!s.size()) return;
   var fns = drawing.makePointStyleFns(trace);
   s.each(function (d) {
-    drawing.singlePointStyle(d, d3.select(this), trace, fns, gd);
+    drawing.singlePointStyle(d, d3.select(this), trace, fns, gd, pt);
   });
 };
-drawing.singlePointStyle = function (d, sel, trace, fns, gd) {
+drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
   var marker = trace.marker;
   var markerLine = marker.line;
+  if (pt && pt.i >= 0 && d.i === undefined) d.i = pt.i;
   sel.style('opacity', fns.selectedOpacityFn ? fns.selectedOpacityFn(d) : d.mo === undefined ? marker.opacity : d.mo);
   if (fns.ms2mrc) {
     var r;
@@ -5499,7 +5500,7 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd) {
     if ('mc' in d) {
       fillColor = d.mcc = fns.markerScale(d.mc);
     } else {
-      fillColor = marker.color || 'rgba(0,0,0,0)';
+      fillColor = marker.color || marker.colors || 'rgba(0,0,0,0)';
     }
     if (fns.selectedColorFn) {
       fillColor = fns.selectedColorFn(d);
@@ -5533,17 +5534,23 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd) {
       if (perPointGradient) gradientID += '-' + d.i;
       drawing.gradient(sel, gd, gradientID, gradientType, [[0, gradientColor], [1, fillColor]], 'fill');
     } else if (patternShape) {
+      var perPointPattern = false;
+      var fgcolor = markerPattern.fgcolor;
+      if (!fgcolor && pt && pt.color) {
+        fgcolor = pt.color;
+        perPointPattern = true;
+      }
+      var patternFGColor = drawing.getPatternAttr(fgcolor, d.i, pt && pt.color || null);
       var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
-      var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
       var patternFGOpacity = markerPattern.fgopacity;
       var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
       var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
-      var perPointPattern = d.mcc || Lib.isArrayOrTypedArray(markerPattern.shape) || Lib.isArrayOrTypedArray(markerPattern.bgcolor) || Lib.isArrayOrTypedArray(markerPattern.size) || Lib.isArrayOrTypedArray(markerPattern.solidity);
+      perPointPattern = perPointPattern || d.mcc || Lib.isArrayOrTypedArray(markerPattern.shape) || Lib.isArrayOrTypedArray(markerPattern.bgcolor) || Lib.isArrayOrTypedArray(markerPattern.fgcolor) || Lib.isArrayOrTypedArray(markerPattern.size) || Lib.isArrayOrTypedArray(markerPattern.solidity);
       var patternID = trace.uid;
       if (perPointPattern) patternID += '-' + d.i;
       drawing.pattern(sel, 'point', gd, patternID, patternShape, patternSize, patternSolidity, d.mcc, markerPattern.fillmode, patternBGColor, patternFGColor, patternFGOpacity);
     } else {
-      Color.fill(sel, fillColor);
+      Lib.isArrayOrTypedArray(fillColor) ? Color.fill(sel, fillColor[d.i]) : Color.fill(sel, fillColor);
     }
     if (lineWidth) {
       Color.stroke(sel, lineColor);
@@ -8816,7 +8823,7 @@ function createHoverText(hoverData, opts) {
       return data.hoverinfo !== 'none';
     });
     // Return early if nothing is hovered on
-    if (groupedHoverData.length === 0) return;
+    if (groupedHoverData.length === 0) return [];
 
     // mock legend
     var hoverlabel = fullLayout.hoverlabel;
@@ -11072,8 +11079,11 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
   var legendTraceCount = 0;
   var legendReallyHasATrace = false;
   var defaultOrder = 'normal';
-  for (var i = 0; i < fullData.length; i++) {
-    trace = fullData[i];
+  var allLegendItems = fullData.filter(function (d) {
+    return legendId === (d.legend || 'legend');
+  });
+  for (var i = 0; i < allLegendItems.length; i++) {
+    trace = allLegendItems[i];
     if (!trace.visible) continue;
 
     // Note that we explicitly count any trace that is either shown or
@@ -11103,10 +11113,10 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
       }) ? 'reversed+grouped' : 'grouped';
     }
   }
-  var showLegend = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'showlegend', legendReallyHasATrace && legendTraceCount > 1);
+  var showLegend = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'showlegend', legendReallyHasATrace && legendTraceCount > (legendId === 'legend' ? 1 : 0));
 
   // delete legend
-  if (showLegend === false) layoutOut.legend = undefined;
+  if (showLegend === false) layoutOut[legendId] = undefined;
   if (showLegend === false && !containerIn.uirevision) return;
   coerce('uirevision', layoutOut.uirevision);
   if (showLegend === false) return;
@@ -11170,7 +11180,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     }
   }, 'y');
   coerce('traceorder', defaultOrder);
-  if (helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
+  if (helpers.isGrouped(layoutOut[legendId])) coerce('tracegroupgap');
   coerce('entrywidth');
   coerce('entrywidthmode');
   coerce('itemsizing');
@@ -11516,7 +11526,7 @@ function drawOne(gd, opts) {
           }
         },
         clickFn: function (numClicks, e) {
-          var clickedTrace = groups.selectAll('g.traces').filter(function () {
+          var clickedTrace = layer.selectAll('g.traces').filter(function () {
             var bbox = this.getBoundingClientRect();
             return e.clientX >= bbox.left && e.clientX <= bbox.right && e.clientY >= bbox.top && e.clientY <= bbox.bottom;
           });
@@ -12142,8 +12152,9 @@ module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
 "use strict";
 
 
-var Lib = __webpack_require__(71828);
 var Registry = __webpack_require__(73972);
+var Lib = __webpack_require__(71828);
+var pushUnique = Lib.pushUnique;
 var SHOWISOLATETIP = true;
 module.exports = function handleClick(g, gd, numClicks) {
   var fullLayout = gd._fullLayout;
@@ -12219,20 +12230,38 @@ module.exports = function handleClick(g, gd, numClicks) {
       insertUpdate(fullInput.index, 'visible', nextVisibility);
     }
   }
+  var thisLegend = fullTrace.legend;
   if (Registry.traceIs(fullTrace, 'pie-like')) {
     var thisLabel = legendItem.label;
     var thisLabelIndex = hiddenSlices.indexOf(thisLabel);
     if (mode === 'toggle') {
       if (thisLabelIndex === -1) hiddenSlices.push(thisLabel);else hiddenSlices.splice(thisLabelIndex, 1);
     } else if (mode === 'toggleothers') {
-      hiddenSlices = [];
-      gd.calcdata[0].forEach(function (d) {
-        if (thisLabel !== d.label) {
-          hiddenSlices.push(d.label);
+      var changed = thisLabelIndex !== -1;
+      var unhideList = [];
+      for (i = 0; i < gd.calcdata.length; i++) {
+        var cdi = gd.calcdata[i];
+        for (j = 0; j < cdi.length; j++) {
+          var d = cdi[j];
+          var dLabel = d.label;
+
+          // ensure we toggle slices that are in this legend)
+          if (thisLegend === cdi[0].trace.legend) {
+            if (thisLabel !== dLabel) {
+              if (hiddenSlices.indexOf(dLabel) === -1) changed = true;
+              pushUnique(hiddenSlices, dLabel);
+              unhideList.push(dLabel);
+            }
+          }
         }
-      });
-      if (gd._fullLayout.hiddenlabels && gd._fullLayout.hiddenlabels.length === hiddenSlices.length && thisLabelIndex === -1) {
-        hiddenSlices = [];
+      }
+      if (!changed) {
+        for (var q = 0; q < unhideList.length; q++) {
+          var pos = hiddenSlices.indexOf(unhideList[q]);
+          if (pos !== -1) {
+            hiddenSlices.splice(pos, 1);
+          }
+        }
       }
     }
     Registry.call('_guiRelayout', gd, 'hiddenlabels', hiddenSlices);
@@ -12291,8 +12320,8 @@ module.exports = function handleClick(g, gd, numClicks) {
         }
       }
       for (i = 0; i < fullData.length; i++) {
-        // False is sticky; we don't change it.
-        if (fullData[i].visible === false) continue;
+        // False is sticky; we don't change it. Also ensure we don't change states of itmes in other legend
+        if (fullData[i].visible === false || fullData[i].legend !== thisLegend) continue;
         if (Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
           continue;
         }
@@ -12739,21 +12768,20 @@ module.exports = function style(s, gd, legend) {
     pts.enter().append('path').classed('legend' + desiredType, true).attr('d', 'M6,6H-6V-6H6Z').attr('transform', centerTransform);
     pts.exit().remove();
     if (pts.size()) {
-      var cont = (trace.marker || {}).line;
-      var lw = boundLineWidth(pieCastOption(cont.width, d0.pts), cont, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
+      var cont = trace.marker || {};
+      var lw = boundLineWidth(pieCastOption(cont.line.width, d0.pts), cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
+      var opt = 'pieLike';
       var tMod = Lib.minExtend(trace, {
         marker: {
           line: {
             width: lw
           }
         }
-      });
-      // since minExtend do not slice more than 3 items we need to patch line.color here
-      tMod.marker.line.color = cont.color;
+      }, opt);
       var d0Mod = Lib.minExtend(d0, {
         trace: tMod
-      });
-      stylePie(pts, d0Mod, tMod);
+      }, opt);
+      stylePie(pts, d0Mod, tMod, gd);
     }
   }
   function styleSpatial(d) {
@@ -25607,24 +25635,28 @@ lib.getTargetArray = function (trace, transformOpts) {
  * because extend-like algorithms are hella slow
  * obj2 is assumed to already be clean of these things (including no arrays)
  */
-lib.minExtend = function (obj1, obj2) {
+function minExtend(obj1, obj2, opt) {
   var objOut = {};
   if (typeof obj2 !== 'object') obj2 = {};
-  var arrayLen = 3;
+  var arrayLen = opt === 'pieLike' ? -1 : 3;
   var keys = Object.keys(obj1);
   var i, k, v;
   for (i = 0; i < keys.length; i++) {
     k = keys[i];
     v = obj1[k];
     if (k.charAt(0) === '_' || typeof v === 'function') continue;else if (k === 'module') objOut[k] = v;else if (Array.isArray(v)) {
-      if (k === 'colorscale') {
+      if (k === 'colorscale' || arrayLen === -1) {
         objOut[k] = v.slice();
       } else {
         objOut[k] = v.slice(0, arrayLen);
       }
     } else if (lib.isTypedArray(v)) {
-      objOut[k] = v.subarray(0, arrayLen);
-    } else if (v && typeof v === 'object') objOut[k] = lib.minExtend(obj1[k], obj2[k]);else objOut[k] = v;
+      if (arrayLen === -1) {
+        objOut[k] = v.subarray();
+      } else {
+        objOut[k] = v.subarray(0, arrayLen);
+      }
+    } else if (v && typeof v === 'object') objOut[k] = minExtend(obj1[k], obj2[k], opt);else objOut[k] = v;
   }
   keys = Object.keys(obj2);
   for (i = 0; i < keys.length; i++) {
@@ -25635,7 +25667,8 @@ lib.minExtend = function (obj1, obj2) {
     }
   }
   return objOut;
-};
+}
+lib.minExtend = minExtend;
 lib.titleCase = function (s) {
   return s.charAt(0).toUpperCase() + s.substr(1);
 };
@@ -49599,13 +49632,7 @@ plots.doAutoMargin = function (gd) {
     r: 0
   };
   var oldMargins = Lib.extendFlat({}, gs);
-  var margins = gd._fullLayout._reservedMargin;
-  for (var key in margins) {
-    for (var side in margins[key]) {
-      var val = margins[key][side];
-      reservedMargins[side] = Math.max(reservedMargins[side], val);
-    }
-  }
+
   // adjust margins for outside components
   // fullLayout.margin is the requested margin,
   // fullLayout._size has margins and plotsize after adjustment
@@ -49617,11 +49644,17 @@ plots.doAutoMargin = function (gd) {
   var pushMarginIds = fullLayout._pushmarginIds;
   var minreducedwidth = fullLayout.minreducedwidth;
   var minreducedheight = fullLayout.minreducedheight;
-  if (fullLayout.margin.autoexpand !== false) {
+  if (margin.autoexpand !== false) {
     for (var k in pushMargin) {
       if (!pushMarginIds[k]) delete pushMargin[k];
     }
-
+    var margins = gd._fullLayout._reservedMargin;
+    for (var key in margins) {
+      for (var side in margins[key]) {
+        var val = margins[key][side];
+        reservedMargins[side] = Math.max(reservedMargins[side], val);
+      }
+    }
     // fill in the requested margins
     pushMargin.base = {
       l: {
@@ -49642,9 +49675,22 @@ plots.doAutoMargin = function (gd) {
       }
     };
 
+    // make sure that the reservedMargin is the minimum needed
+    for (var s in reservedMargins) {
+      var autoMarginPush = 0;
+      for (var m in pushMargin) {
+        if (m !== 'base') {
+          if (isNumeric(pushMargin[m][s].size)) {
+            autoMarginPush = pushMargin[m][s].size > autoMarginPush ? pushMargin[m][s].size : autoMarginPush;
+          }
+        }
+      }
+      var extraMargin = Math.max(0, margin[s] - autoMarginPush);
+      reservedMargins[s] = Math.max(0, reservedMargins[s] - extraMargin);
+    }
+
     // now cycle through all the combinations of l and r
     // (and t and b) to find the required margins
-
     for (var k1 in pushMargin) {
       var pushleft = pushMargin[k1].l || {};
       var pushbottom = pushMargin[k1].b || {};
@@ -63639,6 +63685,7 @@ var colorAttrs = __webpack_require__(22399);
 var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
 var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .si);
 var extendFlat = (__webpack_require__(1426).extendFlat);
+var pattern = (__webpack_require__(79952)/* .pattern */ .u);
 var textFontAttrs = fontAttrs({
   editType: 'plot',
   arrayOk: true,
@@ -63686,6 +63733,7 @@ module.exports = {
       },
       editType: 'calc'
     },
+    pattern: pattern,
     editType: 'calc'
   },
   text: {
@@ -64006,6 +64054,7 @@ var Lib = __webpack_require__(71828);
 var attributes = __webpack_require__(34000);
 var handleDomainDefaults = (__webpack_require__(27670)/* .defaults */ .c);
 var handleText = (__webpack_require__(90769).handleText);
+var coercePattern = (__webpack_require__(71828).coercePattern);
 function handleLabelsAndValues(labels, values) {
   var hasLabels = Array.isArray(labels);
   var hasValues = Lib.isArrayOrTypedArray(values);
@@ -64028,6 +64077,19 @@ function handleLabelsAndValues(labels, values) {
     len: len
   };
 }
+function handleMarkerDefaults(traceIn, traceOut, layout, coerce, isPie) {
+  var lineWidth = coerce('marker.line.width');
+  if (lineWidth) {
+    coerce('marker.line.color', isPie ? undefined : layout.paper_bgcolor // case of funnelarea, sunburst, icicle, treemap
+    );
+  }
+
+  var markerColors = coerce('marker.colors');
+  coercePattern(coerce, 'marker.pattern', markerColors);
+  // push the marker colors (with s) to the foreground colors, to work around logic in the drawing pattern code on marker.color (without s, which is okay for a bar trace)
+  if (traceIn.marker && !traceOut.marker.pattern.fgcolor) traceOut.marker.pattern.fgcolor = traceIn.marker.colors;
+  if (!traceOut.marker.pattern.bgcolor) traceOut.marker.pattern.bgcolor = layout.paper_bgcolor;
+}
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
   function coerce(attr, dflt) {
     return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -64047,9 +64109,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     return;
   }
   traceOut._length = len;
-  var lineWidth = coerce('marker.line.width');
-  if (lineWidth) coerce('marker.line.color');
-  coerce('marker.colors');
+  handleMarkerDefaults(traceIn, traceOut, layout, coerce, true);
   coerce('scalegroup');
   // TODO: hole needs to be coerced to the same value within a scaleegroup
 
@@ -64093,6 +64153,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 }
 module.exports = {
   handleLabelsAndValues: handleLabelsAndValues,
+  handleMarkerDefaults: handleMarkerDefaults,
   supplyDefaults: supplyDefaults
 };
 
@@ -64139,6 +64200,25 @@ module.exports = function eventData(pt, trace) {
     delete out.i;
   }
   return out;
+};
+
+/***/ }),
+
+/***/ 22209:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var Drawing = __webpack_require__(91424);
+var Color = __webpack_require__(7901);
+module.exports = function fillOne(s, pt, trace, gd) {
+  var pattern = trace.marker.pattern;
+  if (pattern && pattern.shape) {
+    Drawing.pointStyle(s, trace, gd, pt);
+  } else {
+    Color.fill(s, pt.color);
+  }
 };
 
 /***/ }),
@@ -65226,7 +65306,7 @@ module.exports = function style(gd) {
       opacity: trace.opacity
     });
     traceSelection.selectAll('path.surface').each(function (pt) {
-      d3.select(this).call(styleOne, pt, trace);
+      d3.select(this).call(styleOne, pt, trace, gd);
     });
   });
 };
@@ -65241,11 +65321,12 @@ module.exports = function style(gd) {
 
 var Color = __webpack_require__(7901);
 var castOption = (__webpack_require__(53581).castOption);
-module.exports = function styleOne(s, pt, trace) {
+var fillOne = __webpack_require__(22209);
+module.exports = function styleOne(s, pt, trace, gd) {
   var line = trace.marker.line;
   var lineColor = castOption(line.color, pt.pts) || Color.defaultLine;
   var lineWidth = castOption(line.width, pt.pts) || 0;
-  s.style('stroke-width', lineWidth).call(Color.fill, pt.color).call(Color.stroke, lineColor);
+  s.call(fillOne, pt, trace, gd).style('stroke-width', lineWidth).call(Color.stroke, lineColor);
 };
 
 /***/ }),
@@ -70440,7 +70521,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.23.2';
+exports.version = '2.24.3';
 
 /***/ }),
 
@@ -70459,8 +70540,10 @@ exports.version = '2.23.2';
 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
@@ -81372,8 +81455,8 @@ if ($defineProperty) {
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "WU": function() { return /* reexport */ format; },
-  "FF": function() { return /* reexport */ locale; }
+  WU: function() { return /* reexport */ format; },
+  FF: function() { return /* reexport */ locale; }
 });
 
 // UNUSED EXPORTS: FormatSpecifier, formatDefaultLocale, formatPrefix, formatSpecifier, precisionFixed, precisionPrefix, precisionRound
@@ -81745,9 +81828,9 @@ function defaultLocale(definition) {
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "i$": function() { return /* reexport */ timeFormat; },
-  "Dq": function() { return /* reexport */ formatLocale; },
-  "g0": function() { return /* reexport */ utcFormat; }
+  i$: function() { return /* reexport */ timeFormat; },
+  Dq: function() { return /* reexport */ formatLocale; },
+  g0: function() { return /* reexport */ utcFormat; }
 });
 
 // UNUSED EXPORTS: isoFormat, isoParse, timeFormatDefaultLocale, timeParse, utcParse
@@ -81971,15 +82054,15 @@ function formatLocale(locale) {
         if (!("w" in d)) d.w = 1;
         if ("Z" in d) {
           week = utcDate(newDate(d.y, 0, 1)), day = week.getUTCDay();
-          week = day > 4 || day === 0 ? utcWeek/* utcMonday.ceil */.l6.ceil(week) : (0,utcWeek/* utcMonday */.l6)(week);
-          week = utcDay/* default.offset */.Z.offset(week, (d.V - 1) * 7);
+          week = day > 4 || day === 0 ? utcWeek/* utcMonday */.l6.ceil(week) : (0,utcWeek/* utcMonday */.l6)(week);
+          week = utcDay/* default */.Z.offset(week, (d.V - 1) * 7);
           d.y = week.getUTCFullYear();
           d.m = week.getUTCMonth();
           d.d = week.getUTCDate() + (d.w + 6) % 7;
         } else {
           week = localDate(newDate(d.y, 0, 1)), day = week.getDay();
-          week = day > 4 || day === 0 ? src_week/* monday.ceil */.wA.ceil(week) : (0,src_week/* monday */.wA)(week);
-          week = src_day/* default.offset */.Z.offset(week, (d.V - 1) * 7);
+          week = day > 4 || day === 0 ? src_week/* monday */.wA.ceil(week) : (0,src_week/* monday */.wA)(week);
+          week = src_day/* default */.Z.offset(week, (d.V - 1) * 7);
           d.y = week.getFullYear();
           d.m = week.getMonth();
           d.d = week.getDate() + (d.w + 6) % 7;
@@ -82274,7 +82357,7 @@ function formatHour12(d, p) {
 }
 
 function formatDayOfYear(d, p) {
-  return pad(1 + src_day/* default.count */.Z.count((0,year/* default */.Z)(d), d), p, 3);
+  return pad(1 + src_day/* default */.Z.count((0,year/* default */.Z)(d), d), p, 3);
 }
 
 function formatMilliseconds(d, p) {
@@ -82303,13 +82386,13 @@ function formatWeekdayNumberMonday(d) {
 }
 
 function formatWeekNumberSunday(d, p) {
-  return pad(src_week/* sunday.count */.OM.count((0,year/* default */.Z)(d) - 1, d), p, 2);
+  return pad(src_week/* sunday */.OM.count((0,year/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatWeekNumberISO(d, p) {
   var day = d.getDay();
-  d = (day >= 4 || day === 0) ? (0,src_week/* thursday */.bL)(d) : src_week/* thursday.ceil */.bL.ceil(d);
-  return pad(src_week/* thursday.count */.bL.count((0,year/* default */.Z)(d), d) + ((0,year/* default */.Z)(d).getDay() === 4), p, 2);
+  d = (day >= 4 || day === 0) ? (0,src_week/* thursday */.bL)(d) : src_week/* thursday */.bL.ceil(d);
+  return pad(src_week/* thursday */.bL.count((0,year/* default */.Z)(d), d) + ((0,year/* default */.Z)(d).getDay() === 4), p, 2);
 }
 
 function formatWeekdayNumberSunday(d) {
@@ -82317,7 +82400,7 @@ function formatWeekdayNumberSunday(d) {
 }
 
 function formatWeekNumberMonday(d, p) {
-  return pad(src_week/* monday.count */.wA.count((0,year/* default */.Z)(d) - 1, d), p, 2);
+  return pad(src_week/* monday */.wA.count((0,year/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatYear(d, p) {
@@ -82348,7 +82431,7 @@ function formatUTCHour12(d, p) {
 }
 
 function formatUTCDayOfYear(d, p) {
-  return pad(1 + utcDay/* default.count */.Z.count((0,utcYear/* default */.Z)(d), d), p, 3);
+  return pad(1 + utcDay/* default */.Z.count((0,utcYear/* default */.Z)(d), d), p, 3);
 }
 
 function formatUTCMilliseconds(d, p) {
@@ -82377,13 +82460,13 @@ function formatUTCWeekdayNumberMonday(d) {
 }
 
 function formatUTCWeekNumberSunday(d, p) {
-  return pad(utcWeek/* utcSunday.count */.Ox.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
+  return pad(utcWeek/* utcSunday */.Ox.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatUTCWeekNumberISO(d, p) {
   var day = d.getUTCDay();
-  d = (day >= 4 || day === 0) ? (0,utcWeek/* utcThursday */.hB)(d) : utcWeek/* utcThursday.ceil */.hB.ceil(d);
-  return pad(utcWeek/* utcThursday.count */.hB.count((0,utcYear/* default */.Z)(d), d) + ((0,utcYear/* default */.Z)(d).getUTCDay() === 4), p, 2);
+  d = (day >= 4 || day === 0) ? (0,utcWeek/* utcThursday */.hB)(d) : utcWeek/* utcThursday */.hB.ceil(d);
+  return pad(utcWeek/* utcThursday */.hB.count((0,utcYear/* default */.Z)(d), d) + ((0,utcYear/* default */.Z)(d).getUTCDay() === 4), p, 2);
 }
 
 function formatUTCWeekdayNumberSunday(d) {
@@ -82391,7 +82474,7 @@ function formatUTCWeekdayNumberSunday(d) {
 }
 
 function formatUTCWeekNumberMonday(d, p) {
-  return pad(utcWeek/* utcMonday.count */.l6.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
+  return pad(utcWeek/* utcMonday */.l6.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatUTCYear(d, p) {
@@ -82461,7 +82544,7 @@ function defaultLocale(definition) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "a": function() { return /* binding */ days; }
+/* harmony export */   a: function() { return /* binding */ days; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30052);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(54263);
@@ -82478,7 +82561,7 @@ var day = (0,_interval_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)(func
   return date.getDate() - 1;
 });
 
-/* harmony default export */ __webpack_exports__["Z"] = (day);
+/* harmony default export */ __webpack_exports__.Z = (day);
 var days = day.range;
 
 
@@ -82489,11 +82572,11 @@ var days = day.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "UD": function() { return /* binding */ durationDay; },
-/* harmony export */   "Y2": function() { return /* binding */ durationHour; },
-/* harmony export */   "Ym": function() { return /* binding */ durationSecond; },
-/* harmony export */   "iM": function() { return /* binding */ durationWeek; },
-/* harmony export */   "yB": function() { return /* binding */ durationMinute; }
+/* harmony export */   UD: function() { return /* binding */ durationDay; },
+/* harmony export */   Y2: function() { return /* binding */ durationHour; },
+/* harmony export */   Ym: function() { return /* binding */ durationSecond; },
+/* harmony export */   iM: function() { return /* binding */ durationWeek; },
+/* harmony export */   yB: function() { return /* binding */ durationMinute; }
 /* harmony export */ });
 var durationSecond = 1e3;
 var durationMinute = 6e4;
@@ -82513,67 +82596,67 @@ __webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "timeDay": function() { return /* reexport */ day/* default */.Z; },
-  "timeDays": function() { return /* reexport */ day/* days */.a; },
-  "timeFriday": function() { return /* reexport */ week/* friday */.mC; },
-  "timeFridays": function() { return /* reexport */ week/* fridays */.b$; },
-  "timeHour": function() { return /* reexport */ src_hour; },
-  "timeHours": function() { return /* reexport */ hours; },
-  "timeInterval": function() { return /* reexport */ interval/* default */.Z; },
-  "timeMillisecond": function() { return /* reexport */ src_millisecond; },
-  "timeMilliseconds": function() { return /* reexport */ milliseconds; },
-  "timeMinute": function() { return /* reexport */ src_minute; },
-  "timeMinutes": function() { return /* reexport */ minutes; },
-  "timeMonday": function() { return /* reexport */ week/* monday */.wA; },
-  "timeMondays": function() { return /* reexport */ week/* mondays */.bJ; },
-  "timeMonth": function() { return /* reexport */ src_month; },
-  "timeMonths": function() { return /* reexport */ months; },
-  "timeSaturday": function() { return /* reexport */ week/* saturday */.EY; },
-  "timeSaturdays": function() { return /* reexport */ week/* saturdays */.Ff; },
-  "timeSecond": function() { return /* reexport */ src_second; },
-  "timeSeconds": function() { return /* reexport */ seconds; },
-  "timeSunday": function() { return /* reexport */ week/* sunday */.OM; },
-  "timeSundays": function() { return /* reexport */ week/* sundays */.vm; },
-  "timeThursday": function() { return /* reexport */ week/* thursday */.bL; },
-  "timeThursdays": function() { return /* reexport */ week/* thursdays */.$t; },
-  "timeTuesday": function() { return /* reexport */ week/* tuesday */.sy; },
-  "timeTuesdays": function() { return /* reexport */ week/* tuesdays */.aU; },
-  "timeWednesday": function() { return /* reexport */ week/* wednesday */.zg; },
-  "timeWednesdays": function() { return /* reexport */ week/* wednesdays */.Ld; },
-  "timeWeek": function() { return /* reexport */ week/* sunday */.OM; },
-  "timeWeeks": function() { return /* reexport */ week/* sundays */.vm; },
-  "timeYear": function() { return /* reexport */ year/* default */.Z; },
-  "timeYears": function() { return /* reexport */ year/* years */.g; },
-  "utcDay": function() { return /* reexport */ utcDay/* default */.Z; },
-  "utcDays": function() { return /* reexport */ utcDay/* utcDays */.y; },
-  "utcFriday": function() { return /* reexport */ utcWeek/* utcFriday */.QQ; },
-  "utcFridays": function() { return /* reexport */ utcWeek/* utcFridays */.fz; },
-  "utcHour": function() { return /* reexport */ src_utcHour; },
-  "utcHours": function() { return /* reexport */ utcHours; },
-  "utcMillisecond": function() { return /* reexport */ src_millisecond; },
-  "utcMilliseconds": function() { return /* reexport */ milliseconds; },
-  "utcMinute": function() { return /* reexport */ src_utcMinute; },
-  "utcMinutes": function() { return /* reexport */ utcMinutes; },
-  "utcMonday": function() { return /* reexport */ utcWeek/* utcMonday */.l6; },
-  "utcMondays": function() { return /* reexport */ utcWeek/* utcMondays */.$3; },
-  "utcMonth": function() { return /* reexport */ src_utcMonth; },
-  "utcMonths": function() { return /* reexport */ utcMonths; },
-  "utcSaturday": function() { return /* reexport */ utcWeek/* utcSaturday */.g4; },
-  "utcSaturdays": function() { return /* reexport */ utcWeek/* utcSaturdays */.Q_; },
-  "utcSecond": function() { return /* reexport */ src_second; },
-  "utcSeconds": function() { return /* reexport */ seconds; },
-  "utcSunday": function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
-  "utcSundays": function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
-  "utcThursday": function() { return /* reexport */ utcWeek/* utcThursday */.hB; },
-  "utcThursdays": function() { return /* reexport */ utcWeek/* utcThursdays */.xj; },
-  "utcTuesday": function() { return /* reexport */ utcWeek/* utcTuesday */.J1; },
-  "utcTuesdays": function() { return /* reexport */ utcWeek/* utcTuesdays */.DK; },
-  "utcWednesday": function() { return /* reexport */ utcWeek/* utcWednesday */.b3; },
-  "utcWednesdays": function() { return /* reexport */ utcWeek/* utcWednesdays */.uy; },
-  "utcWeek": function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
-  "utcWeeks": function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
-  "utcYear": function() { return /* reexport */ utcYear/* default */.Z; },
-  "utcYears": function() { return /* reexport */ utcYear/* utcYears */.D; }
+  timeDay: function() { return /* reexport */ day/* default */.Z; },
+  timeDays: function() { return /* reexport */ day/* days */.a; },
+  timeFriday: function() { return /* reexport */ week/* friday */.mC; },
+  timeFridays: function() { return /* reexport */ week/* fridays */.b$; },
+  timeHour: function() { return /* reexport */ src_hour; },
+  timeHours: function() { return /* reexport */ hours; },
+  timeInterval: function() { return /* reexport */ interval/* default */.Z; },
+  timeMillisecond: function() { return /* reexport */ src_millisecond; },
+  timeMilliseconds: function() { return /* reexport */ milliseconds; },
+  timeMinute: function() { return /* reexport */ src_minute; },
+  timeMinutes: function() { return /* reexport */ minutes; },
+  timeMonday: function() { return /* reexport */ week/* monday */.wA; },
+  timeMondays: function() { return /* reexport */ week/* mondays */.bJ; },
+  timeMonth: function() { return /* reexport */ src_month; },
+  timeMonths: function() { return /* reexport */ months; },
+  timeSaturday: function() { return /* reexport */ week/* saturday */.EY; },
+  timeSaturdays: function() { return /* reexport */ week/* saturdays */.Ff; },
+  timeSecond: function() { return /* reexport */ src_second; },
+  timeSeconds: function() { return /* reexport */ seconds; },
+  timeSunday: function() { return /* reexport */ week/* sunday */.OM; },
+  timeSundays: function() { return /* reexport */ week/* sundays */.vm; },
+  timeThursday: function() { return /* reexport */ week/* thursday */.bL; },
+  timeThursdays: function() { return /* reexport */ week/* thursdays */.$t; },
+  timeTuesday: function() { return /* reexport */ week/* tuesday */.sy; },
+  timeTuesdays: function() { return /* reexport */ week/* tuesdays */.aU; },
+  timeWednesday: function() { return /* reexport */ week/* wednesday */.zg; },
+  timeWednesdays: function() { return /* reexport */ week/* wednesdays */.Ld; },
+  timeWeek: function() { return /* reexport */ week/* sunday */.OM; },
+  timeWeeks: function() { return /* reexport */ week/* sundays */.vm; },
+  timeYear: function() { return /* reexport */ year/* default */.Z; },
+  timeYears: function() { return /* reexport */ year/* years */.g; },
+  utcDay: function() { return /* reexport */ utcDay/* default */.Z; },
+  utcDays: function() { return /* reexport */ utcDay/* utcDays */.y; },
+  utcFriday: function() { return /* reexport */ utcWeek/* utcFriday */.QQ; },
+  utcFridays: function() { return /* reexport */ utcWeek/* utcFridays */.fz; },
+  utcHour: function() { return /* reexport */ src_utcHour; },
+  utcHours: function() { return /* reexport */ utcHours; },
+  utcMillisecond: function() { return /* reexport */ src_millisecond; },
+  utcMilliseconds: function() { return /* reexport */ milliseconds; },
+  utcMinute: function() { return /* reexport */ src_utcMinute; },
+  utcMinutes: function() { return /* reexport */ utcMinutes; },
+  utcMonday: function() { return /* reexport */ utcWeek/* utcMonday */.l6; },
+  utcMondays: function() { return /* reexport */ utcWeek/* utcMondays */.$3; },
+  utcMonth: function() { return /* reexport */ src_utcMonth; },
+  utcMonths: function() { return /* reexport */ utcMonths; },
+  utcSaturday: function() { return /* reexport */ utcWeek/* utcSaturday */.g4; },
+  utcSaturdays: function() { return /* reexport */ utcWeek/* utcSaturdays */.Q_; },
+  utcSecond: function() { return /* reexport */ src_second; },
+  utcSeconds: function() { return /* reexport */ seconds; },
+  utcSunday: function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
+  utcSundays: function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
+  utcThursday: function() { return /* reexport */ utcWeek/* utcThursday */.hB; },
+  utcThursdays: function() { return /* reexport */ utcWeek/* utcThursdays */.xj; },
+  utcTuesday: function() { return /* reexport */ utcWeek/* utcTuesday */.J1; },
+  utcTuesdays: function() { return /* reexport */ utcWeek/* utcTuesdays */.DK; },
+  utcWednesday: function() { return /* reexport */ utcWeek/* utcWednesday */.b3; },
+  utcWednesdays: function() { return /* reexport */ utcWeek/* utcWednesdays */.uy; },
+  utcWeek: function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
+  utcWeeks: function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
+  utcYear: function() { return /* reexport */ utcYear/* default */.Z; },
+  utcYears: function() { return /* reexport */ utcYear/* utcYears */.D; }
 });
 
 // EXTERNAL MODULE: ./node_modules/d3-time/src/interval.js
@@ -82778,7 +82861,7 @@ var utcYear = __webpack_require__(79791);
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* binding */ newInterval; }
+/* harmony export */   Z: function() { return /* binding */ newInterval; }
 /* harmony export */ });
 var t0 = new Date,
     t1 = new Date;
@@ -82859,7 +82942,7 @@ function newInterval(floori, offseti, count, field) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "y": function() { return /* binding */ utcDays; }
+/* harmony export */   y: function() { return /* binding */ utcDays; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30052);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(54263);
@@ -82876,7 +82959,7 @@ var utcDay = (0,_interval_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)(f
   return date.getUTCDate() - 1;
 });
 
-/* harmony default export */ __webpack_exports__["Z"] = (utcDay);
+/* harmony default export */ __webpack_exports__.Z = (utcDay);
 var utcDays = utcDay.range;
 
 
@@ -82887,20 +82970,20 @@ var utcDays = utcDay.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "$3": function() { return /* binding */ utcMondays; },
-/* harmony export */   "DK": function() { return /* binding */ utcTuesdays; },
-/* harmony export */   "J1": function() { return /* binding */ utcTuesday; },
-/* harmony export */   "Ox": function() { return /* binding */ utcSunday; },
-/* harmony export */   "QQ": function() { return /* binding */ utcFriday; },
-/* harmony export */   "Q_": function() { return /* binding */ utcSaturdays; },
-/* harmony export */   "SU": function() { return /* binding */ utcSundays; },
-/* harmony export */   "b3": function() { return /* binding */ utcWednesday; },
-/* harmony export */   "fz": function() { return /* binding */ utcFridays; },
-/* harmony export */   "g4": function() { return /* binding */ utcSaturday; },
-/* harmony export */   "hB": function() { return /* binding */ utcThursday; },
-/* harmony export */   "l6": function() { return /* binding */ utcMonday; },
-/* harmony export */   "uy": function() { return /* binding */ utcWednesdays; },
-/* harmony export */   "xj": function() { return /* binding */ utcThursdays; }
+/* harmony export */   $3: function() { return /* binding */ utcMondays; },
+/* harmony export */   DK: function() { return /* binding */ utcTuesdays; },
+/* harmony export */   J1: function() { return /* binding */ utcTuesday; },
+/* harmony export */   Ox: function() { return /* binding */ utcSunday; },
+/* harmony export */   QQ: function() { return /* binding */ utcFriday; },
+/* harmony export */   Q_: function() { return /* binding */ utcSaturdays; },
+/* harmony export */   SU: function() { return /* binding */ utcSundays; },
+/* harmony export */   b3: function() { return /* binding */ utcWednesday; },
+/* harmony export */   fz: function() { return /* binding */ utcFridays; },
+/* harmony export */   g4: function() { return /* binding */ utcSaturday; },
+/* harmony export */   hB: function() { return /* binding */ utcThursday; },
+/* harmony export */   l6: function() { return /* binding */ utcMonday; },
+/* harmony export */   uy: function() { return /* binding */ utcWednesdays; },
+/* harmony export */   xj: function() { return /* binding */ utcThursdays; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30052);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(54263);
@@ -82942,7 +83025,7 @@ var utcSaturdays = utcSaturday.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "D": function() { return /* binding */ utcYears; }
+/* harmony export */   D: function() { return /* binding */ utcYears; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30052);
 
@@ -82969,7 +83052,7 @@ utcYear.every = function(k) {
   });
 };
 
-/* harmony default export */ __webpack_exports__["Z"] = (utcYear);
+/* harmony default export */ __webpack_exports__.Z = (utcYear);
 var utcYears = utcYear.range;
 
 
@@ -82980,20 +83063,20 @@ var utcYears = utcYear.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "$t": function() { return /* binding */ thursdays; },
-/* harmony export */   "EY": function() { return /* binding */ saturday; },
-/* harmony export */   "Ff": function() { return /* binding */ saturdays; },
-/* harmony export */   "Ld": function() { return /* binding */ wednesdays; },
-/* harmony export */   "OM": function() { return /* binding */ sunday; },
-/* harmony export */   "aU": function() { return /* binding */ tuesdays; },
-/* harmony export */   "b$": function() { return /* binding */ fridays; },
-/* harmony export */   "bJ": function() { return /* binding */ mondays; },
-/* harmony export */   "bL": function() { return /* binding */ thursday; },
-/* harmony export */   "mC": function() { return /* binding */ friday; },
-/* harmony export */   "sy": function() { return /* binding */ tuesday; },
-/* harmony export */   "vm": function() { return /* binding */ sundays; },
-/* harmony export */   "wA": function() { return /* binding */ monday; },
-/* harmony export */   "zg": function() { return /* binding */ wednesday; }
+/* harmony export */   $t: function() { return /* binding */ thursdays; },
+/* harmony export */   EY: function() { return /* binding */ saturday; },
+/* harmony export */   Ff: function() { return /* binding */ saturdays; },
+/* harmony export */   Ld: function() { return /* binding */ wednesdays; },
+/* harmony export */   OM: function() { return /* binding */ sunday; },
+/* harmony export */   aU: function() { return /* binding */ tuesdays; },
+/* harmony export */   b$: function() { return /* binding */ fridays; },
+/* harmony export */   bJ: function() { return /* binding */ mondays; },
+/* harmony export */   bL: function() { return /* binding */ thursday; },
+/* harmony export */   mC: function() { return /* binding */ friday; },
+/* harmony export */   sy: function() { return /* binding */ tuesday; },
+/* harmony export */   vm: function() { return /* binding */ sundays; },
+/* harmony export */   wA: function() { return /* binding */ monday; },
+/* harmony export */   zg: function() { return /* binding */ wednesday; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30052);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(54263);
@@ -83035,7 +83118,7 @@ var saturdays = saturday.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "g": function() { return /* binding */ years; }
+/* harmony export */   g: function() { return /* binding */ years; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30052);
 
@@ -83062,7 +83145,7 @@ year.every = function(k) {
   });
 };
 
-/* harmony default export */ __webpack_exports__["Z"] = (year);
+/* harmony default export */ __webpack_exports__.Z = (year);
 var years = year.range;
 
 

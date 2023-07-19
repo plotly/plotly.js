@@ -12989,7 +12989,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -14538,7 +14538,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -15866,7 +15866,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -17216,7 +17216,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -18736,7 +18736,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -19618,7 +19618,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -20639,7 +20639,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -21689,7 +21689,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -22915,7 +22915,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -24187,7 +24187,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -25170,7 +25170,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -25713,7 +25713,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -27168,7 +27168,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -27216,6 +27216,99 @@
       },
       "widthsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `width`.",
+       "editType": "none",
+       "valType": "string"
+      }
+     },
+     "pattern": {
+      "bgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of background pattern fill. Defaults to a `marker.color` background when `fillmode` is *overlay*. Otherwise, defaults to a transparent background.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "bgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `bgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "description": "Sets the pattern within the marker.",
+      "editType": "style",
+      "fgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of foreground pattern fill. Defaults to a `marker.color` background when `fillmode` is *replace*. Otherwise, defaults to dark grey or white to increase contrast with the `bgcolor`.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "fgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `fgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "fgopacity": {
+       "description": "Sets the opacity of the foreground pattern fill. Defaults to a 0.5 when `fillmode` is *overlay*. Otherwise, defaults to 1.",
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "fillmode": {
+       "description": "Determines whether `marker.color` should be used as a default to `bgcolor` or a `fgcolor`.",
+       "dflt": "replace",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "replace",
+        "overlay"
+       ]
+      },
+      "role": "object",
+      "shape": {
+       "arrayOk": true,
+       "description": "Sets the shape of the pattern fill. By default, no pattern is used for filling the area.",
+       "dflt": "",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "",
+        "/",
+        "\\",
+        "x",
+        "-",
+        "|",
+        "+",
+        "."
+       ]
+      },
+      "shapesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `shape`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "size": {
+       "arrayOk": true,
+       "description": "Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern.",
+       "dflt": 8,
+       "editType": "style",
+       "min": 0,
+       "valType": "number"
+      },
+      "sizesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "solidity": {
+       "arrayOk": true,
+       "description": "Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern.",
+       "dflt": 0.3,
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "soliditysrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `solidity`.",
        "editType": "none",
        "valType": "string"
       }
@@ -28272,7 +28365,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -29431,7 +29524,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -30230,7 +30323,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -32238,7 +32331,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -33532,7 +33625,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -34295,7 +34388,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -34912,6 +35005,99 @@
       },
       "widthsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `width`.",
+       "editType": "none",
+       "valType": "string"
+      }
+     },
+     "pattern": {
+      "bgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of background pattern fill. Defaults to a `marker.color` background when `fillmode` is *overlay*. Otherwise, defaults to a transparent background.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "bgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `bgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "description": "Sets the pattern within the marker.",
+      "editType": "style",
+      "fgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of foreground pattern fill. Defaults to a `marker.color` background when `fillmode` is *replace*. Otherwise, defaults to dark grey or white to increase contrast with the `bgcolor`.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "fgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `fgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "fgopacity": {
+       "description": "Sets the opacity of the foreground pattern fill. Defaults to a 0.5 when `fillmode` is *overlay*. Otherwise, defaults to 1.",
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "fillmode": {
+       "description": "Determines whether `marker.color` should be used as a default to `bgcolor` or a `fgcolor`.",
+       "dflt": "replace",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "replace",
+        "overlay"
+       ]
+      },
+      "role": "object",
+      "shape": {
+       "arrayOk": true,
+       "description": "Sets the shape of the pattern fill. By default, no pattern is used for filling the area.",
+       "dflt": "",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "",
+        "/",
+        "\\",
+        "x",
+        "-",
+        "|",
+        "+",
+        "."
+       ]
+      },
+      "shapesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `shape`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "size": {
+       "arrayOk": true,
+       "description": "Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern.",
+       "dflt": 8,
+       "editType": "style",
+       "min": 0,
+       "valType": "number"
+      },
+      "sizesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "solidity": {
+       "arrayOk": true,
+       "description": "Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern.",
+       "dflt": 0.3,
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "soliditysrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `solidity`.",
        "editType": "none",
        "valType": "string"
       }
@@ -35538,7 +35724,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -36415,7 +36601,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -37476,7 +37662,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -38787,7 +38973,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -39421,7 +39607,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -40911,7 +41097,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -42140,7 +42326,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -42188,6 +42374,99 @@
       },
       "widthsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `width`.",
+       "editType": "none",
+       "valType": "string"
+      }
+     },
+     "pattern": {
+      "bgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of background pattern fill. Defaults to a `marker.color` background when `fillmode` is *overlay*. Otherwise, defaults to a transparent background.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "bgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `bgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "description": "Sets the pattern within the marker.",
+      "editType": "style",
+      "fgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of foreground pattern fill. Defaults to a `marker.color` background when `fillmode` is *replace*. Otherwise, defaults to dark grey or white to increase contrast with the `bgcolor`.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "fgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `fgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "fgopacity": {
+       "description": "Sets the opacity of the foreground pattern fill. Defaults to a 0.5 when `fillmode` is *overlay*. Otherwise, defaults to 1.",
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "fillmode": {
+       "description": "Determines whether `marker.color` should be used as a default to `bgcolor` or a `fgcolor`.",
+       "dflt": "replace",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "replace",
+        "overlay"
+       ]
+      },
+      "role": "object",
+      "shape": {
+       "arrayOk": true,
+       "description": "Sets the shape of the pattern fill. By default, no pattern is used for filling the area.",
+       "dflt": "",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "",
+        "/",
+        "\\",
+        "x",
+        "-",
+        "|",
+        "+",
+        "."
+       ]
+      },
+      "shapesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `shape`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "size": {
+       "arrayOk": true,
+       "description": "Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern.",
+       "dflt": 8,
+       "editType": "style",
+       "min": 0,
+       "valType": "number"
+      },
+      "sizesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "solidity": {
+       "arrayOk": true,
+       "description": "Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern.",
+       "dflt": 0.3,
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "soliditysrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `solidity`.",
        "editType": "none",
        "valType": "string"
       }
@@ -42742,7 +43021,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -43212,7 +43491,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -44426,7 +44705,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -46805,7 +47084,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -48844,7 +49123,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -50759,7 +51038,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -52841,7 +53120,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -54866,7 +55145,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -56065,7 +56344,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -58002,7 +58281,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -59870,7 +60149,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -61805,7 +62084,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -63742,7 +64021,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -65974,7 +66253,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -66686,7 +66965,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -67303,6 +67582,99 @@
       },
       "widthsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `width`.",
+       "editType": "none",
+       "valType": "string"
+      }
+     },
+     "pattern": {
+      "bgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of background pattern fill. Defaults to a `marker.color` background when `fillmode` is *overlay*. Otherwise, defaults to a transparent background.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "bgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `bgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "description": "Sets the pattern within the marker.",
+      "editType": "style",
+      "fgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of foreground pattern fill. Defaults to a `marker.color` background when `fillmode` is *replace*. Otherwise, defaults to dark grey or white to increase contrast with the `bgcolor`.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "fgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `fgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "fgopacity": {
+       "description": "Sets the opacity of the foreground pattern fill. Defaults to a 0.5 when `fillmode` is *overlay*. Otherwise, defaults to 1.",
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "fillmode": {
+       "description": "Determines whether `marker.color` should be used as a default to `bgcolor` or a `fgcolor`.",
+       "dflt": "replace",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "replace",
+        "overlay"
+       ]
+      },
+      "role": "object",
+      "shape": {
+       "arrayOk": true,
+       "description": "Sets the shape of the pattern fill. By default, no pattern is used for filling the area.",
+       "dflt": "",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "",
+        "/",
+        "\\",
+        "x",
+        "-",
+        "|",
+        "+",
+        "."
+       ]
+      },
+      "shapesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `shape`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "size": {
+       "arrayOk": true,
+       "description": "Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern.",
+       "dflt": 8,
+       "editType": "style",
+       "min": 0,
+       "valType": "number"
+      },
+      "sizesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "solidity": {
+       "arrayOk": true,
+       "description": "Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern.",
+       "dflt": 0.3,
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "soliditysrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `solidity`.",
        "editType": "none",
        "valType": "string"
       }
@@ -68658,7 +69030,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -69563,7 +69935,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -69981,7 +70353,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -70645,6 +71017,99 @@
        "editType": "plot",
        "min": 0,
        "valType": "number"
+      }
+     },
+     "pattern": {
+      "bgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of background pattern fill. Defaults to a `marker.color` background when `fillmode` is *overlay*. Otherwise, defaults to a transparent background.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "bgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `bgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "description": "Sets the pattern within the marker.",
+      "editType": "style",
+      "fgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of foreground pattern fill. Defaults to a `marker.color` background when `fillmode` is *replace*. Otherwise, defaults to dark grey or white to increase contrast with the `bgcolor`.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "fgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `fgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "fgopacity": {
+       "description": "Sets the opacity of the foreground pattern fill. Defaults to a 0.5 when `fillmode` is *overlay*. Otherwise, defaults to 1.",
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "fillmode": {
+       "description": "Determines whether `marker.color` should be used as a default to `bgcolor` or a `fgcolor`.",
+       "dflt": "replace",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "replace",
+        "overlay"
+       ]
+      },
+      "role": "object",
+      "shape": {
+       "arrayOk": true,
+       "description": "Sets the shape of the pattern fill. By default, no pattern is used for filling the area.",
+       "dflt": "",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "",
+        "/",
+        "\\",
+        "x",
+        "-",
+        "|",
+        "+",
+        "."
+       ]
+      },
+      "shapesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `shape`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "size": {
+       "arrayOk": true,
+       "description": "Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern.",
+       "dflt": 8,
+       "editType": "style",
+       "min": 0,
+       "valType": "number"
+      },
+      "sizesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "solidity": {
+       "arrayOk": true,
+       "description": "Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern.",
+       "dflt": 0.3,
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "soliditysrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `solidity`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "reversescale": {
@@ -71339,7 +71804,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -73176,7 +73641,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -74027,7 +74492,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"

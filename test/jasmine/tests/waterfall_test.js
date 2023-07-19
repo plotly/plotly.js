@@ -1528,6 +1528,37 @@ describe('waterfall hover', function() {
             .then(done, done.fail);
         });
 
+        it('should provide delta hovertemplate on totals similar to hovertext', function(done) {
+            gd = createGraphDiv();
+
+            function _hover() {
+                var evt = { xpx: 400, ypx: 100 };
+                Fx.hover('graph', evt, 'xy');
+            }
+
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'waterfall',
+                    y: [ 10, -4, null ],
+                    measure: [ '', '', 'total' ],
+                    texttemplate: '%{delta}',
+                    hovertemplate: '%{delta}',
+                }],
+                layout: {
+                    width: 600,
+                    height: 400
+                }
+            })
+            .then(_hover)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '6',
+                    name: 'trace 0'
+                });
+            })
+            .then(done, done.fail);
+        });
+
         it('should format numbers - round hover precision', function(done) {
             gd = createGraphDiv();
 
