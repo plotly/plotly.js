@@ -41,9 +41,9 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     var legendReallyHasATrace = false;
     var defaultOrder = 'normal';
 
-    var shapes = (layoutOut.shapes || []).filter(function(d) { return d.showlegend; });
+    var shapesWithLegend = (layoutOut.shapes || []).filter(function(d) { return d.showlegend; });
 
-    var allLegendItems = fullData.concat(shapes).filter(function(d) {
+    var allLegendItems = fullData.concat(shapesWithLegend).filter(function(d) {
         return legendId === (d.legend || 'legend');
     });
 

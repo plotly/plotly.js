@@ -38,19 +38,9 @@ module.exports = function handleClick(g, gd, numClicks) {
     var legendItem = g.data()[0][0];
     if(legendItem.groupTitle && legendItem.noClick) return;
 
-    var i, j;
     var fullData = gd._fullData;
-    var allLegendItems = fullData.slice();
-    if(fullLayout.shapes) {
-        for(i = 0; i < fullLayout.shapes.length; i++) {
-            var shapeLegend = fullLayout.shapes[i]; // TODO: make a copy instead!
-            if(shapeLegend.visible) {
-                shapeLegend.index = i;
-                shapeLegend._fullInput = shapeLegend;
-                allLegendItems.push(shapeLegend);
-            }
-        }
-    }
+    var shapesWithLegend = (fullLayout.shapes || []).filter(function(d) { return d.showlegend; });
+    var allLegendItems = fullData.concat(shapesWithLegend);
 
     var fullTrace = legendItem.trace;
     if(fullTrace._isShape) {
@@ -59,7 +49,7 @@ module.exports = function handleClick(g, gd, numClicks) {
 
     var legendgroup = fullTrace.legendgroup;
 
-    var kcont, key, keys, val;
+    var i, j, kcont, key, keys, val;
     var dataUpdate = {};
     var dataIndices = [];
     var carrs = [];
@@ -96,9 +86,10 @@ module.exports = function handleClick(g, gd, numClicks) {
     function setVisibility(fullTrace, visibility) {
         if(legendItem.groupTitle && !toggleGroup) return;
 
-        var fullInput = fullTrace._fullInput;
+        var fullInput = fullTrace._fullInput || fullTrace;
         var isShape = fullInput._isShape;
         var index = fullInput.index;
+        if(index === undefined) index = fullInput._index;
 
         if(Registry.hasTransform(fullInput, 'groupby')) {
             var kcont = carrs[index];
