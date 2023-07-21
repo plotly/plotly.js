@@ -475,7 +475,7 @@ var configAttributes = {
 
     chart2music: {
         valType: 'boolean',
-        dflt: true,
+        dflt: false,
         description: 'Whether or not to enable chart2music keyboard and sound accessibility',
     },
 
