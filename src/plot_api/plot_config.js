@@ -471,7 +471,13 @@ var configAttributes = {
             'instead of MM/DD/YYYY). Currently `grouping` and `currency` are ignored',
             'for our automatic number formatting, but can be used in custom formats.'
         ].join(' ')
-    }
+    },
+
+    accessible: {
+        valType: 'boolean',
+        dflt: true,
+        description: 'Whether or not to enable chart2music keyboard and sound accessibility',
+    },
 };
 
 var dfltConfig = {};

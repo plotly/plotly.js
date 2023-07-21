@@ -26,6 +26,7 @@ var manageArrays = require('./manage_arrays');
 var helpers = require('./helpers');
 var subroutines = require('./subroutines');
 var editTypes = require('./edit_types');
+var accessibility = require('./accessibility');
 
 var AX_NAME_PATTERN = require('../plots/cartesian/constants').AX_NAME_PATTERN;
 
@@ -376,9 +377,12 @@ function _doPlot(gd, data, layout, config) {
         // calculated. Would be much better to separate margin calculations from
         // component drawing - see https://github.com/plotly/plotly.js/issues/2704
         Plots.doAutoMargin,
-        saveRangeInitialForInsideTickLabels,
-        Plots.previousPromises
+        saveRangeInitialForInsideTickLabels
     );
+
+    if(gd._context.accessible) seq.push(accessibility.enable);
+
+    seq.push(Plots.previousPromises);
 
     function saveRangeInitialForInsideTickLabels(gd) {
         if(gd._fullLayout._insideTickLabelsAutorange) {
