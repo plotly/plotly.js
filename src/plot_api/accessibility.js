@@ -8,16 +8,18 @@ export function enable(gd) {
     const c2mData = {};
 
     var labels = [];
+    
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
+        Lib.warn(trace);
         if(trace.type === 'scatter') {
             var traceData = [];
             for(var p = 0; p < trace.y.length; p++) {
                 traceData.push(
                     {
-                        x: trace.x[p],
-                        y: trace.y[p],
-                        label: trace.text[p]
+                        x: trace.x ? trace.x[p] : p,
+                        y: trace.y[p] ?? none,
+                        label: trace.text[p] ?? p
                     })
             }
             c2mData[trace.name ?? i] = traceData;
@@ -33,7 +35,7 @@ export function enable(gd) {
     closed_captions.id = 'cc';
     closed_captions.className = 'closed_captions';
     gd.appendChild(closed_captions);
-    
+
     c2mChart({
         title: fullLayout.title.text ?? "",
         type: "line",
