@@ -24,7 +24,7 @@ export function enable(gd) {
             labels.push(trace.name ?? i);
         }
         else {
-            Lib.warn('Accessibility not implemented for trace type: ' + trace.type);
+            Lib.error('Accessibility not implemented for trace type: ' + trace.type);
             return;
         }
     }
@@ -33,9 +33,7 @@ export function enable(gd) {
     closed_captions.id = 'cc';
     closed_captions.className = 'closed_captions';
     gd.appendChild(closed_captions);
-
-    Lib.warn(fullLayout);
-    Lib.warn(fullData);
+    
     c2mChart({
         title: fullLayout.title.text ?? "",
         type: "line",
