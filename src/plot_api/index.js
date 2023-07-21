@@ -24,6 +24,8 @@ exports.deleteFrames = main.deleteFrames;
 exports.animate = main.animate;
 exports.setPlotConfig = main.setPlotConfig;
 
+exports.eraseActiveShape = require('../components/shapes/draw').eraseActiveShape;
+
 exports.toImage = require('./to_image');
 exports.validate = require('./validate');
 exports.downloadImage = require('../snapshot/download');
