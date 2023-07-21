@@ -20,6 +20,7 @@ export function enable(gd) {
     
     var closed_captions = document.createElement('div');
     closed_captions.id = 'cc';
+    closed_captions.className = 'closed_captions';
     gd.appendChild(closed_captions);
 
     c2mChart({
@@ -42,7 +43,9 @@ export function enable(gd) {
                 curveNumber: slice, 
                 pointNumber: index
             }])
-            }
-        }
+            },
+            ...gd._context.chart2musicOptions
+        },
+        info: gd._context.chart2musicInfo
     });      
 };

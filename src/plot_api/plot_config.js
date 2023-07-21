@@ -473,10 +473,22 @@ var configAttributes = {
         ].join(' ')
     },
 
-    accessible: {
+    chart2music: {
         valType: 'boolean',
-        dflt: true,
+        dflt: false,
         description: 'Whether or not to enable chart2music keyboard and sound accessibility',
+    },
+
+    chart2musicOptions: {
+        valType: 'any',
+        dflt: {},
+        description: 'Additional options to pass to the chart2music API. See https://www.chart2music.com/docs/API/Config',
+    },
+
+    chart2musicInfo: {
+        valType: 'any',
+        dflt: {},
+        description: 'Info to pass to the chart2music API. See https://www.chart2music.com/docs/API/Config',
     },
 };
 

@@ -380,7 +380,7 @@ function _doPlot(gd, data, layout, config) {
         saveRangeInitialForInsideTickLabels
     );
 
-    if(gd._context.accessible) seq.push(accessibility.enable);
+    if(gd._context.chart2music) seq.push(accessibility.enable);
 
     seq.push(Plots.previousPromises);
 
