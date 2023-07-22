@@ -4,8 +4,7 @@
     "eslint:recommended"
   ],
   "parserOptions": {
-    "ecmaVersion": 5,
-    "sourceType": "module"
+    "ecmaVersion": 5
   },
   "env": {
     "commonjs": true
