@@ -1,4 +1,5 @@
 import {c2mChart} from "chart2music";
+var Lib = require('../lib');
 
 export function enable(gd) {
 
@@ -18,7 +19,7 @@ export function enable(gd) {
                 traceData.push(
                     {
                         x: trace.x ? trace.x[p] : p,
-                        y: trace.y[p] ?? none,
+                        y: trace.y[p],
                         label: trace.text[p] ?? p
                     })
             }
