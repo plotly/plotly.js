@@ -1,6 +1,6 @@
 "use strict";
-// import c2mChart from "chart2music";
-var c2mChart = require("chart2music");
+import c2mChart from "chart2music";
+// var c2mChart = require("chart2music");
 
 export function enable (gd) {
 
@@ -11,19 +11,20 @@ export function enable (gd) {
 
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
-        if(trace.type === 'scatter') {
+        var {type, x = [], y = [], name = i, text = []} = trace;
+        if(type === 'scatter') {
             var traceData = [];
             if ('y' in trace) {
-                for(var p = 0; p < trace.y.length; p++) {
+                for(var p = 0; p < y.length; p++) {
                     traceData.push(
                         {
-                            x: trace.x ? trace.x[p] : p,
-                            y: trace.y[p],
-                            label: trace.text[p] ?? p
+                            x: x.length > 0 ? x[p] : p,
+                            y: y[p],
+                            label: text[p] ?? p
                         })
                 }
-                c2mData[trace.name ?? i] = traceData;
-                labels.push(trace.name ?? i);
+                c2mData[name] = traceData;
+                labels.push(name);
             }
         }
         else {
