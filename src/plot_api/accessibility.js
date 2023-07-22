@@ -1,33 +1,32 @@
-import {c2mChart} from "chart2music";
-var Lib = require('../lib');
+"use strict";
+import c2mChart from "chart2music";
 
-export function enable(gd) {
-
-    var fullLayout = gd._fullLayout;
-    var fullData = gd._fullData;
+export function enable (gd) {
 
     const c2mData = {};
-
-    var labels = [];
+    const labels = [];
+    
+    const fullData = gd._fullData;
     
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
-        Lib.warn(trace);
         if(trace.type === 'scatter') {
             var traceData = [];
-            for(var p = 0; p < trace.y.length; p++) {
-                traceData.push(
-                    {
-                        x: trace.x ? trace.x[p] : p,
-                        y: trace.y[p],
-                        label: trace.text[p] ?? p
-                    })
+            if ('y' in trace) {
+                for(var p = 0; p < trace.y.length; p++) {
+                    traceData.push(
+                        {
+                            x: trace.x ? trace.x[p] : p,
+                            y: trace.y[p],
+                            label: trace.text[p] ?? p
+                        })
+                }
+                c2mData[trace.name ?? i] = traceData;
+                labels.push(trace.name ?? i);
             }
-            c2mData[trace.name ?? i] = traceData;
-            labels.push(trace.name ?? i);
         }
         else {
-            Lib.error('Accessibility not implemented for trace type: ' + trace.type);
+            // 'Accessibility not implemented for trace type: ' + trace.type
             return;
         }
     }
@@ -37,15 +36,21 @@ export function enable(gd) {
     closed_captions.className = 'closed_captions';
     gd.appendChild(closed_captions);
 
+    const {
+        title: {text: title_text = ''},
+        xaxis: {title: {text: xaxis_text = ''}},
+        yaxis: {title: {text: yaxis_text = ''}},
+    } = gd._fullLayout;
+    
     c2mChart({
-        title: fullLayout.title.text ?? "",
+        title: title_text,
         type: "line",
         axes: {
             x: {
-            label: fullLayout.xaxis.title.text ?? ""
+            label: xaxis_text
             },
             y: {
-            label: fullLayout.yaxis.title.text ?? ""
+            label: yaxis_text
             }
         },
         element: gd,
