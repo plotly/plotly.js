@@ -1,5 +1,6 @@
 "use strict";
-import c2mChart from "chart2music";
+// import c2mChart from "chart2music";
+var c2mChart = require("chart2music");
 
 export function enable (gd) {
 
@@ -7,7 +8,7 @@ export function enable (gd) {
     const labels = [];
     
     const fullData = gd._fullData;
-    
+
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
         if(trace.type === 'scatter') {
@@ -37,9 +38,9 @@ export function enable (gd) {
     gd.appendChild(closed_captions);
 
     const {
-        title: {text: title_text = ''},
-        xaxis: {title: {text: xaxis_text = ''}},
-        yaxis: {title: {text: yaxis_text = ''}},
+        title: {text: title_text = ''} = {},
+        xaxis: {title: {text: xaxis_text = ''} = {}} = {},
+        yaxis: {title: {text: yaxis_text = ''} = {}} = {},
     } = gd._fullLayout;
     
     c2mChart({
