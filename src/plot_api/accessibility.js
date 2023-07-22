@@ -1,6 +1,5 @@
 "use strict";
 import c2mChart from "chart2music";
-// var c2mChart = require("chart2music");
 
 export function enable (gd) {
 
@@ -10,7 +9,7 @@ export function enable (gd) {
     const fullData = gd._fullData;
 
     for(var i = 0; i < fullData.length; i++) {
-        var trace = fullData[i];
+        var trace = fullData[i] ?? {};
         var {type, x = [], y = [], name = i, text = []} = trace;
         if(type === 'scatter') {
             var traceData = [];
