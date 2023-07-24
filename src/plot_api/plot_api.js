@@ -883,10 +883,11 @@ function concatTypedArray(arr0, arr1) {
  * @param {Object|HTMLDivElement} gd The graph div
  * @param {Object} update The key:array map of target attributes to extend
  * @param {Number|Number[]} indices The locations of traces to be extended
- * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening.
+ * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening
+ * @param {Boolean} [redrawGraph] Redraw the graph after adding traces
  *
  */
-function extendTraces(gd, update, indices, maxPoints) {
+function extendTraces(gd, update, indices, maxPoints, redrawGraph = true) {
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -937,14 +938,14 @@ function extendTraces(gd, update, indices, maxPoints) {
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = exports.redraw(gd);
+    var promise = redrawGraph ? exports.redraw(gd) : gd;
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     Queue.add(gd, exports.prependTraces, undoArgs, extendTraces, arguments);
 
     return promise;
 }
 
-function prependTraces(gd, update, indices, maxPoints) {
+function prependTraces(gd, update, indices, maxPoints, redrawGraph = true) {
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -994,7 +995,7 @@ function prependTraces(gd, update, indices, maxPoints) {
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = exports.redraw(gd);
+    var promise = redrawGraph ? exports.redraw(gd) : gd;
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     Queue.add(gd, exports.extendTraces, undoArgs, prependTraces, arguments);
 
