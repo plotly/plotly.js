@@ -669,7 +669,7 @@ function eraseActiveShape(gd) {
 
         delete gd._fullLayout._activeShapeIndex;
 
-        Registry.call('_guiRelayout', gd, {
+        return Registry.call('_guiRelayout', gd, {
             shapes: list
         });
     }
