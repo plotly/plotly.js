@@ -887,7 +887,8 @@ function concatTypedArray(arr0, arr1) {
  * @param {Boolean} [redrawGraph] Redraw the graph after adding traces
  *
  */
-function extendTraces(gd, update, indices, maxPoints, redrawGraph = true) {
+function extendTraces(gd, update, indices, maxPoints, redrawGraph) {
+    redrawGraph = typeof redrawGraph !== "undefined" ? redrawGraph : true;
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -945,7 +946,8 @@ function extendTraces(gd, update, indices, maxPoints, redrawGraph = true) {
     return promise;
 }
 
-function prependTraces(gd, update, indices, maxPoints, redrawGraph = true) {
+function prependTraces(gd, update, indices, maxPoints, redrawGraph) {
+    redrawGraph = typeof redrawGraph !== "undefined" ? redrawGraph : true;
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
