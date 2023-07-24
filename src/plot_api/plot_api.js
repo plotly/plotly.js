@@ -888,7 +888,6 @@ function concatTypedArray(arr0, arr1) {
  *
  */
 function extendTraces(gd, update, indices, maxPoints, redrawGraph) {
-    redrawGraph = typeof redrawGraph !== "undefined" ? redrawGraph : true;
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -939,7 +938,7 @@ function extendTraces(gd, update, indices, maxPoints, redrawGraph) {
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = redrawGraph ? exports.redraw(gd) : gd;
+    var promise = typeof redrawGraph === 'undefined' || redrawGraph ? exports.redraw(gd) : gd;
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     Queue.add(gd, exports.prependTraces, undoArgs, extendTraces, arguments);
 
@@ -947,7 +946,6 @@ function extendTraces(gd, update, indices, maxPoints, redrawGraph) {
 }
 
 function prependTraces(gd, update, indices, maxPoints, redrawGraph) {
-    redrawGraph = typeof redrawGraph !== "undefined" ? redrawGraph : true;
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -997,7 +995,7 @@ function prependTraces(gd, update, indices, maxPoints, redrawGraph) {
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = redrawGraph ? exports.redraw(gd) : gd;
+    var promise = typeof redrawGraph === 'undefined' || redrawGraph ? exports.redraw(gd) : gd;
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     Queue.add(gd, exports.extendTraces, undoArgs, prependTraces, arguments);
 
