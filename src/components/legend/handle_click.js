@@ -289,10 +289,10 @@ module.exports = function handleClick(g, gd, numClicks) {
             }
         }
 
-        Registry.call('_guiRestyle', gd, dataUpdate, dataIndices).then(function() {
-            if(shapesUpdated) {
-                Registry.call('_guiRelayout', gd, {shapes: updatedShapes});
-            }
-        });
+        if(shapesUpdated) {
+            Registry.call('_guiUpdate', gd, dataUpdate, {shapes: updatedShapes}, dataIndices);
+        } else {
+            Registry.call('_guiRestyle', gd, dataUpdate, dataIndices);
+        }
     }
 };
