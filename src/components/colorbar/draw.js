@@ -513,7 +513,7 @@ function drawColorBar(g, opts, gd) {
             .data(fillLevels);
         fills.enter().append('rect')
             .classed(cn.cbfill, true)
-            .style('stroke', 'none');
+            .attr('style', '');
         fills.exit().remove();
 
         var zBounds = zrange

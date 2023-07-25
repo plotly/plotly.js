@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "2.24.2",
+  "version": "2.24.3",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -122,7 +122,7 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.22.5",
-    "@babel/preset-env": "^7.22.6",
+    "@babel/preset-env": "^7.22.9",
     "amdefine": "^1.0.1",
     "babel": "^6.23.0",
     "babel-loader": "^9.1.2",
@@ -133,7 +133,7 @@
     "chttps": "^1.0.6",
     "deep-equal": "^2.2.1",
     "ecstatic": "^4.1.4",
-    "eslint": "^8.44.0",
+    "eslint": "^8.45.0",
     "extra-iterable": "^2.5.22",
     "falafel": "^2.2.5",
     "fs-extra": "^10.1.0",
@@ -175,7 +175,7 @@
     "through2": "^4.0.2",
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
-    "webpack": "^5.88.1",
+    "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
   }
 }

@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v2.24.2
+* plotly.js (finance) v2.24.3
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -11059,8 +11059,11 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
   var legendTraceCount = 0;
   var legendReallyHasATrace = false;
   var defaultOrder = 'normal';
-  for (var i = 0; i < fullData.length; i++) {
-    trace = fullData[i];
+  var allLegendItems = fullData.filter(function (d) {
+    return legendId === (d.legend || 'legend');
+  });
+  for (var i = 0; i < allLegendItems.length; i++) {
+    trace = allLegendItems[i];
     if (!trace.visible) continue;
 
     // Note that we explicitly count any trace that is either shown or
@@ -11090,10 +11093,10 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
       }) ? 'reversed+grouped' : 'grouped';
     }
   }
-  var showLegend = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'showlegend', legendReallyHasATrace && legendTraceCount > 1);
+  var showLegend = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'showlegend', legendReallyHasATrace && legendTraceCount > (legendId === 'legend' ? 1 : 0));
 
   // delete legend
-  if (showLegend === false) layoutOut.legend = undefined;
+  if (showLegend === false) layoutOut[legendId] = undefined;
   if (showLegend === false && !containerIn.uirevision) return;
   coerce('uirevision', layoutOut.uirevision);
   if (showLegend === false) return;
@@ -11157,7 +11160,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     }
   }, 'y');
   coerce('traceorder', defaultOrder);
-  if (helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
+  if (helpers.isGrouped(layoutOut[legendId])) coerce('tracegroupgap');
   coerce('entrywidth');
   coerce('entrywidthmode');
   coerce('itemsizing');
@@ -12129,8 +12132,9 @@ module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
 "use strict";
 
 
-var Lib = __webpack_require__(1828);
 var Registry = __webpack_require__(3972);
+var Lib = __webpack_require__(1828);
+var pushUnique = Lib.pushUnique;
 var SHOWISOLATETIP = true;
 module.exports = function handleClick(g, gd, numClicks) {
   var fullLayout = gd._fullLayout;
@@ -12206,20 +12210,38 @@ module.exports = function handleClick(g, gd, numClicks) {
       insertUpdate(fullInput.index, 'visible', nextVisibility);
     }
   }
+  var thisLegend = fullTrace.legend;
   if (Registry.traceIs(fullTrace, 'pie-like')) {
     var thisLabel = legendItem.label;
     var thisLabelIndex = hiddenSlices.indexOf(thisLabel);
     if (mode === 'toggle') {
       if (thisLabelIndex === -1) hiddenSlices.push(thisLabel);else hiddenSlices.splice(thisLabelIndex, 1);
     } else if (mode === 'toggleothers') {
-      hiddenSlices = [];
-      gd.calcdata[0].forEach(function (d) {
-        if (thisLabel !== d.label) {
-          hiddenSlices.push(d.label);
+      var changed = thisLabelIndex !== -1;
+      var unhideList = [];
+      for (i = 0; i < gd.calcdata.length; i++) {
+        var cdi = gd.calcdata[i];
+        for (j = 0; j < cdi.length; j++) {
+          var d = cdi[j];
+          var dLabel = d.label;
+
+          // ensure we toggle slices that are in this legend)
+          if (thisLegend === cdi[0].trace.legend) {
+            if (thisLabel !== dLabel) {
+              if (hiddenSlices.indexOf(dLabel) === -1) changed = true;
+              pushUnique(hiddenSlices, dLabel);
+              unhideList.push(dLabel);
+            }
+          }
         }
-      });
-      if (gd._fullLayout.hiddenlabels && gd._fullLayout.hiddenlabels.length === hiddenSlices.length && thisLabelIndex === -1) {
-        hiddenSlices = [];
+      }
+      if (!changed) {
+        for (var q = 0; q < unhideList.length; q++) {
+          var pos = hiddenSlices.indexOf(unhideList[q]);
+          if (pos !== -1) {
+            hiddenSlices.splice(pos, 1);
+          }
+        }
       }
     }
     Registry.call('_guiRelayout', gd, 'hiddenlabels', hiddenSlices);
@@ -12278,8 +12300,8 @@ module.exports = function handleClick(g, gd, numClicks) {
         }
       }
       for (i = 0; i < fullData.length; i++) {
-        // False is sticky; we don't change it.
-        if (fullData[i].visible === false) continue;
+        // False is sticky; we don't change it. Also ensure we don't change states of itmes in other legend
+        if (fullData[i].visible === false || fullData[i].legend !== thisLegend) continue;
         if (Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
           continue;
         }
@@ -66416,7 +66438,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.24.2';
+exports.version = '2.24.3';
 
 /***/ }),
 
@@ -73293,8 +73315,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "WU": function() { return /* reexport */ format; },
-  "FF": function() { return /* reexport */ locale; }
+  WU: function() { return /* reexport */ format; },
+  FF: function() { return /* reexport */ locale; }
 });
 
 // UNUSED EXPORTS: FormatSpecifier, formatDefaultLocale, formatPrefix, formatSpecifier, precisionFixed, precisionPrefix, precisionRound
@@ -73666,9 +73688,9 @@ function defaultLocale(definition) {
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "i$": function() { return /* reexport */ timeFormat; },
-  "Dq": function() { return /* reexport */ formatLocale; },
-  "g0": function() { return /* reexport */ utcFormat; }
+  i$: function() { return /* reexport */ timeFormat; },
+  Dq: function() { return /* reexport */ formatLocale; },
+  g0: function() { return /* reexport */ utcFormat; }
 });
 
 // UNUSED EXPORTS: isoFormat, isoParse, timeFormatDefaultLocale, timeParse, utcParse
@@ -73892,15 +73914,15 @@ function formatLocale(locale) {
         if (!("w" in d)) d.w = 1;
         if ("Z" in d) {
           week = utcDate(newDate(d.y, 0, 1)), day = week.getUTCDay();
-          week = day > 4 || day === 0 ? utcWeek/* utcMonday.ceil */.l6.ceil(week) : (0,utcWeek/* utcMonday */.l6)(week);
-          week = utcDay/* default.offset */.Z.offset(week, (d.V - 1) * 7);
+          week = day > 4 || day === 0 ? utcWeek/* utcMonday */.l6.ceil(week) : (0,utcWeek/* utcMonday */.l6)(week);
+          week = utcDay/* default */.Z.offset(week, (d.V - 1) * 7);
           d.y = week.getUTCFullYear();
           d.m = week.getUTCMonth();
           d.d = week.getUTCDate() + (d.w + 6) % 7;
         } else {
           week = localDate(newDate(d.y, 0, 1)), day = week.getDay();
-          week = day > 4 || day === 0 ? src_week/* monday.ceil */.wA.ceil(week) : (0,src_week/* monday */.wA)(week);
-          week = src_day/* default.offset */.Z.offset(week, (d.V - 1) * 7);
+          week = day > 4 || day === 0 ? src_week/* monday */.wA.ceil(week) : (0,src_week/* monday */.wA)(week);
+          week = src_day/* default */.Z.offset(week, (d.V - 1) * 7);
           d.y = week.getFullYear();
           d.m = week.getMonth();
           d.d = week.getDate() + (d.w + 6) % 7;
@@ -74195,7 +74217,7 @@ function formatHour12(d, p) {
 }
 
 function formatDayOfYear(d, p) {
-  return pad(1 + src_day/* default.count */.Z.count((0,year/* default */.Z)(d), d), p, 3);
+  return pad(1 + src_day/* default */.Z.count((0,year/* default */.Z)(d), d), p, 3);
 }
 
 function formatMilliseconds(d, p) {
@@ -74224,13 +74246,13 @@ function formatWeekdayNumberMonday(d) {
 }
 
 function formatWeekNumberSunday(d, p) {
-  return pad(src_week/* sunday.count */.OM.count((0,year/* default */.Z)(d) - 1, d), p, 2);
+  return pad(src_week/* sunday */.OM.count((0,year/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatWeekNumberISO(d, p) {
   var day = d.getDay();
-  d = (day >= 4 || day === 0) ? (0,src_week/* thursday */.bL)(d) : src_week/* thursday.ceil */.bL.ceil(d);
-  return pad(src_week/* thursday.count */.bL.count((0,year/* default */.Z)(d), d) + ((0,year/* default */.Z)(d).getDay() === 4), p, 2);
+  d = (day >= 4 || day === 0) ? (0,src_week/* thursday */.bL)(d) : src_week/* thursday */.bL.ceil(d);
+  return pad(src_week/* thursday */.bL.count((0,year/* default */.Z)(d), d) + ((0,year/* default */.Z)(d).getDay() === 4), p, 2);
 }
 
 function formatWeekdayNumberSunday(d) {
@@ -74238,7 +74260,7 @@ function formatWeekdayNumberSunday(d) {
 }
 
 function formatWeekNumberMonday(d, p) {
-  return pad(src_week/* monday.count */.wA.count((0,year/* default */.Z)(d) - 1, d), p, 2);
+  return pad(src_week/* monday */.wA.count((0,year/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatYear(d, p) {
@@ -74269,7 +74291,7 @@ function formatUTCHour12(d, p) {
 }
 
 function formatUTCDayOfYear(d, p) {
-  return pad(1 + utcDay/* default.count */.Z.count((0,utcYear/* default */.Z)(d), d), p, 3);
+  return pad(1 + utcDay/* default */.Z.count((0,utcYear/* default */.Z)(d), d), p, 3);
 }
 
 function formatUTCMilliseconds(d, p) {
@@ -74298,13 +74320,13 @@ function formatUTCWeekdayNumberMonday(d) {
 }
 
 function formatUTCWeekNumberSunday(d, p) {
-  return pad(utcWeek/* utcSunday.count */.Ox.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
+  return pad(utcWeek/* utcSunday */.Ox.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatUTCWeekNumberISO(d, p) {
   var day = d.getUTCDay();
-  d = (day >= 4 || day === 0) ? (0,utcWeek/* utcThursday */.hB)(d) : utcWeek/* utcThursday.ceil */.hB.ceil(d);
-  return pad(utcWeek/* utcThursday.count */.hB.count((0,utcYear/* default */.Z)(d), d) + ((0,utcYear/* default */.Z)(d).getUTCDay() === 4), p, 2);
+  d = (day >= 4 || day === 0) ? (0,utcWeek/* utcThursday */.hB)(d) : utcWeek/* utcThursday */.hB.ceil(d);
+  return pad(utcWeek/* utcThursday */.hB.count((0,utcYear/* default */.Z)(d), d) + ((0,utcYear/* default */.Z)(d).getUTCDay() === 4), p, 2);
 }
 
 function formatUTCWeekdayNumberSunday(d) {
@@ -74312,7 +74334,7 @@ function formatUTCWeekdayNumberSunday(d) {
 }
 
 function formatUTCWeekNumberMonday(d, p) {
-  return pad(utcWeek/* utcMonday.count */.l6.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
+  return pad(utcWeek/* utcMonday */.l6.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatUTCYear(d, p) {
@@ -74382,7 +74404,7 @@ function defaultLocale(definition) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "a": function() { return /* binding */ days; }
+/* harmony export */   a: function() { return /* binding */ days; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4263);
@@ -74399,7 +74421,7 @@ var day = (0,_interval_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)(func
   return date.getDate() - 1;
 });
 
-/* harmony default export */ __webpack_exports__["Z"] = (day);
+/* harmony default export */ __webpack_exports__.Z = (day);
 var days = day.range;
 
 
@@ -74410,11 +74432,11 @@ var days = day.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "UD": function() { return /* binding */ durationDay; },
-/* harmony export */   "Y2": function() { return /* binding */ durationHour; },
-/* harmony export */   "Ym": function() { return /* binding */ durationSecond; },
-/* harmony export */   "iM": function() { return /* binding */ durationWeek; },
-/* harmony export */   "yB": function() { return /* binding */ durationMinute; }
+/* harmony export */   UD: function() { return /* binding */ durationDay; },
+/* harmony export */   Y2: function() { return /* binding */ durationHour; },
+/* harmony export */   Ym: function() { return /* binding */ durationSecond; },
+/* harmony export */   iM: function() { return /* binding */ durationWeek; },
+/* harmony export */   yB: function() { return /* binding */ durationMinute; }
 /* harmony export */ });
 var durationSecond = 1e3;
 var durationMinute = 6e4;
@@ -74434,67 +74456,67 @@ __webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "timeDay": function() { return /* reexport */ day/* default */.Z; },
-  "timeDays": function() { return /* reexport */ day/* days */.a; },
-  "timeFriday": function() { return /* reexport */ week/* friday */.mC; },
-  "timeFridays": function() { return /* reexport */ week/* fridays */.b$; },
-  "timeHour": function() { return /* reexport */ src_hour; },
-  "timeHours": function() { return /* reexport */ hours; },
-  "timeInterval": function() { return /* reexport */ interval/* default */.Z; },
-  "timeMillisecond": function() { return /* reexport */ src_millisecond; },
-  "timeMilliseconds": function() { return /* reexport */ milliseconds; },
-  "timeMinute": function() { return /* reexport */ src_minute; },
-  "timeMinutes": function() { return /* reexport */ minutes; },
-  "timeMonday": function() { return /* reexport */ week/* monday */.wA; },
-  "timeMondays": function() { return /* reexport */ week/* mondays */.bJ; },
-  "timeMonth": function() { return /* reexport */ src_month; },
-  "timeMonths": function() { return /* reexport */ months; },
-  "timeSaturday": function() { return /* reexport */ week/* saturday */.EY; },
-  "timeSaturdays": function() { return /* reexport */ week/* saturdays */.Ff; },
-  "timeSecond": function() { return /* reexport */ src_second; },
-  "timeSeconds": function() { return /* reexport */ seconds; },
-  "timeSunday": function() { return /* reexport */ week/* sunday */.OM; },
-  "timeSundays": function() { return /* reexport */ week/* sundays */.vm; },
-  "timeThursday": function() { return /* reexport */ week/* thursday */.bL; },
-  "timeThursdays": function() { return /* reexport */ week/* thursdays */.$t; },
-  "timeTuesday": function() { return /* reexport */ week/* tuesday */.sy; },
-  "timeTuesdays": function() { return /* reexport */ week/* tuesdays */.aU; },
-  "timeWednesday": function() { return /* reexport */ week/* wednesday */.zg; },
-  "timeWednesdays": function() { return /* reexport */ week/* wednesdays */.Ld; },
-  "timeWeek": function() { return /* reexport */ week/* sunday */.OM; },
-  "timeWeeks": function() { return /* reexport */ week/* sundays */.vm; },
-  "timeYear": function() { return /* reexport */ year/* default */.Z; },
-  "timeYears": function() { return /* reexport */ year/* years */.g; },
-  "utcDay": function() { return /* reexport */ utcDay/* default */.Z; },
-  "utcDays": function() { return /* reexport */ utcDay/* utcDays */.y; },
-  "utcFriday": function() { return /* reexport */ utcWeek/* utcFriday */.QQ; },
-  "utcFridays": function() { return /* reexport */ utcWeek/* utcFridays */.fz; },
-  "utcHour": function() { return /* reexport */ src_utcHour; },
-  "utcHours": function() { return /* reexport */ utcHours; },
-  "utcMillisecond": function() { return /* reexport */ src_millisecond; },
-  "utcMilliseconds": function() { return /* reexport */ milliseconds; },
-  "utcMinute": function() { return /* reexport */ src_utcMinute; },
-  "utcMinutes": function() { return /* reexport */ utcMinutes; },
-  "utcMonday": function() { return /* reexport */ utcWeek/* utcMonday */.l6; },
-  "utcMondays": function() { return /* reexport */ utcWeek/* utcMondays */.$3; },
-  "utcMonth": function() { return /* reexport */ src_utcMonth; },
-  "utcMonths": function() { return /* reexport */ utcMonths; },
-  "utcSaturday": function() { return /* reexport */ utcWeek/* utcSaturday */.g4; },
-  "utcSaturdays": function() { return /* reexport */ utcWeek/* utcSaturdays */.Q_; },
-  "utcSecond": function() { return /* reexport */ src_second; },
-  "utcSeconds": function() { return /* reexport */ seconds; },
-  "utcSunday": function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
-  "utcSundays": function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
-  "utcThursday": function() { return /* reexport */ utcWeek/* utcThursday */.hB; },
-  "utcThursdays": function() { return /* reexport */ utcWeek/* utcThursdays */.xj; },
-  "utcTuesday": function() { return /* reexport */ utcWeek/* utcTuesday */.J1; },
-  "utcTuesdays": function() { return /* reexport */ utcWeek/* utcTuesdays */.DK; },
-  "utcWednesday": function() { return /* reexport */ utcWeek/* utcWednesday */.b3; },
-  "utcWednesdays": function() { return /* reexport */ utcWeek/* utcWednesdays */.uy; },
-  "utcWeek": function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
-  "utcWeeks": function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
-  "utcYear": function() { return /* reexport */ utcYear/* default */.Z; },
-  "utcYears": function() { return /* reexport */ utcYear/* utcYears */.D; }
+  timeDay: function() { return /* reexport */ day/* default */.Z; },
+  timeDays: function() { return /* reexport */ day/* days */.a; },
+  timeFriday: function() { return /* reexport */ week/* friday */.mC; },
+  timeFridays: function() { return /* reexport */ week/* fridays */.b$; },
+  timeHour: function() { return /* reexport */ src_hour; },
+  timeHours: function() { return /* reexport */ hours; },
+  timeInterval: function() { return /* reexport */ interval/* default */.Z; },
+  timeMillisecond: function() { return /* reexport */ src_millisecond; },
+  timeMilliseconds: function() { return /* reexport */ milliseconds; },
+  timeMinute: function() { return /* reexport */ src_minute; },
+  timeMinutes: function() { return /* reexport */ minutes; },
+  timeMonday: function() { return /* reexport */ week/* monday */.wA; },
+  timeMondays: function() { return /* reexport */ week/* mondays */.bJ; },
+  timeMonth: function() { return /* reexport */ src_month; },
+  timeMonths: function() { return /* reexport */ months; },
+  timeSaturday: function() { return /* reexport */ week/* saturday */.EY; },
+  timeSaturdays: function() { return /* reexport */ week/* saturdays */.Ff; },
+  timeSecond: function() { return /* reexport */ src_second; },
+  timeSeconds: function() { return /* reexport */ seconds; },
+  timeSunday: function() { return /* reexport */ week/* sunday */.OM; },
+  timeSundays: function() { return /* reexport */ week/* sundays */.vm; },
+  timeThursday: function() { return /* reexport */ week/* thursday */.bL; },
+  timeThursdays: function() { return /* reexport */ week/* thursdays */.$t; },
+  timeTuesday: function() { return /* reexport */ week/* tuesday */.sy; },
+  timeTuesdays: function() { return /* reexport */ week/* tuesdays */.aU; },
+  timeWednesday: function() { return /* reexport */ week/* wednesday */.zg; },
+  timeWednesdays: function() { return /* reexport */ week/* wednesdays */.Ld; },
+  timeWeek: function() { return /* reexport */ week/* sunday */.OM; },
+  timeWeeks: function() { return /* reexport */ week/* sundays */.vm; },
+  timeYear: function() { return /* reexport */ year/* default */.Z; },
+  timeYears: function() { return /* reexport */ year/* years */.g; },
+  utcDay: function() { return /* reexport */ utcDay/* default */.Z; },
+  utcDays: function() { return /* reexport */ utcDay/* utcDays */.y; },
+  utcFriday: function() { return /* reexport */ utcWeek/* utcFriday */.QQ; },
+  utcFridays: function() { return /* reexport */ utcWeek/* utcFridays */.fz; },
+  utcHour: function() { return /* reexport */ src_utcHour; },
+  utcHours: function() { return /* reexport */ utcHours; },
+  utcMillisecond: function() { return /* reexport */ src_millisecond; },
+  utcMilliseconds: function() { return /* reexport */ milliseconds; },
+  utcMinute: function() { return /* reexport */ src_utcMinute; },
+  utcMinutes: function() { return /* reexport */ utcMinutes; },
+  utcMonday: function() { return /* reexport */ utcWeek/* utcMonday */.l6; },
+  utcMondays: function() { return /* reexport */ utcWeek/* utcMondays */.$3; },
+  utcMonth: function() { return /* reexport */ src_utcMonth; },
+  utcMonths: function() { return /* reexport */ utcMonths; },
+  utcSaturday: function() { return /* reexport */ utcWeek/* utcSaturday */.g4; },
+  utcSaturdays: function() { return /* reexport */ utcWeek/* utcSaturdays */.Q_; },
+  utcSecond: function() { return /* reexport */ src_second; },
+  utcSeconds: function() { return /* reexport */ seconds; },
+  utcSunday: function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
+  utcSundays: function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
+  utcThursday: function() { return /* reexport */ utcWeek/* utcThursday */.hB; },
+  utcThursdays: function() { return /* reexport */ utcWeek/* utcThursdays */.xj; },
+  utcTuesday: function() { return /* reexport */ utcWeek/* utcTuesday */.J1; },
+  utcTuesdays: function() { return /* reexport */ utcWeek/* utcTuesdays */.DK; },
+  utcWednesday: function() { return /* reexport */ utcWeek/* utcWednesday */.b3; },
+  utcWednesdays: function() { return /* reexport */ utcWeek/* utcWednesdays */.uy; },
+  utcWeek: function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
+  utcWeeks: function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
+  utcYear: function() { return /* reexport */ utcYear/* default */.Z; },
+  utcYears: function() { return /* reexport */ utcYear/* utcYears */.D; }
 });
 
 // EXTERNAL MODULE: ./node_modules/d3-time/src/interval.js
@@ -74699,7 +74721,7 @@ var utcYear = __webpack_require__(9791);
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* binding */ newInterval; }
+/* harmony export */   Z: function() { return /* binding */ newInterval; }
 /* harmony export */ });
 var t0 = new Date,
     t1 = new Date;
@@ -74780,7 +74802,7 @@ function newInterval(floori, offseti, count, field) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "y": function() { return /* binding */ utcDays; }
+/* harmony export */   y: function() { return /* binding */ utcDays; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4263);
@@ -74797,7 +74819,7 @@ var utcDay = (0,_interval_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)(f
   return date.getUTCDate() - 1;
 });
 
-/* harmony default export */ __webpack_exports__["Z"] = (utcDay);
+/* harmony default export */ __webpack_exports__.Z = (utcDay);
 var utcDays = utcDay.range;
 
 
@@ -74808,20 +74830,20 @@ var utcDays = utcDay.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "$3": function() { return /* binding */ utcMondays; },
-/* harmony export */   "DK": function() { return /* binding */ utcTuesdays; },
-/* harmony export */   "J1": function() { return /* binding */ utcTuesday; },
-/* harmony export */   "Ox": function() { return /* binding */ utcSunday; },
-/* harmony export */   "QQ": function() { return /* binding */ utcFriday; },
-/* harmony export */   "Q_": function() { return /* binding */ utcSaturdays; },
-/* harmony export */   "SU": function() { return /* binding */ utcSundays; },
-/* harmony export */   "b3": function() { return /* binding */ utcWednesday; },
-/* harmony export */   "fz": function() { return /* binding */ utcFridays; },
-/* harmony export */   "g4": function() { return /* binding */ utcSaturday; },
-/* harmony export */   "hB": function() { return /* binding */ utcThursday; },
-/* harmony export */   "l6": function() { return /* binding */ utcMonday; },
-/* harmony export */   "uy": function() { return /* binding */ utcWednesdays; },
-/* harmony export */   "xj": function() { return /* binding */ utcThursdays; }
+/* harmony export */   $3: function() { return /* binding */ utcMondays; },
+/* harmony export */   DK: function() { return /* binding */ utcTuesdays; },
+/* harmony export */   J1: function() { return /* binding */ utcTuesday; },
+/* harmony export */   Ox: function() { return /* binding */ utcSunday; },
+/* harmony export */   QQ: function() { return /* binding */ utcFriday; },
+/* harmony export */   Q_: function() { return /* binding */ utcSaturdays; },
+/* harmony export */   SU: function() { return /* binding */ utcSundays; },
+/* harmony export */   b3: function() { return /* binding */ utcWednesday; },
+/* harmony export */   fz: function() { return /* binding */ utcFridays; },
+/* harmony export */   g4: function() { return /* binding */ utcSaturday; },
+/* harmony export */   hB: function() { return /* binding */ utcThursday; },
+/* harmony export */   l6: function() { return /* binding */ utcMonday; },
+/* harmony export */   uy: function() { return /* binding */ utcWednesdays; },
+/* harmony export */   xj: function() { return /* binding */ utcThursdays; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4263);
@@ -74863,7 +74885,7 @@ var utcSaturdays = utcSaturday.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "D": function() { return /* binding */ utcYears; }
+/* harmony export */   D: function() { return /* binding */ utcYears; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 
@@ -74890,7 +74912,7 @@ utcYear.every = function(k) {
   });
 };
 
-/* harmony default export */ __webpack_exports__["Z"] = (utcYear);
+/* harmony default export */ __webpack_exports__.Z = (utcYear);
 var utcYears = utcYear.range;
 
 
@@ -74901,20 +74923,20 @@ var utcYears = utcYear.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "$t": function() { return /* binding */ thursdays; },
-/* harmony export */   "EY": function() { return /* binding */ saturday; },
-/* harmony export */   "Ff": function() { return /* binding */ saturdays; },
-/* harmony export */   "Ld": function() { return /* binding */ wednesdays; },
-/* harmony export */   "OM": function() { return /* binding */ sunday; },
-/* harmony export */   "aU": function() { return /* binding */ tuesdays; },
-/* harmony export */   "b$": function() { return /* binding */ fridays; },
-/* harmony export */   "bJ": function() { return /* binding */ mondays; },
-/* harmony export */   "bL": function() { return /* binding */ thursday; },
-/* harmony export */   "mC": function() { return /* binding */ friday; },
-/* harmony export */   "sy": function() { return /* binding */ tuesday; },
-/* harmony export */   "vm": function() { return /* binding */ sundays; },
-/* harmony export */   "wA": function() { return /* binding */ monday; },
-/* harmony export */   "zg": function() { return /* binding */ wednesday; }
+/* harmony export */   $t: function() { return /* binding */ thursdays; },
+/* harmony export */   EY: function() { return /* binding */ saturday; },
+/* harmony export */   Ff: function() { return /* binding */ saturdays; },
+/* harmony export */   Ld: function() { return /* binding */ wednesdays; },
+/* harmony export */   OM: function() { return /* binding */ sunday; },
+/* harmony export */   aU: function() { return /* binding */ tuesdays; },
+/* harmony export */   b$: function() { return /* binding */ fridays; },
+/* harmony export */   bJ: function() { return /* binding */ mondays; },
+/* harmony export */   bL: function() { return /* binding */ thursday; },
+/* harmony export */   mC: function() { return /* binding */ friday; },
+/* harmony export */   sy: function() { return /* binding */ tuesday; },
+/* harmony export */   vm: function() { return /* binding */ sundays; },
+/* harmony export */   wA: function() { return /* binding */ monday; },
+/* harmony export */   zg: function() { return /* binding */ wednesday; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4263);
@@ -74956,7 +74978,7 @@ var saturdays = saturday.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "g": function() { return /* binding */ years; }
+/* harmony export */   g: function() { return /* binding */ years; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 
@@ -74983,7 +75005,7 @@ year.every = function(k) {
   });
 };
 
-/* harmony default export */ __webpack_exports__["Z"] = (year);
+/* harmony default export */ __webpack_exports__.Z = (year);
 var years = year.range;
 
 
@@ -85747,8 +85769,8 @@ assign(main.baseCalendar.prototype, {
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "sX": function() { return /* reexport */ value; },
-  "k4": function() { return /* reexport */ number; }
+  sX: function() { return /* reexport */ value; },
+  k4: function() { return /* reexport */ number; }
 });
 
 // UNUSED EXPORTS: interpolateArray, interpolateBasis, interpolateBasisClosed, interpolateCubehelix, interpolateCubehelixLong, interpolateDate, interpolateDiscrete, interpolateHcl, interpolateHclLong, interpolateHsl, interpolateHslLong, interpolateHue, interpolateLab, interpolateNumberArray, interpolateObject, interpolateRgb, interpolateRgbBasis, interpolateRgbBasisClosed, interpolateRound, interpolateString, interpolateTransformCss, interpolateTransformSvg, interpolateZoom, piecewise, quantize

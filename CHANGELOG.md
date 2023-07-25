@@ -9,6 +9,14 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.24.3] -- 2023-07-05
+
+### Fixed
+ - Fix double clicking one item in a legend hides traces in other legends [[#6655](https://github.com/plotly/plotly.js/pull/6655)]
+ - Fix double click pie slices when having multiple legends [[#6657](https://github.com/plotly/plotly.js/pull/6657)]
+ - Fix per legend group and traceorder defaults when having multiple legends [[#6664](https://github.com/plotly/plotly.js/pull/6664)]
+
+
 ## [2.24.2] -- 2023-06-09
 
 ### Fixed

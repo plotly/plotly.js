@@ -229,7 +229,7 @@ module.exports = function handleClick(g, gd, numClicks) {
 
                 isInGroup = (hasLegendgroup && _item.legendgroup === legendgroup);
 
-                if(!isInGroup && _item.visible === true && !Registry.traceIs(_item, 'notLegendIsolatable')) {
+                if(!isInGroup && _item.legend === thisLegend && _item.visible === true && !Registry.traceIs(_item, 'notLegendIsolatable')) {
                     isIsolated = false;
                     break;
                 }
