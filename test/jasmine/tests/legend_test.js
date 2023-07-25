@@ -1915,6 +1915,14 @@ describe('legend interaction', function() {
                 Promise.resolve()
                     .then(click(0, 2))
                     .then(assertVisible([false, true, true, false, 'legendonly', true]))
+
+                    // isolate it
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, 'legendonly', false, 'legendonly', true]))
+
+                    // unhide it again
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
                     .then(done, done.fail);
             });
         });
