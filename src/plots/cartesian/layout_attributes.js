@@ -281,11 +281,11 @@ module.exports = {
             'computed in relation to the input data.',
             'See `rangemode` for more info.',
             'If `range` is provided, then `autorange` is set to *false*.',
-            'Using *min* applys autorange only to set the minimum.',
-            'Using *max* applys autorange only to set the maximum.',
-            'Using *min reversed* applys autorange only to set the minimum on a reversed axis.',
-            'Using *max reversed* applys autorange only to set the maximum on a reversed axis.',
-            'Using *reversed* applys autorange on both ends and reverse the axis direction.',
+            'Using *min* applies autorange only to set the minimum.',
+            'Using *max* applies autorange only to set the maximum.',
+            'Using *min reversed* applies autorange only to set the minimum on a reversed axis.',
+            'Using *max reversed* applies autorange only to set the maximum on a reversed axis.',
+            'Using *reversed* applies autorange on both ends and reverses the axis direction.',
         ].join(' ')
     },
     autorangeoptions: {
