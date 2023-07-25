@@ -77,8 +77,44 @@ function drawOne(gd, opts) {
 
     var legendData;
     if(!inHover) {
-        if(!gd.calcdata) return;
-        legendData = fullLayout.showlegend && getLegendData(gd.calcdata, legendObj, fullLayout._legends.length > 1);
+        var calcdata = (gd.calcdata || []).slice();
+
+        var shapes = fullLayout.shapes;
+        for(var i = 0; i < shapes.length; i++) {
+            var shape = shapes[i];
+            if(!shape.showlegend) continue;
+
+            var shapeLegend = {
+                _isShape: true,
+                _fullInput: shape,
+                index: shape._index,
+                name: shape.name || shape.label.text || ('shape ' + shape._index),
+                legend: shape.legend,
+                legendgroup: shape.legendgroup,
+                legendgrouptitle: shape.legendgrouptitle,
+                legendrank: shape.legendrank,
+                legendwidth: shape.legendwidth,
+                showlegend: shape.showlegend,
+                visible: shape.visible,
+                opacity: shape.opacity,
+                mode: shape.type === 'line' ? 'lines' : 'markers',
+                line: shape.line,
+                marker: {
+                    line: shape.line,
+                    color: shape.fillcolor,
+                    size: 12,
+                    symbol:
+                        shape.type === 'rect' ? 'square' :
+                        shape.type === 'circle' ? 'circle' :
+                        // case of path
+                        'hexagon2'
+                },
+            };
+
+            calcdata.push([{ trace: shapeLegend }]);
+        }
+        if(!calcdata.length) return;
+        legendData = fullLayout.showlegend && getLegendData(calcdata, legendObj, fullLayout._legends.length > 1);
     } else {
         if(!legendObj.entries) return;
         legendData = getLegendData(legendObj.entries, legendObj);
@@ -491,9 +527,9 @@ function drawTexts(g, gd, legendObj) {
 
                 if(Registry.hasTransform(fullInput, 'groupby')) {
                     var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
-                    var index = groupbyIndices[groupbyIndices.length - 1];
+                    var _index = groupbyIndices[groupbyIndices.length - 1];
 
-                    var kcont = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
+                    var kcont = Lib.keyedContainer(fullInput, 'transforms[' + _index + '].styles', 'target', 'value.name');
 
                     kcont.set(legendItem.trace._group, newName);
 
@@ -502,7 +538,11 @@ function drawTexts(g, gd, legendObj) {
                     update.name = newName;
                 }
 
-                return Registry.call('_guiRestyle', gd, update, trace.index);
+                if(fullInput._isShape) {
+                    return Registry.call('_guiRelayout', gd, 'shapes[' + trace.index + '].name', update.name);
+                } else {
+                    return Registry.call('_guiRestyle', gd, update, trace.index);
+                }
             });
     } else {
         textLayout(textEl, g, gd, legendObj);
