@@ -16,7 +16,7 @@ module.exports = {
     name: extendFlat({}, boxAttrs.name, {
         description: [
             'Sets the trace name.',
-            'The trace name appear as the legend item and on hover.',
+            'The trace name appears as the legend item and on hover.',
             'For violin traces, the name will also be used for the position',
             'coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are',
             'missing and the position axis is categorical.',

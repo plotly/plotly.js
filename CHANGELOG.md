@@ -9,6 +9,22 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.25.0] -- 2023-07-25
+
+### Added
+ - Add "Equal Earth" projection to geo subplots [[#6670](https://github.com/plotly/plotly.js/pull/6670)],
+   with thanks to @apparebit for the contribution!
+ - Add options to include legends for shapes and `newshape` [[#6653](https://github.com/plotly/plotly.js/pull/6653)]
+ - Add Plotly.deleteActiveShape command [[#6679](https://github.com/plotly/plotly.js/pull/6679)]
+
+### Fixed
+ - Fix contour plot colorscale domain (take account of `zmin`, `zmax`, `cmin` and `cmax`) [[#6625](https://github.com/plotly/plotly.js/pull/6625)],
+   with thanks to @lvlte for the contribution!
+ - Fix text markers on non-mapbox styled maps [[#6652](https://github.com/plotly/plotly.js/pull/6652)],
+   with thanks to @baurt for the contribution!
+ - Fix unhide isolated traces in multi legend cases (regression introduced in 2.24.3) [[#6684](https://github.com/plotly/plotly.js/pull/6684)]
+
+
 ## [2.24.3] -- 2023-07-05
 
 ### Fixed

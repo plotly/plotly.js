@@ -70,7 +70,7 @@ exports.getModuleCalcData = function(calcdata, arg1) {
         // would suggest), but by 'module plot method' so that if some traces
         // share the same module plot method (e.g. bar and histogram), we
         // only call it one!
-        if(trace._module.plot === plotMethod) {
+        if(trace._module && trace._module.plot === plotMethod) {
             moduleCalcData.push(cd);
         } else {
             remainingCalcData.push(cd);
