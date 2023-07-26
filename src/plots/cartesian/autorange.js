@@ -636,40 +636,44 @@ function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
 function applyAutorangeMinOptions(v, ax) {
+    var autorangeoptions = ax.autorangeoptions;
     if(
-        ax.autorangeoptions &&
-        ax.autorangeoptions.minallowed !== undefined &&
-        hasValidMinAndMax(ax, ax.autorangeoptions.minallowed, ax.autorangeoptions.maxallowed)
+        autorangeoptions &&
+        autorangeoptions.minallowed !== undefined &&
+        hasValidMinAndMax(ax, autorangeoptions.minallowed, autorangeoptions.maxallowed)
     ) {
-        return ax.autorangeoptions.minallowed;
+        return autorangeoptions.minallowed;
     }
 
     if(
-        ax.autorangeoptions &&
-        ax.autorangeoptions.clipmin !== undefined &&
-        hasValidMinAndMax(ax, ax.autorangeoptions.clipmin, ax.autorangeoptions.clipmax)
+        autorangeoptions &&
+        autorangeoptions.clipmin !== undefined &&
+        hasValidMinAndMax(ax, autorangeoptions.clipmin, autorangeoptions.clipmax)
     ) {
-        return Math.max(v, ax.d2l(ax.autorangeoptions.clipmin));
+        return Math.max(v, ax.d2l(autorangeoptions.clipmin));
     }
     return v;
 }
 
 function applyAutorangeMaxOptions(v, ax) {
+    var autorangeoptions = ax.autorangeoptions;
+
     if(
-        ax.autorangeoptions &&
-        ax.autorangeoptions.maxallowed !== undefined &&
-        hasValidMinAndMax(ax, ax.autorangeoptions.minallowed, ax.autorangeoptions.maxallowed)
+        autorangeoptions &&
+        autorangeoptions.maxallowed !== undefined &&
+        hasValidMinAndMax(ax, autorangeoptions.minallowed, autorangeoptions.maxallowed)
     ) {
-        return ax.autorangeoptions.maxallowed;
+        return autorangeoptions.maxallowed;
     }
 
     if(
-        ax.autorangeoptions &&
-        ax.autorangeoptions.clipmax !== undefined &&
-        hasValidMinAndMax(ax, ax.autorangeoptions.clipmin, ax.autorangeoptions.clipmax)
+        autorangeoptions &&
+        autorangeoptions.clipmax !== undefined &&
+        hasValidMinAndMax(ax, autorangeoptions.clipmin, autorangeoptions.clipmax)
     ) {
-        return Math.min(v, ax.d2l(ax.autorangeoptions.clipmax));
+        return Math.min(v, ax.d2l(autorangeoptions.clipmax));
     }
+
     return v;
 }
 
@@ -679,8 +683,8 @@ function hasValidMinAndMax(ax, min, max) {
         min !== undefined &&
         max !== undefined
     ) {
-        min = ax.d2l(ax.autorangeoptions.clipmin);
-        max = ax.d2l(ax.autorangeoptions.clipmax);
+        min = ax.d2l(min);
+        max = ax.d2l(max);
         return min < max;
     }
     return true;
