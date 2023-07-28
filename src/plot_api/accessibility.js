@@ -1,7 +1,8 @@
 "use strict";
-import c2mChart from "chart2music";
 
-export function enable (gd) {
+var c2mChart = require("chart2music");
+
+module.exports = function enable (gd) {
 
     const c2mData = {};
     const labels = [];
