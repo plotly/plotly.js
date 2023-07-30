@@ -21,8 +21,21 @@ module.exports = {
                 loader: 'babel-loader'
             }
         }, {
-            test: /\.(js|mjs)$/,
-            include: /node_modules[\\\/](buffer|chart2music|d3-color|d3-interpolate|is-mobile)[\\\/]/,
+            test: /\.js$/,
+            include: /node_modules[\\\/](buffer|d3-color|d3-interpolate|is-mobile)[\\\/]/,
+            use: {
+                loader: 'babel-loader',
+                options: {
+                    babelrc: false,
+                    configFile: false,
+                    presets: [
+                        '@babel/preset-env'
+                    ]
+                }
+            },
+        }, {
+            test: /accessibility\.js$/,
+            include: /src[\\\/]plot_api/,
             use: {
                 loader: 'babel-loader',
                 options: {

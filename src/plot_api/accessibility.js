@@ -1,8 +1,8 @@
 "use strict";
 
-var c2mChart = require("chart2music");
+import c2mChart from "chart2music";
 
-module.exports = function enable (gd) {
+export function enable (gd) {
 
     const c2mData = {};
     const labels = [];
@@ -30,8 +30,8 @@ module.exports = function enable (gd) {
         else {
             // 'Accessibility not implemented for trace type: ' + trace.type
             return;
-        }
-    }
+        };
+    };
     
     var closed_captions = document.createElement('div');
     closed_captions.id = 'cc';
@@ -68,5 +68,6 @@ module.exports = function enable (gd) {
             ...gd._context.chart2musicOptions
         },
         info: gd._context.chart2musicInfo
-    });      
+    }
+    );      
 };
