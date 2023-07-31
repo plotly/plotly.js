@@ -1674,6 +1674,67 @@ describe('legend interaction', function() {
         });
     });
 
+    describe('editable mode interactions for shape legends', function() {
+        var gd;
+
+        var mock = {
+            data: [],
+            layout: {
+                shapes: [
+                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.1, y0: 0.2, x1: 0.2, y1: 0.1},
+                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.3, y0: 0.4, x1: 0.4, y1: 0.3},
+                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.5, y0: 0.6, x1: 0.6, y1: 0.5},
+                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.7, y0: 0.8, x1: 0.8, y1: 0.7},
+                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.9, y0: 1.0, x1: 1.0, y1: 0.9}
+                ]
+            },
+            config: {editable: true}
+        };
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock)).then(done);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function _setValue(index, str) {
+            var item = d3SelectAll('text.legendtext')[0][index || 0];
+            item.dispatchEvent(new MouseEvent('click'));
+            return delay(20)().then(function() {
+                var input = d3Select('.plugin-editable.editable');
+                input.text(str);
+                input.node().dispatchEvent(new KeyboardEvent('blur'));
+            }).then(delay(20));
+        }
+
+        function assertLabels(expected) {
+            var labels = [];
+            d3SelectAll('text.legendtext').each(function() {
+                labels.push(this.textContent);
+            });
+            expect(labels).toEqual(expected);
+        }
+
+        it('sets and unsets shape group names', function(done) {
+            assertLabels(['shape 0', 'shape 1', 'shape 2', 'shape 3', 'shape 4']);
+            // Set the name of the first shape:
+            _setValue(0, 'foo').then(function() {
+                expect(gd.layout.shapes[0].name).toEqual('foo');
+                // labels shorter than half the longest get padded with spaces to match the longest length
+                assertLabels(['foo    ', 'shape 1', 'shape 2', 'shape 3', 'shape 4']);
+
+                // Set the name of the third legend item:
+                return _setValue(3, 'barbar');
+            }).then(function() {
+                expect(gd.layout.shapes[3].name).toEqual('barbar');
+                assertLabels(['foo    ', 'shape 1', 'shape 2', 'barbar', 'shape 4']);
+
+                return _setValue(2, 'asdf');
+            }).then(done, done.fail);
+        });
+    });
+
     describe('staticPlot', function() {
         var gd;
 
@@ -1821,6 +1882,13 @@ describe('legend interaction', function() {
             };
         }
 
+        function assertVisibleShapes(expectation) {
+            return function() {
+                var actual = extractVisibilities(gd._fullLayout.shapes);
+                expect(actual).toEqual(expectation);
+            };
+        }
+
         describe('for regular traces', function() {
             beforeEach(function(done) {
                 Plotly.newPlot(gd, [
@@ -1915,6 +1983,58 @@ describe('legend interaction', function() {
                 Promise.resolve()
                     .then(click(0, 2))
                     .then(assertVisible([false, true, true, false, 'legendonly', true]))
+
+                    // isolate it
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, 'legendonly', false, 'legendonly', true]))
+
+                    // unhide it again
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+        });
+
+        describe('click shape legends', function() {
+            beforeEach(function(done) {
+                Plotly.newPlot(gd, [], {
+                    shapes: [
+                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.1, y0: 0.2, x1: 0.2, y1: 0.1, visible: false},
+                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.3, y0: 0.4, x1: 0.4, y1: 0.3, visible: 'legendonly'},
+                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.5, y0: 0.6, x1: 0.6, y1: 0.5}
+                    ]
+                }).then(done);
+            });
+
+            it('clicking once toggles legendonly -> true', function(done) {
+                Promise.resolve()
+                    .then(assertVisibleShapes([false, 'legendonly', true]))
+                    .then(click(0))
+                    .then(assertVisibleShapes([false, true, true]))
+                    .then(done, done.fail);
+            });
+
+            it('clicking once toggles true -> legendonly', function(done) {
+                Promise.resolve()
+                    .then(assertVisibleShapes([false, 'legendonly', true]))
+                    .then(click(1))
+                    .then(assertVisibleShapes([false, 'legendonly', 'legendonly']))
+                    .then(done, done.fail);
+            });
+
+            it('double-clicking isolates a visible shape', function(done) {
+                Promise.resolve()
+                    .then(click(0))
+                    .then(assertVisibleShapes([false, true, true]))
+                    .then(click(0, 2))
+                    .then(assertVisibleShapes([false, true, 'legendonly']))
+                    .then(done, done.fail);
+            });
+
+            it('double-clicking an isolated trace shows all non-hidden shapes', function(done) {
+                Promise.resolve()
+                    .then(click(0, 2))
+                    .then(assertVisibleShapes([false, true, true]))
                     .then(done, done.fail);
             });
         });

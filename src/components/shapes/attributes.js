@@ -7,18 +7,81 @@ var dash = require('../drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
+var basePlotAttributes = require('../../plots/attributes');
 var shapeTexttemplateAttrs = require('../../plots/template_attributes').shapeTexttemplateAttrs;
 var shapeLabelTexttemplateVars = require('./label_texttemplate');
 
 module.exports = templatedArray('shape', {
-    visible: {
-        valType: 'boolean',
-        dflt: true,
+    visible: extendFlat({}, basePlotAttributes.visible, {
         editType: 'calc+arraydraw',
         description: [
-            'Determines whether or not this shape is visible.'
+            'Determines whether or not this shape is visible.',
+            'If *legendonly*, the shape is not drawn,',
+            'but can appear as a legend item',
+            '(provided that the legend itself is visible).'
+        ].join(' ')
+    }),
+
+    showlegend: {
+        valType: 'boolean',
+        dflt: false,
+        editType: 'calc+arraydraw',
+        description: [
+            'Determines whether or not this',
+            'shape is shown in the legend.'
         ].join(' ')
     },
+
+    legend: extendFlat({}, basePlotAttributes.legend, {
+        editType: 'calc+arraydraw',
+        description: [
+            'Sets the reference to a legend to show this shape in.',
+            'References to these legends are *legend*, *legend2*, *legend3*, etc.',
+            'Settings for these legends are set in the layout, under',
+            '`layout.legend`, `layout.legend2`, etc.'
+        ].join(' ')
+    }),
+
+    legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {
+        editType: 'calc+arraydraw',
+        description: [
+            'Sets the legend group for this shape.',
+            'Traces and shapes part of the same legend group hide/show at the same time',
+            'when toggling legend items.'
+        ].join(' ')
+    }),
+
+    legendgrouptitle: {
+        text: extendFlat({}, basePlotAttributes.legendgrouptitle.text, {
+            editType: 'calc+arraydraw'
+        }),
+        font: fontAttrs({
+            editType: 'calc+arraydraw',
+            description: [
+                'Sets this legend group\'s title font.'
+            ].join(' '),
+        }),
+        editType: 'calc+arraydraw',
+    },
+
+    legendrank: extendFlat({}, basePlotAttributes.legendrank, {
+        editType: 'calc+arraydraw',
+        description: [
+            'Sets the legend rank for this shape.',
+            'Items and groups with smaller ranks are presented on top/left side while',
+            'with *reversed* `legend.traceorder` they are on bottom/right side.',
+            'The default legendrank is 1000,',
+            'so that you can use ranks less than 1000 to place certain items before all unranked items,',
+            'and ranks greater than 1000 to go after all unranked items.',
+            'When having unranked or equal rank items shapes would be displayed after traces',
+            'i.e. according to their order in data and layout.'
+        ].join(' ')
+    }),
+
+    legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {
+        editType: 'calc+arraydraw',
+        description: 'Sets the width (in px or fraction) of the legend for this shape.',
+    }),
 
     type: {
         valType: 'enumerated',
@@ -232,7 +295,10 @@ module.exports = templatedArray('shape', {
             valType: 'string',
             dflt: '',
             editType: 'arraydraw',
-            description: 'Sets the text to display with shape.'
+            description: [
+                'Sets the text to display with shape.',
+                'It is also used for legend item if `name` is not provided.'
+            ].join(' ')
         },
         texttemplate: shapeTexttemplateAttrs({}, {keys: Object.keys(shapeLabelTexttemplateVars)}),
         font: fontAttrs({

@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v2.24.3
+* plotly.js (basic) v2.25.0
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -2873,6 +2873,7 @@ function makeColorBarData(gd) {
   for (var i = 0; i < calcdata.length; i++) {
     var cd = calcdata[i];
     trace = cd[0].trace;
+    if (!trace._module) continue;
     var moduleOpts = trace._module.colorbar;
     if (trace.visible === true && moduleOpts) {
       var allowsMultiplotCbs = Array.isArray(moduleOpts);
@@ -3183,7 +3184,7 @@ function drawColorBar(g, opts, gd) {
     g.selectAll('.' + cn.cbfills + ',.' + cn.cblines).attr('transform', isVertical ? strTranslate(0, Math.round(gs.h * (1 - ax.domain[1]))) : strTranslate(Math.round(gs.w * ax.domain[0]), 0));
     axLayer.attr('transform', isVertical ? strTranslate(0, Math.round(-gs.t)) : strTranslate(Math.round(-gs.l), 0));
     var fills = g.select('.' + cn.cbfills).selectAll('rect.' + cn.cbfill).attr('style', '').data(fillLevels);
-    fills.enter().append('rect').classed(cn.cbfill, true).style('stroke', 'none');
+    fills.enter().append('rect').classed(cn.cbfill, true).attr('style', '');
     fills.exit().remove();
     var zBounds = zrange.map(ax.c2p).map(Math.round).sort(function (a, b) {
       return a - b;
@@ -10989,12 +10990,16 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
   var legendTraceCount = 0;
   var legendReallyHasATrace = false;
   var defaultOrder = 'normal';
-  var allLegendItems = fullData.filter(function (d) {
+  var shapesWithLegend = (layoutOut.shapes || []).filter(function (d) {
+    return d.showlegend;
+  });
+  var allLegendItems = fullData.concat(shapesWithLegend).filter(function (d) {
     return legendId === (d.legend || 'legend');
   });
   for (var i = 0; i < allLegendItems.length; i++) {
     trace = allLegendItems[i];
     if (!trace.visible) continue;
+    var isShape = trace._isShape;
 
     // Note that we explicitly count any trace that is either shown or
     // *would* be shown by default, toward the two traces you need to
@@ -11006,13 +11011,13 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
         legendReallyHasATrace = true;
         // Always show the legend by default if there's a pie,
         // or if there's only one trace but it's explicitly shown
-        if (Registry.traceIs(trace, 'pie-like') || trace._input.showlegend === true) {
+        if (!isShape && Registry.traceIs(trace, 'pie-like') || trace._input.showlegend === true) {
           legendTraceCount++;
         }
       }
       Lib.coerceFont(traceCoerce, 'legendgrouptitle.font', grouptitlefont);
     }
-    if (Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack' || ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
+    if (!isShape && Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack' || ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
       defaultOrder = helpers.isGrouped({
         traceorder: defaultOrder
       }) ? 'grouped+reversed' : 'reversed';
@@ -11113,14 +11118,31 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 }
 module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
   var i;
+  var allLegendsData = fullData.slice();
+
+  // shapes could also show up in legends
+  var shapes = layoutOut.shapes;
+  if (shapes) {
+    for (i = 0; i < shapes.length; i++) {
+      var shape = shapes[i];
+      if (!shape.showlegend) continue;
+      var mockTrace = {
+        _input: shape._input,
+        visible: shape.visible,
+        showlegend: shape.showlegend,
+        legend: shape.legend
+      };
+      allLegendsData.push(mockTrace);
+    }
+  }
   var legends = ['legend'];
-  for (i = 0; i < fullData.length; i++) {
-    Lib.pushUnique(legends, fullData[i].legend);
+  for (i = 0; i < allLegendsData.length; i++) {
+    Lib.pushUnique(legends, allLegendsData[i].legend);
   }
   layoutOut._legends = [];
   for (i = 0; i < legends.length; i++) {
     var legendId = legends[i];
-    groupDefaults(legendId, layoutIn, layoutOut, fullData);
+    groupDefaults(legendId, layoutIn, layoutOut, allLegendsData);
     if (layoutOut[legendId] && layoutOut[legendId].visible) {
       layoutOut[legendId]._id = legendId;
     }
@@ -11200,8 +11222,41 @@ function drawOne(gd, opts) {
   if (!gd._legendMouseDownTime) gd._legendMouseDownTime = 0;
   var legendData;
   if (!inHover) {
-    if (!gd.calcdata) return;
-    legendData = fullLayout.showlegend && getLegendData(gd.calcdata, legendObj, fullLayout._legends.length > 1);
+    var calcdata = (gd.calcdata || []).slice();
+    var shapes = fullLayout.shapes;
+    for (var i = 0; i < shapes.length; i++) {
+      var shape = shapes[i];
+      if (!shape.showlegend) continue;
+      var shapeLegend = {
+        _isShape: true,
+        _fullInput: shape,
+        index: shape._index,
+        name: shape.name || shape.label.text || 'shape ' + shape._index,
+        legend: shape.legend,
+        legendgroup: shape.legendgroup,
+        legendgrouptitle: shape.legendgrouptitle,
+        legendrank: shape.legendrank,
+        legendwidth: shape.legendwidth,
+        showlegend: shape.showlegend,
+        visible: shape.visible,
+        opacity: shape.opacity,
+        mode: shape.type === 'line' ? 'lines' : 'markers',
+        line: shape.line,
+        marker: {
+          line: shape.line,
+          color: shape.fillcolor,
+          size: 12,
+          symbol: shape.type === 'rect' ? 'square' : shape.type === 'circle' ? 'circle' :
+          // case of path
+          'hexagon2'
+        }
+      };
+      calcdata.push([{
+        trace: shapeLegend
+      }]);
+    }
+    if (!calcdata.length) return;
+    legendData = fullLayout.showlegend && getLegendData(calcdata, legendObj, fullLayout._legends.length > 1);
   } else {
     if (!legendObj.entries) return;
     legendData = getLegendData(legendObj.entries, legendObj);
@@ -11526,14 +11581,18 @@ function drawTexts(g, gd, legendObj) {
       var update = {};
       if (Registry.hasTransform(fullInput, 'groupby')) {
         var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
-        var index = groupbyIndices[groupbyIndices.length - 1];
-        var kcont = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
+        var _index = groupbyIndices[groupbyIndices.length - 1];
+        var kcont = Lib.keyedContainer(fullInput, 'transforms[' + _index + '].styles', 'target', 'value.name');
         kcont.set(legendItem.trace._group, newName);
         update = kcont.constructUpdate();
       } else {
         update.name = newName;
       }
-      return Registry.call('_guiRestyle', gd, update, trace.index);
+      if (fullInput._isShape) {
+        return Registry.call('_guiRelayout', gd, 'shapes[' + trace.index + '].name', update.name);
+      } else {
+        return Registry.call('_guiRestyle', gd, update, trace.index);
+      }
     });
   } else {
     textLayout(textEl, g, gd, legendObj);
@@ -12086,36 +12145,54 @@ module.exports = function handleClick(g, gd, numClicks) {
   var legendItem = g.data()[0][0];
   if (legendItem.groupTitle && legendItem.noClick) return;
   var fullData = gd._fullData;
+  var shapesWithLegend = (fullLayout.shapes || []).filter(function (d) {
+    return d.showlegend;
+  });
+  var allLegendItems = fullData.concat(shapesWithLegend);
   var fullTrace = legendItem.trace;
+  if (fullTrace._isShape) {
+    fullTrace = fullTrace._fullInput;
+  }
   var legendgroup = fullTrace.legendgroup;
   var i, j, kcont, key, keys, val;
-  var attrUpdate = {};
-  var attrIndices = [];
+  var dataUpdate = {};
+  var dataIndices = [];
   var carrs = [];
   var carrIdx = [];
-  function insertUpdate(traceIndex, key, value) {
-    var attrIndex = attrIndices.indexOf(traceIndex);
-    var valueArray = attrUpdate[key];
+  function insertDataUpdate(traceIndex, value) {
+    var attrIndex = dataIndices.indexOf(traceIndex);
+    var valueArray = dataUpdate.visible;
     if (!valueArray) {
-      valueArray = attrUpdate[key] = [];
+      valueArray = dataUpdate.visible = [];
     }
-    if (attrIndices.indexOf(traceIndex) === -1) {
-      attrIndices.push(traceIndex);
-      attrIndex = attrIndices.length - 1;
+    if (dataIndices.indexOf(traceIndex) === -1) {
+      dataIndices.push(traceIndex);
+      attrIndex = dataIndices.length - 1;
     }
     valueArray[attrIndex] = value;
     return attrIndex;
   }
+  var updatedShapes = (fullLayout.shapes || []).map(function (d) {
+    return d._input;
+  });
+  var shapesUpdated = false;
+  function insertShapesUpdate(shapeIndex, value) {
+    updatedShapes[shapeIndex].visible = value;
+    shapesUpdated = true;
+  }
   function setVisibility(fullTrace, visibility) {
     if (legendItem.groupTitle && !toggleGroup) return;
-    var fullInput = fullTrace._fullInput;
+    var fullInput = fullTrace._fullInput || fullTrace;
+    var isShape = fullInput._isShape;
+    var index = fullInput.index;
+    if (index === undefined) index = fullInput._index;
     if (Registry.hasTransform(fullInput, 'groupby')) {
-      var kcont = carrs[fullInput.index];
+      var kcont = carrs[index];
       if (!kcont) {
         var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
         var lastGroupbyIndex = groupbyIndices[groupbyIndices.length - 1];
         kcont = Lib.keyedContainer(fullInput, 'transforms[' + lastGroupbyIndex + '].styles', 'target', 'value.visible');
-        carrs[fullInput.index] = kcont;
+        carrs[index] = kcont;
       }
       var curState = kcont.get(fullTrace._group);
 
@@ -12131,17 +12208,23 @@ module.exports = function handleClick(g, gd, numClicks) {
         // true -> legendonly. All others toggle to true:
         kcont.set(fullTrace._group, visibility);
       }
-      carrIdx[fullInput.index] = insertUpdate(fullInput.index, 'visible', fullInput.visible === false ? false : true);
+      carrIdx[index] = insertDataUpdate(index, fullInput.visible === false ? false : true);
     } else {
       // false -> false (not possible since will not be visible in legend)
       // true -> legendonly
       // legendonly -> true
       var nextVisibility = fullInput.visible === false ? false : visibility;
-      insertUpdate(fullInput.index, 'visible', nextVisibility);
+      if (isShape) {
+        insertShapesUpdate(index, nextVisibility);
+      } else {
+        insertDataUpdate(index, nextVisibility);
+      }
     }
   }
   var thisLegend = fullTrace.legend;
-  if (Registry.traceIs(fullTrace, 'pie-like')) {
+  var fullInput = fullTrace._fullInput;
+  var isShape = fullInput && fullInput._isShape;
+  if (!isShape && Registry.traceIs(fullTrace, 'pie-like')) {
     var thisLabel = legendItem.label;
     var thisLabelIndex = hiddenSlices.indexOf(thisLabel);
     if (mode === 'toggle') {
@@ -12180,8 +12263,8 @@ module.exports = function handleClick(g, gd, numClicks) {
     var traceIndicesInGroup = [];
     var tracei;
     if (hasLegendgroup) {
-      for (i = 0; i < fullData.length; i++) {
-        tracei = fullData[i];
+      for (i = 0; i < allLegendItems.length; i++) {
+        tracei = allLegendItems[i];
         if (!tracei.visible) continue;
         if (tracei.legendgroup === legendgroup) {
           traceIndicesInGroup.push(i);
@@ -12203,9 +12286,10 @@ module.exports = function handleClick(g, gd, numClicks) {
       }
       if (hasLegendgroup) {
         if (toggleGroup) {
-          for (i = 0; i < fullData.length; i++) {
-            if (fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
-              setVisibility(fullData[i], nextVisibility);
+          for (i = 0; i < allLegendItems.length; i++) {
+            var item = allLegendItems[i];
+            if (item.visible !== false && item.legendgroup === legendgroup) {
+              setVisibility(item, nextVisibility);
             }
           }
         } else {
@@ -12217,35 +12301,38 @@ module.exports = function handleClick(g, gd, numClicks) {
     } else if (mode === 'toggleothers') {
       // Compute the clicked index. expandedIndex does what we want for expanded traces
       // but also culls hidden traces. That means we have some work to do.
-      var isClicked, isInGroup, notInLegend, otherState;
+      var isClicked, isInGroup, notInLegend, otherState, _item;
       var isIsolated = true;
-      for (i = 0; i < fullData.length; i++) {
-        isClicked = fullData[i] === fullTrace;
-        notInLegend = fullData[i].showlegend !== true;
+      for (i = 0; i < allLegendItems.length; i++) {
+        _item = allLegendItems[i];
+        isClicked = _item === fullTrace;
+        notInLegend = _item.showlegend !== true;
         if (isClicked || notInLegend) continue;
-        isInGroup = hasLegendgroup && fullData[i].legendgroup === legendgroup;
-        if (!isInGroup && fullData[i].visible === true && !Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
+        isInGroup = hasLegendgroup && _item.legendgroup === legendgroup;
+        if (!isInGroup && _item.legend === thisLegend && _item.visible === true && !Registry.traceIs(_item, 'notLegendIsolatable')) {
           isIsolated = false;
           break;
         }
       }
-      for (i = 0; i < fullData.length; i++) {
+      for (i = 0; i < allLegendItems.length; i++) {
+        _item = allLegendItems[i];
+
         // False is sticky; we don't change it. Also ensure we don't change states of itmes in other legend
-        if (fullData[i].visible === false || fullData[i].legend !== thisLegend) continue;
-        if (Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
+        if (_item.visible === false || _item.legend !== thisLegend) continue;
+        if (Registry.traceIs(_item, 'notLegendIsolatable')) {
           continue;
         }
         switch (fullTrace.visible) {
           case 'legendonly':
-            setVisibility(fullData[i], true);
+            setVisibility(_item, true);
             break;
           case true:
             otherState = isIsolated ? true : 'legendonly';
-            isClicked = fullData[i] === fullTrace;
+            isClicked = _item === fullTrace;
             // N.B. consider traces that have a set legendgroup as toggleable
-            notInLegend = fullData[i].showlegend !== true && !fullData[i].legendgroup;
-            isInGroup = isClicked || hasLegendgroup && fullData[i].legendgroup === legendgroup;
-            setVisibility(fullData[i], isInGroup || notInLegend ? true : otherState);
+            notInLegend = _item.showlegend !== true && !_item.legendgroup;
+            isInGroup = isClicked || hasLegendgroup && _item.legendgroup === legendgroup;
+            setVisibility(_item, isInGroup || notInLegend ? true : otherState);
             break;
         }
       }
@@ -12257,7 +12344,7 @@ module.exports = function handleClick(g, gd, numClicks) {
       var updateKeys = Object.keys(update);
       for (j = 0; j < updateKeys.length; j++) {
         key = updateKeys[j];
-        val = attrUpdate[key] = attrUpdate[key] || [];
+        val = dataUpdate[key] = dataUpdate[key] || [];
         val[carrIdx[i]] = update[key];
       }
     }
@@ -12266,17 +12353,23 @@ module.exports = function handleClick(g, gd, numClicks) {
     // values should be explicitly undefined for them to get properly culled
     // as updates and not accidentally reset to the default value. This fills
     // out sparse arrays with the required number of undefined values:
-    keys = Object.keys(attrUpdate);
+    keys = Object.keys(dataUpdate);
     for (i = 0; i < keys.length; i++) {
       key = keys[i];
-      for (j = 0; j < attrIndices.length; j++) {
+      for (j = 0; j < dataIndices.length; j++) {
         // Use hasOwnProperty to protect against falsy values:
-        if (!attrUpdate[key].hasOwnProperty(j)) {
-          attrUpdate[key][j] = undefined;
+        if (!dataUpdate[key].hasOwnProperty(j)) {
+          dataUpdate[key][j] = undefined;
         }
       }
     }
-    Registry.call('_guiRestyle', gd, attrUpdate, attrIndices);
+    if (shapesUpdated) {
+      Registry.call('_guiUpdate', gd, dataUpdate, {
+        shapes: updatedShapes
+      }, dataIndices);
+    } else {
+      Registry.call('_guiRestyle', gd, dataUpdate, dataIndices);
+    }
   }
 };
 
@@ -17391,14 +17484,39 @@ var dash = (__webpack_require__(9952)/* .dash */ .P);
 var extendFlat = (__webpack_require__(1426).extendFlat);
 var templatedArray = (__webpack_require__(4467).templatedArray);
 var axisPlaceableObjs = __webpack_require__(4695);
+var basePlotAttributes = __webpack_require__(9012);
 var shapeTexttemplateAttrs = (__webpack_require__(5386)/* .shapeTexttemplateAttrs */ .R);
 var shapeLabelTexttemplateVars = __webpack_require__(7281);
 module.exports = templatedArray('shape', {
-  visible: {
+  visible: extendFlat({}, basePlotAttributes.visible, {
+    editType: 'calc+arraydraw'
+  }),
+  showlegend: {
     valType: 'boolean',
-    dflt: true,
+    dflt: false,
     editType: 'calc+arraydraw'
   },
+  legend: extendFlat({}, basePlotAttributes.legend, {
+    editType: 'calc+arraydraw'
+  }),
+  legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {
+    editType: 'calc+arraydraw'
+  }),
+  legendgrouptitle: {
+    text: extendFlat({}, basePlotAttributes.legendgrouptitle.text, {
+      editType: 'calc+arraydraw'
+    }),
+    font: fontAttrs({
+      editType: 'calc+arraydraw'
+    }),
+    editType: 'calc+arraydraw'
+  },
+  legendrank: extendFlat({}, basePlotAttributes.legendrank, {
+    editType: 'calc+arraydraw'
+  }),
+  legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {
+    editType: 'calc+arraydraw'
+  }),
   type: {
     valType: 'enumerated',
     values: ['circle', 'rect', 'path', 'line'],
@@ -17764,8 +17882,18 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
   function coerce(attr, dflt) {
     return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
   }
+  shapeOut._isShape = true;
   var visible = coerce('visible');
   if (!visible) return;
+  var showlegend = coerce('showlegend');
+  if (showlegend) {
+    coerce('legend');
+    coerce('legendwidth');
+    coerce('legendgroup');
+    coerce('legendgrouptitle.text');
+    Lib.coerceFont(coerce, 'legendgrouptitle.font');
+    coerce('legendrank');
+  }
   var path = coerce('path');
   var dfltType = path ? 'path' : 'rect';
   var shapeType = coerce('type', dfltType);
@@ -18515,7 +18643,7 @@ function draw(gd) {
     }
   }
   for (var i = 0; i < fullLayout.shapes.length; i++) {
-    if (fullLayout.shapes[i].visible) {
+    if (fullLayout.shapes[i].visible === true) {
       drawOne(gd, i);
     }
   }
@@ -18541,7 +18669,7 @@ function drawOne(gd, index) {
 
   // this shape is gone - quit now after deleting it
   // TODO: use d3 idioms instead of deleting and redrawing every time
-  if (!options._input || options.visible === false) return;
+  if (!options._input || options.visible !== true) return;
   if (options.layer !== 'below') {
     drawShape(gd._fullLayout._shapeUpperLayer);
   } else if (options.xref === 'paper' || options.yref === 'paper') {
@@ -19009,7 +19137,7 @@ function eraseActiveShape(gd) {
       }
     }
     delete gd._fullLayout._activeShapeIndex;
-    Registry.call('_guiRelayout', gd, {
+    return Registry.call('_guiRelayout', gd, {
       shapes: list
     });
   }
@@ -19023,122 +19151,115 @@ function eraseActiveShape(gd) {
 "use strict";
 
 
+var overrideAll = (__webpack_require__(962).overrideAll);
+var basePlotAttributes = __webpack_require__(9012);
 var fontAttrs = __webpack_require__(1940);
 var dash = (__webpack_require__(9952)/* .dash */ .P);
 var extendFlat = (__webpack_require__(1426).extendFlat);
 var shapeTexttemplateAttrs = (__webpack_require__(5386)/* .shapeTexttemplateAttrs */ .R);
 var shapeLabelTexttemplateVars = __webpack_require__(7281);
-module.exports = {
+module.exports = overrideAll({
   newshape: {
+    visible: extendFlat({}, basePlotAttributes.visible, {}),
+    showlegend: {
+      valType: 'boolean',
+      dflt: false
+    },
+    legend: extendFlat({}, basePlotAttributes.legend, {}),
+    legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {}),
+    legendgrouptitle: {
+      text: extendFlat({}, basePlotAttributes.legendgrouptitle.text, {}),
+      font: fontAttrs({})
+    },
+    legendrank: extendFlat({}, basePlotAttributes.legendrank, {}),
+    legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {}),
     line: {
       color: {
-        valType: 'color',
-        editType: 'none'
+        valType: 'color'
       },
       width: {
         valType: 'number',
         min: 0,
-        dflt: 4,
-        editType: 'none'
+        dflt: 4
       },
       dash: extendFlat({}, dash, {
-        dflt: 'solid',
-        editType: 'none'
-      }),
-      editType: 'none'
+        dflt: 'solid'
+      })
     },
     fillcolor: {
       valType: 'color',
-      dflt: 'rgba(0,0,0,0)',
-      editType: 'none'
+      dflt: 'rgba(0,0,0,0)'
     },
     fillrule: {
       valType: 'enumerated',
       values: ['evenodd', 'nonzero'],
-      dflt: 'evenodd',
-      editType: 'none'
+      dflt: 'evenodd'
     },
     opacity: {
       valType: 'number',
       min: 0,
       max: 1,
-      dflt: 1,
-      editType: 'none'
+      dflt: 1
     },
     layer: {
       valType: 'enumerated',
       values: ['below', 'above'],
-      dflt: 'above',
-      editType: 'none'
+      dflt: 'above'
     },
     drawdirection: {
       valType: 'enumerated',
       values: ['ortho', 'horizontal', 'vertical', 'diagonal'],
-      dflt: 'diagonal',
-      editType: 'none'
+      dflt: 'diagonal'
     },
+    name: extendFlat({}, basePlotAttributes.name, {}),
     label: {
       text: {
         valType: 'string',
-        dflt: '',
-        editType: 'none'
+        dflt: ''
       },
       texttemplate: shapeTexttemplateAttrs({
-        newshape: true,
-        editType: 'none'
+        newshape: true
       }, {
         keys: Object.keys(shapeLabelTexttemplateVars)
       }),
-      font: fontAttrs({
-        editType: 'none'
-      }),
+      font: fontAttrs({}),
       textposition: {
         valType: 'enumerated',
-        values: ['top left', 'top center', 'top right', 'middle left', 'middle center', 'middle right', 'bottom left', 'bottom center', 'bottom right', 'start', 'middle', 'end'],
-        editType: 'none'
+        values: ['top left', 'top center', 'top right', 'middle left', 'middle center', 'middle right', 'bottom left', 'bottom center', 'bottom right', 'start', 'middle', 'end']
       },
       textangle: {
         valType: 'angle',
-        dflt: 'auto',
-        editType: 'none'
+        dflt: 'auto'
       },
       xanchor: {
         valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
-        dflt: 'auto',
-        editType: 'none'
+        dflt: 'auto'
       },
       yanchor: {
         valType: 'enumerated',
-        values: ['top', 'middle', 'bottom'],
-        editType: 'none'
+        values: ['top', 'middle', 'bottom']
       },
       padding: {
         valType: 'number',
         dflt: 3,
-        min: 0,
-        editType: 'none'
-      },
-      editType: 'none'
-    },
-    editType: 'none'
+        min: 0
+      }
+    }
   },
   activeshape: {
     fillcolor: {
       valType: 'color',
-      dflt: 'rgb(255,0,255)',
-      editType: 'none'
+      dflt: 'rgb(255,0,255)'
     },
     opacity: {
       valType: 'number',
       min: 0,
       max: 1,
-      dflt: 0.5,
-      editType: 'none'
-    },
-    editType: 'none'
+      dflt: 0.5
+    }
   }
-};
+}, 'none', 'from-root');
 
 /***/ }),
 
@@ -19178,6 +19299,15 @@ function dfltLabelYanchor(isLine, labelTextPosition) {
   return isLine ? 'bottom' : labelTextPosition.indexOf('top') !== -1 ? 'top' : labelTextPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
 }
 module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce) {
+  coerce('newshape.visible');
+  coerce('newshape.name');
+  coerce('newshape.showlegend');
+  coerce('newshape.legend');
+  coerce('newshape.legendwidth');
+  coerce('newshape.legendgroup');
+  coerce('newshape.legendgrouptitle.text');
+  Lib.coerceFont(coerce, 'newshape.legendgrouptitle.font');
+  coerce('newshape.legendrank');
   coerce('newshape.drawdirection');
   coerce('newshape.layer');
   coerce('newshape.fillcolor');
@@ -19589,6 +19719,17 @@ function createShapeObj(outlines, dragOptions, dragmode) {
   var polygons = readPaths(d, gd, plotinfo, isActiveShape);
   var newShape = {
     editable: true,
+    visible: newStyle.visible,
+    name: newStyle.name,
+    showlegend: newStyle.showlegend,
+    legend: newStyle.legend,
+    legendwidth: newStyle.legendwidth,
+    legendgroup: newStyle.legendgroup,
+    legendgrouptitle: {
+      text: newStyle.legendgrouptitle.text,
+      font: newStyle.legendgrouptitle.font
+    },
+    legendrank: newStyle.legendrank,
     label: newStyle.label,
     xref: xPaper ? 'paper' : xaxis._id,
     yref: yPaper ? 'paper' : yaxis._id,
@@ -22569,9 +22710,11 @@ for (var i = 0; i < methodNames.length; i++) {
 register(__webpack_require__(7368));
 
 // register all registrable components modules
-register([__webpack_require__(2199), __webpack_require__(211),
-// fx needs to come after legend
-__webpack_require__(2745), __webpack_require__(2468), __webpack_require__(7322), __webpack_require__(9853), __webpack_require__(8804), __webpack_require__(763), __webpack_require__(3243), __webpack_require__(3137), __webpack_require__(7218), __webpack_require__(3312), __webpack_require__(7369), __webpack_require__(1081), __webpack_require__(2311), __webpack_require__(4168)]);
+register([__webpack_require__(2745), __webpack_require__(2468), __webpack_require__(7322), __webpack_require__(9853), __webpack_require__(8804), __webpack_require__(763), __webpack_require__(3243), __webpack_require__(3137), __webpack_require__(7218), __webpack_require__(3312), __webpack_require__(7369), __webpack_require__(1081), __webpack_require__(2311), __webpack_require__(2199),
+// legend needs to come after shape | legend defaults depends on shapes
+__webpack_require__(211),
+// fx needs to come after legend | unified hover defaults depends on legends
+__webpack_require__(4168)]);
 
 // locales en and en-US are required for default behavior
 register([__webpack_require__(2177), __webpack_require__(7815)]);
@@ -29067,9 +29210,8 @@ module.exports = function containerArrayMatch(astr) {
 "use strict";
 
 
-var Lib = __webpack_require__(1828);
-var extendFlat = Lib.extendFlat;
-var isPlainObject = Lib.isPlainObject;
+var extendFlat = (__webpack_require__(1426).extendFlat);
+var isPlainObject = __webpack_require__(1965);
 var traceOpts = {
   valType: 'flaglist',
   extras: ['none'],
@@ -29831,6 +29973,11 @@ exports.addFrames = main.addFrames;
 exports.deleteFrames = main.deleteFrames;
 exports.animate = main.animate;
 exports.setPlotConfig = main.setPlotConfig;
+var getGraphDiv = (__webpack_require__(4401).getGraphDiv);
+var eraseActiveShape = (__webpack_require__(4031).eraseActiveShape);
+exports.deleteActiveShape = function (gd) {
+  return eraseActiveShape(getGraphDiv(gd));
+};
 exports.toImage = __webpack_require__(403);
 exports.validate = __webpack_require__(4936);
 exports.downloadImage = __webpack_require__(7239);
@@ -32003,6 +32150,15 @@ function _relayout(gd, aobj) {
   // TODO: do we really need special aobj.height/width handling here?
   // couldn't editType do this?
   if (updateAutosize(gd) || aobj.height || aobj.width) flags.plot = true;
+
+  // update shape legends
+  var shapes = fullLayout.shapes;
+  for (i = 0; i < shapes.length; i++) {
+    if (shapes[i].showlegend) {
+      flags.calc = true;
+      break;
+    }
+  }
   if (flags.plot || flags.calc) {
     flags.layoutReplot = true;
   }
@@ -47382,7 +47538,7 @@ exports.a0 = function (calcdata, arg1) {
     // would suggest), but by 'module plot method' so that if some traces
     // share the same module plot method (e.g. bar and histogram), we
     // only call it one!
-    if (trace._module.plot === plotMethod) {
+    if (trace._module && trace._module.plot === plotMethod) {
       moduleCalcData.push(cd);
     } else {
       remainingCalcData.push(cd);
@@ -59114,7 +59270,7 @@ var Lib = __webpack_require__(1828);
 module.exports = function (traceIn, traceOut, layout, coerce, opts) {
   opts = opts || {};
   coerce('textposition');
-  Lib.coerceFont(coerce, 'textfont', layout.font);
+  Lib.coerceFont(coerce, 'textfont', opts.font || layout.font);
   if (!opts.noSelect) {
     coerce('selected.textfont.color');
     coerce('unselected.textfont.color');
@@ -60131,7 +60287,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.24.3';
+exports.version = '2.25.0';
 
 /***/ }),
 
