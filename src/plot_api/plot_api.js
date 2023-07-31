@@ -884,10 +884,9 @@ function concatTypedArray(arr0, arr1) {
  * @param {Object} update The key:array map of target attributes to extend
  * @param {Number|Number[]} indices The locations of traces to be extended
  * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening
- * @param {Boolean} [redrawGraph] Redraw the graph after adding traces
  *
  */
-function extendTraces(gd, update, indices, maxPoints, redrawGraph) {
+function extendTraces(gd, update, indices, maxPoints) {
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -938,14 +937,23 @@ function extendTraces(gd, update, indices, maxPoints, redrawGraph) {
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = typeof redrawGraph === 'undefined' || redrawGraph ? exports.redraw(gd) : gd;
+    var promise = gd;
+    if (gd._context.redrawMin > 0) {
+        Lib.throttle(
+            gd._fullLayout._uid + '-redraw',
+            gd._context.redrawMinimumInterval,
+            function() { promise = exports.redraw(gd); }
+        );
+    } else {
+        promise = exports.redraw(gd);
+    }
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     Queue.add(gd, exports.prependTraces, undoArgs, extendTraces, arguments);
 
     return promise;
 }
 
-function prependTraces(gd, update, indices, maxPoints, redrawGraph) {
+function prependTraces(gd, update, indices, maxPoints) {
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -995,7 +1003,16 @@ function prependTraces(gd, update, indices, maxPoints, redrawGraph) {
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = typeof redrawGraph === 'undefined' || redrawGraph ? exports.redraw(gd) : gd;
+    var promise = gd;
+    if (gd._context.redrawMin > 0) {
+        Lib.throttle(
+            gd._fullLayout._uid + '-redraw',
+            gd._context.redrawMinimumInterval,
+            function() { promise = exports.redraw(gd); }
+        );
+    } else {
+        promise = exports.redraw(gd);
+    }
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     Queue.add(gd, exports.extendTraces, undoArgs, prependTraces, arguments);
 
