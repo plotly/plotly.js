@@ -156,9 +156,13 @@ module.exports = function setConvert(ax, fullLayout) {
         var arrayOut = new Array(len);
 
         for(var i = 0; i < len; i++) {
-            var v0 = (arrayIn[0] || [])[i];
-            var v1 = (arrayIn[1] || [])[i];
-            arrayOut[i] = getCategoryIndex([v0, v1]);
+            var vs = [];
+            for(var j = 0; j < ax.levelNr; j++) {
+                vs.push((arrayIn[j] || [])[i]);
+            }
+            // var v0 = (arrayIn[0] || [])[i];
+            // var v1 = (arrayIn[1] || [])[i];
+            arrayOut[i] = getCategoryIndex(vs);
         }
 
         return arrayOut;
@@ -333,6 +337,7 @@ module.exports = function setConvert(ax, fullLayout) {
         // N.B. multicategory axes don't define d2c and d2l,
         // as 'data-to-calcdata' conversion needs to take into
         // account all data array items as in ax.makeCalcdata.
+        var sortLib = require('../../lib/sort_traces');
 
         ax.r2d = ax.c2d = ax.l2d = getCategoryName;
         ax.d2r = ax.d2l_noadd = getCategoryPosition;
@@ -357,9 +362,10 @@ module.exports = function setConvert(ax, fullLayout) {
             return ensureNumber(v);
         };
 
-        ax.setupMultiCategory = function(fullData) {
+        ax.setupMultiCategory = function(gd) {
+            var fullData = gd._fullData;
             var traceIndices = ax._traceIndices;
-            var i, j;
+            var i;
 
             var group = ax._matchGroup;
             if(group && ax._categories.length === 0) {
@@ -371,49 +377,58 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
             }
 
-            // [ [cnt, {$cat: index}], for 1,2 ]
-            var seen = [[0, {}], [0, {}]];
-            // [ [arrayIn[0][i], arrayIn[1][i]], for i .. N ]
-            var list = [];
+            var xs = [];
+            var fullObjectList = [];
+            var cols = [];
+
+            for(var k = 0; k < fullData[traceIndices[0]][axLetter].length; k++) {
+                cols.push('col' + k.toString());
+            }
+            // Don't think that the trace should be drawn at all if the lengths don't match. Removing the arrays length check. It is better to fail loudly than silently.
 
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
 
                 if(axLetter in trace) {
                     var arrayIn = trace[axLetter];
-                    var len = trace._length || Lib.minRowLength(arrayIn);
+                    if(isArrayOrTypedArray(arrayIn[0])) {
+                        var arrays = arrayIn.map(function(x) {
+                            return x;
+                        });
+                        arrays.push(trace.y);
 
-                    if(isArrayOrTypedArray(arrayIn[0]) && isArrayOrTypedArray(arrayIn[1])) {
-                        for(j = 0; j < len; j++) {
-                            var v0 = arrayIn[0][j];
-                            var v1 = arrayIn[1][j];
+                        var objList = sortLib.matrixToObjectList(arrays, cols);
 
-                            if(isValidCategory(v0) && isValidCategory(v1)) {
-                                list.push([v0, v1]);
+                        Array.prototype.push.apply(fullObjectList, objList);
 
-                                if(!(v0 in seen[0][1])) {
-                                    seen[0][1][v0] = seen[0][0]++;
-                                }
-                                if(!(v1 in seen[1][1])) {
-                                    seen[1][1][v1] = seen[1][0]++;
-                                }
-                            }
-                        }
+                        // convert the trace data from list to object and sort (backwards, stable sort)
+                        var sortedObjectList = sortLib.sortObjectList(cols, objList);
+                        var matrix = sortLib.objectListToList(sortedObjectList);
+                        var sortedMatrix = sortLib.sortedMatrix(matrix);
+
+                        xs = sortedMatrix[0].slice();
+                        var y = sortedMatrix[1];
+
+                        // Could/should set sorted y axis values for each trace as the sorted values are already available.
+                        // Need write access to gd._fullData, bad? Should probably be done right at newPlot, or on setting gd._fullData
+                        var transposedXs = sortLib.transpose(xs);
+                        gd._fullData[i].x = transposedXs;
+                        gd._fullData[i].y = y;
                     }
                 }
             }
+            ax.levelNr = xs[0].length;
+            ax.levels = xs[0].map(function(_, idx) {return idx;});
 
-            list.sort(function(a, b) {
-                var ind0 = seen[0][1];
-                var d = ind0[a[0]] - ind0[b[0]];
-                if(d) return d;
 
-                var ind1 = seen[1][1];
-                return ind1[a[1]] - ind1[b[1]];
-            });
+            var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList.slice());
+            var fullList = sortLib.objectListToList(fullSortedObjectList);
+            var fullSortedMatrix = sortLib.sortedMatrix(fullList);
 
-            for(i = 0; i < list.length; i++) {
-                setCategoryIndex(list[i]);
+            var fullXs = fullSortedMatrix[0].slice();
+
+            for(i = 0; i < fullXs.length; i++) {
+                setCategoryIndex(fullXs[i]);
             }
         };
     }
