@@ -938,7 +938,7 @@ function extendTraces(gd, update, indices, maxPoints) {
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
     var promise = gd;
-    if (gd._context.redrawMin > 0) {
+    if (gd._context.redrawMinimumInterval > 0) {
         Lib.throttle(
             gd._fullLayout._uid + '-redraw',
             gd._context.redrawMinimumInterval,
@@ -1004,7 +1004,7 @@ function prependTraces(gd, update, indices, maxPoints) {
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
     var promise = gd;
-    if (gd._context.redrawMin > 0) {
+    if (gd._context.redrawMinimumInterval > 0) {
         Lib.throttle(
             gd._fullLayout._uid + '-redraw',
             gd._context.redrawMinimumInterval,
