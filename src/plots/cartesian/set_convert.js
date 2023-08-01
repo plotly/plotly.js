@@ -486,6 +486,9 @@ module.exports = function setConvert(ax, fullLayout) {
             return;
         }
 
+        var nullRange0 = range[0] === null;
+        var nullRange1 = range[1] === null;
+
         if(ax.type === 'date' && !ax.autorange) {
             // check if milliseconds or js date objects are provided for range
             // and convert to date strings
@@ -510,7 +513,7 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
             } else {
                 if(!isNumeric(range[i])) {
-                    if(isNumeric(range[1 - i])) {
+                    if(!(nullRange0 || nullRange1) && isNumeric(range[1 - i])) {
                         range[i] = range[1 - i] * (i ? 10 : 0.1);
                     } else {
                         ax[rangeAttr] = dflt;
