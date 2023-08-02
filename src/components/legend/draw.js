@@ -113,7 +113,7 @@ function drawOne(gd, opts) {
 
             calcdata.push([{ trace: shapeLegend }]);
         }
-        if(!calcdata.length) return;
+
         legendData = fullLayout.showlegend && getLegendData(calcdata, legendObj, fullLayout._legends.length > 1);
     } else {
         if(!legendObj.entries) return;
