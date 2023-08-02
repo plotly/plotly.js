@@ -281,7 +281,7 @@ module.exports = {
             'computed in relation to the input data.',
             'See `rangemode` for more info.',
             'If `range` is provided and it has a value for both the',
-            ' lower and upper bound, `autorange` is set to *false*.',
+            'lower and upper bound, `autorange` is set to *false*.',
             'Using *min* applies autorange only to set the minimum.',
             'Using *max* applies autorange only to set the maximum.',
             'Using *min reversed* applies autorange only to set the minimum on a reversed axis.',
