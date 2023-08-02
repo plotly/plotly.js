@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.25.1] -- 2023-08-02
+
+### Fixed
+ - Fix clearing legend using react (regression introduced in 2.25.0) [[#6695](https://github.com/plotly/plotly.js/pull/6695)]
+
+
 ## [2.25.0] -- 2023-07-25
 
 ### Added
