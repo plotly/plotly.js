@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v2.25.0
+* plotly.js (finance) v2.25.1
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -11325,7 +11325,6 @@ function drawOne(gd, opts) {
         trace: shapeLegend
       }]);
     }
-    if (!calcdata.length) return;
     legendData = fullLayout.showlegend && getLegendData(calcdata, legendObj, fullLayout._legends.length > 1);
   } else {
     if (!legendObj.entries) return;
@@ -66594,7 +66593,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.25.0';
+exports.version = '2.25.1';
 
 /***/ }),
 
