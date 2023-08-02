@@ -1204,6 +1204,36 @@ describe('legend relayout update', function() {
         .then(done, done.fail);
     });
 
+    it('should clear an empty legend & add legend using react', function(done) {
+        var fig1 = {
+            data: [{y: [1, 2]}],
+            layout: {showlegend: true}
+        };
+
+        var fig2 = {
+            data: [],
+            layout: {showlegend: true}
+        };
+
+        Plotly.newPlot(gd, fig1)
+        .then(function() {
+            expect(d3SelectAll('.legend')[0].length).toBe(1);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig2);
+        })
+        .then(function() {
+            expect(d3SelectAll('.legend')[0].length).toBe(0);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig1);
+        })
+        .then(function() {
+            expect(d3SelectAll('.legend')[0].length).toBe(1);
+        })
+        .then(done, done.fail);
+    });
+
     it('should be able to add & clear multiple legends using react', function(done) {
         var fig1 = {
             data: [{
