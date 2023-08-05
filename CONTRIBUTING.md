@@ -118,7 +118,7 @@ npm start
 
 This command bundles up the source files and opens up a tab in your browser.
 
-#### Step 6: Open up the console and start developing
+#### Step 6a: Open up the console and start developing
 
 A typical workflow is to make some modifications to the source, update the
 test dashboard, inspect and debug the changes, then repeat. The test dashboard
@@ -145,6 +145,12 @@ Three additional helpers exist that are refreshed every second:
 
 There is also a search bar in the top right of the dashboard. This fuzzy-searches
 image mocks based on their file name and trace type.
+
+#### Step 6b: Create a mock to test new features
+Create a new JSON inside
+`test\image\mocks\`
+which you'll then be able to search from the test dashboard
+
 
 #### Step 7: Regenerate plot-schema in "test" folder then review & commit potential changes
 

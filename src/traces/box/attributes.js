@@ -221,12 +221,14 @@ module.exports = {
 
     boxmean: {
         valType: 'enumerated',
-        values: [true, 'sd', false],
+        values: [true, 'sd', '1sigma', '2sigma', '3sigma', '4sigma', '5sigma', '6sigma', false],
         editType: 'calc',
         description: [
             'If *true*, the mean of the box(es)\' underlying distribution is',
             'drawn as a dashed line inside the box(es).',
             'If *sd* the standard deviation is also drawn.',
+            'If 1sigma the box is drawn between mean+-sigma, instead of median+-quartile',
+            '1sigma, 2sigma, ... , 6sigma are availabe',
             'Defaults to *true* when `mean` is set.',
             'Defaults to *sd* when `sd` is set',
             'Otherwise defaults to *false*.'
@@ -375,6 +377,15 @@ module.exports = {
             'Sets the width of the whiskers relative to',
             'the box\' width.',
             'For example, with 1, the whiskers are as wide as the box(es).'
+        ].join(' ')
+    },
+
+    whiskerdisable: {
+        valType: 'boolean',
+        dflt: false,
+        editType: 'calc',
+        description: [
+            'Determines whether or not whiskers are visible'
         ].join(' ')
     },
 

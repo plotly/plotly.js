@@ -179,7 +179,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         // clicked point from a box during click-to-select
         pointData2.hoverOnBox = true;
 
-        if(attr === 'mean' && ('sd' in di) && trace.boxmean === 'sd') {
+        if(attr === 'mean' && ('sd' in di) && ((trace.boxmean === 'sd') || (trace.boxmean === '1sigma') || (trace.boxmean === '2sigma') || (trace.boxmean === '3sigma') || (trace.boxmean === '4sigma') || (trace.boxmean === '5sigma') || (trace.boxmean === '6sigma'))) {
             pointData2[vLetter + 'err'] = di.sd;
         }
 
