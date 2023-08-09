@@ -773,7 +773,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(matches.yaxes) axList = axList.concat(matches.yaxes);
 
         var attrs = {};
-        var ax, i, rangeInitial;
+        var ax, i;
 
         // For reset+autosize mode:
         // If *any* of the main axes is not at its initial range
@@ -785,11 +785,15 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
-                if((ax._rangeInitial && (
-                        ax.range[0] !== ax._rangeInitial[0] ||
-                        ax.range[1] !== ax._rangeInitial[1]
+                var hasRangeInitial =
+                    ax._rangeInitial0 !== undefined ||
+                    ax._rangeInitial1 !== undefined;
+
+                if((hasRangeInitial && (
+                        ax.range[0] !== ax._rangeInitial0 ||
+                        ax.range[1] !== ax._rangeInitial1
                     )) ||
-                    (!ax._rangeInitial && !ax.autorange)
+                    (!hasRangeInitial && ax.autorange !== true)
                 ) {
                     doubleClickConfig = 'reset';
                     break;
@@ -819,12 +823,17 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 ax = axList[i];
 
                 if(!ax.fixedrange) {
-                    if(!ax._rangeInitial) {
-                        attrs[ax._name + '.autorange'] = true;
+                    var axName = ax._name;
+                    if(ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined) {
+                        attrs[axName + '.autorange'] = true;
+                    } else if(ax._rangeInitial0 === undefined) {
+                        attrs[axName + '.autorange'] = 'min';
+                        attrs[axName + '.range'] = [null, ax._rangeInitial1];
+                    } else if(ax._rangeInitial1 === undefined) {
+                        attrs[axName + '.range'] = [ax._rangeInitial0, null];
+                        attrs[axName + '.autorange'] = 'max';
                     } else {
-                        rangeInitial = ax._rangeInitial;
-                        attrs[ax._name + '.range[0]'] = rangeInitial[0];
-                        attrs[ax._name + '.range[1]'] = rangeInitial[1];
+                        attrs[axName + '.range'] = [ax._rangeInitial0, ax._rangeInitial1];
                     }
                 }
             }

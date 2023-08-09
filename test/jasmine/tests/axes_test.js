@@ -2524,7 +2524,7 @@ describe('Test axes', function() {
             };
         });
 
-        it('should save range when autosize turned off and rangeInitial isn\'t defined', function() {
+        it('should save range when autosize turned off and rangeInitials are not defined', function() {
             ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
                 gd._fullLayout[ax].autorange = false;
             });
@@ -2532,39 +2532,64 @@ describe('Test axes', function() {
             hasOneAxisChanged = saveRangeInitial(gd);
 
             expect(hasOneAxisChanged).toBe(true);
-            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.5, 1]);
-            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+            expect(gd._fullLayout.xaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.xaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.yaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.yaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.xaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.xaxis2._rangeInitial1).toEqual(1);
+
+            expect(gd._fullLayout.yaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.yaxis2._rangeInitial1).toEqual(1);
         });
 
-        it('should not overwrite saved range if rangeInitial is defined', function() {
+        it('should not overwrite saved range if rangeInitials are defined', function() {
             ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
-                gd._fullLayout[ax]._rangeInitial = gd._fullLayout[ax].range.slice();
+                gd._fullLayout[ax]._rangeInitial0 = gd._fullLayout[ax].range[0];
+                gd._fullLayout[ax]._rangeInitial1 = gd._fullLayout[ax].range[1];
                 gd._fullLayout[ax].range = [0, 1];
             });
 
             hasOneAxisChanged = saveRangeInitial(gd);
 
             expect(hasOneAxisChanged).toBe(false);
-            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.5, 1]);
-            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+
+            expect(gd._fullLayout.xaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.xaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.yaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.yaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.xaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.xaxis2._rangeInitial1).toEqual(1);
+
+            expect(gd._fullLayout.yaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.yaxis2._rangeInitial1).toEqual(1);
         });
 
         it('should save range when overwrite option is on and range has changed', function() {
             ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
-                gd._fullLayout[ax]._rangeInitial = gd._fullLayout[ax].range.slice();
+                gd._fullLayout[ax]._rangeInitial0 = gd._fullLayout[ax].range[0];
+                gd._fullLayout[ax]._rangeInitial1 = gd._fullLayout[ax].range[1];
             });
             gd._fullLayout.xaxis2.range = [0.2, 0.4];
 
             hasOneAxisChanged = saveRangeInitial(gd, true);
             expect(hasOneAxisChanged).toBe(true);
-            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.2, 0.4]);
-            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+
+            expect(gd._fullLayout.xaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.xaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.yaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.yaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.xaxis2._rangeInitial0).toEqual(0.2);
+            expect(gd._fullLayout.xaxis2._rangeInitial1).toEqual(0.4);
+
+            expect(gd._fullLayout.yaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.yaxis2._rangeInitial1).toEqual(1);
         });
     });
 

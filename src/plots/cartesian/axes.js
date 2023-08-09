@@ -321,14 +321,18 @@ axes.saveRangeInitial = function(gd, overwrite) {
 
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
-        var isNew = (ax._rangeInitial === undefined);
-        var hasChanged = isNew || !(
-            ax.range[0] === ax._rangeInitial[0] &&
-            ax.range[1] === ax._rangeInitial[1]
+        var isNew =
+            ax._rangeInitial0 === undefined &&
+            ax._rangeInitial1 === undefined;
+
+        var hasChanged = isNew || (
+            ax.range[0] !== ax._rangeInitial0 ||
+            ax.range[1] !== ax._rangeInitial1
         );
 
-        if((isNew && ax.autorange === false) || (overwrite && hasChanged)) {
-            ax._rangeInitial = ax.range.slice();
+        if((isNew && ax.autorange !== true) || (overwrite && hasChanged)) {
+            ax._rangeInitial0 = ax.autorange === 'min' ? undefined : ax.range[0];
+            ax._rangeInitial1 = ax.autorange === 'max' ? undefined : ax.range[1];
             hasOneAxisChanged = true;
         }
     }
