@@ -933,6 +933,7 @@ lib.expandObjectPaths = function(data) {
                 if((match = key.match(dottedPropertyRegex))) {
                     datum = data[key];
                     prop = match[1];
+                    if(prop === '__proto__') continue;
 
                     delete data[key];
 
@@ -941,6 +942,8 @@ lib.expandObjectPaths = function(data) {
                     datum = data[key];
 
                     prop = match[1];
+                    if(prop === '__proto__') continue;
+
                     idx = parseInt(match[2]);
 
                     delete data[key];
@@ -969,9 +972,12 @@ lib.expandObjectPaths = function(data) {
                     } else {
                         // This is the case where this property is the end of the line,
                         // e.g. xaxis.range[0]
+
+                        if(prop === '__proto__') continue;
                         data[prop][idx] = lib.expandObjectPaths(datum);
                     }
                 } else {
+                    if(key === '__proto__') continue;
                     data[key] = lib.expandObjectPaths(data[key]);
                 }
             }
