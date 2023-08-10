@@ -708,6 +708,56 @@ describe('Animate API details', function() {
     });
 });
 
+describe('Animate expandObjectPaths do not pollute prototype', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('should not pollute prototype - layout object', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{y: [1, 3, 2]}]
+        }).then(function() {
+            return Plotly.animate(gd, {
+                transition: {duration: 10},
+                data: [{y: [2, 3, 1]}],
+                traces: [0],
+                layout: {'__proto__.polluted': true}
+            });
+        }).then(function() {
+            setTimeout(function() {
+                var a = {};
+                expect(a.polluted).toBeUndefined();
+            }, 100);
+        }).then(done, done.fail);
+    });
+
+    it('should not pollute prototype - data object', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{y: [1, 3, 2]}]
+        }).then(function() {
+            return Plotly.animate(gd, {
+                transition: {duration: 10},
+                data: [{y: [2, 3, 1], '__proto__.polluted': true}],
+                traces: [0]
+            });
+        }).then(function() {
+            setTimeout(function() {
+                var a = {};
+                expect(a.polluted).toBeUndefined();
+            }, 100);
+        }).then(done, done.fail);
+    });
+});
+
 describe('Animating multiple axes', function() {
     var gd;
 
