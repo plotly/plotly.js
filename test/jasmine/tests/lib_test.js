@@ -468,7 +468,9 @@ describe('Test lib.js:', function() {
 
         it('should fail on a bad property string', function() {
             var badStr = [
-                [], {}, false, undefined, null, NaN, Infinity
+                [], {}, false, undefined, null, NaN, Infinity,
+                // should guard against prototype pollution
+                'x.__proto__.polluted', 'x.y.__proto__.polluted'
             ];
 
             function badProp(i) {
