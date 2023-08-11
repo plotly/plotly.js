@@ -730,7 +730,7 @@ describe('Animate expandObjectPaths do not pollute prototype', function() {
                 transition: {duration: 10},
                 data: [{y: [2, 3, 1]}],
                 traces: [0],
-                layout: {'__proto__.polluted': true}
+                layout: {'__proto__.polluted': true, 'x.__proto__.polluted': true}
             });
         }).then(delay(100)).then(function() {
             var a = {};
