@@ -9,6 +9,16 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.25.2] -- 2023-08-11
+
+### Changed
+ - Update Croatian translations in `hr` locale [[#6690](https://github.com/plotly/plotly.js/pull/6690)],
+   with thanks to @Mkranj for the contribution!
+
+### Fixed
+ - Fix potential prototype pollution in plot API calls [[#6703](https://github.com/plotly/plotly.js/pull/6703), [6704](https://github.com/plotly/plotly.js/pull/6704)]
+
+
 ## [2.25.1] -- 2023-08-02
 
 ### Fixed
