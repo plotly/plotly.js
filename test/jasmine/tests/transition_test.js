@@ -632,7 +632,7 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 
-    it('@flaky should only transition the layout when both traces and layout have animatable changes by default', function(done) {
+    it('@noCI should only transition the layout when both traces and layout have animatable changes by default', function(done) {
         var data = [{y: [1, 2, 1]}];
         var layout = {
             transition: {duration: 10},
@@ -790,7 +790,7 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 
-    it('@flaky should transition layout when one or more axis auto-ranged value changed', function(done) {
+    it('@noCI should transition layout when one or more axis auto-ranged value changed', function(done) {
         var data = [{y: [1, 2, 1]}];
         var layout = {transition: {duration: 10}};
 

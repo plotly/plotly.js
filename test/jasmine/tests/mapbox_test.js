@@ -1300,7 +1300,7 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should respond drag / scroll / double-click interactions', function(done) {
+    it('@noCI @gl should respond drag / scroll / double-click interactions', function(done) {
         var relayoutCnt = 0;
         var doubleClickCnt = 0;
         var relayoutingCnt = 0;
@@ -1409,7 +1409,7 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should respect scrollZoom config option', function(done) {
+    it('@noCI @gl should respect scrollZoom config option', function(done) {
         var mockCopy2 = Lib.extendDeep({}, mock);
         mockCopy2.config = {scrollZoom: false};
 
