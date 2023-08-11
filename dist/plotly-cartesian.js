@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.25.1
+* plotly.js (cartesian) v2.25.2
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -25976,6 +25976,10 @@ lib.objectFromPath = function (path, value) {
 // the inner loop.
 var dottedPropertyRegex = /^([^\[\.]+)\.(.+)?/;
 var indexedPropertyRegex = /^([^\.]+)\[([0-9]+)\](\.)?(.+)?/;
+function notValid(prop) {
+  // guard against polluting __proto__ and other internals getters and setters
+  return prop.slice(0, 2) === '__';
+}
 lib.expandObjectPaths = function (data) {
   var match, key, prop, datum, idx, dest, trailingPath;
   if (typeof data === 'object' && !Array.isArray(data)) {
@@ -25984,11 +25988,13 @@ lib.expandObjectPaths = function (data) {
         if (match = key.match(dottedPropertyRegex)) {
           datum = data[key];
           prop = match[1];
+          if (notValid(prop)) continue;
           delete data[key];
           data[prop] = lib.extendDeepNoArrays(data[prop] || {}, lib.objectFromPath(key, lib.expandObjectPaths(datum))[prop]);
         } else if (match = key.match(indexedPropertyRegex)) {
           datum = data[key];
           prop = match[1];
+          if (notValid(prop)) continue;
           idx = parseInt(match[2]);
           delete data[key];
           data[prop] = data[prop] || [];
@@ -26014,9 +26020,12 @@ lib.expandObjectPaths = function (data) {
           } else {
             // This is the case where this property is the end of the line,
             // e.g. xaxis.range[0]
+
+            if (notValid(prop)) continue;
             data[prop][idx] = lib.expandObjectPaths(datum);
           }
         } else {
+          if (notValid(key)) continue;
           data[key] = lib.expandObjectPaths(data[key]);
         }
       }
@@ -26941,13 +26950,19 @@ module.exports = function nestedProperty(container, propStr) {
   if (isNumeric(propStr)) propStr = String(propStr);else if (typeof propStr !== 'string' || propStr.substr(propStr.length - 4) === '[-1]') {
     throw 'bad property string';
   }
-  var j = 0;
   var propParts = propStr.split('.');
   var indexed;
   var indices;
-  var i;
+  var i, j;
+  for (j = 0; j < propParts.length; j++) {
+    // guard against polluting __proto__ and other internals
+    if (String(propParts[j]).slice(0, 2) === '__') {
+      throw 'bad property string';
+    }
+  }
 
   // check for parts of the nesting hierarchy that are numbers (ie array elements)
+  j = 0;
   while (j < propParts.length) {
     // look for non-bracket chars, then any number of [##] blocks
     indexed = String(propParts[j]).match(/^([^\[\]]*)((\[\-?[0-9]*\])+)$/);
@@ -70699,7 +70714,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.25.1';
+exports.version = '2.25.2';
 
 /***/ }),
 
