@@ -925,6 +925,11 @@ lib.objectFromPath = function(path, value) {
 var dottedPropertyRegex = /^([^\[\.]+)\.(.+)?/;
 var indexedPropertyRegex = /^([^\.]+)\[([0-9]+)\](\.)?(.+)?/;
 
+function notValid(prop) {
+    // guard against polluting __proto__ and other internals getters and setters
+    return prop.slice(0, 2) === '__';
+}
+
 lib.expandObjectPaths = function(data) {
     var match, key, prop, datum, idx, dest, trailingPath;
     if(typeof data === 'object' && !Array.isArray(data)) {
@@ -933,6 +938,7 @@ lib.expandObjectPaths = function(data) {
                 if((match = key.match(dottedPropertyRegex))) {
                     datum = data[key];
                     prop = match[1];
+                    if(notValid(prop)) continue;
 
                     delete data[key];
 
@@ -941,6 +947,8 @@ lib.expandObjectPaths = function(data) {
                     datum = data[key];
 
                     prop = match[1];
+                    if(notValid(prop)) continue;
+
                     idx = parseInt(match[2]);
 
                     delete data[key];
@@ -969,9 +977,12 @@ lib.expandObjectPaths = function(data) {
                     } else {
                         // This is the case where this property is the end of the line,
                         // e.g. xaxis.range[0]
+
+                        if(notValid(prop)) continue;
                         data[prop][idx] = lib.expandObjectPaths(datum);
                     }
                 } else {
+                    if(notValid(key)) continue;
                     data[key] = lib.expandObjectPaths(data[key]);
                 }
             }
