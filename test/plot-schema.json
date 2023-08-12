@@ -15607,18 +15607,12 @@
      "valType": "string"
     },
     "boxmean": {
-     "description": "If *true*, the mean of the box(es)' underlying distribution is drawn as a dashed line inside the box(es). If *sd* the standard deviation is also drawn. If 1sigma the box is drawn between mean+-sigma, instead of median+-quartile 1sigma, 2sigma, ... , 6sigma are availabe Defaults to *true* when `mean` is set. Defaults to *sd* when `sd` is set Otherwise defaults to *false*.",
+     "description": "If *true*, the mean of the box(es)' underlying distribution is drawn as a dashed line inside the box(es). If *sd* the standard deviation is also drawn. Defaults to *true* when `mean` is set. Defaults to *sd* when `sd` is set Otherwise defaults to *false*.",
      "editType": "calc",
      "valType": "enumerated",
      "values": [
       true,
       "sd",
-      "1sigma",
-      "2sigma",
-      "3sigma",
-      "4sigma",
-      "5sigma",
-      "6sigma",
       false
      ]
     },
@@ -16600,6 +16594,13 @@
      "editType": "calc",
      "valType": "data_array"
     },
+    "sdmultiple": {
+     "description": "Scales the box size when sizemode=sd Allowing boxes to be drawn across any stddev range For example 1-stddev, 3-stddev, 5-stddev",
+     "dflt": 1,
+     "editType": "calc",
+     "min": 0,
+     "valType": "number"
+    },
     "sdsrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `sd`.",
      "editType": "none",
@@ -16641,6 +16642,22 @@
      "dflt": true,
      "editType": "style",
      "valType": "boolean"
+    },
+    "showwhiskers": {
+     "description": "Determines whether or not whiskers are visible",
+     "dflt": true,
+     "editType": "calc",
+     "valType": "boolean"
+    },
+    "sizemode": {
+     "description": "Sets the upper and lower bound for the boxes quartiles means box is drawn between Q1 and Q3 SD means the box is drawn between Mean +- Standard Deviation Argument sdmultiple (default 1) to scale the box size So it could be drawn 1-stddev, 3-stddev etc",
+     "dflt": "quartiles",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "quartiles",
+      "sd"
+     ]
     },
     "stream": {
      "editType": "calc",
@@ -16740,12 +16757,6 @@
       false,
       "legendonly"
      ]
-    },
-    "whiskerdisable": {
-     "description": "Determines whether or not whiskers are visible",
-     "dflt": false,
-     "editType": "calc",
-     "valType": "boolean"
     },
     "whiskerwidth": {
      "description": "Sets the width of the whiskers relative to the box' width. For example, with 1, the whiskers are as wide as the box(es).",

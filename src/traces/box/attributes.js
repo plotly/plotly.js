@@ -250,8 +250,6 @@ module.exports = {
             'If *true*, the mean of the box(es)\' underlying distribution is',
             'drawn as a dashed line inside the box(es).',
             'If *sd* the standard deviation is also drawn.',
-            'If 1sigma the box is drawn between mean+-sigma, instead of median+-quartile',
-            '1sigma, 2sigma, ... , 6sigma are availabe',
             'Defaults to *true* when `mean` is set.',
             'Defaults to *sd* when `sd` is set',
             'Otherwise defaults to *false*.'
