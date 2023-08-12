@@ -769,7 +769,7 @@ describe('Test box hover:', function() {
         },
         nums: [
             'median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7',
-            'mean ± σ: 0.45 ± 0.2362908'
+            'mean ± 1σ: 0.45 ± 0.2362908'
         ],
         name: ['radishes', '', '', '', '', '', '', ''],
         axis: 'day 1'
@@ -927,7 +927,7 @@ describe('Test box hover:', function() {
             'max: 1',
             'lower fence: 0.3',
             'upper fence: 1',
-            'mean ± σ: 0.6833333 ± 0.2409472',
+            'mean ± 1σ: 0.6833333 ± 0.2409472',
         ],
         name: ['carrots', '', '', '', '', '', '', ''],
         axis: 'day 2'
@@ -943,7 +943,7 @@ describe('Test box hover:', function() {
             '(max: 1, day 2)',
             '(lower fence: 0.3, day 2)',
             '(upper fence: 1, day 2)',
-            '(mean ± σ: 0.6833333 ± 0.2409472, day 2)'
+            '(mean ± 1σ: 0.6833333 ± 0.2409472, day 2)'
         ],
         name: ['carrots', '', '', '', '', '', '', ''],
     }, {

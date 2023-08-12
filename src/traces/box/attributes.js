@@ -218,10 +218,33 @@ module.exports = {
             'right (left) for vertical boxes and above (below) for horizontal boxes'
         ].join(' ')
     },
-
+    sdmultiple: {
+        valType: 'number',
+        min: 0,
+        editType: 'calc',
+        dflt: 1,
+        description: [
+            'Scales the box size when sizemode=sd',
+            'Allowing boxes to be drawn across any stddev range',
+            'For example 1-stddev, 3-stddev, 5-stddev',
+        ].join(' ')
+    },
+    sizemode: {
+        valType: 'enumerated',
+        values: ['quartiles', 'sd'],
+        editType: 'calc',
+        dflt: 'quartiles',
+        description: [
+            'Sets the upper and lower bound for the boxes',
+            'quartiles means box is drawn between Q1 and Q3',
+            'SD means the box is drawn between Mean +- Standard Deviation',
+            'Argument sdmultiple (default 1) to scale the box size',
+            'So it could be drawn 1-stddev, 3-stddev etc',
+        ].join(' ')
+    },
     boxmean: {
         valType: 'enumerated',
-        values: [true, 'sd', '1sigma', '2sigma', '3sigma', '4sigma', '5sigma', '6sigma', false],
+        values: [true, 'sd', false],
         editType: 'calc',
         description: [
             'If *true*, the mean of the box(es)\' underlying distribution is',
@@ -380,9 +403,9 @@ module.exports = {
         ].join(' ')
     },
 
-    whiskerdisable: {
+    showwhiskers: {
         valType: 'boolean',
-        dflt: false,
+        dflt: true,
         editType: 'calc',
         description: [
             'Determines whether or not whiskers are visible'
