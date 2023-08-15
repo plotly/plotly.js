@@ -95,8 +95,8 @@ function plotBoxAndWhiskers(sel, axes, trace, t, isStatic) {
 
         var posm0 = posAxis.l2p(lcenter - bdPos0 * nw) + bPosPxOffset;
         var posm1 = posAxis.l2p(lcenter + bdPos1 * nw) + bPosPxOffset;
-        var q1 = trace.sizemode === 'sd' ? valAxis.c2p(d.mean - 1 * d.sd, true) :
-                                           valAxis.c2p(d.q1, true);
+        var sdmode = trace.sizemode === 'sd';
+        var q1 = valAxis.c2p(sdmode ? d.mean - d.sd : d.q1, true);
         var q3 = trace.sizemode === 'sd' ? valAxis.c2p(d.mean + 1 * d.sd, true) :
                                            valAxis.c2p(d.q3, true);
         // make sure median isn't identical to either of the
