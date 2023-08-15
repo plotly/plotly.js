@@ -286,7 +286,9 @@ module.exports = function calc(gd, trace) {
                 q1: _(gd, 'q1:'),
                 q3: _(gd, 'q3:'),
                 max: _(gd, 'max:'),
-                mean: (trace.boxmean === 'sd') || (trace.sizemode === 'sd') ? (gd, 'mean ± ' + trace.sdmultiple + 'σ:') : _(gd, 'mean:'),
+                mean: (trace.boxmean === 'sd') || (trace.sizemode === 'sd') ? 
+                    _(gd, 'mean ± σ:').replace('σ', trace.sdmultiple===1 ? 'σ' : (trace.sdmultiple + 'σ')) : //displaying mean +- Nσ whilst supporting translations
+                    _(gd, 'mean:'),
                 lf: _(gd, 'lower fence:'),
                 uf: _(gd, 'upper fence:')
             }
