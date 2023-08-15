@@ -155,6 +155,7 @@ module.exports = {
     hovertemplate: boxAttrs.hovertemplate,
 
     quartilemethod: boxAttrs.quartilemethod,
+    showwhiskers: boxAttrs.showwhiskers,
 
     box: {
         visible: {
