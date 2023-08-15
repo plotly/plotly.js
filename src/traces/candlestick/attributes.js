@@ -51,6 +51,9 @@ module.exports = {
     hovertext: OHLCattrs.hovertext,
 
     whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
+    showwhiskers: boxAttrs.showwhiskers,
+    sizemode: boxAttrs.sizemode,
+
 
     hoverlabel: OHLCattrs.hoverlabel,
 };

@@ -29,6 +29,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('whiskerwidth');
+    coerce('sizemode');
+    coerce('showwhiskers');
 
     layout._requestRangeslider[traceOut.xaxis] = true;
 };
