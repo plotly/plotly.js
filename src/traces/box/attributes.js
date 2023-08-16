@@ -403,10 +403,10 @@ module.exports = {
 
     showwhiskers: {
         valType: 'boolean',
-        dflt: true,
         editType: 'calc',
         description: [
-            'Determines whether or not whiskers are visible'
+            'Determines whether or not whiskers are visible.',
+            'Defaults to true for `sizemode` *quartiles*, false for *sd*.'
         ].join(' ')
     },
 
