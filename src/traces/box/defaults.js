@@ -43,7 +43,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     coerce('whiskerwidth');
     var sizemode = coerce('sizemode');
-    if (sizemode === 'quartiles') {
+    if(sizemode === 'quartiles') {
         coerce('boxmean', boxmeanDflt);
     }
     coerce('showwhiskers', sizemode === 'quartiles');
