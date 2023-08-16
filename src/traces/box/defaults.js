@@ -40,10 +40,12 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
             if(sd && sd.length) boxmeanDflt = 'sd';
         }
     }
-    coerce('boxmean', boxmeanDflt);
 
     coerce('whiskerwidth');
     var sizemode = coerce('sizemode');
+    if (sizemode === 'quartiles') {
+        coerce('boxmean', boxmeanDflt);
+    }
     coerce('showwhiskers', sizemode === 'quartiles');
     coerce('sdmultiple');
     coerce('width');
