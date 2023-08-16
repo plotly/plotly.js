@@ -16644,8 +16644,7 @@
      "valType": "boolean"
     },
     "showwhiskers": {
-     "description": "Determines whether or not whiskers are visible",
-     "dflt": true,
+     "description": "Determines whether or not whiskers are visible. Defaults to true for `sizemode` *quartiles*, false for *sd*.",
      "editType": "calc",
      "valType": "boolean"
     },
@@ -72453,7 +72452,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover. For violin traces, the name will also be used for the position coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are missing and the position axis is categorical. Note that the trace name is also used as a default value for attribute `scalegroup` (please see its description for details).",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover. For violin traces, the name will also be used for the position coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are missing and the position axis is categorical. Note that the trace name is also used as a default value for attribute `scalegroup` (please see its description for details).",
      "editType": "calc+clearAxisTypes",
      "valType": "string"
     },
