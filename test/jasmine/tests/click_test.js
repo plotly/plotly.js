@@ -1017,6 +1017,35 @@ describe('Test click interactions:', function() {
             })
             .then(done, done.fail);
         });
+
+        it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (case of partial ranges)', function(done) {
+            mockCopy = setRanges(mockCopy);
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 3, 4]}
+            ], {
+                xaxis: {range: [1, null]},
+                yaxis: {range: [null, 3]},
+                width: 600,
+                height: 600
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 3.2]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.8, 3]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.2, 3.2]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.8, 4.2]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 3.2]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.8, 3]);
+            })
+            .then(done, done.fail);
+        });
     });
 
     describe('zoom interactions', function() {
