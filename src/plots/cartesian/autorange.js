@@ -76,23 +76,21 @@ function getAutoRange(gd, ax) {
         maxmax = Math.max(maxmax, maxArray[i].val);
     }
 
-    var axReverse = false;
+    var autorange = ax.autorange;
+    var axReverse =
+        autorange === 'reversed' ||
+        autorange === 'min reversed' ||
+        autorange === 'max reversed';
 
-    if(ax.range) {
+    if(!axReverse && ax.range) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         axReverse = rng[1] < rng[0];
     }
+
     // one-time setting to easily reverse the axis
     // when plotting from code
     if(ax.autorange === 'reversed') {
-        axReverse = true;
         ax.autorange = true;
-    } else if(ax.autorange === 'min reversed') {
-        axReverse = true;
-        ax.autorange = 'min';
-    } else if(ax.autorange === 'max reversed') {
-        axReverse = true;
-        ax.autorange = 'max';
     }
 
     var rangeMode = ax.rangemode;
