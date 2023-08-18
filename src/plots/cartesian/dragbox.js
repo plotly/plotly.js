@@ -785,13 +785,15 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
+                var r0 = ax._rangeInitial0;
+                var r1 = ax._rangeInitial1;
                 var hasRangeInitial =
-                    ax._rangeInitial0 !== undefined ||
-                    ax._rangeInitial1 !== undefined;
+                    r0 !== undefined ||
+                    r1 !== undefined;
 
                 if((hasRangeInitial && (
-                        ax.range[0] !== ax._rangeInitial0 ||
-                        ax.range[1] !== ax._rangeInitial1
+                        (r0 !== undefined && r0 !== ax.range[0]) ||
+                        (r1 !== undefined && r1 !== ax.range[1])
                     )) ||
                     (!hasRangeInitial && ax.autorange !== true)
                 ) {

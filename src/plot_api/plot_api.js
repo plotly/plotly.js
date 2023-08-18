@@ -1843,6 +1843,17 @@ function axRangeSupplyDefaultsByPass(gd, flags, specs) {
         var axIn = gd.layout[axName];
         var axOut = fullLayout[axName];
         axOut.autorange = axIn.autorange;
+
+        var r0 = axOut._rangeInitial0;
+        var r1 = axOut._rangeInitial1;
+        // partial range needs supplyDefaults
+        if(
+            (r0 === undefined && r1 !== undefined) ||
+            (r0 !== undefined && r1 === undefined)
+        ) {
+            return false;
+        }
+
         if(axIn.range) {
             axOut.range = axIn.range.slice();
         }
