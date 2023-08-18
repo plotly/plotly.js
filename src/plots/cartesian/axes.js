@@ -330,9 +330,11 @@ axes.saveRangeInitial = function(gd, overwrite) {
             ax.range[1] !== ax._rangeInitial1
         );
 
-        if((isNew && ax.autorange !== true) || (overwrite && hasChanged)) {
-            ax._rangeInitial0 = ax.autorange === 'min' ? undefined : ax.range[0];
-            ax._rangeInitial1 = ax.autorange === 'max' ? undefined : ax.range[1];
+        var autorange = ax.autorange;
+        if((isNew && autorange !== true) || (overwrite && hasChanged)) {
+            ax._rangeInitial0 = (autorange === 'min' || autorange === 'max reversed') ? undefined : ax.range[0];
+            ax._rangeInitial1 = (autorange === 'max' || autorange === 'min reversed') ? undefined : ax.range[1];
+            ax._autorangeInitial = autorange;
             hasOneAxisChanged = true;
         }
     }

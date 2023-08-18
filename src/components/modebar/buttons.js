@@ -274,11 +274,11 @@ function handleCartesian(gd, ev) {
                     if(ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined) {
                         aobj[axName + '.autorange'] = true;
                     } else if(ax._rangeInitial0 === undefined) {
-                        aobj[axName + '.autorange'] = 'min';
+                        aobj[axName + '.autorange'] = ax._autorangeInitial;
                         aobj[axName + '.range'] = [null, ax._rangeInitial1];
                     } else if(ax._rangeInitial1 === undefined) {
                         aobj[axName + '.range'] = [ax._rangeInitial0, null];
-                        aobj[axName + '.autorange'] = 'max';
+                        aobj[axName + '.autorange'] = ax._autorangeInitial;
                     } else {
                         aobj[axName + '.range'] = [ax._rangeInitial0, ax._rangeInitial1];
                     }
