@@ -16738,6 +16738,13 @@
      "editType": "calc",
      "valType": "data_array"
     },
+    "sdmultiple": {
+     "description": "Scales the box size when sizemode=sd Allowing boxes to be drawn across any stddev range For example 1-stddev, 3-stddev, 5-stddev",
+     "dflt": 1,
+     "editType": "calc",
+     "min": 0,
+     "valType": "number"
+    },
     "sdsrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `sd`.",
      "editType": "none",
@@ -16779,6 +16786,21 @@
      "dflt": true,
      "editType": "style",
      "valType": "boolean"
+    },
+    "showwhiskers": {
+     "description": "Determines whether or not whiskers are visible. Defaults to true for `sizemode` *quartiles*, false for *sd*.",
+     "editType": "calc",
+     "valType": "boolean"
+    },
+    "sizemode": {
+     "description": "Sets the upper and lower bound for the boxes quartiles means box is drawn between Q1 and Q3 SD means the box is drawn between Mean +- Standard Deviation Argument sdmultiple (default 1) to scale the box size So it could be drawn 1-stddev, 3-stddev etc",
+     "dflt": "quartiles",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "quartiles",
+      "sd"
+     ]
     },
     "stream": {
      "editType": "calc",

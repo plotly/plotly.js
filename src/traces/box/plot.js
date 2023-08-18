@@ -54,6 +54,7 @@ function plotBoxAndWhiskers(sel, axes, trace, t, isStatic) {
     var wdPos = t.wdPos || 0;
     var bPosPxOffset = t.bPosPxOffset || 0;
     var whiskerWidth = trace.whiskerwidth || 0;
+    var showWhiskers = (trace.showwhiskers !== false);
     var notched = trace.notched || false;
     var nw = notched ? 1 - 2 * trace.notchwidth : 1;
 
@@ -94,12 +95,15 @@ function plotBoxAndWhiskers(sel, axes, trace, t, isStatic) {
 
         var posm0 = posAxis.l2p(lcenter - bdPos0 * nw) + bPosPxOffset;
         var posm1 = posAxis.l2p(lcenter + bdPos1 * nw) + bPosPxOffset;
-        var q1 = valAxis.c2p(d.q1, true);
-        var q3 = valAxis.c2p(d.q3, true);
+        var sdmode = trace.sizemode === 'sd';
+        var q1 = valAxis.c2p(sdmode ? d.mean - d.sd : d.q1, true);
+        var q3 = sdmode ? valAxis.c2p(d.mean + d.sd, true) :
+                          valAxis.c2p(d.q3, true);
         // make sure median isn't identical to either of the
         // quartiles, so we can see it
         var m = Lib.constrain(
-            valAxis.c2p(d.med, true),
+            sdmode ? valAxis.c2p(d.mean, true) :
+                     valAxis.c2p(d.med, true),
             Math.min(q1, q3) + 1, Math.max(q1, q3) - 1
         );
 
@@ -109,7 +113,7 @@ function plotBoxAndWhiskers(sel, axes, trace, t, isStatic) {
         // - box always has d.lf, but boxpoints can be anything
         // - violin has d.lf and should always use it (boxpoints is undefined)
         // - candlestick has only min/max
-        var useExtremes = (d.lf === undefined) || (trace.boxpoints === false);
+        var useExtremes = (d.lf === undefined) || (trace.boxpoints === false) || sdmode;
         var lf = valAxis.c2p(useExtremes ? d.min : d.lf, true);
         var uf = valAxis.c2p(useExtremes ? d.max : d.uf, true);
         var ln = valAxis.c2p(d.ln, true);
@@ -127,10 +131,13 @@ function plotBoxAndWhiskers(sel, axes, trace, t, isStatic) {
                 'V' + pos0 + // right edge
                 (notched ? 'H' + un + 'L' + m + ',' + posm0 + 'L' + ln + ',' + pos0 : '') + // bottom notched edge
                 'Z' + // end of the box
-                'M' + q1 + ',' + posc + 'H' + lf + 'M' + q3 + ',' + posc + 'H' + uf + // whiskers
-                (whiskerWidth === 0 ?
-                    '' : // whisker caps
-                    'M' + lf + ',' + posw0 + 'V' + posw1 + 'M' + uf + ',' + posw0 + 'V' + posw1
+                (showWhiskers ?
+                    'M' + q1 + ',' + posc + 'H' + lf + 'M' + q3 + ',' + posc + 'H' + uf + // whiskers
+                    (whiskerWidth === 0 ?
+                        '' : // whisker caps
+                        'M' + lf + ',' + posw0 + 'V' + posw1 + 'M' + uf + ',' + posw0 + 'V' + posw1
+                    ) :
+                    ''
                 )
             );
         } else {
@@ -148,10 +155,13 @@ function plotBoxAndWhiskers(sel, axes, trace, t, isStatic) {
                     ''
                 ) + // notched left edge
                 'Z' + // end of the box
-                'M' + posc + ',' + q1 + 'V' + lf + 'M' + posc + ',' + q3 + 'V' + uf + // whiskers
-                (whiskerWidth === 0 ?
-                    '' : // whisker caps
-                    'M' + posw0 + ',' + lf + 'H' + posw1 + 'M' + posw0 + ',' + uf + 'H' + posw1
+                (showWhiskers ?
+                    'M' + posc + ',' + q1 + 'V' + lf + 'M' + posc + ',' + q3 + 'V' + uf + // whiskers
+                    (whiskerWidth === 0 ?
+                        '' : // whisker caps
+                        'M' + posw0 + ',' + lf + 'H' + posw1 + 'M' + posw0 + ',' + uf + 'H' + posw1
+                    ) :
+                    ''
                 )
             );
         }
