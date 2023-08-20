@@ -330,12 +330,13 @@ module.exports = {
         ].join(' ')
     },
     // scaleanchor: not used directly, just put here for reference
-    // values are any opposite-letter axis id
+    // values are any opposite-letter axis id, or `false`.
     scaleanchor: {
         valType: 'enumerated',
         values: [
             constants.idRegex.x.toString(),
-            constants.idRegex.y.toString()
+            constants.idRegex.y.toString(),
+            false
         ],
         editType: 'plot',
         description: [
@@ -353,7 +354,12 @@ module.exports = {
             'and the last constraint encountered will be ignored to avoid possible',
             'inconsistent constraints via `scaleratio`.',
             'Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint',
-            'is currently forbidden.'
+            'is currently forbidden.',
+            'Setting `false` allows to remove a default constraint (occasionally,',
+            'you may need to prevent a default `scaleanchor` constraint from',
+            'being applied, eg. when having an image trace `yaxis: {scaleanchor: "x"}`',
+            'is set automatically in order for pixels to be rendered as squares,',
+            'setting `yaxis: {scaleanchor: false}` allows to remove the constraint).'
         ].join(' ')
     },
     scaleratio: {
