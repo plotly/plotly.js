@@ -661,13 +661,18 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
         // approximation to height offset to center the font
         // to avoid getBoundingClientRect
         if(aTitle === MAIN_TITLE) {
+            var titleOffset = 0;
             if(legendObj.title.side === 'left') {
                 // add extra space between legend title and itmes
                 width += constants.itemGap * 2;
+            } else if(legendObj.title.side === 'top center') {
+                if(legendObj._width) titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
+            } else if(legendObj.title.side === 'top right') {
+                if(legendObj._width) titleOffset = legendObj._width - bw - constants.titlePad - width;
             }
 
             svgTextUtils.positionText(textEl,
-                bw + constants.titlePad,
+                bw + constants.titlePad + titleOffset,
                 bw + lineHeight
             );
         } else { // legend item

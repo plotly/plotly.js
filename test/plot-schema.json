@@ -2923,13 +2923,15 @@
      },
      "role": "object",
      "side": {
-      "description": "Determines the location of legend's title with respect to the legend items. Defaulted to *top* with `orientation` is *h*. Defaulted to *left* with `orientation` is *v*. The *top left* options could be used to expand legend area in both x and y sides.",
+      "description": "Determines the location of legend's title with respect to the legend items. Defaulted to *top* with `orientation` is *h*. Defaulted to *left* with `orientation` is *v*. The *top left* options could be used to expand top center and top right are for alignment when `orientation` is *h*. legend area in both x and y sides.",
       "editType": "legend",
       "valType": "enumerated",
       "values": [
        "top",
        "left",
-       "top left"
+       "top left",
+       "top center",
+       "top right"
       ]
      },
      "text": {
