@@ -253,7 +253,7 @@ function handleOneAxDefaults(axIn, axOut, opts) {
         scaleanchor = Lib.coerce(axIn, axOut, {
             scaleanchor: {
                 valType: 'enumerated',
-                values: linkableAxes
+                values: linkableAxes.concat([false])
             }
         }, 'scaleanchor', scaleanchorDflt);
     }

@@ -11157,12 +11157,13 @@
     },
     "role": "object",
     "scaleanchor": {
-     "description": "If set to another axis id (e.g. `x2`, `y`), the range of this axis changes together with the range of the corresponding axis such that the scale of pixels per unit is in a constant ratio. Both axes are still zoomable, but when you zoom one, the other will zoom the same amount, keeping a fixed midpoint. `constrain` and `constraintoward` determine how we enforce the constraint. You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}` but you can only link axes of the same `type`. The linked axis can have the opposite letter (to constrain the aspect ratio) or the same letter (to match scales across subplots). Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant and the last constraint encountered will be ignored to avoid possible inconsistent constraints via `scaleratio`. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden.",
+     "description": "If set to another axis id (e.g. `x2`, `y`), the range of this axis changes together with the range of the corresponding axis such that the scale of pixels per unit is in a constant ratio. Both axes are still zoomable, but when you zoom one, the other will zoom the same amount, keeping a fixed midpoint. `constrain` and `constraintoward` determine how we enforce the constraint. You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}` but you can only link axes of the same `type`. The linked axis can have the opposite letter (to constrain the aspect ratio) or the same letter (to match scales across subplots). Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant and the last constraint encountered will be ignored to avoid possible inconsistent constraints via `scaleratio`. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden. Setting `false` allows to remove a default constraint (occasionally, you may need to prevent a default `scaleanchor` constraint from being applied, eg. when having an image trace `yaxis: {scaleanchor: \"x\"}` is set automatically in order for pixels to be rendered as squares, setting `yaxis: {scaleanchor: false}` allows to remove the constraint).",
      "editType": "plot",
      "valType": "enumerated",
      "values": [
       "/^x([2-9]|[1-9][0-9]+)?( domain)?$/",
-      "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
+      "/^y([2-9]|[1-9][0-9]+)?( domain)?$/",
+      false
      ]
     },
     "scaleratio": {
@@ -12167,12 +12168,13 @@
     },
     "role": "object",
     "scaleanchor": {
-     "description": "If set to another axis id (e.g. `x2`, `y`), the range of this axis changes together with the range of the corresponding axis such that the scale of pixels per unit is in a constant ratio. Both axes are still zoomable, but when you zoom one, the other will zoom the same amount, keeping a fixed midpoint. `constrain` and `constraintoward` determine how we enforce the constraint. You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}` but you can only link axes of the same `type`. The linked axis can have the opposite letter (to constrain the aspect ratio) or the same letter (to match scales across subplots). Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant and the last constraint encountered will be ignored to avoid possible inconsistent constraints via `scaleratio`. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden.",
+     "description": "If set to another axis id (e.g. `x2`, `y`), the range of this axis changes together with the range of the corresponding axis such that the scale of pixels per unit is in a constant ratio. Both axes are still zoomable, but when you zoom one, the other will zoom the same amount, keeping a fixed midpoint. `constrain` and `constraintoward` determine how we enforce the constraint. You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}` but you can only link axes of the same `type`. The linked axis can have the opposite letter (to constrain the aspect ratio) or the same letter (to match scales across subplots). Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant and the last constraint encountered will be ignored to avoid possible inconsistent constraints via `scaleratio`. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden. Setting `false` allows to remove a default constraint (occasionally, you may need to prevent a default `scaleanchor` constraint from being applied, eg. when having an image trace `yaxis: {scaleanchor: \"x\"}` is set automatically in order for pixels to be rendered as squares, setting `yaxis: {scaleanchor: false}` allows to remove the constraint).",
      "editType": "plot",
      "valType": "enumerated",
      "values": [
       "/^x([2-9]|[1-9][0-9]+)?( domain)?$/",
-      "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
+      "/^y([2-9]|[1-9][0-9]+)?( domain)?$/",
+      false
      ]
     },
     "scaleratio": {
