@@ -275,7 +275,7 @@ module.exports = {
                 'Defaulted to *top* with `orientation` is *h*.',
                 'Defaulted to *left* with `orientation` is *v*.',
                 'The *top left* options could be used to expand',
-                'top center and top right are for alignment when `orientation` is *h*.',
+                'top center and top right are for horizontal alignment',
                 'legend area in both x and y sides.'
             ].join(' ')
         },
