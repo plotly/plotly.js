@@ -39,7 +39,8 @@
   ],
   "layout": {
     "legend": {
-      "itemwidth": 60
+      "itemwidth": 60,
+      "title": { "text": "Title", "side": "top center" }
     }
   }
 }

@@ -668,7 +668,7 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
             } else if(legendObj.title.side === 'top center') {
                 if(legendObj._width) titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
             } else if(legendObj.title.side === 'top right') {
-                if(legendObj._width) titleOffset = legendObj._width - bw - constants.titlePad - width;
+                if(legendObj._width) titleOffset = legendObj._width - 2 * bw - constants.titlePad - width;
             }
 
             svgTextUtils.positionText(textEl,
