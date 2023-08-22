@@ -82,11 +82,29 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 var range = coerceAxis('range');
 
                 var autorangeDflt = axOut.getAutorangeDflt(range);
+                var autorange = coerceAxis('autorange', autorangeDflt);
+                var autorangeTrue;
 
-                var autoRange = coerceAxis('autorange', autorangeDflt);
-                axIn.autorange = autoRange;
-                if(autoRange) {
-                    handleAutorangeOptionsDefaults(coerceAxis, autoRange, range);
+                // validate range and set autorange true for invalid partial ranges
+                if(range && (
+                    (range[0] === null && range[1] === null) ||
+                    (range[0] !== null && (autorange === 'min' || autorange === 'max reversed')) ||
+                    (range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))
+                )) {
+                    range = undefined;
+                    delete axOut.range;
+                    axOut.autorange = true;
+                    autorangeTrue = true;
+                }
+
+                if(!autorangeTrue) {
+                    autorangeDflt = axOut.getAutorangeDflt(range);
+                    autorange = coerceAxis('autorange', autorangeDflt);
+                }
+
+                axIn.autorange = autorange;
+                if(autorange) {
+                    handleAutorangeOptionsDefaults(coerceAxis, autorange, range);
 
                     if(axType === 'linear' || axType === '-') coerceAxis('rangemode');
                     if(axOut.isReversed()) axOut._m = -1;

@@ -719,12 +719,17 @@ describe('Test axes', function() {
             layoutIn = {
                 xaxis: { range: 'not-gonna-work' },
                 xaxis2: { range: [1] },
+                xaxis3: { range: [null, null] },
                 yaxis: { range: ['a', 2] },
                 yaxis2: { range: [1, 'b'] },
-                yaxis3: { range: [undefined, {}] }
+                yaxis3: { range: [undefined, {}] },
+                yaxis4: { range: [1, null], autorange: 'min' }, // second range is null not first
+                yaxis5: { range: [null, 2], autorange: 'max' }, // first range is null not second
+                yaxis6: { range: [1, null], autorange: 'max reversed' }, // second range is null not first
+                yaxis7: { range: [null, 2], autorange: 'min reversed' }, // first range is null not second
             };
-            layoutOut._subplots.cartesian.push('x2y2', 'xy3');
-            layoutOut._subplots.yaxis.push('x2', 'y2', 'y3');
+            layoutOut._subplots.cartesian.push('x2y2', 'xy3', 'x3y4', 'x3y5', 'x3y6', 'x3y7');
+            layoutOut._subplots.yaxis.push('x2', 'x3', 'y2', 'y3', 'y4', 'y5', 'y6', 'y7');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
