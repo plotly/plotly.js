@@ -103,6 +103,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // validate range and set autorange true for invalid partial ranges
     if(range && (
         (range[0] === null && range[1] === null) ||
+        ((range[0] === null || range[1] === null) && autorange === 'reversed') ||
         (range[0] !== null && (autorange === 'min' || autorange === 'max reversed')) ||
         (range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))
     )) {
