@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.25.2
+* plotly.js (gl3d) v2.26.0
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -10966,7 +10966,7 @@ module.exports = {
     }),
     side: {
       valType: 'enumerated',
-      values: ['top', 'left', 'top left'],
+      values: ['top', 'left', 'top left', 'top center', 'top right'],
       editType: 'legend'
     },
     editType: 'legend'
@@ -11743,11 +11743,16 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
     // approximation to height offset to center the font
     // to avoid getBoundingClientRect
     if (aTitle === MAIN_TITLE) {
+      var titleOffset = 0;
       if (legendObj.title.side === 'left') {
         // add extra space between legend title and itmes
         width += constants.itemGap * 2;
+      } else if (legendObj.title.side === 'top center') {
+        if (legendObj._width) titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
+      } else if (legendObj.title.side === 'top right') {
+        if (legendObj._width) titleOffset = legendObj._width - 2 * bw - 2 * constants.titlePad - width;
       }
-      svgTextUtils.positionText(textEl, bw + constants.titlePad, bw + lineHeight);
+      svgTextUtils.positionText(textEl, bw + constants.titlePad + titleOffset, bw + lineHeight);
     } else {
       // legend item
       var x = constants.itemGap * 2 + legendObj.itemwidth;
@@ -13299,12 +13304,16 @@ function handleCartesian(gd, ev) {
         if (val === 'auto') {
           aobj[axName + '.autorange'] = true;
         } else if (val === 'reset') {
-          if (ax._rangeInitial === undefined) {
+          if (ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined) {
             aobj[axName + '.autorange'] = true;
+          } else if (ax._rangeInitial0 === undefined) {
+            aobj[axName + '.autorange'] = ax._autorangeInitial;
+            aobj[axName + '.range'] = [null, ax._rangeInitial1];
+          } else if (ax._rangeInitial1 === undefined) {
+            aobj[axName + '.range'] = [ax._rangeInitial0, null];
+            aobj[axName + '.autorange'] = ax._autorangeInitial;
           } else {
-            var rangeInitial = ax._rangeInitial.slice();
-            aobj[axName + '.range[0]'] = rangeInitial[0];
-            aobj[axName + '.range[1]'] = rangeInitial[1];
+            aobj[axName + '.range'] = [ax._rangeInitial0, ax._rangeInitial1];
           }
 
           // N.B. "reset" also resets showspikes
@@ -32056,6 +32065,12 @@ function axRangeSupplyDefaultsByPass(gd, flags, specs) {
     var axIn = gd.layout[axName];
     var axOut = fullLayout[axName];
     axOut.autorange = axIn.autorange;
+    var r0 = axOut._rangeInitial0;
+    var r1 = axOut._rangeInitial1;
+    // partial range needs supplyDefaults
+    if (r0 === undefined && r1 !== undefined || r0 !== undefined && r1 === undefined) {
+      return false;
+    }
     if (axIn.range) {
       axOut.range = axIn.range.slice();
     }
@@ -37086,6 +37101,7 @@ var axIds = __webpack_require__(1675);
 var getFromId = axIds.getFromId;
 var isLinked = axIds.isLinked;
 module.exports = {
+  applyAutorangeOptions: applyAutorangeOptions,
   getAutoRange: getAutoRange,
   makePadFn: makePadFn,
   doAutoRange: doAutoRange,
@@ -37143,15 +37159,16 @@ function getAutoRange(gd, ax) {
     if (minmin !== maxmax) break;
     maxmax = Math.max(maxmax, maxArray[i].val);
   }
-  var axReverse = false;
-  if (ax.range) {
+  var autorange = ax.autorange;
+  var axReverse = autorange === 'reversed' || autorange === 'min reversed' || autorange === 'max reversed';
+  if (!axReverse && ax.range) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
     axReverse = rng[1] < rng[0];
   }
+
   // one-time setting to easily reverse the axis
   // when plotting from code
   if (ax.autorange === 'reversed') {
-    axReverse = true;
     ax.autorange = true;
   }
   var rangeMode = ax.rangemode;
@@ -37250,6 +37267,8 @@ function getAutoRange(gd, ax) {
     mbest = (maxbest.val - minbest.val - calcBreaksLength(ax, minpt.val, maxpt.val)) / (axLen - getPadMin(minbest) - getPadMax(maxbest));
     newRange = [minbest.val - mbest * getPadMin(minbest), maxbest.val + mbest * getPadMax(maxbest)];
   }
+  newRange = applyAutorangeOptions(newRange, ax);
+  if (ax.limitRange) ax.limitRange();
 
   // maintain reversal
   if (axReverse) newRange.reverse();
@@ -37278,7 +37297,7 @@ function makePadFn(fullLayout, ax, max) {
   var extrappad = 0.05 * ax._length;
   var anchorAxis = ax._anchorAxis || {};
   if ((ax.ticklabelposition || '').indexOf('inside') !== -1 || (anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
-    var axReverse = ax.autorange === 'reversed';
+    var axReverse = ax.isReversed();
     if (!axReverse) {
       var rng = Lib.simpleMap(ax.range, ax.r2l);
       axReverse = rng[1] < rng[0];
@@ -37658,6 +37677,85 @@ function lessOrEqual(v0, v1) {
 function greaterOrEqual(v0, v1) {
   return v0 >= v1;
 }
+function applyAutorangeMinOptions(v, ax) {
+  var autorangeoptions = ax.autorangeoptions;
+  if (autorangeoptions && autorangeoptions.minallowed !== undefined && hasValidMinAndMax(ax, autorangeoptions.minallowed, autorangeoptions.maxallowed)) {
+    return autorangeoptions.minallowed;
+  }
+  if (autorangeoptions && autorangeoptions.clipmin !== undefined && hasValidMinAndMax(ax, autorangeoptions.clipmin, autorangeoptions.clipmax)) {
+    return Math.max(v, ax.d2l(autorangeoptions.clipmin));
+  }
+  return v;
+}
+function applyAutorangeMaxOptions(v, ax) {
+  var autorangeoptions = ax.autorangeoptions;
+  if (autorangeoptions && autorangeoptions.maxallowed !== undefined && hasValidMinAndMax(ax, autorangeoptions.minallowed, autorangeoptions.maxallowed)) {
+    return autorangeoptions.maxallowed;
+  }
+  if (autorangeoptions && autorangeoptions.clipmax !== undefined && hasValidMinAndMax(ax, autorangeoptions.clipmin, autorangeoptions.clipmax)) {
+    return Math.min(v, ax.d2l(autorangeoptions.clipmax));
+  }
+  return v;
+}
+function hasValidMinAndMax(ax, min, max) {
+  // in case both min and max are defined, ensure min < max
+  if (min !== undefined && max !== undefined) {
+    min = ax.d2l(min);
+    max = ax.d2l(max);
+    return min < max;
+  }
+  return true;
+}
+
+// this function should be (and is) called before reversing the range
+// so range[0] is the minimum and range[1] is the maximum
+function applyAutorangeOptions(range, ax) {
+  if (!ax || !ax.autorangeoptions) return range;
+  var min = range[0];
+  var max = range[1];
+  var include = ax.autorangeoptions.include;
+  if (include !== undefined) {
+    var lMin = ax.d2l(min);
+    var lMax = ax.d2l(max);
+    if (!Lib.isArrayOrTypedArray(include)) include = [include];
+    for (var i = 0; i < include.length; i++) {
+      var v = ax.d2l(include[i]);
+      if (lMin >= v) {
+        lMin = v;
+        min = v;
+      }
+      if (lMax <= v) {
+        lMax = v;
+        max = v;
+      }
+    }
+  }
+  min = applyAutorangeMinOptions(min, ax);
+  max = applyAutorangeMaxOptions(max, ax);
+  return [min, max];
+}
+
+/***/ }),
+
+/***/ 3074:
+/***/ (function(module) {
+
+"use strict";
+
+
+module.exports = function handleAutorangeOptionsDefaults(coerce, autorange, range) {
+  var minRange, maxRange;
+  if (range) {
+    var isReversed = autorange === 'reversed' || autorange === 'min reversed' || autorange === 'max reversed';
+    minRange = range[isReversed ? 1 : 0];
+    maxRange = range[isReversed ? 0 : 1];
+  }
+  var minallowed = coerce('autorangeoptions.minallowed', maxRange === null ? minRange : undefined);
+  var maxallowed = coerce('autorangeoptions.maxallowed', minRange === null ? maxRange : undefined);
+  if (minallowed === undefined) coerce('autorangeoptions.clipmin');
+  if (maxallowed === undefined) coerce('autorangeoptions.clipmax');
+  coerce('autorangeoptions.include');
+};
 
 /***/ }),
 
@@ -37992,10 +38090,13 @@ axes.saveRangeInitial = function (gd, overwrite) {
   var hasOneAxisChanged = false;
   for (var i = 0; i < axList.length; i++) {
     var ax = axList[i];
-    var isNew = ax._rangeInitial === undefined;
-    var hasChanged = isNew || !(ax.range[0] === ax._rangeInitial[0] && ax.range[1] === ax._rangeInitial[1]);
-    if (isNew && ax.autorange === false || overwrite && hasChanged) {
-      ax._rangeInitial = ax.range.slice();
+    var isNew = ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined;
+    var hasChanged = isNew || ax.range[0] !== ax._rangeInitial0 || ax.range[1] !== ax._rangeInitial1;
+    var autorange = ax.autorange;
+    if (isNew && autorange !== true || overwrite && hasChanged) {
+      ax._rangeInitial0 = autorange === 'min' || autorange === 'max reversed' ? undefined : ax.range[0];
+      ax._rangeInitial1 = autorange === 'max' || autorange === 'min reversed' ? undefined : ax.range[1];
+      ax._autorangeInitial = autorange;
       hasOneAxisChanged = true;
     }
   }
@@ -41587,6 +41688,7 @@ var handleTickLabelDefaults = __webpack_require__(6115);
 var handlePrefixSuffixDefaults = __webpack_require__(9426);
 var handleCategoryOrderDefaults = __webpack_require__(5258);
 var handleLineGridDefaults = __webpack_require__(2128);
+var handleAutorangeOptionsDefaults = __webpack_require__(3074);
 var setConvert = __webpack_require__(1994);
 var DAY_OF_WEEK = (__webpack_require__(5555).WEEKDAY_PATTERN);
 var HOUR = (__webpack_require__(5555).HOUR_PATTERN);
@@ -41638,11 +41740,28 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('ticklabeloverflow', ticklabelposition.indexOf('inside') !== -1 ? 'hide past domain' : axType === 'category' || axType === 'multicategory' ? 'allow' : 'hide past div');
   }
   setConvert(containerOut, layoutOut);
-  var autorangeDflt = !containerOut.isValidRange(containerIn.range);
-  if (autorangeDflt && options.reverseDflt) autorangeDflt = 'reversed';
-  var autoRange = coerce('autorange', autorangeDflt);
-  if (autoRange && (axType === 'linear' || axType === '-')) coerce('rangemode');
-  coerce('range');
+  coerce('minallowed');
+  coerce('maxallowed');
+  var range = coerce('range');
+  var autorangeDflt = containerOut.getAutorangeDflt(range, options);
+  var autorange = coerce('autorange', autorangeDflt);
+  var shouldAutorange;
+
+  // validate range and set autorange true for invalid partial ranges
+  if (range && (range[0] === null && range[1] === null || (range[0] === null || range[1] === null) && (autorange === 'reversed' || autorange === true) || range[0] !== null && (autorange === 'min' || autorange === 'max reversed') || range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))) {
+    range = undefined;
+    delete containerOut.range;
+    containerOut.autorange = true;
+    shouldAutorange = true;
+  }
+  if (!shouldAutorange) {
+    autorangeDflt = containerOut.getAutorangeDflt(range, options);
+    autorange = coerce('autorange', autorangeDflt);
+  }
+  if (autorange) {
+    handleAutorangeOptionsDefaults(coerce, autorange, range);
+    if (axType === 'linear' || axType === '-') coerce('rangemode');
+  }
   containerOut.cleanRange();
   handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
   if (axType !== 'category' && !options.noHover) coerce('hoverformat');
@@ -42360,7 +42479,7 @@ exports.handleDefaults = function (layoutIn, layoutOut, opts) {
       // special logic for coupling of range and autorange
       // if nobody explicitly specifies autorange, but someone does
       // explicitly specify range, autorange must be disabled.
-      if (attr === 'range' && val) {
+      if (attr === 'range' && val && axIn.range && axIn.range.length === 2 && axIn.range[0] !== null && axIn.range[1] !== null) {
         hasRange = true;
       }
       if (attr === 'autorange' && val === null && hasRange) {
@@ -42458,7 +42577,7 @@ function handleOneAxDefaults(axIn, axOut, opts) {
     scaleanchor = Lib.coerce(axIn, axOut, {
       scaleanchor: {
         valType: 'enumerated',
-        values: linkableAxes
+        values: linkableAxes.concat([false])
       }
     }, 'scaleanchor', scaleanchorDflt);
   }
@@ -43491,7 +43610,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     if (matches.xaxes) axList = axList.concat(matches.xaxes);
     if (matches.yaxes) axList = axList.concat(matches.yaxes);
     var attrs = {};
-    var ax, i, rangeInitial;
+    var ax, i;
 
     // For reset+autosize mode:
     // If *any* of the main axes is not at its initial range
@@ -43502,7 +43621,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
       doubleClickConfig = 'autosize';
       for (i = 0; i < axList.length; i++) {
         ax = axList[i];
-        if (ax._rangeInitial && (ax.range[0] !== ax._rangeInitial[0] || ax.range[1] !== ax._rangeInitial[1]) || !ax._rangeInitial && !ax.autorange) {
+        var r0 = ax._rangeInitial0;
+        var r1 = ax._rangeInitial1;
+        var hasRangeInitial = r0 !== undefined || r1 !== undefined;
+        if (hasRangeInitial && (r0 !== undefined && r0 !== ax.range[0] || r1 !== undefined && r1 !== ax.range[1]) || !hasRangeInitial && ax.autorange !== true) {
           doubleClickConfig = 'reset';
           break;
         }
@@ -43526,12 +43648,18 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
       for (i = 0; i < axList.length; i++) {
         ax = axList[i];
         if (!ax.fixedrange) {
-          if (!ax._rangeInitial) {
-            attrs[ax._name + '.autorange'] = true;
+          var axName = ax._name;
+          var autorangeInitial = ax._autorangeInitial;
+          if (ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined) {
+            attrs[axName + '.autorange'] = true;
+          } else if (ax._rangeInitial0 === undefined) {
+            attrs[axName + '.autorange'] = autorangeInitial;
+            attrs[axName + '.range'] = [null, ax._rangeInitial1];
+          } else if (ax._rangeInitial1 === undefined) {
+            attrs[axName + '.range'] = [ax._rangeInitial0, null];
+            attrs[axName + '.autorange'] = autorangeInitial;
           } else {
-            rangeInitial = ax._rangeInitial;
-            attrs[ax._name + '.range[0]'] = rangeInitial[0];
-            attrs[ax._name + '.range[1]'] = rangeInitial[1];
+            attrs[axName + '.range'] = [ax._rangeInitial0, ax._rangeInitial1];
           }
         }
       }
@@ -43575,6 +43703,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if (sp._scene) {
           var xrng = Lib.simpleMap(xa.range, xa.r2l);
           var yrng = Lib.simpleMap(ya.range, ya.r2l);
+          if (xa.limitRange) xa.limitRange();
+          if (ya.limitRange) ya.limitRange();
+          xrng = xa.range;
+          yrng = ya.range;
           sp._scene.update({
             range: [xrng[0], yrng[0], xrng[1], yrng[1]]
           });
@@ -43612,6 +43744,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
           xScaleFactor2 = getLinkedScaleFactor(xa, xScaleFactor, yScaleFactor);
           clipDx = scaleAndGetShift(xa, xScaleFactor2);
         }
+        if (xScaleFactor2 > 1 && (xa.maxallowed !== undefined && editX === (xa.range[0] < xa.range[1] ? 'e' : 'w') || xa.minallowed !== undefined && editX === (xa.range[0] < xa.range[1] ? 'w' : 'e'))) {
+          xScaleFactor2 = 1;
+          clipDx = 0;
+        }
         if (editY2) {
           yScaleFactor2 = yScaleFactor;
           clipDy = ns || matches.isSubplotConstrained ? viewBox[1] : getShift(ya, yScaleFactor2);
@@ -43627,6 +43763,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         } else {
           yScaleFactor2 = getLinkedScaleFactor(ya, xScaleFactor, yScaleFactor);
           clipDy = scaleAndGetShift(ya, yScaleFactor2);
+        }
+        if (yScaleFactor2 > 1 && (ya.maxallowed !== undefined && editY === (ya.range[0] < ya.range[1] ? 'n' : 's') || ya.minallowed !== undefined && editY === (ya.range[0] < ya.range[1] ? 's' : 'n'))) {
+          yScaleFactor2 = 1;
+          clipDy = 0;
         }
 
         // don't scale at all if neither axis is scalable here
@@ -43767,6 +43907,7 @@ function dragAxList(axList, pix) {
       } else {
         axi.range = [axi.l2r(axi._rl[0] - pix / axi._m), axi.l2r(axi._rl[1] - pix / axi._m)];
       }
+      if (axi.limitRange) axi.limitRange();
     }
   }
 }
@@ -44833,13 +44974,57 @@ module.exports = {
   },
   autorange: {
     valType: 'enumerated',
-    values: [true, false, 'reversed'],
+    values: [true, false, 'reversed', 'min reversed', 'max reversed', 'min', 'max'],
     dflt: true,
     editType: 'axrange',
     impliedEdits: {
       'range[0]': undefined,
       'range[1]': undefined
     }
+  },
+  autorangeoptions: {
+    minallowed: {
+      valType: 'any',
+      editType: 'plot',
+      impliedEdits: {
+        'range[0]': undefined,
+        'range[1]': undefined
+      }
+    },
+    maxallowed: {
+      valType: 'any',
+      editType: 'plot',
+      impliedEdits: {
+        'range[0]': undefined,
+        'range[1]': undefined
+      }
+    },
+    clipmin: {
+      valType: 'any',
+      editType: 'plot',
+      impliedEdits: {
+        'range[0]': undefined,
+        'range[1]': undefined
+      }
+    },
+    clipmax: {
+      valType: 'any',
+      editType: 'plot',
+      impliedEdits: {
+        'range[0]': undefined,
+        'range[1]': undefined
+      }
+    },
+    include: {
+      valType: 'any',
+      arrayOk: true,
+      editType: 'plot',
+      impliedEdits: {
+        'range[0]': undefined,
+        'range[1]': undefined
+      }
+    },
+    editType: 'plot'
   },
   rangemode: {
     valType: 'enumerated',
@@ -44870,16 +45055,30 @@ module.exports = {
     },
     anim: true
   },
+  minallowed: {
+    valType: 'any',
+    editType: 'plot',
+    impliedEdits: {
+      '^autorange': false
+    }
+  },
+  maxallowed: {
+    valType: 'any',
+    editType: 'plot',
+    impliedEdits: {
+      '^autorange': false
+    }
+  },
   fixedrange: {
     valType: 'boolean',
     dflt: false,
     editType: 'calc'
   },
   // scaleanchor: not used directly, just put here for reference
-  // values are any opposite-letter axis id
+  // values are any opposite-letter axis id, or `false`.
   scaleanchor: {
     valType: 'enumerated',
-    values: [constants.idRegex.x.toString(), constants.idRegex.y.toString()],
+    values: [constants.idRegex.x.toString(), constants.idRegex.y.toString(), false],
     editType: 'plot'
   },
   scaleratio: {
@@ -46256,6 +46455,19 @@ module.exports = function setConvert(ax, fullLayout) {
     var rl1 = ax.r2l(ax.range[1]);
     return (ax.r2l(v) - rl0) / (rl1 - rl0);
   };
+  ax.limitRange = function (rangeAttr) {
+    var minallowed = ax.minallowed;
+    var maxallowed = ax.maxallowed;
+    if (minallowed === undefined && maxallowed === undefined) return;
+    if (!rangeAttr) rangeAttr = 'range';
+    var range = Lib.nestedProperty(ax, rangeAttr).get();
+    var rng = Lib.simpleMap(range, ax.r2l);
+    var axrev = rng[1] < rng[0];
+    if (axrev) rng.reverse();
+    var bounds = Lib.simpleMap([minallowed, maxallowed], ax.r2l);
+    if (minallowed !== undefined && rng[0] < bounds[0]) range[axrev ? 1 : 0] = minallowed;
+    if (maxallowed !== undefined && rng[1] > bounds[1]) range[axrev ? 0 : 1] = maxallowed;
+  };
 
   /*
    * cleanRange: make sure range is a couplet of valid & distinct values
@@ -46266,6 +46478,10 @@ module.exports = function setConvert(ax, fullLayout) {
    * ax._r, rather than ax.range
    */
   ax.cleanRange = function (rangeAttr, opts) {
+    ax._cleanRange(rangeAttr, opts);
+    ax.limitRange(rangeAttr);
+  };
+  ax._cleanRange = function (rangeAttr, opts) {
     if (!opts) opts = {};
     if (!rangeAttr) rangeAttr = 'range';
     var range = Lib.nestedProperty(ax, rangeAttr).get();
@@ -46281,6 +46497,8 @@ module.exports = function setConvert(ax, fullLayout) {
       Lib.nestedProperty(ax, rangeAttr).set(dflt);
       return;
     }
+    var nullRange0 = range[0] === null;
+    var nullRange1 = range[1] === null;
     if (ax.type === 'date' && !ax.autorange) {
       // check if milliseconds or js date objects are provided for range
       // and convert to date strings
@@ -46302,7 +46520,7 @@ module.exports = function setConvert(ax, fullLayout) {
         }
       } else {
         if (!isNumeric(range[i])) {
-          if (isNumeric(range[1 - i])) {
+          if (!(nullRange0 || nullRange1) && isNumeric(range[1 - i])) {
             range[i] = range[1 - i] * (i ? 10 : 0.1);
           } else {
             ax[rangeAttr] = dflt;
@@ -46602,8 +46820,25 @@ module.exports = function setConvert(ax, fullLayout) {
     }
     return arrayOut;
   };
-  ax.isValidRange = function (range) {
-    return Array.isArray(range) && range.length === 2 && isNumeric(ax.r2l(range[0])) && isNumeric(ax.r2l(range[1]));
+  ax.isValidRange = function (range, nullOk) {
+    return Array.isArray(range) && range.length === 2 && (nullOk && range[0] === null || isNumeric(ax.r2l(range[0]))) && (nullOk && range[1] === null || isNumeric(ax.r2l(range[1])));
+  };
+  ax.getAutorangeDflt = function (range, options) {
+    var autorangeDflt = !ax.isValidRange(range, 'nullOk');
+    if (autorangeDflt && options && options.reverseDflt) autorangeDflt = 'reversed';else if (range) {
+      if (range[0] === null && range[1] === null) {
+        autorangeDflt = true;
+      } else if (range[0] === null && range[1] !== null) {
+        autorangeDflt = 'min';
+      } else if (range[0] !== null && range[1] === null) {
+        autorangeDflt = 'max';
+      }
+    }
+    return autorangeDflt;
+  };
+  ax.isReversed = function () {
+    var autorange = ax.autorange;
+    return autorange === 'reversed' || autorange === 'min reversed' || autorange === 'max reversed';
   };
   ax.isPtWithinRange = function (d, calendar) {
     var coord = ax.c2l(d[axLetter], null, calendar);
@@ -48024,7 +48259,17 @@ module.exports = overrideAll({
   }),
   autotypenumbers: axesAttrs.autotypenumbers,
   autorange: axesAttrs.autorange,
+  autorangeoptions: {
+    minallowed: axesAttrs.autorangeoptions.minallowed,
+    maxallowed: axesAttrs.autorangeoptions.maxallowed,
+    clipmin: axesAttrs.autorangeoptions.clipmin,
+    clipmax: axesAttrs.autorangeoptions.clipmax,
+    include: axesAttrs.autorangeoptions.include,
+    editType: 'plot'
+  },
   rangemode: axesAttrs.rangemode,
+  minallowed: axesAttrs.minallowed,
+  maxallowed: axesAttrs.maxallowed,
   range: extendFlat({}, axesAttrs.range, {
     items: [{
       valType: 'any',
@@ -48701,6 +48946,7 @@ var project = __webpack_require__(3538);
 var createAxesOptions = __webpack_require__(422);
 var createSpikeOptions = __webpack_require__(3133);
 var computeTickMarks = __webpack_require__(6085);
+var applyAutorangeOptions = (__webpack_require__(1739).applyAutorangeOptions);
 var STATIC_CANVAS, STATIC_CONTEXT;
 var tabletmode = false;
 function Scene(options, fullLayout) {
@@ -49254,6 +49500,7 @@ proto.plot = function (sceneData, fullLayout, layout) {
         count: 1
       };
     }
+    var range;
     if (axis.autorange) {
       sceneBounds[0][i] = Infinity;
       sceneBounds[1][i] = -Infinity;
@@ -49293,14 +49540,18 @@ proto.plot = function (sceneData, fullLayout, layout) {
         sceneBounds[0][i] -= d / 32.0;
         sceneBounds[1][i] += d / 32.0;
       }
-      if (axis.autorange === 'reversed') {
+      range = [sceneBounds[0][i], sceneBounds[1][i]];
+      range = applyAutorangeOptions(range, axis);
+      sceneBounds[0][i] = range[0];
+      sceneBounds[1][i] = range[1];
+      if (axis.isReversed()) {
         // swap bounds:
         var tmp = sceneBounds[0][i];
         sceneBounds[0][i] = sceneBounds[1][i];
         sceneBounds[1][i] = tmp;
       }
     } else {
-      var range = axis.range;
+      range = axis.range;
       sceneBounds[0][i] = axis.r2l(range[0]);
       sceneBounds[1][i] = axis.r2l(range[1]);
     }
@@ -49309,11 +49560,13 @@ proto.plot = function (sceneData, fullLayout, layout) {
       sceneBounds[1][i] += 1;
     }
     axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
+    axis.range = [sceneBounds[0][i], sceneBounds[1][i]];
+    axis.limitRange();
 
     // Update plot bounds
     scene.glplot.setBounds(i, {
-      min: sceneBounds[0][i] * dataScale[i],
-      max: sceneBounds[1][i] * dataScale[i]
+      min: axis.range[0] * dataScale[i],
+      max: axis.range[1] * dataScale[i]
     });
   }
 
@@ -63738,7 +63991,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.25.2';
+exports.version = '2.26.0';
 
 /***/ }),
 
