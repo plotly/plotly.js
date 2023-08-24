@@ -271,12 +271,16 @@ function handleCartesian(gd, ev) {
                 if(val === 'auto') {
                     aobj[axName + '.autorange'] = true;
                 } else if(val === 'reset') {
-                    if(ax._rangeInitial === undefined) {
+                    if(ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined) {
                         aobj[axName + '.autorange'] = true;
+                    } else if(ax._rangeInitial0 === undefined) {
+                        aobj[axName + '.autorange'] = ax._autorangeInitial;
+                        aobj[axName + '.range'] = [null, ax._rangeInitial1];
+                    } else if(ax._rangeInitial1 === undefined) {
+                        aobj[axName + '.range'] = [ax._rangeInitial0, null];
+                        aobj[axName + '.autorange'] = ax._autorangeInitial;
                     } else {
-                        var rangeInitial = ax._rangeInitial.slice();
-                        aobj[axName + '.range[0]'] = rangeInitial[0];
-                        aobj[axName + '.range[1]'] = rangeInitial[1];
+                        aobj[axName + '.range'] = [ax._rangeInitial0, ax._rangeInitial1];
                     }
 
                     // N.B. "reset" also resets showspikes

@@ -272,7 +272,7 @@ module.exports = {
     },
     autorange: {
         valType: 'enumerated',
-        values: [true, false, 'reversed'],
+        values: [true, false, 'reversed', 'min reversed', 'max reversed', 'min', 'max'],
         dflt: true,
         editType: 'axrange',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
@@ -280,8 +280,60 @@ module.exports = {
             'Determines whether or not the range of this axis is',
             'computed in relation to the input data.',
             'See `rangemode` for more info.',
-            'If `range` is provided, then `autorange` is set to *false*.'
+            'If `range` is provided and it has a value for both the',
+            'lower and upper bound, `autorange` is set to *false*.',
+            'Using *min* applies autorange only to set the minimum.',
+            'Using *max* applies autorange only to set the maximum.',
+            'Using *min reversed* applies autorange only to set the minimum on a reversed axis.',
+            'Using *max reversed* applies autorange only to set the maximum on a reversed axis.',
+            'Using *reversed* applies autorange on both ends and reverses the axis direction.',
         ].join(' ')
+    },
+    autorangeoptions: {
+        minallowed: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Use this value exactly as autorange minimum.'
+            ].join(' ')
+        },
+        maxallowed: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Use this value exactly as autorange maximum.'
+            ].join(' ')
+        },
+        clipmin: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Clip autorange minimum if it goes beyond this value.',
+                'Has no effect when `autorangeoptions.minallowed` is provided.'
+            ].join(' ')
+        },
+        clipmax: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Clip autorange maximum if it goes beyond this value.',
+                'Has no effect when `autorangeoptions.maxallowed` is provided.'
+            ].join(' ')
+        },
+        include: {
+            valType: 'any',
+            arrayOk: true,
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Ensure this value is included in autorange.'
+            ].join(' ')
+        },
+        editType: 'plot'
     },
     rangemode: {
         valType: 'enumerated',
@@ -317,7 +369,24 @@ module.exports = {
             'will be accepted and converted to strings.',
             'If the axis `type` is *category*, it should be numbers,',
             'using the scale where each category is assigned a serial',
-            'number from zero in the order it appears.'
+            'number from zero in the order it appears.',
+            'Leaving either or both elements `null` impacts the default `autorange`.',
+        ].join(' ')
+    },
+    minallowed: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'^autorange': false},
+        description: [
+            'Determines the minimum range of this axis.'
+        ].join(' ')
+    },
+    maxallowed: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'^autorange': false},
+        description: [
+            'Determines the maximum range of this axis.'
         ].join(' ')
     },
     fixedrange: {

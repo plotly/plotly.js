@@ -432,6 +432,23 @@ module.exports = function setConvert(ax, fullLayout) {
         return (ax.r2l(v) - rl0) / (rl1 - rl0);
     };
 
+    ax.limitRange = function(rangeAttr) {
+        var minallowed = ax.minallowed;
+        var maxallowed = ax.maxallowed;
+        if(minallowed === undefined && maxallowed === undefined) return;
+
+        if(!rangeAttr) rangeAttr = 'range';
+        var range = Lib.nestedProperty(ax, rangeAttr).get();
+        var rng = Lib.simpleMap(range, ax.r2l);
+        var axrev = rng[1] < rng[0];
+        if(axrev) rng.reverse();
+
+        var bounds = Lib.simpleMap([minallowed, maxallowed], ax.r2l);
+
+        if(minallowed !== undefined && rng[0] < bounds[0]) range[axrev ? 1 : 0] = minallowed;
+        if(maxallowed !== undefined && rng[1] > bounds[1]) range[axrev ? 0 : 1] = maxallowed;
+    };
+
     /*
      * cleanRange: make sure range is a couplet of valid & distinct values
      * keep numbers away from the limits of floating point numbers,
@@ -441,6 +458,11 @@ module.exports = function setConvert(ax, fullLayout) {
      * ax._r, rather than ax.range
      */
     ax.cleanRange = function(rangeAttr, opts) {
+        ax._cleanRange(rangeAttr, opts);
+        ax.limitRange(rangeAttr);
+    };
+
+    ax._cleanRange = function(rangeAttr, opts) {
         if(!opts) opts = {};
         if(!rangeAttr) rangeAttr = 'range';
 
@@ -463,6 +485,9 @@ module.exports = function setConvert(ax, fullLayout) {
             Lib.nestedProperty(ax, rangeAttr).set(dflt);
             return;
         }
+
+        var nullRange0 = range[0] === null;
+        var nullRange1 = range[1] === null;
 
         if(ax.type === 'date' && !ax.autorange) {
             // check if milliseconds or js date objects are provided for range
@@ -488,7 +513,7 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
             } else {
                 if(!isNumeric(range[i])) {
-                    if(isNumeric(range[1 - i])) {
+                    if(!(nullRange0 || nullRange1) && isNumeric(range[1 - i])) {
                         range[i] = range[1 - i] * (i ? 10 : 0.1);
                     } else {
                         ax[rangeAttr] = dflt;
@@ -855,12 +880,36 @@ module.exports = function setConvert(ax, fullLayout) {
         return arrayOut;
     };
 
-    ax.isValidRange = function(range) {
+    ax.isValidRange = function(range, nullOk) {
         return (
             Array.isArray(range) &&
             range.length === 2 &&
-            isNumeric(ax.r2l(range[0])) &&
-            isNumeric(ax.r2l(range[1]))
+            ((nullOk && range[0] === null) || isNumeric(ax.r2l(range[0]))) &&
+            ((nullOk && range[1] === null) || isNumeric(ax.r2l(range[1])))
+        );
+    };
+
+    ax.getAutorangeDflt = function(range, options) {
+        var autorangeDflt = !ax.isValidRange(range, 'nullOk');
+        if(autorangeDflt && options && options.reverseDflt) autorangeDflt = 'reversed';
+        else if(range) {
+            if(range[0] === null && range[1] === null) {
+                autorangeDflt = true;
+            } else if(range[0] === null && range[1] !== null) {
+                autorangeDflt = 'min';
+            } else if(range[0] !== null && range[1] === null) {
+                autorangeDflt = 'max';
+            }
+        }
+        return autorangeDflt;
+    };
+
+    ax.isReversed = function() {
+        var autorange = ax.autorange;
+        return (
+            autorange === 'reversed' ||
+            autorange === 'min reversed' ||
+            autorange === 'max reversed'
         );
     };
 
