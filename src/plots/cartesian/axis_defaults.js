@@ -95,25 +95,25 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('minallowed');
     coerce('maxallowed');
     var range = coerce('range');
-
     var autorangeDflt = containerOut.getAutorangeDflt(range, options);
     var autorange = coerce('autorange', autorangeDflt);
-    var autorangeTrue;
+
+    var shouldAutorange;
 
     // validate range and set autorange true for invalid partial ranges
     if(range && (
         (range[0] === null && range[1] === null) ||
-        ((range[0] === null || range[1] === null) && autorange === 'reversed') ||
+        ((range[0] === null || range[1] === null) && (autorange === 'reversed' || autorange === true)) ||
         (range[0] !== null && (autorange === 'min' || autorange === 'max reversed')) ||
         (range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))
     )) {
         range = undefined;
         delete containerOut.range;
         containerOut.autorange = true;
-        autorangeTrue = true;
+        shouldAutorange = true;
     }
 
-    if(!autorangeTrue) {
+    if(!shouldAutorange) {
         autorangeDflt = containerOut.getAutorangeDflt(range, options);
         autorange = coerce('autorange', autorangeDflt);
     }

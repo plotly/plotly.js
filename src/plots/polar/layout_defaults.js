@@ -80,25 +80,24 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 coerceAxis('minallowed');
                 coerceAxis('maxallowed');
                 var range = coerceAxis('range');
-
                 var autorangeDflt = axOut.getAutorangeDflt(range);
                 var autorange = coerceAxis('autorange', autorangeDflt);
-                var autorangeTrue;
+                var shouldAutorange;
 
                 // validate range and set autorange true for invalid partial ranges
                 if(range && (
                     (range[0] === null && range[1] === null) ||
-                    ((range[0] === null || range[1] === null) && autorange === 'reversed') ||
+                    ((range[0] === null || range[1] === null) && (autorange === 'reversed' || autorange === true)) ||
                     (range[0] !== null && (autorange === 'min' || autorange === 'max reversed')) ||
                     (range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))
                 )) {
                     range = undefined;
                     delete axOut.range;
                     axOut.autorange = true;
-                    autorangeTrue = true;
+                    shouldAutorange = true;
                 }
 
-                if(!autorangeTrue) {
+                if(!shouldAutorange) {
                     autorangeDflt = axOut.getAutorangeDflt(range);
                     autorange = coerceAxis('autorange', autorangeDflt);
                 }
