@@ -3329,7 +3329,7 @@ function sortAxisCategoriesByValue(axList, gd) {
 
             // Sort by aggregated value
             categoriesAggregatedValue.sort(function(a, b) {
-                return a[1] - b[1];
+                return order === 'descending' ? b[1] - a[1] : a[1] - b[1];
             });
 
             ax._categoriesAggregatedValue = categoriesAggregatedValue;
@@ -3338,11 +3338,6 @@ function sortAxisCategoriesByValue(axList, gd) {
             ax._initialCategories = categoriesAggregatedValue.map(function(c) {
                 return c[0];
             });
-
-            // Reverse if descending
-            if(order === 'descending') {
-                ax._initialCategories.reverse();
-            }
 
             // Sort all matching axes
             affectedTraces = affectedTraces.concat(ax.sortByInitialCategories());
