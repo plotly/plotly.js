@@ -1035,28 +1035,28 @@ describe('calculated data and points', function() {
                 });
             }
 
-            supportedCartesianTraces.forEach(function(trace) {                
+            supportedCartesianTraces.forEach(function(trace) {
                 ['xaxis', 'yaxis'].forEach(function(axName) {
                     if(axName === 'yaxis' && oneOrientationTraces.indexOf(trace.type) !== -1) return;
 
-                    function checkAggregatedValue(baseMock, expectedAgg, finalOrder, done) {                       
+                    function checkAggregatedValue(baseMock, expectedAgg, finalOrder, done) {
                         var mock = Lib.extendDeep({}, baseMock);
-                       
+
                         if(mock.data[0].type.match(/histogram/)) {
                             for(i = 0; i < mock.data.length; i++) {
                                 mock.data[i][axName === 'yaxis' ? 'y' : 'x'].push('a');
-                                mock.data[i][axName === 'yaxis' ? 'x' : 'y'].push(7);                                
+                                mock.data[i][axName === 'yaxis' ? 'x' : 'y'].push(7);
                             }
                         }
-                      
+
                         Plotly.newPlot(gd, mock)
-                        .then(function(gd) {                          
+                        .then(function(gd) {
                             var agg = gd._fullLayout[trace.type === 'splom' ? 'xaxis' : axName]._categoriesAggregatedValue.sort(function(a, b) {
                                 return a[0] > b[0] ? 1 : -1;
                             });
                             expect(agg).toEqual(expectedAgg, 'wrong aggregation for ' + axName);
 
-                            if(finalOrder) {                               
+                            if(finalOrder) {
                                 expect(gd._fullLayout[trace.type === 'splom' ? 'xaxis' : axName]._categories).toEqual(finalOrder, 'wrong order');
                             }
                         })
@@ -1074,13 +1074,13 @@ describe('calculated data and points', function() {
                             if(categoryorder === 'total descending') finalOrder.reverse();
                             var expectedAgg = [['a', 7], ['b', 2], ['c', 3]];
 
-                            if(trace.type === 'ohlc' || trace.type === 'candlestick'){
+                            if(trace.type === 'ohlc' || trace.type === 'candlestick') {
                                 expectedAgg = [['a', 14], ['b', 4], ['c', 6]];
-                                if(categoryorder === 'total descending') finalOrder= ['a', 'c', 'b']
+                                if(categoryorder === 'total descending') finalOrder = ['a', 'c', 'b'];
                             }
-                            if(trace.type.match(/histogram/)){
+                            if(trace.type.match(/histogram/)) {
                                 expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
-                                if(categoryorder === 'total descending') finalOrder= ['a', 'b', 'c']
+                                if(categoryorder === 'total descending') finalOrder = ['a', 'b', 'c'];
                             }
 
                             checkAggregatedValue(baseMock, expectedAgg, finalOrder, done);

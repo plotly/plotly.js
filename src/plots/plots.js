@@ -3207,6 +3207,10 @@ function sortAxisCategoriesByValue(axList, gd) {
         median: function(values) {return Lib.median(values);}
     };
 
+    function sortValues(a, b) {
+        return order === 'descending' ? b[1] - a[1] : a[1] - b[1];
+    }
+
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
         if(ax.type !== 'category') continue;
@@ -3327,19 +3331,15 @@ function sortAxisCategoriesByValue(axList, gd) {
                 ]);
             }
 
-            function sortValues(a, b) {            
-                return order === 'descending' ? b[1] - a[1] : a[1] - b[1];
-            }
-
             // Sort by aggregated value
-            categoriesAggregatedValue.sort(sortValues);                      
-            
+            categoriesAggregatedValue.sort(sortValues);
+
             ax._categoriesAggregatedValue = categoriesAggregatedValue;
 
             // Set new category order
             ax._initialCategories = categoriesAggregatedValue.map(function(c) {
                 return c[0];
-            });            
+            });
 
             // Sort all matching axes
             affectedTraces = affectedTraces.concat(ax.sortByInitialCategories());
