@@ -3327,17 +3327,19 @@ function sortAxisCategoriesByValue(axList, gd) {
                 ]);
             }
 
-            // Sort by aggregated value
-            categoriesAggregatedValue.sort(function(a, b) {
+            function sortValues(a, b) {            
                 return order === 'descending' ? b[1] - a[1] : a[1] - b[1];
-            });
+            }
 
+            // Sort by aggregated value
+            categoriesAggregatedValue.sort(sortValues);                      
+            
             ax._categoriesAggregatedValue = categoriesAggregatedValue;
 
             // Set new category order
             ax._initialCategories = categoriesAggregatedValue.map(function(c) {
                 return c[0];
-            });
+            });            
 
             // Sort all matching axes
             affectedTraces = affectedTraces.concat(ax.sortByInitialCategories());
