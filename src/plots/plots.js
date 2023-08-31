@@ -3207,7 +3207,7 @@ function sortAxisCategoriesByValue(axList, gd) {
         median: function(values) {return Lib.median(values);}
     };
 
-    function sortValues(a, b) {
+    function sortValues(a, b, order) {
         return order === 'descending' ? b[1] - a[1] : a[1] - b[1];
     }
 
@@ -3332,7 +3332,7 @@ function sortAxisCategoriesByValue(axList, gd) {
             }
 
             // Sort by aggregated value
-            categoriesAggregatedValue.sort(sortValues);
+            categoriesAggregatedValue.sort((a,b) => sortValues(a, b, order));
 
             ax._categoriesAggregatedValue = categoriesAggregatedValue;
 
