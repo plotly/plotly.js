@@ -3207,11 +3207,11 @@ function sortAxisCategoriesByValue(axList, gd) {
         median: function(values) {return Lib.median(values);}
     };
 
-    function sortAscending (a, b) {
+    function sortAscending(a, b) {
         return a[1] - b[1];
     }
 
-    function sortDescending (a, b) {
+    function sortDescending(a, b) {
         return b[1] - a[1];
     }
 
