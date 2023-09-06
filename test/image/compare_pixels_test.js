@@ -42,9 +42,13 @@ if(argv._.length === 0) {
 // Build list of mocks to compare
 var allMockList = [];
 var mathjax3;
+var virtualWebgl = false;
 argv._.forEach(function(pattern) {
     if(pattern === 'mathjax3') {
         mathjax3 = true;
+    } else if(pattern === 'virtual-webgl') {
+        virtualWebgl = true;
+        allMockList = getMockList('');
     } else {
         var mockList = getMockList(pattern);
 
@@ -65,6 +69,12 @@ allMockList = allMockList.filter(function(a) {
         a !== 'mapbox_custom-style'
     );
 });
+
+if(virtualWebgl) {
+    allMockList = allMockList.filter(function(a) {
+        return a.slice(0, 2) === 'gl' || a.slice(0, 6) === 'mapbox';
+    });
+}
 
 if(mathjax3) {
     allMockList = [
@@ -91,6 +101,7 @@ var fail = function(mockName) {
         failed.push(mockName);
     }
 };
+
 for(var i = 0; i < allMockList.length; i++) {
     var mockName = allMockList[i];
 
@@ -98,6 +109,18 @@ for(var i = 0; i < allMockList.length; i++) {
     if([
         'mapbox_density0-legend',
         'mapbox_osm-style'
+    ].indexOf(mockName) !== -1) {
+        continue;
+    }
+
+    // the following mocks than only have regl-line2d lines (no morkers),
+    // do not render at first draw when using virtual webgl. TODO: find a fix
+    if(virtualWebgl && [
+        'gl2d_connect_gaps',
+        'gl2d_line_select',
+        'gl2d_lines_almost_horizontal_vertical',
+        'gl2d_scattergl_simple_line_reversed_ranges',
+        'gl2d_subplots_anchor'
     ].indexOf(mockName) !== -1) {
         continue;
     }
@@ -151,15 +174,28 @@ for(var i = 0; i < allMockList.length; i++) {
 
     var shouldBePixelPerfect = !(isMapbox || isOtherFlaky);
 
+    var threshold = shouldBePixelPerfect ? 0 : [
+        // more flaky
+        'mapbox_angles',
+        'mapbox_layers',
+        'mapbox_custom-style',
+        'mapbox_geojson-attributes'
+    ].indexOf(mockName) !== -1 ? 1 : 0.15;
+
+    if(virtualWebgl) {
+        threshold = Math.max(0.4, threshold);
+        if([
+            'gl3d_ibm-plot',
+            'gl3d_isosurface_2surfaces-checker_spaceframe',
+            'gl3d_opacity-scaling-spikes',
+            'gl3d_cone-wind',
+            'gl3d_isosurface_math',
+            'gl3d_scatter3d-blank-text'
+        ].indexOf(mockName) !== -1) threshold = 0.7;
+    }
+
     var numDiffPixels = pixelmatch(img0.data, img1.data, diff.data, width, height, {
-        threshold: shouldBePixelPerfect ? 0 :
-            [
-                // more flaky
-                'mapbox_angles',
-                'mapbox_layers',
-                'mapbox_custom-style',
-                'mapbox_geojson-attributes'
-            ].indexOf(mockName) !== -1 ? 1 : 0.15
+        threshold: threshold
     });
 
     if(numDiffPixels) {

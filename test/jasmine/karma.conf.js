@@ -127,6 +127,7 @@ var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
 var pathToSaneTopojsonDist = path.join(__dirname, '..', '..', 'node_modules', 'sane-topojson', 'dist');
 var pathToMathJax2 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v2');
 var pathToMathJax3 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v3');
+var pathToVirtualWebgl = path.join(__dirname, '..', '..', 'node_modules', 'virtual-webgl', 'src', 'virtual-webgl.js');
 
 var reporters = [];
 if(argv['report-progress'] || argv['report-spec'] || argv['report-dots']) {
@@ -349,6 +350,13 @@ if(isBundleTest) {
     }
 } else {
     func.defaultConfig.files.push(pathToJQuery);
+}
+
+if(argv.virtualWebgl) {
+    // add virtual-webgl to the top
+    func.defaultConfig.files = [
+        pathToVirtualWebgl
+    ].concat(func.defaultConfig.files);
 }
 
 // lastly, load test file glob
