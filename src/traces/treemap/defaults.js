@@ -6,6 +6,7 @@ var Color = require('../../components/color');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
 var TEXTPAD = require('../bar/constants').TEXTPAD;
+var handleMarkerDefaults = require('../pie/defaults').handleMarkerDefaults;
 
 var Colorscale = require('../../components/colorscale');
 var hasColorscale = Colorscale.hasColorscale;
@@ -64,10 +65,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('textposition');
     var bottomText = traceOut.textposition.indexOf('bottom') !== -1;
 
-    var lineWidth = coerce('marker.line.width');
-    if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
-
-    var colors = coerce('marker.colors');
+    handleMarkerDefaults(traceIn, traceOut, layout, coerce);
     var withColorscale = traceOut._hasColorscale = (
         hasColorscale(traceIn, 'marker', 'colors') ||
         (traceIn.marker || {}).coloraxis // N.B. special logic to consider "values" colorscales
@@ -75,7 +73,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     } else {
-        coerce('marker.depthfade', !(colors || []).length);
+        coerce('marker.depthfade', !(traceOut.marker.colors || []).length);
     }
 
     var headerSize = traceOut.textfont.size * 2;

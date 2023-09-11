@@ -9,14 +9,21 @@ var attributes = require('./attributes');
 var basePlotLayoutAttributes = require('../../plots/layout_attributes');
 var helpers = require('./helpers');
 
-
-module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
-    var containerIn = layoutIn.legend || {};
-    var containerOut = Template.newContainer(layoutOut, 'legend');
+function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
+    var containerIn = layoutIn[legendId] || {};
+    var containerOut = Template.newContainer(layoutOut, legendId);
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
+
+    // N.B. unified hover needs to inherit from font, bgcolor & bordercolor even when legend.visible is false
+    var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
+    coerce('bgcolor', layoutOut.paper_bgcolor);
+    coerce('bordercolor');
+
+    var visible = coerce('visible');
+    if(!visible) return;
 
     var trace;
     var traceCoerce = function(attr, dflt) {
@@ -34,10 +41,18 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var legendReallyHasATrace = false;
     var defaultOrder = 'normal';
 
-    for(var i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
+    var shapesWithLegend = (layoutOut.shapes || []).filter(function(d) { return d.showlegend; });
+
+    var allLegendItems = fullData.concat(shapesWithLegend).filter(function(d) {
+        return legendId === (d.legend || 'legend');
+    });
+
+    for(var i = 0; i < allLegendItems.length; i++) {
+        trace = allLegendItems[i];
 
         if(!trace.visible) continue;
+
+        var isShape = trace._isShape;
 
         // Note that we explicitly count any trace that is either shown or
         // *would* be shown by default, toward the two traces you need to
@@ -56,7 +71,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
                 legendReallyHasATrace = true;
                 // Always show the legend by default if there's a pie,
                 // or if there's only one trace but it's explicitly shown
-                if(Registry.traceIs(trace, 'pie-like') ||
+                if(!isShape && Registry.traceIs(trace, 'pie-like') ||
                     trace._input.showlegend === true
                 ) {
                     legendTraceCount++;
@@ -66,7 +81,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
             Lib.coerceFont(traceCoerce, 'legendgrouptitle.font', grouptitlefont);
         }
 
-        if((Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
+        if((!isShape && Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
                 ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
             defaultOrder = helpers.isGrouped({traceorder: defaultOrder}) ?
                 'grouped+reversed' : 'reversed';
@@ -80,10 +95,10 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     var showLegend = Lib.coerce(layoutIn, layoutOut,
         basePlotLayoutAttributes, 'showlegend',
-        legendReallyHasATrace && legendTraceCount > 1);
+        legendReallyHasATrace && (legendTraceCount > (legendId === 'legend' ? 1 : 0)));
 
     // delete legend
-    if(showLegend === false) layoutOut.legend = undefined;
+    if(showLegend === false) layoutOut[legendId] = undefined;
 
     if(showLegend === false && !containerIn.uirevision) return;
 
@@ -91,36 +106,75 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     if(showLegend === false) return;
 
-    coerce('bgcolor', layoutOut.paper_bgcolor);
-    coerce('bordercolor');
     coerce('borderwidth');
-    var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
 
     var orientation = coerce('orientation');
+
+    var yref = coerce('yref');
+    var xref = coerce('xref');
+
     var isHorizontal = orientation === 'h';
+    var isPaperY = yref === 'paper';
+    var isPaperX = xref === 'paper';
     var defaultX, defaultY, defaultYAnchor;
+    var defaultXAnchor = 'left';
 
     if(isHorizontal) {
         defaultX = 0;
 
         if(Registry.getComponentMethod('rangeslider', 'isVisible')(layoutIn.xaxis)) {
-            defaultY = 1.1;
-            defaultYAnchor = 'bottom';
+            if(isPaperY) {
+                defaultY = 1.1;
+                defaultYAnchor = 'bottom';
+            } else {
+                defaultY = 1;
+                defaultYAnchor = 'top';
+            }
         } else {
             // maybe use y=1.1 / yanchor=bottom as above
             //   to avoid https://github.com/plotly/plotly.js/issues/1199
             //   in v3
-            defaultY = -0.1;
-            defaultYAnchor = 'top';
+            if(isPaperY) {
+                defaultY = -0.1;
+                defaultYAnchor = 'top';
+            } else {
+                defaultY = 0;
+                defaultYAnchor = 'bottom';
+            }
         }
     } else {
-        defaultX = 1.02;
         defaultY = 1;
         defaultYAnchor = 'auto';
+        if(isPaperX) {
+            defaultX = 1.02;
+        } else {
+            defaultX = 1;
+            defaultXAnchor = 'right';
+        }
     }
 
+    Lib.coerce(containerIn, containerOut, {
+        x: {
+            valType: 'number',
+            editType: 'legend',
+            min: isPaperX ? -2 : 0,
+            max: isPaperX ? 3 : 1,
+            dflt: defaultX,
+        }
+    }, 'x');
+
+    Lib.coerce(containerIn, containerOut, {
+        y: {
+            valType: 'number',
+            editType: 'legend',
+            min: isPaperY ? -2 : 0,
+            max: isPaperY ? 3 : 1,
+            dflt: defaultY,
+        }
+    }, 'y');
+
     coerce('traceorder', defaultOrder);
-    if(helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
+    if(helpers.isGrouped(layoutOut[legendId])) coerce('tracegroupgap');
 
     coerce('entrywidth');
     coerce('entrywidthmode');
@@ -131,9 +185,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     coerce('itemdoubleclick');
     coerce('groupclick');
 
-    coerce('x', defaultX);
-    coerce('xanchor');
-    coerce('y', defaultY);
+    coerce('xanchor', defaultXAnchor);
     coerce('yanchor', defaultYAnchor);
     coerce('valign');
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
@@ -146,5 +198,50 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         });
 
         Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
+    }
+}
+
+module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
+    var i;
+
+    var allLegendsData = fullData.slice();
+
+    // shapes could also show up in legends
+    var shapes = layoutOut.shapes;
+    if(shapes) {
+        for(i = 0; i < shapes.length; i++) {
+            var shape = shapes[i];
+            if(!shape.showlegend) continue;
+
+            var mockTrace = {
+                _input: shape._input,
+                visible: shape.visible,
+                showlegend: shape.showlegend,
+                legend: shape.legend
+            };
+
+            allLegendsData.push(mockTrace);
+        }
+    }
+
+    var legends = ['legend'];
+    for(i = 0; i < allLegendsData.length; i++) {
+        Lib.pushUnique(legends, allLegendsData[i].legend);
+    }
+
+    layoutOut._legends = [];
+    for(i = 0; i < legends.length; i++) {
+        var legendId = legends[i];
+
+        groupDefaults(legendId, layoutIn, layoutOut, allLegendsData);
+
+        if(
+            layoutOut[legendId] &&
+            layoutOut[legendId].visible
+        ) {
+            layoutOut[legendId]._id = legendId;
+        }
+
+        layoutOut._legends.push(legendId);
     }
 };

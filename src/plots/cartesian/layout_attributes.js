@@ -272,7 +272,7 @@ module.exports = {
     },
     autorange: {
         valType: 'enumerated',
-        values: [true, false, 'reversed'],
+        values: [true, false, 'reversed', 'min reversed', 'max reversed', 'min', 'max'],
         dflt: true,
         editType: 'axrange',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
@@ -280,8 +280,60 @@ module.exports = {
             'Determines whether or not the range of this axis is',
             'computed in relation to the input data.',
             'See `rangemode` for more info.',
-            'If `range` is provided, then `autorange` is set to *false*.'
+            'If `range` is provided and it has a value for both the',
+            'lower and upper bound, `autorange` is set to *false*.',
+            'Using *min* applies autorange only to set the minimum.',
+            'Using *max* applies autorange only to set the maximum.',
+            'Using *min reversed* applies autorange only to set the minimum on a reversed axis.',
+            'Using *max reversed* applies autorange only to set the maximum on a reversed axis.',
+            'Using *reversed* applies autorange on both ends and reverses the axis direction.',
         ].join(' ')
+    },
+    autorangeoptions: {
+        minallowed: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Use this value exactly as autorange minimum.'
+            ].join(' ')
+        },
+        maxallowed: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Use this value exactly as autorange maximum.'
+            ].join(' ')
+        },
+        clipmin: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Clip autorange minimum if it goes beyond this value.',
+                'Has no effect when `autorangeoptions.minallowed` is provided.'
+            ].join(' ')
+        },
+        clipmax: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Clip autorange maximum if it goes beyond this value.',
+                'Has no effect when `autorangeoptions.maxallowed` is provided.'
+            ].join(' ')
+        },
+        include: {
+            valType: 'any',
+            arrayOk: true,
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Ensure this value is included in autorange.'
+            ].join(' ')
+        },
+        editType: 'plot'
     },
     rangemode: {
         valType: 'enumerated',
@@ -317,7 +369,24 @@ module.exports = {
             'will be accepted and converted to strings.',
             'If the axis `type` is *category*, it should be numbers,',
             'using the scale where each category is assigned a serial',
-            'number from zero in the order it appears.'
+            'number from zero in the order it appears.',
+            'Leaving either or both elements `null` impacts the default `autorange`.',
+        ].join(' ')
+    },
+    minallowed: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'^autorange': false},
+        description: [
+            'Determines the minimum range of this axis.'
+        ].join(' ')
+    },
+    maxallowed: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'^autorange': false},
+        description: [
+            'Determines the maximum range of this axis.'
         ].join(' ')
     },
     fixedrange: {
@@ -330,12 +399,13 @@ module.exports = {
         ].join(' ')
     },
     // scaleanchor: not used directly, just put here for reference
-    // values are any opposite-letter axis id
+    // values are any opposite-letter axis id, or `false`.
     scaleanchor: {
         valType: 'enumerated',
         values: [
             constants.idRegex.x.toString(),
-            constants.idRegex.y.toString()
+            constants.idRegex.y.toString(),
+            false
         ],
         editType: 'plot',
         description: [
@@ -353,7 +423,12 @@ module.exports = {
             'and the last constraint encountered will be ignored to avoid possible',
             'inconsistent constraints via `scaleratio`.',
             'Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint',
-            'is currently forbidden.'
+            'is currently forbidden.',
+            'Setting `false` allows to remove a default constraint (occasionally,',
+            'you may need to prevent a default `scaleanchor` constraint from',
+            'being applied, eg. when having an image trace `yaxis: {scaleanchor: "x"}`',
+            'is set automatically in order for pixels to be rendered as squares,',
+            'setting `yaxis: {scaleanchor: false}` allows to remove the constraint).'
         ].join(' ')
     },
     scaleratio: {
@@ -642,6 +717,8 @@ module.exports = {
             'For example using {US: \'USA\', CA: \'Canada\'} changes US to USA',
             'and CA to Canada. The labels we would have shown must match',
             'the keys exactly, after adding any tickprefix or ticksuffix.',
+            'For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash.',
+            'That means you need to use −1 instead of -1.',
             'labelalias can be used with any axis type, and both keys (if needed)',
             'and values (if desired) can include html-like tags or MathJax.'
         ].join(' ')

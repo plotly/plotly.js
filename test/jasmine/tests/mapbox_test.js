@@ -407,7 +407,7 @@ describe('mapbox credentials', function() {
         });
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should not throw when using a custom mapbox style URL with an access token in the layout', function(done) {
+    it('@noCI @gl should not throw when using a custom mapbox style URL with an access token in the layout', function(done) {
         var cnt = 0;
 
         Plotly.newPlot(gd, [{
@@ -1300,7 +1300,7 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should respond drag / scroll / double-click interactions', function(done) {
+    it('@noCI @gl should respond drag / scroll / double-click interactions', function(done) {
         var relayoutCnt = 0;
         var doubleClickCnt = 0;
         var relayoutingCnt = 0;
@@ -1409,7 +1409,7 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should respect scrollZoom config option', function(done) {
+    it('@noCI @gl should respect scrollZoom config option', function(done) {
         var mockCopy2 = Lib.extendDeep({}, mock);
         mockCopy2.config = {scrollZoom: false};
 
@@ -1513,7 +1513,7 @@ describe('mapbox plots', function() {
             });
         });
 
-        it('@gl should be displayed for style "stamen-watercolor"', function(done) {
+        it('@noCI @gl should be displayed for style "stamen-watercolor"', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'stamen-watercolor'}})
             .then(function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');

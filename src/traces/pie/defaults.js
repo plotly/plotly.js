@@ -5,6 +5,7 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
+var coercePattern = require('../../lib').coercePattern;
 
 function handleLabelsAndValues(labels, values) {
     var hasLabels = Lib.isArrayOrTypedArray(labels);
@@ -35,6 +36,22 @@ function handleLabelsAndValues(labels, values) {
     };
 }
 
+function handleMarkerDefaults(traceIn, traceOut, layout, coerce, isPie) {
+    var lineWidth = coerce('marker.line.width');
+    if(lineWidth) {
+        coerce('marker.line.color',
+            isPie ? undefined :
+            layout.paper_bgcolor // case of funnelarea, sunburst, icicle, treemap
+        );
+    }
+
+    var markerColors = coerce('marker.colors');
+    coercePattern(coerce, 'marker.pattern', markerColors);
+    // push the marker colors (with s) to the foreground colors, to work around logic in the drawing pattern code on marker.color (without s, which is okay for a bar trace)
+    if(traceIn.marker && !traceOut.marker.pattern.fgcolor) traceOut.marker.pattern.fgcolor = traceIn.marker.colors;
+    if(!traceOut.marker.pattern.bgcolor) traceOut.marker.pattern.bgcolor = layout.paper_bgcolor;
+}
+
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -61,10 +78,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     }
     traceOut._length = len;
 
-    var lineWidth = coerce('marker.line.width');
-    if(lineWidth) coerce('marker.line.color');
-
-    coerce('marker.colors');
+    handleMarkerDefaults(traceIn, traceOut, layout, coerce, true);
 
     coerce('scalegroup');
     // TODO: hole needs to be coerced to the same value within a scaleegroup
@@ -117,5 +131,6 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
 module.exports = {
     handleLabelsAndValues: handleLabelsAndValues,
+    handleMarkerDefaults: handleMarkerDefaults,
     supplyDefaults: supplyDefaults
 };

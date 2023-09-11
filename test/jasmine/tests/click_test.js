@@ -958,9 +958,14 @@ describe('Test click interactions:', function() {
                 var ya = fullLayout.yaxis;
                 var ya2 = fullLayout.yaxis2;
 
-                expect(xa._rangeInitial).toBe(undefined);
-                expect(ya._rangeInitial).toBe(undefined);
-                expect(ya2._rangeInitial).toBe(undefined);
+                expect(xa._rangeInitial0).toBe(undefined);
+                expect(xa._rangeInitial1).toBe(undefined);
+
+                expect(ya._rangeInitial0).toBe(undefined);
+                expect(ya._rangeInitial1).toBe(undefined);
+
+                expect(ya2._rangeInitial0).toBe(undefined);
+                expect(ya2._rangeInitial1).toBe(undefined);
 
                 expect(xa.range).toBeCloseToArray(exp.xRng, 1, msg);
                 expect(ya.range).toBeCloseToArray(exp.yRng, 1, msg);
@@ -969,8 +974,12 @@ describe('Test click interactions:', function() {
 
             Plotly.newPlot(gd, [], {})
             .then(function() {
-                expect(gd._fullLayout.xaxis._rangeInitial).toBe(undefined);
-                expect(gd._fullLayout.yaxis._rangeInitial).toBe(undefined);
+                expect(gd._fullLayout.xaxis._rangeInitial0).toBe(undefined);
+                expect(gd._fullLayout.xaxis._rangeInitial1).toBe(undefined);
+
+                expect(gd._fullLayout.yaxis._rangeInitial0).toBe(undefined);
+                expect(gd._fullLayout.yaxis._rangeInitial1).toBe(undefined);
+
                 expect(gd._fullLayout.yaxis2).toBe(undefined);
             })
             .then(function() { return Plotly.react(gd, fig); })
@@ -1005,6 +1014,64 @@ describe('Test click interactions:', function() {
                     yRng: [0.788, 4.211],
                     y2Rng: [-1, 1]
                 });
+            })
+            .then(done, done.fail);
+        });
+
+        it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (case of partial ranges)', function(done) {
+            mockCopy = setRanges(mockCopy);
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 3, 4]}
+            ], {
+                xaxis: {range: [1, null]},
+                yaxis: {range: [null, 3]},
+                width: 600,
+                height: 600
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 3.2]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.8, 3]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.2, 3.2]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.8, 4.2]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 3.2]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.8, 3]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (case of partial ranges reversed)', function(done) {
+            mockCopy = setRanges(mockCopy);
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 3, 4]}
+            ], {
+                xaxis: {range: [null, 1], autorange: 'max reversed'},
+                yaxis: {range: [3, null], autorange: 'min reversed'},
+                width: 600,
+                height: 600
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([3.2, 1]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([3, 0.8]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([3.2, -0.2]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([4.2, 0.8]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([3.2, 1]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([3, 0.8]);
             })
             .then(done, done.fail);
         });

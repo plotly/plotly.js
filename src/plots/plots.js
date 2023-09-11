@@ -1322,6 +1322,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
                 'showlegend'
             );
 
+            coerce('legend');
             coerce('legendwidth');
             coerce('legendgroup');
             coerce('legendgrouptitle.text');
@@ -2013,13 +2014,6 @@ plots.doAutoMargin = function(gd) {
     var reservedMargins = {t: 0, b: 0, l: 0, r: 0};
     var oldMargins = Lib.extendFlat({}, gs);
 
-    var margins = gd._fullLayout._reservedMargin;
-    for(var key in margins) {
-        for(var side in margins[key]) {
-            var val = margins[key][side];
-            reservedMargins[side] = Math.max(reservedMargins[side], val);
-        }
-    }
     // adjust margins for outside components
     // fullLayout.margin is the requested margin,
     // fullLayout._size has margins and plotsize after adjustment
@@ -2032,11 +2026,18 @@ plots.doAutoMargin = function(gd) {
     var minreducedwidth = fullLayout.minreducedwidth;
     var minreducedheight = fullLayout.minreducedheight;
 
-    if(fullLayout.margin.autoexpand !== false) {
+    if(margin.autoexpand !== false) {
         for(var k in pushMargin) {
             if(!pushMarginIds[k]) delete pushMargin[k];
         }
 
+        var margins = gd._fullLayout._reservedMargin;
+        for(var key in margins) {
+            for(var side in margins[key]) {
+                var val = margins[key][side];
+                reservedMargins[side] = Math.max(reservedMargins[side], val);
+            }
+        }
         // fill in the requested margins
         pushMargin.base = {
             l: {val: 0, size: ml},
@@ -2045,9 +2046,23 @@ plots.doAutoMargin = function(gd) {
             b: {val: 0, size: mb}
         };
 
+
+        // make sure that the reservedMargin is the minimum needed
+        for(var s in reservedMargins) {
+            var autoMarginPush = 0;
+            for(var m in pushMargin) {
+                if(m !== 'base') {
+                    if(isNumeric(pushMargin[m][s].size)) {
+                        autoMarginPush = pushMargin[m][s].size > autoMarginPush ? pushMargin[m][s].size : autoMarginPush;
+                    }
+                }
+            }
+            var extraMargin = Math.max(0, (margin[s] - autoMarginPush));
+            reservedMargins[s] = Math.max(0, reservedMargins[s] - extraMargin);
+        }
+
         // now cycle through all the combinations of l and r
         // (and t and b) to find the required margins
-
         for(var k1 in pushMargin) {
             var pushleft = pushMargin[k1].l || {};
             var pushbottom = pushMargin[k1].b || {};

@@ -1843,6 +1843,17 @@ function axRangeSupplyDefaultsByPass(gd, flags, specs) {
         var axIn = gd.layout[axName];
         var axOut = fullLayout[axName];
         axOut.autorange = axIn.autorange;
+
+        var r0 = axOut._rangeInitial0;
+        var r1 = axOut._rangeInitial1;
+        // partial range needs supplyDefaults
+        if(
+            (r0 === undefined && r1 !== undefined) ||
+            (r0 !== undefined && r1 === undefined)
+        ) {
+            return false;
+        }
+
         if(axIn.range) {
             axOut.range = axIn.range.slice();
         }
@@ -2227,6 +2238,15 @@ function _relayout(gd, aobj) {
     // TODO: do we really need special aobj.height/width handling here?
     // couldn't editType do this?
     if(updateAutosize(gd) || aobj.height || aobj.width) flags.plot = true;
+
+    // update shape legends
+    var shapes = fullLayout.shapes;
+    for(i = 0; i < shapes.length; i++) {
+        if(shapes[i].showlegend) {
+            flags.calc = true;
+            break;
+        }
+    }
 
     if(flags.plot || flags.calc) {
         flags.layoutReplot = true;

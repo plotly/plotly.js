@@ -14,6 +14,16 @@ function dfltLabelYanchor(isLine, labelTextPosition) {
 }
 
 module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce) {
+    coerce('newshape.visible');
+    coerce('newshape.name');
+    coerce('newshape.showlegend');
+    coerce('newshape.legend');
+    coerce('newshape.legendwidth');
+    coerce('newshape.legendgroup');
+    coerce('newshape.legendgrouptitle.text');
+    Lib.coerceFont(coerce, 'newshape.legendgrouptitle.font');
+    coerce('newshape.legendrank');
+
     coerce('newshape.drawdirection');
     coerce('newshape.layer');
     coerce('newshape.fillcolor');
@@ -28,7 +38,8 @@ module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce
 
     var isLine = layoutIn.dragmode === 'drawline';
     var labelText = coerce('newshape.label.text');
-    if(labelText) {
+    var labelTextTemplate = coerce('newshape.label.texttemplate');
+    if(labelText || labelTextTemplate) {
         coerce('newshape.label.textangle');
         var labelTextPosition = coerce('newshape.label.textposition', isLine ? 'middle' : 'middle center');
         coerce('newshape.label.xanchor');

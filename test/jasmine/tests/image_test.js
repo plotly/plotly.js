@@ -209,6 +209,14 @@ describe('image smart layout defaults', function() {
         expect(gd._fullLayout.yaxis.scaleanchor).toBe('x');
     });
 
+    it('should NOT set scaleanchor if asked not to', function() {
+        gd = {};
+        gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
+        gd.layout = {yaxis: {scaleanchor: false}};
+        supplyAllDefaults(gd);
+        expect(gd._fullLayout.yaxis.scaleanchor).toBe(false);
+    });
+
     it('should NOT reset scaleanchor if it\'s already defined', function() {
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}, {y: [5, 3, 2], xaxis: 'x3'}];
         gd.layout = {yaxis: {scaleanchor: 'x3'}};

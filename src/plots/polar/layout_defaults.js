@@ -13,6 +13,7 @@ var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
 var handlePrefixSuffixDefaults = require('../cartesian/prefix_suffix_defaults');
 var handleCategoryOrderDefaults = require('../cartesian/category_order_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
+var handleAutorangeOptionsDefaults = require('../cartesian/autorange_options_defaults');
 var autoType = require('../cartesian/axis_autotype');
 
 var layoutAttributes = require('./layout_attributes');
@@ -76,12 +77,39 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         switch(axName) {
             case 'radialaxis':
-                var autoRange = coerceAxis('autorange', !axOut.isValidRange(axIn.range));
-                axIn.autorange = autoRange;
-                if(autoRange && (axType === 'linear' || axType === '-')) coerceAxis('rangemode');
-                if(autoRange === 'reversed') axOut._m = -1;
+                coerceAxis('minallowed');
+                coerceAxis('maxallowed');
+                var range = coerceAxis('range');
+                var autorangeDflt = axOut.getAutorangeDflt(range);
+                var autorange = coerceAxis('autorange', autorangeDflt);
+                var shouldAutorange;
 
-                coerceAxis('range');
+                // validate range and set autorange true for invalid partial ranges
+                if(range && (
+                    (range[0] === null && range[1] === null) ||
+                    ((range[0] === null || range[1] === null) && (autorange === 'reversed' || autorange === true)) ||
+                    (range[0] !== null && (autorange === 'min' || autorange === 'max reversed')) ||
+                    (range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))
+                )) {
+                    range = undefined;
+                    delete axOut.range;
+                    axOut.autorange = true;
+                    shouldAutorange = true;
+                }
+
+                if(!shouldAutorange) {
+                    autorangeDflt = axOut.getAutorangeDflt(range);
+                    autorange = coerceAxis('autorange', autorangeDflt);
+                }
+
+                axIn.autorange = autorange;
+                if(autorange) {
+                    handleAutorangeOptionsDefaults(coerceAxis, autorange, range);
+
+                    if(axType === 'linear' || axType === '-') coerceAxis('rangemode');
+                    if(axOut.isReversed()) axOut._m = -1;
+                }
+
                 axOut.cleanRange('range', {dfltRange: [0, 1]});
                 break;
 

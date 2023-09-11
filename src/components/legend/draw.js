@@ -24,32 +24,97 @@ var helpers = require('./helpers');
 
 var MAIN_TITLE = 1;
 
+var LEGEND_PATTERN = /^legend[0-9]*$/;
+
 module.exports = function draw(gd, opts) {
-    if(!opts) opts = gd._fullLayout.legend || {};
-    return _draw(gd, opts);
+    if(opts) {
+        drawOne(gd, opts);
+    } else {
+        var fullLayout = gd._fullLayout;
+        var newLegends = fullLayout._legends;
+
+        // remove old legends that won't stay on the graph
+        var oldLegends = fullLayout._infolayer.selectAll('[class^="legend"]');
+
+        oldLegends.each(function() {
+            var el = d3.select(this);
+            var classes = el.attr('class');
+            var cls = classes.split(' ')[0];
+            if(cls.match(LEGEND_PATTERN) && newLegends.indexOf(cls) === -1) {
+                el.remove();
+            }
+        });
+
+        // draw/update new legends
+        for(var i = 0; i < newLegends.length; i++) {
+            var legendId = newLegends[i];
+            var legendObj = gd._fullLayout[legendId];
+            drawOne(gd, legendObj);
+        }
+    }
 };
 
-function _draw(gd, legendObj) {
+function drawOne(gd, opts) {
+    var legendObj = opts || {};
+
     var fullLayout = gd._fullLayout;
-    var clipId = 'legend' + fullLayout._uid;
-    var layer;
+    var legendId = getId(legendObj);
+
+    var clipId, layer;
 
     var inHover = legendObj._inHover;
     if(inHover) {
         layer = legendObj.layer;
-        clipId += '-hover';
+        clipId = 'hover';
     } else {
         layer = fullLayout._infolayer;
+        clipId = legendId;
     }
-
     if(!layer) return;
+    clipId += fullLayout._uid;
 
     if(!gd._legendMouseDownTime) gd._legendMouseDownTime = 0;
 
     var legendData;
     if(!inHover) {
-        if(!gd.calcdata) return;
-        legendData = fullLayout.showlegend && getLegendData(gd.calcdata, legendObj);
+        var calcdata = (gd.calcdata || []).slice();
+
+        var shapes = fullLayout.shapes;
+        for(var i = 0; i < shapes.length; i++) {
+            var shape = shapes[i];
+            if(!shape.showlegend) continue;
+
+            var shapeLegend = {
+                _isShape: true,
+                _fullInput: shape,
+                index: shape._index,
+                name: shape.name || shape.label.text || ('shape ' + shape._index),
+                legend: shape.legend,
+                legendgroup: shape.legendgroup,
+                legendgrouptitle: shape.legendgrouptitle,
+                legendrank: shape.legendrank,
+                legendwidth: shape.legendwidth,
+                showlegend: shape.showlegend,
+                visible: shape.visible,
+                opacity: shape.opacity,
+                mode: shape.type === 'line' ? 'lines' : 'markers',
+                line: shape.line,
+                marker: {
+                    line: shape.line,
+                    color: shape.fillcolor,
+                    size: 12,
+                    symbol:
+                        shape.type === 'rect' ? 'square' :
+                        shape.type === 'circle' ? 'circle' :
+                        // case of path
+                        'hexagon2'
+                },
+            };
+
+            calcdata.push([{ trace: shapeLegend }]);
+        }
+
+        legendData = fullLayout.showlegend && getLegendData(calcdata, legendObj, fullLayout._legends.length > 1);
     } else {
         if(!legendObj.entries) return;
         legendData = getLegendData(legendObj.entries, legendObj);
@@ -58,12 +123,12 @@ function _draw(gd, legendObj) {
     var hiddenSlices = fullLayout.hiddenlabels || [];
 
     if(!inHover && (!fullLayout.showlegend || !legendData.length)) {
-        layer.selectAll('.legend').remove();
+        layer.selectAll('.' + legendId).remove();
         fullLayout._topdefs.select('#' + clipId).remove();
-        return Plots.autoMargin(gd, 'legend');
+        return Plots.autoMargin(gd, legendId);
     }
 
-    var legend = Lib.ensureSingle(layer, 'g', 'legend', function(s) {
+    var legend = Lib.ensureSingle(layer, 'g', legendId, function(s) {
         if(!inHover) s.attr('pointer-events', 'all');
     });
 
@@ -84,14 +149,14 @@ function _draw(gd, legendObj) {
     legendObj._titleWidth = 0;
     legendObj._titleHeight = 0;
     if(title.text) {
-        var titleEl = Lib.ensureSingle(scrollBox, 'text', 'legendtitletext');
+        var titleEl = Lib.ensureSingle(scrollBox, 'text', legendId + 'titletext');
         titleEl.attr('text-anchor', 'start')
             .call(Drawing.font, title.font)
             .text(title.text);
 
         textLayout(titleEl, scrollBox, gd, legendObj, MAIN_TITLE); // handle mathjax or multi-line text and compute title height
     } else {
-        scrollBox.selectAll('.legendtitletext').remove();
+        scrollBox.selectAll('.' + legendId + 'titletext').remove();
     }
 
     var scrollBar = Lib.ensureSingle(legend, 'rect', 'scrollbar', function(s) {
@@ -117,7 +182,7 @@ function _draw(gd, legendObj) {
     })
     .each(function() { d3.select(this).call(drawTexts, gd, legendObj); })
     .call(style, gd, legendObj)
-    .each(function() { if(!inHover) d3.select(this).call(setupTraceToggle, gd); });
+    .each(function() { if(!inHover) d3.select(this).call(setupTraceToggle, gd, legendId); });
 
     Lib.syncOrAsync([
         Plots.previousPromises,
@@ -125,30 +190,43 @@ function _draw(gd, legendObj) {
         function() {
             var gs = fullLayout._size;
             var bw = legendObj.borderwidth;
+            var isPaperX = legendObj.xref === 'paper';
+            var isPaperY = legendObj.yref === 'paper';
 
             if(!inHover) {
-                var expMargin = expandMargin(gd);
+                var lx, ly;
+
+                if(isPaperX) {
+                    lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+                } else {
+                    lx = fullLayout.width * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+                }
+
+                if(isPaperY) {
+                    ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+                } else {
+                    ly = fullLayout.height * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+                }
+
+                var expMargin = expandMargin(gd, legendId, lx, ly);
 
                 // IF expandMargin return a Promise (which is truthy),
                 // we're under a doAutoMargin redraw, so we don't have to
                 // draw the remaining pieces below
                 if(expMargin) return;
 
-                var lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
-                var ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
-
                 if(fullLayout.margin.autoexpand) {
                     var lx0 = lx;
                     var ly0 = ly;
 
-                    lx = Lib.constrain(lx, 0, fullLayout.width - legendObj._width);
-                    ly = Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight);
+                    lx = isPaperX ? Lib.constrain(lx, 0, fullLayout.width - legendObj._width) : lx0;
+                    ly = isPaperY ? Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight) : ly0;
 
                     if(lx !== lx0) {
-                        Lib.log('Constrain legend.x to make legend fit inside graph');
+                        Lib.log('Constrain ' + legendId + '.x to make legend fit inside graph');
                     }
                     if(ly !== ly0) {
-                        Lib.log('Constrain legend.y to make legend fit inside graph');
+                        Lib.log('Constrain ' + legendId + '.y to make legend fit inside graph');
                     }
                 }
 
@@ -294,7 +372,7 @@ function _draw(gd, legendObj) {
             }
 
             function scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio) {
-                legendObj._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
+                legendObj._scrollY = gd._fullLayout[legendId]._scrollY = scrollBoxY;
                 Drawing.setTranslate(scrollBox, 0, -scrollBoxY);
 
                 Drawing.setRect(
@@ -330,7 +408,10 @@ function _draw(gd, legendObj) {
                     },
                     doneFn: function() {
                         if(xf !== undefined && yf !== undefined) {
-                            Registry.call('_guiRelayout', gd, {'legend.x': xf, 'legend.y': yf});
+                            var obj = {};
+                            obj[legendId + '.x'] = xf;
+                            obj[legendId + '.y'] = yf;
+                            Registry.call('_guiRelayout', gd, obj);
                         }
                     },
                     clickFn: function(numClicks, e) {
@@ -402,6 +483,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
 }
 
 function drawTexts(g, gd, legendObj) {
+    var legendId = getId(legendObj);
     var legendItem = g.data()[0][0];
     var trace = legendItem.trace;
     var isPieLike = Registry.traceIs(trace, 'pie-like');
@@ -424,7 +506,7 @@ function drawTexts(g, gd, legendObj) {
         }
     }
 
-    var textEl = Lib.ensureSingle(g, 'text', 'legendtext');
+    var textEl = Lib.ensureSingle(g, 'text', legendId + 'text');
 
     textEl.attr('text-anchor', 'start')
         .call(Drawing.font, font)
@@ -445,9 +527,9 @@ function drawTexts(g, gd, legendObj) {
 
                 if(Registry.hasTransform(fullInput, 'groupby')) {
                     var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
-                    var index = groupbyIndices[groupbyIndices.length - 1];
+                    var _index = groupbyIndices[groupbyIndices.length - 1];
 
-                    var kcont = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
+                    var kcont = Lib.keyedContainer(fullInput, 'transforms[' + _index + '].styles', 'target', 'value.name');
 
                     kcont.set(legendItem.trace._group, newName);
 
@@ -456,7 +538,11 @@ function drawTexts(g, gd, legendObj) {
                     update.name = newName;
                 }
 
-                return Registry.call('_guiRestyle', gd, update, trace.index);
+                if(fullInput._isShape) {
+                    return Registry.call('_guiRelayout', gd, 'shapes[' + trace.index + '].name', update.name);
+                } else {
+                    return Registry.call('_guiRestyle', gd, update, trace.index);
+                }
             });
     } else {
         textLayout(textEl, g, gd, legendObj);
@@ -478,12 +564,12 @@ function ensureLength(str, maxLength) {
     return str;
 }
 
-function setupTraceToggle(g, gd) {
+function setupTraceToggle(g, gd, legendId) {
     var doubleClickDelay = gd._context.doubleClickDelay;
     var newMouseDownTime;
     var numClicks = 1;
 
-    var traceToggle = Lib.ensureSingle(g, 'rect', 'legendtoggle', function(s) {
+    var traceToggle = Lib.ensureSingle(g, 'rect', legendId + 'toggle', function(s) {
         if(!gd._context.staticPlot) {
             s.style('cursor', 'pointer').attr('pointer-events', 'all');
         }
@@ -505,7 +591,7 @@ function setupTraceToggle(g, gd) {
     });
     traceToggle.on('mouseup', function() {
         if(gd._dragged || gd._editing) return;
-        var legend = gd._fullLayout.legend;
+        var legend = gd._fullLayout[legendId];
 
         if((new Date()).getTime() - gd._legendMouseDownTime > doubleClickDelay) {
             numClicks = Math.max(numClicks - 1, 1);
@@ -531,7 +617,11 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
 
     var mathjaxGroup = g.select('g[class*=math-group]');
     var mathjaxNode = mathjaxGroup.node();
-    if(!legendObj) legendObj = gd._fullLayout.legend;
+
+    var legendId = getId(legendObj);
+    if(!legendObj) {
+        legendObj = gd._fullLayout[legendId];
+    }
     var bw = legendObj.borderwidth;
     var font;
     if(aTitle === MAIN_TITLE) {
@@ -556,9 +646,12 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
             Drawing.setTranslate(mathjaxGroup, 0, height * 0.25);
         }
     } else {
-        var textEl = g.select(aTitle === MAIN_TITLE ?
-            '.legendtitletext' : '.legendtext'
-        );
+        var cls = '.' + legendId + (
+            aTitle === MAIN_TITLE ? 'title' : ''
+        ) + 'text';
+
+        var textEl = g.select(cls);
+
         var textLines = svgTextUtils.lineCount(textEl);
         var textNode = textEl.node();
 
@@ -568,13 +661,18 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
         // approximation to height offset to center the font
         // to avoid getBoundingClientRect
         if(aTitle === MAIN_TITLE) {
+            var titleOffset = 0;
             if(legendObj.title.side === 'left') {
                 // add extra space between legend title and itmes
                 width += constants.itemGap * 2;
+            } else if(legendObj.title.side === 'top center') {
+                if(legendObj._width) titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
+            } else if(legendObj.title.side === 'top right') {
+                if(legendObj._width) titleOffset = legendObj._width - 2 * bw - 2 * constants.titlePad - width;
             }
 
             svgTextUtils.positionText(textEl,
-                bw + constants.titlePad,
+                bw + constants.titlePad + titleOffset,
                 bw + lineHeight
             );
         } else { // legend item
@@ -619,7 +717,7 @@ function getTitleSize(legendObj) {
 }
 
 /*
- * Computes in fullLayout.legend:
+ * Computes in fullLayout[legendId]:
  *
  *  - _height: legend height including items past scrollbox height
  *  - _maxHeight: maximum legend height before scrollbox is required
@@ -630,7 +728,10 @@ function getTitleSize(legendObj) {
  */
 function computeLegendDimensions(gd, groups, traces, legendObj) {
     var fullLayout = gd._fullLayout;
-    if(!legendObj) legendObj = fullLayout.legend;
+    var legendId = getId(legendObj);
+    if(!legendObj) {
+        legendObj = fullLayout[legendId];
+    }
     var gs = fullLayout._size;
 
     var isVertical = helpers.isVertical(legendObj);
@@ -818,7 +919,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var edits = gd._context.edits;
     var isEditable = edits.legendText || edits.legendPosition;
     traces.each(function(d) {
-        var traceToggle = d3.select(this).select('.legendtoggle');
+        var traceToggle = d3.select(this).select('.' + legendId + 'toggle');
         var h = d[0].height;
         var legendgroup = d[0].trace.legendgroup;
         var traceWidth = getTraceWidth(d, legendObj, textGap);
@@ -833,20 +934,45 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     });
 }
 
-function expandMargin(gd) {
+function expandMargin(gd, legendId, lx, ly) {
     var fullLayout = gd._fullLayout;
-    var legendObj = fullLayout.legend;
+    var legendObj = fullLayout[legendId];
     var xanchor = getXanchor(legendObj);
     var yanchor = getYanchor(legendObj);
 
-    return Plots.autoMargin(gd, 'legend', {
-        x: legendObj.x,
-        y: legendObj.y,
-        l: legendObj._width * (FROM_TL[xanchor]),
-        r: legendObj._width * (FROM_BR[xanchor]),
-        b: legendObj._effHeight * (FROM_BR[yanchor]),
-        t: legendObj._effHeight * (FROM_TL[yanchor])
-    });
+    var isPaperX = legendObj.xref === 'paper';
+    var isPaperY = legendObj.yref === 'paper';
+
+    gd._fullLayout._reservedMargin[legendId] = {};
+    var sideY = legendObj.y < 0.5 ? 'b' : 't';
+    var sideX = legendObj.x < 0.5 ? 'l' : 'r';
+    var possibleReservedMargins = {
+        r: (fullLayout.width - lx),
+        l: lx + legendObj._width,
+        b: (fullLayout.height - ly),
+        t: ly + legendObj._effHeight
+    };
+
+    if(isPaperX && isPaperY) {
+        return Plots.autoMargin(gd, legendId, {
+            x: legendObj.x,
+            y: legendObj.y,
+            l: legendObj._width * (FROM_TL[xanchor]),
+            r: legendObj._width * (FROM_BR[xanchor]),
+            b: legendObj._effHeight * (FROM_BR[yanchor]),
+            t: legendObj._effHeight * (FROM_TL[yanchor])
+        });
+    } else if(isPaperX) {
+        gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
+    } else if(isPaperY) {
+        gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
+    } else {
+        if(legendObj.orientation === 'v') {
+            gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
+        } else {
+            gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
+        }
+    }
 }
 
 function getXanchor(legendObj) {
@@ -859,4 +985,8 @@ function getYanchor(legendObj) {
     return Lib.isBottomAnchor(legendObj) ? 'bottom' :
         Lib.isMiddleAnchor(legendObj) ? 'middle' :
         'top';
+}
+
+function getId(legendObj) {
+    return legendObj._id || 'legend';
 }

@@ -9,6 +9,139 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.26.0] -- 2023-08-24
+
+### Added
+ - Add "min", "max", "min reversed" and "max reversed" autorange options and handle partial ranges (i.e. one end being null), add `autorangeoptions` (`clipmin`, `clipmax`, `minallowed`, `maxallowed`, `include`) as well as `minallowed` and `maxallowed` to cartesian, gl3d and radial axes [[#6547](https://github.com/plotly/plotly.js/pull/6547)]
+ - Add [n]-sigma (std deviations) box plots as an alternative to quartiles [[#6697](https://github.com/plotly/plotly.js/issues/6697)], with thanks to @28raining for the contribution!
+ - Add "top left" & "top center" side options to legend title [[#6711](https://github.com/plotly/plotly.js/pull/6711)], with thanks to @28raining for the contribution!
+- Add "false" option to `scaleanchor` to allow removing a constraint that is set by default [[#6712](https://github.com/plotly/plotly.js/pull/6712)], with thanks to @lvlte for the contribution!
+
+
+## [2.25.2] -- 2023-08-11
+
+### Changed
+ - Update Croatian translations in `hr` locale [[#6690](https://github.com/plotly/plotly.js/pull/6690)],
+   with thanks to @Mkranj for the contribution!
+
+### Fixed
+ - Fix potential prototype pollution in plot API calls [[#6703](https://github.com/plotly/plotly.js/pull/6703), [6704](https://github.com/plotly/plotly.js/pull/6704)]
+
+
+## [2.25.1] -- 2023-08-02
+
+### Fixed
+ - Fix clearing legend using react (regression introduced in 2.25.0) [[#6695](https://github.com/plotly/plotly.js/pull/6695)]
+
+
+## [2.25.0] -- 2023-07-25
+
+### Added
+ - Add "Equal Earth" projection to geo subplots [[#6670](https://github.com/plotly/plotly.js/pull/6670)],
+   with thanks to @apparebit for the contribution!
+ - Add options to include legends for shapes and `newshape` [[#6653](https://github.com/plotly/plotly.js/pull/6653)]
+ - Add Plotly.deleteActiveShape command [[#6679](https://github.com/plotly/plotly.js/pull/6679)]
+
+### Fixed
+ - Fix contour plot colorscale domain (take account of `zmin`, `zmax`, `cmin` and `cmax`) [[#6625](https://github.com/plotly/plotly.js/pull/6625)],
+   with thanks to @lvlte for the contribution!
+ - Fix text markers on non-mapbox styled maps [[#6652](https://github.com/plotly/plotly.js/pull/6652)],
+   with thanks to @baurt for the contribution!
+ - Fix unhide isolated traces in multi legend cases (regression introduced in 2.24.3) [[#6684](https://github.com/plotly/plotly.js/pull/6684)]
+
+
+## [2.24.3] -- 2023-07-05
+
+### Fixed
+ - Fix double clicking one item in a legend hides traces in other legends [[#6655](https://github.com/plotly/plotly.js/pull/6655)]
+ - Fix double click pie slices when having multiple legends [[#6657](https://github.com/plotly/plotly.js/pull/6657)]
+ - Fix per legend group and traceorder defaults when having multiple legends [[#6664](https://github.com/plotly/plotly.js/pull/6664)]
+
+
+## [2.24.2] -- 2023-06-09
+
+### Fixed
+ - Fix legend groups toggle (regression introduced in 2.22.0) [#6639]((https://github.com/plotly/plotly.js/issues/6639))
+ - Fix waterfall `hovertemplate` not showing delta on totals similar [#6635]((https://github.com/plotly/plotly.js/issues/6635))
+
+
+## [2.24.1] -- 2023-06-07
+
+### Fixed
+ - Fix minimal copying of arrays in minExtend function
+  (regression introduced in 2.24.0) [#6632]((https://github.com/plotly/plotly.js/issues/6632))
+
+
+## [2.24.0] -- 2023-06-06
+
+### Added
+ - add pattern to pie, funnelarea, sunburst, icicle and treemap traces [[#6601](https://github.com/plotly/plotly.js/pull/6601), [#6619](https://github.com/plotly/plotly.js/pull/6619), [#6622](https://github.com/plotly/plotly.js/pull/6622), [#6626](https://github.com/plotly/plotly.js/pull/6626), [#6627](https://github.com/plotly/plotly.js/pull/6627), [#6628](https://github.com/plotly/plotly.js/pull/6628), [#6629](https://github.com/plotly/plotly.js/pull/6629)],
+  with thanks to @thierryVergult for the contribution!
+
+### Fixed
+ - Fix to prevent accessing undefined (hoverText.hoverLabels) in case all currently shown markers
+   have hoverinfo: "none" (regression introduced in 2.6.0) [#6614]((https://github.com/plotly/plotly.js/issues/6614)),
+   with thanks to @Domino987 for the contribution!
+ - Fix to ensure only minimum margin spacing is added for container-referenced legends and colorbars [[#6616](https://github.com/plotly/plotly.js/pull/6616)]
+
+
+## [2.23.2] -- 2023-05-19
+
+### Fixed
+ - Fix text rendering while drawing new shapes [[#6608](https://github.com/plotly/plotly.js/pull/6608)],
+   with thanks to the [Volkswagen](https://www.volkswagenag.com) Center of Excellence for Battery Systems for sponsoring development!
+
+
+## [2.23.1] -- 2023-05-16
+
+### Fixed
+ - Fix heatmap rendering on iOS and Safari when `zsmooth` is set to false [[#6605](https://github.com/plotly/plotly.js/pull/6605)], with thanks to @lvlte for the contribution!
+
+
+## [2.23.0] -- 2023-05-12
+
+### Added
+ - Add `legend.xref` and `legend.yref` to enable container-referenced positioning of legends [[#6589](https://github.com/plotly/plotly.js/pull/6589)], with thanks to [Gamma Technologies](https://www.gtisoft.com/) for sponsoring the related development.
+ - Add `colorbar.xref` and `colorbar.yref` to enable container-referenced positioning of colorbars [[#6593](https://github.com/plotly/plotly.js/pull/6593)], with thanks to [Gamma Technologies](https://www.gtisoft.com/) for sponsoring the related development.
+
+### Changed
+ - Improve heatmap rendering performance when `zsmooth` is set to false [[#6574](https://github.com/plotly/plotly.js/pull/6574)], with thanks to @lvlte for the contribution!
+
+
+## [2.22.0] -- 2023-04-27
+
+### Added
+ - Add `legend` references to traces and `legend2`, `legend3`, etc. to layout,
+   also add `visible` to legend i.e. to allow positioning multiple legends on a graph [[#6535](https://github.com/plotly/plotly.js/pull/6535)],
+   this feature was anonymously sponsored: thank you to our sponsor!
+
+### Changed
+ - Update Norwegian translations in `no` locale [[#5410](https://github.com/plotly/plotly.js/pull/5410)],
+   with thanks to @bjornol for the contribution!
+ - Update Slovak translations and number formats in `sk` locale [[#6580](https://github.com/plotly/plotly.js/pull/6580)], with thanks to @Libco for the contribution!
+
+### Fixed
+ - Fix `plotly_click` in gl3d scenes to fire on touch devices [[#6563](https://github.com/plotly/plotly.js/pull/6563)],
+   with thanks to @NickTominaga for the contribution!
+ - Fix scatter3d when `marker.opacity` is set to zero [[#6581](https://github.com/plotly/plotly.js/pull/6581)], with thanks to @dmyronuk for the contribution!
+ - Fix scattermapbox visibility restyle [[#6567](https://github.com/plotly/plotly.js/pull/6567)]
+
+
+## [2.21.0] -- 2023-04-17
+
+### Added
+ - Add `texttemplate` to shape.label for parametric shapes i.e. line, rect and circle [[#6527](https://github.com/plotly/plotly.js/pull/6527)],
+   with thanks to the [Volkswagen](https://www.volkswagenag.com) Center of Excellence for Battery Systems for sponsoring development!
+ - Add strict option to custom bundle command [[#6557](https://github.com/plotly/plotly.js/pull/6557)],
+   with thanks to @CallumNZ for the contribution!
+
+### Fixed
+ - Fix dragging of legend when xanchor is not 'left' or yanchor is not 'top' [[#6528](https://github.com/plotly/plotly.js/pull/6528)],
+   with thanks to @bmaranville for the contribution!
+ - Fix heatmap rendering bug and improve performance when `zsmooth` is set to "fast" [[#6565](https://github.com/plotly/plotly.js/pull/6565)],
+   with thanks to @lvlte for the contribution!
+
+
 ## [2.20.0] -- 2023-03-15
 
 ### Added

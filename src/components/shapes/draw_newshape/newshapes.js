@@ -25,20 +25,12 @@ var writePaths = helpers.writePaths;
 var ellipseOver = helpers.ellipseOver;
 var fixDatesForPaths = helpers.fixDatesForPaths;
 
-module.exports = function newShapes(outlines, dragOptions) {
+function newShapes(outlines, dragOptions) {
     if(!outlines.length) return;
     var e = outlines[0][0]; // pick first
     if(!e) return;
-    var d = e.getAttribute('d');
 
     var gd = dragOptions.gd;
-    var newStyle = gd._fullLayout.newshape;
-
-    var plotinfo = dragOptions.plotinfo;
-    var xaxis = plotinfo.xaxis;
-    var yaxis = plotinfo.yaxis;
-    var xPaper = !!plotinfo.domain || !plotinfo.xaxis;
-    var yPaper = !!plotinfo.domain || !plotinfo.yaxis;
 
     var isActiveShape = dragOptions.isActiveShape;
     var dragmode = dragOptions.dragmode;
@@ -70,12 +62,80 @@ module.exports = function newShapes(outlines, dragOptions) {
         }
     }
 
-    var isOpenMode = openMode(dragmode);
+    var newShape = createShapeObj(outlines, dragOptions, dragmode);
 
+    clearOutline(gd);
+
+    var editHelpers = dragOptions.editHelpers;
+    var modifyItem = (editHelpers || {}).modifyItem;
+
+    var allShapes = [];
+    for(var q = 0; q < shapes.length; q++) {
+        var beforeEdit = gd._fullLayout.shapes[q];
+        allShapes[q] = beforeEdit._input;
+
+        if(
+            isActiveShape !== undefined &&
+            q === gd._fullLayout._activeShapeIndex
+        ) {
+            var afterEdit = newShape;
+
+            switch(beforeEdit.type) {
+                case 'line':
+                case 'rect':
+                case 'circle':
+                    modifyItem('x0', afterEdit.x0);
+                    modifyItem('x1', afterEdit.x1);
+                    modifyItem('y0', afterEdit.y0);
+                    modifyItem('y1', afterEdit.y1);
+                    break;
+
+                case 'path':
+                    modifyItem('path', afterEdit.path);
+                    break;
+            }
+        }
+    }
+
+    if(isActiveShape === undefined) {
+        allShapes.push(newShape); // add new shape
+        return allShapes;
+    }
+
+    return editHelpers ? editHelpers.getUpdateObj() : {};
+}
+
+function createShapeObj(outlines, dragOptions, dragmode) {
+    var e = outlines[0][0]; // pick first outline
+    var gd = dragOptions.gd;
+
+    var d = e.getAttribute('d');
+    var newStyle = gd._fullLayout.newshape;
+    var plotinfo = dragOptions.plotinfo;
+    var isActiveShape = dragOptions.isActiveShape;
+
+    var xaxis = plotinfo.xaxis;
+    var yaxis = plotinfo.yaxis;
+    var xPaper = !!plotinfo.domain || !plotinfo.xaxis;
+    var yPaper = !!plotinfo.domain || !plotinfo.yaxis;
+
+    var isOpenMode = openMode(dragmode);
     var polygons = readPaths(d, gd, plotinfo, isActiveShape);
 
     var newShape = {
         editable: true,
+
+        visible: newStyle.visible,
+        name: newStyle.name,
+        showlegend: newStyle.showlegend,
+        legend: newStyle.legend,
+        legendwidth: newStyle.legendwidth,
+        legendgroup: newStyle.legendgroup,
+        legendgrouptitle: {
+            text: newStyle.legendgrouptitle.text,
+            font: newStyle.legendgrouptitle.font
+        },
+        legendrank: newStyle.legendrank,
 
         label: newStyle.label,
 
@@ -191,44 +251,10 @@ module.exports = function newShapes(outlines, dragOptions) {
         newShape.path = writePaths(polygons);
         cell = null;
     }
+    return newShape;
+}
 
-    clearOutline(gd);
-
-    var editHelpers = dragOptions.editHelpers;
-    var modifyItem = (editHelpers || {}).modifyItem;
-
-    var allShapes = [];
-    for(var q = 0; q < shapes.length; q++) {
-        var beforeEdit = gd._fullLayout.shapes[q];
-        allShapes[q] = beforeEdit._input;
-
-        if(
-            isActiveShape !== undefined &&
-            q === gd._fullLayout._activeShapeIndex
-        ) {
-            var afterEdit = newShape;
-
-            switch(beforeEdit.type) {
-                case 'line':
-                case 'rect':
-                case 'circle':
-                    modifyItem('x0', afterEdit.x0);
-                    modifyItem('x1', afterEdit.x1);
-                    modifyItem('y0', afterEdit.y0);
-                    modifyItem('y1', afterEdit.y1);
-                    break;
-
-                case 'path':
-                    modifyItem('path', afterEdit.path);
-                    break;
-            }
-        }
-    }
-
-    if(isActiveShape === undefined) {
-        allShapes.push(newShape); // add new shape
-        return allShapes;
-    }
-
-    return editHelpers ? editHelpers.getUpdateObj() : {};
+module.exports = {
+    newShapes: newShapes,
+    createShapeObj: createShapeObj,
 };

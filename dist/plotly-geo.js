@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.20.0
+* plotly.js (geo) v2.26.0
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -2512,9 +2512,13 @@ module.exports = overrideAll({
     dflt: 1
   },
   x: {
-    valType: 'number',
-    min: -2,
-    max: 3
+    valType: 'number'
+  },
+  xref: {
+    valType: 'enumerated',
+    dflt: 'paper',
+    values: ['container', 'paper'],
+    editType: 'layoutstyle'
   },
   xanchor: {
     valType: 'enumerated',
@@ -2526,9 +2530,13 @@ module.exports = overrideAll({
     dflt: 10
   },
   y: {
-    valType: 'number',
-    min: -2,
-    max: 3
+    valType: 'number'
+  },
+  yref: {
+    valType: 'enumerated',
+    dflt: 'paper',
+    values: ['container', 'paper'],
+    editType: 'layoutstyle'
   },
   yanchor: {
     valType: 'enumerated',
@@ -2673,11 +2681,42 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
   coerce('thickness', thicknessmode === 'fraction' ? 30 / (isVertical ? w : h) : 30);
   var lenmode = coerce('lenmode');
   coerce('len', lenmode === 'fraction' ? 1 : isVertical ? h : w);
-  coerce('x', isVertical ? 1.02 : 0.5);
-  coerce('xanchor', isVertical ? 'left' : 'center');
+  var yref = coerce('yref');
+  var xref = coerce('xref');
+  var isPaperY = yref === 'paper';
+  var isPaperX = xref === 'paper';
+  var defaultX, defaultY, defaultYAnchor;
+  var defaultXAnchor = 'left';
+  if (isVertical) {
+    defaultYAnchor = 'middle';
+    defaultXAnchor = isPaperX ? 'left' : 'right';
+    defaultX = isPaperX ? 1.02 : 1;
+    defaultY = 0.5;
+  } else {
+    defaultYAnchor = isPaperY ? 'bottom' : 'top';
+    defaultXAnchor = 'center';
+    defaultX = 0.5;
+    defaultY = isPaperY ? 1.02 : 1;
+  }
+  Lib.coerce(colorbarIn, colorbarOut, {
+    x: {
+      valType: 'number',
+      min: isPaperX ? -2 : 0,
+      max: isPaperX ? 3 : 1,
+      dflt: defaultX
+    }
+  }, 'x');
+  Lib.coerce(colorbarIn, colorbarOut, {
+    y: {
+      valType: 'number',
+      min: isPaperY ? -2 : 0,
+      max: isPaperY ? 3 : 1,
+      dflt: defaultY
+    }
+  }, 'y');
+  coerce('xanchor', defaultXAnchor);
   coerce('xpad');
-  coerce('y', isVertical ? 0.5 : 1.02);
-  coerce('yanchor', isVertical ? 'middle' : 'bottom');
+  coerce('yanchor', defaultYAnchor);
   coerce('ypad');
   Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
   coerce('outlinecolor');
@@ -2707,7 +2746,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
   handleTickLabelDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
   handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
   coerce('title.text', layout._dfltTitle.colorbar);
-  var tickFont = colorbarOut.tickfont;
+  var tickFont = colorbarOut.showticklabels ? colorbarOut.tickfont : font;
   var dfltTitleFont = Lib.extendFlat({}, tickFont, {
     color: font.color,
     size: Lib.bigFont(tickFont.size)
@@ -2834,6 +2873,7 @@ function makeColorBarData(gd) {
   for (var i = 0; i < calcdata.length; i++) {
     var cd = calcdata[i];
     trace = cd[0].trace;
+    if (!trace._module) continue;
     var moduleOpts = trace._module.colorbar;
     if (trace.visible === true && moduleOpts) {
       var allowsMultiplotCbs = Array.isArray(moduleOpts);
@@ -2891,6 +2931,8 @@ function drawColorBar(g, opts, gd) {
   var ypad = opts.ypad;
   var optsX = opts.x;
   var optsY = isVertical ? opts.y : 1 - opts.y;
+  var isPaperY = opts.yref === 'paper';
+  var isPaperX = opts.xref === 'paper';
   var fullLayout = gd._fullLayout;
   var gs = fullLayout._size;
   var fillColor = opts._fillcolor;
@@ -2919,10 +2961,12 @@ function drawColorBar(g, opts, gd) {
   var thickFrac = thickPx / (isVertical ? gs.w : gs.h);
   var lenPx = Math.round(len * (lenmode === 'fraction' ? isVertical ? gs.h : gs.w : 1));
   var lenFrac = lenPx / (isVertical ? gs.h : gs.w);
+  var posW = isPaperX ? gs.w : gd._fullLayout.width;
+  var posH = isPaperY ? gs.h : gd._fullLayout.height;
 
   // x positioning: do it initially just for left anchor,
   // then fix at the end (since we don't know the width yet)
-  var uPx = Math.round(isVertical ? optsX * gs.w + xpad : optsY * gs.h + ypad);
+  var uPx = Math.round(isVertical ? optsX * posW + xpad : optsY * posH + ypad);
   var xRatio = {
     center: 0.5,
     right: 1
@@ -2937,7 +2981,7 @@ function drawColorBar(g, opts, gd) {
 
   // y/x positioning (for v/h) we can do correctly from the start
   var vFrac = isVertical ? optsY - yRatio * lenFrac : optsX - xRatio * lenFrac;
-  var vPx = Math.round(isVertical ? gs.h * (1 - vFrac) : gs.w * vFrac);
+  var vPx = Math.round(isVertical ? posH * (1 - vFrac) : posW * vFrac);
 
   // stash a few things for makeEditable
   opts._lenFrac = lenFrac;
@@ -3022,16 +3066,16 @@ function drawColorBar(g, opts, gd) {
     if (isVertical && topOrBottom || !isVertical && !topOrBottom) {
       var x, y;
       if (titleSide === 'top') {
-        x = xpad + gs.l + gs.w * optsX;
-        y = ypad + gs.t + gs.h * (1 - vFrac - lenFrac) + 3 + titleFontSize * 0.75;
+        x = xpad + gs.l + posW * optsX;
+        y = ypad + gs.t + posH * (1 - vFrac - lenFrac) + 3 + titleFontSize * 0.75;
       }
       if (titleSide === 'bottom') {
-        x = xpad + gs.l + gs.w * optsX;
-        y = ypad + gs.t + gs.h * (1 - vFrac) - 3 - titleFontSize * 0.25;
+        x = xpad + gs.l + posW * optsX;
+        y = ypad + gs.t + posH * (1 - vFrac) - 3 - titleFontSize * 0.25;
       }
       if (titleSide === 'right') {
-        y = ypad + gs.t + gs.h * optsY + 3 + titleFontSize * 0.75;
-        x = xpad + gs.l + gs.w * vFrac;
+        y = ypad + gs.t + posH * optsY + 3 + titleFontSize * 0.75;
+        x = xpad + gs.l + posW * vFrac;
       }
       drawTitle(ax._id + 'title', {
         attributes: {
@@ -3049,15 +3093,15 @@ function drawColorBar(g, opts, gd) {
       var x, y;
       if (titleSide === 'right') {
         y = mid;
-        x = gs.l + gs.w * pos + 10 + titleFontSize * (ax.showticklabels ? 1 : 0.5);
+        x = gs.l + posW * pos + 10 + titleFontSize * (ax.showticklabels ? 1 : 0.5);
       } else {
         x = mid;
         if (titleSide === 'bottom') {
-          y = gs.t + gs.h * pos + 10 + (ticklabelposition.indexOf('inside') === -1 ? ax.tickfont.size : 0) + (ax.ticks !== 'intside' ? opts.ticklen || 0 : 0);
+          y = gs.t + posH * pos + 10 + (ticklabelposition.indexOf('inside') === -1 ? ax.tickfont.size : 0) + (ax.ticks !== 'intside' ? opts.ticklen || 0 : 0);
         }
         if (titleSide === 'top') {
           var nlines = title.text.split('<br>').length;
-          y = gs.t + gs.h * pos + 10 - thickPx - LINE_SPACING * titleFontSize * nlines;
+          y = gs.t + posH * pos + 10 - thickPx - LINE_SPACING * titleFontSize * nlines;
         }
       }
       drawTitle((isVertical ?
@@ -3140,7 +3184,7 @@ function drawColorBar(g, opts, gd) {
     g.selectAll('.' + cn.cbfills + ',.' + cn.cblines).attr('transform', isVertical ? strTranslate(0, Math.round(gs.h * (1 - ax.domain[1]))) : strTranslate(Math.round(gs.w * ax.domain[0]), 0));
     axLayer.attr('transform', isVertical ? strTranslate(0, Math.round(-gs.t)) : strTranslate(Math.round(-gs.l), 0));
     var fills = g.select('.' + cn.cbfills).selectAll('rect.' + cn.cbfill).attr('style', '').data(fillLevels);
-    fills.enter().append('rect').classed(cn.cbfill, true).style('stroke', 'none');
+    fills.enter().append('rect').classed(cn.cbfill, true).attr('style', '');
     fills.exit().remove();
     var zBounds = zrange.map(ax.c2p).map(Math.round).sort(function (a, b) {
       return a - b;
@@ -3248,13 +3292,21 @@ function drawColorBar(g, opts, gd) {
     fullLayout._hColorbarMoveTitle = hColorbarMoveTitle;
     fullLayout._hColorbarMoveCBTitle = moveY;
     var extraW = borderwidth + outlinewidth;
-    g.select('.' + cn.cbbg).attr('x', (isVertical ? uPx : vPx) - extraW / 2 - (isVertical ? xpad : 0)).attr('y', (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle)).attr(isVertical ? 'width' : 'height', Math.max(outerThickness - hColorbarMoveTitle, 2)).attr(isVertical ? 'height' : 'width', Math.max(lenPx + extraW, 2)).call(Color.fill, bgcolor).call(Color.stroke, opts.bordercolor).style('stroke-width', borderwidth);
+
+    // TODO - are these the correct positions?
+    var lx = (isVertical ? uPx : vPx) - extraW / 2 - (isVertical ? xpad : 0);
+    var ly = (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle);
+    g.select('.' + cn.cbbg).attr('x', lx).attr('y', ly).attr(isVertical ? 'width' : 'height', Math.max(outerThickness - hColorbarMoveTitle, 2)).attr(isVertical ? 'height' : 'width', Math.max(lenPx + extraW, 2)).call(Color.fill, bgcolor).call(Color.stroke, opts.bordercolor).style('stroke-width', borderwidth);
     var moveX = rightSideHorizontal ? Math.max(titleWidth - 10, 0) : 0;
     g.selectAll('.' + cn.cboutline).attr('x', (isVertical ? uPx : vPx + xpad) + moveX).attr('y', (isVertical ? vPx + ypad - lenPx : uPx) + (topSideVertical ? titleHeight : 0)).attr(isVertical ? 'width' : 'height', Math.max(thickPx, 2)).attr(isVertical ? 'height' : 'width', Math.max(lenPx - (isVertical ? 2 * ypad + titleHeight : 2 * xpad + moveX), 2)).call(Color.stroke, opts.outlinecolor).style({
       fill: 'none',
       'stroke-width': outlinewidth
     });
-    g.attr('transform', strTranslate(gs.l - (isVertical ? xRatio * outerThickness : 0), gs.t - (isVertical ? 0 : (1 - yRatio) * outerThickness - moveY)));
+    var xShift = isVertical ? xRatio * outerThickness : 0;
+    var yShift = isVertical ? 0 : (1 - yRatio) * outerThickness - moveY;
+    xShift = isPaperX ? gs.l - xShift : -xShift;
+    yShift = isPaperY ? gs.t - yShift : -yShift;
+    g.attr('transform', strTranslate(xShift, yShift));
     if (!isVertical && (borderwidth || tinycolor(bgcolor).getAlpha() && !tinycolor.equals(fullLayout.paper_bgcolor, bgcolor))) {
       // for horizontal colorbars when there is a border line or having different background color
       // hide/adjust x positioning for the first/last tick labels if they go outside the border
@@ -3344,7 +3396,28 @@ function drawColorBar(g, opts, gd) {
         marginOpts.yb = optsY + thickness * bFrac;
       }
     }
-    Plots.autoMargin(gd, opts._id, marginOpts);
+    var sideY = opts.y < 0.5 ? 'b' : 't';
+    var sideX = opts.x < 0.5 ? 'l' : 'r';
+    gd._fullLayout._reservedMargin[opts._id] = {};
+    var possibleReservedMargins = {
+      r: fullLayout.width - lx - xShift,
+      l: lx + marginOpts.r,
+      b: fullLayout.height - ly - yShift,
+      t: ly + marginOpts.b
+    };
+    if (isPaperX && isPaperY) {
+      Plots.autoMargin(gd, opts._id, marginOpts);
+    } else if (isPaperX) {
+      gd._fullLayout._reservedMargin[opts._id][sideY] = possibleReservedMargins[sideY];
+    } else if (isPaperY) {
+      gd._fullLayout._reservedMargin[opts._id][sideX] = possibleReservedMargins[sideX];
+    } else {
+      if (isVertical) {
+        gd._fullLayout._reservedMargin[opts._id][sideX] = possibleReservedMargins[sideX];
+      } else {
+        gd._fullLayout._reservedMargin[opts._id][sideY] = possibleReservedMargins[sideY];
+      }
+    }
   }
   return Lib.syncOrAsync([Plots.previousPromises, drawDummyTitle, drawAxis, drawCbTitle, Plots.previousPromises, positionCB], gd);
 }
@@ -5277,16 +5350,17 @@ drawing.getPatternAttr = function (mp, i, dflt) {
   }
   return mp;
 };
-drawing.pointStyle = function (s, trace, gd) {
+drawing.pointStyle = function (s, trace, gd, pt) {
   if (!s.size()) return;
   var fns = drawing.makePointStyleFns(trace);
   s.each(function (d) {
-    drawing.singlePointStyle(d, d3.select(this), trace, fns, gd);
+    drawing.singlePointStyle(d, d3.select(this), trace, fns, gd, pt);
   });
 };
-drawing.singlePointStyle = function (d, sel, trace, fns, gd) {
+drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
   var marker = trace.marker;
   var markerLine = marker.line;
+  if (pt && pt.i >= 0 && d.i === undefined) d.i = pt.i;
   sel.style('opacity', fns.selectedOpacityFn ? fns.selectedOpacityFn(d) : d.mo === undefined ? marker.opacity : d.mo);
   if (fns.ms2mrc) {
     var r;
@@ -5337,7 +5411,7 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd) {
     if ('mc' in d) {
       fillColor = d.mcc = fns.markerScale(d.mc);
     } else {
-      fillColor = marker.color || 'rgba(0,0,0,0)';
+      fillColor = marker.color || marker.colors || 'rgba(0,0,0,0)';
     }
     if (fns.selectedColorFn) {
       fillColor = fns.selectedColorFn(d);
@@ -5371,17 +5445,23 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd) {
       if (perPointGradient) gradientID += '-' + d.i;
       drawing.gradient(sel, gd, gradientID, gradientType, [[0, gradientColor], [1, fillColor]], 'fill');
     } else if (patternShape) {
+      var perPointPattern = false;
+      var fgcolor = markerPattern.fgcolor;
+      if (!fgcolor && pt && pt.color) {
+        fgcolor = pt.color;
+        perPointPattern = true;
+      }
+      var patternFGColor = drawing.getPatternAttr(fgcolor, d.i, pt && pt.color || null);
       var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
-      var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
       var patternFGOpacity = markerPattern.fgopacity;
       var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
       var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
-      var perPointPattern = d.mcc || Lib.isArrayOrTypedArray(markerPattern.shape) || Lib.isArrayOrTypedArray(markerPattern.bgcolor) || Lib.isArrayOrTypedArray(markerPattern.size) || Lib.isArrayOrTypedArray(markerPattern.solidity);
+      perPointPattern = perPointPattern || d.mcc || Lib.isArrayOrTypedArray(markerPattern.shape) || Lib.isArrayOrTypedArray(markerPattern.bgcolor) || Lib.isArrayOrTypedArray(markerPattern.fgcolor) || Lib.isArrayOrTypedArray(markerPattern.size) || Lib.isArrayOrTypedArray(markerPattern.solidity);
       var patternID = trace.uid;
       if (perPointPattern) patternID += '-' + d.i;
       drawing.pattern(sel, 'point', gd, patternID, patternShape, patternSize, patternSolidity, d.mcc, markerPattern.fillmode, patternBGColor, patternFGColor, patternFGOpacity);
     } else {
-      Color.fill(sel, fillColor);
+      Lib.isArrayOrTypedArray(fillColor) ? Color.fill(sel, fillColor[d.i]) : Color.fill(sel, fillColor);
     }
     if (lineWidth) {
       Color.stroke(sel, lineColor);
@@ -8654,7 +8734,7 @@ function createHoverText(hoverData, opts) {
       return data.hoverinfo !== 'none';
     });
     // Return early if nothing is hovered on
-    if (groupedHoverData.length === 0) return;
+    if (groupedHoverData.length === 0) return [];
 
     // mock legend
     var hoverlabel = fullLayout.hoverlabel;
@@ -10695,6 +10775,15 @@ module.exports = {
 var fontAttrs = __webpack_require__(1940);
 var colorAttrs = __webpack_require__(2399);
 module.exports = {
+  // not really a 'subplot' attribute container,
+  // but this is the flag we use to denote attributes that
+  // support yaxis, yaxis2, yaxis3, ... counters
+  _isSubplotObj: true,
+  visible: {
+    valType: 'boolean',
+    dflt: true,
+    editType: 'legend'
+  },
   bgcolor: {
     valType: 'color',
     editType: 'legend'
@@ -10777,9 +10866,13 @@ module.exports = {
   },
   x: {
     valType: 'number',
-    min: -2,
-    max: 3,
     editType: 'legend'
+  },
+  xref: {
+    valType: 'enumerated',
+    dflt: 'paper',
+    values: ['container', 'paper'],
+    editType: 'layoutstyle'
   },
   xanchor: {
     valType: 'enumerated',
@@ -10789,9 +10882,13 @@ module.exports = {
   },
   y: {
     valType: 'number',
-    min: -2,
-    max: 3,
     editType: 'legend'
+  },
+  yref: {
+    valType: 'enumerated',
+    dflt: 'paper',
+    values: ['container', 'paper'],
+    editType: 'layoutstyle'
   },
   yanchor: {
     valType: 'enumerated',
@@ -10819,7 +10916,7 @@ module.exports = {
     }),
     side: {
       valType: 'enumerated',
-      values: ['top', 'left', 'top left'],
+      values: ['top', 'left', 'top left', 'top center', 'top right'],
       editType: 'legend'
     },
     editType: 'legend'
@@ -10867,12 +10964,19 @@ var plotsAttrs = __webpack_require__(9012);
 var attributes = __webpack_require__(3030);
 var basePlotLayoutAttributes = __webpack_require__(820);
 var helpers = __webpack_require__(130);
-module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
-  var containerIn = layoutIn.legend || {};
-  var containerOut = Template.newContainer(layoutOut, 'legend');
+function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
+  var containerIn = layoutIn[legendId] || {};
+  var containerOut = Template.newContainer(layoutOut, legendId);
   function coerce(attr, dflt) {
     return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
   }
+
+  // N.B. unified hover needs to inherit from font, bgcolor & bordercolor even when legend.visible is false
+  var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
+  coerce('bgcolor', layoutOut.paper_bgcolor);
+  coerce('bordercolor');
+  var visible = coerce('visible');
+  if (!visible) return;
   var trace;
   var traceCoerce = function (attr, dflt) {
     var traceIn = trace._input;
@@ -10886,9 +10990,16 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
   var legendTraceCount = 0;
   var legendReallyHasATrace = false;
   var defaultOrder = 'normal';
-  for (var i = 0; i < fullData.length; i++) {
-    trace = fullData[i];
+  var shapesWithLegend = (layoutOut.shapes || []).filter(function (d) {
+    return d.showlegend;
+  });
+  var allLegendItems = fullData.concat(shapesWithLegend).filter(function (d) {
+    return legendId === (d.legend || 'legend');
+  });
+  for (var i = 0; i < allLegendItems.length; i++) {
+    trace = allLegendItems[i];
     if (!trace.visible) continue;
+    var isShape = trace._isShape;
 
     // Note that we explicitly count any trace that is either shown or
     // *would* be shown by default, toward the two traces you need to
@@ -10900,13 +11011,13 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         legendReallyHasATrace = true;
         // Always show the legend by default if there's a pie,
         // or if there's only one trace but it's explicitly shown
-        if (Registry.traceIs(trace, 'pie-like') || trace._input.showlegend === true) {
+        if (!isShape && Registry.traceIs(trace, 'pie-like') || trace._input.showlegend === true) {
           legendTraceCount++;
         }
       }
       Lib.coerceFont(traceCoerce, 'legendgrouptitle.font', grouptitlefont);
     }
-    if (Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack' || ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
+    if (!isShape && Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack' || ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
       defaultOrder = helpers.isGrouped({
         traceorder: defaultOrder
       }) ? 'grouped+reversed' : 'reversed';
@@ -10917,39 +11028,74 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
       }) ? 'reversed+grouped' : 'grouped';
     }
   }
-  var showLegend = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'showlegend', legendReallyHasATrace && legendTraceCount > 1);
+  var showLegend = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'showlegend', legendReallyHasATrace && legendTraceCount > (legendId === 'legend' ? 1 : 0));
 
   // delete legend
-  if (showLegend === false) layoutOut.legend = undefined;
+  if (showLegend === false) layoutOut[legendId] = undefined;
   if (showLegend === false && !containerIn.uirevision) return;
   coerce('uirevision', layoutOut.uirevision);
   if (showLegend === false) return;
-  coerce('bgcolor', layoutOut.paper_bgcolor);
-  coerce('bordercolor');
   coerce('borderwidth');
-  var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
   var orientation = coerce('orientation');
+  var yref = coerce('yref');
+  var xref = coerce('xref');
   var isHorizontal = orientation === 'h';
+  var isPaperY = yref === 'paper';
+  var isPaperX = xref === 'paper';
   var defaultX, defaultY, defaultYAnchor;
+  var defaultXAnchor = 'left';
   if (isHorizontal) {
     defaultX = 0;
     if (Registry.getComponentMethod('rangeslider', 'isVisible')(layoutIn.xaxis)) {
-      defaultY = 1.1;
-      defaultYAnchor = 'bottom';
+      if (isPaperY) {
+        defaultY = 1.1;
+        defaultYAnchor = 'bottom';
+      } else {
+        defaultY = 1;
+        defaultYAnchor = 'top';
+      }
     } else {
       // maybe use y=1.1 / yanchor=bottom as above
       //   to avoid https://github.com/plotly/plotly.js/issues/1199
       //   in v3
-      defaultY = -0.1;
-      defaultYAnchor = 'top';
+      if (isPaperY) {
+        defaultY = -0.1;
+        defaultYAnchor = 'top';
+      } else {
+        defaultY = 0;
+        defaultYAnchor = 'bottom';
+      }
     }
   } else {
-    defaultX = 1.02;
     defaultY = 1;
     defaultYAnchor = 'auto';
+    if (isPaperX) {
+      defaultX = 1.02;
+    } else {
+      defaultX = 1;
+      defaultXAnchor = 'right';
+    }
   }
+  Lib.coerce(containerIn, containerOut, {
+    x: {
+      valType: 'number',
+      editType: 'legend',
+      min: isPaperX ? -2 : 0,
+      max: isPaperX ? 3 : 1,
+      dflt: defaultX
+    }
+  }, 'x');
+  Lib.coerce(containerIn, containerOut, {
+    y: {
+      valType: 'number',
+      editType: 'legend',
+      min: isPaperY ? -2 : 0,
+      max: isPaperY ? 3 : 1,
+      dflt: defaultY
+    }
+  }, 'y');
   coerce('traceorder', defaultOrder);
-  if (helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
+  if (helpers.isGrouped(layoutOut[legendId])) coerce('tracegroupgap');
   coerce('entrywidth');
   coerce('entrywidthmode');
   coerce('itemsizing');
@@ -10957,9 +11103,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
   coerce('itemclick');
   coerce('itemdoubleclick');
   coerce('groupclick');
-  coerce('x', defaultX);
-  coerce('xanchor');
-  coerce('y', defaultY);
+  coerce('xanchor', defaultXAnchor);
   coerce('yanchor', defaultYAnchor);
   coerce('valign');
   Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
@@ -10970,6 +11114,39 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
       size: Lib.bigFont(itemFont.size)
     });
     Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
+  }
+}
+module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
+  var i;
+  var allLegendsData = fullData.slice();
+
+  // shapes could also show up in legends
+  var shapes = layoutOut.shapes;
+  if (shapes) {
+    for (i = 0; i < shapes.length; i++) {
+      var shape = shapes[i];
+      if (!shape.showlegend) continue;
+      var mockTrace = {
+        _input: shape._input,
+        visible: shape.visible,
+        showlegend: shape.showlegend,
+        legend: shape.legend
+      };
+      allLegendsData.push(mockTrace);
+    }
+  }
+  var legends = ['legend'];
+  for (i = 0; i < allLegendsData.length; i++) {
+    Lib.pushUnique(legends, allLegendsData[i].legend);
+  }
+  layoutOut._legends = [];
+  for (i = 0; i < legends.length; i++) {
+    var legendId = legends[i];
+    groupDefaults(legendId, layoutIn, layoutOut, allLegendsData);
+    if (layoutOut[legendId] && layoutOut[legendId].visible) {
+      layoutOut[legendId]._id = legendId;
+    }
+    layoutOut._legends.push(legendId);
   }
 };
 
@@ -11000,38 +11177,96 @@ var getLegendData = __webpack_require__(2424);
 var style = __webpack_require__(3630);
 var helpers = __webpack_require__(130);
 var MAIN_TITLE = 1;
+var LEGEND_PATTERN = /^legend[0-9]*$/;
 module.exports = function draw(gd, opts) {
-  if (!opts) opts = gd._fullLayout.legend || {};
-  return _draw(gd, opts);
+  if (opts) {
+    drawOne(gd, opts);
+  } else {
+    var fullLayout = gd._fullLayout;
+    var newLegends = fullLayout._legends;
+
+    // remove old legends that won't stay on the graph
+    var oldLegends = fullLayout._infolayer.selectAll('[class^="legend"]');
+    oldLegends.each(function () {
+      var el = d3.select(this);
+      var classes = el.attr('class');
+      var cls = classes.split(' ')[0];
+      if (cls.match(LEGEND_PATTERN) && newLegends.indexOf(cls) === -1) {
+        el.remove();
+      }
+    });
+
+    // draw/update new legends
+    for (var i = 0; i < newLegends.length; i++) {
+      var legendId = newLegends[i];
+      var legendObj = gd._fullLayout[legendId];
+      drawOne(gd, legendObj);
+    }
+  }
 };
-function _draw(gd, legendObj) {
+function drawOne(gd, opts) {
+  var legendObj = opts || {};
   var fullLayout = gd._fullLayout;
-  var clipId = 'legend' + fullLayout._uid;
-  var layer;
+  var legendId = getId(legendObj);
+  var clipId, layer;
   var inHover = legendObj._inHover;
   if (inHover) {
     layer = legendObj.layer;
-    clipId += '-hover';
+    clipId = 'hover';
   } else {
     layer = fullLayout._infolayer;
+    clipId = legendId;
   }
   if (!layer) return;
+  clipId += fullLayout._uid;
   if (!gd._legendMouseDownTime) gd._legendMouseDownTime = 0;
   var legendData;
   if (!inHover) {
-    if (!gd.calcdata) return;
-    legendData = fullLayout.showlegend && getLegendData(gd.calcdata, legendObj);
+    var calcdata = (gd.calcdata || []).slice();
+    var shapes = fullLayout.shapes;
+    for (var i = 0; i < shapes.length; i++) {
+      var shape = shapes[i];
+      if (!shape.showlegend) continue;
+      var shapeLegend = {
+        _isShape: true,
+        _fullInput: shape,
+        index: shape._index,
+        name: shape.name || shape.label.text || 'shape ' + shape._index,
+        legend: shape.legend,
+        legendgroup: shape.legendgroup,
+        legendgrouptitle: shape.legendgrouptitle,
+        legendrank: shape.legendrank,
+        legendwidth: shape.legendwidth,
+        showlegend: shape.showlegend,
+        visible: shape.visible,
+        opacity: shape.opacity,
+        mode: shape.type === 'line' ? 'lines' : 'markers',
+        line: shape.line,
+        marker: {
+          line: shape.line,
+          color: shape.fillcolor,
+          size: 12,
+          symbol: shape.type === 'rect' ? 'square' : shape.type === 'circle' ? 'circle' :
+          // case of path
+          'hexagon2'
+        }
+      };
+      calcdata.push([{
+        trace: shapeLegend
+      }]);
+    }
+    legendData = fullLayout.showlegend && getLegendData(calcdata, legendObj, fullLayout._legends.length > 1);
   } else {
     if (!legendObj.entries) return;
     legendData = getLegendData(legendObj.entries, legendObj);
   }
   var hiddenSlices = fullLayout.hiddenlabels || [];
   if (!inHover && (!fullLayout.showlegend || !legendData.length)) {
-    layer.selectAll('.legend').remove();
+    layer.selectAll('.' + legendId).remove();
     fullLayout._topdefs.select('#' + clipId).remove();
-    return Plots.autoMargin(gd, 'legend');
+    return Plots.autoMargin(gd, legendId);
   }
-  var legend = Lib.ensureSingle(layer, 'g', 'legend', function (s) {
+  var legend = Lib.ensureSingle(layer, 'g', legendId, function (s) {
     if (!inHover) s.attr('pointer-events', 'all');
   });
   var clipPath = Lib.ensureSingleById(fullLayout._topdefs, 'clipPath', clipId, function (s) {
@@ -11046,11 +11281,11 @@ function _draw(gd, legendObj) {
   legendObj._titleWidth = 0;
   legendObj._titleHeight = 0;
   if (title.text) {
-    var titleEl = Lib.ensureSingle(scrollBox, 'text', 'legendtitletext');
+    var titleEl = Lib.ensureSingle(scrollBox, 'text', legendId + 'titletext');
     titleEl.attr('text-anchor', 'start').call(Drawing.font, title.font).text(title.text);
     textLayout(titleEl, scrollBox, gd, legendObj, MAIN_TITLE); // handle mathjax or multi-line text and compute title height
   } else {
-    scrollBox.selectAll('.legendtitletext').remove();
+    scrollBox.selectAll('.' + legendId + 'titletext').remove();
   }
   var scrollBar = Lib.ensureSingle(legend, 'rect', 'scrollbar', function (s) {
     s.attr(constants.scrollBarEnterAttrs).call(Color.fill, constants.scrollBarColor);
@@ -11071,32 +11306,43 @@ function _draw(gd, legendObj) {
   }).each(function () {
     d3.select(this).call(drawTexts, gd, legendObj);
   }).call(style, gd, legendObj).each(function () {
-    if (!inHover) d3.select(this).call(setupTraceToggle, gd);
+    if (!inHover) d3.select(this).call(setupTraceToggle, gd, legendId);
   });
   Lib.syncOrAsync([Plots.previousPromises, function () {
     return computeLegendDimensions(gd, groups, traces, legendObj);
   }, function () {
     var gs = fullLayout._size;
     var bw = legendObj.borderwidth;
+    var isPaperX = legendObj.xref === 'paper';
+    var isPaperY = legendObj.yref === 'paper';
     if (!inHover) {
-      var expMargin = expandMargin(gd);
+      var lx, ly;
+      if (isPaperX) {
+        lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+      } else {
+        lx = fullLayout.width * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+      }
+      if (isPaperY) {
+        ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+      } else {
+        ly = fullLayout.height * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+      }
+      var expMargin = expandMargin(gd, legendId, lx, ly);
 
       // IF expandMargin return a Promise (which is truthy),
       // we're under a doAutoMargin redraw, so we don't have to
       // draw the remaining pieces below
       if (expMargin) return;
-      var lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
-      var ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
       if (fullLayout.margin.autoexpand) {
         var lx0 = lx;
         var ly0 = ly;
-        lx = Lib.constrain(lx, 0, fullLayout.width - legendObj._width);
-        ly = Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight);
+        lx = isPaperX ? Lib.constrain(lx, 0, fullLayout.width - legendObj._width) : lx0;
+        ly = isPaperY ? Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight) : ly0;
         if (lx !== lx0) {
-          Lib.log('Constrain legend.x to make legend fit inside graph');
+          Lib.log('Constrain ' + legendId + '.x to make legend fit inside graph');
         }
         if (ly !== ly0) {
-          Lib.log('Constrain legend.y to make legend fit inside graph');
+          Lib.log('Constrain ' + legendId + '.y to make legend fit inside graph');
         }
       }
 
@@ -11212,7 +11458,7 @@ function _draw(gd, legendObj) {
       scrollBox.call(scrollBoxTouchDrag);
     }
     function scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio) {
-      legendObj._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
+      legendObj._scrollY = gd._fullLayout[legendId]._scrollY = scrollBoxY;
       Drawing.setTranslate(scrollBox, 0, -scrollBoxY);
       Drawing.setRect(scrollBar, legendObj._width, constants.scrollBarMargin + scrollBoxY * scrollRatio, constants.scrollBarWidth, scrollBarHeight);
       clipPath.select('rect').attr('y', bw + scrollBoxY);
@@ -11232,15 +11478,15 @@ function _draw(gd, legendObj) {
           var newX = x0 + dx;
           var newY = y0 + dy;
           Drawing.setTranslate(legend, newX, newY);
-          xf = dragElement.align(newX, 0, gs.l, gs.l + gs.w, legendObj.xanchor);
-          yf = dragElement.align(newY, 0, gs.t + gs.h, gs.t, legendObj.yanchor);
+          xf = dragElement.align(newX, legendObj._width, gs.l, gs.l + gs.w, legendObj.xanchor);
+          yf = dragElement.align(newY + legendObj._height, -legendObj._height, gs.t + gs.h, gs.t, legendObj.yanchor);
         },
         doneFn: function () {
           if (xf !== undefined && yf !== undefined) {
-            Registry.call('_guiRelayout', gd, {
-              'legend.x': xf,
-              'legend.y': yf
-            });
+            var obj = {};
+            obj[legendId + '.x'] = xf;
+            obj[legendId + '.y'] = yf;
+            Registry.call('_guiRelayout', gd, obj);
           }
         },
         clickFn: function (numClicks, e) {
@@ -11299,6 +11545,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
   }
 }
 function drawTexts(g, gd, legendObj) {
+  var legendId = getId(legendObj);
   var legendItem = g.data()[0][0];
   var trace = legendItem.trace;
   var isPieLike = Registry.traceIs(trace, 'pie-like');
@@ -11319,7 +11566,7 @@ function drawTexts(g, gd, legendObj) {
       name = legendItem.text;
     }
   }
-  var textEl = Lib.ensureSingle(g, 'text', 'legendtext');
+  var textEl = Lib.ensureSingle(g, 'text', legendId + 'text');
   textEl.attr('text-anchor', 'start').call(Drawing.font, font).text(isEditable ? ensureLength(name, maxNameLength) : name);
   var textGap = legendObj.itemwidth + constants.itemGap * 2;
   svgTextUtils.positionText(textEl, textGap, 0);
@@ -11333,14 +11580,18 @@ function drawTexts(g, gd, legendObj) {
       var update = {};
       if (Registry.hasTransform(fullInput, 'groupby')) {
         var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
-        var index = groupbyIndices[groupbyIndices.length - 1];
-        var kcont = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
+        var _index = groupbyIndices[groupbyIndices.length - 1];
+        var kcont = Lib.keyedContainer(fullInput, 'transforms[' + _index + '].styles', 'target', 'value.name');
         kcont.set(legendItem.trace._group, newName);
         update = kcont.constructUpdate();
       } else {
         update.name = newName;
       }
-      return Registry.call('_guiRestyle', gd, update, trace.index);
+      if (fullInput._isShape) {
+        return Registry.call('_guiRelayout', gd, 'shapes[' + trace.index + '].name', update.name);
+      } else {
+        return Registry.call('_guiRestyle', gd, update, trace.index);
+      }
     });
   } else {
     textLayout(textEl, g, gd, legendObj);
@@ -11361,11 +11612,11 @@ function ensureLength(str, maxLength) {
   for (var i = targetLength - str.length; i > 0; i--) str += ' ';
   return str;
 }
-function setupTraceToggle(g, gd) {
+function setupTraceToggle(g, gd, legendId) {
   var doubleClickDelay = gd._context.doubleClickDelay;
   var newMouseDownTime;
   var numClicks = 1;
-  var traceToggle = Lib.ensureSingle(g, 'rect', 'legendtoggle', function (s) {
+  var traceToggle = Lib.ensureSingle(g, 'rect', legendId + 'toggle', function (s) {
     if (!gd._context.staticPlot) {
       s.style('cursor', 'pointer').attr('pointer-events', 'all');
     }
@@ -11385,7 +11636,7 @@ function setupTraceToggle(g, gd) {
   });
   traceToggle.on('mouseup', function () {
     if (gd._dragged || gd._editing) return;
-    var legend = gd._fullLayout.legend;
+    var legend = gd._fullLayout[legendId];
     if (new Date().getTime() - gd._legendMouseDownTime > doubleClickDelay) {
       numClicks = Math.max(numClicks - 1, 1);
     }
@@ -11406,7 +11657,10 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
   }
   var mathjaxGroup = g.select('g[class*=math-group]');
   var mathjaxNode = mathjaxGroup.node();
-  if (!legendObj) legendObj = gd._fullLayout.legend;
+  var legendId = getId(legendObj);
+  if (!legendObj) {
+    legendObj = gd._fullLayout[legendId];
+  }
   var bw = legendObj.borderwidth;
   var font;
   if (aTitle === MAIN_TITLE) {
@@ -11429,7 +11683,8 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
       Drawing.setTranslate(mathjaxGroup, 0, height * 0.25);
     }
   } else {
-    var textEl = g.select(aTitle === MAIN_TITLE ? '.legendtitletext' : '.legendtext');
+    var cls = '.' + legendId + (aTitle === MAIN_TITLE ? 'title' : '') + 'text';
+    var textEl = g.select(cls);
     var textLines = svgTextUtils.lineCount(textEl);
     var textNode = textEl.node();
     height = lineHeight * textLines;
@@ -11438,11 +11693,16 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
     // approximation to height offset to center the font
     // to avoid getBoundingClientRect
     if (aTitle === MAIN_TITLE) {
+      var titleOffset = 0;
       if (legendObj.title.side === 'left') {
         // add extra space between legend title and itmes
         width += constants.itemGap * 2;
+      } else if (legendObj.title.side === 'top center') {
+        if (legendObj._width) titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
+      } else if (legendObj.title.side === 'top right') {
+        if (legendObj._width) titleOffset = legendObj._width - 2 * bw - 2 * constants.titlePad - width;
       }
-      svgTextUtils.positionText(textEl, bw + constants.titlePad, bw + lineHeight);
+      svgTextUtils.positionText(textEl, bw + constants.titlePad + titleOffset, bw + lineHeight);
     } else {
       // legend item
       var x = constants.itemGap * 2 + legendObj.itemwidth;
@@ -11479,7 +11739,7 @@ function getTitleSize(legendObj) {
 }
 
 /*
- * Computes in fullLayout.legend:
+ * Computes in fullLayout[legendId]:
  *
  *  - _height: legend height including items past scrollbox height
  *  - _maxHeight: maximum legend height before scrollbox is required
@@ -11490,7 +11750,10 @@ function getTitleSize(legendObj) {
  */
 function computeLegendDimensions(gd, groups, traces, legendObj) {
   var fullLayout = gd._fullLayout;
-  if (!legendObj) legendObj = fullLayout.legend;
+  var legendId = getId(legendObj);
+  if (!legendObj) {
+    legendObj = fullLayout[legendId];
+  }
   var gs = fullLayout._size;
   var isVertical = helpers.isVertical(legendObj);
   var isGrouped = helpers.isGrouped(legendObj);
@@ -11625,7 +11888,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
   var edits = gd._context.edits;
   var isEditable = edits.legendText || edits.legendPosition;
   traces.each(function (d) {
-    var traceToggle = d3.select(this).select('.legendtoggle');
+    var traceToggle = d3.select(this).select('.' + legendId + 'toggle');
     var h = d[0].height;
     var legendgroup = d[0].trace.legendgroup;
     var traceWidth = getTraceWidth(d, legendObj, textGap);
@@ -11639,25 +11902,51 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     Drawing.setRect(traceToggle, 0, -h / 2, w, h);
   });
 }
-function expandMargin(gd) {
+function expandMargin(gd, legendId, lx, ly) {
   var fullLayout = gd._fullLayout;
-  var legendObj = fullLayout.legend;
+  var legendObj = fullLayout[legendId];
   var xanchor = getXanchor(legendObj);
   var yanchor = getYanchor(legendObj);
-  return Plots.autoMargin(gd, 'legend', {
-    x: legendObj.x,
-    y: legendObj.y,
-    l: legendObj._width * FROM_TL[xanchor],
-    r: legendObj._width * FROM_BR[xanchor],
-    b: legendObj._effHeight * FROM_BR[yanchor],
-    t: legendObj._effHeight * FROM_TL[yanchor]
-  });
+  var isPaperX = legendObj.xref === 'paper';
+  var isPaperY = legendObj.yref === 'paper';
+  gd._fullLayout._reservedMargin[legendId] = {};
+  var sideY = legendObj.y < 0.5 ? 'b' : 't';
+  var sideX = legendObj.x < 0.5 ? 'l' : 'r';
+  var possibleReservedMargins = {
+    r: fullLayout.width - lx,
+    l: lx + legendObj._width,
+    b: fullLayout.height - ly,
+    t: ly + legendObj._effHeight
+  };
+  if (isPaperX && isPaperY) {
+    return Plots.autoMargin(gd, legendId, {
+      x: legendObj.x,
+      y: legendObj.y,
+      l: legendObj._width * FROM_TL[xanchor],
+      r: legendObj._width * FROM_BR[xanchor],
+      b: legendObj._effHeight * FROM_BR[yanchor],
+      t: legendObj._effHeight * FROM_TL[yanchor]
+    });
+  } else if (isPaperX) {
+    gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
+  } else if (isPaperY) {
+    gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
+  } else {
+    if (legendObj.orientation === 'v') {
+      gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
+    } else {
+      gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
+    }
+  }
 }
 function getXanchor(legendObj) {
   return Lib.isRightAnchor(legendObj) ? 'right' : Lib.isCenterAnchor(legendObj) ? 'center' : 'left';
 }
 function getYanchor(legendObj) {
   return Lib.isBottomAnchor(legendObj) ? 'bottom' : Lib.isMiddleAnchor(legendObj) ? 'middle' : 'top';
+}
+function getId(legendObj) {
+  return legendObj._id || 'legend';
 }
 
 /***/ }),
@@ -11670,7 +11959,7 @@ function getYanchor(legendObj) {
 
 var Registry = __webpack_require__(3972);
 var helpers = __webpack_require__(130);
-module.exports = function getLegendData(calcdata, opts) {
+module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
   var inHover = opts._inHover;
   var grouped = helpers.isGrouped(opts);
   var reversed = helpers.isReversed(opts);
@@ -11681,7 +11970,10 @@ module.exports = function getLegendData(calcdata, opts) {
   var lgroupi = 0;
   var maxNameLength = 0;
   var i, j;
-  function addOneItem(legendGroup, legendItem) {
+  function addOneItem(legendId, legendGroup, legendItem) {
+    if (opts.visible === false) return;
+    if (hasMultipleLegends && legendId !== opts._id) return;
+
     // each '' legend group is treated as a separate group
     if (legendGroup === '' || !helpers.isGrouped(opts)) {
       // TODO: check this against fullData legendgroups?
@@ -11703,6 +11995,7 @@ module.exports = function getLegendData(calcdata, opts) {
     var cd = calcdata[i];
     var cd0 = cd[0];
     var trace = cd0.trace;
+    var lid = trace.legend;
     var lgroup = trace.legendgroup;
     if (!inHover && (!trace.visible || !trace.showlegend)) continue;
     if (Registry.traceIs(trace, 'pie-like')) {
@@ -11710,7 +12003,7 @@ module.exports = function getLegendData(calcdata, opts) {
       for (j = 0; j < cd.length; j++) {
         var labelj = cd[j].label;
         if (!slicesShown[lgroup][labelj]) {
-          addOneItem(lgroup, {
+          addOneItem(lid, lgroup, {
             label: labelj,
             color: cd[j].color,
             i: cd[j].i,
@@ -11722,7 +12015,7 @@ module.exports = function getLegendData(calcdata, opts) {
         }
       }
     } else {
-      addOneItem(lgroup, cd0);
+      addOneItem(lid, lgroup, cd0);
       maxNameLength = Math.max(maxNameLength, (trace.name || '').length);
     }
   }
@@ -11832,8 +12125,9 @@ module.exports = function getLegendData(calcdata, opts) {
 "use strict";
 
 
-var Lib = __webpack_require__(1828);
 var Registry = __webpack_require__(3972);
+var Lib = __webpack_require__(1828);
+var pushUnique = Lib.pushUnique;
 var SHOWISOLATETIP = true;
 module.exports = function handleClick(g, gd, numClicks) {
   var fullLayout = gd._fullLayout;
@@ -11855,36 +12149,54 @@ module.exports = function handleClick(g, gd, numClicks) {
   var legendItem = g.data()[0][0];
   if (legendItem.groupTitle && legendItem.noClick) return;
   var fullData = gd._fullData;
+  var shapesWithLegend = (fullLayout.shapes || []).filter(function (d) {
+    return d.showlegend;
+  });
+  var allLegendItems = fullData.concat(shapesWithLegend);
   var fullTrace = legendItem.trace;
+  if (fullTrace._isShape) {
+    fullTrace = fullTrace._fullInput;
+  }
   var legendgroup = fullTrace.legendgroup;
   var i, j, kcont, key, keys, val;
-  var attrUpdate = {};
-  var attrIndices = [];
+  var dataUpdate = {};
+  var dataIndices = [];
   var carrs = [];
   var carrIdx = [];
-  function insertUpdate(traceIndex, key, value) {
-    var attrIndex = attrIndices.indexOf(traceIndex);
-    var valueArray = attrUpdate[key];
+  function insertDataUpdate(traceIndex, value) {
+    var attrIndex = dataIndices.indexOf(traceIndex);
+    var valueArray = dataUpdate.visible;
     if (!valueArray) {
-      valueArray = attrUpdate[key] = [];
+      valueArray = dataUpdate.visible = [];
     }
-    if (attrIndices.indexOf(traceIndex) === -1) {
-      attrIndices.push(traceIndex);
-      attrIndex = attrIndices.length - 1;
+    if (dataIndices.indexOf(traceIndex) === -1) {
+      dataIndices.push(traceIndex);
+      attrIndex = dataIndices.length - 1;
     }
     valueArray[attrIndex] = value;
     return attrIndex;
   }
+  var updatedShapes = (fullLayout.shapes || []).map(function (d) {
+    return d._input;
+  });
+  var shapesUpdated = false;
+  function insertShapesUpdate(shapeIndex, value) {
+    updatedShapes[shapeIndex].visible = value;
+    shapesUpdated = true;
+  }
   function setVisibility(fullTrace, visibility) {
     if (legendItem.groupTitle && !toggleGroup) return;
-    var fullInput = fullTrace._fullInput;
+    var fullInput = fullTrace._fullInput || fullTrace;
+    var isShape = fullInput._isShape;
+    var index = fullInput.index;
+    if (index === undefined) index = fullInput._index;
     if (Registry.hasTransform(fullInput, 'groupby')) {
-      var kcont = carrs[fullInput.index];
+      var kcont = carrs[index];
       if (!kcont) {
         var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
         var lastGroupbyIndex = groupbyIndices[groupbyIndices.length - 1];
         kcont = Lib.keyedContainer(fullInput, 'transforms[' + lastGroupbyIndex + '].styles', 'target', 'value.visible');
-        carrs[fullInput.index] = kcont;
+        carrs[index] = kcont;
       }
       var curState = kcont.get(fullTrace._group);
 
@@ -11900,29 +12212,53 @@ module.exports = function handleClick(g, gd, numClicks) {
         // true -> legendonly. All others toggle to true:
         kcont.set(fullTrace._group, visibility);
       }
-      carrIdx[fullInput.index] = insertUpdate(fullInput.index, 'visible', fullInput.visible === false ? false : true);
+      carrIdx[index] = insertDataUpdate(index, fullInput.visible === false ? false : true);
     } else {
       // false -> false (not possible since will not be visible in legend)
       // true -> legendonly
       // legendonly -> true
       var nextVisibility = fullInput.visible === false ? false : visibility;
-      insertUpdate(fullInput.index, 'visible', nextVisibility);
+      if (isShape) {
+        insertShapesUpdate(index, nextVisibility);
+      } else {
+        insertDataUpdate(index, nextVisibility);
+      }
     }
   }
-  if (Registry.traceIs(fullTrace, 'pie-like')) {
+  var thisLegend = fullTrace.legend;
+  var fullInput = fullTrace._fullInput;
+  var isShape = fullInput && fullInput._isShape;
+  if (!isShape && Registry.traceIs(fullTrace, 'pie-like')) {
     var thisLabel = legendItem.label;
     var thisLabelIndex = hiddenSlices.indexOf(thisLabel);
     if (mode === 'toggle') {
       if (thisLabelIndex === -1) hiddenSlices.push(thisLabel);else hiddenSlices.splice(thisLabelIndex, 1);
     } else if (mode === 'toggleothers') {
-      hiddenSlices = [];
-      gd.calcdata[0].forEach(function (d) {
-        if (thisLabel !== d.label) {
-          hiddenSlices.push(d.label);
+      var changed = thisLabelIndex !== -1;
+      var unhideList = [];
+      for (i = 0; i < gd.calcdata.length; i++) {
+        var cdi = gd.calcdata[i];
+        for (j = 0; j < cdi.length; j++) {
+          var d = cdi[j];
+          var dLabel = d.label;
+
+          // ensure we toggle slices that are in this legend)
+          if (thisLegend === cdi[0].trace.legend) {
+            if (thisLabel !== dLabel) {
+              if (hiddenSlices.indexOf(dLabel) === -1) changed = true;
+              pushUnique(hiddenSlices, dLabel);
+              unhideList.push(dLabel);
+            }
+          }
         }
-      });
-      if (gd._fullLayout.hiddenlabels && gd._fullLayout.hiddenlabels.length === hiddenSlices.length && thisLabelIndex === -1) {
-        hiddenSlices = [];
+      }
+      if (!changed) {
+        for (var q = 0; q < unhideList.length; q++) {
+          var pos = hiddenSlices.indexOf(unhideList[q]);
+          if (pos !== -1) {
+            hiddenSlices.splice(pos, 1);
+          }
+        }
       }
     }
     Registry.call('_guiRelayout', gd, 'hiddenlabels', hiddenSlices);
@@ -11931,8 +12267,8 @@ module.exports = function handleClick(g, gd, numClicks) {
     var traceIndicesInGroup = [];
     var tracei;
     if (hasLegendgroup) {
-      for (i = 0; i < fullData.length; i++) {
-        tracei = fullData[i];
+      for (i = 0; i < allLegendItems.length; i++) {
+        tracei = allLegendItems[i];
         if (!tracei.visible) continue;
         if (tracei.legendgroup === legendgroup) {
           traceIndicesInGroup.push(i);
@@ -11954,9 +12290,10 @@ module.exports = function handleClick(g, gd, numClicks) {
       }
       if (hasLegendgroup) {
         if (toggleGroup) {
-          for (i = 0; i < fullData.length; i++) {
-            if (fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
-              setVisibility(fullData[i], nextVisibility);
+          for (i = 0; i < allLegendItems.length; i++) {
+            var item = allLegendItems[i];
+            if (item.visible !== false && item.legendgroup === legendgroup) {
+              setVisibility(item, nextVisibility);
             }
           }
         } else {
@@ -11968,35 +12305,38 @@ module.exports = function handleClick(g, gd, numClicks) {
     } else if (mode === 'toggleothers') {
       // Compute the clicked index. expandedIndex does what we want for expanded traces
       // but also culls hidden traces. That means we have some work to do.
-      var isClicked, isInGroup, notInLegend, otherState;
+      var isClicked, isInGroup, notInLegend, otherState, _item;
       var isIsolated = true;
-      for (i = 0; i < fullData.length; i++) {
-        isClicked = fullData[i] === fullTrace;
-        notInLegend = fullData[i].showlegend !== true;
+      for (i = 0; i < allLegendItems.length; i++) {
+        _item = allLegendItems[i];
+        isClicked = _item === fullTrace;
+        notInLegend = _item.showlegend !== true;
         if (isClicked || notInLegend) continue;
-        isInGroup = hasLegendgroup && fullData[i].legendgroup === legendgroup;
-        if (!isInGroup && fullData[i].visible === true && !Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
+        isInGroup = hasLegendgroup && _item.legendgroup === legendgroup;
+        if (!isInGroup && _item.legend === thisLegend && _item.visible === true && !Registry.traceIs(_item, 'notLegendIsolatable')) {
           isIsolated = false;
           break;
         }
       }
-      for (i = 0; i < fullData.length; i++) {
-        // False is sticky; we don't change it.
-        if (fullData[i].visible === false) continue;
-        if (Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
+      for (i = 0; i < allLegendItems.length; i++) {
+        _item = allLegendItems[i];
+
+        // False is sticky; we don't change it. Also ensure we don't change states of itmes in other legend
+        if (_item.visible === false || _item.legend !== thisLegend) continue;
+        if (Registry.traceIs(_item, 'notLegendIsolatable')) {
           continue;
         }
         switch (fullTrace.visible) {
           case 'legendonly':
-            setVisibility(fullData[i], true);
+            setVisibility(_item, true);
             break;
           case true:
             otherState = isIsolated ? true : 'legendonly';
-            isClicked = fullData[i] === fullTrace;
+            isClicked = _item === fullTrace;
             // N.B. consider traces that have a set legendgroup as toggleable
-            notInLegend = fullData[i].showlegend !== true && !fullData[i].legendgroup;
-            isInGroup = isClicked || hasLegendgroup && fullData[i].legendgroup === legendgroup;
-            setVisibility(fullData[i], isInGroup || notInLegend ? true : otherState);
+            notInLegend = _item.showlegend !== true && !_item.legendgroup;
+            isInGroup = isClicked || hasLegendgroup && _item.legendgroup === legendgroup;
+            setVisibility(_item, isInGroup || notInLegend ? true : otherState);
             break;
         }
       }
@@ -12008,7 +12348,7 @@ module.exports = function handleClick(g, gd, numClicks) {
       var updateKeys = Object.keys(update);
       for (j = 0; j < updateKeys.length; j++) {
         key = updateKeys[j];
-        val = attrUpdate[key] = attrUpdate[key] || [];
+        val = dataUpdate[key] = dataUpdate[key] || [];
         val[carrIdx[i]] = update[key];
       }
     }
@@ -12017,17 +12357,23 @@ module.exports = function handleClick(g, gd, numClicks) {
     // values should be explicitly undefined for them to get properly culled
     // as updates and not accidentally reset to the default value. This fills
     // out sparse arrays with the required number of undefined values:
-    keys = Object.keys(attrUpdate);
+    keys = Object.keys(dataUpdate);
     for (i = 0; i < keys.length; i++) {
       key = keys[i];
-      for (j = 0; j < attrIndices.length; j++) {
+      for (j = 0; j < dataIndices.length; j++) {
         // Use hasOwnProperty to protect against falsy values:
-        if (!attrUpdate[key].hasOwnProperty(j)) {
-          attrUpdate[key][j] = undefined;
+        if (!dataUpdate[key].hasOwnProperty(j)) {
+          dataUpdate[key][j] = undefined;
         }
       }
     }
-    Registry.call('_guiRestyle', gd, attrUpdate, attrIndices);
+    if (shapesUpdated) {
+      Registry.call('_guiUpdate', gd, dataUpdate, {
+        shapes: updatedShapes
+      }, dataIndices);
+    } else {
+      Registry.call('_guiRestyle', gd, dataUpdate, dataIndices);
+    }
   }
 };
 
@@ -12429,21 +12775,20 @@ module.exports = function style(s, gd, legend) {
     pts.enter().append('path').classed('legend' + desiredType, true).attr('d', 'M6,6H-6V-6H6Z').attr('transform', centerTransform);
     pts.exit().remove();
     if (pts.size()) {
-      var cont = (trace.marker || {}).line;
-      var lw = boundLineWidth(pieCastOption(cont.width, d0.pts), cont, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
+      var cont = trace.marker || {};
+      var lw = boundLineWidth(pieCastOption(cont.line.width, d0.pts), cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
+      var opt = 'pieLike';
       var tMod = Lib.minExtend(trace, {
         marker: {
           line: {
             width: lw
           }
         }
-      });
-      // since minExtend do not slice more than 3 items we need to patch line.color here
-      tMod.marker.line.color = cont.color;
+      }, opt);
       var d0Mod = Lib.minExtend(d0, {
         trace: tMod
-      });
-      stylePie(pts, d0Mod, tMod);
+      }, opt);
+      stylePie(pts, d0Mod, tMod, gd);
     }
   }
   function styleSpatial(d) {
@@ -12909,12 +13254,16 @@ function handleCartesian(gd, ev) {
         if (val === 'auto') {
           aobj[axName + '.autorange'] = true;
         } else if (val === 'reset') {
-          if (ax._rangeInitial === undefined) {
+          if (ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined) {
             aobj[axName + '.autorange'] = true;
+          } else if (ax._rangeInitial0 === undefined) {
+            aobj[axName + '.autorange'] = ax._autorangeInitial;
+            aobj[axName + '.range'] = [null, ax._rangeInitial1];
+          } else if (ax._rangeInitial1 === undefined) {
+            aobj[axName + '.range'] = [ax._rangeInitial0, null];
+            aobj[axName + '.autorange'] = ax._autorangeInitial;
           } else {
-            var rangeInitial = ax._rangeInitial.slice();
-            aobj[axName + '.range[0]'] = rangeInitial[0];
-            aobj[axName + '.range[1]'] = rangeInitial[1];
+            aobj[axName + '.range'] = [ax._rangeInitial0, ax._rangeInitial1];
           }
 
           // N.B. "reset" also resets showspikes
@@ -15913,7 +16262,7 @@ var clearOutline = (__webpack_require__(1873).clearOutline);
 var newShapeHelpers = __webpack_require__(165);
 var handleEllipse = newShapeHelpers.handleEllipse;
 var readPaths = newShapeHelpers.readPaths;
-var newShapes = __webpack_require__(551);
+var newShapes = (__webpack_require__(551).newShapes);
 var newSelections = __webpack_require__(5855);
 var activateLastSelection = (__webpack_require__(2485).activateLastSelection);
 var Lib = __webpack_require__(1828);
@@ -15978,6 +16327,9 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
   }
   var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data([1]);
   var newStyle = isDrawMode ? fullLayout.newshape : fullLayout.newselection;
+  if (isDrawMode) {
+    dragOptions.hasText = newStyle.label.text || newStyle.label.texttemplate;
+  }
   var fillC = isDrawMode && !isOpenMode ? newStyle.fillcolor : 'rgba(0,0,0,0)';
   var strokeC = newStyle.line.color || (isCartesian ? Color.contrast(gd._fullLayout.plot_bgcolor) : '#7f7f7f' // non-cartesian subplot
   );
@@ -15993,6 +16345,16 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     stroke: Color.defaultLine,
     'stroke-width': 1
   }).attr('transform', transform).attr('d', 'M0,0Z');
+
+  // create & style group for text label
+  if (isDrawMode && dragOptions.hasText) {
+    var shapeGroup = zoomLayer.select('.label-temp');
+    if (shapeGroup.empty()) {
+      shapeGroup = zoomLayer.append('g').classed('label-temp', true).classed('select-outline', true).style({
+        opacity: 0.8
+      });
+    }
+  }
   var throttleID = fullLayout._uid + constants.SELECTID;
   var selection = [];
 
@@ -17130,12 +17492,39 @@ var dash = (__webpack_require__(9952)/* .dash */ .P);
 var extendFlat = (__webpack_require__(1426).extendFlat);
 var templatedArray = (__webpack_require__(4467).templatedArray);
 var axisPlaceableObjs = __webpack_require__(4695);
+var basePlotAttributes = __webpack_require__(9012);
+var shapeTexttemplateAttrs = (__webpack_require__(5386)/* .shapeTexttemplateAttrs */ .R);
+var shapeLabelTexttemplateVars = __webpack_require__(7281);
 module.exports = templatedArray('shape', {
-  visible: {
+  visible: extendFlat({}, basePlotAttributes.visible, {
+    editType: 'calc+arraydraw'
+  }),
+  showlegend: {
     valType: 'boolean',
-    dflt: true,
+    dflt: false,
     editType: 'calc+arraydraw'
   },
+  legend: extendFlat({}, basePlotAttributes.legend, {
+    editType: 'calc+arraydraw'
+  }),
+  legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {
+    editType: 'calc+arraydraw'
+  }),
+  legendgrouptitle: {
+    text: extendFlat({}, basePlotAttributes.legendgrouptitle.text, {
+      editType: 'calc+arraydraw'
+    }),
+    font: fontAttrs({
+      editType: 'calc+arraydraw'
+    }),
+    editType: 'calc+arraydraw'
+  },
+  legendrank: extendFlat({}, basePlotAttributes.legendrank, {
+    editType: 'calc+arraydraw'
+  }),
+  legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {
+    editType: 'calc+arraydraw'
+  }),
   type: {
     valType: 'enumerated',
     values: ['circle', 'rect', 'path', 'line'],
@@ -17230,6 +17619,9 @@ module.exports = templatedArray('shape', {
       dflt: '',
       editType: 'arraydraw'
     },
+    texttemplate: shapeTexttemplateAttrs({}, {
+      keys: Object.keys(shapeLabelTexttemplateVars)
+    }),
     font: fontAttrs({
       editType: 'calc+arraydraw',
       colorEditType: 'arraydraw'
@@ -17498,8 +17890,18 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
   function coerce(attr, dflt) {
     return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
   }
+  shapeOut._isShape = true;
   var visible = coerce('visible');
   if (!visible) return;
+  var showlegend = coerce('showlegend');
+  if (showlegend) {
+    coerce('legend');
+    coerce('legendwidth');
+    coerce('legendgroup');
+    coerce('legendgrouptitle.text');
+    Lib.coerceFont(coerce, 'legendgrouptitle.font');
+    coerce('legendrank');
+  }
   var path = coerce('path');
   var dfltType = path ? 'path' : 'rect';
   var shapeType = coerce('type', dfltType);
@@ -17591,8 +17993,14 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
   // Label options
   var isLine = shapeType === 'line';
-  var labelText = coerce('label.text');
-  if (labelText) {
+  var labelTextTemplate, labelText;
+  if (noPath) {
+    labelTextTemplate = coerce('label.texttemplate');
+  }
+  if (!labelTextTemplate) {
+    labelText = coerce('label.text');
+  }
+  if (labelText || labelTextTemplate) {
     coerce('label.textangle');
     var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
     coerce('label.xanchor');
@@ -17600,6 +18008,266 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     coerce('label.padding');
     Lib.coerceFont(coerce, 'label.font', fullLayout.font);
   }
+}
+
+/***/ }),
+
+/***/ 8100:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var Lib = __webpack_require__(1828);
+var Axes = __webpack_require__(9298);
+var svgTextUtils = __webpack_require__(3893);
+var Drawing = __webpack_require__(1424);
+var readPaths = (__webpack_require__(165).readPaths);
+var helpers = __webpack_require__(477);
+var getPathString = helpers.getPathString;
+var shapeLabelTexttemplateVars = __webpack_require__(7281);
+var FROM_TL = (__webpack_require__(8783).FROM_TL);
+module.exports = function drawLabel(gd, index, options, shapeGroup) {
+  // Remove existing label
+  shapeGroup.selectAll('.shape-label').remove();
+
+  // If no label text or texttemplate, return
+  if (!(options.label.text || options.label.texttemplate)) return;
+
+  // Text template overrides text
+  var text;
+  if (options.label.texttemplate) {
+    var templateValues = {};
+    if (options.type !== 'path') {
+      var _xa = Axes.getFromId(gd, options.xref);
+      var _ya = Axes.getFromId(gd, options.yref);
+      for (var key in shapeLabelTexttemplateVars) {
+        var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
+        if (val !== undefined) templateValues[key] = val;
+      }
+    }
+    text = Lib.texttemplateStringForShapes(options.label.texttemplate, {}, gd._fullLayout._d3locale, templateValues);
+  } else {
+    text = options.label.text;
+  }
+  var labelGroupAttrs = {
+    'data-index': index
+  };
+  var font = options.label.font;
+  var labelTextAttrs = {
+    'data-notex': 1
+  };
+  var labelGroup = shapeGroup.append('g').attr(labelGroupAttrs).classed('shape-label', true);
+  var labelText = labelGroup.append('text').attr(labelTextAttrs).classed('shape-label-text', true).text(text);
+
+  // Get x and y bounds of shape
+  var shapex0, shapex1, shapey0, shapey1;
+  if (options.path) {
+    // If shape is defined as a path, get the
+    // min and max bounds across all polygons in path
+    var d = getPathString(gd, options);
+    var polygons = readPaths(d, gd);
+    shapex0 = Infinity;
+    shapey0 = Infinity;
+    shapex1 = -Infinity;
+    shapey1 = -Infinity;
+    for (var i = 0; i < polygons.length; i++) {
+      for (var j = 0; j < polygons[i].length; j++) {
+        var p = polygons[i][j];
+        for (var k = 1; k < p.length; k += 2) {
+          var _x = p[k];
+          var _y = p[k + 1];
+          shapex0 = Math.min(shapex0, _x);
+          shapex1 = Math.max(shapex1, _x);
+          shapey0 = Math.min(shapey0, _y);
+          shapey1 = Math.max(shapey1, _y);
+        }
+      }
+    }
+  } else {
+    // Otherwise, we use the x and y bounds defined in the shape options
+    // and convert them to pixel coordinates
+    // Setup conversion functions
+    var xa = Axes.getFromId(gd, options.xref);
+    var xRefType = Axes.getRefType(options.xref);
+    var ya = Axes.getFromId(gd, options.yref);
+    var yRefType = Axes.getRefType(options.yref);
+    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
+    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+    shapex0 = x2p(options.x0);
+    shapex1 = x2p(options.x1);
+    shapey0 = y2p(options.y0);
+    shapey1 = y2p(options.y1);
+  }
+
+  // Handle `auto` angle
+  var textangle = options.label.textangle;
+  if (textangle === 'auto') {
+    if (options.type === 'line') {
+      // Auto angle for line is same angle as line
+      textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
+    } else {
+      // Auto angle for all other shapes is 0
+      textangle = 0;
+    }
+  }
+
+  // Do an initial render so we can get the text bounding box height
+  labelText.call(function (s) {
+    s.call(Drawing.font, font).attr({});
+    svgTextUtils.convertToTspans(s, gd);
+    return s;
+  });
+  var textBB = Drawing.bBox(labelText.node());
+
+  // Calculate correct (x,y) for text
+  // We also determine true xanchor since xanchor depends on position when set to 'auto'
+  var textPos = calcTextPosition(shapex0, shapey0, shapex1, shapey1, options, textangle, textBB);
+  var textx = textPos.textx;
+  var texty = textPos.texty;
+  var xanchor = textPos.xanchor;
+
+  // Update (x,y) position, xanchor, and angle
+  labelText.attr({
+    'text-anchor': {
+      left: 'start',
+      center: 'middle',
+      right: 'end'
+    }[xanchor],
+    y: texty,
+    x: textx,
+    transform: 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
+  }).call(svgTextUtils.positionText, textx, texty);
+};
+function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
+  var dy, dx;
+  dx = Math.abs(shapex1 - shapex0);
+  if (shapex1 >= shapex0) {
+    dy = shapey0 - shapey1;
+  } else {
+    dy = shapey1 - shapey0;
+  }
+  return -180 / Math.PI * Math.atan2(dy, dx);
+}
+function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actualTextAngle, textBB) {
+  var textPosition = shapeOptions.label.textposition;
+  var textAngle = shapeOptions.label.textangle;
+  var textPadding = shapeOptions.label.padding;
+  var shapeType = shapeOptions.type;
+  var textAngleRad = Math.PI / 180 * actualTextAngle;
+  var sinA = Math.sin(textAngleRad);
+  var cosA = Math.cos(textAngleRad);
+  var xanchor = shapeOptions.label.xanchor;
+  var yanchor = shapeOptions.label.yanchor;
+  var textx, texty, paddingX, paddingY;
+
+  // Text position functions differently for lines vs. other shapes
+  if (shapeType === 'line') {
+    // Set base position for start vs. center vs. end of line (default is 'center')
+    if (textPosition === 'start') {
+      textx = shapex0;
+      texty = shapey0;
+    } else if (textPosition === 'end') {
+      textx = shapex1;
+      texty = shapey1;
+    } else {
+      // Default: center
+      textx = (shapex0 + shapex1) / 2;
+      texty = (shapey0 + shapey1) / 2;
+    }
+
+    // Set xanchor if xanchor is 'auto'
+    if (xanchor === 'auto') {
+      if (textPosition === 'start') {
+        if (textAngle === 'auto') {
+          if (shapex1 > shapex0) xanchor = 'left';else if (shapex1 < shapex0) xanchor = 'right';else xanchor = 'center';
+        } else {
+          if (shapex1 > shapex0) xanchor = 'right';else if (shapex1 < shapex0) xanchor = 'left';else xanchor = 'center';
+        }
+      } else if (textPosition === 'end') {
+        if (textAngle === 'auto') {
+          if (shapex1 > shapex0) xanchor = 'right';else if (shapex1 < shapex0) xanchor = 'left';else xanchor = 'center';
+        } else {
+          if (shapex1 > shapex0) xanchor = 'left';else if (shapex1 < shapex0) xanchor = 'right';else xanchor = 'center';
+        }
+      } else {
+        xanchor = 'center';
+      }
+    }
+
+    // Special case for padding when angle is 'auto' for lines
+    // Padding should be treated as an orthogonal offset in this case
+    // Otherwise, padding is just a simple x and y offset
+    var paddingConstantsX = {
+      left: 1,
+      center: 0,
+      right: -1
+    };
+    var paddingConstantsY = {
+      bottom: -1,
+      middle: 0,
+      top: 1
+    };
+    if (textAngle === 'auto') {
+      // Set direction to apply padding (based on `yanchor` only)
+      var paddingDirection = paddingConstantsY[yanchor];
+      paddingX = -textPadding * sinA * paddingDirection;
+      paddingY = textPadding * cosA * paddingDirection;
+    } else {
+      // Set direction to apply padding (based on `xanchor` and `yanchor`)
+      var paddingDirectionX = paddingConstantsX[xanchor];
+      var paddingDirectionY = paddingConstantsY[yanchor];
+      paddingX = textPadding * paddingDirectionX;
+      paddingY = textPadding * paddingDirectionY;
+    }
+    textx = textx + paddingX;
+    texty = texty + paddingY;
+  } else {
+    // Text position for shapes that are not lines
+    // calc horizontal position
+    // Horizontal needs a little extra padding to look balanced
+    paddingX = textPadding + 3;
+    if (textPosition.indexOf('right') !== -1) {
+      textx = Math.max(shapex0, shapex1) - paddingX;
+      if (xanchor === 'auto') xanchor = 'right';
+    } else if (textPosition.indexOf('left') !== -1) {
+      textx = Math.min(shapex0, shapex1) + paddingX;
+      if (xanchor === 'auto') xanchor = 'left';
+    } else {
+      // Default: center
+      textx = (shapex0 + shapex1) / 2;
+      if (xanchor === 'auto') xanchor = 'center';
+    }
+
+    // calc vertical position
+    if (textPosition.indexOf('top') !== -1) {
+      texty = Math.min(shapey0, shapey1);
+    } else if (textPosition.indexOf('bottom') !== -1) {
+      texty = Math.max(shapey0, shapey1);
+    } else {
+      texty = (shapey0 + shapey1) / 2;
+    }
+    // Apply padding
+    paddingY = textPadding;
+    if (yanchor === 'bottom') {
+      texty = texty - paddingY;
+    } else if (yanchor === 'top') {
+      texty = texty + paddingY;
+    }
+  }
+
+  // Shift vertical (& horizontal) position according to `yanchor`
+  var shiftFraction = FROM_TL[yanchor];
+  // Adjust so that text is anchored at top of first line rather than at baseline of first line
+  var baselineAdjust = shapeOptions.label.font.size;
+  var textHeight = textBB.height;
+  var xshift = (textHeight * shiftFraction - baselineAdjust) * sinA;
+  var yshift = -(textHeight * shiftFraction - baselineAdjust) * cosA;
+  return {
+    textx: textx + xshift,
+    texty: texty + yshift,
+    xanchor: xanchor
+  };
 }
 
 /***/ }),
@@ -17629,8 +18297,10 @@ var helpers = __webpack_require__(165);
 var pointsOnRectangle = helpers.pointsOnRectangle;
 var pointsOnEllipse = helpers.pointsOnEllipse;
 var writePaths = helpers.writePaths;
-var newShapes = __webpack_require__(551);
+var newShapes = (__webpack_require__(551).newShapes);
+var createShapeObj = (__webpack_require__(551).createShapeObj);
 var newSelections = __webpack_require__(5855);
+var drawLabel = __webpack_require__(8100);
 module.exports = function displayOutlines(polygons, outlines, dragOptions, nCalls) {
   if (!nCalls) nCalls = 0;
   var gd = dragOptions.gd;
@@ -17682,6 +18352,13 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
     var g = zoomLayer.append('g').attr('class', 'outline-controllers');
     addVertexControllers(g);
     addGroupControllers();
+  }
+
+  // draw label
+  if (isDrawMode && dragOptions.hasText) {
+    var shapeGroup = zoomLayer.select('.label-temp');
+    var shapeOptions = createShapeObj(outlines, dragOptions, dragOptions.dragmode);
+    drawLabel(gd, 'label-temp', shapeOptions, shapeGroup);
   }
   function startDragVertex(evt) {
     indexI = +evt.srcElement.getAttribute('data-i');
@@ -17932,17 +18609,16 @@ var Lib = __webpack_require__(1828);
 var Axes = __webpack_require__(9298);
 var readPaths = (__webpack_require__(165).readPaths);
 var displayOutlines = __webpack_require__(2359);
+var drawLabel = __webpack_require__(8100);
 var clearOutlineControllers = (__webpack_require__(1873).clearOutlineControllers);
 var Color = __webpack_require__(7901);
 var Drawing = __webpack_require__(1424);
 var arrayEditor = (__webpack_require__(4467).arrayEditor);
 var dragElement = __webpack_require__(8569);
 var setCursor = __webpack_require__(6964);
-var svgTextUtils = __webpack_require__(3893);
 var constants = __webpack_require__(1459);
 var helpers = __webpack_require__(477);
 var getPathString = helpers.getPathString;
-var FROM_TL = (__webpack_require__(8783).FROM_TL);
 
 // Shapes are stored in gd.layout.shapes, an array of objects
 // index can point to one item in this array,
@@ -17956,7 +18632,8 @@ var FROM_TL = (__webpack_require__(8783).FROM_TL);
 module.exports = {
   draw: draw,
   drawOne: drawOne,
-  eraseActiveShape: eraseActiveShape
+  eraseActiveShape: eraseActiveShape,
+  drawLabel: drawLabel
 };
 function draw(gd) {
   var fullLayout = gd._fullLayout;
@@ -17974,7 +18651,7 @@ function draw(gd) {
     }
   }
   for (var i = 0; i < fullLayout.shapes.length; i++) {
-    if (fullLayout.shapes[i].visible) {
+    if (fullLayout.shapes[i].visible === true) {
       drawOne(gd, i);
     }
   }
@@ -18000,7 +18677,7 @@ function drawOne(gd, index) {
 
   // this shape is gone - quit now after deleting it
   // TODO: use d3 idioms instead of deleting and redrawing every time
-  if (!options._input || options.visible === false) return;
+  if (!options._input || options.visible !== true) return;
   if (options.layer !== 'below') {
     drawShape(gd._fullLayout._shapeUpperLayer);
   } else if (options.xref === 'paper' || options.yref === 'paper') {
@@ -18058,7 +18735,7 @@ function drawOne(gd, index) {
         plotinfo: plotinfo,
         gd: gd,
         editHelpers: editHelpers,
-        hasText: options.label.text,
+        hasText: options.label.text || options.label.texttemplate,
         isActiveShape: true // i.e. to enable controllers
       };
 
@@ -18415,232 +19092,6 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     Drawing.setClipUrl(shapePath, clipAxes ? 'clip' + gd._fullLayout._uid + clipAxes : null, gd);
   }
 }
-function drawLabel(gd, index, options, shapeGroup) {
-  // Remove existing label
-  shapeGroup.selectAll('.shape-label').remove();
-
-  // If no label, return
-  if (!options.label.text) return;
-  var labelGroupAttrs = {
-    'data-index': index
-  };
-  var text = options.label.text;
-  var font = options.label.font;
-  var labelTextAttrs = {
-    'data-notex': 1
-  };
-  var labelGroup = shapeGroup.append('g').attr(labelGroupAttrs).classed('shape-label', true);
-  var labelText = labelGroup.append('text').attr(labelTextAttrs).classed('shape-label-text', true).text(text);
-
-  // Get x and y bounds of shape
-  var shapex0, shapex1, shapey0, shapey1;
-  if (options.path) {
-    // If shape is defined as a path, get the
-    // min and max bounds across all polygons in path
-    var d = getPathString(gd, options);
-    var polygons = readPaths(d, gd);
-    shapex0 = Infinity;
-    shapey0 = Infinity;
-    shapex1 = -Infinity;
-    shapey1 = -Infinity;
-    for (var i = 0; i < polygons.length; i++) {
-      for (var j = 0; j < polygons[i].length; j++) {
-        var p = polygons[i][j];
-        for (var k = 1; k < p.length; k += 2) {
-          var _x = p[k];
-          var _y = p[k + 1];
-          shapex0 = Math.min(shapex0, _x);
-          shapex1 = Math.max(shapex1, _x);
-          shapey0 = Math.min(shapey0, _y);
-          shapey1 = Math.max(shapey1, _y);
-        }
-      }
-    }
-  } else {
-    // Otherwise, we use the x and y bounds defined in the shape options
-    // and convert them to pixel coordinates
-    // Setup conversion functions
-    var xa = Axes.getFromId(gd, options.xref);
-    var xRefType = Axes.getRefType(options.xref);
-    var ya = Axes.getFromId(gd, options.yref);
-    var yRefType = Axes.getRefType(options.yref);
-    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
-    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
-    shapex0 = x2p(options.x0);
-    shapex1 = x2p(options.x1);
-    shapey0 = y2p(options.y0);
-    shapey1 = y2p(options.y1);
-  }
-
-  // Handle `auto` angle
-  var textangle = options.label.textangle;
-  if (textangle === 'auto') {
-    if (options.type === 'line') {
-      // Auto angle for line is same angle as line
-      textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
-    } else {
-      // Auto angle for all other shapes is 0
-      textangle = 0;
-    }
-  }
-
-  // Do an initial render so we can get the text bounding box height
-  labelText.call(function (s) {
-    s.call(Drawing.font, font).attr({});
-    svgTextUtils.convertToTspans(s, gd);
-    return s;
-  });
-  var textBB = Drawing.bBox(labelText.node());
-
-  // Calculate correct (x,y) for text
-  // We also determine true xanchor since xanchor depends on position when set to 'auto'
-  var textPos = calcTextPosition(shapex0, shapey0, shapex1, shapey1, options, textangle, textBB);
-  var textx = textPos.textx;
-  var texty = textPos.texty;
-  var xanchor = textPos.xanchor;
-
-  // Update (x,y) position, xanchor, and angle
-  labelText.attr({
-    'text-anchor': {
-      left: 'start',
-      center: 'middle',
-      right: 'end'
-    }[xanchor],
-    y: texty,
-    x: textx,
-    transform: 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
-  }).call(svgTextUtils.positionText, textx, texty);
-}
-function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
-  var dy, dx;
-  dx = Math.abs(shapex1 - shapex0);
-  if (shapex1 >= shapex0) {
-    dy = shapey0 - shapey1;
-  } else {
-    dy = shapey1 - shapey0;
-  }
-  return -180 / Math.PI * Math.atan2(dy, dx);
-}
-function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actualTextAngle, textBB) {
-  var textPosition = shapeOptions.label.textposition;
-  var textAngle = shapeOptions.label.textangle;
-  var textPadding = shapeOptions.label.padding;
-  var shapeType = shapeOptions.type;
-  var textAngleRad = Math.PI / 180 * actualTextAngle;
-  var sinA = Math.sin(textAngleRad);
-  var cosA = Math.cos(textAngleRad);
-  var xanchor = shapeOptions.label.xanchor;
-  var yanchor = shapeOptions.label.yanchor;
-  var textx, texty, paddingX, paddingY;
-
-  // Text position functions differently for lines vs. other shapes
-  if (shapeType === 'line') {
-    // Set base position for start vs. center vs. end of line (default is 'center')
-    if (textPosition === 'start') {
-      textx = shapex0;
-      texty = shapey0;
-    } else if (textPosition === 'end') {
-      textx = shapex1;
-      texty = shapey1;
-    } else {
-      // Default: center
-      textx = (shapex0 + shapex1) / 2;
-      texty = (shapey0 + shapey1) / 2;
-    }
-
-    // Set xanchor if xanchor is 'auto'
-    if (xanchor === 'auto') {
-      if (textPosition === 'start') {
-        if (textAngle === 'auto') {
-          if (shapex1 > shapex0) xanchor = 'left';else if (shapex1 < shapex0) xanchor = 'right';else xanchor = 'center';
-        } else {
-          if (shapex1 > shapex0) xanchor = 'right';else if (shapex1 < shapex0) xanchor = 'left';else xanchor = 'center';
-        }
-      } else if (textPosition === 'end') {
-        if (textAngle === 'auto') {
-          if (shapex1 > shapex0) xanchor = 'right';else if (shapex1 < shapex0) xanchor = 'left';else xanchor = 'center';
-        } else {
-          if (shapex1 > shapex0) xanchor = 'left';else if (shapex1 < shapex0) xanchor = 'right';else xanchor = 'center';
-        }
-      } else {
-        xanchor = 'center';
-      }
-    }
-
-    // Special case for padding when angle is 'auto' for lines
-    // Padding should be treated as an orthogonal offset in this case
-    // Otherwise, padding is just a simple x and y offset
-    var paddingConstantsX = {
-      left: 1,
-      center: 0,
-      right: -1
-    };
-    var paddingConstantsY = {
-      bottom: -1,
-      middle: 0,
-      top: 1
-    };
-    if (textAngle === 'auto') {
-      // Set direction to apply padding (based on `yanchor` only)
-      var paddingDirection = paddingConstantsY[yanchor];
-      paddingX = -textPadding * sinA * paddingDirection;
-      paddingY = textPadding * cosA * paddingDirection;
-    } else {
-      // Set direction to apply padding (based on `xanchor` and `yanchor`)
-      var paddingDirectionX = paddingConstantsX[xanchor];
-      var paddingDirectionY = paddingConstantsY[yanchor];
-      paddingX = textPadding * paddingDirectionX;
-      paddingY = textPadding * paddingDirectionY;
-    }
-    textx = textx + paddingX;
-    texty = texty + paddingY;
-  } else {
-    // Text position for shapes that are not lines
-    // calc horizontal position
-    // Horizontal needs a little extra padding to look balanced
-    paddingX = textPadding + 3;
-    if (textPosition.indexOf('right') !== -1) {
-      textx = Math.max(shapex0, shapex1) - paddingX;
-      if (xanchor === 'auto') xanchor = 'right';
-    } else if (textPosition.indexOf('left') !== -1) {
-      textx = Math.min(shapex0, shapex1) + paddingX;
-      if (xanchor === 'auto') xanchor = 'left';
-    } else {
-      // Default: center
-      textx = (shapex0 + shapex1) / 2;
-      if (xanchor === 'auto') xanchor = 'center';
-    }
-
-    // calc vertical position
-    if (textPosition.indexOf('top') !== -1) {
-      texty = Math.min(shapey0, shapey1);
-    } else if (textPosition.indexOf('bottom') !== -1) {
-      texty = Math.max(shapey0, shapey1);
-    } else {
-      texty = (shapey0 + shapey1) / 2;
-    }
-    // Apply padding
-    paddingY = textPadding;
-    if (yanchor === 'bottom') {
-      texty = texty - paddingY;
-    } else if (yanchor === 'top') {
-      texty = texty + paddingY;
-    }
-  }
-
-  // Shift vertical (& horizontal) position according to `yanchor`
-  var shiftFraction = FROM_TL[yanchor];
-  // Adjust so that text is anchored at top of first line rather than at baseline of first line
-  var baselineAdjust = shapeOptions.label.font.size;
-  var textHeight = textBB.height;
-  var xshift = (textHeight * shiftFraction - baselineAdjust) * sinA;
-  var yshift = -(textHeight * shiftFraction - baselineAdjust) * cosA;
-  return {
-    textx: textx + xshift,
-    texty: texty + yshift,
-    xanchor: xanchor
-  };
-}
 function movePath(pathIn, moveX, moveY) {
   return pathIn.replace(constants.segmentRE, function (segment) {
     var paramNumber = 0;
@@ -18694,7 +19145,7 @@ function eraseActiveShape(gd) {
       }
     }
     delete gd._fullLayout._activeShapeIndex;
-    Registry.call('_guiRelayout', gd, {
+    return Registry.call('_guiRelayout', gd, {
       shapes: list
     });
   }
@@ -18708,114 +19159,115 @@ function eraseActiveShape(gd) {
 "use strict";
 
 
+var overrideAll = (__webpack_require__(962).overrideAll);
+var basePlotAttributes = __webpack_require__(9012);
 var fontAttrs = __webpack_require__(1940);
 var dash = (__webpack_require__(9952)/* .dash */ .P);
 var extendFlat = (__webpack_require__(1426).extendFlat);
-module.exports = {
+var shapeTexttemplateAttrs = (__webpack_require__(5386)/* .shapeTexttemplateAttrs */ .R);
+var shapeLabelTexttemplateVars = __webpack_require__(7281);
+module.exports = overrideAll({
   newshape: {
+    visible: extendFlat({}, basePlotAttributes.visible, {}),
+    showlegend: {
+      valType: 'boolean',
+      dflt: false
+    },
+    legend: extendFlat({}, basePlotAttributes.legend, {}),
+    legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {}),
+    legendgrouptitle: {
+      text: extendFlat({}, basePlotAttributes.legendgrouptitle.text, {}),
+      font: fontAttrs({})
+    },
+    legendrank: extendFlat({}, basePlotAttributes.legendrank, {}),
+    legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {}),
     line: {
       color: {
-        valType: 'color',
-        editType: 'none'
+        valType: 'color'
       },
       width: {
         valType: 'number',
         min: 0,
-        dflt: 4,
-        editType: 'none'
+        dflt: 4
       },
       dash: extendFlat({}, dash, {
-        dflt: 'solid',
-        editType: 'none'
-      }),
-      editType: 'none'
+        dflt: 'solid'
+      })
     },
     fillcolor: {
       valType: 'color',
-      dflt: 'rgba(0,0,0,0)',
-      editType: 'none'
+      dflt: 'rgba(0,0,0,0)'
     },
     fillrule: {
       valType: 'enumerated',
       values: ['evenodd', 'nonzero'],
-      dflt: 'evenodd',
-      editType: 'none'
+      dflt: 'evenodd'
     },
     opacity: {
       valType: 'number',
       min: 0,
       max: 1,
-      dflt: 1,
-      editType: 'none'
+      dflt: 1
     },
     layer: {
       valType: 'enumerated',
       values: ['below', 'above'],
-      dflt: 'above',
-      editType: 'none'
+      dflt: 'above'
     },
     drawdirection: {
       valType: 'enumerated',
       values: ['ortho', 'horizontal', 'vertical', 'diagonal'],
-      dflt: 'diagonal',
-      editType: 'none'
+      dflt: 'diagonal'
     },
+    name: extendFlat({}, basePlotAttributes.name, {}),
     label: {
       text: {
         valType: 'string',
-        dflt: '',
-        editType: 'none'
+        dflt: ''
       },
-      font: fontAttrs({
-        editType: 'none'
+      texttemplate: shapeTexttemplateAttrs({
+        newshape: true
+      }, {
+        keys: Object.keys(shapeLabelTexttemplateVars)
       }),
+      font: fontAttrs({}),
       textposition: {
         valType: 'enumerated',
-        values: ['top left', 'top center', 'top right', 'middle left', 'middle center', 'middle right', 'bottom left', 'bottom center', 'bottom right', 'start', 'middle', 'end'],
-        editType: 'none'
+        values: ['top left', 'top center', 'top right', 'middle left', 'middle center', 'middle right', 'bottom left', 'bottom center', 'bottom right', 'start', 'middle', 'end']
       },
       textangle: {
         valType: 'angle',
-        dflt: 'auto',
-        editType: 'none'
+        dflt: 'auto'
       },
       xanchor: {
         valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
-        dflt: 'auto',
-        editType: 'none'
+        dflt: 'auto'
       },
       yanchor: {
         valType: 'enumerated',
-        values: ['top', 'middle', 'bottom'],
-        editType: 'none'
+        values: ['top', 'middle', 'bottom']
       },
       padding: {
         valType: 'number',
         dflt: 3,
-        min: 0,
-        editType: 'none'
-      },
-      editType: 'none'
-    },
-    editType: 'none'
+        min: 0
+      }
+    }
   },
   activeshape: {
     fillcolor: {
       valType: 'color',
-      dflt: 'rgb(255,0,255)',
-      editType: 'none'
+      dflt: 'rgb(255,0,255)'
     },
     opacity: {
       valType: 'number',
       min: 0,
       max: 1,
-      dflt: 0.5,
-      editType: 'none'
-    },
-    editType: 'none'
+      dflt: 0.5
+    }
   }
-};
+}, 'none', 'from-root');
 
 /***/ }),
 
@@ -18855,6 +19307,15 @@ function dfltLabelYanchor(isLine, labelTextPosition) {
   return isLine ? 'bottom' : labelTextPosition.indexOf('top') !== -1 ? 'top' : labelTextPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
 }
 module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce) {
+  coerce('newshape.visible');
+  coerce('newshape.name');
+  coerce('newshape.showlegend');
+  coerce('newshape.legend');
+  coerce('newshape.legendwidth');
+  coerce('newshape.legendgroup');
+  coerce('newshape.legendgrouptitle.text');
+  Lib.coerceFont(coerce, 'newshape.legendgrouptitle.font');
+  coerce('newshape.legendrank');
   coerce('newshape.drawdirection');
   coerce('newshape.layer');
   coerce('newshape.fillcolor');
@@ -18868,7 +19329,8 @@ module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce
   }
   var isLine = layoutIn.dragmode === 'drawline';
   var labelText = coerce('newshape.label.text');
-  if (labelText) {
+  var labelTextTemplate = coerce('newshape.label.texttemplate');
+  if (labelText || labelTextTemplate) {
     coerce('newshape.label.textangle');
     var labelTextPosition = coerce('newshape.label.textposition', isLine ? 'middle' : 'middle center');
     coerce('newshape.label.xanchor');
@@ -19187,18 +19649,11 @@ var readPaths = helpers.readPaths;
 var writePaths = helpers.writePaths;
 var ellipseOver = helpers.ellipseOver;
 var fixDatesForPaths = helpers.fixDatesForPaths;
-module.exports = function newShapes(outlines, dragOptions) {
+function newShapes(outlines, dragOptions) {
   if (!outlines.length) return;
   var e = outlines[0][0]; // pick first
   if (!e) return;
-  var d = e.getAttribute('d');
   var gd = dragOptions.gd;
-  var newStyle = gd._fullLayout.newshape;
-  var plotinfo = dragOptions.plotinfo;
-  var xaxis = plotinfo.xaxis;
-  var yaxis = plotinfo.yaxis;
-  var xPaper = !!plotinfo.domain || !plotinfo.xaxis;
-  var yPaper = !!plotinfo.domain || !plotinfo.yaxis;
   var isActiveShape = dragOptions.isActiveShape;
   var dragmode = dragOptions.dragmode;
   var shapes = (gd.layout || {}).shapes || [];
@@ -19226,10 +19681,63 @@ module.exports = function newShapes(outlines, dragOptions) {
       }
     }
   }
+  var newShape = createShapeObj(outlines, dragOptions, dragmode);
+  clearOutline(gd);
+  var editHelpers = dragOptions.editHelpers;
+  var modifyItem = (editHelpers || {}).modifyItem;
+  var allShapes = [];
+  for (var q = 0; q < shapes.length; q++) {
+    var beforeEdit = gd._fullLayout.shapes[q];
+    allShapes[q] = beforeEdit._input;
+    if (isActiveShape !== undefined && q === gd._fullLayout._activeShapeIndex) {
+      var afterEdit = newShape;
+      switch (beforeEdit.type) {
+        case 'line':
+        case 'rect':
+        case 'circle':
+          modifyItem('x0', afterEdit.x0);
+          modifyItem('x1', afterEdit.x1);
+          modifyItem('y0', afterEdit.y0);
+          modifyItem('y1', afterEdit.y1);
+          break;
+        case 'path':
+          modifyItem('path', afterEdit.path);
+          break;
+      }
+    }
+  }
+  if (isActiveShape === undefined) {
+    allShapes.push(newShape); // add new shape
+    return allShapes;
+  }
+  return editHelpers ? editHelpers.getUpdateObj() : {};
+}
+function createShapeObj(outlines, dragOptions, dragmode) {
+  var e = outlines[0][0]; // pick first outline
+  var gd = dragOptions.gd;
+  var d = e.getAttribute('d');
+  var newStyle = gd._fullLayout.newshape;
+  var plotinfo = dragOptions.plotinfo;
+  var isActiveShape = dragOptions.isActiveShape;
+  var xaxis = plotinfo.xaxis;
+  var yaxis = plotinfo.yaxis;
+  var xPaper = !!plotinfo.domain || !plotinfo.xaxis;
+  var yPaper = !!plotinfo.domain || !plotinfo.yaxis;
   var isOpenMode = openMode(dragmode);
   var polygons = readPaths(d, gd, plotinfo, isActiveShape);
   var newShape = {
     editable: true,
+    visible: newStyle.visible,
+    name: newStyle.name,
+    showlegend: newStyle.showlegend,
+    legend: newStyle.legend,
+    legendwidth: newStyle.legendwidth,
+    legendgroup: newStyle.legendgroup,
+    legendgrouptitle: {
+      text: newStyle.legendgrouptitle.text,
+      font: newStyle.legendgrouptitle.font
+    },
+    legendrank: newStyle.legendrank,
     label: newStyle.label,
     xref: xPaper ? 'paper' : xaxis._id,
     yref: yPaper ? 'paper' : yaxis._id,
@@ -19316,35 +19824,11 @@ module.exports = function newShapes(outlines, dragOptions) {
     newShape.path = writePaths(polygons);
     cell = null;
   }
-  clearOutline(gd);
-  var editHelpers = dragOptions.editHelpers;
-  var modifyItem = (editHelpers || {}).modifyItem;
-  var allShapes = [];
-  for (var q = 0; q < shapes.length; q++) {
-    var beforeEdit = gd._fullLayout.shapes[q];
-    allShapes[q] = beforeEdit._input;
-    if (isActiveShape !== undefined && q === gd._fullLayout._activeShapeIndex) {
-      var afterEdit = newShape;
-      switch (beforeEdit.type) {
-        case 'line':
-        case 'rect':
-        case 'circle':
-          modifyItem('x0', afterEdit.x0);
-          modifyItem('x1', afterEdit.x1);
-          modifyItem('y0', afterEdit.y0);
-          modifyItem('y1', afterEdit.y1);
-          break;
-        case 'path':
-          modifyItem('path', afterEdit.path);
-          break;
-      }
-    }
-  }
-  if (isActiveShape === undefined) {
-    allShapes.push(newShape); // add new shape
-    return allShapes;
-  }
-  return editHelpers ? editHelpers.getUpdateObj() : {};
+  return newShape;
+}
+module.exports = {
+  newShapes: newShapes,
+  createShapeObj: createShapeObj
 };
 
 /***/ }),
@@ -19668,6 +20152,72 @@ module.exports = {
   calcAutorange: __webpack_require__(5627),
   draw: drawModule.draw,
   drawOne: drawModule.drawOne
+};
+
+/***/ }),
+
+/***/ 7281:
+/***/ (function(module) {
+
+"use strict";
+
+
+// Wrapper functions to handle paper-referenced shapes, which have no axis
+function d2l(v, axis) {
+  return axis ? axis.d2l(v) : v;
+}
+function l2d(v, axis) {
+  return axis ? axis.l2d(v) : v;
+}
+function x0Fn(shape) {
+  return shape.x0;
+}
+function x1Fn(shape) {
+  return shape.x1;
+}
+function y0Fn(shape) {
+  return shape.y0;
+}
+function y1Fn(shape) {
+  return shape.y1;
+}
+function dxFn(shape, xa) {
+  return d2l(shape.x1, xa) - d2l(shape.x0, xa);
+}
+function dyFn(shape, xa, ya) {
+  return d2l(shape.y1, ya) - d2l(shape.y0, ya);
+}
+function widthFn(shape, xa) {
+  return Math.abs(dxFn(shape, xa));
+}
+function heightFn(shape, xa, ya) {
+  return Math.abs(dyFn(shape, xa, ya));
+}
+function lengthFn(shape, xa, ya) {
+  return shape.type !== 'line' ? undefined : Math.sqrt(Math.pow(dxFn(shape, xa), 2) + Math.pow(dyFn(shape, xa, ya), 2));
+}
+function xcenterFn(shape, xa) {
+  return l2d((d2l(shape.x1, xa) + d2l(shape.x0, xa)) / 2, xa);
+}
+function ycenterFn(shape, xa, ya) {
+  return l2d((d2l(shape.y1, ya) + d2l(shape.y0, ya)) / 2, ya);
+}
+function slopeFn(shape, xa, ya) {
+  return shape.type !== 'line' ? undefined : dyFn(shape, xa, ya) / dxFn(shape, xa);
+}
+module.exports = {
+  x0: x0Fn,
+  x1: x1Fn,
+  y0: y0Fn,
+  y1: y1Fn,
+  slope: slopeFn,
+  dx: dxFn,
+  dy: dyFn,
+  width: widthFn,
+  height: heightFn,
+  length: lengthFn,
+  xcenter: xcenterFn,
+  ycenter: ycenterFn
 };
 
 /***/ }),
@@ -22168,9 +22718,11 @@ for (var i = 0; i < methodNames.length; i++) {
 register(__webpack_require__(7368));
 
 // register all registrable components modules
-register([__webpack_require__(2199), __webpack_require__(211),
-// fx needs to come after legend
-__webpack_require__(2745), __webpack_require__(2468), __webpack_require__(7322), __webpack_require__(9853), __webpack_require__(8804), __webpack_require__(763), __webpack_require__(3243), __webpack_require__(3137), __webpack_require__(7218), __webpack_require__(3312), __webpack_require__(7369), __webpack_require__(1081), __webpack_require__(2311), __webpack_require__(4168)]);
+register([__webpack_require__(2745), __webpack_require__(2468), __webpack_require__(7322), __webpack_require__(9853), __webpack_require__(8804), __webpack_require__(763), __webpack_require__(3243), __webpack_require__(3137), __webpack_require__(7218), __webpack_require__(3312), __webpack_require__(7369), __webpack_require__(1081), __webpack_require__(2311), __webpack_require__(2199),
+// legend needs to come after shape | legend defaults depends on shapes
+__webpack_require__(211),
+// fx needs to come after legend | unified hover defaults depends on legends
+__webpack_require__(4168)]);
 
 // locales en and en-US are required for default behavior
 register([__webpack_require__(2177), __webpack_require__(7815)]);
@@ -25550,24 +26102,28 @@ lib.getTargetArray = function (trace, transformOpts) {
  * because extend-like algorithms are hella slow
  * obj2 is assumed to already be clean of these things (including no arrays)
  */
-lib.minExtend = function (obj1, obj2) {
+function minExtend(obj1, obj2, opt) {
   var objOut = {};
   if (typeof obj2 !== 'object') obj2 = {};
-  var arrayLen = 3;
+  var arrayLen = opt === 'pieLike' ? -1 : 3;
   var keys = Object.keys(obj1);
   var i, k, v;
   for (i = 0; i < keys.length; i++) {
     k = keys[i];
     v = obj1[k];
     if (k.charAt(0) === '_' || typeof v === 'function') continue;else if (k === 'module') objOut[k] = v;else if (Array.isArray(v)) {
-      if (k === 'colorscale') {
+      if (k === 'colorscale' || arrayLen === -1) {
         objOut[k] = v.slice();
       } else {
         objOut[k] = v.slice(0, arrayLen);
       }
     } else if (lib.isTypedArray(v)) {
-      objOut[k] = v.subarray(0, arrayLen);
-    } else if (v && typeof v === 'object') objOut[k] = lib.minExtend(obj1[k], obj2[k]);else objOut[k] = v;
+      if (arrayLen === -1) {
+        objOut[k] = v.subarray();
+      } else {
+        objOut[k] = v.subarray(0, arrayLen);
+      }
+    } else if (v && typeof v === 'object') objOut[k] = minExtend(obj1[k], obj2[k], opt);else objOut[k] = v;
   }
   keys = Object.keys(obj2);
   for (i = 0; i < keys.length; i++) {
@@ -25578,7 +26134,8 @@ lib.minExtend = function (obj1, obj2) {
     }
   }
   return objOut;
-};
+}
+lib.minExtend = minExtend;
 lib.titleCase = function (s) {
   return s.charAt(0).toUpperCase() + s.substr(1);
 };
@@ -25744,6 +26301,10 @@ lib.objectFromPath = function (path, value) {
 // the inner loop.
 var dottedPropertyRegex = /^([^\[\.]+)\.(.+)?/;
 var indexedPropertyRegex = /^([^\.]+)\[([0-9]+)\](\.)?(.+)?/;
+function notValid(prop) {
+  // guard against polluting __proto__ and other internals getters and setters
+  return prop.slice(0, 2) === '__';
+}
 lib.expandObjectPaths = function (data) {
   var match, key, prop, datum, idx, dest, trailingPath;
   if (typeof data === 'object' && !Array.isArray(data)) {
@@ -25752,11 +26313,13 @@ lib.expandObjectPaths = function (data) {
         if (match = key.match(dottedPropertyRegex)) {
           datum = data[key];
           prop = match[1];
+          if (notValid(prop)) continue;
           delete data[key];
           data[prop] = lib.extendDeepNoArrays(data[prop] || {}, lib.objectFromPath(key, lib.expandObjectPaths(datum))[prop]);
         } else if (match = key.match(indexedPropertyRegex)) {
           datum = data[key];
           prop = match[1];
+          if (notValid(prop)) continue;
           idx = parseInt(match[2]);
           delete data[key];
           data[prop] = data[prop] || [];
@@ -25782,9 +26345,12 @@ lib.expandObjectPaths = function (data) {
           } else {
             // This is the case where this property is the end of the line,
             // e.g. xaxis.range[0]
+
+            if (notValid(prop)) continue;
             data[prop][idx] = lib.expandObjectPaths(datum);
           }
         } else {
+          if (notValid(key)) continue;
           data[key] = lib.expandObjectPaths(data[key]);
         }
       }
@@ -25883,6 +26449,34 @@ var texttemplateWarnings = {
 lib.texttemplateString = function () {
   return templateFormatString.apply(texttemplateWarnings, arguments);
 };
+
+// Regex for parsing multiplication and division operations applied to a template key
+// Used for shape.label.texttemplate
+// Matches a key name (non-whitespace characters), followed by a * or / character, followed by a number
+// For example, the following strings are matched: `x0*2`, `slope/1.60934`, `y1*2.54`
+var MULT_DIV_REGEX = /^(\S+)([\*\/])(-?\d+(\.\d+)?)$/;
+function multDivParser(inputStr) {
+  var match = inputStr.match(MULT_DIV_REGEX);
+  if (match) return {
+    key: match[1],
+    op: match[2],
+    number: Number(match[3])
+  };
+  return {
+    key: inputStr,
+    op: null,
+    number: null
+  };
+}
+var texttemplateWarningsForShapes = {
+  max: 10,
+  count: 0,
+  name: 'texttemplate',
+  parseMultDiv: true
+};
+lib.texttemplateStringForShapes = function () {
+  return templateFormatString.apply(texttemplateWarningsForShapes, arguments);
+};
 var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
 /**
  * Substitute values from an object into a string and optionally formats them using d3-format,
@@ -25916,6 +26510,17 @@ function templateFormatString(string, labels, d3locale) {
     var key = rawKey;
     if (isSpaceOther || isSpaceOtherSpace) key = key.substring(1);
     if (isOtherSpace || isSpaceOtherSpace) key = key.substring(0, key.length - 1);
+
+    // Shape labels support * and / operators in template string
+    // Parse these if the parseMultDiv param is set to true
+    var parsedOp = null;
+    var parsedNumber = null;
+    if (opts.parseMultDiv) {
+      var _match = multDivParser(key);
+      key = _match.key;
+      parsedOp = _match.op;
+      parsedNumber = _match.number;
+    }
     var value;
     if (hasOther) {
       value = labels[key];
@@ -25936,6 +26541,12 @@ function templateFormatString(string, labels, d3locale) {
         }
         if (value !== undefined) break;
       }
+    }
+
+    // Apply mult/div operation (if applicable)
+    if (value !== undefined) {
+      if (parsedOp === '*') value *= parsedNumber;
+      if (parsedOp === '/') value /= parsedNumber;
     }
     if (value === undefined && opts) {
       if (opts.count < opts.max) {
@@ -26664,13 +27275,19 @@ module.exports = function nestedProperty(container, propStr) {
   if (isNumeric(propStr)) propStr = String(propStr);else if (typeof propStr !== 'string' || propStr.substr(propStr.length - 4) === '[-1]') {
     throw 'bad property string';
   }
-  var j = 0;
   var propParts = propStr.split('.');
   var indexed;
   var indices;
-  var i;
+  var i, j;
+  for (j = 0; j < propParts.length; j++) {
+    // guard against polluting __proto__ and other internals
+    if (String(propParts[j]).slice(0, 2) === '__') {
+      throw 'bad property string';
+    }
+  }
 
   // check for parts of the nesting hierarchy that are numbers (ie array elements)
+  j = 0;
   while (j < propParts.length) {
     // look for non-bracket chars, then any number of [##] blocks
     indexed = String(propParts[j]).match(/^([^\[\]]*)((\[\-?[0-9]*\])+)$/);
@@ -29064,9 +29681,8 @@ module.exports = function containerArrayMatch(astr) {
 "use strict";
 
 
-var Lib = __webpack_require__(1828);
-var extendFlat = Lib.extendFlat;
-var isPlainObject = Lib.isPlainObject;
+var extendFlat = (__webpack_require__(1426).extendFlat);
+var isPlainObject = __webpack_require__(1965);
 var traceOpts = {
   valType: 'flaglist',
   extras: ['none'],
@@ -29828,6 +30444,11 @@ exports.addFrames = main.addFrames;
 exports.deleteFrames = main.deleteFrames;
 exports.animate = main.animate;
 exports.setPlotConfig = main.setPlotConfig;
+var getGraphDiv = (__webpack_require__(4401).getGraphDiv);
+var eraseActiveShape = (__webpack_require__(4031).eraseActiveShape);
+exports.deleteActiveShape = function (gd) {
+  return eraseActiveShape(getGraphDiv(gd));
+};
 exports.toImage = __webpack_require__(403);
 exports.validate = __webpack_require__(4936);
 exports.downloadImage = __webpack_require__(7239);
@@ -31657,6 +32278,12 @@ function axRangeSupplyDefaultsByPass(gd, flags, specs) {
     var axIn = gd.layout[axName];
     var axOut = fullLayout[axName];
     axOut.autorange = axIn.autorange;
+    var r0 = axOut._rangeInitial0;
+    var r1 = axOut._rangeInitial1;
+    // partial range needs supplyDefaults
+    if (r0 === undefined && r1 !== undefined || r0 !== undefined && r1 === undefined) {
+      return false;
+    }
     if (axIn.range) {
       axOut.range = axIn.range.slice();
     }
@@ -32000,6 +32627,15 @@ function _relayout(gd, aobj) {
   // TODO: do we really need special aobj.height/width handling here?
   // couldn't editType do this?
   if (updateAutosize(gd) || aobj.height || aobj.width) flags.plot = true;
+
+  // update shape legends
+  var shapes = fullLayout.shapes;
+  for (i = 0; i < shapes.length; i++) {
+    if (shapes[i].showlegend) {
+      flags.calc = true;
+      break;
+    }
+  }
   if (flags.plot || flags.calc) {
     flags.layoutReplot = true;
   }
@@ -36443,6 +37079,11 @@ module.exports = {
     dflt: true,
     editType: 'style'
   },
+  legend: {
+    valType: 'subplotid',
+    dflt: 'legend',
+    editType: 'style'
+  },
   legendgroup: {
     valType: 'string',
     dflt: '',
@@ -36673,6 +37314,7 @@ var axIds = __webpack_require__(1675);
 var getFromId = axIds.getFromId;
 var isLinked = axIds.isLinked;
 module.exports = {
+  applyAutorangeOptions: applyAutorangeOptions,
   getAutoRange: getAutoRange,
   makePadFn: makePadFn,
   doAutoRange: doAutoRange,
@@ -36730,15 +37372,16 @@ function getAutoRange(gd, ax) {
     if (minmin !== maxmax) break;
     maxmax = Math.max(maxmax, maxArray[i].val);
   }
-  var axReverse = false;
-  if (ax.range) {
+  var autorange = ax.autorange;
+  var axReverse = autorange === 'reversed' || autorange === 'min reversed' || autorange === 'max reversed';
+  if (!axReverse && ax.range) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
     axReverse = rng[1] < rng[0];
   }
+
   // one-time setting to easily reverse the axis
   // when plotting from code
   if (ax.autorange === 'reversed') {
-    axReverse = true;
     ax.autorange = true;
   }
   var rangeMode = ax.rangemode;
@@ -36837,6 +37480,8 @@ function getAutoRange(gd, ax) {
     mbest = (maxbest.val - minbest.val - calcBreaksLength(ax, minpt.val, maxpt.val)) / (axLen - getPadMin(minbest) - getPadMax(maxbest));
     newRange = [minbest.val - mbest * getPadMin(minbest), maxbest.val + mbest * getPadMax(maxbest)];
   }
+  newRange = applyAutorangeOptions(newRange, ax);
+  if (ax.limitRange) ax.limitRange();
 
   // maintain reversal
   if (axReverse) newRange.reverse();
@@ -36865,7 +37510,7 @@ function makePadFn(fullLayout, ax, max) {
   var extrappad = 0.05 * ax._length;
   var anchorAxis = ax._anchorAxis || {};
   if ((ax.ticklabelposition || '').indexOf('inside') !== -1 || (anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
-    var axReverse = ax.autorange === 'reversed';
+    var axReverse = ax.isReversed();
     if (!axReverse) {
       var rng = Lib.simpleMap(ax.range, ax.r2l);
       axReverse = rng[1] < rng[0];
@@ -37245,6 +37890,85 @@ function lessOrEqual(v0, v1) {
 function greaterOrEqual(v0, v1) {
   return v0 >= v1;
 }
+function applyAutorangeMinOptions(v, ax) {
+  var autorangeoptions = ax.autorangeoptions;
+  if (autorangeoptions && autorangeoptions.minallowed !== undefined && hasValidMinAndMax(ax, autorangeoptions.minallowed, autorangeoptions.maxallowed)) {
+    return autorangeoptions.minallowed;
+  }
+  if (autorangeoptions && autorangeoptions.clipmin !== undefined && hasValidMinAndMax(ax, autorangeoptions.clipmin, autorangeoptions.clipmax)) {
+    return Math.max(v, ax.d2l(autorangeoptions.clipmin));
+  }
+  return v;
+}
+function applyAutorangeMaxOptions(v, ax) {
+  var autorangeoptions = ax.autorangeoptions;
+  if (autorangeoptions && autorangeoptions.maxallowed !== undefined && hasValidMinAndMax(ax, autorangeoptions.minallowed, autorangeoptions.maxallowed)) {
+    return autorangeoptions.maxallowed;
+  }
+  if (autorangeoptions && autorangeoptions.clipmax !== undefined && hasValidMinAndMax(ax, autorangeoptions.clipmin, autorangeoptions.clipmax)) {
+    return Math.min(v, ax.d2l(autorangeoptions.clipmax));
+  }
+  return v;
+}
+function hasValidMinAndMax(ax, min, max) {
+  // in case both min and max are defined, ensure min < max
+  if (min !== undefined && max !== undefined) {
+    min = ax.d2l(min);
+    max = ax.d2l(max);
+    return min < max;
+  }
+  return true;
+}
+
+// this function should be (and is) called before reversing the range
+// so range[0] is the minimum and range[1] is the maximum
+function applyAutorangeOptions(range, ax) {
+  if (!ax || !ax.autorangeoptions) return range;
+  var min = range[0];
+  var max = range[1];
+  var include = ax.autorangeoptions.include;
+  if (include !== undefined) {
+    var lMin = ax.d2l(min);
+    var lMax = ax.d2l(max);
+    if (!Lib.isArrayOrTypedArray(include)) include = [include];
+    for (var i = 0; i < include.length; i++) {
+      var v = ax.d2l(include[i]);
+      if (lMin >= v) {
+        lMin = v;
+        min = v;
+      }
+      if (lMax <= v) {
+        lMax = v;
+        max = v;
+      }
+    }
+  }
+  min = applyAutorangeMinOptions(min, ax);
+  max = applyAutorangeMaxOptions(max, ax);
+  return [min, max];
+}
+
+/***/ }),
+
+/***/ 3074:
+/***/ (function(module) {
+
+"use strict";
+
+
+module.exports = function handleAutorangeOptionsDefaults(coerce, autorange, range) {
+  var minRange, maxRange;
+  if (range) {
+    var isReversed = autorange === 'reversed' || autorange === 'min reversed' || autorange === 'max reversed';
+    minRange = range[isReversed ? 1 : 0];
+    maxRange = range[isReversed ? 0 : 1];
+  }
+  var minallowed = coerce('autorangeoptions.minallowed', maxRange === null ? minRange : undefined);
+  var maxallowed = coerce('autorangeoptions.maxallowed', minRange === null ? maxRange : undefined);
+  if (minallowed === undefined) coerce('autorangeoptions.clipmin');
+  if (maxallowed === undefined) coerce('autorangeoptions.clipmax');
+  coerce('autorangeoptions.include');
+};
 
 /***/ }),
 
@@ -37579,10 +38303,13 @@ axes.saveRangeInitial = function (gd, overwrite) {
   var hasOneAxisChanged = false;
   for (var i = 0; i < axList.length; i++) {
     var ax = axList[i];
-    var isNew = ax._rangeInitial === undefined;
-    var hasChanged = isNew || !(ax.range[0] === ax._rangeInitial[0] && ax.range[1] === ax._rangeInitial[1]);
-    if (isNew && ax.autorange === false || overwrite && hasChanged) {
-      ax._rangeInitial = ax.range.slice();
+    var isNew = ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined;
+    var hasChanged = isNew || ax.range[0] !== ax._rangeInitial0 || ax.range[1] !== ax._rangeInitial1;
+    var autorange = ax.autorange;
+    if (isNew && autorange !== true || overwrite && hasChanged) {
+      ax._rangeInitial0 = autorange === 'min' || autorange === 'max reversed' ? undefined : ax.range[0];
+      ax._rangeInitial1 = autorange === 'max' || autorange === 'min reversed' ? undefined : ax.range[1];
+      ax._autorangeInitial = autorange;
       hasOneAxisChanged = true;
     }
   }
@@ -41174,6 +41901,7 @@ var handleTickLabelDefaults = __webpack_require__(6115);
 var handlePrefixSuffixDefaults = __webpack_require__(9426);
 var handleCategoryOrderDefaults = __webpack_require__(5258);
 var handleLineGridDefaults = __webpack_require__(2128);
+var handleAutorangeOptionsDefaults = __webpack_require__(3074);
 var setConvert = __webpack_require__(1994);
 var DAY_OF_WEEK = (__webpack_require__(5555).WEEKDAY_PATTERN);
 var HOUR = (__webpack_require__(5555).HOUR_PATTERN);
@@ -41225,11 +41953,28 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('ticklabeloverflow', ticklabelposition.indexOf('inside') !== -1 ? 'hide past domain' : axType === 'category' || axType === 'multicategory' ? 'allow' : 'hide past div');
   }
   setConvert(containerOut, layoutOut);
-  var autorangeDflt = !containerOut.isValidRange(containerIn.range);
-  if (autorangeDflt && options.reverseDflt) autorangeDflt = 'reversed';
-  var autoRange = coerce('autorange', autorangeDflt);
-  if (autoRange && (axType === 'linear' || axType === '-')) coerce('rangemode');
-  coerce('range');
+  coerce('minallowed');
+  coerce('maxallowed');
+  var range = coerce('range');
+  var autorangeDflt = containerOut.getAutorangeDflt(range, options);
+  var autorange = coerce('autorange', autorangeDflt);
+  var shouldAutorange;
+
+  // validate range and set autorange true for invalid partial ranges
+  if (range && (range[0] === null && range[1] === null || (range[0] === null || range[1] === null) && (autorange === 'reversed' || autorange === true) || range[0] !== null && (autorange === 'min' || autorange === 'max reversed') || range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))) {
+    range = undefined;
+    delete containerOut.range;
+    containerOut.autorange = true;
+    shouldAutorange = true;
+  }
+  if (!shouldAutorange) {
+    autorangeDflt = containerOut.getAutorangeDflt(range, options);
+    autorange = coerce('autorange', autorangeDflt);
+  }
+  if (autorange) {
+    handleAutorangeOptionsDefaults(coerce, autorange, range);
+    if (axType === 'linear' || axType === '-') coerce('rangemode');
+  }
   containerOut.cleanRange();
   handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
   if (axType !== 'category' && !options.noHover) coerce('hoverformat');
@@ -41947,7 +42692,7 @@ exports.handleDefaults = function (layoutIn, layoutOut, opts) {
       // special logic for coupling of range and autorange
       // if nobody explicitly specifies autorange, but someone does
       // explicitly specify range, autorange must be disabled.
-      if (attr === 'range' && val) {
+      if (attr === 'range' && val && axIn.range && axIn.range.length === 2 && axIn.range[0] !== null && axIn.range[1] !== null) {
         hasRange = true;
       }
       if (attr === 'autorange' && val === null && hasRange) {
@@ -42045,7 +42790,7 @@ function handleOneAxDefaults(axIn, axOut, opts) {
     scaleanchor = Lib.coerce(axIn, axOut, {
       scaleanchor: {
         valType: 'enumerated',
-        values: linkableAxes
+        values: linkableAxes.concat([false])
       }
     }, 'scaleanchor', scaleanchorDflt);
   }
@@ -43078,7 +43823,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     if (matches.xaxes) axList = axList.concat(matches.xaxes);
     if (matches.yaxes) axList = axList.concat(matches.yaxes);
     var attrs = {};
-    var ax, i, rangeInitial;
+    var ax, i;
 
     // For reset+autosize mode:
     // If *any* of the main axes is not at its initial range
@@ -43089,7 +43834,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
       doubleClickConfig = 'autosize';
       for (i = 0; i < axList.length; i++) {
         ax = axList[i];
-        if (ax._rangeInitial && (ax.range[0] !== ax._rangeInitial[0] || ax.range[1] !== ax._rangeInitial[1]) || !ax._rangeInitial && !ax.autorange) {
+        var r0 = ax._rangeInitial0;
+        var r1 = ax._rangeInitial1;
+        var hasRangeInitial = r0 !== undefined || r1 !== undefined;
+        if (hasRangeInitial && (r0 !== undefined && r0 !== ax.range[0] || r1 !== undefined && r1 !== ax.range[1]) || !hasRangeInitial && ax.autorange !== true) {
           doubleClickConfig = 'reset';
           break;
         }
@@ -43113,12 +43861,18 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
       for (i = 0; i < axList.length; i++) {
         ax = axList[i];
         if (!ax.fixedrange) {
-          if (!ax._rangeInitial) {
-            attrs[ax._name + '.autorange'] = true;
+          var axName = ax._name;
+          var autorangeInitial = ax._autorangeInitial;
+          if (ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined) {
+            attrs[axName + '.autorange'] = true;
+          } else if (ax._rangeInitial0 === undefined) {
+            attrs[axName + '.autorange'] = autorangeInitial;
+            attrs[axName + '.range'] = [null, ax._rangeInitial1];
+          } else if (ax._rangeInitial1 === undefined) {
+            attrs[axName + '.range'] = [ax._rangeInitial0, null];
+            attrs[axName + '.autorange'] = autorangeInitial;
           } else {
-            rangeInitial = ax._rangeInitial;
-            attrs[ax._name + '.range[0]'] = rangeInitial[0];
-            attrs[ax._name + '.range[1]'] = rangeInitial[1];
+            attrs[axName + '.range'] = [ax._rangeInitial0, ax._rangeInitial1];
           }
         }
       }
@@ -43162,6 +43916,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if (sp._scene) {
           var xrng = Lib.simpleMap(xa.range, xa.r2l);
           var yrng = Lib.simpleMap(ya.range, ya.r2l);
+          if (xa.limitRange) xa.limitRange();
+          if (ya.limitRange) ya.limitRange();
+          xrng = xa.range;
+          yrng = ya.range;
           sp._scene.update({
             range: [xrng[0], yrng[0], xrng[1], yrng[1]]
           });
@@ -43199,6 +43957,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
           xScaleFactor2 = getLinkedScaleFactor(xa, xScaleFactor, yScaleFactor);
           clipDx = scaleAndGetShift(xa, xScaleFactor2);
         }
+        if (xScaleFactor2 > 1 && (xa.maxallowed !== undefined && editX === (xa.range[0] < xa.range[1] ? 'e' : 'w') || xa.minallowed !== undefined && editX === (xa.range[0] < xa.range[1] ? 'w' : 'e'))) {
+          xScaleFactor2 = 1;
+          clipDx = 0;
+        }
         if (editY2) {
           yScaleFactor2 = yScaleFactor;
           clipDy = ns || matches.isSubplotConstrained ? viewBox[1] : getShift(ya, yScaleFactor2);
@@ -43214,6 +43976,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         } else {
           yScaleFactor2 = getLinkedScaleFactor(ya, xScaleFactor, yScaleFactor);
           clipDy = scaleAndGetShift(ya, yScaleFactor2);
+        }
+        if (yScaleFactor2 > 1 && (ya.maxallowed !== undefined && editY === (ya.range[0] < ya.range[1] ? 'n' : 's') || ya.minallowed !== undefined && editY === (ya.range[0] < ya.range[1] ? 's' : 'n'))) {
+          yScaleFactor2 = 1;
+          clipDy = 0;
         }
 
         // don't scale at all if neither axis is scalable here
@@ -43354,6 +44120,7 @@ function dragAxList(axList, pix) {
       } else {
         axi.range = [axi.l2r(axi._rl[0] - pix / axi._m), axi.l2r(axi._rl[1] - pix / axi._m)];
       }
+      if (axi.limitRange) axi.limitRange();
     }
   }
 }
@@ -44420,13 +45187,57 @@ module.exports = {
   },
   autorange: {
     valType: 'enumerated',
-    values: [true, false, 'reversed'],
+    values: [true, false, 'reversed', 'min reversed', 'max reversed', 'min', 'max'],
     dflt: true,
     editType: 'axrange',
     impliedEdits: {
       'range[0]': undefined,
       'range[1]': undefined
     }
+  },
+  autorangeoptions: {
+    minallowed: {
+      valType: 'any',
+      editType: 'plot',
+      impliedEdits: {
+        'range[0]': undefined,
+        'range[1]': undefined
+      }
+    },
+    maxallowed: {
+      valType: 'any',
+      editType: 'plot',
+      impliedEdits: {
+        'range[0]': undefined,
+        'range[1]': undefined
+      }
+    },
+    clipmin: {
+      valType: 'any',
+      editType: 'plot',
+      impliedEdits: {
+        'range[0]': undefined,
+        'range[1]': undefined
+      }
+    },
+    clipmax: {
+      valType: 'any',
+      editType: 'plot',
+      impliedEdits: {
+        'range[0]': undefined,
+        'range[1]': undefined
+      }
+    },
+    include: {
+      valType: 'any',
+      arrayOk: true,
+      editType: 'plot',
+      impliedEdits: {
+        'range[0]': undefined,
+        'range[1]': undefined
+      }
+    },
+    editType: 'plot'
   },
   rangemode: {
     valType: 'enumerated',
@@ -44457,16 +45268,30 @@ module.exports = {
     },
     anim: true
   },
+  minallowed: {
+    valType: 'any',
+    editType: 'plot',
+    impliedEdits: {
+      '^autorange': false
+    }
+  },
+  maxallowed: {
+    valType: 'any',
+    editType: 'plot',
+    impliedEdits: {
+      '^autorange': false
+    }
+  },
   fixedrange: {
     valType: 'boolean',
     dflt: false,
     editType: 'calc'
   },
   // scaleanchor: not used directly, just put here for reference
-  // values are any opposite-letter axis id
+  // values are any opposite-letter axis id, or `false`.
   scaleanchor: {
     valType: 'enumerated',
-    values: [constants.idRegex.x.toString(), constants.idRegex.y.toString()],
+    values: [constants.idRegex.x.toString(), constants.idRegex.y.toString(), false],
     editType: 'plot'
   },
   scaleratio: {
@@ -45843,6 +46668,19 @@ module.exports = function setConvert(ax, fullLayout) {
     var rl1 = ax.r2l(ax.range[1]);
     return (ax.r2l(v) - rl0) / (rl1 - rl0);
   };
+  ax.limitRange = function (rangeAttr) {
+    var minallowed = ax.minallowed;
+    var maxallowed = ax.maxallowed;
+    if (minallowed === undefined && maxallowed === undefined) return;
+    if (!rangeAttr) rangeAttr = 'range';
+    var range = Lib.nestedProperty(ax, rangeAttr).get();
+    var rng = Lib.simpleMap(range, ax.r2l);
+    var axrev = rng[1] < rng[0];
+    if (axrev) rng.reverse();
+    var bounds = Lib.simpleMap([minallowed, maxallowed], ax.r2l);
+    if (minallowed !== undefined && rng[0] < bounds[0]) range[axrev ? 1 : 0] = minallowed;
+    if (maxallowed !== undefined && rng[1] > bounds[1]) range[axrev ? 0 : 1] = maxallowed;
+  };
 
   /*
    * cleanRange: make sure range is a couplet of valid & distinct values
@@ -45853,6 +46691,10 @@ module.exports = function setConvert(ax, fullLayout) {
    * ax._r, rather than ax.range
    */
   ax.cleanRange = function (rangeAttr, opts) {
+    ax._cleanRange(rangeAttr, opts);
+    ax.limitRange(rangeAttr);
+  };
+  ax._cleanRange = function (rangeAttr, opts) {
     if (!opts) opts = {};
     if (!rangeAttr) rangeAttr = 'range';
     var range = Lib.nestedProperty(ax, rangeAttr).get();
@@ -45868,6 +46710,8 @@ module.exports = function setConvert(ax, fullLayout) {
       Lib.nestedProperty(ax, rangeAttr).set(dflt);
       return;
     }
+    var nullRange0 = range[0] === null;
+    var nullRange1 = range[1] === null;
     if (ax.type === 'date' && !ax.autorange) {
       // check if milliseconds or js date objects are provided for range
       // and convert to date strings
@@ -45889,7 +46733,7 @@ module.exports = function setConvert(ax, fullLayout) {
         }
       } else {
         if (!isNumeric(range[i])) {
-          if (isNumeric(range[1 - i])) {
+          if (!(nullRange0 || nullRange1) && isNumeric(range[1 - i])) {
             range[i] = range[1 - i] * (i ? 10 : 0.1);
           } else {
             ax[rangeAttr] = dflt;
@@ -46189,8 +47033,25 @@ module.exports = function setConvert(ax, fullLayout) {
     }
     return arrayOut;
   };
-  ax.isValidRange = function (range) {
-    return Array.isArray(range) && range.length === 2 && isNumeric(ax.r2l(range[0])) && isNumeric(ax.r2l(range[1]));
+  ax.isValidRange = function (range, nullOk) {
+    return Array.isArray(range) && range.length === 2 && (nullOk && range[0] === null || isNumeric(ax.r2l(range[0]))) && (nullOk && range[1] === null || isNumeric(ax.r2l(range[1])));
+  };
+  ax.getAutorangeDflt = function (range, options) {
+    var autorangeDflt = !ax.isValidRange(range, 'nullOk');
+    if (autorangeDflt && options && options.reverseDflt) autorangeDflt = 'reversed';else if (range) {
+      if (range[0] === null && range[1] === null) {
+        autorangeDflt = true;
+      } else if (range[0] === null && range[1] !== null) {
+        autorangeDflt = 'min';
+      } else if (range[0] !== null && range[1] === null) {
+        autorangeDflt = 'max';
+      }
+    }
+    return autorangeDflt;
+  };
+  ax.isReversed = function () {
+    var autorange = ax.autorange;
+    return autorange === 'reversed' || autorange === 'min reversed' || autorange === 'max reversed';
   };
   ax.isPtWithinRange = function (d, calendar) {
     var coord = ax.c2l(d[axLetter], null, calendar);
@@ -47343,6 +48204,7 @@ exports.projNames = {
   eckert5: 'eckert5',
   eckert6: 'eckert6',
   eisenlohr: 'eisenlohr',
+  'equal earth': 'equalEarth',
   equirectangular: 'equirectangular',
   fahey: 'fahey',
   'foucaut sinusoidal': 'foucautSinusoidal',
@@ -49171,7 +50033,7 @@ exports.a0 = function (calcdata, arg1) {
     // would suggest), but by 'module plot method' so that if some traces
     // share the same module plot method (e.g. bar and histogram), we
     // only call it one!
-    if (trace._module.plot === plotMethod) {
+    if (trace._module && trace._module.plot === plotMethod) {
       moduleCalcData.push(cd);
     } else {
       remainingCalcData.push(cd);
@@ -50676,6 +51538,7 @@ plots.supplyTraceDefaults = function (traceIn, traceOut, colorIndex, layout, tra
     coerce('meta');
     if (Registry.traceIs(traceOut, 'showLegend')) {
       Lib.coerce(traceIn, traceOut, _module.attributes.showlegend ? _module.attributes : plots.attributes, 'showlegend');
+      coerce('legend');
       coerce('legendwidth');
       coerce('legendgroup');
       coerce('legendgrouptitle.text');
@@ -51262,13 +52125,7 @@ plots.doAutoMargin = function (gd) {
     r: 0
   };
   var oldMargins = Lib.extendFlat({}, gs);
-  var margins = gd._fullLayout._reservedMargin;
-  for (var key in margins) {
-    for (var side in margins[key]) {
-      var val = margins[key][side];
-      reservedMargins[side] = Math.max(reservedMargins[side], val);
-    }
-  }
+
   // adjust margins for outside components
   // fullLayout.margin is the requested margin,
   // fullLayout._size has margins and plotsize after adjustment
@@ -51280,11 +52137,17 @@ plots.doAutoMargin = function (gd) {
   var pushMarginIds = fullLayout._pushmarginIds;
   var minreducedwidth = fullLayout.minreducedwidth;
   var minreducedheight = fullLayout.minreducedheight;
-  if (fullLayout.margin.autoexpand !== false) {
+  if (margin.autoexpand !== false) {
     for (var k in pushMargin) {
       if (!pushMarginIds[k]) delete pushMargin[k];
     }
-
+    var margins = gd._fullLayout._reservedMargin;
+    for (var key in margins) {
+      for (var side in margins[key]) {
+        var val = margins[key][side];
+        reservedMargins[side] = Math.max(reservedMargins[side], val);
+      }
+    }
     // fill in the requested margins
     pushMargin.base = {
       l: {
@@ -51305,9 +52168,22 @@ plots.doAutoMargin = function (gd) {
       }
     };
 
+    // make sure that the reservedMargin is the minimum needed
+    for (var s in reservedMargins) {
+      var autoMarginPush = 0;
+      for (var m in pushMargin) {
+        if (m !== 'base') {
+          if (isNumeric(pushMargin[m][s].size)) {
+            autoMarginPush = pushMargin[m][s].size > autoMarginPush ? pushMargin[m][s].size : autoMarginPush;
+          }
+        }
+      }
+      var extraMargin = Math.max(0, margin[s] - autoMarginPush);
+      reservedMargins[s] = Math.max(0, reservedMargins[s] - extraMargin);
+    }
+
     // now cycle through all the combinations of l and r
     // (and t and b) to find the required margins
-
     for (var k1 in pushMargin) {
       var pushleft = pushMargin[k1].l || {};
       var pushbottom = pushMargin[k1].b || {};
@@ -52695,6 +53571,9 @@ function templateFormatStringDescription(opts) {
   var supportOther = opts && opts.supportOther;
   return ['Variables are inserted using %{variable},', 'for example "y: %{y}"' + (supportOther ? ' as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown.' : '.'), 'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".', FORMAT_LINK, 'for details on the formatting syntax.', 'Dates are formatted using d3-time-format\'s syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".', DATE_FORMAT_LINK, 'for details on the date formatting syntax.'].join(' ');
 }
+function shapeTemplateFormatStringDescription() {
+  return ['Variables are inserted using %{variable},', 'for example "x0: %{x0}".', 'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{x0:$.2f}". See', FORMAT_LINK, 'for details on the formatting syntax.', 'Dates are formatted using d3-time-format\'s syntax %{variable|d3-time-format}, for example "Day: %{x0|%m %b %Y}". See', DATE_FORMAT_LINK, 'for details on the date formatting syntax.', 'A single multiplication or division operation may be applied to numeric variables, and combined with', 'd3 number formatting, for example "Length in cm: %{x0*2.54}", "%{slope*60:.1f} meters per second."', 'For log axes, variable values are given in log units.', 'For date axes, x/y coordinate variables and center variables use datetimes, while all other variable values use values in ms.'].join(' ');
+}
 function describeVariables(extra) {
   var descPart = extra.description ? ' ' + extra.description : '';
   var keys = extra.keys || [];
@@ -52705,14 +53584,14 @@ function describeVariables(extra) {
     }
     descPart = descPart + 'Finally, the template string has access to ';
     if (keys.length === 1) {
-      descPart = 'variable ' + quotedKeys[0];
+      descPart = descPart + 'variable ' + quotedKeys[0];
     } else {
-      descPart = 'variables ' + quotedKeys.slice(0, -1).join(', ') + ' and ' + quotedKeys.slice(-1) + '.';
+      descPart = descPart + 'variables ' + quotedKeys.slice(0, -1).join(', ') + ' and ' + quotedKeys.slice(-1) + '.';
     }
   }
   return descPart;
 }
-exports.f = function (opts, extra) {
+exports.fF = function (opts, extra) {
   opts = opts || {};
   extra = extra || {};
   var descPart = describeVariables(extra);
@@ -52726,7 +53605,7 @@ exports.f = function (opts, extra) {
   }
   return hovertemplate;
 };
-exports.s = function (opts, extra) {
+exports.si = function (opts, extra) {
   opts = opts || {};
   extra = extra || {};
   var descPart = describeVariables(extra);
@@ -52738,6 +53617,18 @@ exports.s = function (opts, extra) {
   if (opts.arrayOk !== false) {
     texttemplate.arrayOk = true;
   }
+  return texttemplate;
+};
+exports.R = function (opts, extra) {
+  opts = opts || {};
+  extra = extra || {};
+  var newStr = opts.newshape ? 'new ' : '';
+  var descPart = describeVariables(extra);
+  var texttemplate = {
+    valType: 'string',
+    dflt: '',
+    editType: opts.editType || 'arraydraw'
+  };
   return texttemplate;
 };
 
@@ -54655,7 +55546,7 @@ Sieve.prototype.getLabel = function getLabel(position, value) {
 "use strict";
 
 
-var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .f);
+var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
 var scatterGeoAttrs = __webpack_require__(9316);
 var colorScaleAttrs = __webpack_require__(693);
 var baseAttrs = __webpack_require__(9012);
@@ -55097,6 +55988,25 @@ module.exports = {
 
 /***/ }),
 
+/***/ 2209:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var Drawing = __webpack_require__(1424);
+var Color = __webpack_require__(7901);
+module.exports = function fillOne(s, pt, trace, gd) {
+  var pattern = trace.marker.pattern;
+  if (pattern && pattern.shape) {
+    Drawing.pointStyle(s, trace, gd, pt);
+  } else {
+    Color.fill(s, pt.color);
+  }
+};
+
+/***/ }),
+
 /***/ 3581:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -55139,11 +56049,12 @@ exports.getRotationAngle = function (rotation) {
 
 var Color = __webpack_require__(7901);
 var castOption = (__webpack_require__(3581).castOption);
-module.exports = function styleOne(s, pt, trace) {
+var fillOne = __webpack_require__(2209);
+module.exports = function styleOne(s, pt, trace, gd) {
   var line = trace.marker.line;
   var lineColor = castOption(line.color, pt.pts) || Color.defaultLine;
   var lineWidth = castOption(line.width, pt.pts) || 0;
-  s.style('stroke-width', lineWidth).call(Color.fill, pt.color).call(Color.stroke, lineColor);
+  s.call(fillOne, pt, trace, gd).style('stroke-width', lineWidth).call(Color.stroke, lineColor);
 };
 
 /***/ }),
@@ -55200,8 +56111,8 @@ module.exports = function arraysToCalcdata(cd, trace) {
 
 
 var axisHoverFormat = (__webpack_require__(2663).axisHoverFormat);
-var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .s);
-var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .f);
+var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .si);
+var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
 var colorScaleAttrs = __webpack_require__(693);
 var fontAttrs = __webpack_require__(1940);
 var dash = (__webpack_require__(9952)/* .dash */ .P);
@@ -58070,7 +58981,7 @@ var Lib = __webpack_require__(1828);
 module.exports = function (traceIn, traceOut, layout, coerce, opts) {
   opts = opts || {};
   coerce('textposition');
-  Lib.coerceFont(coerce, 'textfont', layout.font);
+  Lib.coerceFont(coerce, 'textfont', opts.font || layout.font);
   if (!opts.noSelect) {
     coerce('selected.textfont.color');
     coerce('unselected.textfont.color');
@@ -58120,8 +59031,8 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
 "use strict";
 
 
-var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .f);
-var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .s);
+var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
+var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .si);
 var scatterAttrs = __webpack_require__(2196);
 var baseAttrs = __webpack_require__(9012);
 var colorAttributes = __webpack_require__(693);
@@ -59638,7 +60549,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.20.0';
+exports.version = '2.26.0';
 
 /***/ }),
 
@@ -73194,8 +74105,8 @@ module.exports = {
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "TS": function() { return /* reexport */ merge; },
-  "w6": function() { return /* reexport */ src_range; }
+  TS: function() { return /* reexport */ merge; },
+  w6: function() { return /* reexport */ src_range; }
 });
 
 // UNUSED EXPORTS: ascending, bisect, bisectLeft, bisectRight, bisector, cross, descending, deviation, extent, histogram, max, mean, median, min, pairs, permute, quantile, scan, shuffle, sum, thresholdFreedmanDiaconis, thresholdScott, thresholdSturges, tickIncrement, tickStep, ticks, transpose, variance, zip
@@ -73473,8 +74384,8 @@ function ticks_tickStep(start, stop, count) {
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "WU": function() { return /* reexport */ format; },
-  "FF": function() { return /* reexport */ locale; }
+  WU: function() { return /* reexport */ format; },
+  FF: function() { return /* reexport */ locale; }
 });
 
 // UNUSED EXPORTS: FormatSpecifier, formatDefaultLocale, formatPrefix, formatSpecifier, precisionFixed, precisionPrefix, precisionRound
@@ -73848,189 +74759,189 @@ __webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "geoAiry": function() { return /* reexport */ airy; },
-  "geoAiryRaw": function() { return /* reexport */ airyRaw; },
-  "geoAitoff": function() { return /* reexport */ aitoff; },
-  "geoAitoffRaw": function() { return /* reexport */ aitoffRaw; },
-  "geoArmadillo": function() { return /* reexport */ armadillo; },
-  "geoArmadilloRaw": function() { return /* reexport */ armadilloRaw; },
-  "geoAugust": function() { return /* reexport */ august; },
-  "geoAugustRaw": function() { return /* reexport */ augustRaw; },
-  "geoBaker": function() { return /* reexport */ baker; },
-  "geoBakerRaw": function() { return /* reexport */ bakerRaw; },
-  "geoBerghaus": function() { return /* reexport */ berghaus; },
-  "geoBerghausRaw": function() { return /* reexport */ berghausRaw; },
-  "geoBertin1953": function() { return /* reexport */ bertin; },
-  "geoBertin1953Raw": function() { return /* reexport */ bertin1953Raw; },
-  "geoBoggs": function() { return /* reexport */ boggs; },
-  "geoBoggsRaw": function() { return /* reexport */ boggsRaw; },
-  "geoBonne": function() { return /* reexport */ bonne; },
-  "geoBonneRaw": function() { return /* reexport */ bonneRaw; },
-  "geoBottomley": function() { return /* reexport */ bottomley; },
-  "geoBottomleyRaw": function() { return /* reexport */ bottomleyRaw; },
-  "geoBromley": function() { return /* reexport */ bromley; },
-  "geoBromleyRaw": function() { return /* reexport */ bromleyRaw; },
-  "geoChamberlin": function() { return /* reexport */ chamberlin; },
-  "geoChamberlinAfrica": function() { return /* reexport */ chamberlinAfrica; },
-  "geoChamberlinRaw": function() { return /* reexport */ chamberlinRaw; },
-  "geoCollignon": function() { return /* reexport */ collignon; },
-  "geoCollignonRaw": function() { return /* reexport */ collignonRaw; },
-  "geoCraig": function() { return /* reexport */ craig; },
-  "geoCraigRaw": function() { return /* reexport */ craigRaw; },
-  "geoCraster": function() { return /* reexport */ craster; },
-  "geoCrasterRaw": function() { return /* reexport */ crasterRaw; },
-  "geoCylindricalEqualArea": function() { return /* reexport */ cylindricalEqualArea; },
-  "geoCylindricalEqualAreaRaw": function() { return /* reexport */ cylindricalEqualAreaRaw; },
-  "geoCylindricalStereographic": function() { return /* reexport */ cylindricalStereographic; },
-  "geoCylindricalStereographicRaw": function() { return /* reexport */ cylindricalStereographicRaw; },
-  "geoEckert1": function() { return /* reexport */ eckert1; },
-  "geoEckert1Raw": function() { return /* reexport */ eckert1Raw; },
-  "geoEckert2": function() { return /* reexport */ eckert2; },
-  "geoEckert2Raw": function() { return /* reexport */ eckert2Raw; },
-  "geoEckert3": function() { return /* reexport */ eckert3; },
-  "geoEckert3Raw": function() { return /* reexport */ eckert3Raw; },
-  "geoEckert4": function() { return /* reexport */ eckert4; },
-  "geoEckert4Raw": function() { return /* reexport */ eckert4Raw; },
-  "geoEckert5": function() { return /* reexport */ eckert5; },
-  "geoEckert5Raw": function() { return /* reexport */ eckert5Raw; },
-  "geoEckert6": function() { return /* reexport */ eckert6; },
-  "geoEckert6Raw": function() { return /* reexport */ eckert6Raw; },
-  "geoEisenlohr": function() { return /* reexport */ eisenlohr; },
-  "geoEisenlohrRaw": function() { return /* reexport */ eisenlohrRaw; },
-  "geoFahey": function() { return /* reexport */ fahey; },
-  "geoFaheyRaw": function() { return /* reexport */ faheyRaw; },
-  "geoFoucaut": function() { return /* reexport */ foucaut; },
-  "geoFoucautRaw": function() { return /* reexport */ foucautRaw; },
-  "geoFoucautSinusoidal": function() { return /* reexport */ foucautSinusoidal; },
-  "geoFoucautSinusoidalRaw": function() { return /* reexport */ foucautSinusoidalRaw; },
-  "geoGilbert": function() { return /* reexport */ gilbert; },
-  "geoGingery": function() { return /* reexport */ gingery; },
-  "geoGingeryRaw": function() { return /* reexport */ gingeryRaw; },
-  "geoGinzburg4": function() { return /* reexport */ ginzburg4; },
-  "geoGinzburg4Raw": function() { return /* reexport */ ginzburg4Raw; },
-  "geoGinzburg5": function() { return /* reexport */ ginzburg5; },
-  "geoGinzburg5Raw": function() { return /* reexport */ ginzburg5Raw; },
-  "geoGinzburg6": function() { return /* reexport */ ginzburg6; },
-  "geoGinzburg6Raw": function() { return /* reexport */ ginzburg6Raw; },
-  "geoGinzburg8": function() { return /* reexport */ ginzburg8; },
-  "geoGinzburg8Raw": function() { return /* reexport */ ginzburg8Raw; },
-  "geoGinzburg9": function() { return /* reexport */ ginzburg9; },
-  "geoGinzburg9Raw": function() { return /* reexport */ ginzburg9Raw; },
-  "geoGringorten": function() { return /* reexport */ gringorten; },
-  "geoGringortenQuincuncial": function() { return /* reexport */ quincuncial_gringorten; },
-  "geoGringortenRaw": function() { return /* reexport */ gringortenRaw; },
-  "geoGuyou": function() { return /* reexport */ guyou; },
-  "geoGuyouRaw": function() { return /* reexport */ guyouRaw; },
-  "geoHammer": function() { return /* reexport */ hammer; },
-  "geoHammerRaw": function() { return /* reexport */ hammerRaw; },
-  "geoHammerRetroazimuthal": function() { return /* reexport */ hammerRetroazimuthal; },
-  "geoHammerRetroazimuthalRaw": function() { return /* reexport */ hammerRetroazimuthalRaw; },
-  "geoHealpix": function() { return /* reexport */ healpix; },
-  "geoHealpixRaw": function() { return /* reexport */ healpixRaw; },
-  "geoHill": function() { return /* reexport */ hill; },
-  "geoHillRaw": function() { return /* reexport */ hillRaw; },
-  "geoHomolosine": function() { return /* reexport */ homolosine; },
-  "geoHomolosineRaw": function() { return /* reexport */ homolosineRaw; },
-  "geoHufnagel": function() { return /* reexport */ hufnagel; },
-  "geoHufnagelRaw": function() { return /* reexport */ hufnagelRaw; },
-  "geoHyperelliptical": function() { return /* reexport */ hyperelliptical; },
-  "geoHyperellipticalRaw": function() { return /* reexport */ hyperellipticalRaw; },
-  "geoInterrupt": function() { return /* reexport */ interrupted; },
-  "geoInterruptedBoggs": function() { return /* reexport */ interrupted_boggs; },
-  "geoInterruptedHomolosine": function() { return /* reexport */ interrupted_homolosine; },
-  "geoInterruptedMollweide": function() { return /* reexport */ interrupted_mollweide; },
-  "geoInterruptedMollweideHemispheres": function() { return /* reexport */ mollweideHemispheres; },
-  "geoInterruptedQuarticAuthalic": function() { return /* reexport */ quarticAuthalic; },
-  "geoInterruptedSinuMollweide": function() { return /* reexport */ interrupted_sinuMollweide; },
-  "geoInterruptedSinusoidal": function() { return /* reexport */ interrupted_sinusoidal; },
-  "geoKavrayskiy7": function() { return /* reexport */ kavrayskiy7; },
-  "geoKavrayskiy7Raw": function() { return /* reexport */ kavrayskiy7Raw; },
-  "geoLagrange": function() { return /* reexport */ lagrange; },
-  "geoLagrangeRaw": function() { return /* reexport */ lagrangeRaw; },
-  "geoLarrivee": function() { return /* reexport */ larrivee; },
-  "geoLarriveeRaw": function() { return /* reexport */ larriveeRaw; },
-  "geoLaskowski": function() { return /* reexport */ laskowski; },
-  "geoLaskowskiRaw": function() { return /* reexport */ laskowskiRaw; },
-  "geoLittrow": function() { return /* reexport */ littrow; },
-  "geoLittrowRaw": function() { return /* reexport */ littrowRaw; },
-  "geoLoximuthal": function() { return /* reexport */ loximuthal; },
-  "geoLoximuthalRaw": function() { return /* reexport */ loximuthalRaw; },
-  "geoMiller": function() { return /* reexport */ miller; },
-  "geoMillerRaw": function() { return /* reexport */ millerRaw; },
-  "geoModifiedStereographic": function() { return /* reexport */ modifiedStereographic; },
-  "geoModifiedStereographicAlaska": function() { return /* reexport */ modifiedStereographicAlaska; },
-  "geoModifiedStereographicGs48": function() { return /* reexport */ modifiedStereographicGs48; },
-  "geoModifiedStereographicGs50": function() { return /* reexport */ modifiedStereographicGs50; },
-  "geoModifiedStereographicLee": function() { return /* reexport */ modifiedStereographicLee; },
-  "geoModifiedStereographicMiller": function() { return /* reexport */ modifiedStereographicMiller; },
-  "geoModifiedStereographicRaw": function() { return /* reexport */ modifiedStereographicRaw; },
-  "geoMollweide": function() { return /* reexport */ mollweide; },
-  "geoMollweideRaw": function() { return /* reexport */ mollweideRaw; },
-  "geoMtFlatPolarParabolic": function() { return /* reexport */ mtFlatPolarParabolic; },
-  "geoMtFlatPolarParabolicRaw": function() { return /* reexport */ mtFlatPolarParabolicRaw; },
-  "geoMtFlatPolarQuartic": function() { return /* reexport */ mtFlatPolarQuartic; },
-  "geoMtFlatPolarQuarticRaw": function() { return /* reexport */ mtFlatPolarQuarticRaw; },
-  "geoMtFlatPolarSinusoidal": function() { return /* reexport */ mtFlatPolarSinusoidal; },
-  "geoMtFlatPolarSinusoidalRaw": function() { return /* reexport */ mtFlatPolarSinusoidalRaw; },
-  "geoNaturalEarth": function() { return /* reexport */ naturalEarth1/* default */.Z; },
-  "geoNaturalEarth2": function() { return /* reexport */ naturalEarth2; },
-  "geoNaturalEarth2Raw": function() { return /* reexport */ naturalEarth2Raw; },
-  "geoNaturalEarthRaw": function() { return /* reexport */ naturalEarth1/* naturalEarth1Raw */.K; },
-  "geoNellHammer": function() { return /* reexport */ nellHammer; },
-  "geoNellHammerRaw": function() { return /* reexport */ nellHammerRaw; },
-  "geoNicolosi": function() { return /* reexport */ nicolosi; },
-  "geoNicolosiRaw": function() { return /* reexport */ nicolosiRaw; },
-  "geoPatterson": function() { return /* reexport */ patterson; },
-  "geoPattersonRaw": function() { return /* reexport */ pattersonRaw; },
-  "geoPeirceQuincuncial": function() { return /* reexport */ peirce; },
-  "geoPierceQuincuncial": function() { return /* reexport */ peirce; },
-  "geoPolyconic": function() { return /* reexport */ polyconic; },
-  "geoPolyconicRaw": function() { return /* reexport */ polyconicRaw; },
-  "geoPolyhedral": function() { return /* reexport */ polyhedral; },
-  "geoPolyhedralButterfly": function() { return /* reexport */ butterfly; },
-  "geoPolyhedralCollignon": function() { return /* reexport */ polyhedral_collignon; },
-  "geoPolyhedralWaterman": function() { return /* reexport */ waterman; },
-  "geoProject": function() { return /* reexport */ project; },
-  "geoQuantize": function() { return /* reexport */ quantize; },
-  "geoQuincuncial": function() { return /* reexport */ quincuncial; },
-  "geoRectangularPolyconic": function() { return /* reexport */ rectangularPolyconic; },
-  "geoRectangularPolyconicRaw": function() { return /* reexport */ rectangularPolyconicRaw; },
-  "geoRobinson": function() { return /* reexport */ robinson; },
-  "geoRobinsonRaw": function() { return /* reexport */ robinsonRaw; },
-  "geoSatellite": function() { return /* reexport */ satellite; },
-  "geoSatelliteRaw": function() { return /* reexport */ satelliteRaw; },
-  "geoSinuMollweide": function() { return /* reexport */ sinuMollweide; },
-  "geoSinuMollweideRaw": function() { return /* reexport */ sinuMollweideRaw; },
-  "geoSinusoidal": function() { return /* reexport */ sinusoidal; },
-  "geoSinusoidalRaw": function() { return /* reexport */ sinusoidalRaw; },
-  "geoStitch": function() { return /* reexport */ stitch; },
-  "geoTimes": function() { return /* reexport */ times; },
-  "geoTimesRaw": function() { return /* reexport */ timesRaw; },
-  "geoTwoPointAzimuthal": function() { return /* reexport */ twoPointAzimuthal; },
-  "geoTwoPointAzimuthalRaw": function() { return /* reexport */ twoPointAzimuthalRaw; },
-  "geoTwoPointAzimuthalUsa": function() { return /* reexport */ twoPointAzimuthalUsa; },
-  "geoTwoPointEquidistant": function() { return /* reexport */ twoPointEquidistant; },
-  "geoTwoPointEquidistantRaw": function() { return /* reexport */ twoPointEquidistantRaw; },
-  "geoTwoPointEquidistantUsa": function() { return /* reexport */ twoPointEquidistantUsa; },
-  "geoVanDerGrinten": function() { return /* reexport */ vanDerGrinten; },
-  "geoVanDerGrinten2": function() { return /* reexport */ vanDerGrinten2; },
-  "geoVanDerGrinten2Raw": function() { return /* reexport */ vanDerGrinten2Raw; },
-  "geoVanDerGrinten3": function() { return /* reexport */ vanDerGrinten3; },
-  "geoVanDerGrinten3Raw": function() { return /* reexport */ vanDerGrinten3Raw; },
-  "geoVanDerGrinten4": function() { return /* reexport */ vanDerGrinten4; },
-  "geoVanDerGrinten4Raw": function() { return /* reexport */ vanDerGrinten4Raw; },
-  "geoVanDerGrintenRaw": function() { return /* reexport */ vanDerGrintenRaw; },
-  "geoWagner": function() { return /* reexport */ wagner; },
-  "geoWagner4": function() { return /* reexport */ wagner4; },
-  "geoWagner4Raw": function() { return /* reexport */ wagner4Raw; },
-  "geoWagner6": function() { return /* reexport */ wagner6; },
-  "geoWagner6Raw": function() { return /* reexport */ wagner6Raw; },
-  "geoWagner7": function() { return /* reexport */ wagner7; },
-  "geoWagnerRaw": function() { return /* reexport */ wagnerRaw; },
-  "geoWiechel": function() { return /* reexport */ wiechel; },
-  "geoWiechelRaw": function() { return /* reexport */ wiechelRaw; },
-  "geoWinkel3": function() { return /* reexport */ winkel3; },
-  "geoWinkel3Raw": function() { return /* reexport */ winkel3Raw; }
+  geoAiry: function() { return /* reexport */ airy; },
+  geoAiryRaw: function() { return /* reexport */ airyRaw; },
+  geoAitoff: function() { return /* reexport */ aitoff; },
+  geoAitoffRaw: function() { return /* reexport */ aitoffRaw; },
+  geoArmadillo: function() { return /* reexport */ armadillo; },
+  geoArmadilloRaw: function() { return /* reexport */ armadilloRaw; },
+  geoAugust: function() { return /* reexport */ august; },
+  geoAugustRaw: function() { return /* reexport */ augustRaw; },
+  geoBaker: function() { return /* reexport */ baker; },
+  geoBakerRaw: function() { return /* reexport */ bakerRaw; },
+  geoBerghaus: function() { return /* reexport */ berghaus; },
+  geoBerghausRaw: function() { return /* reexport */ berghausRaw; },
+  geoBertin1953: function() { return /* reexport */ bertin; },
+  geoBertin1953Raw: function() { return /* reexport */ bertin1953Raw; },
+  geoBoggs: function() { return /* reexport */ boggs; },
+  geoBoggsRaw: function() { return /* reexport */ boggsRaw; },
+  geoBonne: function() { return /* reexport */ bonne; },
+  geoBonneRaw: function() { return /* reexport */ bonneRaw; },
+  geoBottomley: function() { return /* reexport */ bottomley; },
+  geoBottomleyRaw: function() { return /* reexport */ bottomleyRaw; },
+  geoBromley: function() { return /* reexport */ bromley; },
+  geoBromleyRaw: function() { return /* reexport */ bromleyRaw; },
+  geoChamberlin: function() { return /* reexport */ chamberlin; },
+  geoChamberlinAfrica: function() { return /* reexport */ chamberlinAfrica; },
+  geoChamberlinRaw: function() { return /* reexport */ chamberlinRaw; },
+  geoCollignon: function() { return /* reexport */ collignon; },
+  geoCollignonRaw: function() { return /* reexport */ collignonRaw; },
+  geoCraig: function() { return /* reexport */ craig; },
+  geoCraigRaw: function() { return /* reexport */ craigRaw; },
+  geoCraster: function() { return /* reexport */ craster; },
+  geoCrasterRaw: function() { return /* reexport */ crasterRaw; },
+  geoCylindricalEqualArea: function() { return /* reexport */ cylindricalEqualArea; },
+  geoCylindricalEqualAreaRaw: function() { return /* reexport */ cylindricalEqualAreaRaw; },
+  geoCylindricalStereographic: function() { return /* reexport */ cylindricalStereographic; },
+  geoCylindricalStereographicRaw: function() { return /* reexport */ cylindricalStereographicRaw; },
+  geoEckert1: function() { return /* reexport */ eckert1; },
+  geoEckert1Raw: function() { return /* reexport */ eckert1Raw; },
+  geoEckert2: function() { return /* reexport */ eckert2; },
+  geoEckert2Raw: function() { return /* reexport */ eckert2Raw; },
+  geoEckert3: function() { return /* reexport */ eckert3; },
+  geoEckert3Raw: function() { return /* reexport */ eckert3Raw; },
+  geoEckert4: function() { return /* reexport */ eckert4; },
+  geoEckert4Raw: function() { return /* reexport */ eckert4Raw; },
+  geoEckert5: function() { return /* reexport */ eckert5; },
+  geoEckert5Raw: function() { return /* reexport */ eckert5Raw; },
+  geoEckert6: function() { return /* reexport */ eckert6; },
+  geoEckert6Raw: function() { return /* reexport */ eckert6Raw; },
+  geoEisenlohr: function() { return /* reexport */ eisenlohr; },
+  geoEisenlohrRaw: function() { return /* reexport */ eisenlohrRaw; },
+  geoFahey: function() { return /* reexport */ fahey; },
+  geoFaheyRaw: function() { return /* reexport */ faheyRaw; },
+  geoFoucaut: function() { return /* reexport */ foucaut; },
+  geoFoucautRaw: function() { return /* reexport */ foucautRaw; },
+  geoFoucautSinusoidal: function() { return /* reexport */ foucautSinusoidal; },
+  geoFoucautSinusoidalRaw: function() { return /* reexport */ foucautSinusoidalRaw; },
+  geoGilbert: function() { return /* reexport */ gilbert; },
+  geoGingery: function() { return /* reexport */ gingery; },
+  geoGingeryRaw: function() { return /* reexport */ gingeryRaw; },
+  geoGinzburg4: function() { return /* reexport */ ginzburg4; },
+  geoGinzburg4Raw: function() { return /* reexport */ ginzburg4Raw; },
+  geoGinzburg5: function() { return /* reexport */ ginzburg5; },
+  geoGinzburg5Raw: function() { return /* reexport */ ginzburg5Raw; },
+  geoGinzburg6: function() { return /* reexport */ ginzburg6; },
+  geoGinzburg6Raw: function() { return /* reexport */ ginzburg6Raw; },
+  geoGinzburg8: function() { return /* reexport */ ginzburg8; },
+  geoGinzburg8Raw: function() { return /* reexport */ ginzburg8Raw; },
+  geoGinzburg9: function() { return /* reexport */ ginzburg9; },
+  geoGinzburg9Raw: function() { return /* reexport */ ginzburg9Raw; },
+  geoGringorten: function() { return /* reexport */ gringorten; },
+  geoGringortenQuincuncial: function() { return /* reexport */ quincuncial_gringorten; },
+  geoGringortenRaw: function() { return /* reexport */ gringortenRaw; },
+  geoGuyou: function() { return /* reexport */ guyou; },
+  geoGuyouRaw: function() { return /* reexport */ guyouRaw; },
+  geoHammer: function() { return /* reexport */ hammer; },
+  geoHammerRaw: function() { return /* reexport */ hammerRaw; },
+  geoHammerRetroazimuthal: function() { return /* reexport */ hammerRetroazimuthal; },
+  geoHammerRetroazimuthalRaw: function() { return /* reexport */ hammerRetroazimuthalRaw; },
+  geoHealpix: function() { return /* reexport */ healpix; },
+  geoHealpixRaw: function() { return /* reexport */ healpixRaw; },
+  geoHill: function() { return /* reexport */ hill; },
+  geoHillRaw: function() { return /* reexport */ hillRaw; },
+  geoHomolosine: function() { return /* reexport */ homolosine; },
+  geoHomolosineRaw: function() { return /* reexport */ homolosineRaw; },
+  geoHufnagel: function() { return /* reexport */ hufnagel; },
+  geoHufnagelRaw: function() { return /* reexport */ hufnagelRaw; },
+  geoHyperelliptical: function() { return /* reexport */ hyperelliptical; },
+  geoHyperellipticalRaw: function() { return /* reexport */ hyperellipticalRaw; },
+  geoInterrupt: function() { return /* reexport */ interrupted; },
+  geoInterruptedBoggs: function() { return /* reexport */ interrupted_boggs; },
+  geoInterruptedHomolosine: function() { return /* reexport */ interrupted_homolosine; },
+  geoInterruptedMollweide: function() { return /* reexport */ interrupted_mollweide; },
+  geoInterruptedMollweideHemispheres: function() { return /* reexport */ mollweideHemispheres; },
+  geoInterruptedQuarticAuthalic: function() { return /* reexport */ quarticAuthalic; },
+  geoInterruptedSinuMollweide: function() { return /* reexport */ interrupted_sinuMollweide; },
+  geoInterruptedSinusoidal: function() { return /* reexport */ interrupted_sinusoidal; },
+  geoKavrayskiy7: function() { return /* reexport */ kavrayskiy7; },
+  geoKavrayskiy7Raw: function() { return /* reexport */ kavrayskiy7Raw; },
+  geoLagrange: function() { return /* reexport */ lagrange; },
+  geoLagrangeRaw: function() { return /* reexport */ lagrangeRaw; },
+  geoLarrivee: function() { return /* reexport */ larrivee; },
+  geoLarriveeRaw: function() { return /* reexport */ larriveeRaw; },
+  geoLaskowski: function() { return /* reexport */ laskowski; },
+  geoLaskowskiRaw: function() { return /* reexport */ laskowskiRaw; },
+  geoLittrow: function() { return /* reexport */ littrow; },
+  geoLittrowRaw: function() { return /* reexport */ littrowRaw; },
+  geoLoximuthal: function() { return /* reexport */ loximuthal; },
+  geoLoximuthalRaw: function() { return /* reexport */ loximuthalRaw; },
+  geoMiller: function() { return /* reexport */ miller; },
+  geoMillerRaw: function() { return /* reexport */ millerRaw; },
+  geoModifiedStereographic: function() { return /* reexport */ modifiedStereographic; },
+  geoModifiedStereographicAlaska: function() { return /* reexport */ modifiedStereographicAlaska; },
+  geoModifiedStereographicGs48: function() { return /* reexport */ modifiedStereographicGs48; },
+  geoModifiedStereographicGs50: function() { return /* reexport */ modifiedStereographicGs50; },
+  geoModifiedStereographicLee: function() { return /* reexport */ modifiedStereographicLee; },
+  geoModifiedStereographicMiller: function() { return /* reexport */ modifiedStereographicMiller; },
+  geoModifiedStereographicRaw: function() { return /* reexport */ modifiedStereographicRaw; },
+  geoMollweide: function() { return /* reexport */ mollweide; },
+  geoMollweideRaw: function() { return /* reexport */ mollweideRaw; },
+  geoMtFlatPolarParabolic: function() { return /* reexport */ mtFlatPolarParabolic; },
+  geoMtFlatPolarParabolicRaw: function() { return /* reexport */ mtFlatPolarParabolicRaw; },
+  geoMtFlatPolarQuartic: function() { return /* reexport */ mtFlatPolarQuartic; },
+  geoMtFlatPolarQuarticRaw: function() { return /* reexport */ mtFlatPolarQuarticRaw; },
+  geoMtFlatPolarSinusoidal: function() { return /* reexport */ mtFlatPolarSinusoidal; },
+  geoMtFlatPolarSinusoidalRaw: function() { return /* reexport */ mtFlatPolarSinusoidalRaw; },
+  geoNaturalEarth: function() { return /* reexport */ naturalEarth1/* default */.Z; },
+  geoNaturalEarth2: function() { return /* reexport */ naturalEarth2; },
+  geoNaturalEarth2Raw: function() { return /* reexport */ naturalEarth2Raw; },
+  geoNaturalEarthRaw: function() { return /* reexport */ naturalEarth1/* naturalEarth1Raw */.K; },
+  geoNellHammer: function() { return /* reexport */ nellHammer; },
+  geoNellHammerRaw: function() { return /* reexport */ nellHammerRaw; },
+  geoNicolosi: function() { return /* reexport */ nicolosi; },
+  geoNicolosiRaw: function() { return /* reexport */ nicolosiRaw; },
+  geoPatterson: function() { return /* reexport */ patterson; },
+  geoPattersonRaw: function() { return /* reexport */ pattersonRaw; },
+  geoPeirceQuincuncial: function() { return /* reexport */ peirce; },
+  geoPierceQuincuncial: function() { return /* reexport */ peirce; },
+  geoPolyconic: function() { return /* reexport */ polyconic; },
+  geoPolyconicRaw: function() { return /* reexport */ polyconicRaw; },
+  geoPolyhedral: function() { return /* reexport */ polyhedral; },
+  geoPolyhedralButterfly: function() { return /* reexport */ butterfly; },
+  geoPolyhedralCollignon: function() { return /* reexport */ polyhedral_collignon; },
+  geoPolyhedralWaterman: function() { return /* reexport */ waterman; },
+  geoProject: function() { return /* reexport */ project; },
+  geoQuantize: function() { return /* reexport */ quantize; },
+  geoQuincuncial: function() { return /* reexport */ quincuncial; },
+  geoRectangularPolyconic: function() { return /* reexport */ rectangularPolyconic; },
+  geoRectangularPolyconicRaw: function() { return /* reexport */ rectangularPolyconicRaw; },
+  geoRobinson: function() { return /* reexport */ robinson; },
+  geoRobinsonRaw: function() { return /* reexport */ robinsonRaw; },
+  geoSatellite: function() { return /* reexport */ satellite; },
+  geoSatelliteRaw: function() { return /* reexport */ satelliteRaw; },
+  geoSinuMollweide: function() { return /* reexport */ sinuMollweide; },
+  geoSinuMollweideRaw: function() { return /* reexport */ sinuMollweideRaw; },
+  geoSinusoidal: function() { return /* reexport */ sinusoidal; },
+  geoSinusoidalRaw: function() { return /* reexport */ sinusoidalRaw; },
+  geoStitch: function() { return /* reexport */ stitch; },
+  geoTimes: function() { return /* reexport */ times; },
+  geoTimesRaw: function() { return /* reexport */ timesRaw; },
+  geoTwoPointAzimuthal: function() { return /* reexport */ twoPointAzimuthal; },
+  geoTwoPointAzimuthalRaw: function() { return /* reexport */ twoPointAzimuthalRaw; },
+  geoTwoPointAzimuthalUsa: function() { return /* reexport */ twoPointAzimuthalUsa; },
+  geoTwoPointEquidistant: function() { return /* reexport */ twoPointEquidistant; },
+  geoTwoPointEquidistantRaw: function() { return /* reexport */ twoPointEquidistantRaw; },
+  geoTwoPointEquidistantUsa: function() { return /* reexport */ twoPointEquidistantUsa; },
+  geoVanDerGrinten: function() { return /* reexport */ vanDerGrinten; },
+  geoVanDerGrinten2: function() { return /* reexport */ vanDerGrinten2; },
+  geoVanDerGrinten2Raw: function() { return /* reexport */ vanDerGrinten2Raw; },
+  geoVanDerGrinten3: function() { return /* reexport */ vanDerGrinten3; },
+  geoVanDerGrinten3Raw: function() { return /* reexport */ vanDerGrinten3Raw; },
+  geoVanDerGrinten4: function() { return /* reexport */ vanDerGrinten4; },
+  geoVanDerGrinten4Raw: function() { return /* reexport */ vanDerGrinten4Raw; },
+  geoVanDerGrintenRaw: function() { return /* reexport */ vanDerGrintenRaw; },
+  geoWagner: function() { return /* reexport */ wagner; },
+  geoWagner4: function() { return /* reexport */ wagner4; },
+  geoWagner4Raw: function() { return /* reexport */ wagner4Raw; },
+  geoWagner6: function() { return /* reexport */ wagner6; },
+  geoWagner6Raw: function() { return /* reexport */ wagner6Raw; },
+  geoWagner7: function() { return /* reexport */ wagner7; },
+  geoWagnerRaw: function() { return /* reexport */ wagnerRaw; },
+  geoWiechel: function() { return /* reexport */ wiechel; },
+  geoWiechelRaw: function() { return /* reexport */ wiechelRaw; },
+  geoWinkel3: function() { return /* reexport */ winkel3; },
+  geoWinkel3Raw: function() { return /* reexport */ winkel3Raw; }
 });
 
 // EXTERNAL MODULE: ./node_modules/d3-geo/src/projection/index.js + 1 modules
@@ -74388,7 +75299,7 @@ function berghausRaw(lobes) {
       theta = theta0 + 2 * atan((cotAlpha + s * sqrt(cotAlpha * cotAlpha - 3)) / 3);
       x = r * cos(theta), y = r * sin(theta);
     }
-    return azimuthalEquidistant/* azimuthalEquidistantRaw.invert */.N.invert(x, y);
+    return azimuthalEquidistant/* azimuthalEquidistantRaw */.N.invert(x, y);
   };
 
   return forward;
@@ -74453,7 +75364,7 @@ function hammerRaw(A, B) {
   }
 
   forward.invert = function(x, y) {
-    var coordinates = azimuthalEqualArea/* azimuthalEqualAreaRaw.invert */.l.invert(x / A, y);
+    var coordinates = azimuthalEqualArea/* azimuthalEqualAreaRaw */.l.invert(x / A, y);
     coordinates[0] *= B;
     return coordinates;
   };
@@ -75488,7 +76399,7 @@ function gingeryRaw(rho, n) {
       x = r * cos(theta);
       y = r * sin(theta);
     }
-    return azimuthalEquidistant/* azimuthalEquidistantRaw.invert */.N.invert(x, y);
+    return azimuthalEquidistant/* azimuthalEquidistantRaw */.N.invert(x, y);
   };
 
   return forward;
@@ -77589,7 +78500,7 @@ polyconicRaw.invert = function(x, y) {
 // EXTERNAL MODULE: ./node_modules/d3-geo/src/bounds.js
 var bounds = __webpack_require__(7338);
 // EXTERNAL MODULE: ./node_modules/d3-geo/src/interpolate.js
-var interpolate = __webpack_require__(3074);
+var interpolate = __webpack_require__(6920);
 ;// CONCATENATED MODULE: ./node_modules/d3-geo-projection/src/polyhedral/matrix.js
 
 
@@ -78853,7 +79764,7 @@ function twoPointAzimuthalRaw(d) {
   }
 
   forward.invert = function(x, y) {
-    return gnomonic/* gnomonicRaw.invert */.M.invert(x / cosd, y);
+    return gnomonic/* gnomonicRaw */.M.invert(x / cosd, y);
   };
 
   return forward;
@@ -79421,7 +80332,7 @@ winkel3Raw.invert = function(x, y) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 // Adds floating point numbers with twice the normal precision.
 // Reference: J. R. Shewchuk, Adaptive Precision Floating-Point Arithmetic and
@@ -79472,9 +80383,9 @@ function add(adder, a, b) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "L9": function() { return /* binding */ areaRingSum; },
-/* harmony export */   "ZP": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; },
-/* harmony export */   "gL": function() { return /* binding */ areaStream; }
+/* harmony export */   L9: function() { return /* binding */ areaRingSum; },
+/* harmony export */   ZP: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; },
+/* harmony export */   gL: function() { return /* binding */ areaStream; }
 /* harmony export */ });
 /* harmony import */ var _adder_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3940);
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9695);
@@ -79563,7 +80474,7 @@ function areaPoint(lambda, phi) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _adder_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3940);
 /* harmony import */ var _area_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7860);
@@ -79593,10 +80504,10 @@ var boundsStream = {
     boundsStream.lineStart = boundsRingStart;
     boundsStream.lineEnd = boundsRingEnd;
     deltaSum.reset();
-    _area_js__WEBPACK_IMPORTED_MODULE_1__/* .areaStream.polygonStart */ .gL.polygonStart();
+    _area_js__WEBPACK_IMPORTED_MODULE_1__/* .areaStream */ .gL.polygonStart();
   },
   polygonEnd: function() {
-    _area_js__WEBPACK_IMPORTED_MODULE_1__/* .areaStream.polygonEnd */ .gL.polygonEnd();
+    _area_js__WEBPACK_IMPORTED_MODULE_1__/* .areaStream */ .gL.polygonEnd();
     boundsStream.point = boundsPoint;
     boundsStream.lineStart = boundsLineStart;
     boundsStream.lineEnd = boundsLineEnd;
@@ -79682,17 +80593,17 @@ function boundsRingPoint(lambda, phi) {
   } else {
     lambda00 = lambda, phi00 = phi;
   }
-  _area_js__WEBPACK_IMPORTED_MODULE_1__/* .areaStream.point */ .gL.point(lambda, phi);
+  _area_js__WEBPACK_IMPORTED_MODULE_1__/* .areaStream */ .gL.point(lambda, phi);
   linePoint(lambda, phi);
 }
 
 function boundsRingStart() {
-  _area_js__WEBPACK_IMPORTED_MODULE_1__/* .areaStream.lineStart */ .gL.lineStart();
+  _area_js__WEBPACK_IMPORTED_MODULE_1__/* .areaStream */ .gL.lineStart();
 }
 
 function boundsRingEnd() {
   boundsRingPoint(lambda00, phi00);
-  _area_js__WEBPACK_IMPORTED_MODULE_1__/* .areaStream.lineEnd */ .gL.lineEnd();
+  _area_js__WEBPACK_IMPORTED_MODULE_1__/* .areaStream */ .gL.lineEnd();
   if ((0,_math_js__WEBPACK_IMPORTED_MODULE_2__/* .abs */ .Wn)(deltaSum) > _math_js__WEBPACK_IMPORTED_MODULE_2__/* .epsilon */ .Ho) lambda0 = -(lambda1 = 180);
   range[0] = lambda0, range[1] = lambda1;
   p0 = null;
@@ -79758,13 +80669,13 @@ function rangeContains(range, x) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Og": function() { return /* binding */ cartesian; },
-/* harmony export */   "T": function() { return /* binding */ cartesianScale; },
-/* harmony export */   "T5": function() { return /* binding */ cartesianCross; },
-/* harmony export */   "Y1": function() { return /* binding */ spherical; },
-/* harmony export */   "iJ": function() { return /* binding */ cartesianNormalizeInPlace; },
-/* harmony export */   "j9": function() { return /* binding */ cartesianDot; },
-/* harmony export */   "s0": function() { return /* binding */ cartesianAddInPlace; }
+/* harmony export */   Og: function() { return /* binding */ cartesian; },
+/* harmony export */   T: function() { return /* binding */ cartesianScale; },
+/* harmony export */   T5: function() { return /* binding */ cartesianCross; },
+/* harmony export */   Y1: function() { return /* binding */ spherical; },
+/* harmony export */   iJ: function() { return /* binding */ cartesianNormalizeInPlace; },
+/* harmony export */   j9: function() { return /* binding */ cartesianDot; },
+/* harmony export */   s0: function() { return /* binding */ cartesianAddInPlace; }
 /* harmony export */ });
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9695);
 
@@ -79809,7 +80720,7 @@ function cartesianNormalizeInPlace(d) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9695);
 /* harmony import */ var _noop_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3182);
@@ -79965,8 +80876,8 @@ function centroidRingPoint(lambda, phi) {
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "m": function() { return /* binding */ circleStream; },
-  "Z": function() { return /* binding */ circle; }
+  m: function() { return /* binding */ circleStream; },
+  Z: function() { return /* binding */ circle; }
 });
 
 // EXTERNAL MODULE: ./node_modules/d3-geo/src/cartesian.js
@@ -80068,7 +80979,7 @@ function circleRadius(cosRadius, point) {
 
 
 
-/* harmony default export */ __webpack_exports__["Z"] = ((0,_index_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)(
+/* harmony default export */ __webpack_exports__.Z = ((0,_index_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)(
   function() { return true; },
   clipAntimeridianLine,
   clipAntimeridianInterpolate,
@@ -80166,7 +81077,7 @@ function clipAntimeridianInterpolate(from, to, direction, stream) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _noop_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3182);
 
@@ -80202,7 +81113,7 @@ function clipAntimeridianInterpolate(from, to, direction, stream) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _cartesian_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7620);
 /* harmony import */ var _circle_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7613);
@@ -80395,7 +81306,7 @@ function clipAntimeridianInterpolate(from, to, direction, stream) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _buffer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5272);
 /* harmony import */ var _rejoin_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6225);
@@ -80544,7 +81455,7 @@ function compareIntersection(a, b) {
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "Z": function() { return /* binding */ clipRectangle; }
+  Z: function() { return /* binding */ clipRectangle; }
 });
 
 // EXTERNAL MODULE: ./node_modules/d3-geo/src/math.js
@@ -80794,7 +81705,7 @@ function clipRectangle(x0, y0, x1, y1) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _pointEqual_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7108);
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9695);
@@ -80910,7 +81821,7 @@ function link(array) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(a, b) {
 
@@ -80933,7 +81844,7 @@ function link(array) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x) {
   return x;
@@ -80951,55 +81862,55 @@ __webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "geoAlbers": function() { return /* reexport */ albers; },
-  "geoAlbersUsa": function() { return /* reexport */ albersUsa; },
-  "geoArea": function() { return /* reexport */ src_area/* default */.ZP; },
-  "geoAzimuthalEqualArea": function() { return /* reexport */ azimuthalEqualArea/* default */.Z; },
-  "geoAzimuthalEqualAreaRaw": function() { return /* reexport */ azimuthalEqualArea/* azimuthalEqualAreaRaw */.l; },
-  "geoAzimuthalEquidistant": function() { return /* reexport */ azimuthalEquidistant/* default */.Z; },
-  "geoAzimuthalEquidistantRaw": function() { return /* reexport */ azimuthalEquidistant/* azimuthalEquidistantRaw */.N; },
-  "geoBounds": function() { return /* reexport */ bounds/* default */.Z; },
-  "geoCentroid": function() { return /* reexport */ centroid/* default */.Z; },
-  "geoCircle": function() { return /* reexport */ circle/* default */.Z; },
-  "geoClipAntimeridian": function() { return /* reexport */ antimeridian/* default */.Z; },
-  "geoClipCircle": function() { return /* reexport */ clip_circle/* default */.Z; },
-  "geoClipExtent": function() { return /* reexport */ extent; },
-  "geoClipRectangle": function() { return /* reexport */ rectangle/* default */.Z; },
-  "geoConicConformal": function() { return /* reexport */ conicConformal; },
-  "geoConicConformalRaw": function() { return /* reexport */ conicConformalRaw; },
-  "geoConicEqualArea": function() { return /* reexport */ conicEqualArea; },
-  "geoConicEqualAreaRaw": function() { return /* reexport */ conicEqualAreaRaw; },
-  "geoConicEquidistant": function() { return /* reexport */ conicEquidistant; },
-  "geoConicEquidistantRaw": function() { return /* reexport */ conicEquidistantRaw; },
-  "geoContains": function() { return /* reexport */ contains; },
-  "geoDistance": function() { return /* reexport */ distance; },
-  "geoEqualEarth": function() { return /* reexport */ equalEarth; },
-  "geoEqualEarthRaw": function() { return /* reexport */ equalEarthRaw; },
-  "geoEquirectangular": function() { return /* reexport */ equirectangular/* default */.Z; },
-  "geoEquirectangularRaw": function() { return /* reexport */ equirectangular/* equirectangularRaw */.k; },
-  "geoGnomonic": function() { return /* reexport */ gnomonic/* default */.Z; },
-  "geoGnomonicRaw": function() { return /* reexport */ gnomonic/* gnomonicRaw */.M; },
-  "geoGraticule": function() { return /* reexport */ graticule; },
-  "geoGraticule10": function() { return /* reexport */ graticule10; },
-  "geoIdentity": function() { return /* reexport */ projection_identity; },
-  "geoInterpolate": function() { return /* reexport */ interpolate/* default */.Z; },
-  "geoLength": function() { return /* reexport */ src_length; },
-  "geoMercator": function() { return /* reexport */ mercator; },
-  "geoMercatorRaw": function() { return /* reexport */ mercatorRaw; },
-  "geoNaturalEarth1": function() { return /* reexport */ naturalEarth1/* default */.Z; },
-  "geoNaturalEarth1Raw": function() { return /* reexport */ naturalEarth1/* naturalEarth1Raw */.K; },
-  "geoOrthographic": function() { return /* reexport */ orthographic/* default */.Z; },
-  "geoOrthographicRaw": function() { return /* reexport */ orthographic/* orthographicRaw */.I; },
-  "geoPath": function() { return /* reexport */ path; },
-  "geoProjection": function() { return /* reexport */ projection/* default */.Z; },
-  "geoProjectionMutator": function() { return /* reexport */ projection/* projectionMutator */.r; },
-  "geoRotation": function() { return /* reexport */ rotation/* default */.Z; },
-  "geoStereographic": function() { return /* reexport */ stereographic; },
-  "geoStereographicRaw": function() { return /* reexport */ stereographicRaw; },
-  "geoStream": function() { return /* reexport */ stream/* default */.Z; },
-  "geoTransform": function() { return /* reexport */ src_transform/* default */.Z; },
-  "geoTransverseMercator": function() { return /* reexport */ transverseMercator; },
-  "geoTransverseMercatorRaw": function() { return /* reexport */ transverseMercatorRaw; }
+  geoAlbers: function() { return /* reexport */ albers; },
+  geoAlbersUsa: function() { return /* reexport */ albersUsa; },
+  geoArea: function() { return /* reexport */ src_area/* default */.ZP; },
+  geoAzimuthalEqualArea: function() { return /* reexport */ azimuthalEqualArea/* default */.Z; },
+  geoAzimuthalEqualAreaRaw: function() { return /* reexport */ azimuthalEqualArea/* azimuthalEqualAreaRaw */.l; },
+  geoAzimuthalEquidistant: function() { return /* reexport */ azimuthalEquidistant/* default */.Z; },
+  geoAzimuthalEquidistantRaw: function() { return /* reexport */ azimuthalEquidistant/* azimuthalEquidistantRaw */.N; },
+  geoBounds: function() { return /* reexport */ bounds/* default */.Z; },
+  geoCentroid: function() { return /* reexport */ centroid/* default */.Z; },
+  geoCircle: function() { return /* reexport */ circle/* default */.Z; },
+  geoClipAntimeridian: function() { return /* reexport */ antimeridian/* default */.Z; },
+  geoClipCircle: function() { return /* reexport */ clip_circle/* default */.Z; },
+  geoClipExtent: function() { return /* reexport */ extent; },
+  geoClipRectangle: function() { return /* reexport */ rectangle/* default */.Z; },
+  geoConicConformal: function() { return /* reexport */ conicConformal; },
+  geoConicConformalRaw: function() { return /* reexport */ conicConformalRaw; },
+  geoConicEqualArea: function() { return /* reexport */ conicEqualArea; },
+  geoConicEqualAreaRaw: function() { return /* reexport */ conicEqualAreaRaw; },
+  geoConicEquidistant: function() { return /* reexport */ conicEquidistant; },
+  geoConicEquidistantRaw: function() { return /* reexport */ conicEquidistantRaw; },
+  geoContains: function() { return /* reexport */ contains; },
+  geoDistance: function() { return /* reexport */ distance; },
+  geoEqualEarth: function() { return /* reexport */ equalEarth; },
+  geoEqualEarthRaw: function() { return /* reexport */ equalEarthRaw; },
+  geoEquirectangular: function() { return /* reexport */ equirectangular/* default */.Z; },
+  geoEquirectangularRaw: function() { return /* reexport */ equirectangular/* equirectangularRaw */.k; },
+  geoGnomonic: function() { return /* reexport */ gnomonic/* default */.Z; },
+  geoGnomonicRaw: function() { return /* reexport */ gnomonic/* gnomonicRaw */.M; },
+  geoGraticule: function() { return /* reexport */ graticule; },
+  geoGraticule10: function() { return /* reexport */ graticule10; },
+  geoIdentity: function() { return /* reexport */ projection_identity; },
+  geoInterpolate: function() { return /* reexport */ interpolate/* default */.Z; },
+  geoLength: function() { return /* reexport */ src_length; },
+  geoMercator: function() { return /* reexport */ mercator; },
+  geoMercatorRaw: function() { return /* reexport */ mercatorRaw; },
+  geoNaturalEarth1: function() { return /* reexport */ naturalEarth1/* default */.Z; },
+  geoNaturalEarth1Raw: function() { return /* reexport */ naturalEarth1/* naturalEarth1Raw */.K; },
+  geoOrthographic: function() { return /* reexport */ orthographic/* default */.Z; },
+  geoOrthographicRaw: function() { return /* reexport */ orthographic/* orthographicRaw */.I; },
+  geoPath: function() { return /* reexport */ path; },
+  geoProjection: function() { return /* reexport */ projection/* default */.Z; },
+  geoProjectionMutator: function() { return /* reexport */ projection/* projectionMutator */.r; },
+  geoRotation: function() { return /* reexport */ rotation/* default */.Z; },
+  geoStereographic: function() { return /* reexport */ stereographic; },
+  geoStereographicRaw: function() { return /* reexport */ stereographicRaw; },
+  geoStream: function() { return /* reexport */ stream/* default */.Z; },
+  geoTransform: function() { return /* reexport */ src_transform/* default */.Z; },
+  geoTransverseMercator: function() { return /* reexport */ transverseMercator; },
+  geoTransverseMercatorRaw: function() { return /* reexport */ transverseMercatorRaw; }
 });
 
 // EXTERNAL MODULE: ./node_modules/d3-geo/src/area.js
@@ -81324,7 +82235,7 @@ function graticule10() {
 }
 
 // EXTERNAL MODULE: ./node_modules/d3-geo/src/interpolate.js
-var interpolate = __webpack_require__(3074);
+var interpolate = __webpack_require__(6920);
 // EXTERNAL MODULE: ./node_modules/d3-geo/src/identity.js
 var identity = __webpack_require__(8593);
 ;// CONCATENATED MODULE: ./node_modules/d3-geo/src/path/area.js
@@ -81673,7 +82584,7 @@ function string_circle(radius) {
 
   path.bounds = function(object) {
     (0,stream/* default */.Z)(object, projectionStream(path_bounds/* default */.Z));
-    return path_bounds/* default.result */.Z.result();
+    return path_bounds/* default */.Z.result();
   };
 
   path.centroid = function(object) {
@@ -82258,12 +83169,12 @@ transverseMercatorRaw.invert = function(x, y) {
 
 /***/ }),
 
-/***/ 3074:
+/***/ 6920:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9695);
 
@@ -82311,29 +83222,29 @@ transverseMercatorRaw.invert = function(x, y) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "BZ": function() { return /* binding */ tau; },
-/* harmony export */   "Ho": function() { return /* binding */ epsilon; },
-/* harmony export */   "Jy": function() { return /* binding */ haversin; },
-/* harmony export */   "Kh": function() { return /* binding */ acos; },
-/* harmony export */   "O$": function() { return /* binding */ sin; },
-/* harmony export */   "OR": function() { return /* binding */ tan; },
-/* harmony export */   "Qq": function() { return /* binding */ exp; },
-/* harmony export */   "RW": function() { return /* binding */ degrees; },
-/* harmony export */   "Wn": function() { return /* binding */ abs; },
-/* harmony export */   "Xx": function() { return /* binding */ sign; },
-/* harmony export */   "ZR": function() { return /* binding */ asin; },
-/* harmony export */   "_b": function() { return /* binding */ sqrt; },
-/* harmony export */   "aW": function() { return /* binding */ epsilon2; },
-/* harmony export */   "cM": function() { return /* binding */ log; },
-/* harmony export */   "fv": function() { return /* binding */ atan2; },
-/* harmony export */   "mC": function() { return /* binding */ cos; },
-/* harmony export */   "mD": function() { return /* binding */ ceil; },
-/* harmony export */   "ou": function() { return /* binding */ halfPi; },
-/* harmony export */   "pi": function() { return /* binding */ pi; },
-/* harmony export */   "pu": function() { return /* binding */ quarterPi; },
-/* harmony export */   "sQ": function() { return /* binding */ pow; },
-/* harmony export */   "uR": function() { return /* binding */ radians; },
-/* harmony export */   "z4": function() { return /* binding */ atan; }
+/* harmony export */   BZ: function() { return /* binding */ tau; },
+/* harmony export */   Ho: function() { return /* binding */ epsilon; },
+/* harmony export */   Jy: function() { return /* binding */ haversin; },
+/* harmony export */   Kh: function() { return /* binding */ acos; },
+/* harmony export */   O$: function() { return /* binding */ sin; },
+/* harmony export */   OR: function() { return /* binding */ tan; },
+/* harmony export */   Qq: function() { return /* binding */ exp; },
+/* harmony export */   RW: function() { return /* binding */ degrees; },
+/* harmony export */   Wn: function() { return /* binding */ abs; },
+/* harmony export */   Xx: function() { return /* binding */ sign; },
+/* harmony export */   ZR: function() { return /* binding */ asin; },
+/* harmony export */   _b: function() { return /* binding */ sqrt; },
+/* harmony export */   aW: function() { return /* binding */ epsilon2; },
+/* harmony export */   cM: function() { return /* binding */ log; },
+/* harmony export */   fv: function() { return /* binding */ atan2; },
+/* harmony export */   mC: function() { return /* binding */ cos; },
+/* harmony export */   mD: function() { return /* binding */ ceil; },
+/* harmony export */   ou: function() { return /* binding */ halfPi; },
+/* harmony export */   pi: function() { return /* binding */ pi; },
+/* harmony export */   pu: function() { return /* binding */ quarterPi; },
+/* harmony export */   sQ: function() { return /* binding */ pow; },
+/* harmony export */   uR: function() { return /* binding */ radians; },
+/* harmony export */   z4: function() { return /* binding */ atan; }
 /* harmony export */ });
 /* unused harmony export floor */
 var epsilon = 1e-6;
@@ -82380,7 +83291,7 @@ function haversin(x) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* binding */ noop; }
+/* harmony export */   Z: function() { return /* binding */ noop; }
 /* harmony export */ });
 function noop() {}
 
@@ -82419,7 +83330,7 @@ function boundsPoint(x, y) {
   if (y > y1) y1 = y;
 }
 
-/* harmony default export */ __webpack_exports__["Z"] = (boundsStream);
+/* harmony default export */ __webpack_exports__.Z = (boundsStream);
 
 
 /***/ }),
@@ -82429,7 +83340,7 @@ function boundsPoint(x, y) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9695);
 
@@ -82446,7 +83357,7 @@ function boundsPoint(x, y) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _adder_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3940);
 /* harmony import */ var _cartesian_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7620);
@@ -82539,8 +83450,8 @@ function longitude(point) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "O": function() { return /* binding */ azimuthalInvert; },
-/* harmony export */   "W": function() { return /* binding */ azimuthalRaw; }
+/* harmony export */   O: function() { return /* binding */ azimuthalInvert; },
+/* harmony export */   W: function() { return /* binding */ azimuthalRaw; }
 /* harmony export */ });
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9695);
 
@@ -82578,8 +83489,8 @@ function azimuthalInvert(angle) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; },
-/* harmony export */   "l": function() { return /* binding */ azimuthalEqualAreaRaw; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; },
+/* harmony export */   l: function() { return /* binding */ azimuthalEqualAreaRaw; }
 /* harmony export */ });
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9695);
 /* harmony import */ var _azimuthal_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5382);
@@ -82610,8 +83521,8 @@ azimuthalEqualAreaRaw.invert = (0,_azimuthal_js__WEBPACK_IMPORTED_MODULE_0__/* .
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "N": function() { return /* binding */ azimuthalEquidistantRaw; },
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   N: function() { return /* binding */ azimuthalEquidistantRaw; },
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9695);
 /* harmony import */ var _azimuthal_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5382);
@@ -82642,8 +83553,8 @@ azimuthalEquidistantRaw.invert = (0,_azimuthal_js__WEBPACK_IMPORTED_MODULE_0__/*
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; },
-/* harmony export */   "k": function() { return /* binding */ equirectangularRaw; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; },
+/* harmony export */   k: function() { return /* binding */ equirectangularRaw; }
 /* harmony export */ });
 /* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5002);
 
@@ -82667,10 +83578,10 @@ equirectangularRaw.invert = equirectangularRaw;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "V6": function() { return /* binding */ fitWidth; },
-/* harmony export */   "mF": function() { return /* binding */ fitSize; },
-/* harmony export */   "qg": function() { return /* binding */ fitExtent; },
-/* harmony export */   "rf": function() { return /* binding */ fitHeight; }
+/* harmony export */   V6: function() { return /* binding */ fitWidth; },
+/* harmony export */   mF: function() { return /* binding */ fitSize; },
+/* harmony export */   qg: function() { return /* binding */ fitExtent; },
+/* harmony export */   rf: function() { return /* binding */ fitHeight; }
 /* harmony export */ });
 /* harmony import */ var _stream_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2736);
 /* harmony import */ var _path_bounds_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3559);
@@ -82682,7 +83593,7 @@ function fit(projection, fitBounds, object) {
   projection.scale(150).translate([0, 0]);
   if (clip != null) projection.clipExtent(null);
   (0,_stream_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)(object, projection.stream(_path_bounds_js__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Z));
-  fitBounds(_path_bounds_js__WEBPACK_IMPORTED_MODULE_1__/* ["default"].result */ .Z.result());
+  fitBounds(_path_bounds_js__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Z.result());
   if (clip != null) projection.clipExtent(clip);
   return projection;
 }
@@ -82730,8 +83641,8 @@ function fitHeight(projection, height, object) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "M": function() { return /* binding */ gnomonicRaw; },
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   M: function() { return /* binding */ gnomonicRaw; },
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9695);
 /* harmony import */ var _azimuthal_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5382);
@@ -82763,8 +83674,8 @@ gnomonicRaw.invert = (0,_azimuthal_js__WEBPACK_IMPORTED_MODULE_1__/* .azimuthalI
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "Z": function() { return /* binding */ projection; },
-  "r": function() { return /* binding */ projectionMutator; }
+  Z: function() { return /* binding */ projection; },
+  r: function() { return /* binding */ projectionMutator; }
 });
 
 // EXTERNAL MODULE: ./node_modules/d3-geo/src/clip/antimeridian.js
@@ -83077,8 +83988,8 @@ function projectionMutator(projectAt) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "K": function() { return /* binding */ naturalEarth1Raw; },
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   K: function() { return /* binding */ naturalEarth1Raw; },
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5002);
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9695);
@@ -83119,8 +84030,8 @@ naturalEarth1Raw.invert = function(x, y) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "I": function() { return /* binding */ orthographicRaw; },
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   I: function() { return /* binding */ orthographicRaw; },
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9695);
 /* harmony import */ var _azimuthal_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5382);
@@ -83149,8 +84060,8 @@ orthographicRaw.invert = (0,_azimuthal_js__WEBPACK_IMPORTED_MODULE_1__/* .azimut
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "I": function() { return /* binding */ rotateRadians; },
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   I: function() { return /* binding */ rotateRadians; },
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 /* harmony import */ var _compose_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6059);
 /* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9695);
@@ -83239,7 +84150,7 @@ function rotationPhiGamma(deltaPhi, deltaGamma) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }
 /* harmony export */ });
 function streamGeometry(geometry, stream) {
   if (geometry && streamGeometryType.hasOwnProperty(geometry.type)) {
@@ -83319,8 +84230,8 @@ function streamPolygon(coordinates, stream) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; },
-/* harmony export */   "l": function() { return /* binding */ transformer; }
+/* harmony export */   Z: function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; },
+/* harmony export */   l: function() { return /* binding */ transformer; }
 /* harmony export */ });
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(methods) {
   return {
@@ -83359,9 +84270,9 @@ TransformStream.prototype = {
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "i$": function() { return /* reexport */ timeFormat; },
-  "Dq": function() { return /* reexport */ formatLocale; },
-  "g0": function() { return /* reexport */ utcFormat; }
+  i$: function() { return /* reexport */ timeFormat; },
+  Dq: function() { return /* reexport */ formatLocale; },
+  g0: function() { return /* reexport */ utcFormat; }
 });
 
 // UNUSED EXPORTS: isoFormat, isoParse, timeFormatDefaultLocale, timeParse, utcParse
@@ -83585,15 +84496,15 @@ function formatLocale(locale) {
         if (!("w" in d)) d.w = 1;
         if ("Z" in d) {
           week = utcDate(newDate(d.y, 0, 1)), day = week.getUTCDay();
-          week = day > 4 || day === 0 ? utcWeek/* utcMonday.ceil */.l6.ceil(week) : (0,utcWeek/* utcMonday */.l6)(week);
-          week = utcDay/* default.offset */.Z.offset(week, (d.V - 1) * 7);
+          week = day > 4 || day === 0 ? utcWeek/* utcMonday */.l6.ceil(week) : (0,utcWeek/* utcMonday */.l6)(week);
+          week = utcDay/* default */.Z.offset(week, (d.V - 1) * 7);
           d.y = week.getUTCFullYear();
           d.m = week.getUTCMonth();
           d.d = week.getUTCDate() + (d.w + 6) % 7;
         } else {
           week = localDate(newDate(d.y, 0, 1)), day = week.getDay();
-          week = day > 4 || day === 0 ? src_week/* monday.ceil */.wA.ceil(week) : (0,src_week/* monday */.wA)(week);
-          week = src_day/* default.offset */.Z.offset(week, (d.V - 1) * 7);
+          week = day > 4 || day === 0 ? src_week/* monday */.wA.ceil(week) : (0,src_week/* monday */.wA)(week);
+          week = src_day/* default */.Z.offset(week, (d.V - 1) * 7);
           d.y = week.getFullYear();
           d.m = week.getMonth();
           d.d = week.getDate() + (d.w + 6) % 7;
@@ -83888,7 +84799,7 @@ function formatHour12(d, p) {
 }
 
 function formatDayOfYear(d, p) {
-  return pad(1 + src_day/* default.count */.Z.count((0,year/* default */.Z)(d), d), p, 3);
+  return pad(1 + src_day/* default */.Z.count((0,year/* default */.Z)(d), d), p, 3);
 }
 
 function formatMilliseconds(d, p) {
@@ -83917,13 +84828,13 @@ function formatWeekdayNumberMonday(d) {
 }
 
 function formatWeekNumberSunday(d, p) {
-  return pad(src_week/* sunday.count */.OM.count((0,year/* default */.Z)(d) - 1, d), p, 2);
+  return pad(src_week/* sunday */.OM.count((0,year/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatWeekNumberISO(d, p) {
   var day = d.getDay();
-  d = (day >= 4 || day === 0) ? (0,src_week/* thursday */.bL)(d) : src_week/* thursday.ceil */.bL.ceil(d);
-  return pad(src_week/* thursday.count */.bL.count((0,year/* default */.Z)(d), d) + ((0,year/* default */.Z)(d).getDay() === 4), p, 2);
+  d = (day >= 4 || day === 0) ? (0,src_week/* thursday */.bL)(d) : src_week/* thursday */.bL.ceil(d);
+  return pad(src_week/* thursday */.bL.count((0,year/* default */.Z)(d), d) + ((0,year/* default */.Z)(d).getDay() === 4), p, 2);
 }
 
 function formatWeekdayNumberSunday(d) {
@@ -83931,7 +84842,7 @@ function formatWeekdayNumberSunday(d) {
 }
 
 function formatWeekNumberMonday(d, p) {
-  return pad(src_week/* monday.count */.wA.count((0,year/* default */.Z)(d) - 1, d), p, 2);
+  return pad(src_week/* monday */.wA.count((0,year/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatYear(d, p) {
@@ -83962,7 +84873,7 @@ function formatUTCHour12(d, p) {
 }
 
 function formatUTCDayOfYear(d, p) {
-  return pad(1 + utcDay/* default.count */.Z.count((0,utcYear/* default */.Z)(d), d), p, 3);
+  return pad(1 + utcDay/* default */.Z.count((0,utcYear/* default */.Z)(d), d), p, 3);
 }
 
 function formatUTCMilliseconds(d, p) {
@@ -83991,13 +84902,13 @@ function formatUTCWeekdayNumberMonday(d) {
 }
 
 function formatUTCWeekNumberSunday(d, p) {
-  return pad(utcWeek/* utcSunday.count */.Ox.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
+  return pad(utcWeek/* utcSunday */.Ox.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatUTCWeekNumberISO(d, p) {
   var day = d.getUTCDay();
-  d = (day >= 4 || day === 0) ? (0,utcWeek/* utcThursday */.hB)(d) : utcWeek/* utcThursday.ceil */.hB.ceil(d);
-  return pad(utcWeek/* utcThursday.count */.hB.count((0,utcYear/* default */.Z)(d), d) + ((0,utcYear/* default */.Z)(d).getUTCDay() === 4), p, 2);
+  d = (day >= 4 || day === 0) ? (0,utcWeek/* utcThursday */.hB)(d) : utcWeek/* utcThursday */.hB.ceil(d);
+  return pad(utcWeek/* utcThursday */.hB.count((0,utcYear/* default */.Z)(d), d) + ((0,utcYear/* default */.Z)(d).getUTCDay() === 4), p, 2);
 }
 
 function formatUTCWeekdayNumberSunday(d) {
@@ -84005,7 +84916,7 @@ function formatUTCWeekdayNumberSunday(d) {
 }
 
 function formatUTCWeekNumberMonday(d, p) {
-  return pad(utcWeek/* utcMonday.count */.l6.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
+  return pad(utcWeek/* utcMonday */.l6.count((0,utcYear/* default */.Z)(d) - 1, d), p, 2);
 }
 
 function formatUTCYear(d, p) {
@@ -84075,7 +84986,7 @@ function defaultLocale(definition) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "a": function() { return /* binding */ days; }
+/* harmony export */   a: function() { return /* binding */ days; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4263);
@@ -84092,7 +85003,7 @@ var day = (0,_interval_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)(func
   return date.getDate() - 1;
 });
 
-/* harmony default export */ __webpack_exports__["Z"] = (day);
+/* harmony default export */ __webpack_exports__.Z = (day);
 var days = day.range;
 
 
@@ -84103,11 +85014,11 @@ var days = day.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "UD": function() { return /* binding */ durationDay; },
-/* harmony export */   "Y2": function() { return /* binding */ durationHour; },
-/* harmony export */   "Ym": function() { return /* binding */ durationSecond; },
-/* harmony export */   "iM": function() { return /* binding */ durationWeek; },
-/* harmony export */   "yB": function() { return /* binding */ durationMinute; }
+/* harmony export */   UD: function() { return /* binding */ durationDay; },
+/* harmony export */   Y2: function() { return /* binding */ durationHour; },
+/* harmony export */   Ym: function() { return /* binding */ durationSecond; },
+/* harmony export */   iM: function() { return /* binding */ durationWeek; },
+/* harmony export */   yB: function() { return /* binding */ durationMinute; }
 /* harmony export */ });
 var durationSecond = 1e3;
 var durationMinute = 6e4;
@@ -84127,67 +85038,67 @@ __webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "timeDay": function() { return /* reexport */ day/* default */.Z; },
-  "timeDays": function() { return /* reexport */ day/* days */.a; },
-  "timeFriday": function() { return /* reexport */ week/* friday */.mC; },
-  "timeFridays": function() { return /* reexport */ week/* fridays */.b$; },
-  "timeHour": function() { return /* reexport */ src_hour; },
-  "timeHours": function() { return /* reexport */ hours; },
-  "timeInterval": function() { return /* reexport */ interval/* default */.Z; },
-  "timeMillisecond": function() { return /* reexport */ src_millisecond; },
-  "timeMilliseconds": function() { return /* reexport */ milliseconds; },
-  "timeMinute": function() { return /* reexport */ src_minute; },
-  "timeMinutes": function() { return /* reexport */ minutes; },
-  "timeMonday": function() { return /* reexport */ week/* monday */.wA; },
-  "timeMondays": function() { return /* reexport */ week/* mondays */.bJ; },
-  "timeMonth": function() { return /* reexport */ src_month; },
-  "timeMonths": function() { return /* reexport */ months; },
-  "timeSaturday": function() { return /* reexport */ week/* saturday */.EY; },
-  "timeSaturdays": function() { return /* reexport */ week/* saturdays */.Ff; },
-  "timeSecond": function() { return /* reexport */ src_second; },
-  "timeSeconds": function() { return /* reexport */ seconds; },
-  "timeSunday": function() { return /* reexport */ week/* sunday */.OM; },
-  "timeSundays": function() { return /* reexport */ week/* sundays */.vm; },
-  "timeThursday": function() { return /* reexport */ week/* thursday */.bL; },
-  "timeThursdays": function() { return /* reexport */ week/* thursdays */.$t; },
-  "timeTuesday": function() { return /* reexport */ week/* tuesday */.sy; },
-  "timeTuesdays": function() { return /* reexport */ week/* tuesdays */.aU; },
-  "timeWednesday": function() { return /* reexport */ week/* wednesday */.zg; },
-  "timeWednesdays": function() { return /* reexport */ week/* wednesdays */.Ld; },
-  "timeWeek": function() { return /* reexport */ week/* sunday */.OM; },
-  "timeWeeks": function() { return /* reexport */ week/* sundays */.vm; },
-  "timeYear": function() { return /* reexport */ year/* default */.Z; },
-  "timeYears": function() { return /* reexport */ year/* years */.g; },
-  "utcDay": function() { return /* reexport */ utcDay/* default */.Z; },
-  "utcDays": function() { return /* reexport */ utcDay/* utcDays */.y; },
-  "utcFriday": function() { return /* reexport */ utcWeek/* utcFriday */.QQ; },
-  "utcFridays": function() { return /* reexport */ utcWeek/* utcFridays */.fz; },
-  "utcHour": function() { return /* reexport */ src_utcHour; },
-  "utcHours": function() { return /* reexport */ utcHours; },
-  "utcMillisecond": function() { return /* reexport */ src_millisecond; },
-  "utcMilliseconds": function() { return /* reexport */ milliseconds; },
-  "utcMinute": function() { return /* reexport */ src_utcMinute; },
-  "utcMinutes": function() { return /* reexport */ utcMinutes; },
-  "utcMonday": function() { return /* reexport */ utcWeek/* utcMonday */.l6; },
-  "utcMondays": function() { return /* reexport */ utcWeek/* utcMondays */.$3; },
-  "utcMonth": function() { return /* reexport */ src_utcMonth; },
-  "utcMonths": function() { return /* reexport */ utcMonths; },
-  "utcSaturday": function() { return /* reexport */ utcWeek/* utcSaturday */.g4; },
-  "utcSaturdays": function() { return /* reexport */ utcWeek/* utcSaturdays */.Q_; },
-  "utcSecond": function() { return /* reexport */ src_second; },
-  "utcSeconds": function() { return /* reexport */ seconds; },
-  "utcSunday": function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
-  "utcSundays": function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
-  "utcThursday": function() { return /* reexport */ utcWeek/* utcThursday */.hB; },
-  "utcThursdays": function() { return /* reexport */ utcWeek/* utcThursdays */.xj; },
-  "utcTuesday": function() { return /* reexport */ utcWeek/* utcTuesday */.J1; },
-  "utcTuesdays": function() { return /* reexport */ utcWeek/* utcTuesdays */.DK; },
-  "utcWednesday": function() { return /* reexport */ utcWeek/* utcWednesday */.b3; },
-  "utcWednesdays": function() { return /* reexport */ utcWeek/* utcWednesdays */.uy; },
-  "utcWeek": function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
-  "utcWeeks": function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
-  "utcYear": function() { return /* reexport */ utcYear/* default */.Z; },
-  "utcYears": function() { return /* reexport */ utcYear/* utcYears */.D; }
+  timeDay: function() { return /* reexport */ day/* default */.Z; },
+  timeDays: function() { return /* reexport */ day/* days */.a; },
+  timeFriday: function() { return /* reexport */ week/* friday */.mC; },
+  timeFridays: function() { return /* reexport */ week/* fridays */.b$; },
+  timeHour: function() { return /* reexport */ src_hour; },
+  timeHours: function() { return /* reexport */ hours; },
+  timeInterval: function() { return /* reexport */ interval/* default */.Z; },
+  timeMillisecond: function() { return /* reexport */ src_millisecond; },
+  timeMilliseconds: function() { return /* reexport */ milliseconds; },
+  timeMinute: function() { return /* reexport */ src_minute; },
+  timeMinutes: function() { return /* reexport */ minutes; },
+  timeMonday: function() { return /* reexport */ week/* monday */.wA; },
+  timeMondays: function() { return /* reexport */ week/* mondays */.bJ; },
+  timeMonth: function() { return /* reexport */ src_month; },
+  timeMonths: function() { return /* reexport */ months; },
+  timeSaturday: function() { return /* reexport */ week/* saturday */.EY; },
+  timeSaturdays: function() { return /* reexport */ week/* saturdays */.Ff; },
+  timeSecond: function() { return /* reexport */ src_second; },
+  timeSeconds: function() { return /* reexport */ seconds; },
+  timeSunday: function() { return /* reexport */ week/* sunday */.OM; },
+  timeSundays: function() { return /* reexport */ week/* sundays */.vm; },
+  timeThursday: function() { return /* reexport */ week/* thursday */.bL; },
+  timeThursdays: function() { return /* reexport */ week/* thursdays */.$t; },
+  timeTuesday: function() { return /* reexport */ week/* tuesday */.sy; },
+  timeTuesdays: function() { return /* reexport */ week/* tuesdays */.aU; },
+  timeWednesday: function() { return /* reexport */ week/* wednesday */.zg; },
+  timeWednesdays: function() { return /* reexport */ week/* wednesdays */.Ld; },
+  timeWeek: function() { return /* reexport */ week/* sunday */.OM; },
+  timeWeeks: function() { return /* reexport */ week/* sundays */.vm; },
+  timeYear: function() { return /* reexport */ year/* default */.Z; },
+  timeYears: function() { return /* reexport */ year/* years */.g; },
+  utcDay: function() { return /* reexport */ utcDay/* default */.Z; },
+  utcDays: function() { return /* reexport */ utcDay/* utcDays */.y; },
+  utcFriday: function() { return /* reexport */ utcWeek/* utcFriday */.QQ; },
+  utcFridays: function() { return /* reexport */ utcWeek/* utcFridays */.fz; },
+  utcHour: function() { return /* reexport */ src_utcHour; },
+  utcHours: function() { return /* reexport */ utcHours; },
+  utcMillisecond: function() { return /* reexport */ src_millisecond; },
+  utcMilliseconds: function() { return /* reexport */ milliseconds; },
+  utcMinute: function() { return /* reexport */ src_utcMinute; },
+  utcMinutes: function() { return /* reexport */ utcMinutes; },
+  utcMonday: function() { return /* reexport */ utcWeek/* utcMonday */.l6; },
+  utcMondays: function() { return /* reexport */ utcWeek/* utcMondays */.$3; },
+  utcMonth: function() { return /* reexport */ src_utcMonth; },
+  utcMonths: function() { return /* reexport */ utcMonths; },
+  utcSaturday: function() { return /* reexport */ utcWeek/* utcSaturday */.g4; },
+  utcSaturdays: function() { return /* reexport */ utcWeek/* utcSaturdays */.Q_; },
+  utcSecond: function() { return /* reexport */ src_second; },
+  utcSeconds: function() { return /* reexport */ seconds; },
+  utcSunday: function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
+  utcSundays: function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
+  utcThursday: function() { return /* reexport */ utcWeek/* utcThursday */.hB; },
+  utcThursdays: function() { return /* reexport */ utcWeek/* utcThursdays */.xj; },
+  utcTuesday: function() { return /* reexport */ utcWeek/* utcTuesday */.J1; },
+  utcTuesdays: function() { return /* reexport */ utcWeek/* utcTuesdays */.DK; },
+  utcWednesday: function() { return /* reexport */ utcWeek/* utcWednesday */.b3; },
+  utcWednesdays: function() { return /* reexport */ utcWeek/* utcWednesdays */.uy; },
+  utcWeek: function() { return /* reexport */ utcWeek/* utcSunday */.Ox; },
+  utcWeeks: function() { return /* reexport */ utcWeek/* utcSundays */.SU; },
+  utcYear: function() { return /* reexport */ utcYear/* default */.Z; },
+  utcYears: function() { return /* reexport */ utcYear/* utcYears */.D; }
 });
 
 // EXTERNAL MODULE: ./node_modules/d3-time/src/interval.js
@@ -84392,7 +85303,7 @@ var utcYear = __webpack_require__(9791);
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": function() { return /* binding */ newInterval; }
+/* harmony export */   Z: function() { return /* binding */ newInterval; }
 /* harmony export */ });
 var t0 = new Date,
     t1 = new Date;
@@ -84473,7 +85384,7 @@ function newInterval(floori, offseti, count, field) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "y": function() { return /* binding */ utcDays; }
+/* harmony export */   y: function() { return /* binding */ utcDays; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4263);
@@ -84490,7 +85401,7 @@ var utcDay = (0,_interval_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)(f
   return date.getUTCDate() - 1;
 });
 
-/* harmony default export */ __webpack_exports__["Z"] = (utcDay);
+/* harmony default export */ __webpack_exports__.Z = (utcDay);
 var utcDays = utcDay.range;
 
 
@@ -84501,20 +85412,20 @@ var utcDays = utcDay.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "$3": function() { return /* binding */ utcMondays; },
-/* harmony export */   "DK": function() { return /* binding */ utcTuesdays; },
-/* harmony export */   "J1": function() { return /* binding */ utcTuesday; },
-/* harmony export */   "Ox": function() { return /* binding */ utcSunday; },
-/* harmony export */   "QQ": function() { return /* binding */ utcFriday; },
-/* harmony export */   "Q_": function() { return /* binding */ utcSaturdays; },
-/* harmony export */   "SU": function() { return /* binding */ utcSundays; },
-/* harmony export */   "b3": function() { return /* binding */ utcWednesday; },
-/* harmony export */   "fz": function() { return /* binding */ utcFridays; },
-/* harmony export */   "g4": function() { return /* binding */ utcSaturday; },
-/* harmony export */   "hB": function() { return /* binding */ utcThursday; },
-/* harmony export */   "l6": function() { return /* binding */ utcMonday; },
-/* harmony export */   "uy": function() { return /* binding */ utcWednesdays; },
-/* harmony export */   "xj": function() { return /* binding */ utcThursdays; }
+/* harmony export */   $3: function() { return /* binding */ utcMondays; },
+/* harmony export */   DK: function() { return /* binding */ utcTuesdays; },
+/* harmony export */   J1: function() { return /* binding */ utcTuesday; },
+/* harmony export */   Ox: function() { return /* binding */ utcSunday; },
+/* harmony export */   QQ: function() { return /* binding */ utcFriday; },
+/* harmony export */   Q_: function() { return /* binding */ utcSaturdays; },
+/* harmony export */   SU: function() { return /* binding */ utcSundays; },
+/* harmony export */   b3: function() { return /* binding */ utcWednesday; },
+/* harmony export */   fz: function() { return /* binding */ utcFridays; },
+/* harmony export */   g4: function() { return /* binding */ utcSaturday; },
+/* harmony export */   hB: function() { return /* binding */ utcThursday; },
+/* harmony export */   l6: function() { return /* binding */ utcMonday; },
+/* harmony export */   uy: function() { return /* binding */ utcWednesdays; },
+/* harmony export */   xj: function() { return /* binding */ utcThursdays; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4263);
@@ -84556,7 +85467,7 @@ var utcSaturdays = utcSaturday.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "D": function() { return /* binding */ utcYears; }
+/* harmony export */   D: function() { return /* binding */ utcYears; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 
@@ -84583,7 +85494,7 @@ utcYear.every = function(k) {
   });
 };
 
-/* harmony default export */ __webpack_exports__["Z"] = (utcYear);
+/* harmony default export */ __webpack_exports__.Z = (utcYear);
 var utcYears = utcYear.range;
 
 
@@ -84594,20 +85505,20 @@ var utcYears = utcYear.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "$t": function() { return /* binding */ thursdays; },
-/* harmony export */   "EY": function() { return /* binding */ saturday; },
-/* harmony export */   "Ff": function() { return /* binding */ saturdays; },
-/* harmony export */   "Ld": function() { return /* binding */ wednesdays; },
-/* harmony export */   "OM": function() { return /* binding */ sunday; },
-/* harmony export */   "aU": function() { return /* binding */ tuesdays; },
-/* harmony export */   "b$": function() { return /* binding */ fridays; },
-/* harmony export */   "bJ": function() { return /* binding */ mondays; },
-/* harmony export */   "bL": function() { return /* binding */ thursday; },
-/* harmony export */   "mC": function() { return /* binding */ friday; },
-/* harmony export */   "sy": function() { return /* binding */ tuesday; },
-/* harmony export */   "vm": function() { return /* binding */ sundays; },
-/* harmony export */   "wA": function() { return /* binding */ monday; },
-/* harmony export */   "zg": function() { return /* binding */ wednesday; }
+/* harmony export */   $t: function() { return /* binding */ thursdays; },
+/* harmony export */   EY: function() { return /* binding */ saturday; },
+/* harmony export */   Ff: function() { return /* binding */ saturdays; },
+/* harmony export */   Ld: function() { return /* binding */ wednesdays; },
+/* harmony export */   OM: function() { return /* binding */ sunday; },
+/* harmony export */   aU: function() { return /* binding */ tuesdays; },
+/* harmony export */   b$: function() { return /* binding */ fridays; },
+/* harmony export */   bJ: function() { return /* binding */ mondays; },
+/* harmony export */   bL: function() { return /* binding */ thursday; },
+/* harmony export */   mC: function() { return /* binding */ friday; },
+/* harmony export */   sy: function() { return /* binding */ tuesday; },
+/* harmony export */   vm: function() { return /* binding */ sundays; },
+/* harmony export */   wA: function() { return /* binding */ monday; },
+/* harmony export */   zg: function() { return /* binding */ wednesday; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 /* harmony import */ var _duration_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4263);
@@ -84649,7 +85560,7 @@ var saturdays = saturday.range;
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "g": function() { return /* binding */ years; }
+/* harmony export */   g: function() { return /* binding */ years; }
 /* harmony export */ });
 /* harmony import */ var _interval_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(52);
 
@@ -84676,7 +85587,7 @@ year.every = function(k) {
   });
 };
 
-/* harmony default export */ __webpack_exports__["Z"] = (year);
+/* harmony default export */ __webpack_exports__.Z = (year);
 var years = year.range;
 
 
@@ -90161,7 +91072,7 @@ else {}
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "zL": function() { return /* reexport */ feature; }
+  zL: function() { return /* reexport */ feature; }
 });
 
 // UNUSED EXPORTS: bbox, merge, mergeArcs, mesh, meshArcs, neighbors, quantize, transform, untransform

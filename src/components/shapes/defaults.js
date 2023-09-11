@@ -29,8 +29,20 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
     }
 
+    shapeOut._isShape = true;
+
     var visible = coerce('visible');
     if(!visible) return;
+
+    var showlegend = coerce('showlegend');
+    if(showlegend) {
+        coerce('legend');
+        coerce('legendwidth');
+        coerce('legendgroup');
+        coerce('legendgrouptitle.text');
+        Lib.coerceFont(coerce, 'legendgrouptitle.font');
+        coerce('legendrank');
+    }
 
     var path = coerce('path');
     var dfltType = path ? 'path' : 'rect';
@@ -128,8 +140,10 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
     // Label options
     var isLine = shapeType === 'line';
-    var labelText = coerce('label.text');
-    if(labelText) {
+    var labelTextTemplate, labelText;
+    if(noPath) { labelTextTemplate = coerce('label.texttemplate'); }
+    if(!labelTextTemplate) { labelText = coerce('label.text'); }
+    if(labelText || labelTextTemplate) {
         coerce('label.textangle');
         var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
         coerce('label.xanchor');

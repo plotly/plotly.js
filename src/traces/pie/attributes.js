@@ -8,6 +8,7 @@ var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplat
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var pattern = require('../../components/drawing/attributes').pattern;
 
 var textFontAttrs = fontAttrs({
     editType: 'plot',
@@ -89,6 +90,7 @@ module.exports = {
             },
             editType: 'calc'
         },
+        pattern: pattern,
         editType: 'calc'
     },
 
