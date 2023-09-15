@@ -465,10 +465,10 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         evtData.label = legendItem.datum()[0].label;
     }
 
-    var clickVal = Events.triggerHandler(gd, 'plotly_legendclick', evtData);
-    if(clickVal === false) return;
-
     if(numClicks === 1) {
+        var clickVal = Events.triggerHandler(gd, 'plotly_legendclick', evtData);
+        if(clickVal === false) return;
+    
         legend._clickTimeout = setTimeout(function() {
             if(!gd._fullLayout) return;
             handleClick(legendItem, gd, numClicks);
