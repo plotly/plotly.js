@@ -464,7 +464,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     if(Registry.traceIs(trace, 'pie-like')) {
         evtData.label = legendItem.datum()[0].label;
     }
-        
+
     if(numClicks === 1) {
         var clickVal = Events.triggerHandler(gd, 'plotly_legendclick', evtData);
         if(clickVal === false) return;
