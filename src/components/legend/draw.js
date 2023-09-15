@@ -148,8 +148,9 @@ function drawOne(gd, opts) {
     var title = legendObj.title;
     legendObj._titleWidth = 0;
     legendObj._titleHeight = 0;
+    var titleEl;
     if(title.text) {
-        var titleEl = Lib.ensureSingle(scrollBox, 'text', legendId + 'titletext');
+        titleEl = Lib.ensureSingle(scrollBox, 'text', legendId + 'titletext');
         titleEl.attr('text-anchor', 'start')
             .call(Drawing.font, title.font)
             .text(title.text);
@@ -192,6 +193,11 @@ function drawOne(gd, opts) {
             var bw = legendObj.borderwidth;
             var isPaperX = legendObj.xref === 'paper';
             var isPaperY = legendObj.yref === 'paper';
+
+            // re-calculate title position after legend width is derived. To allow for horizontal alignment
+            if(title.text) {
+                textLayout(titleEl, scrollBox, gd, legendObj, MAIN_TITLE);
+            }
 
             if(!inHover) {
                 var lx, ly;
