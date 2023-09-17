@@ -39,10 +39,10 @@
   ],
   "layout": {
     "barmode": "overlay",
-    "title": "Sampled Results",
+    "title": { "text": "Sampled Results" },
     "xaxis": {
-      "title": "Date"
+      "title": { "text": "Date" }
     },
-    "yaxis": { "title": "Count" }
+    "yaxis": { "title": { "text": "Count" } }
   }
 }
