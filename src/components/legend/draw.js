@@ -54,6 +54,30 @@ module.exports = function draw(gd, opts) {
     }
 };
 
+//After legend dimensions are calculated the title can be aligned horizontally left, center, right
+function horizontalAlignTitle(titleEl, legendObj, bw) {
+    if ((legendObj.title.side !== 'top center') && (legendObj.title.side !== 'top right')) return;
+
+    var font = legendObj.title.font;
+    var lineHeight = font.size * LINE_SPACING;
+    var titleOffset = 0;
+    var textNode = titleEl.node();
+
+    var  width = Drawing.bBox(textNode).width;  //width of the title text
+
+    if(legendObj.title.side === 'top center') {
+        titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
+    } else if(legendObj.title.side === 'top right') {
+        titleOffset = legendObj._width - 2 * bw - 2 * constants.titlePad - width;
+    }
+
+    svgTextUtils.positionText(titleEl,
+        bw + constants.titlePad + titleOffset,
+        bw + lineHeight
+    );
+}
+
+
 function drawOne(gd, opts) {
     var legendObj = opts || {};
 
@@ -196,7 +220,7 @@ function drawOne(gd, opts) {
 
             // re-calculate title position after legend width is derived. To allow for horizontal alignment
             if(title.text) {
-                textLayout(titleEl, scrollBox, gd, legendObj, MAIN_TITLE);
+                horizontalAlignTitle(titleEl, legendObj, bw);
             }
 
             if(!inHover) {
@@ -667,18 +691,13 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
         // approximation to height offset to center the font
         // to avoid getBoundingClientRect
         if(aTitle === MAIN_TITLE) {
-            var titleOffset = 0;
             if(legendObj.title.side === 'left') {
                 // add extra space between legend title and itmes
                 width += constants.itemGap * 2;
-            } else if(legendObj.title.side === 'top center') {
-                if(legendObj._width) titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
-            } else if(legendObj.title.side === 'top right') {
-                if(legendObj._width) titleOffset = legendObj._width - 2 * bw - 2 * constants.titlePad - width;
             }
 
             svgTextUtils.positionText(textEl,
-                bw + constants.titlePad + titleOffset,
+                bw + constants.titlePad,
                 bw + lineHeight
             );
         } else { // legend item
