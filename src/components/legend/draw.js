@@ -54,16 +54,16 @@ module.exports = function draw(gd, opts) {
     }
 };
 
-//After legend dimensions are calculated the title can be aligned horizontally left, center, right
+// After legend dimensions are calculated the title can be aligned horizontally left, center, right
 function horizontalAlignTitle(titleEl, legendObj, bw) {
-    if ((legendObj.title.side !== 'top center') && (legendObj.title.side !== 'top right')) return;
+    if((legendObj.title.side !== 'top center') && (legendObj.title.side !== 'top right')) return;
 
     var font = legendObj.title.font;
     var lineHeight = font.size * LINE_SPACING;
     var titleOffset = 0;
     var textNode = titleEl.node();
 
-    var  width = Drawing.bBox(textNode).width;  //width of the title text
+    var width = Drawing.bBox(textNode).width;  // width of the title text
 
     if(legendObj.title.side === 'top center') {
         titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
