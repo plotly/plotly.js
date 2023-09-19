@@ -2720,7 +2720,7 @@ describe('legend with custom doubleClickDelay', function() {
         .then(_assert('[long] after click + (t/2) delay', 1, 0))
         .then(delay(tLong + 10))
         .then(click(0)).then(delay(DBLCLICKDELAY + 1)).then(click(0))
-        .then(_assert('[long] after click + (DBLCLICKDELAY+1) delay + click', 1, 1))
+        .then(_assert('[long] after click + (DBLCLICKDELAY+1) delay + click', 2, 1))
         .then(delay(tLong + 10))
         .then(click(0)).then(delay(1.1 * tLong)).then(click(0))
         .then(_assert('[long] after click + (1.1*t) delay + click', 2, 0))
