@@ -1047,6 +1047,58 @@ describe('Test click interactions:', function() {
             .then(done, done.fail);
         });
 
+        it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (*min* partial insiderange and inside tick lables)', function(done) {
+            mockCopy = setRanges(mockCopy);
+
+            Plotly.newPlot(gd, [{
+                y: [1, 3, 2]}
+            ], {
+                xaxis: {insiderange: [null, 1]},
+                yaxis: {ticks: 'inside', ticklabelposition: 'inside'},
+                width: 600,
+                height: 600
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.166, 1]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.166, 2.134]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.166, 1]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (*max* partial insiderange and inside tick lables)', function(done) {
+            mockCopy = setRanges(mockCopy);
+
+            Plotly.newPlot(gd, [{
+                y: [2, 3, 1]}
+            ], {
+                xaxis: {insiderange: [1, null]},
+                yaxis: {ticks: 'inside', ticklabelposition: 'inside', side: 'right'},
+                width: 600,
+                height: 600
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.166]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.134, 2.166]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.166]);
+            })
+            .then(done, done.fail);
+        });
+
         it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (case of partial ranges reversed)', function(done) {
             mockCopy = setRanges(mockCopy);
 

@@ -1004,6 +1004,7 @@ function mockColorBarAxis(gd, opts, zrange) {
         noHover: true,
         noTickson: true,
         noTicklabelmode: true,
+        noInsideRange: true,
         calendar: fullLayout.calendar  // not really necessary (yet?)
     };
 

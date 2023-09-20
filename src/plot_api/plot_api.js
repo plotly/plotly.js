@@ -354,9 +354,11 @@ function _doPlot(gd, data, layout, config) {
         seq.push(
             drawAxes,
             function insideTickLabelsAutorange(gd) {
-                if(gd._fullLayout._insideTickLabelsAutorange) {
-                    relayout(gd, gd._fullLayout._insideTickLabelsAutorange).then(function() {
-                        gd._fullLayout._insideTickLabelsAutorange = undefined;
+                if(gd._fullLayout._insideTickLabelsUpdaterange) {
+                    relayout(gd, gd._fullLayout._insideTickLabelsUpdaterange).then(function() {
+                        Axes.saveRangeInitial(gd, true);
+
+                        gd._fullLayout._insideTickLabelsUpdaterange = undefined;
                     });
                 }
             }
@@ -376,15 +378,8 @@ function _doPlot(gd, data, layout, config) {
         // calculated. Would be much better to separate margin calculations from
         // component drawing - see https://github.com/plotly/plotly.js/issues/2704
         Plots.doAutoMargin,
-        saveRangeInitialForInsideTickLabels,
         Plots.previousPromises
     );
-
-    function saveRangeInitialForInsideTickLabels(gd) {
-        if(gd._fullLayout._insideTickLabelsAutorange) {
-            if(graphWasEmpty) Axes.saveRangeInitial(gd, true);
-        }
-    }
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took

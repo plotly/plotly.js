@@ -92,9 +92,14 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     setConvert(containerOut, layoutOut);
 
+    var insiderange;
+    if(!options.noInsiderange && axType !== 'log') {
+        insiderange = coerce('insiderange');
+    }
+
     coerce('minallowed');
     coerce('maxallowed');
-    var range = coerce('range');
+    var range = coerce('range', insiderange);
     var autorangeDflt = containerOut.getAutorangeDflt(range, options);
     var autorange = coerce('autorange', autorangeDflt);
 
