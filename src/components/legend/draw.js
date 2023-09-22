@@ -494,11 +494,9 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     if(Registry.traceIs(trace, 'pie-like')) {
         evtData.label = legendItem.datum()[0].label;
     }
-
     var clickVal = Events.triggerHandler(gd, 'plotly_legendclick', evtData);
-    if(clickVal === false) return;
-
     if(numClicks === 1) {
+        if(clickVal === false) return;
         legend._clickTimeout = setTimeout(function() {
             if(!gd._fullLayout) return;
             handleClick(legendItem, gd, numClicks);
@@ -508,7 +506,8 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         gd._legendMouseDownTime = 0;
 
         var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
-        if(dblClickVal !== false) handleClick(legendItem, gd, numClicks);
+        // Activate default double click behaviour only when both single click and double click values are not false
+        if(dblClickVal !== false && clickVal !== false) handleClick(legendItem, gd, numClicks);
     }
 }
 
