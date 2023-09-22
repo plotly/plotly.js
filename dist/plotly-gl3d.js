@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.26.0
+* plotly.js (gl3d) v2.26.1
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -11254,6 +11254,23 @@ module.exports = function draw(gd, opts) {
     }
   }
 };
+
+// After legend dimensions are calculated the title can be aligned horizontally left, center, right
+function horizontalAlignTitle(titleEl, legendObj, bw) {
+  if (legendObj.title.side !== 'top center' && legendObj.title.side !== 'top right') return;
+  var font = legendObj.title.font;
+  var lineHeight = font.size * LINE_SPACING;
+  var titleOffset = 0;
+  var textNode = titleEl.node();
+  var width = Drawing.bBox(textNode).width; // width of the title text
+
+  if (legendObj.title.side === 'top center') {
+    titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
+  } else if (legendObj.title.side === 'top right') {
+    titleOffset = legendObj._width - 2 * bw - 2 * constants.titlePad - width;
+  }
+  svgTextUtils.positionText(titleEl, bw + constants.titlePad + titleOffset, bw + lineHeight);
+}
 function drawOne(gd, opts) {
   var legendObj = opts || {};
   var fullLayout = gd._fullLayout;
@@ -11330,8 +11347,9 @@ function drawOne(gd, opts) {
   var title = legendObj.title;
   legendObj._titleWidth = 0;
   legendObj._titleHeight = 0;
+  var titleEl;
   if (title.text) {
-    var titleEl = Lib.ensureSingle(scrollBox, 'text', legendId + 'titletext');
+    titleEl = Lib.ensureSingle(scrollBox, 'text', legendId + 'titletext');
     titleEl.attr('text-anchor', 'start').call(Drawing.font, title.font).text(title.text);
     textLayout(titleEl, scrollBox, gd, legendObj, MAIN_TITLE); // handle mathjax or multi-line text and compute title height
   } else {
@@ -11365,6 +11383,11 @@ function drawOne(gd, opts) {
     var bw = legendObj.borderwidth;
     var isPaperX = legendObj.xref === 'paper';
     var isPaperY = legendObj.yref === 'paper';
+
+    // re-calculate title position after legend width is derived. To allow for horizontal alignment
+    if (title.text) {
+      horizontalAlignTitle(titleEl, legendObj, bw);
+    }
     if (!inHover) {
       var lx, ly;
       if (isPaperX) {
@@ -11581,8 +11604,8 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     evtData.label = legendItem.datum()[0].label;
   }
   var clickVal = Events.triggerHandler(gd, 'plotly_legendclick', evtData);
-  if (clickVal === false) return;
   if (numClicks === 1) {
+    if (clickVal === false) return;
     legend._clickTimeout = setTimeout(function () {
       if (!gd._fullLayout) return;
       handleClick(legendItem, gd, numClicks);
@@ -11591,7 +11614,8 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     if (legend._clickTimeout) clearTimeout(legend._clickTimeout);
     gd._legendMouseDownTime = 0;
     var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
-    if (dblClickVal !== false) handleClick(legendItem, gd, numClicks);
+    // Activate default double click behaviour only when both single click and double click values are not false
+    if (dblClickVal !== false && clickVal !== false) handleClick(legendItem, gd, numClicks);
   }
 }
 function drawTexts(g, gd, legendObj) {
@@ -11743,16 +11767,11 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
     // approximation to height offset to center the font
     // to avoid getBoundingClientRect
     if (aTitle === MAIN_TITLE) {
-      var titleOffset = 0;
       if (legendObj.title.side === 'left') {
         // add extra space between legend title and itmes
         width += constants.itemGap * 2;
-      } else if (legendObj.title.side === 'top center') {
-        if (legendObj._width) titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
-      } else if (legendObj.title.side === 'top right') {
-        if (legendObj._width) titleOffset = legendObj._width - 2 * bw - 2 * constants.titlePad - width;
       }
-      svgTextUtils.positionText(textEl, bw + constants.titlePad + titleOffset, bw + lineHeight);
+      svgTextUtils.positionText(textEl, bw + constants.titlePad, bw + lineHeight);
     } else {
       // legend item
       var x = constants.itemGap * 2 + legendObj.itemwidth;
@@ -63991,7 +64010,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.26.0';
+exports.version = '2.26.1';
 
 /***/ }),
 
