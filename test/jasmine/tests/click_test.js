@@ -1055,6 +1055,7 @@ describe('Test click interactions:', function() {
             ], {
                 xaxis: {insiderange: [null, 1]},
                 yaxis: {ticks: 'inside', ticklabelposition: 'inside'},
+                plot_bgcolor: 'lightgray',
                 width: 600,
                 height: 600
             }).then(function() {
@@ -1081,6 +1082,7 @@ describe('Test click interactions:', function() {
             ], {
                 xaxis: {insiderange: [1, null]},
                 yaxis: {ticks: 'inside', ticklabelposition: 'inside', side: 'right'},
+                plot_bgcolor: 'lightgray',
                 width: 600,
                 height: 600
             }).then(function() {

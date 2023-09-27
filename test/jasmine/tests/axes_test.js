@@ -1606,6 +1606,37 @@ describe('Test axes', function() {
         });
     });
 
+    describe('insiderange relayout', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('can relayout insiderange', function(done) {
+            Plotly.newPlot(gd, [{
+                y: [1, 3, 2, 4]}
+            ], {
+                xaxis: {insiderange: [0, 2]},
+                yaxis: {ticklabelposition: 'inside'},
+                plot_bgcolor: 'lightgray',
+                width: 600,
+                height: 600
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.132, 2]);
+
+                return Plotly.relayout(gd, {
+                    'xaxis.insiderange': [1, 3],
+                    'xaxis.range': null
+                });
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.867, 3]);
+            }).then(done, done.fail);
+        });
+    });
+
     describe('constraints relayout', function() {
         var gd;
 

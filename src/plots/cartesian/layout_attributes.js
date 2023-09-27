@@ -401,15 +401,15 @@ module.exports = {
     insiderange: {
         valType: 'info_array',
         items: [
-            {valType: 'any', editType: 'axrange'},
-            {valType: 'any', editType: 'axrange'}
+            {valType: 'any', editType: 'plot'},
+            {valType: 'any', editType: 'plot'}
         ],
-        editType: 'axrange',
+        editType: 'plot',
         description: [
             'Could be used to set the desired inside range of this axis',
             '(excluding the labels) when `ticklabelposition` of',
             'the anchored axis has *inside*.',
-            'Not implemented for axes with `type` *log*',
+            'Not implemented for axes with `type` *log*.',
             'This would be ignored when `range` is provided.'
         ].join(' ')
     },

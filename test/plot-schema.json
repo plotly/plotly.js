@@ -10893,15 +10893,15 @@
      "valType": "string"
     },
     "insiderange": {
-     "description": "Could be used to set the desired inside range of this axis (excluding the labels) when `ticklabelposition` of the anchored axis has *inside*. Not implemented for axes with `type` *log* This would be ignored when `range` is provided.",
-     "editType": "axrange",
+     "description": "Could be used to set the desired inside range of this axis (excluding the labels) when `ticklabelposition` of the anchored axis has *inside*. Not implemented for axes with `type` *log*. This would be ignored when `range` is provided.",
+     "editType": "plot",
      "items": [
       {
-       "editType": "axrange",
+       "editType": "plot",
        "valType": "any"
       },
       {
-       "editType": "axrange",
+       "editType": "plot",
        "valType": "any"
       }
      ],
@@ -12233,15 +12233,15 @@
      "valType": "string"
     },
     "insiderange": {
-     "description": "Could be used to set the desired inside range of this axis (excluding the labels) when `ticklabelposition` of the anchored axis has *inside*. Not implemented for axes with `type` *log* This would be ignored when `range` is provided.",
-     "editType": "axrange",
+     "description": "Could be used to set the desired inside range of this axis (excluding the labels) when `ticklabelposition` of the anchored axis has *inside*. Not implemented for axes with `type` *log*. This would be ignored when `range` is provided.",
+     "editType": "plot",
      "items": [
       {
-       "editType": "axrange",
+       "editType": "plot",
        "valType": "any"
       },
       {
-       "editType": "axrange",
+       "editType": "plot",
        "valType": "any"
       }
      ],
