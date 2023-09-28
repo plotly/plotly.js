@@ -1628,8 +1628,7 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.132, 2]);
 
                 return Plotly.relayout(gd, {
-                    'xaxis.insiderange': [1, 3],
-                    'xaxis.range': null
+                    'xaxis.insiderange': [1, 3]
                 });
             }).then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.867, 3]);
@@ -7954,6 +7953,40 @@ describe('more react tests', function() {
             expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
         })
         .then(done, done.fail);
+    });
+
+    it('insiderange react to new data', function(done) {
+        var layout = {
+            xaxis: {
+                insiderange: [0, 2]
+            },
+            yaxis: {
+                ticklabelposition: 'inside'
+            },
+            plot_bgcolor: 'lightgray',
+            width: 600,
+            height: 600
+        };
+
+        var data1 = [{
+            y: [1, 3, 2]
+        }];
+
+        var data2 = [{
+            y: [1000, 3000, 2000]
+        }];
+
+        var fig1 = {data: data1, layout: layout};
+        var fig2 = {data: data2, layout: layout};
+
+        Plotly.newPlot(gd, fig1)
+        .then(function() {
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.132, 2]);
+
+            return Plotly.react(gd, fig2);
+        }).then(function() {
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.179, 2]);
+        }).then(done, done.fail);
     });
 });
 

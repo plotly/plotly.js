@@ -355,7 +355,7 @@ function _doPlot(gd, data, layout, config) {
             drawAxes,
             function insideTickLabelsAutorange(gd) {
                 if(gd._fullLayout._insideTickLabelsUpdaterange) {
-                    relayout(gd, gd._fullLayout._insideTickLabelsUpdaterange).then(function() {
+                    return relayout(gd, gd._fullLayout._insideTickLabelsUpdaterange).then(function() {
                         Axes.saveRangeInitial(gd, true);
 
                         gd._fullLayout._insideTickLabelsUpdaterange = undefined;
