@@ -3884,9 +3884,13 @@ axes.drawLabels = function(gd, ax, opts) {
 
             var p0 = anchorAx.d2p(anchorAx.range[index]);
             var p1 = anchorAx.d2p(anchorAx.range[otherIndex]);
-
             var dist = Math.abs(p1 - p0);
-            move *= 1 + move / dist;
+            if(dist - move > 0) {
+                dist -= move;
+                move *= 1 + move / dist;
+            } else {
+                move = 0;
+            }
 
             if(ax._id.charAt(0) !== 'y') move = -move;
 

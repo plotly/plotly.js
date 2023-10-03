@@ -87,7 +87,7 @@
         },
         "plot_bgcolor": "lightblue",
         "showlegend": false,
-        "width":  360,
+        "width":  300,
         "height": 900,
         "margin": {
             "t": 60,
