@@ -1625,13 +1625,13 @@ describe('Test axes', function() {
                 width: 600,
                 height: 600
             }).then(function() {
-                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.132, 2]);
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
 
                 return Plotly.relayout(gd, {
                     'xaxis.insiderange': [1, 3]
                 });
             }).then(function() {
-                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.867, 3]);
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.889, 3]);
             }).then(done, done.fail);
         });
     });
@@ -7981,11 +7981,11 @@ describe('more react tests', function() {
 
         Plotly.newPlot(gd, fig1)
         .then(function() {
-            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.132, 2]);
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
 
             return Plotly.react(gd, fig2);
         }).then(function() {
-            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.179, 2]);
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.164, 2]);
         }).then(done, done.fail);
     });
 });

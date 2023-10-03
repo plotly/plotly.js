@@ -3837,7 +3837,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 }
 
                 labelsMaxW = Math.max(labelsMaxW, bb.width);
-                labelsMaxH = Math.max(labelsMaxW, bb.height);
+                labelsMaxH = Math.max(labelsMaxH, bb.height);
             }
         });
 
@@ -3866,14 +3866,14 @@ axes.drawLabels = function(gd, ax, opts) {
         if(anchorAx.insiderange) {
             var BBs = computeTickLabelBoundingBoxes();
             var move = ax._id.charAt(0) === 'y' ?
-                BBs.labelsMaxW + 4 * TEXTPAD :
+                BBs.labelsMaxW :
                 BBs.labelsMaxH;
+
+            move += 2 * TEXTPAD;
 
             if(ax.ticklabelposition === 'inside') {
                 move += ax.ticklen || 0;
             }
-
-            if(ax._id.charAt(0) !== 'y') move = -move;
 
             var sgn = (ax.side === 'right' || ax.side === 'top') ? 1 : -1;
             var index = sgn === 1 ? 1 : 0;
@@ -3881,6 +3881,15 @@ axes.drawLabels = function(gd, ax, opts) {
 
             var newRange = [];
             newRange[otherIndex] = anchorAx.range[otherIndex];
+
+            var p0 = anchorAx.d2p(anchorAx.range[index]);
+            var p1 = anchorAx.d2p(anchorAx.range[otherIndex]);
+
+            var dist = Math.abs(p1 - p0);
+            move *= 1 + move / dist;
+
+            if(ax._id.charAt(0) !== 'y') move = -move;
+
             newRange[index] = anchorAx.p2d(
                 anchorAx.d2p(anchorAx.range[index]) +
                 sgn * move
