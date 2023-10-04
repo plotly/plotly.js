@@ -354,11 +354,12 @@ function _doPlot(gd, data, layout, config) {
         seq.push(
             drawAxes,
             function insideTickLabelsAutorange(gd) {
-                if(gd._fullLayout._insideTickLabelsUpdaterange) {
-                    return relayout(gd, gd._fullLayout._insideTickLabelsUpdaterange).then(function() {
-                        Axes.saveRangeInitial(gd, true);
+                var insideTickLabelsUpdaterange = gd._fullLayout._insideTickLabelsUpdaterange;
+                if(insideTickLabelsUpdaterange) {
+                    gd._fullLayout._insideTickLabelsUpdaterange = undefined;
 
-                        gd._fullLayout._insideTickLabelsUpdaterange = undefined;
+                    return relayout(gd, insideTickLabelsUpdaterange).then(function() {
+                        Axes.saveRangeInitial(gd, true);
                     });
                 }
             }
@@ -1785,7 +1786,6 @@ function relayout(gd, astr, val) {
     // something may have happened within relayout that we
     // need to wait for
     var seq = [Plots.previousPromises];
-
     if(flags.layoutReplot) {
         seq.push(subroutines.layoutReplot);
     } else if(Object.keys(aobj).length) {
