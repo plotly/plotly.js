@@ -15,6 +15,9 @@ var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
 
 var Axes = require('../plots/cartesian/axes');
+var handleRangeDefaults = require('../plots/cartesian/range_defaults');
+
+var cartesianLayoutAttributes = require('../plots/cartesian/layout_attributes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
@@ -1833,26 +1836,19 @@ function axRangeSupplyDefaultsByPass(gd, flags, specs) {
         if(k !== 'axrange' && flags[k]) return false;
     }
 
+    var axIn, axOut;
+    var coerce = function(attr, dflt) {
+        return Lib.coerce(axIn, axOut, cartesianLayoutAttributes, attr, dflt);
+    };
+
+    var options = {}; // passing empty options for now!
+
     for(var axId in specs.rangesAltered) {
         var axName = Axes.id2name(axId);
-        var axIn = gd.layout[axName];
-        var axOut = fullLayout[axName];
-        axOut.autorange = axIn.autorange;
+        axIn = gd.layout[axName];
+        axOut = fullLayout[axName];
 
-        var r0 = axOut._rangeInitial0;
-        var r1 = axOut._rangeInitial1;
-        // partial range needs supplyDefaults
-        if(
-            (r0 === undefined && r1 !== undefined) ||
-            (r0 !== undefined && r1 === undefined)
-        ) {
-            return false;
-        }
-
-        if(axIn.range) {
-            axOut.range = axIn.range.slice();
-        }
-        axOut.cleanRange();
+        handleRangeDefaults(axIn, axOut, coerce, options);
 
         if(axOut._matchGroup) {
             for(var axId2 in axOut._matchGroup) {

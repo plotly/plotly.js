@@ -9,6 +9,18 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.26.2] -- 2023-10-04
+
+### Fixed
+ - Fix range interactions affecting partial ranges in other subplots [[#6743](https://github.com/plotly/plotly.js/pull/6743)]
+ - Fix to emit `plotly_click` event on touchscreens with "select" `dragmode` [[#6724](https://github.com/plotly/plotly.js/pull/6724)]),
+   with thanks to @lvlte for the contribution!
+ - Fix error display for failing builds [[#6739](https://github.com/plotly/plotly.js/pull/6739)],
+   with thanks to @dmt0 for the contribution!
+ - Use the "willReadFrequently" 2d context creation attribute to optimize readback performance for heat map traces [[#6741](https://github.com/plotly/plotly.js/pull/6741)],
+   with thanks to @bebeal for the contribution!
+
+
 ## [2.26.1] -- 2023-09-22
 
 ### Fixed
