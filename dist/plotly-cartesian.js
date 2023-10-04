@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.26.1
+* plotly.js (cartesian) v2.26.2
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -16698,7 +16698,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
           emitSelected(gd, undefined);
         }
       }
-      Fx.click(gd, evt);
+      Fx.click(gd, evt, plotinfo.id);
     }).catch(Lib.error);
   };
   dragOptions.doneFn = function () {
@@ -30385,6 +30385,8 @@ var Registry = __webpack_require__(73972);
 var PlotSchema = __webpack_require__(86281);
 var Plots = __webpack_require__(74875);
 var Axes = __webpack_require__(89298);
+var handleRangeDefaults = __webpack_require__(23608);
+var cartesianLayoutAttributes = __webpack_require__(13838);
 var Drawing = __webpack_require__(91424);
 var Color = __webpack_require__(7901);
 var initInteractions = (__webpack_require__(4305).initInteractions);
@@ -32002,21 +32004,17 @@ function axRangeSupplyDefaultsByPass(gd, flags, specs) {
   for (var k in flags) {
     if (k !== 'axrange' && flags[k]) return false;
   }
+  var axIn, axOut;
+  var coerce = function (attr, dflt) {
+    return Lib.coerce(axIn, axOut, cartesianLayoutAttributes, attr, dflt);
+  };
+  var options = {}; // passing empty options for now!
+
   for (var axId in specs.rangesAltered) {
     var axName = Axes.id2name(axId);
-    var axIn = gd.layout[axName];
-    var axOut = fullLayout[axName];
-    axOut.autorange = axIn.autorange;
-    var r0 = axOut._rangeInitial0;
-    var r1 = axOut._rangeInitial1;
-    // partial range needs supplyDefaults
-    if (r0 === undefined && r1 !== undefined || r0 !== undefined && r1 === undefined) {
-      return false;
-    }
-    if (axIn.range) {
-      axOut.range = axIn.range.slice();
-    }
-    axOut.cleanRange();
+    axIn = gd.layout[axName];
+    axOut = fullLayout[axName];
+    handleRangeDefaults(axIn, axOut, coerce, options);
     if (axOut._matchGroup) {
       for (var axId2 in axOut._matchGroup) {
         if (axId2 !== axId) {
@@ -41630,7 +41628,7 @@ var handleTickLabelDefaults = __webpack_require__(96115);
 var handlePrefixSuffixDefaults = __webpack_require__(89426);
 var handleCategoryOrderDefaults = __webpack_require__(15258);
 var handleLineGridDefaults = __webpack_require__(92128);
-var handleAutorangeOptionsDefaults = __webpack_require__(23074);
+var handleRangeDefaults = __webpack_require__(23608);
 var setConvert = __webpack_require__(21994);
 var DAY_OF_WEEK = (__webpack_require__(85555).WEEKDAY_PATTERN);
 var HOUR = (__webpack_require__(85555).HOUR_PATTERN);
@@ -41682,29 +41680,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('ticklabeloverflow', ticklabelposition.indexOf('inside') !== -1 ? 'hide past domain' : axType === 'category' || axType === 'multicategory' ? 'allow' : 'hide past div');
   }
   setConvert(containerOut, layoutOut);
-  coerce('minallowed');
-  coerce('maxallowed');
-  var range = coerce('range');
-  var autorangeDflt = containerOut.getAutorangeDflt(range, options);
-  var autorange = coerce('autorange', autorangeDflt);
-  var shouldAutorange;
-
-  // validate range and set autorange true for invalid partial ranges
-  if (range && (range[0] === null && range[1] === null || (range[0] === null || range[1] === null) && (autorange === 'reversed' || autorange === true) || range[0] !== null && (autorange === 'min' || autorange === 'max reversed') || range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))) {
-    range = undefined;
-    delete containerOut.range;
-    containerOut.autorange = true;
-    shouldAutorange = true;
-  }
-  if (!shouldAutorange) {
-    autorangeDflt = containerOut.getAutorangeDflt(range, options);
-    autorange = coerce('autorange', autorangeDflt);
-  }
-  if (autorange) {
-    handleAutorangeOptionsDefaults(coerce, autorange, range);
-    if (axType === 'linear' || axType === '-') coerce('rangemode');
-  }
-  containerOut.cleanRange();
+  handleRangeDefaults(containerIn, containerOut, coerce, options);
   handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
   if (axType !== 'category' && !options.noHover) coerce('hoverformat');
   var dfltColor = coerce('color');
@@ -45965,6 +45941,43 @@ module.exports = function handlePrefixSuffixDefaults(containerIn, containerOut, 
   if (tickPrefix) coerce('showtickprefix', showAttrDflt);
   var tickSuffix = coerce('ticksuffix', tickSuffixDflt);
   if (tickSuffix) coerce('showticksuffix', showAttrDflt);
+};
+
+/***/ }),
+
+/***/ 23608:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var handleAutorangeOptionsDefaults = __webpack_require__(23074);
+module.exports = function handleRangeDefaults(containerIn, containerOut, coerce, options) {
+  var axTemplate = containerOut._template || {};
+  var axType = containerOut.type || axTemplate.type || '-';
+  coerce('minallowed');
+  coerce('maxallowed');
+  var range = coerce('range');
+  var autorangeDflt = containerOut.getAutorangeDflt(range, options);
+  var autorange = coerce('autorange', autorangeDflt);
+  var shouldAutorange;
+
+  // validate range and set autorange true for invalid partial ranges
+  if (range && (range[0] === null && range[1] === null || (range[0] === null || range[1] === null) && (autorange === 'reversed' || autorange === true) || range[0] !== null && (autorange === 'min' || autorange === 'max reversed') || range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))) {
+    range = undefined;
+    delete containerOut.range;
+    containerOut.autorange = true;
+    shouldAutorange = true;
+  }
+  if (!shouldAutorange) {
+    autorangeDflt = containerOut.getAutorangeDflt(range, options);
+    autorange = coerce('autorange', autorangeDflt);
+  }
+  if (autorange) {
+    handleAutorangeOptionsDefaults(coerce, autorange, range);
+    if (axType === 'linear' || axType === '-') coerce('rangemode');
+  }
+  containerOut.cleanRange();
 };
 
 /***/ }),
@@ -61087,7 +61100,9 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
     var canvas = document.createElement('canvas');
     canvas.width = canvasW;
     canvas.height = canvasH;
-    var context = canvas.getContext('2d');
+    var context = canvas.getContext('2d', {
+      willReadFrequently: true
+    });
     var sclFunc = makeColorScaleFuncFromTrace(trace, {
       noNumericCheck: true,
       returnArray: true
@@ -70997,7 +71012,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.26.1';
+exports.version = '2.26.2';
 
 /***/ }),
 
