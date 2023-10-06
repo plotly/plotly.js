@@ -114,6 +114,12 @@ var configAttributes = {
         }
     },
 
+    editSelection: {
+        valType: 'boolean',
+        dflt: true,
+        description: 'Enables moving selections.'
+    },
+
     autosizable: {
         valType: 'boolean',
         dflt: false,

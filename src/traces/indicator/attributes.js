@@ -248,6 +248,22 @@ module.exports = {
                 'Set the font used to display the delta'
             ].join(' ')
         }),
+        prefix: {
+            valType: 'string',
+            dflt: '',
+            editType: 'plot',
+            description: [
+                'Sets a prefix appearing before the delta.'
+            ].join(' ')
+        },
+        suffix: {
+            valType: 'string',
+            dflt: '',
+            editType: 'plot',
+            description: [
+                'Sets a suffix appearing next to the delta.'
+            ].join(' ')
+        },
         editType: 'calc'
     },
     gauge: {
@@ -291,7 +307,7 @@ module.exports = {
                 dflt: true
             }),
             // tick and title properties named and function exactly as in axes
-            tickmode: axesAttrs.tickmode,
+            tickmode: axesAttrs.minor.tickmode,
             nticks: axesAttrs.nticks,
             tick0: axesAttrs.tick0,
             dtick: axesAttrs.dtick,
@@ -303,6 +319,7 @@ module.exports = {
             tickcolor: axesAttrs.tickcolor,
             ticklabelstep: axesAttrs.ticklabelstep,
             showticklabels: axesAttrs.showticklabels,
+            labelalias: axesAttrs.labelalias,
             tickfont: fontAttrs({
                 description: 'Sets the color bar\'s tick label font'
             }),

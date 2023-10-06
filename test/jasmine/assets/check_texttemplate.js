@@ -1,9 +1,9 @@
 'use strict';
 
-var Plotly = require('@lib/index');
-var Registry = require('@src/registry');
+var Plotly = require('../../../lib/index');
+var Registry = require('../../../src/registry');
 
-var Lib = require('@src/lib');
+var Lib = require('../../../src/lib');
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var failTest = require('../assets/fail_test');
@@ -72,7 +72,7 @@ module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
         tests.push(['%{customdata}', customdata]);
 
         // Generate meta
-        data[0].meta = {'colname': 'A'};
+        data[0].meta = {colname: 'A'};
         var metaSolution = [];
         for(i = 0; i < N; i++) {
             metaSolution.push(data[0].meta.colname);

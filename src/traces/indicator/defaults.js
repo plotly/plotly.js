@@ -63,6 +63,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce('delta.decreasing.symbol');
         coerce('delta.decreasing.color');
         coerce('delta.position');
+        coerce('delta.prefix');
+        coerce('delta.suffix');
         deltaFontSize = traceOut.delta.font.size;
     }
     traceOut._scaleNumbers = (!traceOut._hasNumber || auto[0]) && (!traceOut._hasDelta || auto[1]) || false;

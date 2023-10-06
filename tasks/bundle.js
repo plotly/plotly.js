@@ -3,7 +3,7 @@ var prependFile = require('prepend-file');
 
 var constants = require('./util/constants');
 var common = require('./util/common');
-var _bundle = require('./util/browserify_wrapper');
+var _bundle = require('./util/bundle_wrapper');
 
 var header = constants.licenseDist + '\n';
 var pathToPlotlyDist = constants.pathToPlotlyDist;
@@ -31,50 +31,47 @@ if(!doesFileExist(constants.pathToCSSBuild)) {
 // memory consumption.
 var tasks = [];
 
-// Browserify plotly.js
+// Bundle plotly.js
 tasks.push(function(done) {
     _bundle(pathToPlotlyIndex, pathToPlotlyDist, {
-        standalone: 'Plotly',
         pathToMinBundle: pathToPlotlyDistMin
     }, function() {
-        prependFile(pathToPlotlyDist, header, common.throwOnError);
-        prependFile(pathToPlotlyDistMin, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyDist, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyDistMin, header, common.throwOnError);
 
         done();
     });
 });
 
-// Browserify plotly.js-strict
+// Bundle plotly.js-strict
 tasks.push(function(done) {
     _bundle(pathToPlotlyStrict, pathToPlotlyStrictDist, {
-        standalone: 'Plotly',
         pathToMinBundle: pathToPlotlyStrictDistMin
     }, function() {
-        prependFile(pathToPlotlyStrictDist, header, common.throwOnError);
-        prependFile(pathToPlotlyStrictDistMin, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyStrictDist, header.replace('plotly.js', 'plotly.js (strict)'), common.throwOnError);
+        prependFile.sync(pathToPlotlyStrictDistMin, header.replace('plotly.js', 'plotly.js (strict - minified)'), common.throwOnError);
 
         done();
     });
 });
 
-// Browserify the geo assets
+// Bundle the geo assets
 tasks.push(function(done) {
     _bundle(pathToPlotlyGeoAssetsSrc, pathToPlotlyGeoAssetsDist, {
         standalone: 'PlotlyGeoAssets'
     }, function() {
-        prependFile(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
 
         done();
     });
 });
 
-// Browserify plotly.js with meta
+// Bundle plotly.js with meta
 tasks.push(function(done) {
     _bundle(pathToPlotlyIndex, pathToPlotlyDistWithMeta, {
-        standalone: 'Plotly',
         noCompress: true
     }, function() {
-        prependFile(pathToPlotlyDistWithMeta, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyDistWithMeta, header, common.throwOnError);
 
         done();
     });

@@ -1,9 +1,9 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
 
-var convert = require('@src/traces/densitymapbox/convert');
-var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
+var convert = require('../../../src/traces/densitymapbox/convert');
+var MAPBOX_ACCESS_TOKEN = require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -283,7 +283,7 @@ describe('Test densitymapbox hover:', function() {
         gd = createGraphDiv();
 
         var fig = Lib.extendDeep({},
-            s.mock || require('@mocks/mapbox_density0.json')
+            s.mock || require('../../image/mocks/mapbox_density0.json')
         );
 
         if(s.patch) {

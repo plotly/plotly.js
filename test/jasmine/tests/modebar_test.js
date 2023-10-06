@@ -1,11 +1,11 @@
 var d3Select = require('../../strict-d3').select;
 
-var createModeBar = require('@src/components/modebar/modebar');
-var manageModeBar = require('@src/components/modebar/manage');
+var createModeBar = require('../../../src/components/modebar/modebar');
+var manageModeBar = require('../../../src/components/modebar/manage');
 
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Registry = require('@src/registry');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Registry = require('../../../src/registry');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var selectButton = require('../assets/modebar_button');
@@ -996,6 +996,15 @@ describe('ModeBar', function() {
             expect(countButtons(gd._fullLayout._modeBar))
                 .toEqual(initialButtonCount + 6);
         });
+
+        it('sets up buttons without changing the input', function() {
+            var config = [['toImage']];
+            var gd = setupGraphInfo();
+            gd._context.modeBarButtons = config;
+            manageModeBar(gd);
+            expect(config).toEqual([['toImage']]);
+            expect(countButtons(gd._fullLayout._modeBar)).toEqual(2);
+        });
     });
 
     describe('modebar on clicks', function() {
@@ -1373,7 +1382,7 @@ describe('ModeBar', function() {
                         zoom: 8
                     }
                 }, {
-                    mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+                    mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
                 })
                 .then(function() {
                     _assert(10, 10, 8);

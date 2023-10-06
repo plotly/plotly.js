@@ -696,10 +696,6 @@
         "height": 496,
         "xaxis": {
             "title": {"text": "GDP per capita (2000 dollars)"},
-            "range": [
-                2.1277059579936974,
-                5.024737566733606
-            ],
             "domain": [
                 0,
                 1
@@ -736,7 +732,10 @@
             "position": 0,
             "mirror": "all",
             "overlaying": false,
-            "autorange": true
+            "autorange": true,
+            "autorangeoptions": {
+                "clipmin": "1e3"
+            }
         },
         "yaxis": {
             "title": {"text": "Life Expectancy (years)"},

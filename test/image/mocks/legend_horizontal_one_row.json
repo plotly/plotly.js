@@ -20,7 +20,8 @@
         }
     ],
     "layout": {
+        "height": 300,
         "title": {"text": "Average Distribution per Month"},
-        "legend": { "orientation": "h" }
+        "legend": { "orientation": "h", "title": { "text": "Legend Title", "side": "top center" }}
     }
 }

@@ -5,6 +5,7 @@ var Color = require('../../components/color');
 var Lib = require('../../lib');
 var helpers = require('../sunburst/helpers');
 var resizeText = require('../bar/uniform_text').resizeText;
+var fillOne = require('../sunburst/fill_one');
 
 function style(gd) {
     var s = gd._fullLayout._treemaplayer.selectAll('.trace');
@@ -18,14 +19,14 @@ function style(gd) {
         gTrace.style('opacity', trace.opacity);
 
         gTrace.selectAll('path.surface').each(function(pt) {
-            d3.select(this).call(styleOne, pt, trace, {
+            d3.select(this).call(styleOne, pt, trace, gd, {
                 hovered: false
             });
         });
     });
 }
 
-function styleOne(s, pt, trace, opts) {
+function styleOne(s, pt, trace, gd, opts) {
     var hovered = (opts || {}).hovered;
     var cdi = pt.data.data;
     var ptNumber = cdi.i;
@@ -80,8 +81,8 @@ function styleOne(s, pt, trace, opts) {
         }
     }
 
-    s.style('stroke-width', lineWidth)
-        .call(Color.fill, fillColor)
+    s.call(fillOne, pt, trace, gd, fillColor)
+        .style('stroke-width', lineWidth)
         .call(Color.stroke, lineColor)
         .style('opacity', opacity);
 }

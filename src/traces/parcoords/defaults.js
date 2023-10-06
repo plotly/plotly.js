@@ -107,4 +107,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('labelangle');
     coerce('labelside');
+
+    coerce('unselected.line.color');
+    coerce('unselected.line.opacity');
 };

@@ -2641,9 +2641,9 @@
                 "y": 1.3,
                 "z": 1
             },
-            "xaxis": { "nticks": 12 },
-            "yaxis": { "nticks": 12 },
-            "zaxis": { "nticks": 12 },
+            "xaxis": { "nticks": 12, "minallowed": 0.25 },
+            "yaxis": { "nticks": 12, "minallowed": 0.25 },
+            "zaxis": { "nticks": 12, "maxallowed": 0.75 },
             "camera": {
                 "eye": {
                     "x": -1.2,

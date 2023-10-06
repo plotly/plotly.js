@@ -35,6 +35,16 @@
       "font": {
         "size": 24
       }
+    },
+    "xaxis": {
+      "minor": {
+        "showgrid": true
+      }
+    },
+    "yaxis": {
+      "minor": {
+        "showgrid": true
+      }
     }
   }
 }

@@ -440,6 +440,16 @@
       "autorange": false,
       "tickmode": "array",
       "range": [0.4, 4.6],
+      "minor": {
+        "tickvals": [1.5, 2.5, 3.5],
+        "ticks": "inside",
+        "tickwidth": 100,
+        "ticklen": 5,
+        "tickcolor": "orange",
+        "gridcolor": "yellow",
+        "gridwidth": 100,
+        "griddash": "5px"
+      },
       "ticktext": ["2012", "2013", "2014", "2015"],
       "tickvals": [1, 2, 3, 4],
       "ticks": "",
@@ -537,7 +547,8 @@
         "size": 11.9552
       },
       "y": -0.4,
-      "orientation": "h"
+      "orientation": "h",
+      "title": { "text": "Legend Title", "side": "top right" }
     },
     "hovermode": "closest",
     "width": 680,

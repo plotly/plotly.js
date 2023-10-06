@@ -3,41 +3,6 @@ Depending on your needs you may require/import one of [the distributed plotly.js
 
 The sections below provide additional info in respect to alternative building frameworks.
 
-## Browserify example
-
-Given source file:
-```js
-// file: index.js
-var Plotly = require('plotly.js-dist-min');
-// ....
-```
-
-then simply run
-
-```sh
-browserify index.js > bundle.js
-```
-
----
-## Webpack
-
-For plotly.js to build with Webpack you will need to install [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json`. This adds Browserify transform compatibility to Webpack which is necessary for some plotly.js dependencies.
-
-A repo that demonstrates how to build plotly.js with Webpack can be found [here](https://github.com/plotly/plotly-webpack). In short add `ify-loader` to the `module` section in your `webpack.config.js`:
-
-```js
-...
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                loader: 'ify-loader'
-            }
-        ]
-    },
-...
-```
-
 ---
 ## Angular CLI
 

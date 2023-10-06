@@ -47,7 +47,8 @@ var stylesNonMapbox = {
             source: 'plotly-osm-tiles',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'white-bg': {
         id: 'white-bg',
@@ -59,7 +60,8 @@ var stylesNonMapbox = {
             paint: {'background-color': '#FFFFFF'},
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'carto-positron': {
         id: 'carto-positron',
@@ -78,7 +80,8 @@ var stylesNonMapbox = {
             source: 'plotly-carto-positron',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'carto-darkmatter': {
         id: 'carto-darkmatter',
@@ -97,7 +100,8 @@ var stylesNonMapbox = {
             source: 'plotly-carto-darkmatter',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'stamen-terrain': {
         id: 'stamen-terrain',
@@ -116,7 +120,8 @@ var stylesNonMapbox = {
             source: 'plotly-stamen-terrain',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'stamen-toner': {
         id: 'stamen-toner',
@@ -135,7 +140,8 @@ var stylesNonMapbox = {
             source: 'plotly-stamen-toner',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'stamen-watercolor': {
         id: 'stamen-watercolor',
@@ -154,7 +160,8 @@ var stylesNonMapbox = {
             source: 'plotly-stamen-watercolor',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     }
 };
 
@@ -213,12 +220,12 @@ module.exports = {
     styleRules: {
         map: 'overflow:hidden;position:relative;',
         'missing-css': 'display:none;',
-        'canary': 'background-color:salmon;',
+        canary: 'background-color:salmon;',
 
         // Reusing CSS directives from: https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.1/mapbox-gl.css
         'ctrl-bottom-left': 'position: absolute; pointer-events: none; z-index: 2; bottom: 0; left: 0;',
         'ctrl-bottom-right': 'position: absolute; pointer-events: none; z-index: 2; right: 0; bottom: 0;',
-        'ctrl': 'clear: both; pointer-events: auto; transform: translate(0, 0);',
+        ctrl: 'clear: both; pointer-events: auto; transform: translate(0, 0);',
 
         // Compact ctrl
         'ctrl-attrib.mapboxgl-compact .mapboxgl-ctrl-attrib-inner': 'display: none;',

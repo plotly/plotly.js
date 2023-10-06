@@ -56,13 +56,15 @@ if(process.argv.length > 2) {
     var out = args.out ? args.out : 'custom';
     var traces = inputArray(args.traces, allTraces);
     var transforms = inputArray(args.transforms, allTransforms);
+    var strict = inputBoolean(args.strict, false);
 
     var opts = {
         traceList: createList(['scatter'], traces, allTraces, 'trace'),
         transformList: createList([], transforms, allTransforms, 'transform'),
 
         name: out,
-        index: path.join(constants.pathToLib, 'index-' + out + '.js')
+        index: path.join(constants.pathToLib, 'index-' + (strict ? 'strict-' : '') + out + '.js'),
+        strict: strict,
     };
 
     if(unminified) {

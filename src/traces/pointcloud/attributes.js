@@ -53,7 +53,7 @@ module.exports = {
                 'Sets the marker fill color. It accepts a specific color.',
                 'If the color is not fully opaque and there are hundreds of thousands',
                 'of points, it may cause slower zooming and panning.'
-            ].join('')
+            ].join(' ')
         },
         opacity: {
             valType: 'number',

@@ -8,6 +8,7 @@ var isUnifiedHover = require('../fx/helpers').isUnifiedHover;
 var createModeBar = require('./modebar');
 var modeBarButtons = require('./buttons');
 var DRAW_MODES = require('./constants').DRAW_MODES;
+var extendDeep = require('../../lib').extendDeep;
 
 /**
  * ModeBar wrapper around 'create' and 'update',
@@ -330,7 +331,9 @@ function appendButtonsToGroups(groups, buttons) {
 }
 
 // fill in custom buttons referring to default mode bar buttons
-function fillCustomButton(customButtons) {
+function fillCustomButton(originalModeBarButtons) {
+    var customButtons = extendDeep([], originalModeBarButtons);
+
     for(var i = 0; i < customButtons.length; i++) {
         var buttonGroup = customButtons[i];
 

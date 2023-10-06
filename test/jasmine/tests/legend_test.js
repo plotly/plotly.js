@@ -1,11 +1,12 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
-var Legend = require('@src/components/legend');
-var getLegendData = require('@src/components/legend/get_legend_data');
-var helpers = require('@src/components/legend/helpers');
+var Legend = require('../../../src/components/legend');
+var getLegendData = require('../../../src/components/legend/get_legend_data');
+var helpers = require('../../../src/components/legend/helpers');
+var constants = require('../../../src/components/legend/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -16,9 +17,9 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
-var mock = require('@mocks/legend_horizontal.json');
+var mock = require('../../image/mocks/legend_horizontal.json');
 
-var Drawing = require('@src/components/drawing');
+var Drawing = require('../../../src/components/drawing');
 
 describe('legend defaults', function() {
     'use strict';
@@ -122,6 +123,31 @@ describe('legend defaults', function() {
         expect(layoutOut.legend.traceorder).toEqual('reversed');
     });
 
+    it('should default traceorder to reversed for stack bar charts | multi-legend case', function() {
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'bar', visible: 'legendonly'},
+            {legend: 'legend2', type: 'bar', visible: 'legendonly'},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'}
+        ]);
+
+        layoutOut.legend2 = {};
+        layoutOut.legend3 = {};
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('normal');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+
+        layoutOut.barmode = 'stack';
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('reversed');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+    });
+
     it('should default traceorder to reversed for filled tonext scatter charts', function() {
         fullData = allShown([
             {type: 'scatter'},
@@ -147,6 +173,30 @@ describe('legend defaults', function() {
         expect(layoutOut.legend.traceorder).toEqual('grouped+reversed');
     });
 
+    it('should default traceorder to grouped when a group is present | multi-legend case', function() {
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'scatter', legendgroup: 'group'},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'}
+        ]);
+
+        layoutOut.legend2 = {};
+        layoutOut.legend3 = {};
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('grouped');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+
+        fullData[1].fill = 'tonextx';
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('reversed+grouped');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+    });
+
     it('does not consider invisible traces for traceorder default', function() {
         fullData = allShown([
             {type: 'bar', visible: false},
@@ -166,6 +216,38 @@ describe('legend defaults', function() {
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('normal');
+    });
+
+    it('does not consider invisible traces for traceorder default | multi-legend case', function() {
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'bar', visible: false},
+            {legend: 'legend2', type: 'bar', visible: false},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'},
+        ]);
+
+        layoutOut.legend2 = {};
+        layoutOut.legend3 = {};
+
+        layoutOut.barmode = 'stack';
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('normal');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
+
+        fullData = allShown([
+            {type: 'scatter'},
+            {legend: 'legend2', type: 'scatter', legendgroup: 'group', visible: false},
+            {legend: 'legend2', type: 'scatter'},
+            {legend: 'legend3', type: 'scatter'}
+        ]);
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+        expect(layoutOut.legend2.traceorder).toEqual('normal');
+        expect(layoutOut.legend3.traceorder).toEqual('normal');
     });
 
     it('should default orientation to vertical', function() {
@@ -912,7 +994,7 @@ describe('legend relayout update', function() {
     afterEach(destroyGraphDiv);
 
     it('should hide and show the legend', function(done) {
-        var mockCopy = Lib.extendDeep({}, require('@mocks/0.json'), {layout: {
+        var mockCopy = Lib.extendDeep({}, require('../../image/mocks/0.json'), {layout: {
             legend: {x: 1.1, xanchor: 'left'},
             margin: {l: 50, r: 50, pad: 0},
             width: 500
@@ -943,7 +1025,7 @@ describe('legend relayout update', function() {
     });
 
     it('should update border styling', function(done) {
-        var mockCopy = Lib.extendDeep({}, require('@mocks/0.json'));
+        var mockCopy = Lib.extendDeep({}, require('../../image/mocks/0.json'));
 
         function assertLegendStyle(bgColor, borderColor, borderWidth) {
             var node = d3Select('g.legend').select('rect').node();
@@ -985,7 +1067,7 @@ describe('legend relayout update', function() {
         }
 
         it('it should translate markers', function(done) {
-            var mockCopy = Lib.extendDeep({}, require('@mocks/legend_valign_top.json'));
+            var mockCopy = Lib.extendDeep({}, require('../../image/mocks/legend_valign_top.json'));
 
             var top, middle, bottom;
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
@@ -1008,7 +1090,7 @@ describe('legend relayout update', function() {
 
     describe('with legendgroup', function() {
         it('changes the margin size to fit tracegroupgap', function(done) {
-            var mockCopy = Lib.extendDeep({}, require('@mocks/legendgroup_horizontal_wrapping.json'));
+            var mockCopy = Lib.extendDeep({}, require('../../image/mocks/legendgroup_horizontal_wrapping.json'));
             Plotly.newPlot(gd, mockCopy)
             .then(function() {
                 expect(gd._fullLayout._size.b).toBe(113);
@@ -1026,7 +1108,7 @@ describe('legend relayout update', function() {
     });
 
     it('should make legend fit in graph viewport', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/legend_negative_x.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/legend_negative_x.json'));
 
         function _assert(msg, xy, wh) {
             return function() {
@@ -1053,7 +1135,7 @@ describe('legend relayout update', function() {
     });
 
     it('should fit in graph viewport when changing legend.title.side', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/0.json'));
         fig.layout.legend = {
             title: {
                 text: 'legend title'
@@ -1121,6 +1203,74 @@ describe('legend relayout update', function() {
         })
         .then(done, done.fail);
     });
+
+    it('should clear an empty legend & add legend using react', function(done) {
+        var fig1 = {
+            data: [{y: [1, 2]}],
+            layout: {showlegend: true}
+        };
+
+        var fig2 = {
+            data: [],
+            layout: {showlegend: true}
+        };
+
+        Plotly.newPlot(gd, fig1)
+        .then(function() {
+            expect(d3SelectAll('.legend')[0].length).toBe(1);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig2);
+        })
+        .then(function() {
+            expect(d3SelectAll('.legend')[0].length).toBe(0);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig1);
+        })
+        .then(function() {
+            expect(d3SelectAll('.legend')[0].length).toBe(1);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should be able to add & clear multiple legends using react', function(done) {
+        var fig1 = {
+            data: [{
+                y: [1, 2, 3]
+            }]
+        };
+
+        var fig2 = {
+            data: [{
+                y: [1, 2, 3]
+            }, {
+                y: [3, 1, 2],
+                legend: 'legend2'
+            }],
+            layout: {
+                legend2: {y: 0.5}
+            }
+        };
+
+        Plotly.newPlot(gd, fig1)
+        .then(function() {
+            expect(d3SelectAll('.legend2')[0].length).toBe(0);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig2);
+        })
+        .then(function() {
+            expect(d3SelectAll('.legend2')[0].length).toBe(1);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig1);
+        })
+        .then(function() {
+            expect(d3SelectAll('.legend2')[0].length).toBe(0);
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('legend orientation change:', function() {
@@ -1129,7 +1279,7 @@ describe('legend orientation change:', function() {
     afterEach(destroyGraphDiv);
 
     it('should update plot background', function(done) {
-        var mock = require('@mocks/legend_horizontal_autowrap.json');
+        var mock = require('../../image/mocks/legend_horizontal_autowrap.json');
         var gd = createGraphDiv();
         var initialLegendBGColor;
 
@@ -1152,7 +1302,7 @@ describe('legend restyle update', function() {
     afterEach(destroyGraphDiv);
 
     it('should update trace toggle background rectangle', function(done) {
-        var mock = require('@mocks/0.json');
+        var mock = require('../../image/mocks/0.json');
         var mockCopy = Lib.extendDeep({}, mock);
         var gd = createGraphDiv();
 
@@ -1205,7 +1355,7 @@ describe('legend interaction', function() {
         var testEntry = 2;
 
         beforeAll(function(done) {
-            var mock = require('@mocks/pie_simple.json');
+            var mock = require('../../image/mocks/pie_simple.json');
             mockCopy = Lib.extendDeep({}, mock);
             gd = createGraphDiv();
 
@@ -1300,7 +1450,7 @@ describe('legend interaction', function() {
         var testEntry = 2;
 
         beforeAll(function(done) {
-            var mock = require('@mocks/29.json');
+            var mock = require('../../image/mocks/29.json');
             mockCopy = Lib.extendDeep({}, mock);
             gd = createGraphDiv();
 
@@ -1427,7 +1577,7 @@ describe('legend interaction', function() {
         }
 
         it('should ignore carpet traces when toggling', function(done) {
-            var _mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
+            var _mock = Lib.extendDeep({}, require('../../image/mocks/cheater.json'));
             var gd = createGraphDiv();
 
             Plotly.newPlot(gd, _mock).then(function() {
@@ -1550,6 +1700,67 @@ describe('legend interaction', function() {
                     {target: 2, value: {name: 'hoo'}}
                 ]);
                 assertLabels(['boo~~~', '1 (trace 1)', 'hoo        ', '           ', '4 (trace 1)']);
+            }).then(done, done.fail);
+        });
+    });
+
+    describe('editable mode interactions for shape legends', function() {
+        var gd;
+
+        var mock = {
+            data: [],
+            layout: {
+                shapes: [
+                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.1, y0: 0.2, x1: 0.2, y1: 0.1},
+                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.3, y0: 0.4, x1: 0.4, y1: 0.3},
+                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.5, y0: 0.6, x1: 0.6, y1: 0.5},
+                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.7, y0: 0.8, x1: 0.8, y1: 0.7},
+                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.9, y0: 1.0, x1: 1.0, y1: 0.9}
+                ]
+            },
+            config: {editable: true}
+        };
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock)).then(done);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function _setValue(index, str) {
+            var item = d3SelectAll('text.legendtext')[0][index || 0];
+            item.dispatchEvent(new MouseEvent('click'));
+            return delay(20)().then(function() {
+                var input = d3Select('.plugin-editable.editable');
+                input.text(str);
+                input.node().dispatchEvent(new KeyboardEvent('blur'));
+            }).then(delay(20));
+        }
+
+        function assertLabels(expected) {
+            var labels = [];
+            d3SelectAll('text.legendtext').each(function() {
+                labels.push(this.textContent);
+            });
+            expect(labels).toEqual(expected);
+        }
+
+        it('sets and unsets shape group names', function(done) {
+            assertLabels(['shape 0', 'shape 1', 'shape 2', 'shape 3', 'shape 4']);
+            // Set the name of the first shape:
+            _setValue(0, 'foo').then(function() {
+                expect(gd.layout.shapes[0].name).toEqual('foo');
+                // labels shorter than half the longest get padded with spaces to match the longest length
+                assertLabels(['foo    ', 'shape 1', 'shape 2', 'shape 3', 'shape 4']);
+
+                // Set the name of the third legend item:
+                return _setValue(3, 'barbar');
+            }).then(function() {
+                expect(gd.layout.shapes[3].name).toEqual('barbar');
+                assertLabels(['foo    ', 'shape 1', 'shape 2', 'barbar', 'shape 4']);
+
+                return _setValue(2, 'asdf');
             }).then(done, done.fail);
         });
     });
@@ -1701,6 +1912,13 @@ describe('legend interaction', function() {
             };
         }
 
+        function assertVisibleShapes(expectation) {
+            return function() {
+                var actual = extractVisibilities(gd._fullLayout.shapes);
+                expect(actual).toEqual(expectation);
+            };
+        }
+
         describe('for regular traces', function() {
             beforeEach(function(done) {
                 Plotly.newPlot(gd, [
@@ -1739,6 +1957,114 @@ describe('legend interaction', function() {
                 Promise.resolve()
                     .then(click(0, 2))
                     .then(assertVisible([false, true, true]))
+                    .then(done, done.fail);
+            });
+        });
+
+        describe('for regular traces in different legends', function() {
+            beforeEach(function(done) {
+                Plotly.newPlot(gd, [
+                    {x: [1, 2], y: [0, 1], visible: false},
+                    {x: [1, 2], y: [1, 2], visible: 'legendonly'},
+                    {x: [1, 2], y: [2, 3]},
+                    {x: [1, 2], y: [0, 1], yaxis: 'y2', legend: 'legend2', visible: false},
+                    {x: [1, 2], y: [1, 2], yaxis: 'y2', legend: 'legend2', visible: 'legendonly'},
+                    {x: [1, 2], y: [2, 3], yaxis: 'y2', legend: 'legend2'}
+                ], {
+                    yaxis: {
+                        domain: [0.55, 1]
+                    },
+                    yaxis2: {
+                        anchor: 'x',
+                        domain: [0, 0.45]
+                    },
+                    legend2: {
+                        y: 0.5
+                    }
+                }).then(done);
+            });
+
+            it('clicking once toggles legendonly -> true', function(done) {
+                Promise.resolve()
+                    .then(assertVisible([false, 'legendonly', true, false, 'legendonly', true]))
+                    .then(click(0))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+
+            it('clicking once toggles true -> legendonly', function(done) {
+                Promise.resolve()
+                    .then(assertVisible([false, 'legendonly', true, false, 'legendonly', true]))
+                    .then(click(1))
+                    .then(assertVisible([false, 'legendonly', 'legendonly', false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+
+            it('double-clicking isolates a visible trace ', function(done) {
+                Promise.resolve()
+                    .then(click(0))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, 'legendonly', false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+
+            it('double-clicking an isolated trace shows all non-hidden traces', function(done) {
+                Promise.resolve()
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
+
+                    // isolate it
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, 'legendonly', false, 'legendonly', true]))
+
+                    // unhide it again
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, true, false, 'legendonly', true]))
+                    .then(done, done.fail);
+            });
+        });
+
+        describe('click shape legends', function() {
+            beforeEach(function(done) {
+                Plotly.newPlot(gd, [], {
+                    shapes: [
+                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.1, y0: 0.2, x1: 0.2, y1: 0.1, visible: false},
+                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.3, y0: 0.4, x1: 0.4, y1: 0.3, visible: 'legendonly'},
+                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.5, y0: 0.6, x1: 0.6, y1: 0.5}
+                    ]
+                }).then(done);
+            });
+
+            it('clicking once toggles legendonly -> true', function(done) {
+                Promise.resolve()
+                    .then(assertVisibleShapes([false, 'legendonly', true]))
+                    .then(click(0))
+                    .then(assertVisibleShapes([false, true, true]))
+                    .then(done, done.fail);
+            });
+
+            it('clicking once toggles true -> legendonly', function(done) {
+                Promise.resolve()
+                    .then(assertVisibleShapes([false, 'legendonly', true]))
+                    .then(click(1))
+                    .then(assertVisibleShapes([false, 'legendonly', 'legendonly']))
+                    .then(done, done.fail);
+            });
+
+            it('double-clicking isolates a visible shape', function(done) {
+                Promise.resolve()
+                    .then(click(0))
+                    .then(assertVisibleShapes([false, true, true]))
+                    .then(click(0, 2))
+                    .then(assertVisibleShapes([false, true, 'legendonly']))
+                    .then(done, done.fail);
+            });
+
+            it('double-clicking an isolated trace shows all non-hidden shapes', function(done) {
+                Promise.resolve()
+                    .then(click(0, 2))
+                    .then(assertVisibleShapes([false, true, true]))
                     .then(done, done.fail);
             });
         });
@@ -1954,7 +2280,7 @@ describe('legend interaction', function() {
             var fig, to;
 
             beforeEach(function() {
-                fig = Lib.extendDeep({}, require('@mocks/0.json'));
+                fig = Lib.extendDeep({}, require('../../image/mocks/0.json'));
             });
 
             afterEach(function() {
@@ -2242,6 +2568,78 @@ describe('legend interaction', function() {
                 .then(done, done.fail);
             }, 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
         });
+
+        describe('should honor *itemclick* and *itemdoubleclick* settings | case of pie in multiple legends', function() {
+            var _assert;
+
+            function run() {
+                return Promise.resolve()
+                    .then(click(0, 1)).then(_assert(['legendonly', true, true, true, true, true]))
+                    .then(click(0, 1)).then(_assert([true, true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, 'legendonly', 'legendonly', true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, true, true, true, true, true]))
+                    .then(function() {
+                        return Plotly.relayout(gd, {
+                            'legend.itemclick': false,
+                            'legend.itemdoubleclick': false
+                        });
+                    })
+                    .then(delay(100))
+                    .then(click(0, 1)).then(_assert([true, true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, true, true, true, true, true]))
+                    .then(function() {
+                        return Plotly.relayout(gd, {
+                            'legend.itemclick': 'toggleothers',
+                            'legend.itemdoubleclick': 'toggle'
+                        });
+                    })
+                    .then(delay(100))
+                    .then(click(0, 1)).then(_assert([true, 'legendonly', 'legendonly', true, true, true]))
+                    .then(click(0, 1)).then(_assert([true, true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert(['legendonly', true, true, true, true, true]))
+                    .then(click(0, 2)).then(_assert([true, true, true, true, true, true]));
+            }
+
+            _assert = function(_exp) {
+                return function() {
+                    var exp = [];
+                    if(_exp[0] === 'legendonly') exp.push('F');
+                    if(_exp[1] === 'legendonly') exp.push('E');
+                    if(_exp[2] === 'legendonly') exp.push('D');
+                    if(_exp[3] === 'legendonly') exp.push('C');
+                    if(_exp[4] === 'legendonly') exp.push('B');
+                    if(_exp[5] === 'legendonly') exp.push('A');
+                    expect(gd._fullLayout.hiddenlabels || []).toEqual(exp);
+                };
+            };
+
+            it('- pie case | multiple legends', function(done) {
+                Plotly.newPlot(gd, [{
+                    legend: 'legend2',
+                    type: 'pie',
+                    labels: ['A', 'B', 'C'],
+                    values: [1, 2, 3],
+                    domain: {
+                        y: [0, 0.45]
+                    }
+                }, {
+                    type: 'pie',
+                    labels: ['D', 'E', 'F'],
+                    values: [1, 2, 3],
+                    domain: {
+                        y: [0.55, 1]
+                    }
+                }], {
+                    legend2: {
+                        y: 0.35
+                    },
+                    width: 500,
+                    height: 500
+                })
+                .then(run)
+                .then(done, done.fail);
+            }, 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+        });
     });
 });
 
@@ -2344,4 +2742,120 @@ describe('legend with custom doubleClickDelay', function() {
         .then(_assert('[short] after click + (1.1*t) delay + click', 2, 0))
         .then(done, done.fail);
     }, 3 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+
+    it('custom plotly_legenddoubleclick handler should fire even when plotly_legendclick has been cancelled', function(done) {
+        var tShort = 0.75 * DBLCLICKDELAY;
+        var dblClickCnt = 0;
+        var newPlot = function(fig) {
+            return Plotly.newPlot(gd, fig).then(function() {
+                gd.on('plotly_legendclick', function() { return false; });
+                gd.on('plotly_legenddoubleclick', function() { dblClickCnt++; });
+            });
+        };
+
+        function _assert(msg, _dblClickCnt) {
+            return function() {
+                expect(dblClickCnt).toBe(_dblClickCnt, msg + '| dblClickCnt');
+                dblClickCnt = 0;
+            };
+        }
+
+        newPlot({
+            data: [
+                {y: [1, 2, 1]},
+                {y: [2, 1, 2]}
+            ],
+            layout: {},
+            config: {}
+        })
+        .then(click(0))
+        .then(delay(tShort))
+        .then(click(0))
+        .then(_assert('Double click increases count', 1))
+        .then(done);
+    }, 3 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+});
+
+describe('legend with custom legendwidth', function() {
+    var gd;
+
+    var data = [
+        {x: [1, 2, 1], y: [1, 2, 1], name: 'legend text 1'},
+        {x: [2, 1, 2], y: [2, 1, 2], name: 'legend text 12'},
+        {x: [2, 3, 4], y: [2, 3, 4], name: 'legend text 123'}
+    ];
+
+    var layout = {
+        legend: {
+            orientation: 'h'
+        }
+    };
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertLegendTextWidth(variants) {
+        var nodes = d3SelectAll('rect.legendtoggle');
+        var index = 0;
+        nodes.each(function() {
+            var node = d3Select(this);
+            var w = +node.attr('width');
+            if(variants[index]) expect(w).toEqual(variants[index]);
+            index += 1;
+        });
+    }
+
+    it('should change width when trace has legendwidth', function(done) {
+        var extendedData = Lib.extendDeep([], data);
+        extendedData.forEach(function(trace, index) {
+            trace.legendwidth = (index + 1) * 50;
+        });
+
+        var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
+
+        Plotly.newPlot(gd, {data: extendedData, layout: layout}).then(function() {
+            assertLegendTextWidth([50 + textGap, 100 + textGap, 150 + textGap]);
+        }).then(done);
+    });
+
+    it('should change width when legend has entrywidth', function(done) {
+        var extendedLayout = Lib.extendDeep({}, layout);
+        var width = 50;
+        extendedLayout.legend.entrywidth = width;
+
+        var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
+
+        Plotly.newPlot(gd, {data: data, layout: extendedLayout}).then(function() {
+            assertLegendTextWidth([width + textGap, width + textGap, width + textGap]);
+        }).then(done);
+    });
+
+    it('should change group width when trace has legendwidth', function(done) {
+        var extendedLayout = Lib.extendDeep([], layout);
+        extendedLayout.legend.traceorder = 'grouped';
+
+        var extendedData = Lib.extendDeep([], data);
+        extendedData[0].legendwidth = 100;
+        extendedData[0].legendgroup = 'test';
+        extendedData[1].legendgroup = 'test';
+
+        var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
+
+        Plotly.newPlot(gd, {data: extendedData, layout: extendedLayout}).then(function() {
+            assertLegendTextWidth([100 + textGap, 100 + textGap, undefined]);
+        }).then(done);
+    });
+
+    it('should change width when legend has entrywidth and entrywidthmode is fraction', function(done) {
+        var extendedLayout = Lib.extendDeep({}, layout);
+        extendedLayout.legend.entrywidthmode = 'fraction';
+        extendedLayout.legend.entrywidth = 0.3;
+
+        Plotly.newPlot(gd, {data: data, layout: extendedLayout}).then(function() {
+            assertLegendTextWidth([162, 162, 162]);
+        }).then(done);
+    });
 });

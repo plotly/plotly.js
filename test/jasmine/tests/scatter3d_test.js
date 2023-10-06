@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Color = require('@src/components/color');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Color = require('../../../src/components/color');
 
-var Scatter3D = require('@src/traces/scatter3d');
+var Scatter3D = require('../../../src/traces/scatter3d');
 
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -116,7 +116,7 @@ describe('Test scatter3d interactions:', function() {
 
     // lines, markers, text, error bars and surfaces each
     // correspond to one glplot object
-    var mock = require('@mocks/gl3d_marker-arrays.json');
+    var mock = require('../../image/mocks/gl3d_marker-arrays.json');
     var mock2 = Lib.extendDeep({}, mock);
     mock2.data[0].mode = 'lines+markers+text';
     mock2.data[0].error_z = { value: 10 };
@@ -326,6 +326,23 @@ describe('Test scatter3d interactions:', function() {
             Plotly.restyle(gd, 'opacity', 0.5).then(function() {
                 expect(gd._fullLayout.scene._scene.glplot.objects[0].hasAlpha).toEqual(true);
             });
+        })
+        .then(done, done.fail);
+    });
+
+    it('@gl markers should be transparent when marker.opacity is 0', function(done) {
+        Plotly.newPlot(gd, [
+            {
+                type: 'scatter3d',
+                x: [0],
+                y: [0],
+                z: [0],
+                mode: 'markers',
+                marker: { opacity: 0 }
+            },
+        ])
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.glplot.objects[0].opacity).toEqual(0);
         })
         .then(done, done.fail);
     });

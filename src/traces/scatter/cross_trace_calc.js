@@ -1,6 +1,42 @@
 'use strict';
 
 var calc = require('./calc');
+var setGroupPositions = require('../bar/cross_trace_calc').setGroupPositions;
+
+function groupCrossTraceCalc(gd, plotinfo) {
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+
+    var fullLayout = gd._fullLayout;
+    var fullTraces = gd._fullData;
+    var calcTraces = gd.calcdata;
+    var calcTracesHorz = [];
+    var calcTracesVert = [];
+
+    for(var i = 0; i < fullTraces.length; i++) {
+        var fullTrace = fullTraces[i];
+        if(
+            fullTrace.visible === true &&
+            fullTrace.type === 'scatter' &&
+            fullTrace.xaxis === xa._id &&
+            fullTrace.yaxis === ya._id
+        ) {
+            if(fullTrace.orientation === 'h') {
+                calcTracesHorz.push(calcTraces[i]);
+            } else if(fullTrace.orientation === 'v') { // check for v since certain scatter traces may not have an orientation
+                calcTracesVert.push(calcTraces[i]);
+            }
+        }
+    }
+
+    var opts = {
+        mode: fullLayout.scattermode,
+        gap: fullLayout.scattergap
+    };
+
+    setGroupPositions(gd, xa, ya, calcTracesVert, opts);
+    setGroupPositions(gd, ya, xa, calcTracesHorz, opts);
+}
 
 /*
  * Scatter stacking & normalization calculations
@@ -8,6 +44,10 @@ var calc = require('./calc');
  */
 
 module.exports = function crossTraceCalc(gd, plotinfo) {
+    if(gd._fullLayout.scattermode === 'group') {
+        groupCrossTraceCalc(gd, plotinfo);
+    }
+
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var subplot = xa._id + ya._id;

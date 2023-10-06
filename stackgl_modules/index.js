@@ -1,5 +1,1849 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.stackgl = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(_glvis_,module,exports){
-'use strict'
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["Stackgl"] = factory();
+	else
+		root["Stackgl"] = factory();
+})(self, function() {
+return /******/ (function() { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 7386:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = {
+  alpha_shape: __webpack_require__(2350),
+  convex_hull: __webpack_require__(5537),
+  delaunay_triangulate: __webpack_require__(4419),
+  gl_cone3d: __webpack_require__(1140),
+  gl_error3d: __webpack_require__(3110),
+  gl_heatmap2d: __webpack_require__(6386),
+  gl_line3d: __webpack_require__(6086),
+  gl_mesh3d: __webpack_require__(8116),
+  gl_plot2d: __webpack_require__(2117),
+  gl_plot3d: __webpack_require__(1059),
+  gl_pointcloud2d: __webpack_require__(8271),
+  gl_scatter3d: __webpack_require__(2182),
+  gl_select_box: __webpack_require__(6623),
+  gl_spikes2d: __webpack_require__(3050),
+  gl_streamtube3d: __webpack_require__(7307),
+  gl_surface3d: __webpack_require__(3754),
+  ndarray: __webpack_require__(5050),
+  ndarray_linear_interpolate: __webpack_require__(3581)
+};
+
+/***/ }),
+
+/***/ 2146:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+var __webpack_unused_export__;
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <https://feross.org>
+ * @license  MIT
+ */
+/* eslint-disable no-proto */
+
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+var base64 = __webpack_require__(3910);
+var ieee754 = __webpack_require__(3187);
+var customInspectSymbol = typeof Symbol === 'function' && typeof Symbol['for'] === 'function' // eslint-disable-line dot-notation
+? Symbol['for']('nodejs.util.inspect.custom') // eslint-disable-line dot-notation
+: null;
+exports.lW = Buffer;
+__webpack_unused_export__ = SlowBuffer;
+exports.h2 = 50;
+var K_MAX_LENGTH = 0x7fffffff;
+__webpack_unused_export__ = K_MAX_LENGTH;
+
+/**
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
+ *   === true    Use Uint8Array implementation (fastest)
+ *   === false   Print warning and recommend using `buffer` v4.x which has an Object
+ *               implementation (most compatible, even IE6)
+ *
+ * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+ * Opera 11.6+, iOS 4.2+.
+ *
+ * We report that the browser does not support typed arrays if the are not subclassable
+ * using __proto__. Firefox 4-29 lacks support for adding new properties to `Uint8Array`
+ * (See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438). IE 10 lacks support
+ * for __proto__ and has a buggy typed array implementation.
+ */
+Buffer.TYPED_ARRAY_SUPPORT = typedArraySupport();
+if (!Buffer.TYPED_ARRAY_SUPPORT && typeof console !== 'undefined' && typeof console.error === 'function') {
+  console.error('This browser lacks typed array (Uint8Array) support which is required by ' + '`buffer` v5.x. Use `buffer` v4.x if you require old browser support.');
+}
+function typedArraySupport() {
+  // Can typed array instances can be augmented?
+  try {
+    var arr = new Uint8Array(1);
+    var proto = {
+      foo: function foo() {
+        return 42;
+      }
+    };
+    Object.setPrototypeOf(proto, Uint8Array.prototype);
+    Object.setPrototypeOf(arr, proto);
+    return arr.foo() === 42;
+  } catch (e) {
+    return false;
+  }
+}
+Object.defineProperty(Buffer.prototype, 'parent', {
+  enumerable: true,
+  get: function get() {
+    if (!Buffer.isBuffer(this)) return undefined;
+    return this.buffer;
+  }
+});
+Object.defineProperty(Buffer.prototype, 'offset', {
+  enumerable: true,
+  get: function get() {
+    if (!Buffer.isBuffer(this)) return undefined;
+    return this.byteOffset;
+  }
+});
+function createBuffer(length) {
+  if (length > K_MAX_LENGTH) {
+    throw new RangeError('The value "' + length + '" is invalid for option "size"');
+  }
+  // Return an augmented `Uint8Array` instance
+  var buf = new Uint8Array(length);
+  Object.setPrototypeOf(buf, Buffer.prototype);
+  return buf;
+}
+
+/**
+ * The Buffer constructor returns instances of `Uint8Array` that have their
+ * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+ * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+ * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+ * returns a single octet.
+ *
+ * The `Uint8Array` prototype remains unmodified.
+ */
+
+function Buffer(arg, encodingOrOffset, length) {
+  // Common case.
+  if (typeof arg === 'number') {
+    if (typeof encodingOrOffset === 'string') {
+      throw new TypeError('The "string" argument must be of type string. Received type number');
+    }
+    return allocUnsafe(arg);
+  }
+  return from(arg, encodingOrOffset, length);
+}
+Buffer.poolSize = 8192; // not used by this implementation
+
+function from(value, encodingOrOffset, length) {
+  if (typeof value === 'string') {
+    return fromString(value, encodingOrOffset);
+  }
+  if (ArrayBuffer.isView(value)) {
+    return fromArrayView(value);
+  }
+  if (value == null) {
+    throw new TypeError('The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' + 'or Array-like Object. Received type ' + _typeof(value));
+  }
+  if (isInstance(value, ArrayBuffer) || value && isInstance(value.buffer, ArrayBuffer)) {
+    return fromArrayBuffer(value, encodingOrOffset, length);
+  }
+  if (typeof SharedArrayBuffer !== 'undefined' && (isInstance(value, SharedArrayBuffer) || value && isInstance(value.buffer, SharedArrayBuffer))) {
+    return fromArrayBuffer(value, encodingOrOffset, length);
+  }
+  if (typeof value === 'number') {
+    throw new TypeError('The "value" argument must not be of type number. Received type number');
+  }
+  var valueOf = value.valueOf && value.valueOf();
+  if (valueOf != null && valueOf !== value) {
+    return Buffer.from(valueOf, encodingOrOffset, length);
+  }
+  var b = fromObject(value);
+  if (b) return b;
+  if (typeof Symbol !== 'undefined' && Symbol.toPrimitive != null && typeof value[Symbol.toPrimitive] === 'function') {
+    return Buffer.from(value[Symbol.toPrimitive]('string'), encodingOrOffset, length);
+  }
+  throw new TypeError('The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' + 'or Array-like Object. Received type ' + _typeof(value));
+}
+
+/**
+ * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+ * if value is a number.
+ * Buffer.from(str[, encoding])
+ * Buffer.from(array)
+ * Buffer.from(buffer)
+ * Buffer.from(arrayBuffer[, byteOffset[, length]])
+ **/
+Buffer.from = function (value, encodingOrOffset, length) {
+  return from(value, encodingOrOffset, length);
+};
+
+// Note: Change prototype *after* Buffer.from is defined to workaround Chrome bug:
+// https://github.com/feross/buffer/pull/148
+Object.setPrototypeOf(Buffer.prototype, Uint8Array.prototype);
+Object.setPrototypeOf(Buffer, Uint8Array);
+function assertSize(size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('"size" argument must be of type number');
+  } else if (size < 0) {
+    throw new RangeError('The value "' + size + '" is invalid for option "size"');
+  }
+}
+function alloc(size, fill, encoding) {
+  assertSize(size);
+  if (size <= 0) {
+    return createBuffer(size);
+  }
+  if (fill !== undefined) {
+    // Only pay attention to encoding if it's a string. This
+    // prevents accidentally sending in a number that would
+    // be interpreted as a start offset.
+    return typeof encoding === 'string' ? createBuffer(size).fill(fill, encoding) : createBuffer(size).fill(fill);
+  }
+  return createBuffer(size);
+}
+
+/**
+ * Creates a new filled Buffer instance.
+ * alloc(size[, fill[, encoding]])
+ **/
+Buffer.alloc = function (size, fill, encoding) {
+  return alloc(size, fill, encoding);
+};
+function allocUnsafe(size) {
+  assertSize(size);
+  return createBuffer(size < 0 ? 0 : checked(size) | 0);
+}
+
+/**
+ * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+ * */
+Buffer.allocUnsafe = function (size) {
+  return allocUnsafe(size);
+};
+/**
+ * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+ */
+Buffer.allocUnsafeSlow = function (size) {
+  return allocUnsafe(size);
+};
+function fromString(string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') {
+    encoding = 'utf8';
+  }
+  if (!Buffer.isEncoding(encoding)) {
+    throw new TypeError('Unknown encoding: ' + encoding);
+  }
+  var length = byteLength(string, encoding) | 0;
+  var buf = createBuffer(length);
+  var actual = buf.write(string, encoding);
+  if (actual !== length) {
+    // Writing a hex string, for example, that contains invalid characters will
+    // cause everything after the first invalid character to be ignored. (e.g.
+    // 'abxxcd' will be treated as 'ab')
+    buf = buf.slice(0, actual);
+  }
+  return buf;
+}
+function fromArrayLike(array) {
+  var length = array.length < 0 ? 0 : checked(array.length) | 0;
+  var buf = createBuffer(length);
+  for (var i = 0; i < length; i += 1) {
+    buf[i] = array[i] & 255;
+  }
+  return buf;
+}
+function fromArrayView(arrayView) {
+  if (isInstance(arrayView, Uint8Array)) {
+    var copy = new Uint8Array(arrayView);
+    return fromArrayBuffer(copy.buffer, copy.byteOffset, copy.byteLength);
+  }
+  return fromArrayLike(arrayView);
+}
+function fromArrayBuffer(array, byteOffset, length) {
+  if (byteOffset < 0 || array.byteLength < byteOffset) {
+    throw new RangeError('"offset" is outside of buffer bounds');
+  }
+  if (array.byteLength < byteOffset + (length || 0)) {
+    throw new RangeError('"length" is outside of buffer bounds');
+  }
+  var buf;
+  if (byteOffset === undefined && length === undefined) {
+    buf = new Uint8Array(array);
+  } else if (length === undefined) {
+    buf = new Uint8Array(array, byteOffset);
+  } else {
+    buf = new Uint8Array(array, byteOffset, length);
+  }
+
+  // Return an augmented `Uint8Array` instance
+  Object.setPrototypeOf(buf, Buffer.prototype);
+  return buf;
+}
+function fromObject(obj) {
+  if (Buffer.isBuffer(obj)) {
+    var len = checked(obj.length) | 0;
+    var buf = createBuffer(len);
+    if (buf.length === 0) {
+      return buf;
+    }
+    obj.copy(buf, 0, 0, len);
+    return buf;
+  }
+  if (obj.length !== undefined) {
+    if (typeof obj.length !== 'number' || numberIsNaN(obj.length)) {
+      return createBuffer(0);
+    }
+    return fromArrayLike(obj);
+  }
+  if (obj.type === 'Buffer' && Array.isArray(obj.data)) {
+    return fromArrayLike(obj.data);
+  }
+}
+function checked(length) {
+  // Note: cannot use `length < K_MAX_LENGTH` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= K_MAX_LENGTH) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' + 'size: 0x' + K_MAX_LENGTH.toString(16) + ' bytes');
+  }
+  return length | 0;
+}
+function SlowBuffer(length) {
+  if (+length != length) {
+    // eslint-disable-line eqeqeq
+    length = 0;
+  }
+  return Buffer.alloc(+length);
+}
+Buffer.isBuffer = function isBuffer(b) {
+  return b != null && b._isBuffer === true && b !== Buffer.prototype; // so Buffer.isBuffer(Buffer.prototype) will be false
+};
+
+Buffer.compare = function compare(a, b) {
+  if (isInstance(a, Uint8Array)) a = Buffer.from(a, a.offset, a.byteLength);
+  if (isInstance(b, Uint8Array)) b = Buffer.from(b, b.offset, b.byteLength);
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+    throw new TypeError('The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array');
+  }
+  if (a === b) return 0;
+  var x = a.length;
+  var y = b.length;
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i];
+      y = b[i];
+      break;
+    }
+  }
+  if (x < y) return -1;
+  if (y < x) return 1;
+  return 0;
+};
+Buffer.isEncoding = function isEncoding(encoding) {
+  switch (String(encoding).toLowerCase()) {
+    case 'hex':
+    case 'utf8':
+    case 'utf-8':
+    case 'ascii':
+    case 'latin1':
+    case 'binary':
+    case 'base64':
+    case 'ucs2':
+    case 'ucs-2':
+    case 'utf16le':
+    case 'utf-16le':
+      return true;
+    default:
+      return false;
+  }
+};
+Buffer.concat = function concat(list, length) {
+  if (!Array.isArray(list)) {
+    throw new TypeError('"list" argument must be an Array of Buffers');
+  }
+  if (list.length === 0) {
+    return Buffer.alloc(0);
+  }
+  var i;
+  if (length === undefined) {
+    length = 0;
+    for (i = 0; i < list.length; ++i) {
+      length += list[i].length;
+    }
+  }
+  var buffer = Buffer.allocUnsafe(length);
+  var pos = 0;
+  for (i = 0; i < list.length; ++i) {
+    var buf = list[i];
+    if (isInstance(buf, Uint8Array)) {
+      if (pos + buf.length > buffer.length) {
+        if (!Buffer.isBuffer(buf)) buf = Buffer.from(buf);
+        buf.copy(buffer, pos);
+      } else {
+        Uint8Array.prototype.set.call(buffer, buf, pos);
+      }
+    } else if (!Buffer.isBuffer(buf)) {
+      throw new TypeError('"list" argument must be an Array of Buffers');
+    } else {
+      buf.copy(buffer, pos);
+    }
+    pos += buf.length;
+  }
+  return buffer;
+};
+function byteLength(string, encoding) {
+  if (Buffer.isBuffer(string)) {
+    return string.length;
+  }
+  if (ArrayBuffer.isView(string) || isInstance(string, ArrayBuffer)) {
+    return string.byteLength;
+  }
+  if (typeof string !== 'string') {
+    throw new TypeError('The "string" argument must be one of type string, Buffer, or ArrayBuffer. ' + 'Received type ' + _typeof(string));
+  }
+  var len = string.length;
+  var mustMatch = arguments.length > 2 && arguments[2] === true;
+  if (!mustMatch && len === 0) return 0;
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false;
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'latin1':
+      case 'binary':
+        return len;
+      case 'utf8':
+      case 'utf-8':
+        return utf8ToBytes(string).length;
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2;
+      case 'hex':
+        return len >>> 1;
+      case 'base64':
+        return base64ToBytes(string).length;
+      default:
+        if (loweredCase) {
+          return mustMatch ? -1 : utf8ToBytes(string).length; // assume utf8
+        }
+
+        encoding = ('' + encoding).toLowerCase();
+        loweredCase = true;
+    }
+  }
+}
+Buffer.byteLength = byteLength;
+function slowToString(encoding, start, end) {
+  var loweredCase = false;
+
+  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+  // property of a typed array.
+
+  // This behaves neither like String nor Uint8Array in that we set start/end
+  // to their upper/lower bounds if the value passed is out of range.
+  // undefined is handled specially as per ECMA-262 6th Edition,
+  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+  if (start === undefined || start < 0) {
+    start = 0;
+  }
+  // Return early if start > this.length. Done here to prevent potential uint32
+  // coercion fail below.
+  if (start > this.length) {
+    return '';
+  }
+  if (end === undefined || end > this.length) {
+    end = this.length;
+  }
+  if (end <= 0) {
+    return '';
+  }
+
+  // Force coercion to uint32. This will also coerce falsey/NaN values to 0.
+  end >>>= 0;
+  start >>>= 0;
+  if (end <= start) {
+    return '';
+  }
+  if (!encoding) encoding = 'utf8';
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end);
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end);
+      case 'ascii':
+        return asciiSlice(this, start, end);
+      case 'latin1':
+      case 'binary':
+        return latin1Slice(this, start, end);
+      case 'base64':
+        return base64Slice(this, start, end);
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end);
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding);
+        encoding = (encoding + '').toLowerCase();
+        loweredCase = true;
+    }
+  }
+}
+
+// This property is used by `Buffer.isBuffer` (and the `is-buffer` npm package)
+// to detect a Buffer instance. It's not possible to use `instanceof Buffer`
+// reliably in a browserify context because there could be multiple different
+// copies of the 'buffer' package in use. This method works even for Buffer
+// instances that were created from another copy of the `buffer` package.
+// See: https://github.com/feross/buffer/issues/154
+Buffer.prototype._isBuffer = true;
+function swap(b, n, m) {
+  var i = b[n];
+  b[n] = b[m];
+  b[m] = i;
+}
+Buffer.prototype.swap16 = function swap16() {
+  var len = this.length;
+  if (len % 2 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 16-bits');
+  }
+  for (var i = 0; i < len; i += 2) {
+    swap(this, i, i + 1);
+  }
+  return this;
+};
+Buffer.prototype.swap32 = function swap32() {
+  var len = this.length;
+  if (len % 4 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 32-bits');
+  }
+  for (var i = 0; i < len; i += 4) {
+    swap(this, i, i + 3);
+    swap(this, i + 1, i + 2);
+  }
+  return this;
+};
+Buffer.prototype.swap64 = function swap64() {
+  var len = this.length;
+  if (len % 8 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 64-bits');
+  }
+  for (var i = 0; i < len; i += 8) {
+    swap(this, i, i + 7);
+    swap(this, i + 1, i + 6);
+    swap(this, i + 2, i + 5);
+    swap(this, i + 3, i + 4);
+  }
+  return this;
+};
+Buffer.prototype.toString = function toString() {
+  var length = this.length;
+  if (length === 0) return '';
+  if (arguments.length === 0) return utf8Slice(this, 0, length);
+  return slowToString.apply(this, arguments);
+};
+Buffer.prototype.toLocaleString = Buffer.prototype.toString;
+Buffer.prototype.equals = function equals(b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer');
+  if (this === b) return true;
+  return Buffer.compare(this, b) === 0;
+};
+Buffer.prototype.inspect = function inspect() {
+  var str = '';
+  var max = exports.h2;
+  str = this.toString('hex', 0, max).replace(/(.{2})/g, '$1 ').trim();
+  if (this.length > max) str += ' ... ';
+  return '<Buffer ' + str + '>';
+};
+if (customInspectSymbol) {
+  Buffer.prototype[customInspectSymbol] = Buffer.prototype.inspect;
+}
+Buffer.prototype.compare = function compare(target, start, end, thisStart, thisEnd) {
+  if (isInstance(target, Uint8Array)) {
+    target = Buffer.from(target, target.offset, target.byteLength);
+  }
+  if (!Buffer.isBuffer(target)) {
+    throw new TypeError('The "target" argument must be one of type Buffer or Uint8Array. ' + 'Received type ' + _typeof(target));
+  }
+  if (start === undefined) {
+    start = 0;
+  }
+  if (end === undefined) {
+    end = target ? target.length : 0;
+  }
+  if (thisStart === undefined) {
+    thisStart = 0;
+  }
+  if (thisEnd === undefined) {
+    thisEnd = this.length;
+  }
+  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+    throw new RangeError('out of range index');
+  }
+  if (thisStart >= thisEnd && start >= end) {
+    return 0;
+  }
+  if (thisStart >= thisEnd) {
+    return -1;
+  }
+  if (start >= end) {
+    return 1;
+  }
+  start >>>= 0;
+  end >>>= 0;
+  thisStart >>>= 0;
+  thisEnd >>>= 0;
+  if (this === target) return 0;
+  var x = thisEnd - thisStart;
+  var y = end - start;
+  var len = Math.min(x, y);
+  var thisCopy = this.slice(thisStart, thisEnd);
+  var targetCopy = target.slice(start, end);
+  for (var i = 0; i < len; ++i) {
+    if (thisCopy[i] !== targetCopy[i]) {
+      x = thisCopy[i];
+      y = targetCopy[i];
+      break;
+    }
+  }
+  if (x < y) return -1;
+  if (y < x) return 1;
+  return 0;
+};
+
+// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+//
+// Arguments:
+// - buffer - a Buffer to search
+// - val - a string, Buffer, or number
+// - byteOffset - an index into `buffer`; will be clamped to an int32
+// - encoding - an optional encoding, relevant is val is a string
+// - dir - true for indexOf, false for lastIndexOf
+function bidirectionalIndexOf(buffer, val, byteOffset, encoding, dir) {
+  // Empty buffer means no match
+  if (buffer.length === 0) return -1;
+
+  // Normalize byteOffset
+  if (typeof byteOffset === 'string') {
+    encoding = byteOffset;
+    byteOffset = 0;
+  } else if (byteOffset > 0x7fffffff) {
+    byteOffset = 0x7fffffff;
+  } else if (byteOffset < -0x80000000) {
+    byteOffset = -0x80000000;
+  }
+  byteOffset = +byteOffset; // Coerce to Number.
+  if (numberIsNaN(byteOffset)) {
+    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+    byteOffset = dir ? 0 : buffer.length - 1;
+  }
+
+  // Normalize byteOffset: negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset;
+  if (byteOffset >= buffer.length) {
+    if (dir) return -1;else byteOffset = buffer.length - 1;
+  } else if (byteOffset < 0) {
+    if (dir) byteOffset = 0;else return -1;
+  }
+
+  // Normalize val
+  if (typeof val === 'string') {
+    val = Buffer.from(val, encoding);
+  }
+
+  // Finally, search either indexOf (if dir is true) or lastIndexOf
+  if (Buffer.isBuffer(val)) {
+    // Special case: looking for empty string/buffer always fails
+    if (val.length === 0) {
+      return -1;
+    }
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir);
+  } else if (typeof val === 'number') {
+    val = val & 0xFF; // Search for a byte value [0-255]
+    if (typeof Uint8Array.prototype.indexOf === 'function') {
+      if (dir) {
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset);
+      } else {
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset);
+      }
+    }
+    return arrayIndexOf(buffer, [val], byteOffset, encoding, dir);
+  }
+  throw new TypeError('val must be string, number or Buffer');
+}
+function arrayIndexOf(arr, val, byteOffset, encoding, dir) {
+  var indexSize = 1;
+  var arrLength = arr.length;
+  var valLength = val.length;
+  if (encoding !== undefined) {
+    encoding = String(encoding).toLowerCase();
+    if (encoding === 'ucs2' || encoding === 'ucs-2' || encoding === 'utf16le' || encoding === 'utf-16le') {
+      if (arr.length < 2 || val.length < 2) {
+        return -1;
+      }
+      indexSize = 2;
+      arrLength /= 2;
+      valLength /= 2;
+      byteOffset /= 2;
+    }
+  }
+  function read(buf, i) {
+    if (indexSize === 1) {
+      return buf[i];
+    } else {
+      return buf.readUInt16BE(i * indexSize);
+    }
+  }
+  var i;
+  if (dir) {
+    var foundIndex = -1;
+    for (i = byteOffset; i < arrLength; i++) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+        if (foundIndex === -1) foundIndex = i;
+        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize;
+      } else {
+        if (foundIndex !== -1) i -= i - foundIndex;
+        foundIndex = -1;
+      }
+    }
+  } else {
+    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength;
+    for (i = byteOffset; i >= 0; i--) {
+      var found = true;
+      for (var j = 0; j < valLength; j++) {
+        if (read(arr, i + j) !== read(val, j)) {
+          found = false;
+          break;
+        }
+      }
+      if (found) return i;
+    }
+  }
+  return -1;
+}
+Buffer.prototype.includes = function includes(val, byteOffset, encoding) {
+  return this.indexOf(val, byteOffset, encoding) !== -1;
+};
+Buffer.prototype.indexOf = function indexOf(val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, true);
+};
+Buffer.prototype.lastIndexOf = function lastIndexOf(val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, false);
+};
+function hexWrite(buf, string, offset, length) {
+  offset = Number(offset) || 0;
+  var remaining = buf.length - offset;
+  if (!length) {
+    length = remaining;
+  } else {
+    length = Number(length);
+    if (length > remaining) {
+      length = remaining;
+    }
+  }
+  var strLen = string.length;
+  if (length > strLen / 2) {
+    length = strLen / 2;
+  }
+  var i;
+  for (i = 0; i < length; ++i) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16);
+    if (numberIsNaN(parsed)) return i;
+    buf[offset + i] = parsed;
+  }
+  return i;
+}
+function utf8Write(buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length);
+}
+function asciiWrite(buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length);
+}
+function base64Write(buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length);
+}
+function ucs2Write(buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length);
+}
+Buffer.prototype.write = function write(string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8';
+    length = this.length;
+    offset = 0;
+    // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset;
+    length = this.length;
+    offset = 0;
+    // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset >>> 0;
+    if (isFinite(length)) {
+      length = length >>> 0;
+      if (encoding === undefined) encoding = 'utf8';
+    } else {
+      encoding = length;
+      length = undefined;
+    }
+  } else {
+    throw new Error('Buffer.write(string, encoding, offset[, length]) is no longer supported');
+  }
+  var remaining = this.length - offset;
+  if (length === undefined || length > remaining) length = remaining;
+  if (string.length > 0 && (length < 0 || offset < 0) || offset > this.length) {
+    throw new RangeError('Attempt to write outside buffer bounds');
+  }
+  if (!encoding) encoding = 'utf8';
+  var loweredCase = false;
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length);
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length);
+      case 'ascii':
+      case 'latin1':
+      case 'binary':
+        return asciiWrite(this, string, offset, length);
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length);
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length);
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding);
+        encoding = ('' + encoding).toLowerCase();
+        loweredCase = true;
+    }
+  }
+};
+Buffer.prototype.toJSON = function toJSON() {
+  return {
+    type: 'Buffer',
+    data: Array.prototype.slice.call(this._arr || this, 0)
+  };
+};
+function base64Slice(buf, start, end) {
+  if (start === 0 && end === buf.length) {
+    return base64.fromByteArray(buf);
+  } else {
+    return base64.fromByteArray(buf.slice(start, end));
+  }
+}
+function utf8Slice(buf, start, end) {
+  end = Math.min(buf.length, end);
+  var res = [];
+  var i = start;
+  while (i < end) {
+    var firstByte = buf[i];
+    var codePoint = null;
+    var bytesPerSequence = firstByte > 0xEF ? 4 : firstByte > 0xDF ? 3 : firstByte > 0xBF ? 2 : 1;
+    if (i + bytesPerSequence <= end) {
+      var secondByte = void 0,
+        thirdByte = void 0,
+        fourthByte = void 0,
+        tempCodePoint = void 0;
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte;
+          }
+          break;
+        case 2:
+          secondByte = buf[i + 1];
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | secondByte & 0x3F;
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint;
+            }
+          }
+          break;
+        case 3:
+          secondByte = buf[i + 1];
+          thirdByte = buf[i + 2];
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | thirdByte & 0x3F;
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint;
+            }
+          }
+          break;
+        case 4:
+          secondByte = buf[i + 1];
+          thirdByte = buf[i + 2];
+          fourthByte = buf[i + 3];
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | fourthByte & 0x3F;
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint;
+            }
+          }
+      }
+    }
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD;
+      bytesPerSequence = 1;
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000;
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800);
+      codePoint = 0xDC00 | codePoint & 0x3FF;
+    }
+    res.push(codePoint);
+    i += bytesPerSequence;
+  }
+  return decodeCodePointsArray(res);
+}
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000;
+function decodeCodePointsArray(codePoints) {
+  var len = codePoints.length;
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints); // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = '';
+  var i = 0;
+  while (i < len) {
+    res += String.fromCharCode.apply(String, codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH));
+  }
+  return res;
+}
+function asciiSlice(buf, start, end) {
+  var ret = '';
+  end = Math.min(buf.length, end);
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i] & 0x7F);
+  }
+  return ret;
+}
+function latin1Slice(buf, start, end) {
+  var ret = '';
+  end = Math.min(buf.length, end);
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i]);
+  }
+  return ret;
+}
+function hexSlice(buf, start, end) {
+  var len = buf.length;
+  if (!start || start < 0) start = 0;
+  if (!end || end < 0 || end > len) end = len;
+  var out = '';
+  for (var i = start; i < end; ++i) {
+    out += hexSliceLookupTable[buf[i]];
+  }
+  return out;
+}
+function utf16leSlice(buf, start, end) {
+  var bytes = buf.slice(start, end);
+  var res = '';
+  // If bytes.length is odd, the last 8 bits must be ignored (same as node.js)
+  for (var i = 0; i < bytes.length - 1; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256);
+  }
+  return res;
+}
+Buffer.prototype.slice = function slice(start, end) {
+  var len = this.length;
+  start = ~~start;
+  end = end === undefined ? len : ~~end;
+  if (start < 0) {
+    start += len;
+    if (start < 0) start = 0;
+  } else if (start > len) {
+    start = len;
+  }
+  if (end < 0) {
+    end += len;
+    if (end < 0) end = 0;
+  } else if (end > len) {
+    end = len;
+  }
+  if (end < start) end = start;
+  var newBuf = this.subarray(start, end);
+  // Return an augmented `Uint8Array` instance
+  Object.setPrototypeOf(newBuf, Buffer.prototype);
+  return newBuf;
+};
+
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset(offset, ext, length) {
+  if (offset % 1 !== 0 || offset < 0) throw new RangeError('offset is not uint');
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length');
+}
+Buffer.prototype.readUintLE = Buffer.prototype.readUIntLE = function readUIntLE(offset, byteLength, noAssert) {
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+  var val = this[offset];
+  var mul = 1;
+  var i = 0;
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul;
+  }
+  return val;
+};
+Buffer.prototype.readUintBE = Buffer.prototype.readUIntBE = function readUIntBE(offset, byteLength, noAssert) {
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
+  if (!noAssert) {
+    checkOffset(offset, byteLength, this.length);
+  }
+  var val = this[offset + --byteLength];
+  var mul = 1;
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul;
+  }
+  return val;
+};
+Buffer.prototype.readUint8 = Buffer.prototype.readUInt8 = function readUInt8(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 1, this.length);
+  return this[offset];
+};
+Buffer.prototype.readUint16LE = Buffer.prototype.readUInt16LE = function readUInt16LE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  return this[offset] | this[offset + 1] << 8;
+};
+Buffer.prototype.readUint16BE = Buffer.prototype.readUInt16BE = function readUInt16BE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  return this[offset] << 8 | this[offset + 1];
+};
+Buffer.prototype.readUint32LE = Buffer.prototype.readUInt32LE = function readUInt32LE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return (this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16) + this[offset + 3] * 0x1000000;
+};
+Buffer.prototype.readUint32BE = Buffer.prototype.readUInt32BE = function readUInt32BE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return this[offset] * 0x1000000 + (this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3]);
+};
+Buffer.prototype.readBigUInt64LE = defineBigIntMethod(function readBigUInt64LE(offset) {
+  offset = offset >>> 0;
+  validateNumber(offset, 'offset');
+  var first = this[offset];
+  var last = this[offset + 7];
+  if (first === undefined || last === undefined) {
+    boundsError(offset, this.length - 8);
+  }
+  var lo = first + this[++offset] * Math.pow(2, 8) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 24);
+  var hi = this[++offset] + this[++offset] * Math.pow(2, 8) + this[++offset] * Math.pow(2, 16) + last * Math.pow(2, 24);
+  return BigInt(lo) + (BigInt(hi) << BigInt(32));
+});
+Buffer.prototype.readBigUInt64BE = defineBigIntMethod(function readBigUInt64BE(offset) {
+  offset = offset >>> 0;
+  validateNumber(offset, 'offset');
+  var first = this[offset];
+  var last = this[offset + 7];
+  if (first === undefined || last === undefined) {
+    boundsError(offset, this.length - 8);
+  }
+  var hi = first * Math.pow(2, 24) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + this[++offset];
+  var lo = this[++offset] * Math.pow(2, 24) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + last;
+  return (BigInt(hi) << BigInt(32)) + BigInt(lo);
+});
+Buffer.prototype.readIntLE = function readIntLE(offset, byteLength, noAssert) {
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+  var val = this[offset];
+  var mul = 1;
+  var i = 0;
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul;
+  }
+  mul *= 0x80;
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength);
+  return val;
+};
+Buffer.prototype.readIntBE = function readIntBE(offset, byteLength, noAssert) {
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+  var i = byteLength;
+  var mul = 1;
+  var val = this[offset + --i];
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul;
+  }
+  mul *= 0x80;
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength);
+  return val;
+};
+Buffer.prototype.readInt8 = function readInt8(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 1, this.length);
+  if (!(this[offset] & 0x80)) return this[offset];
+  return (0xff - this[offset] + 1) * -1;
+};
+Buffer.prototype.readInt16LE = function readInt16LE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  var val = this[offset] | this[offset + 1] << 8;
+  return val & 0x8000 ? val | 0xFFFF0000 : val;
+};
+Buffer.prototype.readInt16BE = function readInt16BE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  var val = this[offset + 1] | this[offset] << 8;
+  return val & 0x8000 ? val | 0xFFFF0000 : val;
+};
+Buffer.prototype.readInt32LE = function readInt32LE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16 | this[offset + 3] << 24;
+};
+Buffer.prototype.readInt32BE = function readInt32BE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return this[offset] << 24 | this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3];
+};
+Buffer.prototype.readBigInt64LE = defineBigIntMethod(function readBigInt64LE(offset) {
+  offset = offset >>> 0;
+  validateNumber(offset, 'offset');
+  var first = this[offset];
+  var last = this[offset + 7];
+  if (first === undefined || last === undefined) {
+    boundsError(offset, this.length - 8);
+  }
+  var val = this[offset + 4] + this[offset + 5] * Math.pow(2, 8) + this[offset + 6] * Math.pow(2, 16) + (last << 24); // Overflow
+
+  return (BigInt(val) << BigInt(32)) + BigInt(first + this[++offset] * Math.pow(2, 8) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 24));
+});
+Buffer.prototype.readBigInt64BE = defineBigIntMethod(function readBigInt64BE(offset) {
+  offset = offset >>> 0;
+  validateNumber(offset, 'offset');
+  var first = this[offset];
+  var last = this[offset + 7];
+  if (first === undefined || last === undefined) {
+    boundsError(offset, this.length - 8);
+  }
+  var val = (first << 24) +
+  // Overflow
+  this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + this[++offset];
+  return (BigInt(val) << BigInt(32)) + BigInt(this[++offset] * Math.pow(2, 24) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + last);
+});
+Buffer.prototype.readFloatLE = function readFloatLE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return ieee754.read(this, offset, true, 23, 4);
+};
+Buffer.prototype.readFloatBE = function readFloatBE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return ieee754.read(this, offset, false, 23, 4);
+};
+Buffer.prototype.readDoubleLE = function readDoubleLE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 8, this.length);
+  return ieee754.read(this, offset, true, 52, 8);
+};
+Buffer.prototype.readDoubleBE = function readDoubleBE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 8, this.length);
+  return ieee754.read(this, offset, false, 52, 8);
+};
+function checkInt(buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance');
+  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds');
+  if (offset + ext > buf.length) throw new RangeError('Index out of range');
+}
+Buffer.prototype.writeUintLE = Buffer.prototype.writeUIntLE = function writeUIntLE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1;
+    checkInt(this, value, offset, byteLength, maxBytes, 0);
+  }
+  var mul = 1;
+  var i = 0;
+  this[offset] = value & 0xFF;
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = value / mul & 0xFF;
+  }
+  return offset + byteLength;
+};
+Buffer.prototype.writeUintBE = Buffer.prototype.writeUIntBE = function writeUIntBE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1;
+    checkInt(this, value, offset, byteLength, maxBytes, 0);
+  }
+  var i = byteLength - 1;
+  var mul = 1;
+  this[offset + i] = value & 0xFF;
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = value / mul & 0xFF;
+  }
+  return offset + byteLength;
+};
+Buffer.prototype.writeUint8 = Buffer.prototype.writeUInt8 = function writeUInt8(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0);
+  this[offset] = value & 0xff;
+  return offset + 1;
+};
+Buffer.prototype.writeUint16LE = Buffer.prototype.writeUInt16LE = function writeUInt16LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
+  this[offset] = value & 0xff;
+  this[offset + 1] = value >>> 8;
+  return offset + 2;
+};
+Buffer.prototype.writeUint16BE = Buffer.prototype.writeUInt16BE = function writeUInt16BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
+  this[offset] = value >>> 8;
+  this[offset + 1] = value & 0xff;
+  return offset + 2;
+};
+Buffer.prototype.writeUint32LE = Buffer.prototype.writeUInt32LE = function writeUInt32LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
+  this[offset + 3] = value >>> 24;
+  this[offset + 2] = value >>> 16;
+  this[offset + 1] = value >>> 8;
+  this[offset] = value & 0xff;
+  return offset + 4;
+};
+Buffer.prototype.writeUint32BE = Buffer.prototype.writeUInt32BE = function writeUInt32BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
+  this[offset] = value >>> 24;
+  this[offset + 1] = value >>> 16;
+  this[offset + 2] = value >>> 8;
+  this[offset + 3] = value & 0xff;
+  return offset + 4;
+};
+function wrtBigUInt64LE(buf, value, offset, min, max) {
+  checkIntBI(value, min, max, buf, offset, 7);
+  var lo = Number(value & BigInt(0xffffffff));
+  buf[offset++] = lo;
+  lo = lo >> 8;
+  buf[offset++] = lo;
+  lo = lo >> 8;
+  buf[offset++] = lo;
+  lo = lo >> 8;
+  buf[offset++] = lo;
+  var hi = Number(value >> BigInt(32) & BigInt(0xffffffff));
+  buf[offset++] = hi;
+  hi = hi >> 8;
+  buf[offset++] = hi;
+  hi = hi >> 8;
+  buf[offset++] = hi;
+  hi = hi >> 8;
+  buf[offset++] = hi;
+  return offset;
+}
+function wrtBigUInt64BE(buf, value, offset, min, max) {
+  checkIntBI(value, min, max, buf, offset, 7);
+  var lo = Number(value & BigInt(0xffffffff));
+  buf[offset + 7] = lo;
+  lo = lo >> 8;
+  buf[offset + 6] = lo;
+  lo = lo >> 8;
+  buf[offset + 5] = lo;
+  lo = lo >> 8;
+  buf[offset + 4] = lo;
+  var hi = Number(value >> BigInt(32) & BigInt(0xffffffff));
+  buf[offset + 3] = hi;
+  hi = hi >> 8;
+  buf[offset + 2] = hi;
+  hi = hi >> 8;
+  buf[offset + 1] = hi;
+  hi = hi >> 8;
+  buf[offset] = hi;
+  return offset + 8;
+}
+Buffer.prototype.writeBigUInt64LE = defineBigIntMethod(function writeBigUInt64LE(value) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  return wrtBigUInt64LE(this, value, offset, BigInt(0), BigInt('0xffffffffffffffff'));
+});
+Buffer.prototype.writeBigUInt64BE = defineBigIntMethod(function writeBigUInt64BE(value) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  return wrtBigUInt64BE(this, value, offset, BigInt(0), BigInt('0xffffffffffffffff'));
+});
+Buffer.prototype.writeIntLE = function writeIntLE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1);
+    checkInt(this, value, offset, byteLength, limit - 1, -limit);
+  }
+  var i = 0;
+  var mul = 1;
+  var sub = 0;
+  this[offset] = value & 0xFF;
+  while (++i < byteLength && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+      sub = 1;
+    }
+    this[offset + i] = (value / mul >> 0) - sub & 0xFF;
+  }
+  return offset + byteLength;
+};
+Buffer.prototype.writeIntBE = function writeIntBE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1);
+    checkInt(this, value, offset, byteLength, limit - 1, -limit);
+  }
+  var i = byteLength - 1;
+  var mul = 1;
+  var sub = 0;
+  this[offset + i] = value & 0xFF;
+  while (--i >= 0 && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+      sub = 1;
+    }
+    this[offset + i] = (value / mul >> 0) - sub & 0xFF;
+  }
+  return offset + byteLength;
+};
+Buffer.prototype.writeInt8 = function writeInt8(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
+  if (value < 0) value = 0xff + value + 1;
+  this[offset] = value & 0xff;
+  return offset + 1;
+};
+Buffer.prototype.writeInt16LE = function writeInt16LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+  this[offset] = value & 0xff;
+  this[offset + 1] = value >>> 8;
+  return offset + 2;
+};
+Buffer.prototype.writeInt16BE = function writeInt16BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+  this[offset] = value >>> 8;
+  this[offset + 1] = value & 0xff;
+  return offset + 2;
+};
+Buffer.prototype.writeInt32LE = function writeInt32LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+  this[offset] = value & 0xff;
+  this[offset + 1] = value >>> 8;
+  this[offset + 2] = value >>> 16;
+  this[offset + 3] = value >>> 24;
+  return offset + 4;
+};
+Buffer.prototype.writeInt32BE = function writeInt32BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+  if (value < 0) value = 0xffffffff + value + 1;
+  this[offset] = value >>> 24;
+  this[offset + 1] = value >>> 16;
+  this[offset + 2] = value >>> 8;
+  this[offset + 3] = value & 0xff;
+  return offset + 4;
+};
+Buffer.prototype.writeBigInt64LE = defineBigIntMethod(function writeBigInt64LE(value) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  return wrtBigUInt64LE(this, value, offset, -BigInt('0x8000000000000000'), BigInt('0x7fffffffffffffff'));
+});
+Buffer.prototype.writeBigInt64BE = defineBigIntMethod(function writeBigInt64BE(value) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  return wrtBigUInt64BE(this, value, offset, -BigInt('0x8000000000000000'), BigInt('0x7fffffffffffffff'));
+});
+function checkIEEE754(buf, value, offset, ext, max, min) {
+  if (offset + ext > buf.length) throw new RangeError('Index out of range');
+  if (offset < 0) throw new RangeError('Index out of range');
+}
+function writeFloat(buf, value, offset, littleEndian, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38);
+  }
+  ieee754.write(buf, value, offset, littleEndian, 23, 4);
+  return offset + 4;
+}
+Buffer.prototype.writeFloatLE = function writeFloatLE(value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert);
+};
+Buffer.prototype.writeFloatBE = function writeFloatBE(value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert);
+};
+function writeDouble(buf, value, offset, littleEndian, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308);
+  }
+  ieee754.write(buf, value, offset, littleEndian, 52, 8);
+  return offset + 8;
+}
+Buffer.prototype.writeDoubleLE = function writeDoubleLE(value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert);
+};
+Buffer.prototype.writeDoubleBE = function writeDoubleBE(value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert);
+};
+
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy(target, targetStart, start, end) {
+  if (!Buffer.isBuffer(target)) throw new TypeError('argument should be a Buffer');
+  if (!start) start = 0;
+  if (!end && end !== 0) end = this.length;
+  if (targetStart >= target.length) targetStart = target.length;
+  if (!targetStart) targetStart = 0;
+  if (end > 0 && end < start) end = start;
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0;
+  if (target.length === 0 || this.length === 0) return 0;
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds');
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('Index out of range');
+  if (end < 0) throw new RangeError('sourceEnd out of bounds');
+
+  // Are we oob?
+  if (end > this.length) end = this.length;
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start;
+  }
+  var len = end - start;
+  if (this === target && typeof Uint8Array.prototype.copyWithin === 'function') {
+    // Use built-in when available, missing from IE11
+    this.copyWithin(targetStart, start, end);
+  } else {
+    Uint8Array.prototype.set.call(target, this.subarray(start, end), targetStart);
+  }
+  return len;
+};
+
+// Usage:
+//    buffer.fill(number[, offset[, end]])
+//    buffer.fill(buffer[, offset[, end]])
+//    buffer.fill(string[, offset[, end]][, encoding])
+Buffer.prototype.fill = function fill(val, start, end, encoding) {
+  // Handle string cases:
+  if (typeof val === 'string') {
+    if (typeof start === 'string') {
+      encoding = start;
+      start = 0;
+      end = this.length;
+    } else if (typeof end === 'string') {
+      encoding = end;
+      end = this.length;
+    }
+    if (encoding !== undefined && typeof encoding !== 'string') {
+      throw new TypeError('encoding must be a string');
+    }
+    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+      throw new TypeError('Unknown encoding: ' + encoding);
+    }
+    if (val.length === 1) {
+      var code = val.charCodeAt(0);
+      if (encoding === 'utf8' && code < 128 || encoding === 'latin1') {
+        // Fast path: If `val` fits into a single byte, use that numeric value.
+        val = code;
+      }
+    }
+  } else if (typeof val === 'number') {
+    val = val & 255;
+  } else if (typeof val === 'boolean') {
+    val = Number(val);
+  }
+
+  // Invalid ranges are not set to a default, so can range check early.
+  if (start < 0 || this.length < start || this.length < end) {
+    throw new RangeError('Out of range index');
+  }
+  if (end <= start) {
+    return this;
+  }
+  start = start >>> 0;
+  end = end === undefined ? this.length : end >>> 0;
+  if (!val) val = 0;
+  var i;
+  if (typeof val === 'number') {
+    for (i = start; i < end; ++i) {
+      this[i] = val;
+    }
+  } else {
+    var bytes = Buffer.isBuffer(val) ? val : Buffer.from(val, encoding);
+    var len = bytes.length;
+    if (len === 0) {
+      throw new TypeError('The value "' + val + '" is invalid for argument "value"');
+    }
+    for (i = 0; i < end - start; ++i) {
+      this[i + start] = bytes[i % len];
+    }
+  }
+  return this;
+};
+
+// CUSTOM ERRORS
+// =============
+
+// Simplified versions from Node, changed for Buffer-only usage
+var errors = {};
+function E(sym, getMessage, Base) {
+  errors[sym] = /*#__PURE__*/function (_Base) {
+    _inherits(NodeError, _Base);
+    var _super = _createSuper(NodeError);
+    function NodeError() {
+      var _this;
+      _classCallCheck(this, NodeError);
+      _this = _super.call(this);
+      Object.defineProperty(_assertThisInitialized(_this), 'message', {
+        value: getMessage.apply(_assertThisInitialized(_this), arguments),
+        writable: true,
+        configurable: true
+      });
+
+      // Add the error code to the name to include it in the stack trace.
+      _this.name = "".concat(_this.name, " [").concat(sym, "]");
+      // Access the stack to generate the error message including the error code
+      // from the name.
+      _this.stack; // eslint-disable-line no-unused-expressions
+      // Reset the name to the actual name.
+      delete _this.name;
+      return _this;
+    }
+    _createClass(NodeError, [{
+      key: "code",
+      get: function get() {
+        return sym;
+      },
+      set: function set(value) {
+        Object.defineProperty(this, 'code', {
+          configurable: true,
+          enumerable: true,
+          value: value,
+          writable: true
+        });
+      }
+    }, {
+      key: "toString",
+      value: function toString() {
+        return "".concat(this.name, " [").concat(sym, "]: ").concat(this.message);
+      }
+    }]);
+    return NodeError;
+  }(Base);
+}
+E('ERR_BUFFER_OUT_OF_BOUNDS', function (name) {
+  if (name) {
+    return "".concat(name, " is outside of buffer bounds");
+  }
+  return 'Attempt to access memory outside buffer bounds';
+}, RangeError);
+E('ERR_INVALID_ARG_TYPE', function (name, actual) {
+  return "The \"".concat(name, "\" argument must be of type number. Received type ").concat(_typeof(actual));
+}, TypeError);
+E('ERR_OUT_OF_RANGE', function (str, range, input) {
+  var msg = "The value of \"".concat(str, "\" is out of range.");
+  var received = input;
+  if (Number.isInteger(input) && Math.abs(input) > Math.pow(2, 32)) {
+    received = addNumericalSeparator(String(input));
+  } else if (typeof input === 'bigint') {
+    received = String(input);
+    if (input > Math.pow(BigInt(2), BigInt(32)) || input < -Math.pow(BigInt(2), BigInt(32))) {
+      received = addNumericalSeparator(received);
+    }
+    received += 'n';
+  }
+  msg += " It must be ".concat(range, ". Received ").concat(received);
+  return msg;
+}, RangeError);
+function addNumericalSeparator(val) {
+  var res = '';
+  var i = val.length;
+  var start = val[0] === '-' ? 1 : 0;
+  for (; i >= start + 4; i -= 3) {
+    res = "_".concat(val.slice(i - 3, i)).concat(res);
+  }
+  return "".concat(val.slice(0, i)).concat(res);
+}
+
+// CHECK FUNCTIONS
+// ===============
+
+function checkBounds(buf, offset, byteLength) {
+  validateNumber(offset, 'offset');
+  if (buf[offset] === undefined || buf[offset + byteLength] === undefined) {
+    boundsError(offset, buf.length - (byteLength + 1));
+  }
+}
+function checkIntBI(value, min, max, buf, offset, byteLength) {
+  if (value > max || value < min) {
+    var n = typeof min === 'bigint' ? 'n' : '';
+    var range;
+    if (byteLength > 3) {
+      if (min === 0 || min === BigInt(0)) {
+        range = ">= 0".concat(n, " and < 2").concat(n, " ** ").concat((byteLength + 1) * 8).concat(n);
+      } else {
+        range = ">= -(2".concat(n, " ** ").concat((byteLength + 1) * 8 - 1).concat(n, ") and < 2 ** ") + "".concat((byteLength + 1) * 8 - 1).concat(n);
+      }
+    } else {
+      range = ">= ".concat(min).concat(n, " and <= ").concat(max).concat(n);
+    }
+    throw new errors.ERR_OUT_OF_RANGE('value', range, value);
+  }
+  checkBounds(buf, offset, byteLength);
+}
+function validateNumber(value, name) {
+  if (typeof value !== 'number') {
+    throw new errors.ERR_INVALID_ARG_TYPE(name, 'number', value);
+  }
+}
+function boundsError(value, length, type) {
+  if (Math.floor(value) !== value) {
+    validateNumber(value, type);
+    throw new errors.ERR_OUT_OF_RANGE(type || 'offset', 'an integer', value);
+  }
+  if (length < 0) {
+    throw new errors.ERR_BUFFER_OUT_OF_BOUNDS();
+  }
+  throw new errors.ERR_OUT_OF_RANGE(type || 'offset', ">= ".concat(type ? 1 : 0, " and <= ").concat(length), value);
+}
+
+// HELPER FUNCTIONS
+// ================
+
+var INVALID_BASE64_RE = /[^+/0-9A-Za-z-_]/g;
+function base64clean(str) {
+  // Node takes equal signs as end of the Base64 encoding
+  str = str.split('=')[0];
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = str.trim().replace(INVALID_BASE64_RE, '');
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return '';
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '=';
+  }
+  return str;
+}
+function utf8ToBytes(string, units) {
+  units = units || Infinity;
+  var codePoint;
+  var length = string.length;
+  var leadSurrogate = null;
+  var bytes = [];
+  for (var i = 0; i < length; ++i) {
+    codePoint = string.charCodeAt(i);
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (!leadSurrogate) {
+        // no lead yet
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+          continue;
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+          continue;
+        }
+
+        // valid lead
+        leadSurrogate = codePoint;
+        continue;
+      }
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+        leadSurrogate = codePoint;
+        continue;
+      }
+
+      // valid surrogate pair
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000;
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+    }
+    leadSurrogate = null;
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break;
+      bytes.push(codePoint);
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break;
+      bytes.push(codePoint >> 0x6 | 0xC0, codePoint & 0x3F | 0x80);
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break;
+      bytes.push(codePoint >> 0xC | 0xE0, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
+    } else if (codePoint < 0x110000) {
+      if ((units -= 4) < 0) break;
+      bytes.push(codePoint >> 0x12 | 0xF0, codePoint >> 0xC & 0x3F | 0x80, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
+    } else {
+      throw new Error('Invalid code point');
+    }
+  }
+  return bytes;
+}
+function asciiToBytes(str) {
+  var byteArray = [];
+  for (var i = 0; i < str.length; ++i) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xFF);
+  }
+  return byteArray;
+}
+function utf16leToBytes(str, units) {
+  var c, hi, lo;
+  var byteArray = [];
+  for (var i = 0; i < str.length; ++i) {
+    if ((units -= 2) < 0) break;
+    c = str.charCodeAt(i);
+    hi = c >> 8;
+    lo = c % 256;
+    byteArray.push(lo);
+    byteArray.push(hi);
+  }
+  return byteArray;
+}
+function base64ToBytes(str) {
+  return base64.toByteArray(base64clean(str));
+}
+function blitBuffer(src, dst, offset, length) {
+  var i;
+  for (i = 0; i < length; ++i) {
+    if (i + offset >= dst.length || i >= src.length) break;
+    dst[i + offset] = src[i];
+  }
+  return i;
+}
+
+// ArrayBuffer or Uint8Array objects from other contexts (i.e. iframes) do not pass
+// the `instanceof` check but they should be treated as of that type.
+// See: https://github.com/feross/buffer/issues/166
+function isInstance(obj, type) {
+  return obj instanceof type || obj != null && obj.constructor != null && obj.constructor.name != null && obj.constructor.name === type.name;
+}
+function numberIsNaN(obj) {
+  // For IE11 support
+  return obj !== obj; // eslint-disable-line no-self-compare
+}
+
+// Create lookup table for `toString('hex')`
+// See: https://github.com/feross/buffer/issues/219
+var hexSliceLookupTable = function () {
+  var alphabet = '0123456789abcdef';
+  var table = new Array(256);
+  for (var i = 0; i < 16; ++i) {
+    var i16 = i * 16;
+    for (var j = 0; j < 16; ++j) {
+      table[i16 + j] = alphabet[i] + alphabet[j];
+    }
+  }
+  return table;
+}();
+
+// Return not function with Error if BigInt not supported
+function defineBigIntMethod(fn) {
+  return typeof BigInt === 'undefined' ? BufferBigIntNotDefined : fn;
+}
+function BufferBigIntNotDefined() {
+  throw new Error('BigInt not supported');
+}
+
+/***/ }),
+
+/***/ 2321:
+/***/ (function(module) {
+
+"use strict";
+
+
+module.exports = isMobile;
+module.exports.isMobile = isMobile;
+module.exports["default"] = isMobile;
+var mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|samsungbrowser.*mobile|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
+var notMobileRE = /CrOS/;
+var tabletRE = /android|ipad|playbook|silk/i;
+function isMobile(opts) {
+  if (!opts) opts = {};
+  var ua = opts.ua;
+  if (!ua && typeof navigator !== 'undefined') ua = navigator.userAgent;
+  if (ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
+    ua = ua.headers['user-agent'];
+  }
+  if (typeof ua !== 'string') return false;
+  var result = mobileRE.test(ua) && !notMobileRE.test(ua) || !!opts.tablet && tabletRE.test(ua);
+  if (!result && opts.tablet && opts.featureDetect && navigator && navigator.maxTouchPoints > 1 && ua.indexOf('Macintosh') !== -1 && ua.indexOf('Safari') !== -1) {
+    result = true;
+  }
+  return result;
+}
+
+/***/ }),
+
+/***/ 3910:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 
 exports.byteLength = byteLength
 exports.toByteArray = toByteArray
@@ -152,1790 +1996,13 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],2:[function(_glvis_,module,exports){
 
-},{}],3:[function(_glvis_,module,exports){
-(function (Buffer){(function (){
-/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <https://feross.org>
- * @license  MIT
- */
-/* eslint-disable no-proto */
+/***/ }),
 
-'use strict'
+/***/ 3187:
+/***/ (function(__unused_webpack_module, exports) {
 
-var base64 = _glvis_('base64-js')
-var ieee754 = _glvis_('ieee754')
-
-exports.Buffer = Buffer
-exports.SlowBuffer = SlowBuffer
-exports.INSPECT_MAX_BYTES = 50
-
-var K_MAX_LENGTH = 0x7fffffff
-exports.kMaxLength = K_MAX_LENGTH
-
-/**
- * If `Buffer.TYPED_ARRAY_SUPPORT`:
- *   === true    Use Uint8Array implementation (fastest)
- *   === false   Print warning and recommend using `buffer` v4.x which has an Object
- *               implementation (most compatible, even IE6)
- *
- * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
- * Opera 11.6+, iOS 4.2+.
- *
- * We report that the browser does not support typed arrays if the are not subclassable
- * using __proto__. Firefox 4-29 lacks support for adding new properties to `Uint8Array`
- * (See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438). IE 10 lacks support
- * for __proto__ and has a buggy typed array implementation.
- */
-Buffer.TYPED_ARRAY_SUPPORT = typedArraySupport()
-
-if (!Buffer.TYPED_ARRAY_SUPPORT && typeof console !== 'undefined' &&
-    typeof console.error === 'function') {
-  console.error(
-    'This browser lacks typed array (Uint8Array) support which is required by ' +
-    '`buffer` v5.x. Use `buffer` v4.x if you require old browser support.'
-  )
-}
-
-function typedArraySupport () {
-  // Can typed array instances can be augmented?
-  try {
-    var arr = new Uint8Array(1)
-    arr.__proto__ = { __proto__: Uint8Array.prototype, foo: function () { return 42 } }
-    return arr.foo() === 42
-  } catch (e) {
-    return false
-  }
-}
-
-Object.defineProperty(Buffer.prototype, 'parent', {
-  enumerable: true,
-  get: function () {
-    if (!Buffer.isBuffer(this)) return undefined
-    return this.buffer
-  }
-})
-
-Object.defineProperty(Buffer.prototype, 'offset', {
-  enumerable: true,
-  get: function () {
-    if (!Buffer.isBuffer(this)) return undefined
-    return this.byteOffset
-  }
-})
-
-function createBuffer (length) {
-  if (length > K_MAX_LENGTH) {
-    throw new RangeError('The value "' + length + '" is invalid for option "size"')
-  }
-  // Return an augmented `Uint8Array` instance
-  var buf = new Uint8Array(length)
-  buf.__proto__ = Buffer.prototype
-  return buf
-}
-
-/**
- * The Buffer constructor returns instances of `Uint8Array` that have their
- * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
- * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
- * and the `Uint8Array` methods. Square bracket notation works as expected -- it
- * returns a single octet.
- *
- * The `Uint8Array` prototype remains unmodified.
- */
-
-function Buffer (arg, encodingOrOffset, length) {
-  // Common case.
-  if (typeof arg === 'number') {
-    if (typeof encodingOrOffset === 'string') {
-      throw new TypeError(
-        'The "string" argument must be of type string. Received type number'
-      )
-    }
-    return allocUnsafe(arg)
-  }
-  return from(arg, encodingOrOffset, length)
-}
-
-// Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
-if (typeof Symbol !== 'undefined' && Symbol.species != null &&
-    Buffer[Symbol.species] === Buffer) {
-  Object.defineProperty(Buffer, Symbol.species, {
-    value: null,
-    configurable: true,
-    enumerable: false,
-    writable: false
-  })
-}
-
-Buffer.poolSize = 8192 // not used by this implementation
-
-function from (value, encodingOrOffset, length) {
-  if (typeof value === 'string') {
-    return fromString(value, encodingOrOffset)
-  }
-
-  if (ArrayBuffer.isView(value)) {
-    return fromArrayLike(value)
-  }
-
-  if (value == null) {
-    throw TypeError(
-      'The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' +
-      'or Array-like Object. Received type ' + (typeof value)
-    )
-  }
-
-  if (isInstance(value, ArrayBuffer) ||
-      (value && isInstance(value.buffer, ArrayBuffer))) {
-    return fromArrayBuffer(value, encodingOrOffset, length)
-  }
-
-  if (typeof value === 'number') {
-    throw new TypeError(
-      'The "value" argument must not be of type number. Received type number'
-    )
-  }
-
-  var valueOf = value.valueOf && value.valueOf()
-  if (valueOf != null && valueOf !== value) {
-    return Buffer.from(valueOf, encodingOrOffset, length)
-  }
-
-  var b = fromObject(value)
-  if (b) return b
-
-  if (typeof Symbol !== 'undefined' && Symbol.toPrimitive != null &&
-      typeof value[Symbol.toPrimitive] === 'function') {
-    return Buffer.from(
-      value[Symbol.toPrimitive]('string'), encodingOrOffset, length
-    )
-  }
-
-  throw new TypeError(
-    'The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' +
-    'or Array-like Object. Received type ' + (typeof value)
-  )
-}
-
-/**
- * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
- * if value is a number.
- * Buffer.from(str[, encoding])
- * Buffer.from(array)
- * Buffer.from(buffer)
- * Buffer.from(arrayBuffer[, byteOffset[, length]])
- **/
-Buffer.from = function (value, encodingOrOffset, length) {
-  return from(value, encodingOrOffset, length)
-}
-
-// Note: Change prototype *after* Buffer.from is defined to workaround Chrome bug:
-// https://github.com/feross/buffer/pull/148
-Buffer.prototype.__proto__ = Uint8Array.prototype
-Buffer.__proto__ = Uint8Array
-
-function assertSize (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('"size" argument must be of type number')
-  } else if (size < 0) {
-    throw new RangeError('The value "' + size + '" is invalid for option "size"')
-  }
-}
-
-function alloc (size, fill, encoding) {
-  assertSize(size)
-  if (size <= 0) {
-    return createBuffer(size)
-  }
-  if (fill !== undefined) {
-    // Only pay attention to encoding if it's a string. This
-    // prevents accidentally sending in a number that would
-    // be interpretted as a start offset.
-    return typeof encoding === 'string'
-      ? createBuffer(size).fill(fill, encoding)
-      : createBuffer(size).fill(fill)
-  }
-  return createBuffer(size)
-}
-
-/**
- * Creates a new filled Buffer instance.
- * alloc(size[, fill[, encoding]])
- **/
-Buffer.alloc = function (size, fill, encoding) {
-  return alloc(size, fill, encoding)
-}
-
-function allocUnsafe (size) {
-  assertSize(size)
-  return createBuffer(size < 0 ? 0 : checked(size) | 0)
-}
-
-/**
- * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
- * */
-Buffer.allocUnsafe = function (size) {
-  return allocUnsafe(size)
-}
-/**
- * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
- */
-Buffer.allocUnsafeSlow = function (size) {
-  return allocUnsafe(size)
-}
-
-function fromString (string, encoding) {
-  if (typeof encoding !== 'string' || encoding === '') {
-    encoding = 'utf8'
-  }
-
-  if (!Buffer.isEncoding(encoding)) {
-    throw new TypeError('Unknown encoding: ' + encoding)
-  }
-
-  var length = byteLength(string, encoding) | 0
-  var buf = createBuffer(length)
-
-  var actual = buf.write(string, encoding)
-
-  if (actual !== length) {
-    // Writing a hex string, for example, that contains invalid characters will
-    // cause everything after the first invalid character to be ignored. (e.g.
-    // 'abxxcd' will be treated as 'ab')
-    buf = buf.slice(0, actual)
-  }
-
-  return buf
-}
-
-function fromArrayLike (array) {
-  var length = array.length < 0 ? 0 : checked(array.length) | 0
-  var buf = createBuffer(length)
-  for (var i = 0; i < length; i += 1) {
-    buf[i] = array[i] & 255
-  }
-  return buf
-}
-
-function fromArrayBuffer (array, byteOffset, length) {
-  if (byteOffset < 0 || array.byteLength < byteOffset) {
-    throw new RangeError('"offset" is outside of buffer bounds')
-  }
-
-  if (array.byteLength < byteOffset + (length || 0)) {
-    throw new RangeError('"length" is outside of buffer bounds')
-  }
-
-  var buf
-  if (byteOffset === undefined && length === undefined) {
-    buf = new Uint8Array(array)
-  } else if (length === undefined) {
-    buf = new Uint8Array(array, byteOffset)
-  } else {
-    buf = new Uint8Array(array, byteOffset, length)
-  }
-
-  // Return an augmented `Uint8Array` instance
-  buf.__proto__ = Buffer.prototype
-  return buf
-}
-
-function fromObject (obj) {
-  if (Buffer.isBuffer(obj)) {
-    var len = checked(obj.length) | 0
-    var buf = createBuffer(len)
-
-    if (buf.length === 0) {
-      return buf
-    }
-
-    obj.copy(buf, 0, 0, len)
-    return buf
-  }
-
-  if (obj.length !== undefined) {
-    if (typeof obj.length !== 'number' || numberIsNaN(obj.length)) {
-      return createBuffer(0)
-    }
-    return fromArrayLike(obj)
-  }
-
-  if (obj.type === 'Buffer' && Array.isArray(obj.data)) {
-    return fromArrayLike(obj.data)
-  }
-}
-
-function checked (length) {
-  // Note: cannot use `length < K_MAX_LENGTH` here because that fails when
-  // length is NaN (which is otherwise coerced to zero.)
-  if (length >= K_MAX_LENGTH) {
-    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-                         'size: 0x' + K_MAX_LENGTH.toString(16) + ' bytes')
-  }
-  return length | 0
-}
-
-function SlowBuffer (length) {
-  if (+length != length) { // eslint-disable-line eqeqeq
-    length = 0
-  }
-  return Buffer.alloc(+length)
-}
-
-Buffer.isBuffer = function isBuffer (b) {
-  return b != null && b._isBuffer === true &&
-    b !== Buffer.prototype // so Buffer.isBuffer(Buffer.prototype) will be false
-}
-
-Buffer.compare = function compare (a, b) {
-  if (isInstance(a, Uint8Array)) a = Buffer.from(a, a.offset, a.byteLength)
-  if (isInstance(b, Uint8Array)) b = Buffer.from(b, b.offset, b.byteLength)
-  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
-    throw new TypeError(
-      'The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array'
-    )
-  }
-
-  if (a === b) return 0
-
-  var x = a.length
-  var y = b.length
-
-  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
-    if (a[i] !== b[i]) {
-      x = a[i]
-      y = b[i]
-      break
-    }
-  }
-
-  if (x < y) return -1
-  if (y < x) return 1
-  return 0
-}
-
-Buffer.isEncoding = function isEncoding (encoding) {
-  switch (String(encoding).toLowerCase()) {
-    case 'hex':
-    case 'utf8':
-    case 'utf-8':
-    case 'ascii':
-    case 'latin1':
-    case 'binary':
-    case 'base64':
-    case 'ucs2':
-    case 'ucs-2':
-    case 'utf16le':
-    case 'utf-16le':
-      return true
-    default:
-      return false
-  }
-}
-
-Buffer.concat = function concat (list, length) {
-  if (!Array.isArray(list)) {
-    throw new TypeError('"list" argument must be an Array of Buffers')
-  }
-
-  if (list.length === 0) {
-    return Buffer.alloc(0)
-  }
-
-  var i
-  if (length === undefined) {
-    length = 0
-    for (i = 0; i < list.length; ++i) {
-      length += list[i].length
-    }
-  }
-
-  var buffer = Buffer.allocUnsafe(length)
-  var pos = 0
-  for (i = 0; i < list.length; ++i) {
-    var buf = list[i]
-    if (isInstance(buf, Uint8Array)) {
-      buf = Buffer.from(buf)
-    }
-    if (!Buffer.isBuffer(buf)) {
-      throw new TypeError('"list" argument must be an Array of Buffers')
-    }
-    buf.copy(buffer, pos)
-    pos += buf.length
-  }
-  return buffer
-}
-
-function byteLength (string, encoding) {
-  if (Buffer.isBuffer(string)) {
-    return string.length
-  }
-  if (ArrayBuffer.isView(string) || isInstance(string, ArrayBuffer)) {
-    return string.byteLength
-  }
-  if (typeof string !== 'string') {
-    throw new TypeError(
-      'The "string" argument must be one of type string, Buffer, or ArrayBuffer. ' +
-      'Received type ' + typeof string
-    )
-  }
-
-  var len = string.length
-  var mustMatch = (arguments.length > 2 && arguments[2] === true)
-  if (!mustMatch && len === 0) return 0
-
-  // Use a for loop to avoid recursion
-  var loweredCase = false
-  for (;;) {
-    switch (encoding) {
-      case 'ascii':
-      case 'latin1':
-      case 'binary':
-        return len
-      case 'utf8':
-      case 'utf-8':
-        return utf8ToBytes(string).length
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return len * 2
-      case 'hex':
-        return len >>> 1
-      case 'base64':
-        return base64ToBytes(string).length
-      default:
-        if (loweredCase) {
-          return mustMatch ? -1 : utf8ToBytes(string).length // assume utf8
-        }
-        encoding = ('' + encoding).toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-Buffer.byteLength = byteLength
-
-function slowToString (encoding, start, end) {
-  var loweredCase = false
-
-  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
-  // property of a typed array.
-
-  // This behaves neither like String nor Uint8Array in that we set start/end
-  // to their upper/lower bounds if the value passed is out of range.
-  // undefined is handled specially as per ECMA-262 6th Edition,
-  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
-  if (start === undefined || start < 0) {
-    start = 0
-  }
-  // Return early if start > this.length. Done here to prevent potential uint32
-  // coercion fail below.
-  if (start > this.length) {
-    return ''
-  }
-
-  if (end === undefined || end > this.length) {
-    end = this.length
-  }
-
-  if (end <= 0) {
-    return ''
-  }
-
-  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
-  end >>>= 0
-  start >>>= 0
-
-  if (end <= start) {
-    return ''
-  }
-
-  if (!encoding) encoding = 'utf8'
-
-  while (true) {
-    switch (encoding) {
-      case 'hex':
-        return hexSlice(this, start, end)
-
-      case 'utf8':
-      case 'utf-8':
-        return utf8Slice(this, start, end)
-
-      case 'ascii':
-        return asciiSlice(this, start, end)
-
-      case 'latin1':
-      case 'binary':
-        return latin1Slice(this, start, end)
-
-      case 'base64':
-        return base64Slice(this, start, end)
-
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return utf16leSlice(this, start, end)
-
-      default:
-        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-        encoding = (encoding + '').toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-
-// This property is used by `Buffer.isBuffer` (and the `is-buffer` npm package)
-// to detect a Buffer instance. It's not possible to use `instanceof Buffer`
-// reliably in a browserify context because there could be multiple different
-// copies of the 'buffer' package in use. This method works even for Buffer
-// instances that were created from another copy of the `buffer` package.
-// See: https://github.com/feross/buffer/issues/154
-Buffer.prototype._isBuffer = true
-
-function swap (b, n, m) {
-  var i = b[n]
-  b[n] = b[m]
-  b[m] = i
-}
-
-Buffer.prototype.swap16 = function swap16 () {
-  var len = this.length
-  if (len % 2 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 16-bits')
-  }
-  for (var i = 0; i < len; i += 2) {
-    swap(this, i, i + 1)
-  }
-  return this
-}
-
-Buffer.prototype.swap32 = function swap32 () {
-  var len = this.length
-  if (len % 4 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 32-bits')
-  }
-  for (var i = 0; i < len; i += 4) {
-    swap(this, i, i + 3)
-    swap(this, i + 1, i + 2)
-  }
-  return this
-}
-
-Buffer.prototype.swap64 = function swap64 () {
-  var len = this.length
-  if (len % 8 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 64-bits')
-  }
-  for (var i = 0; i < len; i += 8) {
-    swap(this, i, i + 7)
-    swap(this, i + 1, i + 6)
-    swap(this, i + 2, i + 5)
-    swap(this, i + 3, i + 4)
-  }
-  return this
-}
-
-Buffer.prototype.toString = function toString () {
-  var length = this.length
-  if (length === 0) return ''
-  if (arguments.length === 0) return utf8Slice(this, 0, length)
-  return slowToString.apply(this, arguments)
-}
-
-Buffer.prototype.toLocaleString = Buffer.prototype.toString
-
-Buffer.prototype.equals = function equals (b) {
-  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
-  if (this === b) return true
-  return Buffer.compare(this, b) === 0
-}
-
-Buffer.prototype.inspect = function inspect () {
-  var str = ''
-  var max = exports.INSPECT_MAX_BYTES
-  str = this.toString('hex', 0, max).replace(/(.{2})/g, '$1 ').trim()
-  if (this.length > max) str += ' ... '
-  return '<Buffer ' + str + '>'
-}
-
-Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
-  if (isInstance(target, Uint8Array)) {
-    target = Buffer.from(target, target.offset, target.byteLength)
-  }
-  if (!Buffer.isBuffer(target)) {
-    throw new TypeError(
-      'The "target" argument must be one of type Buffer or Uint8Array. ' +
-      'Received type ' + (typeof target)
-    )
-  }
-
-  if (start === undefined) {
-    start = 0
-  }
-  if (end === undefined) {
-    end = target ? target.length : 0
-  }
-  if (thisStart === undefined) {
-    thisStart = 0
-  }
-  if (thisEnd === undefined) {
-    thisEnd = this.length
-  }
-
-  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
-    throw new RangeError('out of range index')
-  }
-
-  if (thisStart >= thisEnd && start >= end) {
-    return 0
-  }
-  if (thisStart >= thisEnd) {
-    return -1
-  }
-  if (start >= end) {
-    return 1
-  }
-
-  start >>>= 0
-  end >>>= 0
-  thisStart >>>= 0
-  thisEnd >>>= 0
-
-  if (this === target) return 0
-
-  var x = thisEnd - thisStart
-  var y = end - start
-  var len = Math.min(x, y)
-
-  var thisCopy = this.slice(thisStart, thisEnd)
-  var targetCopy = target.slice(start, end)
-
-  for (var i = 0; i < len; ++i) {
-    if (thisCopy[i] !== targetCopy[i]) {
-      x = thisCopy[i]
-      y = targetCopy[i]
-      break
-    }
-  }
-
-  if (x < y) return -1
-  if (y < x) return 1
-  return 0
-}
-
-// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
-// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
-//
-// Arguments:
-// - buffer - a Buffer to search
-// - val - a string, Buffer, or number
-// - byteOffset - an index into `buffer`; will be clamped to an int32
-// - encoding - an optional encoding, relevant is val is a string
-// - dir - true for indexOf, false for lastIndexOf
-function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
-  // Empty buffer means no match
-  if (buffer.length === 0) return -1
-
-  // Normalize byteOffset
-  if (typeof byteOffset === 'string') {
-    encoding = byteOffset
-    byteOffset = 0
-  } else if (byteOffset > 0x7fffffff) {
-    byteOffset = 0x7fffffff
-  } else if (byteOffset < -0x80000000) {
-    byteOffset = -0x80000000
-  }
-  byteOffset = +byteOffset // Coerce to Number.
-  if (numberIsNaN(byteOffset)) {
-    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
-    byteOffset = dir ? 0 : (buffer.length - 1)
-  }
-
-  // Normalize byteOffset: negative offsets start from the end of the buffer
-  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
-  if (byteOffset >= buffer.length) {
-    if (dir) return -1
-    else byteOffset = buffer.length - 1
-  } else if (byteOffset < 0) {
-    if (dir) byteOffset = 0
-    else return -1
-  }
-
-  // Normalize val
-  if (typeof val === 'string') {
-    val = Buffer.from(val, encoding)
-  }
-
-  // Finally, search either indexOf (if dir is true) or lastIndexOf
-  if (Buffer.isBuffer(val)) {
-    // Special case: looking for empty string/buffer always fails
-    if (val.length === 0) {
-      return -1
-    }
-    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
-  } else if (typeof val === 'number') {
-    val = val & 0xFF // Search for a byte value [0-255]
-    if (typeof Uint8Array.prototype.indexOf === 'function') {
-      if (dir) {
-        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
-      } else {
-        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
-      }
-    }
-    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
-  }
-
-  throw new TypeError('val must be string, number or Buffer')
-}
-
-function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
-  var indexSize = 1
-  var arrLength = arr.length
-  var valLength = val.length
-
-  if (encoding !== undefined) {
-    encoding = String(encoding).toLowerCase()
-    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
-        encoding === 'utf16le' || encoding === 'utf-16le') {
-      if (arr.length < 2 || val.length < 2) {
-        return -1
-      }
-      indexSize = 2
-      arrLength /= 2
-      valLength /= 2
-      byteOffset /= 2
-    }
-  }
-
-  function read (buf, i) {
-    if (indexSize === 1) {
-      return buf[i]
-    } else {
-      return buf.readUInt16BE(i * indexSize)
-    }
-  }
-
-  var i
-  if (dir) {
-    var foundIndex = -1
-    for (i = byteOffset; i < arrLength; i++) {
-      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
-        if (foundIndex === -1) foundIndex = i
-        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
-      } else {
-        if (foundIndex !== -1) i -= i - foundIndex
-        foundIndex = -1
-      }
-    }
-  } else {
-    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
-    for (i = byteOffset; i >= 0; i--) {
-      var found = true
-      for (var j = 0; j < valLength; j++) {
-        if (read(arr, i + j) !== read(val, j)) {
-          found = false
-          break
-        }
-      }
-      if (found) return i
-    }
-  }
-
-  return -1
-}
-
-Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
-  return this.indexOf(val, byteOffset, encoding) !== -1
-}
-
-Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
-  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
-}
-
-Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
-  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
-}
-
-function hexWrite (buf, string, offset, length) {
-  offset = Number(offset) || 0
-  var remaining = buf.length - offset
-  if (!length) {
-    length = remaining
-  } else {
-    length = Number(length)
-    if (length > remaining) {
-      length = remaining
-    }
-  }
-
-  var strLen = string.length
-
-  if (length > strLen / 2) {
-    length = strLen / 2
-  }
-  for (var i = 0; i < length; ++i) {
-    var parsed = parseInt(string.substr(i * 2, 2), 16)
-    if (numberIsNaN(parsed)) return i
-    buf[offset + i] = parsed
-  }
-  return i
-}
-
-function utf8Write (buf, string, offset, length) {
-  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
-}
-
-function asciiWrite (buf, string, offset, length) {
-  return blitBuffer(asciiToBytes(string), buf, offset, length)
-}
-
-function latin1Write (buf, string, offset, length) {
-  return asciiWrite(buf, string, offset, length)
-}
-
-function base64Write (buf, string, offset, length) {
-  return blitBuffer(base64ToBytes(string), buf, offset, length)
-}
-
-function ucs2Write (buf, string, offset, length) {
-  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
-}
-
-Buffer.prototype.write = function write (string, offset, length, encoding) {
-  // Buffer#write(string)
-  if (offset === undefined) {
-    encoding = 'utf8'
-    length = this.length
-    offset = 0
-  // Buffer#write(string, encoding)
-  } else if (length === undefined && typeof offset === 'string') {
-    encoding = offset
-    length = this.length
-    offset = 0
-  // Buffer#write(string, offset[, length][, encoding])
-  } else if (isFinite(offset)) {
-    offset = offset >>> 0
-    if (isFinite(length)) {
-      length = length >>> 0
-      if (encoding === undefined) encoding = 'utf8'
-    } else {
-      encoding = length
-      length = undefined
-    }
-  } else {
-    throw new Error(
-      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
-    )
-  }
-
-  var remaining = this.length - offset
-  if (length === undefined || length > remaining) length = remaining
-
-  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
-    throw new RangeError('Attempt to write outside buffer bounds')
-  }
-
-  if (!encoding) encoding = 'utf8'
-
-  var loweredCase = false
-  for (;;) {
-    switch (encoding) {
-      case 'hex':
-        return hexWrite(this, string, offset, length)
-
-      case 'utf8':
-      case 'utf-8':
-        return utf8Write(this, string, offset, length)
-
-      case 'ascii':
-        return asciiWrite(this, string, offset, length)
-
-      case 'latin1':
-      case 'binary':
-        return latin1Write(this, string, offset, length)
-
-      case 'base64':
-        // Warning: maxLength not taken into account in base64Write
-        return base64Write(this, string, offset, length)
-
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return ucs2Write(this, string, offset, length)
-
-      default:
-        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-        encoding = ('' + encoding).toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-
-Buffer.prototype.toJSON = function toJSON () {
-  return {
-    type: 'Buffer',
-    data: Array.prototype.slice.call(this._arr || this, 0)
-  }
-}
-
-function base64Slice (buf, start, end) {
-  if (start === 0 && end === buf.length) {
-    return base64.fromByteArray(buf)
-  } else {
-    return base64.fromByteArray(buf.slice(start, end))
-  }
-}
-
-function utf8Slice (buf, start, end) {
-  end = Math.min(buf.length, end)
-  var res = []
-
-  var i = start
-  while (i < end) {
-    var firstByte = buf[i]
-    var codePoint = null
-    var bytesPerSequence = (firstByte > 0xEF) ? 4
-      : (firstByte > 0xDF) ? 3
-        : (firstByte > 0xBF) ? 2
-          : 1
-
-    if (i + bytesPerSequence <= end) {
-      var secondByte, thirdByte, fourthByte, tempCodePoint
-
-      switch (bytesPerSequence) {
-        case 1:
-          if (firstByte < 0x80) {
-            codePoint = firstByte
-          }
-          break
-        case 2:
-          secondByte = buf[i + 1]
-          if ((secondByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
-            if (tempCodePoint > 0x7F) {
-              codePoint = tempCodePoint
-            }
-          }
-          break
-        case 3:
-          secondByte = buf[i + 1]
-          thirdByte = buf[i + 2]
-          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
-            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
-              codePoint = tempCodePoint
-            }
-          }
-          break
-        case 4:
-          secondByte = buf[i + 1]
-          thirdByte = buf[i + 2]
-          fourthByte = buf[i + 3]
-          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
-            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
-              codePoint = tempCodePoint
-            }
-          }
-      }
-    }
-
-    if (codePoint === null) {
-      // we did not generate a valid codePoint so insert a
-      // replacement char (U+FFFD) and advance only 1 byte
-      codePoint = 0xFFFD
-      bytesPerSequence = 1
-    } else if (codePoint > 0xFFFF) {
-      // encode to utf16 (surrogate pair dance)
-      codePoint -= 0x10000
-      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
-      codePoint = 0xDC00 | codePoint & 0x3FF
-    }
-
-    res.push(codePoint)
-    i += bytesPerSequence
-  }
-
-  return decodeCodePointsArray(res)
-}
-
-// Based on http://stackoverflow.com/a/22747272/680742, the browser with
-// the lowest limit is Chrome, with 0x10000 args.
-// We go 1 magnitude less, for safety
-var MAX_ARGUMENTS_LENGTH = 0x1000
-
-function decodeCodePointsArray (codePoints) {
-  var len = codePoints.length
-  if (len <= MAX_ARGUMENTS_LENGTH) {
-    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
-  }
-
-  // Decode in chunks to avoid "call stack size exceeded".
-  var res = ''
-  var i = 0
-  while (i < len) {
-    res += String.fromCharCode.apply(
-      String,
-      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
-    )
-  }
-  return res
-}
-
-function asciiSlice (buf, start, end) {
-  var ret = ''
-  end = Math.min(buf.length, end)
-
-  for (var i = start; i < end; ++i) {
-    ret += String.fromCharCode(buf[i] & 0x7F)
-  }
-  return ret
-}
-
-function latin1Slice (buf, start, end) {
-  var ret = ''
-  end = Math.min(buf.length, end)
-
-  for (var i = start; i < end; ++i) {
-    ret += String.fromCharCode(buf[i])
-  }
-  return ret
-}
-
-function hexSlice (buf, start, end) {
-  var len = buf.length
-
-  if (!start || start < 0) start = 0
-  if (!end || end < 0 || end > len) end = len
-
-  var out = ''
-  for (var i = start; i < end; ++i) {
-    out += toHex(buf[i])
-  }
-  return out
-}
-
-function utf16leSlice (buf, start, end) {
-  var bytes = buf.slice(start, end)
-  var res = ''
-  for (var i = 0; i < bytes.length; i += 2) {
-    res += String.fromCharCode(bytes[i] + (bytes[i + 1] * 256))
-  }
-  return res
-}
-
-Buffer.prototype.slice = function slice (start, end) {
-  var len = this.length
-  start = ~~start
-  end = end === undefined ? len : ~~end
-
-  if (start < 0) {
-    start += len
-    if (start < 0) start = 0
-  } else if (start > len) {
-    start = len
-  }
-
-  if (end < 0) {
-    end += len
-    if (end < 0) end = 0
-  } else if (end > len) {
-    end = len
-  }
-
-  if (end < start) end = start
-
-  var newBuf = this.subarray(start, end)
-  // Return an augmented `Uint8Array` instance
-  newBuf.__proto__ = Buffer.prototype
-  return newBuf
-}
-
-/*
- * Need to make sure that buffer isn't trying to write out of bounds.
- */
-function checkOffset (offset, ext, length) {
-  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
-  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
-}
-
-Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var val = this[offset]
-  var mul = 1
-  var i = 0
-  while (++i < byteLength && (mul *= 0x100)) {
-    val += this[offset + i] * mul
-  }
-
-  return val
-}
-
-Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
-  if (!noAssert) {
-    checkOffset(offset, byteLength, this.length)
-  }
-
-  var val = this[offset + --byteLength]
-  var mul = 1
-  while (byteLength > 0 && (mul *= 0x100)) {
-    val += this[offset + --byteLength] * mul
-  }
-
-  return val
-}
-
-Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 1, this.length)
-  return this[offset]
-}
-
-Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  return this[offset] | (this[offset + 1] << 8)
-}
-
-Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  return (this[offset] << 8) | this[offset + 1]
-}
-
-Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return ((this[offset]) |
-      (this[offset + 1] << 8) |
-      (this[offset + 2] << 16)) +
-      (this[offset + 3] * 0x1000000)
-}
-
-Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset] * 0x1000000) +
-    ((this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    this[offset + 3])
-}
-
-Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var val = this[offset]
-  var mul = 1
-  var i = 0
-  while (++i < byteLength && (mul *= 0x100)) {
-    val += this[offset + i] * mul
-  }
-  mul *= 0x80
-
-  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
-  return val
-}
-
-Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var i = byteLength
-  var mul = 1
-  var val = this[offset + --i]
-  while (i > 0 && (mul *= 0x100)) {
-    val += this[offset + --i] * mul
-  }
-  mul *= 0x80
-
-  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
-  return val
-}
-
-Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 1, this.length)
-  if (!(this[offset] & 0x80)) return (this[offset])
-  return ((0xff - this[offset] + 1) * -1)
-}
-
-Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  var val = this[offset] | (this[offset + 1] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
-}
-
-Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  var val = this[offset + 1] | (this[offset] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
-}
-
-Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset]) |
-    (this[offset + 1] << 8) |
-    (this[offset + 2] << 16) |
-    (this[offset + 3] << 24)
-}
-
-Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset] << 24) |
-    (this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    (this[offset + 3])
-}
-
-Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-  return ieee754.read(this, offset, true, 23, 4)
-}
-
-Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-  return ieee754.read(this, offset, false, 23, 4)
-}
-
-Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 8, this.length)
-  return ieee754.read(this, offset, true, 52, 8)
-}
-
-Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 8, this.length)
-  return ieee754.read(this, offset, false, 52, 8)
-}
-
-function checkInt (buf, value, offset, ext, max, min) {
-  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
-  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
-  if (offset + ext > buf.length) throw new RangeError('Index out of range')
-}
-
-Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
-  if (!noAssert) {
-    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-    checkInt(this, value, offset, byteLength, maxBytes, 0)
-  }
-
-  var mul = 1
-  var i = 0
-  this[offset] = value & 0xFF
-  while (++i < byteLength && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
-  if (!noAssert) {
-    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-    checkInt(this, value, offset, byteLength, maxBytes, 0)
-  }
-
-  var i = byteLength - 1
-  var mul = 1
-  this[offset + i] = value & 0xFF
-  while (--i >= 0 && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
-  this[offset] = (value & 0xff)
-  return offset + 1
-}
-
-Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  this[offset] = (value & 0xff)
-  this[offset + 1] = (value >>> 8)
-  return offset + 2
-}
-
-Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  this[offset] = (value >>> 8)
-  this[offset + 1] = (value & 0xff)
-  return offset + 2
-}
-
-Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  this[offset + 3] = (value >>> 24)
-  this[offset + 2] = (value >>> 16)
-  this[offset + 1] = (value >>> 8)
-  this[offset] = (value & 0xff)
-  return offset + 4
-}
-
-Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  this[offset] = (value >>> 24)
-  this[offset + 1] = (value >>> 16)
-  this[offset + 2] = (value >>> 8)
-  this[offset + 3] = (value & 0xff)
-  return offset + 4
-}
-
-Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) {
-    var limit = Math.pow(2, (8 * byteLength) - 1)
-
-    checkInt(this, value, offset, byteLength, limit - 1, -limit)
-  }
-
-  var i = 0
-  var mul = 1
-  var sub = 0
-  this[offset] = value & 0xFF
-  while (++i < byteLength && (mul *= 0x100)) {
-    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
-      sub = 1
-    }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) {
-    var limit = Math.pow(2, (8 * byteLength) - 1)
-
-    checkInt(this, value, offset, byteLength, limit - 1, -limit)
-  }
-
-  var i = byteLength - 1
-  var mul = 1
-  var sub = 0
-  this[offset + i] = value & 0xFF
-  while (--i >= 0 && (mul *= 0x100)) {
-    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
-      sub = 1
-    }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
-  if (value < 0) value = 0xff + value + 1
-  this[offset] = (value & 0xff)
-  return offset + 1
-}
-
-Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  this[offset] = (value & 0xff)
-  this[offset + 1] = (value >>> 8)
-  return offset + 2
-}
-
-Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  this[offset] = (value >>> 8)
-  this[offset + 1] = (value & 0xff)
-  return offset + 2
-}
-
-Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
-  this[offset] = (value & 0xff)
-  this[offset + 1] = (value >>> 8)
-  this[offset + 2] = (value >>> 16)
-  this[offset + 3] = (value >>> 24)
-  return offset + 4
-}
-
-Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
-  if (value < 0) value = 0xffffffff + value + 1
-  this[offset] = (value >>> 24)
-  this[offset + 1] = (value >>> 16)
-  this[offset + 2] = (value >>> 8)
-  this[offset + 3] = (value & 0xff)
-  return offset + 4
-}
-
-function checkIEEE754 (buf, value, offset, ext, max, min) {
-  if (offset + ext > buf.length) throw new RangeError('Index out of range')
-  if (offset < 0) throw new RangeError('Index out of range')
-}
-
-function writeFloat (buf, value, offset, littleEndian, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) {
-    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
-  }
-  ieee754.write(buf, value, offset, littleEndian, 23, 4)
-  return offset + 4
-}
-
-Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
-  return writeFloat(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
-  return writeFloat(this, value, offset, false, noAssert)
-}
-
-function writeDouble (buf, value, offset, littleEndian, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) {
-    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
-  }
-  ieee754.write(buf, value, offset, littleEndian, 52, 8)
-  return offset + 8
-}
-
-Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
-  return writeDouble(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
-  return writeDouble(this, value, offset, false, noAssert)
-}
-
-// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
-Buffer.prototype.copy = function copy (target, targetStart, start, end) {
-  if (!Buffer.isBuffer(target)) throw new TypeError('argument should be a Buffer')
-  if (!start) start = 0
-  if (!end && end !== 0) end = this.length
-  if (targetStart >= target.length) targetStart = target.length
-  if (!targetStart) targetStart = 0
-  if (end > 0 && end < start) end = start
-
-  // Copy 0 bytes; we're done
-  if (end === start) return 0
-  if (target.length === 0 || this.length === 0) return 0
-
-  // Fatal error conditions
-  if (targetStart < 0) {
-    throw new RangeError('targetStart out of bounds')
-  }
-  if (start < 0 || start >= this.length) throw new RangeError('Index out of range')
-  if (end < 0) throw new RangeError('sourceEnd out of bounds')
-
-  // Are we oob?
-  if (end > this.length) end = this.length
-  if (target.length - targetStart < end - start) {
-    end = target.length - targetStart + start
-  }
-
-  var len = end - start
-
-  if (this === target && typeof Uint8Array.prototype.copyWithin === 'function') {
-    // Use built-in when available, missing from IE11
-    this.copyWithin(targetStart, start, end)
-  } else if (this === target && start < targetStart && targetStart < end) {
-    // descending copy from end
-    for (var i = len - 1; i >= 0; --i) {
-      target[i + targetStart] = this[i + start]
-    }
-  } else {
-    Uint8Array.prototype.set.call(
-      target,
-      this.subarray(start, end),
-      targetStart
-    )
-  }
-
-  return len
-}
-
-// Usage:
-//    buffer.fill(number[, offset[, end]])
-//    buffer.fill(buffer[, offset[, end]])
-//    buffer.fill(string[, offset[, end]][, encoding])
-Buffer.prototype.fill = function fill (val, start, end, encoding) {
-  // Handle string cases:
-  if (typeof val === 'string') {
-    if (typeof start === 'string') {
-      encoding = start
-      start = 0
-      end = this.length
-    } else if (typeof end === 'string') {
-      encoding = end
-      end = this.length
-    }
-    if (encoding !== undefined && typeof encoding !== 'string') {
-      throw new TypeError('encoding must be a string')
-    }
-    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
-      throw new TypeError('Unknown encoding: ' + encoding)
-    }
-    if (val.length === 1) {
-      var code = val.charCodeAt(0)
-      if ((encoding === 'utf8' && code < 128) ||
-          encoding === 'latin1') {
-        // Fast path: If `val` fits into a single byte, use that numeric value.
-        val = code
-      }
-    }
-  } else if (typeof val === 'number') {
-    val = val & 255
-  }
-
-  // Invalid ranges are not set to a default, so can range check early.
-  if (start < 0 || this.length < start || this.length < end) {
-    throw new RangeError('Out of range index')
-  }
-
-  if (end <= start) {
-    return this
-  }
-
-  start = start >>> 0
-  end = end === undefined ? this.length : end >>> 0
-
-  if (!val) val = 0
-
-  var i
-  if (typeof val === 'number') {
-    for (i = start; i < end; ++i) {
-      this[i] = val
-    }
-  } else {
-    var bytes = Buffer.isBuffer(val)
-      ? val
-      : Buffer.from(val, encoding)
-    var len = bytes.length
-    if (len === 0) {
-      throw new TypeError('The value "' + val +
-        '" is invalid for argument "value"')
-    }
-    for (i = 0; i < end - start; ++i) {
-      this[i + start] = bytes[i % len]
-    }
-  }
-
-  return this
-}
-
-// HELPER FUNCTIONS
-// ================
-
-var INVALID_BASE64_RE = /[^+/0-9A-Za-z-_]/g
-
-function base64clean (str) {
-  // Node takes equal signs as end of the Base64 encoding
-  str = str.split('=')[0]
-  // Node strips out invalid characters like \n and \t from the string, base64-js does not
-  str = str.trim().replace(INVALID_BASE64_RE, '')
-  // Node converts strings with length < 2 to ''
-  if (str.length < 2) return ''
-  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
-  while (str.length % 4 !== 0) {
-    str = str + '='
-  }
-  return str
-}
-
-function toHex (n) {
-  if (n < 16) return '0' + n.toString(16)
-  return n.toString(16)
-}
-
-function utf8ToBytes (string, units) {
-  units = units || Infinity
-  var codePoint
-  var length = string.length
-  var leadSurrogate = null
-  var bytes = []
-
-  for (var i = 0; i < length; ++i) {
-    codePoint = string.charCodeAt(i)
-
-    // is surrogate component
-    if (codePoint > 0xD7FF && codePoint < 0xE000) {
-      // last char was a lead
-      if (!leadSurrogate) {
-        // no lead yet
-        if (codePoint > 0xDBFF) {
-          // unexpected trail
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-          continue
-        } else if (i + 1 === length) {
-          // unpaired lead
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-          continue
-        }
-
-        // valid lead
-        leadSurrogate = codePoint
-
-        continue
-      }
-
-      // 2 leads in a row
-      if (codePoint < 0xDC00) {
-        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-        leadSurrogate = codePoint
-        continue
-      }
-
-      // valid surrogate pair
-      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
-    } else if (leadSurrogate) {
-      // valid bmp char, but last char was a lead
-      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-    }
-
-    leadSurrogate = null
-
-    // encode utf8
-    if (codePoint < 0x80) {
-      if ((units -= 1) < 0) break
-      bytes.push(codePoint)
-    } else if (codePoint < 0x800) {
-      if ((units -= 2) < 0) break
-      bytes.push(
-        codePoint >> 0x6 | 0xC0,
-        codePoint & 0x3F | 0x80
-      )
-    } else if (codePoint < 0x10000) {
-      if ((units -= 3) < 0) break
-      bytes.push(
-        codePoint >> 0xC | 0xE0,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
-      )
-    } else if (codePoint < 0x110000) {
-      if ((units -= 4) < 0) break
-      bytes.push(
-        codePoint >> 0x12 | 0xF0,
-        codePoint >> 0xC & 0x3F | 0x80,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
-      )
-    } else {
-      throw new Error('Invalid code point')
-    }
-  }
-
-  return bytes
-}
-
-function asciiToBytes (str) {
-  var byteArray = []
-  for (var i = 0; i < str.length; ++i) {
-    // Node's code seems to be doing this and not & 0x7F..
-    byteArray.push(str.charCodeAt(i) & 0xFF)
-  }
-  return byteArray
-}
-
-function utf16leToBytes (str, units) {
-  var c, hi, lo
-  var byteArray = []
-  for (var i = 0; i < str.length; ++i) {
-    if ((units -= 2) < 0) break
-
-    c = str.charCodeAt(i)
-    hi = c >> 8
-    lo = c % 256
-    byteArray.push(lo)
-    byteArray.push(hi)
-  }
-
-  return byteArray
-}
-
-function base64ToBytes (str) {
-  return base64.toByteArray(base64clean(str))
-}
-
-function blitBuffer (src, dst, offset, length) {
-  for (var i = 0; i < length; ++i) {
-    if ((i + offset >= dst.length) || (i >= src.length)) break
-    dst[i + offset] = src[i]
-  }
-  return i
-}
-
-// ArrayBuffer or Uint8Array objects from other contexts (i.e. iframes) do not pass
-// the `instanceof` check but they should be treated as of that type.
-// See: https://github.com/feross/buffer/issues/166
-function isInstance (obj, type) {
-  return obj instanceof type ||
-    (obj != null && obj.constructor != null && obj.constructor.name != null &&
-      obj.constructor.name === type.name)
-}
-function numberIsNaN (obj) {
-  // For IE11 support
-  return obj !== obj // eslint-disable-line no-self-compare
-}
-
-}).call(this)}).call(this,_glvis_("buffer").Buffer)
-},{"base64-js":1,"buffer":3,"ieee754":4}],4:[function(_glvis_,module,exports){
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -2021,222 +2088,20 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],5:[function(_glvis_,module,exports){
-// shim for using process in browser
-var process = module.exports = {};
 
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
+/***/ }),
 
-var cachedSetTimeout;
-var cachedClearTimeout;
+/***/ 1152:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
+"use strict";
 
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],6:[function(_glvis_,module,exports){
-module.exports = {
-    alpha_shape: _glvis_('alpha-shape'),
-    convex_hull: _glvis_('convex-hull'),
-    delaunay_triangulate: _glvis_('delaunay-triangulate'),
-    gl_cone3d: _glvis_('gl-cone3d'),
-    gl_error3d: _glvis_('gl-error3d'),
-    gl_heatmap2d: _glvis_('gl-heatmap2d'),
-    gl_line3d: _glvis_('gl-line3d'),
-    gl_mesh3d: _glvis_('gl-mesh3d'),
-    gl_plot2d: _glvis_('gl-plot2d'),
-    gl_plot3d: _glvis_('gl-plot3d'),
-    gl_pointcloud2d: _glvis_('gl-pointcloud2d'),
-    gl_scatter3d: _glvis_('gl-scatter3d'),
-    gl_select_box: _glvis_('gl-select-box'),
-    gl_spikes2d: _glvis_('gl-spikes2d'),
-    gl_streamtube3d: _glvis_('gl-streamtube3d'),
-    gl_surface3d: _glvis_('gl-surface3d'),
-    ndarray: _glvis_('ndarray'),
-    ndarray_linear_interpolate: _glvis_('ndarray-linear-interpolate'),
-};
-
-},{"alpha-shape":12,"convex-hull":58,"delaunay-triangulate":63,"gl-cone3d":79,"gl-error3d":84,"gl-heatmap2d":88,"gl-line3d":91,"gl-mesh3d":112,"gl-plot2d":118,"gl-plot3d":121,"gl-pointcloud2d":123,"gl-scatter3d":128,"gl-select-box":130,"gl-spikes2d":139,"gl-streamtube3d":143,"gl-surface3d":145,"ndarray":259,"ndarray-linear-interpolate":253}],7:[function(_glvis_,module,exports){
-'use strict'
 
 module.exports = createViewController
 
-var createTurntable = _glvis_('turntable-camera-controller')
-var createOrbit     = _glvis_('orbit-camera-controller')
-var createMatrix    = _glvis_('matrix-camera-controller')
+var createTurntable = __webpack_require__(3440)
+var createOrbit     = __webpack_require__(7774)
+var createMatrix    = __webpack_require__(9298)
 
 function ViewController(controllers, mode) {
   this._controllerNames = Object.keys(controllers)
@@ -2385,12 +2250,18 @@ function createViewController(options) {
     matrix: matrix
   }, mode)
 }
-},{"matrix-camera-controller":245,"orbit-camera-controller":263,"turntable-camera-controller":305}],8:[function(_glvis_,module,exports){
-'use strict'
 
-var weakMap      = typeof WeakMap === 'undefined' ? _glvis_('weak-map') : WeakMap
-var createBuffer = _glvis_('gl-buffer')
-var createVAO    = _glvis_('gl-vao')
+/***/ }),
+
+/***/ 8126:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var weakMap      = typeof WeakMap === 'undefined' ? __webpack_require__(5346) : WeakMap
+var createBuffer = __webpack_require__(5827)
+var createVAO    = __webpack_require__(2944)
 
 var TriangleCache = new weakMap()
 
@@ -2416,8 +2287,13 @@ function createABigTriangle(gl) {
 
 module.exports = createABigTriangle
 
-},{"gl-buffer":78,"gl-vao":150,"weak-map":313}],9:[function(_glvis_,module,exports){
-var padLeft = _glvis_('pad-left')
+
+/***/ }),
+
+/***/ 8008:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var padLeft = __webpack_require__(4930)
 
 module.exports = addLineNumbers
 function addLineNumbers (string, start, delim) {
@@ -2434,12 +2310,18 @@ function addLineNumbers (string, start, delim) {
   }).join('\n')
 }
 
-},{"pad-left":264}],10:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2153:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = affineHull
 
-var orient = _glvis_('robust-orientation')
+var orient = __webpack_require__(417)
 
 function linearlyIndependent(points, d) {
   var nhull = new Array(d+1)
@@ -2486,13 +2368,19 @@ function affineHull(points) {
   }
   return index
 }
-},{"robust-orientation":284}],11:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 4653:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = alphaComplex
 
-var delaunay = _glvis_('delaunay-triangulate')
-var circumradius = _glvis_('circumradius')
+var delaunay = __webpack_require__(4419)
+var circumradius = __webpack_require__(1778)
 
 function alphaComplex(alpha, points) {
   return delaunay(points).filter(function(cell) {
@@ -2503,26 +2391,42 @@ function alphaComplex(alpha, points) {
     return circumradius(simplex) * alpha < 1
   })
 }
-},{"circumradius":49,"delaunay-triangulate":63}],12:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2350:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = alphaShape
 
-var ac = _glvis_('alpha-complex')
-var bnd = _glvis_('simplicial-complex-boundary')
+var ac = __webpack_require__(4653)
+var bnd = __webpack_require__(8691)
 
 function alphaShape(alpha, points) {
   return bnd(ac(alpha, points))
 }
-},{"alpha-complex":11,"simplicial-complex-boundary":290}],13:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7896:
+/***/ (function(module) {
+
 module.exports = function _atob(str) {
   return atob(str)
 }
 
-},{}],14:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 957:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = barycentric
 
-var solve = _glvis_('robust-linear-solve')
+var solve = __webpack_require__(6606)
 
 function reduce(x) {
   var r = 0
@@ -2565,10 +2469,16 @@ function barycentric(simplex, point) {
   }
   return y
 }
-},{"robust-linear-solve":283}],15:[function(_glvis_,module,exports){
-'use strict'
 
-var rationalize = _glvis_('./lib/rationalize')
+/***/ }),
+
+/***/ 1539:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var rationalize = __webpack_require__(8524)
 
 module.exports = add
 
@@ -2578,8 +2488,14 @@ function add(a, b) {
     a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":25}],16:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 8846:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = cmp
 
@@ -2587,10 +2503,16 @@ function cmp(a, b) {
     return a[0].mul(b[1]).cmp(b[0].mul(a[1]))
 }
 
-},{}],17:[function(_glvis_,module,exports){
-'use strict'
 
-var rationalize = _glvis_('./lib/rationalize')
+/***/ }),
+
+/***/ 9189:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var rationalize = __webpack_require__(8524)
 
 module.exports = div
 
@@ -2598,15 +2520,21 @@ function div(a, b) {
   return rationalize(a[0].mul(b[1]), a[1].mul(b[0]))
 }
 
-},{"./lib/rationalize":25}],18:[function(_glvis_,module,exports){
-'use strict'
 
-var isRat = _glvis_('./is-rat')
-var isBN = _glvis_('./lib/is-bn')
-var num2bn = _glvis_('./lib/num-to-bn')
-var str2bn = _glvis_('./lib/str-to-bn')
-var rationalize = _glvis_('./lib/rationalize')
-var div = _glvis_('./div')
+/***/ }),
+
+/***/ 5125:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var isRat = __webpack_require__(234)
+var isBN = __webpack_require__(3218)
+var num2bn = __webpack_require__(5514)
+var str2bn = __webpack_require__(2813)
+var rationalize = __webpack_require__(8524)
+var div = __webpack_require__(9189)
 
 module.exports = makeRational
 
@@ -2660,10 +2588,16 @@ function makeRational(numer, denom) {
   return rationalize(a, b)
 }
 
-},{"./div":17,"./is-rat":19,"./lib/is-bn":23,"./lib/num-to-bn":24,"./lib/rationalize":25,"./lib/str-to-bn":26}],19:[function(_glvis_,module,exports){
-'use strict'
 
-var isBN = _glvis_('./lib/is-bn')
+/***/ }),
+
+/***/ 234:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var isBN = __webpack_require__(3218)
 
 module.exports = isRat
 
@@ -2671,10 +2605,16 @@ function isRat(x) {
   return Array.isArray(x) && x.length === 2 && isBN(x[0]) && isBN(x[1])
 }
 
-},{"./lib/is-bn":23}],20:[function(_glvis_,module,exports){
-'use strict'
 
-var BN = _glvis_('bn.js')
+/***/ }),
+
+/***/ 4275:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var BN = __webpack_require__(1928)
 
 module.exports = sign
 
@@ -2682,10 +2622,16 @@ function sign (x) {
   return x.cmp(new BN(0))
 }
 
-},{"bn.js":33}],21:[function(_glvis_,module,exports){
-'use strict'
 
-var sign = _glvis_('./bn-sign')
+/***/ }),
+
+/***/ 9958:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var sign = __webpack_require__(4275)
 
 module.exports = bn2num
 
@@ -2707,11 +2653,17 @@ function bn2num(b) {
   return sign(b) * out
 }
 
-},{"./bn-sign":20}],22:[function(_glvis_,module,exports){
-'use strict'
 
-var db = _glvis_('double-bits')
-var ctz = _glvis_('bit-twiddle').countTrailingZeros
+/***/ }),
+
+/***/ 1112:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var db = __webpack_require__(8362)
+var ctz = (__webpack_require__(2288).countTrailingZeros)
 
 module.exports = ctzNumber
 
@@ -2728,10 +2680,16 @@ function ctzNumber(x) {
   return h + 32
 }
 
-},{"bit-twiddle":32,"double-bits":64}],23:[function(_glvis_,module,exports){
-'use strict'
 
-var BN = _glvis_('bn.js')
+/***/ }),
+
+/***/ 3218:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var BN = __webpack_require__(1928)
 
 module.exports = isBN
 
@@ -2741,11 +2699,17 @@ function isBN(x) {
   return x && typeof x === 'object' && Boolean(x.words)
 }
 
-},{"bn.js":33}],24:[function(_glvis_,module,exports){
-'use strict'
 
-var BN = _glvis_('bn.js')
-var db = _glvis_('double-bits')
+/***/ }),
+
+/***/ 5514:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var BN = __webpack_require__(1928)
+var db = __webpack_require__(8362)
 
 module.exports = num2bn
 
@@ -2758,11 +2722,17 @@ function num2bn(x) {
   }
 }
 
-},{"bn.js":33,"double-bits":64}],25:[function(_glvis_,module,exports){
-'use strict'
 
-var num2bn = _glvis_('./num-to-bn')
-var sign = _glvis_('./bn-sign')
+/***/ }),
+
+/***/ 8524:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var num2bn = __webpack_require__(5514)
+var sign = __webpack_require__(4275)
 
 module.exports = rationalize
 
@@ -2786,10 +2756,16 @@ function rationalize(numer, denom) {
   return [ numer, denom ]
 }
 
-},{"./bn-sign":20,"./num-to-bn":24}],26:[function(_glvis_,module,exports){
-'use strict'
 
-var BN = _glvis_('bn.js')
+/***/ }),
+
+/***/ 2813:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var BN = __webpack_require__(1928)
 
 module.exports = str2BN
 
@@ -2797,10 +2773,16 @@ function str2BN(x) {
   return new BN(x)
 }
 
-},{"bn.js":33}],27:[function(_glvis_,module,exports){
-'use strict'
 
-var rationalize = _glvis_('./lib/rationalize')
+/***/ }),
+
+/***/ 3962:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var rationalize = __webpack_require__(8524)
 
 module.exports = mul
 
@@ -2808,10 +2790,16 @@ function mul(a, b) {
   return rationalize(a[0].mul(b[0]), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":25}],28:[function(_glvis_,module,exports){
-'use strict'
 
-var bnsign = _glvis_('./lib/bn-sign')
+/***/ }),
+
+/***/ 4951:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bnsign = __webpack_require__(4275)
 
 module.exports = sign
 
@@ -2819,10 +2807,16 @@ function sign(x) {
   return bnsign(x[0]) * bnsign(x[1])
 }
 
-},{"./lib/bn-sign":20}],29:[function(_glvis_,module,exports){
-'use strict'
 
-var rationalize = _glvis_('./lib/rationalize')
+/***/ }),
+
+/***/ 4354:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var rationalize = __webpack_require__(8524)
 
 module.exports = sub
 
@@ -2830,11 +2824,17 @@ function sub(a, b) {
   return rationalize(a[0].mul(b[1]).sub(a[1].mul(b[0])), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":25}],30:[function(_glvis_,module,exports){
-'use strict'
 
-var bn2num = _glvis_('./lib/bn-to-num')
-var ctz = _glvis_('./lib/ctz')
+/***/ }),
+
+/***/ 7999:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bn2num = __webpack_require__(9958)
+var ctz = __webpack_require__(1112)
 
 module.exports = roundRat
 
@@ -2868,8 +2868,14 @@ function roundRat (f) {
   }
 }
 
-},{"./lib/bn-to-num":21,"./lib/ctz":22}],31:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 5070:
+/***/ (function(module) {
+
+"use strict";
+
 
 // (a, y, c, l, h) = (array, y[, cmp, lo, hi])
 
@@ -2938,7 +2944,13 @@ module.exports = {
   eq: function(a, y, c, l, h) { return norm(a, y, c, l, h, eq)}
 }
 
-},{}],32:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2288:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
 /**
  * Bit twiddling hacks for JavaScript.
  *
@@ -2948,7 +2960,7 @@ module.exports = {
  *    http://graphics.stanford.edu/~seander/bithacks.html
  */
 
-"use strict"; "use restrict";
+ "use restrict";
 
 //Number of bits in an integer
 var INT_BITS = 32;
@@ -3144,7 +3156,13 @@ exports.nextCombination = function(v) {
 }
 
 
-},{}],33:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1928:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
 (function (module, exports) {
   'use strict';
 
@@ -3200,7 +3218,7 @@ exports.nextCombination = function(v) {
     if (typeof window !== 'undefined' && typeof window.Buffer !== 'undefined') {
       Buffer = window.Buffer;
     } else {
-      Buffer = _glvis_('buffer').Buffer;
+      Buffer = (__webpack_require__(6601).Buffer);
     }
   } catch (e) {
   }
@@ -6590,10 +6608,16 @@ exports.nextCombination = function(v) {
     var res = this.imod(a._invmp(this.m).mul(this.r2));
     return res._forceRed(this);
   };
-})(typeof module === 'undefined' || module, this);
+})( false || module, this);
 
-},{"buffer":2}],34:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2692:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = boundary
 
@@ -6628,14 +6652,20 @@ function boundary (cells) {
   return result
 }
 
-},{}],35:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2569:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = boxIntersectWrapper
 
-var pool = _glvis_('typedarray-pool')
-var sweep = _glvis_('./lib/sweep')
-var boxIntersectIter = _glvis_('./lib/intersect')
+var pool = __webpack_require__(5306)
+var sweep = __webpack_require__(1390)
+var boxIntersectIter = __webpack_require__(2337)
 
 function boxEmpty(d, box) {
   for(var j=0; j<d; ++j) {
@@ -6766,8 +6796,14 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
       throw new Error('box-intersect: Invalid arguments')
   }
 }
-},{"./lib/intersect":37,"./lib/sweep":41,"typedarray-pool":308}],36:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 7333:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 
 function full() {
   function bruteForceRedFull(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi) {
@@ -6906,19 +6942,25 @@ function bruteForcePlanner(isFull) {
 
 exports.partial = bruteForcePlanner(false)
 exports.full    = bruteForcePlanner(true)
-},{}],37:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2337:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = boxIntersectIter
 
-var pool = _glvis_('typedarray-pool')
-var bits = _glvis_('bit-twiddle')
-var bruteForce = _glvis_('./brute')
+var pool = __webpack_require__(5306)
+var bits = __webpack_require__(2288)
+var bruteForce = __webpack_require__(7333)
 var bruteForcePartial = bruteForce.partial
 var bruteForceFull = bruteForce.full
-var sweep = _glvis_('./sweep')
-var findMedian = _glvis_('./median')
-var genPartition = _glvis_('./partition')
+var sweep = __webpack_require__(1390)
+var findMedian = __webpack_require__(2464)
+var genPartition = __webpack_require__(122)
 
 //Twiddle parameters
 var BRUTE_FORCE_CUTOFF    = 128       //Cut off for brute force search
@@ -7395,12 +7437,18 @@ function boxIntersectIter(
     }
   }
 }
-},{"./brute":36,"./median":38,"./partition":39,"./sweep":41,"bit-twiddle":32,"typedarray-pool":308}],38:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2464:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = findMedian
 
-var genPartition = _glvis_('./partition')
+var genPartition = __webpack_require__(122)
 
 var partitionStartLessThan = genPartition('lo<p0')
 
@@ -7538,8 +7586,14 @@ function findMedian(d, axis, start, end, boxes, ids) {
     start, mid, boxes, ids,
     boxes[elemSize*mid+axis])
 }
-},{"./partition":39}],39:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 122:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = genPartition
 
@@ -7652,8 +7706,14 @@ function lo_lessThan_p0_and_p1_lessThan_hi(a, b, c, d, e, f, p0, p1) {
   return m
 }
 
-},{}],40:[function(_glvis_,module,exports){
-'use strict';
+
+/***/ }),
+
+/***/ 309:
+/***/ (function(module) {
+
+"use strict";
+
 
 //This code is extracted from ndarray-sort
 //It is inlined here as a temporary workaround
@@ -7889,8 +7949,14 @@ function quickSort(left, right, data) {
     quickSort(less, great, data);
   }
 }
-},{}],41:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 1390:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = {
   init:           sqInit,
@@ -7900,9 +7966,9 @@ module.exports = {
   scanComplete:   scanComplete
 }
 
-var pool  = _glvis_('typedarray-pool')
-var bits  = _glvis_('bit-twiddle')
-var isort = _glvis_('./sort')
+var pool  = __webpack_require__(5306)
+var bits  = __webpack_require__(2288)
+var isort = __webpack_require__(309)
 
 //Flag for blue
 var BLUE_FLAG = (1<<28)
@@ -8324,13 +8390,19 @@ red_loop:
     }
   }
 }
-},{"./sort":40,"bit-twiddle":32,"typedarray-pool":308}],42:[function(_glvis_,module,exports){
-'use strict'
 
-var monotoneTriangulate = _glvis_('./lib/monotone')
-var makeIndex = _glvis_('./lib/triangulation')
-var delaunayFlip = _glvis_('./lib/delaunay')
-var filterTriangulation = _glvis_('./lib/filter')
+/***/ }),
+
+/***/ 7761:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var monotoneTriangulate = __webpack_require__(9971)
+var makeIndex = __webpack_require__(743)
+var delaunayFlip = __webpack_require__(2161)
+var filterTriangulation = __webpack_require__(7098)
 
 module.exports = cdt2d
 
@@ -8408,11 +8480,17 @@ function cdt2d(points, edges, options) {
   }
 }
 
-},{"./lib/delaunay":43,"./lib/filter":44,"./lib/monotone":45,"./lib/triangulation":46}],43:[function(_glvis_,module,exports){
-'use strict'
 
-var inCircle = _glvis_('robust-in-sphere')[4]
-var bsearch = _glvis_('binary-search-bounds')
+/***/ }),
+
+/***/ 2161:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var inCircle = (__webpack_require__(2227)[4])
+var bsearch = __webpack_require__(5070)
 
 module.exports = delaunayRefine
 
@@ -8525,10 +8603,16 @@ function delaunayRefine(points, triangulation) {
   }
 }
 
-},{"binary-search-bounds":31,"robust-in-sphere":282}],44:[function(_glvis_,module,exports){
-'use strict'
 
-var bsearch = _glvis_('binary-search-bounds')
+/***/ }),
+
+/***/ 7098:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bsearch = __webpack_require__(5070)
 
 module.exports = classifyFaces
 
@@ -8707,11 +8791,17 @@ function classifyFaces(triangulation, target, infinity) {
   return result
 }
 
-},{"binary-search-bounds":31}],45:[function(_glvis_,module,exports){
-'use strict'
 
-var bsearch = _glvis_('binary-search-bounds')
-var orient = _glvis_('robust-orientation')[3]
+/***/ }),
+
+/***/ 9971:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bsearch = __webpack_require__(5070)
+var orient = (__webpack_require__(417)[3])
 
 var EVENT_POINT = 0
 var EVENT_END   = 1
@@ -8896,10 +8986,16 @@ function monotoneTriangulate(points, edges) {
   return cells
 }
 
-},{"binary-search-bounds":31,"robust-orientation":284}],46:[function(_glvis_,module,exports){
-'use strict'
 
-var bsearch = _glvis_('binary-search-bounds')
+/***/ }),
+
+/***/ 743:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bsearch = __webpack_require__(5070)
 
 module.exports = createTriangulation
 
@@ -9002,8 +9098,14 @@ function createTriangulation(numVerts, edges) {
   return new Triangulation(stars, edges)
 }
 
-},{"binary-search-bounds":31}],47:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 9887:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = orientation
 
@@ -9021,11 +9123,17 @@ function orientation(s) {
   return p
 }
 
-},{}],48:[function(_glvis_,module,exports){
-"use strict"
 
-var dup = _glvis_("dup")
-var solve = _glvis_("robust-linear-solve")
+/***/ }),
+
+/***/ 9243:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var dup = __webpack_require__(3094)
+var solve = __webpack_require__(6606)
 
 function dot(a, b) {
   var s = 0.0
@@ -9090,10 +9198,15 @@ function circumcenter(points) {
 
 circumcenter.barycenetric = barycentricCircumcenter
 module.exports = circumcenter
-},{"dup":65,"robust-linear-solve":283}],49:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1778:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = circumradius
 
-var circumcenter = _glvis_('circumcenter')
+var circumcenter = __webpack_require__(9243)
 
 function circumradius(points) {
   var center = circumcenter(points)
@@ -9106,21 +9219,27 @@ function circumradius(points) {
   }
   return Math.sqrt(avgDist / points.length)
 }
-},{"circumcenter":48}],50:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 197:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = cleanPSLG
 
-var UnionFind = _glvis_('union-find')
-var boxIntersect = _glvis_('box-intersect')
-var segseg = _glvis_('robust-segment-intersect')
-var rat = _glvis_('big-rat')
-var ratCmp = _glvis_('big-rat/cmp')
-var ratToFloat = _glvis_('big-rat/to-float')
-var ratVec = _glvis_('rat-vec')
-var nextafter = _glvis_('nextafter')
+var UnionFind = __webpack_require__(1731)
+var boxIntersect = __webpack_require__(2569)
+var segseg = __webpack_require__(4434)
+var rat = __webpack_require__(5125)
+var ratCmp = __webpack_require__(8846)
+var ratToFloat = __webpack_require__(7999)
+var ratVec = __webpack_require__(2826)
+var nextafter = __webpack_require__(8551)
 
-var solveIntersection = _glvis_('./lib/rat-seg-intersect')
+var solveIntersection = __webpack_require__(5528)
 
 // Bounds on a rational number when rounded to a float
 function boundRat (r) {
@@ -9489,18 +9608,24 @@ function cleanPSLG (points, edges, colors) {
   return modified
 }
 
-},{"./lib/rat-seg-intersect":51,"big-rat":18,"big-rat/cmp":16,"big-rat/to-float":30,"box-intersect":35,"nextafter":260,"rat-vec":273,"robust-segment-intersect":287,"union-find":309}],51:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 5528:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = solveIntersection
 
-var ratMul = _glvis_('big-rat/mul')
-var ratDiv = _glvis_('big-rat/div')
-var ratSub = _glvis_('big-rat/sub')
-var ratSign = _glvis_('big-rat/sign')
-var rvSub = _glvis_('rat-vec/sub')
-var rvAdd = _glvis_('rat-vec/add')
-var rvMuls = _glvis_('rat-vec/muls')
+var ratMul = __webpack_require__(3962)
+var ratDiv = __webpack_require__(9189)
+var ratSub = __webpack_require__(4354)
+var ratSign = __webpack_require__(4951)
+var rvSub = __webpack_require__(6695)
+var rvAdd = __webpack_require__(7584)
+var rvMuls = __webpack_require__(4469)
 
 function ratPerp (a, b) {
   return ratSub(ratMul(a[0], b[1]), ratMul(a[1], b[0]))
@@ -9533,7 +9658,12 @@ function solveIntersection (a, b, c, d) {
   return r
 }
 
-},{"big-rat/div":17,"big-rat/mul":27,"big-rat/sign":28,"big-rat/sub":29,"rat-vec/add":272,"rat-vec/muls":274,"rat-vec/sub":275}],52:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5692:
+/***/ (function(module) {
+
 module.exports={
 	"jet":[{"index":0,"rgb":[0,0,131]},{"index":0.125,"rgb":[0,60,170]},{"index":0.375,"rgb":[5,255,255]},{"index":0.625,"rgb":[255,255,0]},{"index":0.875,"rgb":[250,0,0]},{"index":1,"rgb":[128,0,0]}],
 
@@ -9624,16 +9754,22 @@ module.exports={
 	"cubehelix": [{"index":0,"rgb":[0,0,0]},{"index":0.07,"rgb":[22,5,59]},{"index":0.13,"rgb":[60,4,105]},{"index":0.2,"rgb":[109,1,135]},{"index":0.27,"rgb":[161,0,147]},{"index":0.33,"rgb":[210,2,142]},{"index":0.4,"rgb":[251,11,123]},{"index":0.47,"rgb":[255,29,97]},{"index":0.53,"rgb":[255,54,69]},{"index":0.6,"rgb":[255,85,46]},{"index":0.67,"rgb":[255,120,34]},{"index":0.73,"rgb":[255,157,37]},{"index":0.8,"rgb":[241,191,57]},{"index":0.87,"rgb":[224,220,93]},{"index":0.93,"rgb":[218,241,142]},{"index":1,"rgb":[227,253,198]}]
 };
 
-},{}],53:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9156:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
 /*
  * Ben Postlethwaite
  * January 2013
  * License MIT
  */
-'use strict';
 
-var colorScale = _glvis_('./colorScale');
-var lerp = _glvis_('lerp')
+
+var colorScale = __webpack_require__(5692);
+var lerp = __webpack_require__(3578)
 
 module.exports = createColormap;
 
@@ -9769,16 +9905,22 @@ function rgbaStr (rgba) {
     return 'rgba(' + rgba.join(',') + ')';
 }
 
-},{"./colorScale":52,"lerp":240}],54:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 9398:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = compareAngle
 
-var orient = _glvis_("robust-orientation")
-var sgn = _glvis_("signum")
-var twoSum = _glvis_("two-sum")
-var robustProduct = _glvis_("robust-product")
-var robustSum = _glvis_("robust-sum")
+var orient = __webpack_require__(417)
+var sgn = __webpack_require__(7538)
+var twoSum = __webpack_require__(87)
+var robustProduct = __webpack_require__(2019)
+var robustSum = __webpack_require__(9662)
 
 function testInterior(a, b, c) {
   var x0 = twoSum(a[0], -b[0])
@@ -9855,15 +9997,26 @@ function compareAngle(a, b, c, d) {
     }
   }
 }
-},{"robust-orientation":284,"robust-product":285,"robust-sum":289,"signum":55,"two-sum":307}],55:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 7538:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = function signum(x) {
   if(x < 0) { return -1 }
   if(x > 0) { return 1 }
   return 0.0
 }
-},{}],56:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9209:
+/***/ (function(module) {
+
 module.exports = compareCells
 
 var min = Math.min
@@ -9919,11 +10072,17 @@ function compareCells(a, b) {
   }
 }
 
-},{}],57:[function(_glvis_,module,exports){
-'use strict'
 
-var compareCells = _glvis_('compare-cell')
-var parity = _glvis_('cell-orientation')
+/***/ }),
+
+/***/ 1284:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var compareCells = __webpack_require__(9209)
+var parity = __webpack_require__(9887)
 
 module.exports = compareOrientedCells
 
@@ -9931,12 +10090,18 @@ function compareOrientedCells(a, b) {
   return compareCells(a, b) || parity(a) - parity(b)
 }
 
-},{"cell-orientation":47,"compare-cell":56}],58:[function(_glvis_,module,exports){
-"use strict"
 
-var convexHull1d = _glvis_('./lib/ch1d')
-var convexHull2d = _glvis_('./lib/ch2d')
-var convexHullnd = _glvis_('./lib/chnd')
+/***/ }),
+
+/***/ 5537:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var convexHull1d = __webpack_require__(8950)
+var convexHull2d = __webpack_require__(8722)
+var convexHullnd = __webpack_require__(3332)
 
 module.exports = convexHull
 
@@ -9957,8 +10122,14 @@ function convexHull(points) {
   }
   return convexHullnd(points, d)
 }
-},{"./lib/ch1d":59,"./lib/ch2d":60,"./lib/chnd":61}],59:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 8950:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = convexHull1d
 
@@ -9981,12 +10152,18 @@ function convexHull1d(points) {
     return [[lo]]
   }
 }
-},{}],60:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 8722:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = convexHull2D
 
-var monotoneHull = _glvis_('monotone-convex-hull-2d')
+var monotoneHull = __webpack_require__(3266)
 
 function convexHull2D(points) {
   var hull = monotoneHull(points)
@@ -10004,13 +10181,19 @@ function convexHull2D(points) {
   return edges
 }
 
-},{"monotone-convex-hull-2d":246}],61:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3332:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = convexHullnD
 
-var ich = _glvis_('incremental-convex-hull')
-var aff = _glvis_('affine-hull')
+var ich = __webpack_require__(2183)
+var aff = __webpack_require__(2153)
 
 function permute(points, front) {
   var n = points.length
@@ -10065,8 +10248,14 @@ function convexHullnD(points, d) {
     return invPermute(nhull, ah)
   }
 }
-},{"affine-hull":10,"incremental-convex-hull":233}],62:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 9680:
+/***/ (function(module) {
+
+"use strict";
+
 
 function dcubicHermite(p0, v0, p1, v1, t, f) {
   var dh00 = 6*t*t-6*t,
@@ -10105,11 +10294,17 @@ function cubicHermite(p0, v0, p1, v1, t, f) {
 
 module.exports = cubicHermite
 module.exports.derivative = dcubicHermite
-},{}],63:[function(_glvis_,module,exports){
-"use strict"
 
-var ch = _glvis_("incremental-convex-hull")
-var uniq = _glvis_("uniq")
+/***/ }),
+
+/***/ 4419:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var ch = __webpack_require__(2183)
+var uniq = __webpack_require__(1215)
 
 module.exports = triangulate
 
@@ -10265,8 +10460,12 @@ function triangulate(points, includePointAtInfinity) {
 
   return hull
 }
-},{"incremental-convex-hull":233,"uniq":310}],64:[function(_glvis_,module,exports){
-(function (Buffer){(function (){
+
+/***/ }),
+
+/***/ 8362:
+/***/ (function(module) {
+
 var hasTypedArrays = false
 if(typeof Float64Array !== "undefined") {
   var DOUBLE_VIEW = new Float64Array(1)
@@ -10368,9 +10567,14 @@ module.exports.denormalized = function(n) {
   var hi = module.exports.hi(n)
   return !(hi & 0x7ff00000)
 }
-}).call(this)}).call(this,_glvis_("buffer").Buffer)
-},{"buffer":3}],65:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 3094:
+/***/ (function(module) {
+
+"use strict";
+
 
 function dupe_array(count, value, i) {
   var c = count[i]|0
@@ -10419,12 +10623,18 @@ function dupe(count, value) {
 }
 
 module.exports = dupe
-},{}],66:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 8348:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = edgeToAdjacency
 
-var uniq = _glvis_("uniq")
+var uniq = __webpack_require__(1215)
 
 function edgeToAdjacency(edges, numVertices) {
   var numEdges = edges.length
@@ -10453,8 +10663,14 @@ function edgeToAdjacency(edges, numVertices) {
   }
   return adj
 }
-},{"uniq":310}],67:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 5795:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = extractPlanes
 
@@ -10470,13 +10686,19 @@ function extractPlanes(M, zNear, zFar) {
     [ zf*M[12] - M[8], zf*M[13] - M[9], zf*M[14] - M[10], zf*M[15] - M[11] ]
   ]
 }
-},{}],68:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 8444:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createFilteredVector
 
-var cubicHermite = _glvis_('cubic-hermite')
-var bsearch = _glvis_('binary-search-bounds')
+var cubicHermite = __webpack_require__(9680)
+var bsearch = __webpack_require__(5070)
 
 function clamp(lo, hi, x) {
   return Math.min(hi, Math.max(lo, x))
@@ -10763,8 +10985,14 @@ function createFilteredVector(initState, initVelocity, initTime) {
   }
 }
 
-},{"binary-search-bounds":31,"cubic-hermite":62}],69:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 7080:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = createRBTree
 
@@ -11760,16 +11988,22 @@ function defaultCompare(a, b) {
 function createRBTree(compare) {
   return new RedBlackTree(compare || defaultCompare, null)
 }
-},{}],70:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 7453:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createAxes
 
-var createText        = _glvis_('./lib/text.js')
-var createLines       = _glvis_('./lib/lines.js')
-var createBackground  = _glvis_('./lib/background.js')
-var getCubeProperties = _glvis_('./lib/cube.js')
-var Ticks             = _glvis_('./lib/ticks.js')
+var createText        = __webpack_require__(9557)
+var createLines       = __webpack_require__(1681)
+var createBackground  = __webpack_require__(1011)
+var getCubeProperties = __webpack_require__(2864)
+var Ticks             = __webpack_require__(8468)
 
 var identity = new Float32Array([
   1, 0, 0, 0,
@@ -12368,14 +12602,20 @@ function createAxes(gl, options) {
   return axes
 }
 
-},{"./lib/background.js":71,"./lib/cube.js":72,"./lib/lines.js":73,"./lib/text.js":75,"./lib/ticks.js":76}],71:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 1011:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createBackgroundCube
 
-var createBuffer = _glvis_('gl-buffer')
-var createVAO    = _glvis_('gl-vao')
-var createShader = _glvis_('./shaders').bg
+var createBuffer = __webpack_require__(5827)
+var createVAO    = __webpack_require__(2944)
+var createShader = (__webpack_require__(1943).bg)
 
 function BackgroundCube(gl, buffer, vao, shader) {
   this.gl = gl
@@ -12481,15 +12721,21 @@ function createBackgroundCube(gl) {
   return new BackgroundCube(gl, buffer, vao, shader)
 }
 
-},{"./shaders":74,"gl-buffer":78,"gl-vao":150}],72:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 2864:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = getCubeEdges
 
-var bits      = _glvis_('bit-twiddle')
-var multiply  = _glvis_('gl-mat4/multiply')
-var splitPoly = _glvis_('split-polygon')
-var orient    = _glvis_('robust-orientation')
+var bits      = __webpack_require__(2288)
+var multiply  = __webpack_require__(104)
+var splitPoly = __webpack_require__(4670)
+var orient    = __webpack_require__(417)
 
 var mvp        = new Array(16)
 var pCubeVerts = new Array(8)
@@ -12723,14 +12969,20 @@ function getCubeEdges(model, view, projection, bounds, ortho) {
   //Return result
   return CUBE_RESULT
 }
-},{"bit-twiddle":32,"gl-mat4/multiply":100,"robust-orientation":284,"split-polygon":300}],73:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 1681:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports    = createLines
 
-var createBuffer  = _glvis_('gl-buffer')
-var createVAO     = _glvis_('gl-vao')
-var createShader  = _glvis_('./shaders').line
+var createBuffer  = __webpack_require__(5827)
+var createVAO     = __webpack_require__(2944)
+var createShader  = (__webpack_require__(1943)/* .line */ .j)
 
 var MAJOR_AXIS = [0,0,0]
 var MINOR_AXIS = [0,0,0]
@@ -12933,15 +13185,21 @@ function createLines(gl, bounds, ticks) {
   return new Lines(gl, vertBuf, vao, shader, tickCount, tickOffset, gridCount, gridOffset)
 }
 
-},{"./shaders":74,"gl-buffer":78,"gl-vao":150}],74:[function(_glvis_,module,exports){
-'use strict'
 
-var glslify = _glvis_('glslify')
-var createShader = _glvis_('gl-shader')
+/***/ }),
+
+/***/ 1943:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var glslify = __webpack_require__(6832)
+var createShader = __webpack_require__(5158)
 
 var lineVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, majorAxis, minorAxis, screenAxis;\nuniform float lineWidth;\nuniform vec2 screenShape;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nvoid main() {\n  vec3 major = position.x * majorAxis;\n  vec3 minor = position.y * minorAxis;\n\n  vec3 vPosition = major + minor + offset;\n  vec3 pPosition = project(vPosition);\n  vec3 offset = project(vPosition + screenAxis * position.z);\n\n  vec2 screen = normalize((offset - pPosition).xy * screenShape) / screenShape;\n\n  gl_Position = vec4(pPosition + vec3(0.5 * screen * lineWidth, 0), 1.0);\n}\n"])
 var lineFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
-exports.line = function(gl) {
+exports.j = function(gl) {
   return createShader(gl, lineVert, lineFrag, null, [
     {name: 'position', type: 'vec3'}
   ])
@@ -12949,7 +13207,7 @@ exports.line = function(gl) {
 
 var textVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, axis, alignDir, alignOpt;\nuniform float scale, angle, pixelScale;\nuniform vec2 resolution;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nfloat computeViewAngle(vec3 a, vec3 b) {\n  vec3 A = project(a);\n  vec3 B = project(b);\n\n  return atan(\n    (B.y - A.y) * resolution.y,\n    (B.x - A.x) * resolution.x\n  );\n}\n\nconst float PI = 3.141592;\nconst float TWO_PI = 2.0 * PI;\nconst float HALF_PI = 0.5 * PI;\nconst float ONE_AND_HALF_PI = 1.5 * PI;\n\nint option = int(floor(alignOpt.x + 0.001));\nfloat hv_ratio =       alignOpt.y;\nbool enableAlign =    (alignOpt.z != 0.0);\n\nfloat mod_angle(float a) {\n  return mod(a, PI);\n}\n\nfloat positive_angle(float a) {\n  return mod_angle((a < 0.0) ?\n    a + TWO_PI :\n    a\n  );\n}\n\nfloat look_upwards(float a) {\n  float b = positive_angle(a);\n  return ((b > HALF_PI) && (b <= ONE_AND_HALF_PI)) ?\n    b - PI :\n    b;\n}\n\nfloat look_horizontal_or_vertical(float a, float ratio) {\n  // ratio controls the ratio between being horizontal to (vertical + horizontal)\n  // if ratio is set to 0.5 then it is 50%, 50%.\n  // when using a higher ratio e.g. 0.75 the result would\n  // likely be more horizontal than vertical.\n\n  float b = positive_angle(a);\n\n  return\n    (b < (      ratio) * HALF_PI) ? 0.0 :\n    (b < (2.0 - ratio) * HALF_PI) ? -HALF_PI :\n    (b < (2.0 + ratio) * HALF_PI) ? 0.0 :\n    (b < (4.0 - ratio) * HALF_PI) ? HALF_PI :\n                                    0.0;\n}\n\nfloat roundTo(float a, float b) {\n  return float(b * floor((a + 0.5 * b) / b));\n}\n\nfloat look_round_n_directions(float a, int n) {\n  float b = positive_angle(a);\n  float div = TWO_PI / float(n);\n  float c = roundTo(b, div);\n  return look_upwards(c);\n}\n\nfloat applyAlignOption(float rawAngle, float delta) {\n  return\n    (option >  2) ? look_round_n_directions(rawAngle + delta, option) :       // option 3-n: round to n directions\n    (option == 2) ? look_horizontal_or_vertical(rawAngle + delta, hv_ratio) : // horizontal or vertical\n    (option == 1) ? rawAngle + delta :       // use free angle, and flip to align with one direction of the axis\n    (option == 0) ? look_upwards(rawAngle) : // use free angle, and stay upwards\n    (option ==-1) ? 0.0 :                    // useful for backward compatibility, all texts remains horizontal\n                    rawAngle;                // otherwise return back raw input angle\n}\n\nbool isAxisTitle = (axis.x == 0.0) &&\n                   (axis.y == 0.0) &&\n                   (axis.z == 0.0);\n\nvoid main() {\n  //Compute world offset\n  float axisDistance = position.z;\n  vec3 dataPosition = axisDistance * axis + offset;\n\n  float beta = angle; // i.e. user defined attributes for each tick\n\n  float axisAngle;\n  float clipAngle;\n  float flip;\n\n  if (enableAlign) {\n    axisAngle = (isAxisTitle) ? HALF_PI :\n                      computeViewAngle(dataPosition, dataPosition + axis);\n    clipAngle = computeViewAngle(dataPosition, dataPosition + alignDir);\n\n    axisAngle += (sin(axisAngle) < 0.0) ? PI : 0.0;\n    clipAngle += (sin(clipAngle) < 0.0) ? PI : 0.0;\n\n    flip = (dot(vec2(cos(axisAngle), sin(axisAngle)),\n                vec2(sin(clipAngle),-cos(clipAngle))) > 0.0) ? 1.0 : 0.0;\n\n    beta += applyAlignOption(clipAngle, flip * PI);\n  }\n\n  //Compute plane offset\n  vec2 planeCoord = position.xy * pixelScale;\n\n  mat2 planeXform = scale * mat2(\n     cos(beta), sin(beta),\n    -sin(beta), cos(beta)\n  );\n\n  vec2 viewOffset = 2.0 * planeXform * planeCoord / resolution;\n\n  //Compute clip position\n  vec3 clipPosition = project(dataPosition);\n\n  //Apply text offset in clip coordinates\n  clipPosition += vec3(viewOffset, 0.0);\n\n  //Done\n  gl_Position = vec4(clipPosition, 1.0);\n}"])
 var textFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
-exports.text = function(gl) {
+exports.f = function(gl) {
   return createShader(gl, textVert, textFrag, null, [
     {name: 'position', type: 'vec3'}
   ])
@@ -12964,16 +13222,21 @@ exports.bg = function(gl) {
   ])
 }
 
-},{"gl-shader":132,"glslify":231}],75:[function(_glvis_,module,exports){
-(function (process){(function (){
-"use strict"
+
+/***/ }),
+
+/***/ 9557:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createTextSprites
 
-var createBuffer  = _glvis_('gl-buffer')
-var createVAO     = _glvis_('gl-vao')
-var vectorizeText = _glvis_('vectorize-text')
-var createShader  = _glvis_('./shaders').text
+var createBuffer  = __webpack_require__(5827)
+var createVAO     = __webpack_require__(2944)
+var vectorizeText = __webpack_require__(875)
+var createShader  = (__webpack_require__(1943)/* .text */ .f)
 
 var globals = window || process.global || {}
 var __TEXT_CACHE  = globals.__TEXT_CACHE || {}
@@ -13185,9 +13448,14 @@ function createTextSprites(
   return result
 }
 
-}).call(this)}).call(this,_glvis_('_process'))
-},{"./shaders":74,"_process":5,"gl-buffer":78,"gl-vao":150,"vectorize-text":311}],76:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 8468:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 
 exports.create   = defaultTicks
 exports.equal    = ticksEqual
@@ -13267,17 +13535,23 @@ function ticksEqual(ticksA, ticksB) {
   }
   return true
 }
-},{}],77:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 2771:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = axesProperties
 
-var getPlanes   = _glvis_("extract-frustum-planes")
-var splitPoly   = _glvis_("split-polygon")
-var cubeParams  = _glvis_("./lib/cube.js")
-var m4mul       = _glvis_("gl-mat4/multiply")
-var m4transpose = _glvis_("gl-mat4/transpose")
-var v4transformMat4 = _glvis_("gl-vec4/transformMat4")
+var getPlanes   = __webpack_require__(5795)
+var splitPoly   = __webpack_require__(4670)
+var cubeParams  = __webpack_require__(2864)
+var m4mul       = __webpack_require__(104)
+var m4transpose = __webpack_require__(2142)
+var v4transformMat4 = __webpack_require__(6342)
 
 var identity    = new Float32Array([
     1, 0, 0, 0,
@@ -13411,12 +13685,18 @@ i_loop:
   return ranges
 }
 
-},{"./lib/cube.js":72,"extract-frustum-planes":67,"gl-mat4/multiply":100,"gl-mat4/transpose":109,"gl-vec4/transformMat4":221,"split-polygon":300}],78:[function(_glvis_,module,exports){
-"use strict"
 
-var pool = _glvis_("typedarray-pool")
-var ops = _glvis_("ndarray-ops")
-var ndarray = _glvis_("ndarray")
+/***/ }),
+
+/***/ 5827:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var pool = __webpack_require__(5306)
+var ops = __webpack_require__(7498)
+var ndarray = __webpack_require__(5050)
 
 var SUPPORTED_TYPES = [
   "uint8",
@@ -13565,10 +13845,16 @@ function createBuffer(gl, data, type, usage) {
 
 module.exports = createBuffer
 
-},{"ndarray":259,"ndarray-ops":254,"typedarray-pool":308}],79:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1140:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 "use strict";
 
-var vec3 = _glvis_('gl-vec3');
+
+var vec3 = __webpack_require__(2858);
 
 module.exports = function(vectorfield, bounds) {
 	var positions = vectorfield.positions;
@@ -13694,8 +13980,8 @@ module.exports = function(vectorfield, bounds) {
 	return geo;
 };
 
-var shaders = _glvis_('./lib/shaders');
-module.exports.createMesh = _glvis_('./create_mesh');
+var shaders = __webpack_require__(7234);
+module.exports.createMesh = __webpack_require__(5028);
 module.exports.createConeMesh = function(gl, params) {
 	return module.exports.createMesh(gl, params, {
 		shaders: shaders,
@@ -13703,17 +13989,23 @@ module.exports.createConeMesh = function(gl, params) {
 	});
 }
 
-},{"./create_mesh":80,"./lib/shaders":81,"gl-vec3":169}],80:[function(_glvis_,module,exports){
-'use strict'
 
-var createShader  = _glvis_('gl-shader')
-var createBuffer  = _glvis_('gl-buffer')
-var createVAO     = _glvis_('gl-vao')
-var createTexture = _glvis_('gl-texture2d')
-var multiply      = _glvis_('gl-mat4/multiply')
-var invert        = _glvis_('gl-mat4/invert')
-var ndarray       = _glvis_('ndarray')
-var colormap      = _glvis_('colormap')
+/***/ }),
+
+/***/ 5028:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createShader  = __webpack_require__(5158)
+var createBuffer  = __webpack_require__(5827)
+var createVAO     = __webpack_require__(2944)
+var createTexture = __webpack_require__(8931)
+var multiply      = __webpack_require__(104)
+var invert        = __webpack_require__(7437)
+var ndarray       = __webpack_require__(5050)
+var colormap      = __webpack_require__(9156)
 
 var IDENTITY = [
   1,0,0,0,
@@ -14278,8 +14570,13 @@ function createVectorMesh(gl, params, opts) {
 
 module.exports = createVectorMesh
 
-},{"colormap":53,"gl-buffer":78,"gl-mat4/invert":98,"gl-mat4/multiply":100,"gl-shader":132,"gl-texture2d":146,"gl-vao":150,"ndarray":259}],81:[function(_glvis_,module,exports){
-var glslify       = _glvis_('glslify')
+
+/***/ }),
+
+/***/ 7234:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var glslify       = __webpack_require__(6832)
 
 var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, coneScale, coneOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * conePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(conePosition, 1.0);\n  vec4 t_position  = view * conePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = conePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
 var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
@@ -14306,7 +14603,12 @@ exports.pickShader = {
   ]
 }
 
-},{"glslify":231}],82:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1950:
+/***/ (function(module) {
+
 module.exports = {
   0: 'NONE',
   1: 'ONE',
@@ -14606,21 +14908,32 @@ module.exports = {
   37444: 'BROWSER_DEFAULT_WEBGL'
 }
 
-},{}],83:[function(_glvis_,module,exports){
-var gl10 = _glvis_('./1.0/numbers')
+
+/***/ }),
+
+/***/ 6603:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var gl10 = __webpack_require__(1950)
 
 module.exports = function lookupConstant (number) {
   return gl10[number]
 }
 
-},{"./1.0/numbers":82}],84:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3110:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createErrorBars
 
-var createBuffer  = _glvis_('gl-buffer')
-var createVAO     = _glvis_('gl-vao')
-var createShader  = _glvis_('./shaders/index')
+var createBuffer  = __webpack_require__(5827)
+var createVAO     = __webpack_require__(2944)
+var createShader  = __webpack_require__(7667)
 
 var IDENTITY = [1,0,0,0,
                 0,1,0,0,
@@ -14864,11 +15177,17 @@ function createErrorBars(options) {
   return result
 }
 
-},{"./shaders/index":85,"gl-buffer":78,"gl-vao":150}],85:[function(_glvis_,module,exports){
-'use strict'
 
-var glslify = _glvis_('glslify')
-var createShader = _glvis_('gl-shader')
+/***/ }),
+
+/***/ 7667:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var glslify = __webpack_require__(6832)
+var createShader = __webpack_require__(5158)
 
 var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, offset;\nattribute vec4 color;\nuniform mat4 model, view, projection;\nuniform float capSize;\nvarying vec4 fragColor;\nvarying vec3 fragPosition;\n\nvoid main() {\n  vec4 worldPosition  = model * vec4(position, 1.0);\n  worldPosition       = (worldPosition / worldPosition.w) + vec4(capSize * offset, 0.0);\n  gl_Position         = projection * view * worldPosition;\n  fragColor           = color;\n  fragPosition        = position;\n}"])
 var fragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float opacity;\nvarying vec3 fragPosition;\nvarying vec4 fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], fragPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  gl_FragColor = opacity * fragColor;\n}"])
@@ -14881,10 +15200,16 @@ module.exports = function(gl) {
   ])
 }
 
-},{"gl-shader":132,"glslify":231}],86:[function(_glvis_,module,exports){
-'use strict'
 
-var createTexture = _glvis_('gl-texture2d')
+/***/ }),
+
+/***/ 4234:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createTexture = __webpack_require__(8931)
 
 module.exports = createFBO
 
@@ -15348,12 +15673,17 @@ function createFBO(gl, width, height, options) {
     WEBGL_draw_buffers)
 }
 
-},{"gl-texture2d":146}],87:[function(_glvis_,module,exports){
 
-var sprintf = _glvis_('sprintf-js').sprintf;
-var glConstants = _glvis_('gl-constants/lookup');
-var shaderName = _glvis_('glsl-shader-name');
-var addLineNumbers = _glvis_('add-line-numbers');
+/***/ }),
+
+/***/ 3530:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+
+var sprintf = (__webpack_require__(8974).sprintf);
+var glConstants = __webpack_require__(6603);
+var shaderName = __webpack_require__(9365);
+var addLineNumbers = __webpack_require__(8008);
 
 module.exports = formatCompilerError;
 
@@ -15403,18 +15733,24 @@ function formatCompilerError(errLog, src, type) {
 }
 
 
-},{"add-line-numbers":9,"gl-constants/lookup":83,"glsl-shader-name":223,"sprintf-js":301}],88:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 6386:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createHeatmap2D
 
-var bsearch = _glvis_('binary-search-bounds')
-var iota = _glvis_('iota-array')
-var pool = _glvis_('typedarray-pool')
-var createShader = _glvis_('gl-shader')
-var createBuffer = _glvis_('gl-buffer')
+var bsearch = __webpack_require__(5070)
+var iota = __webpack_require__(9560)
+var pool = __webpack_require__(5306)
+var createShader = __webpack_require__(5158)
+var createBuffer = __webpack_require__(5827)
 
-var shaders = _glvis_('./lib/shaders')
+var shaders = __webpack_require__(1292)
 
 function GLHeatmap2D (
   plot,
@@ -15755,10 +16091,16 @@ function createHeatmap2D (plot, options) {
   return heatmap
 }
 
-},{"./lib/shaders":89,"binary-search-bounds":31,"gl-buffer":78,"gl-shader":132,"iota-array":235,"typedarray-pool":308}],89:[function(_glvis_,module,exports){
-'use strict'
 
-var glslify = _glvis_('glslify')
+/***/ }),
+
+/***/ 1292:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var glslify = __webpack_require__(6832)
 
 module.exports = {
   fragment:     glslify(["precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = vec4(fragColor.rgb * fragColor.a, fragColor.a);\n}\n"]),
@@ -15767,9 +16109,14 @@ module.exports = {
   pickVertex:   glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\nattribute vec2 weight;\n\nuniform vec2 shape;\nuniform mat3 viewTransform;\n\nvarying vec4 fragId;\nvarying vec2 vWeight;\n\nvoid main() {\n  vWeight = weight;\n\n  fragId = pickId;\n\n  vec3 vPosition = viewTransform * vec3( position + (weight-.5)/(shape-1.) , 1.0);\n  gl_Position = vec4(vPosition.xy, 0, vPosition.z);\n}\n"])
 }
 
-},{"glslify":231}],90:[function(_glvis_,module,exports){
-var glslify       = _glvis_('glslify')
-var createShader  = _glvis_('gl-shader')
+
+/***/ }),
+
+/***/ 248:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var glslify       = __webpack_require__(6832)
+var createShader  = __webpack_require__(5158)
 
 var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  vec4 startPoint = project(position);\n  vec4 endPoint   = project(nextPosition);\n\n  vec2 A = startPoint.xy / startPoint.w;\n  vec2 B =   endPoint.xy /   endPoint.w;\n\n  float clipAngle = atan(\n    (B.y - A.y) * screenShape.y,\n    (B.x - A.x) * screenShape.x\n  );\n\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(\n    sin(clipAngle),\n    -cos(clipAngle)\n  ) / screenShape;\n\n  gl_Position = vec4(startPoint.xy + startPoint.w * offset, startPoint.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"])
 var forwardFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3      clipBounds[2];\nuniform sampler2D dashTexture;\nuniform float     dashScale;\nuniform float     opacity;\n\nvarying vec3    worldPosition;\nvarying float   pixelArcLength;\nvarying vec4    fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], worldPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  float dashWeight = texture2D(dashTexture, vec2(dashScale * pixelArcLength, 0)).r;\n  if(dashWeight < 0.5) {\n    discard;\n  }\n  gl_FragColor = fragColor * opacity;\n}\n"])
@@ -15791,14 +16138,20 @@ exports.createPickShader = function(gl) {
   return createShader(gl, vertSrc, pickFrag, null, ATTRIBUTES)
 }
 
-},{"gl-shader":132,"glslify":231}],91:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 6086:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createLinePlot
 
-var createBuffer = _glvis_('gl-buffer')
-var createVAO = _glvis_('gl-vao')
-var createTexture = _glvis_('gl-texture2d')
+var createBuffer = __webpack_require__(5827)
+var createVAO = __webpack_require__(2944)
+var createTexture = __webpack_require__(8931)
 
 var UINT8_VIEW = new Uint8Array(4)
 var FLOAT_VIEW = new Float32Array(UINT8_VIEW.buffer)
@@ -15811,9 +16164,9 @@ function unpackFloat(x, y, z, w) {
   return FLOAT_VIEW[0]
 }
 
-var bsearch = _glvis_('binary-search-bounds')
-var ndarray = _glvis_('ndarray')
-var shaders = _glvis_('./lib/shaders')
+var bsearch = __webpack_require__(5070)
+var ndarray = __webpack_require__(5050)
+var shaders = __webpack_require__(248)
 
 var createShader = shaders.createShader
 var createPickShader = shaders.createPickShader
@@ -16192,7 +16545,12 @@ function createLinePlot (options) {
   return linePlot
 }
 
-},{"./lib/shaders":90,"binary-search-bounds":31,"gl-buffer":78,"gl-texture2d":146,"gl-vao":150,"ndarray":259}],92:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7332:
+/***/ (function(module) {
+
 module.exports = clone;
 
 /**
@@ -16221,7 +16579,12 @@ function clone(a) {
     out[15] = a[15];
     return out;
 };
-},{}],93:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9823:
+/***/ (function(module) {
+
 module.exports = create;
 
 /**
@@ -16249,7 +16612,12 @@ function create() {
     out[15] = 1;
     return out;
 };
-},{}],94:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7787:
+/***/ (function(module) {
+
 module.exports = determinant;
 
 /**
@@ -16280,7 +16648,12 @@ function determinant(a) {
     // Calculate the determinant
     return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 };
-},{}],95:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5950:
+/***/ (function(module) {
+
 module.exports = fromQuat;
 
 /**
@@ -16328,7 +16701,12 @@ function fromQuat(out, q) {
 
     return out;
 };
-},{}],96:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7280:
+/***/ (function(module) {
+
 module.exports = fromRotationTranslation;
 
 /**
@@ -16382,7 +16760,12 @@ function fromRotationTranslation(out, q, v) {
     
     return out;
 };
-},{}],97:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9947:
+/***/ (function(module) {
+
 module.exports = identity;
 
 /**
@@ -16410,7 +16793,12 @@ function identity(out) {
     out[15] = 1;
     return out;
 };
-},{}],98:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7437:
+/***/ (function(module) {
+
 module.exports = invert;
 
 /**
@@ -16466,8 +16854,13 @@ function invert(out, a) {
 
     return out;
 };
-},{}],99:[function(_glvis_,module,exports){
-var identity = _glvis_('./identity');
+
+/***/ }),
+
+/***/ 3012:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var identity = __webpack_require__(9947);
 
 module.exports = lookAt;
 
@@ -16557,7 +16950,12 @@ function lookAt(out, eye, center, up) {
 
     return out;
 };
-},{"./identity":97}],100:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 104:
+/***/ (function(module) {
+
 module.exports = multiply;
 
 /**
@@ -16600,7 +16998,12 @@ function multiply(out, a, b) {
     out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
     return out;
 };
-},{}],101:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5268:
+/***/ (function(module) {
+
 module.exports = ortho;
 
 /**
@@ -16637,7 +17040,12 @@ function ortho(out, left, right, bottom, top, near, far) {
     out[15] = 1;
     return out;
 };
-},{}],102:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1120:
+/***/ (function(module) {
+
 module.exports = perspective;
 
 /**
@@ -16671,7 +17079,12 @@ function perspective(out, fovy, aspect, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],103:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4422:
+/***/ (function(module) {
+
 module.exports = rotate;
 
 /**
@@ -16736,7 +17149,12 @@ function rotate(out, a, rad, axis) {
     }
     return out;
 };
-},{}],104:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6109:
+/***/ (function(module) {
+
 module.exports = rotateX;
 
 /**
@@ -16781,7 +17199,12 @@ function rotateX(out, a, rad) {
     out[11] = a23 * c - a13 * s;
     return out;
 };
-},{}],105:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7115:
+/***/ (function(module) {
+
 module.exports = rotateY;
 
 /**
@@ -16826,7 +17249,12 @@ function rotateY(out, a, rad) {
     out[11] = a03 * s + a23 * c;
     return out;
 };
-},{}],106:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5240:
+/***/ (function(module) {
+
 module.exports = rotateZ;
 
 /**
@@ -16871,7 +17299,12 @@ function rotateZ(out, a, rad) {
     out[7] = a13 * c - a03 * s;
     return out;
 };
-},{}],107:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3668:
+/***/ (function(module) {
+
 module.exports = scale;
 
 /**
@@ -16903,7 +17336,12 @@ function scale(out, a, v) {
     out[15] = a[15];
     return out;
 };
-},{}],108:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 998:
+/***/ (function(module) {
+
 module.exports = translate;
 
 /**
@@ -16942,7 +17380,12 @@ function translate(out, a, v) {
 
     return out;
 };
-},{}],109:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2142:
+/***/ (function(module) {
+
 module.exports = transpose;
 
 /**
@@ -16992,11 +17435,17 @@ function transpose(out, a) {
     
     return out;
 };
-},{}],110:[function(_glvis_,module,exports){
-'use strict'
 
-var barycentric            = _glvis_('barycentric')
-var closestPointToTriangle = _glvis_('polytope-closest-point/lib/closest_point_2d.js')
+/***/ }),
+
+/***/ 4340:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var barycentric            = __webpack_require__(957)
+var closestPointToTriangle = __webpack_require__(7309)
 
 module.exports = closestPointToPickLocation
 
@@ -17090,8 +17539,13 @@ function closestPointToPickLocation(simplex, pixelCoord, model, view, projection
   }
   return [closestIndex, interpolate(simplex, weights), weights]
 }
-},{"barycentric":14,"polytope-closest-point/lib/closest_point_2d.js":270}],111:[function(_glvis_,module,exports){
-var glslify       = _glvis_('glslify')
+
+/***/ }),
+
+/***/ 2056:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var glslify       = __webpack_require__(6832)
 
 var triVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  gl_Position      = project(position);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * vec4(position , 1.0);\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal  = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  f_color          = color;\n  f_data           = position;\n  f_uv             = uv;\n}\n"])
 var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\n//#pragma glslify: beckmann = require(glsl-specular-beckmann) // used in gl-surface3d\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (f_color.a == 0.0 ||\n    outOfRange(clipBounds[0], clipBounds[1], f_data)\n  ) discard;\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  //float specular = max(0.0, beckmann(L, V, N, roughness)); // used in gl-surface3d\n\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = vec4(f_color.rgb, 1.0) * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * f_color.a;\n}\n"])
@@ -17159,25 +17613,31 @@ exports.contourShader = {
   ]
 }
 
-},{"glslify":231}],112:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 8116:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 var DEFAULT_VERTEX_NORMALS_EPSILON = 1e-6; // may be too large if triangles are very small
 var DEFAULT_FACE_NORMALS_EPSILON = 1e-6;
 
-var createShader  = _glvis_('gl-shader')
-var createBuffer  = _glvis_('gl-buffer')
-var createVAO     = _glvis_('gl-vao')
-var createTexture = _glvis_('gl-texture2d')
-var normals       = _glvis_('normals')
-var multiply      = _glvis_('gl-mat4/multiply')
-var invert        = _glvis_('gl-mat4/invert')
-var ndarray       = _glvis_('ndarray')
-var colormap      = _glvis_('colormap')
-var getContour    = _glvis_('simplicial-complex-contour')
-var pool          = _glvis_('typedarray-pool')
-var shaders       = _glvis_('./lib/shaders')
-var closestPoint  = _glvis_('./lib/closest-point')
+var createShader  = __webpack_require__(5158)
+var createBuffer  = __webpack_require__(5827)
+var createVAO     = __webpack_require__(2944)
+var createTexture = __webpack_require__(8931)
+var normals       = __webpack_require__(115)
+var multiply      = __webpack_require__(104)
+var invert        = __webpack_require__(7437)
+var ndarray       = __webpack_require__(5050)
+var colormap      = __webpack_require__(9156)
+var getContour    = __webpack_require__(7212)
+var pool          = __webpack_require__(5306)
+var shaders       = __webpack_require__(2056)
+var closestPoint  = __webpack_require__(4340)
 
 var meshShader    = shaders.meshShader
 var wireShader    = shaders.wireShader
@@ -18270,15 +18730,21 @@ function createSimplicialMesh(gl, params) {
 
 module.exports = createSimplicialMesh
 
-},{"./lib/closest-point":110,"./lib/shaders":111,"colormap":53,"gl-buffer":78,"gl-mat4/invert":98,"gl-mat4/multiply":100,"gl-shader":132,"gl-texture2d":146,"gl-vao":150,"ndarray":259,"normals":261,"simplicial-complex-contour":291,"typedarray-pool":308}],113:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 4554:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createBoxes
 
-var createBuffer = _glvis_('gl-buffer')
-var createShader = _glvis_('gl-shader')
+var createBuffer = __webpack_require__(5827)
+var createShader = __webpack_require__(5158)
 
-var shaders = _glvis_('./shaders')
+var shaders = __webpack_require__(2709)
 
 function Boxes(plot, vbo, shader) {
   this.plot   = plot
@@ -18333,15 +18799,21 @@ function createBoxes(plot) {
   return new Boxes(plot, vbo, shader)
 }
 
-},{"./shaders":116,"gl-buffer":78,"gl-shader":132}],114:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3016:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createGrid
 
-var createBuffer  = _glvis_('gl-buffer')
-var createShader  = _glvis_('gl-shader')
-var bsearch       = _glvis_('binary-search-bounds')
-var shaders       = _glvis_('./shaders')
+var createBuffer  = __webpack_require__(5827)
+var createShader  = __webpack_require__(5158)
+var bsearch       = __webpack_require__(5070)
+var shaders       = __webpack_require__(2709)
 
 function Grid(plot, vbo, shader, tickShader) {
   this.plot   = plot
@@ -18580,15 +19052,21 @@ function createGrid(plot) {
   return grid
 }
 
-},{"./shaders":116,"binary-search-bounds":31,"gl-buffer":78,"gl-shader":132}],115:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 1154:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createLines
 
-var createBuffer = _glvis_('gl-buffer')
-var createShader = _glvis_('gl-shader')
+var createBuffer = __webpack_require__(5827)
+var createShader = __webpack_require__(5158)
 
-var shaders = _glvis_('./shaders')
+var shaders = __webpack_require__(2709)
 
 function Lines(plot, vbo, shader) {
   this.plot   = plot
@@ -18645,10 +19123,16 @@ function createLines(plot) {
   return lines
 }
 
-},{"./shaders":116,"gl-buffer":78,"gl-shader":132}],116:[function(_glvis_,module,exports){
-'use strict'
 
-var glslify = _glvis_('glslify')
+/***/ }),
+
+/***/ 2709:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var glslify = __webpack_require__(6832)
 
 var FRAGMENT = glslify(["precision lowp float;\n#define GLSLIFY 1\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = vec4(color.xyz * color.w, color.w);\n}\n"])
 
@@ -18663,16 +19147,22 @@ module.exports = {
   tickVert: glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale, screenOffset, tickScale;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  gl_Position = vec4(pos + tickScale*dataCoord.yz + screenOffset, 0, 1);\n}\n"])
 }
 
-},{"glslify":231}],117:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 5613:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createTextElements
 
-var createBuffer = _glvis_('gl-buffer')
-var createShader = _glvis_('gl-shader')
-var getText      = _glvis_('text-cache')
-var bsearch      = _glvis_('binary-search-bounds')
-var shaders      = _glvis_('./shaders')
+var createBuffer = __webpack_require__(5827)
+var createShader = __webpack_require__(5158)
+var getText      = __webpack_require__(6946)
+var bsearch      = __webpack_require__(5070)
+var shaders      = __webpack_require__(2709)
 
 function TextElements(plot, vbo, shader) {
   this.plot         = plot
@@ -18941,17 +19431,23 @@ function createTextElements(plot) {
   return text
 }
 
-},{"./shaders":116,"binary-search-bounds":31,"gl-buffer":78,"gl-shader":132,"text-cache":303}],118:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2117:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createGLPlot2D
 
-var createPick = _glvis_('gl-select-static')
+var createPick = __webpack_require__(2611)
 
-var createGrid = _glvis_('./lib/grid')
-var createText = _glvis_('./lib/text')
-var createLine = _glvis_('./lib/line')
-var createBox  = _glvis_('./lib/box')
+var createGrid = __webpack_require__(3016)
+var createText = __webpack_require__(5613)
+var createLine = __webpack_require__(1154)
+var createBox  = __webpack_require__(4554)
 
 function GLPlot2D(gl, pickBuffer) {
   this.gl               = gl
@@ -19524,17 +20020,23 @@ function createGLPlot2D(options) {
   return plot
 }
 
-},{"./lib/box":113,"./lib/grid":114,"./lib/line":115,"./lib/text":117,"gl-select-static":131}],119:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 4296:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createCamera
 
-var now         = _glvis_('right-now')
-var createView  = _glvis_('3d-view')
-var mouseChange = _glvis_('mouse-change')
-var mouseWheel  = _glvis_('mouse-wheel')
-var mouseOffset = _glvis_('mouse-event-offset')
-var hasPassive  = _glvis_('has-passive-events')
+var now         = __webpack_require__(8161)
+var createView  = __webpack_require__(1152)
+var mouseChange = __webpack_require__(6145)
+var mouseWheel  = __webpack_require__(6475)
+var mouseOffset = __webpack_require__(2565)
+var hasPassive  = __webpack_require__(5233)
 
 function createCamera(element, options) {
   element = element || document.body
@@ -19805,9 +20307,14 @@ function createCamera(element, options) {
   return camera
 }
 
-},{"3d-view":7,"has-passive-events":232,"mouse-change":247,"mouse-event-offset":248,"mouse-wheel":250,"right-now":278}],120:[function(_glvis_,module,exports){
-var glslify      = _glvis_('glslify')
-var createShader = _glvis_('gl-shader')
+
+/***/ }),
+
+/***/ 8245:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var glslify      = __webpack_require__(6832)
+var createShader = __webpack_require__(5158)
 
 var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\nattribute vec2 position;\nvarying vec2 uv;\nvoid main() {\n  uv = position;\n  gl_Position = vec4(position, 0, 1);\n}"])
 var fragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform sampler2D accumBuffer;\nvarying vec2 uv;\n\nvoid main() {\n  vec4 accum = texture2D(accumBuffer, 0.5 * (uv + 1.0));\n  gl_FragColor = min(vec4(1,1,1,1), accum);\n}"])
@@ -19816,21 +20323,27 @@ module.exports = function(gl) {
   return createShader(gl, vertSrc, fragSrc, null, [ { name: 'position', type: 'vec2'}])
 }
 
-},{"gl-shader":132,"glslify":231}],121:[function(_glvis_,module,exports){
-'use strict'
 
-var createCamera = _glvis_('./camera.js')
-var createAxes   = _glvis_('gl-axes3d')
-var axesRanges   = _glvis_('gl-axes3d/properties')
-var createSpikes = _glvis_('gl-spikes3d')
-var createSelect = _glvis_('gl-select-static')
-var createFBO    = _glvis_('gl-fbo')
-var drawTriangle = _glvis_('a-big-triangle')
-var mouseChange  = _glvis_('mouse-change')
-var perspective  = _glvis_('gl-mat4/perspective')
-var ortho        = _glvis_('gl-mat4/ortho')
-var createShader = _glvis_('./lib/shader')
-var isMobile = _glvis_('is-mobile')({ tablet: true, featureDetect: true })
+/***/ }),
+
+/***/ 1059:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createCamera = __webpack_require__(4296)
+var createAxes   = __webpack_require__(7453)
+var axesRanges   = __webpack_require__(2771)
+var createSpikes = __webpack_require__(6496)
+var createSelect = __webpack_require__(2611)
+var createFBO    = __webpack_require__(4234)
+var drawTriangle = __webpack_require__(8126)
+var mouseChange  = __webpack_require__(6145)
+var perspective  = __webpack_require__(1120)
+var ortho        = __webpack_require__(5268)
+var createShader = __webpack_require__(8245)
+var isMobile = __webpack_require__(2321)({ tablet: true, featureDetect: true })
 
 module.exports = {
   createScene: createScene,
@@ -20671,23 +21184,34 @@ function calcCameraParams(scene, isOrtho) {
   }
 }
 
-},{"./camera.js":119,"./lib/shader":120,"a-big-triangle":8,"gl-axes3d":70,"gl-axes3d/properties":77,"gl-fbo":86,"gl-mat4/ortho":101,"gl-mat4/perspective":102,"gl-select-static":131,"gl-spikes3d":141,"is-mobile":238,"mouse-change":247}],122:[function(_glvis_,module,exports){
-var glslify = _glvis_('glslify')
+
+/***/ }),
+
+/***/ 8023:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var glslify = __webpack_require__(6832)
 
 exports.pointVertex       = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform float pointCloud;\n\nhighp float rand(vec2 co) {\n  highp float a = 12.9898;\n  highp float b = 78.233;\n  highp float c = 43758.5453;\n  highp float d = dot(co.xy, vec2(a, b));\n  highp float e = mod(d, 3.14);\n  return fract(sin(e) * c);\n}\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n    // if we don't jitter the point size a bit, overall point cloud\n    // saturation 'jumps' on zooming, which is disturbing and confusing\n  gl_PointSize = pointSize * ((19.5 + rand(position)) / 20.0);\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    // get the same square surface as circle would be\n    gl_PointSize *= 0.886;\n  }\n}"])
 exports.pointFragment     = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color, borderColor;\nuniform float centerFraction;\nuniform float pointCloud;\n\nvoid main() {\n  float radius;\n  vec4 baseColor;\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    if(centerFraction == 1.0) {\n      gl_FragColor = color;\n    } else {\n      gl_FragColor = mix(borderColor, color, centerFraction);\n    }\n  } else {\n    radius = length(2.0 * gl_PointCoord.xy - 1.0);\n    if(radius > 1.0) {\n      discard;\n    }\n    baseColor = mix(borderColor, color, step(radius, centerFraction));\n    gl_FragColor = vec4(baseColor.rgb * baseColor.a, baseColor.a);\n  }\n}\n"])
 exports.pickVertex        = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  fragId = id;\n}\n"])
 exports.pickFragment      = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0 * gl_PointCoord.xy - 1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}\n"])
 
-},{"glslify":231}],123:[function(_glvis_,module,exports){
-'use strict'
 
-var createShader = _glvis_('gl-shader')
-var createBuffer = _glvis_('gl-buffer')
+/***/ }),
 
-var pool = _glvis_('typedarray-pool')
+/***/ 8271:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var SHADERS = _glvis_('./lib/shader')
+"use strict";
+
+
+var createShader = __webpack_require__(5158)
+var createBuffer = __webpack_require__(5827)
+
+var pool = __webpack_require__(5306)
+
+var SHADERS = __webpack_require__(8023)
 
 module.exports = createPointcloud2D
 
@@ -20899,7 +21423,12 @@ function createPointcloud2D(plot, options) {
   return result
 }
 
-},{"./lib/shader":122,"gl-buffer":78,"gl-shader":132,"typedarray-pool":308}],124:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6093:
+/***/ (function(module) {
+
 module.exports = slerp
 
 /**
@@ -20952,17 +21481,29 @@ function slerp (out, a, b, t) {
   return out
 }
 
-},{}],125:[function(_glvis_,module,exports){
-'use strict';
+
+/***/ }),
+
+/***/ 8240:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = function(a){
   return (!a && a !== 0) ? '' : a.toString();
 }
 
-},{}],126:[function(_glvis_,module,exports){
-"use strict"
 
-var vectorizeText = _glvis_("vectorize-text")
+/***/ }),
+
+/***/ 4123:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var vectorizeText = __webpack_require__(875)
 
 module.exports = getGlyph
 
@@ -21028,9 +21569,14 @@ function getGlyph(symbol, font, pixelRatio) {
   //Save cached symbol
   return fontCache[symbol] = [triSymbol, lineSymbol, bounds]
 }
-},{"vectorize-text":311}],127:[function(_glvis_,module,exports){
-var createShaderWrapper = _glvis_('gl-shader')
-var glslify = _glvis_('glslify')
+
+/***/ }),
+
+/***/ 9282:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var createShaderWrapper = __webpack_require__(5158)
+var glslify = __webpack_require__(6832)
 
 var perspectiveVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform vec4 highlightId;\nuniform float highlightScale;\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = 1.0;\n    if(distance(highlightId, id) < 0.0001) {\n      scale = highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1);\n    vec4 viewPosition = view * worldPosition;\n    viewPosition = viewPosition / viewPosition.w;\n    vec4 clipPosition = projection * (viewPosition + scale * vec4(glyph.x, -glyph.y, 0, 0));\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
 var orthographicVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float highlightScale, pixelRatio;\nuniform vec4 highlightId;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = pixelRatio;\n    if(distance(highlightId.bgr, id.bgr) < 0.001) {\n      scale *= highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1.0);\n    vec4 viewPosition = view * worldPosition;\n    vec4 clipPosition = projection * viewPosition;\n    clipPosition /= clipPosition.w;\n\n    gl_Position = clipPosition + vec4(screenSize * scale * vec2(glyph.x, -glyph.y), 0.0, 0.0);\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
@@ -21105,17 +21651,23 @@ exports.createPickProject = function(gl) {
   return createShader(gl, pickProject)
 }
 
-},{"gl-shader":132,"glslify":231}],128:[function(_glvis_,module,exports){
-'use strict'
 
-var isAllBlank      = _glvis_('is-string-blank')
-var createBuffer    = _glvis_('gl-buffer')
-var createVAO       = _glvis_('gl-vao')
-var pool            = _glvis_('typedarray-pool')
-var mat4mult        = _glvis_('gl-mat4/multiply')
-var shaders         = _glvis_('./lib/shaders')
-var getGlyph        = _glvis_('./lib/glyphs')
-var getSimpleString = _glvis_('./lib/get-simple-string')
+/***/ }),
+
+/***/ 2182:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var isAllBlank      = __webpack_require__(3596)
+var createBuffer    = __webpack_require__(5827)
+var createVAO       = __webpack_require__(2944)
+var pool            = __webpack_require__(5306)
+var mat4mult        = __webpack_require__(104)
+var shaders         = __webpack_require__(9282)
+var getGlyph        = __webpack_require__(4123)
+var getSimpleString = __webpack_require__(8240)
 
 var IDENTITY = [1,0,0,0,
                 0,1,0,0,
@@ -21977,21 +22529,33 @@ function createPointCloud(options) {
   return pointCloud
 }
 
-},{"./lib/get-simple-string":125,"./lib/glyphs":126,"./lib/shaders":127,"gl-buffer":78,"gl-mat4/multiply":100,"gl-vao":150,"is-string-blank":239,"typedarray-pool":308}],129:[function(_glvis_,module,exports){
-'use strict'
 
-var glslify = _glvis_('glslify')
+/***/ }),
+
+/***/ 1884:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var glslify = __webpack_require__(6832)
 
 exports.boxVertex = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 vertex;\n\nuniform vec2 cornerA, cornerB;\n\nvoid main() {\n  gl_Position = vec4(mix(cornerA, cornerB, vertex), 0, 1);\n}\n"])
 exports.boxFragment = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = color;\n}\n"])
 
-},{"glslify":231}],130:[function(_glvis_,module,exports){
-'use strict'
 
-var createShader = _glvis_('gl-shader')
-var createBuffer = _glvis_('gl-buffer')
+/***/ }),
 
-var SHADERS = _glvis_('./lib/shaders')
+/***/ 6623:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createShader = __webpack_require__(5158)
+var createBuffer = __webpack_require__(5827)
+
+var SHADERS = __webpack_require__(1884)
 
 module.exports = createSelectBox
 
@@ -22111,15 +22675,21 @@ function createSelectBox(plot, options) {
   return selectBox
 }
 
-},{"./lib/shaders":129,"gl-buffer":78,"gl-shader":132}],131:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2611:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createSelectBuffer
 
-var createFBO = _glvis_('gl-fbo')
-var pool      = _glvis_('typedarray-pool')
-var ndarray   = _glvis_('ndarray')
-var nextPow2  = _glvis_('bit-twiddle').nextPow2
+var createFBO = __webpack_require__(4234)
+var pool      = __webpack_require__(5306)
+var ndarray   = __webpack_require__(5050)
+var nextPow2  = (__webpack_require__(2288).nextPow2)
 
 var selectRange = function(arr, x, y) {
   var closestD2 = 1e8
@@ -22296,15 +22866,21 @@ function createSelectBuffer(gl, shape) {
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":32,"gl-fbo":86,"ndarray":259,"typedarray-pool":308}],132:[function(_glvis_,module,exports){
-'use strict'
 
-var createUniformWrapper   = _glvis_('./lib/create-uniforms')
-var createAttributeWrapper = _glvis_('./lib/create-attributes')
-var makeReflect            = _glvis_('./lib/reflect')
-var shaderCache            = _glvis_('./lib/shader-cache')
-var runtime                = _glvis_('./lib/runtime-reflect')
-var GLError                = _glvis_("./lib/GLError")
+/***/ }),
+
+/***/ 5158:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createUniformWrapper   = __webpack_require__(9016)
+var createAttributeWrapper = __webpack_require__(4280)
+var makeReflect            = __webpack_require__(3984)
+var shaderCache            = __webpack_require__(1628)
+var runtime                = __webpack_require__(2631)
+var GLError                = __webpack_require__(9068)
 
 //Shader object
 function Shader(gl) {
@@ -22562,7 +23138,12 @@ function createShader(
 
 module.exports = createShader
 
-},{"./lib/GLError":133,"./lib/create-attributes":134,"./lib/create-uniforms":135,"./lib/reflect":136,"./lib/runtime-reflect":137,"./lib/shader-cache":138}],133:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9068:
+/***/ (function(module) {
+
 function GLError (rawError, shortMessage, longMessage) {
     this.shortMessage = shortMessage || ''
     this.longMessage = longMessage || ''
@@ -22577,12 +23158,18 @@ GLError.prototype.name = 'GLError'
 GLError.prototype.constructor = GLError
 module.exports = GLError
 
-},{}],134:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 4280:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createAttributeWrapper
 
-var GLError = _glvis_("./GLError")
+var GLError = __webpack_require__(9068)
 
 function ShaderAttribute(
     gl
@@ -22862,11 +23449,17 @@ function createAttributeWrapper(
   return obj
 }
 
-},{"./GLError":133}],135:[function(_glvis_,module,exports){
-'use strict'
 
-var coallesceUniforms = _glvis_('./reflect')
-var GLError = _glvis_("./GLError")
+/***/ }),
+
+/***/ 9016:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var coallesceUniforms = __webpack_require__(3984)
+var GLError = __webpack_require__(9068)
 
 module.exports = createUniformWrapper
 
@@ -23073,8 +23666,14 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
   }
 }
 
-},{"./GLError":133,"./reflect":136}],136:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3984:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = makeReflectTypes
 
@@ -23131,8 +23730,14 @@ function makeReflectTypes(uniforms, useIndex) {
   }
   return obj
 }
-},{}],137:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2631:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 
 exports.uniforms    = runtimeUniforms
 exports.attributes  = runtimeAttributes
@@ -23211,16 +23816,22 @@ function runtimeAttributes(gl, program) {
   return result
 }
 
-},{}],138:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 1628:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
 
 exports.shader   = getShaderReference
 exports.program  = createProgram
 
-var GLError = _glvis_("./GLError")
-var formatCompilerError = _glvis_('gl-format-compiler-error');
+var GLError = __webpack_require__(9068)
+var formatCompilerError = __webpack_require__(3530);
 
-var weakMap = typeof WeakMap === 'undefined' ? _glvis_('weakmap-shim') : WeakMap
+var weakMap = typeof WeakMap === 'undefined' ? __webpack_require__(4037) : WeakMap
 var CACHE = new weakMap()
 
 var SHADER_COUNTER = 0
@@ -23349,8 +23960,14 @@ function createProgram(gl, vref, fref, attribs, locations) {
   return getCache(gl).getProgram(vref, fref, attribs, locations)
 }
 
-},{"./GLError":133,"gl-format-compiler-error":87,"weakmap-shim":316}],139:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3050:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = createSpikes2D
 
@@ -23437,11 +24054,17 @@ function createSpikes2D(plot, options) {
   return spikes
 }
 
-},{}],140:[function(_glvis_,module,exports){
-'use strict'
 
-var glslify      = _glvis_('glslify')
-var createShader = _glvis_('gl-shader')
+/***/ }),
+
+/***/ 3540:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var glslify      = __webpack_require__(6832)
+var createShader = __webpack_require__(5158)
 
 var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, color;\nattribute float weight;\n\nuniform mat4 model, view, projection;\nuniform vec3 coordinates[3];\nuniform vec4 colors[3];\nuniform vec2 screenShape;\nuniform float lineWidth;\n\nvarying vec4 fragColor;\n\nvoid main() {\n  vec3 vertexPosition = mix(coordinates[0],\n    mix(coordinates[2], coordinates[1], 0.5 * (position + 1.0)), abs(position));\n\n  vec4 clipPos = projection * view * model * vec4(vertexPosition, 1.0);\n  vec2 clipOffset = (projection * view * model * vec4(color, 0.0)).xy;\n  vec2 delta = weight * clipOffset * screenShape;\n  vec2 lineOffset = normalize(vec2(delta.y, -delta.x)) / screenShape;\n\n  gl_Position   = vec4(clipPos.xy + clipPos.w * 0.5 * lineWidth * lineOffset, clipPos.z, clipPos.w);\n  fragColor     = color.x * colors[0] + color.y * colors[1] + color.z * colors[2];\n}\n"])
 var fragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor;\n\nvoid main() {\n  gl_FragColor = fragColor;\n}"])
@@ -23454,12 +24077,18 @@ module.exports = function(gl) {
   ])
 }
 
-},{"gl-shader":132,"glslify":231}],141:[function(_glvis_,module,exports){
-'use strict'
 
-var createBuffer = _glvis_('gl-buffer')
-var createVAO = _glvis_('gl-vao')
-var createShader = _glvis_('./shaders/index')
+/***/ }),
+
+/***/ 6496:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createBuffer = __webpack_require__(5827)
+var createVAO = __webpack_require__(2944)
+var createShader = __webpack_require__(3540)
 
 module.exports = createSpikes
 
@@ -23650,8 +24279,13 @@ function createSpikes(gl, options) {
   return spikes
 }
 
-},{"./shaders/index":140,"gl-buffer":78,"gl-vao":150}],142:[function(_glvis_,module,exports){
-var glslify       = _glvis_('glslify')
+
+/***/ }),
+
+/***/ 9578:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var glslify       = __webpack_require__(6832)
 
 var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, tubeScale;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * tubePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(tubePosition, 1.0);\n  vec4 t_position  = view * tubePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = tubePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
 var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
@@ -23678,11 +24312,17 @@ exports.pickShader = {
   ]
 }
 
-},{"glslify":231}],143:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7307:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 "use strict";
 
-var vec3 = _glvis_('gl-vec3');
-var vec4 = _glvis_('gl-vec4');
+
+var vec3 = __webpack_require__(2858);
+var vec4 = __webpack_require__(4020);
 var GRID_TYPES = ['xyz', 'xzy', 'yxz', 'yzx', 'zxy', 'zyx'];
 
 var streamToTube = function(stream, maxDivergence, minDistance, maxNorm) {
@@ -24229,8 +24869,8 @@ module.exports = function(vectorField, bounds) {
 	return tubes;
 };
 
-var shaders = _glvis_('./lib/shaders');
-var createMesh = _glvis_('gl-cone3d').createMesh;
+var shaders = __webpack_require__(9578);
+var createMesh = (__webpack_require__(1140).createMesh);
 module.exports.createTubeMesh = function(gl, params) {
 	return createMesh(gl, params, {
 		shaders: shaders,
@@ -24238,9 +24878,14 @@ module.exports.createTubeMesh = function(gl, params) {
 	});
 }
 
-},{"./lib/shaders":142,"gl-cone3d":79,"gl-vec3":169,"gl-vec4":205}],144:[function(_glvis_,module,exports){
-var createShader = _glvis_('gl-shader')
-var glslify = _glvis_('glslify')
+
+/***/ }),
+
+/***/ 9054:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var createShader = __webpack_require__(5158)
+var glslify = __webpack_require__(6832)
 
 var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform vec3 objectOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 localCoordinate = vec3(uv.zw, f.x);\n  worldCoordinate = objectOffset + localCoordinate;\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"])
 var fragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat beckmannSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform float vertexColor;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  if (\n    kill > 0.0 ||\n    vColor.a == 0.0 ||\n    outOfRange(clipBounds[0], clipBounds[1], worldCoordinate)\n  ) discard;\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = max(beckmannSpecular(L, V, N, roughness), 0.);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  //decide how to interpolate color — in vertex or in fragment\n  vec4 surfaceColor =\n    step(vertexColor, .5) * texture2D(colormap, vec2(value, value)) +\n    step(.5, vertexColor) * vColor;\n\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"])
@@ -24288,26 +24933,32 @@ exports.createPickContourShader = function (gl) {
   return shader
 }
 
-},{"gl-shader":132,"glslify":231}],145:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3754:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createSurfacePlot
 
-var bits = _glvis_('bit-twiddle')
-var createBuffer = _glvis_('gl-buffer')
-var createVAO = _glvis_('gl-vao')
-var createTexture = _glvis_('gl-texture2d')
-var pool = _glvis_('typedarray-pool')
-var colormap = _glvis_('colormap')
-var ops = _glvis_('ndarray-ops')
-var pack = _glvis_('ndarray-pack')
-var ndarray = _glvis_('ndarray')
-var surfaceNets = _glvis_('surface-nets')
-var multiply = _glvis_('gl-mat4/multiply')
-var invert = _glvis_('gl-mat4/invert')
-var bsearch = _glvis_('binary-search-bounds')
-var gradient = _glvis_('ndarray-gradient')
-var shaders = _glvis_('./lib/shaders')
+var bits = __webpack_require__(2288)
+var createBuffer = __webpack_require__(5827)
+var createVAO = __webpack_require__(2944)
+var createTexture = __webpack_require__(8931)
+var pool = __webpack_require__(5306)
+var colormap = __webpack_require__(9156)
+var ops = __webpack_require__(7498)
+var pack = __webpack_require__(7382)
+var ndarray = __webpack_require__(5050)
+var surfaceNets = __webpack_require__(4162)
+var multiply = __webpack_require__(104)
+var invert = __webpack_require__(7437)
+var bsearch = __webpack_require__(5070)
+var gradient = __webpack_require__(9144)
+var shaders = __webpack_require__(9054)
 
 var createShader = shaders.createShader
 var createContourShader = shaders.createContourShader
@@ -25670,12 +26321,18 @@ function createSurfacePlot (params) {
   return surface
 }
 
-},{"./lib/shaders":144,"binary-search-bounds":31,"bit-twiddle":32,"colormap":53,"gl-buffer":78,"gl-mat4/invert":98,"gl-mat4/multiply":100,"gl-texture2d":146,"gl-vao":150,"ndarray":259,"ndarray-gradient":252,"ndarray-ops":254,"ndarray-pack":255,"surface-nets":302,"typedarray-pool":308}],146:[function(_glvis_,module,exports){
-'use strict'
 
-var ndarray = _glvis_('ndarray')
-var ops     = _glvis_('ndarray-ops')
-var pool    = _glvis_('typedarray-pool')
+/***/ }),
+
+/***/ 8931:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var ndarray = __webpack_require__(5050)
+var ops     = __webpack_require__(7498)
+var pool    = __webpack_require__(5306)
 
 module.exports = createTexture2D
 
@@ -26233,8 +26890,14 @@ function createTexture2D(gl) {
   throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
 }
 
-},{"ndarray":259,"ndarray-ops":254,"typedarray-pool":308}],147:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 3056:
+/***/ (function(module) {
+
+"use strict";
+
 
 function doBind(gl, elements, attributes) {
   if(elements) {
@@ -26288,10 +26951,16 @@ function doBind(gl, elements, attributes) {
 }
 
 module.exports = doBind
-},{}],148:[function(_glvis_,module,exports){
-"use strict"
 
-var bindAttribs = _glvis_("./do-bind.js")
+/***/ }),
+
+/***/ 7220:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bindAttribs = __webpack_require__(3056)
 
 function VAOEmulated(gl) {
   this.gl = gl
@@ -26328,10 +26997,16 @@ function createVAOEmulated(gl) {
 }
 
 module.exports = createVAOEmulated
-},{"./do-bind.js":147}],149:[function(_glvis_,module,exports){
-"use strict"
 
-var bindAttribs = _glvis_("./do-bind.js")
+/***/ }),
+
+/***/ 3778:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bindAttribs = __webpack_require__(3056)
 
 function VertexAttribute(location, dimension, a, b, c, d) {
   this.location = location
@@ -26416,11 +27091,17 @@ function createVAONative(gl, ext) {
 }
 
 module.exports = createVAONative
-},{"./do-bind.js":147}],150:[function(_glvis_,module,exports){
-"use strict"
 
-var createVAONative = _glvis_("./lib/vao-native.js")
-var createVAOEmulated = _glvis_("./lib/vao-emulated.js")
+/***/ }),
+
+/***/ 2944:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createVAONative = __webpack_require__(3778)
+var createVAOEmulated = __webpack_require__(7220)
 
 function ExtensionShim (gl) {
   this.bindVertexArrayOES = gl.bindVertexArray.bind(gl)
@@ -26445,7 +27126,12 @@ function createVAO(gl, attributes, elements, elementsType) {
 
 module.exports = createVAO
 
-},{"./lib/vao-emulated.js":148,"./lib/vao-native.js":149}],151:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2598:
+/***/ (function(module) {
+
 module.exports = add;
 
 /**
@@ -26462,12 +27148,17 @@ function add(out, a, b) {
     out[2] = a[2] + b[2]
     return out
 }
-},{}],152:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5879:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = angle
 
-var fromValues = _glvis_('./fromValues')
-var normalize = _glvis_('./normalize')
-var dot = _glvis_('./dot')
+var fromValues = __webpack_require__(5415)
+var normalize = __webpack_require__(899)
+var dot = __webpack_require__(9305)
 
 /**
  * Get the angle between two 3D vectors
@@ -26491,7 +27182,12 @@ function angle(a, b) {
     }     
 }
 
-},{"./dot":162,"./fromValues":168,"./normalize":179}],153:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8827:
+/***/ (function(module) {
+
 module.exports = ceil
 
 /**
@@ -26508,7 +27204,12 @@ function ceil(out, a) {
   return out
 }
 
-},{}],154:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7622:
+/***/ (function(module) {
+
 module.exports = clone;
 
 /**
@@ -26524,7 +27225,12 @@ function clone(a) {
     out[2] = a[2]
     return out
 }
-},{}],155:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8782:
+/***/ (function(module) {
+
 module.exports = copy;
 
 /**
@@ -26540,7 +27246,12 @@ function copy(out, a) {
     out[2] = a[2]
     return out
 }
-},{}],156:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8501:
+/***/ (function(module) {
+
 module.exports = create;
 
 /**
@@ -26555,7 +27266,12 @@ function create() {
     out[2] = 0
     return out
 }
-},{}],157:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 903:
+/***/ (function(module) {
+
 module.exports = cross;
 
 /**
@@ -26575,10 +27291,20 @@ function cross(out, a, b) {
     out[2] = ax * by - ay * bx
     return out
 }
-},{}],158:[function(_glvis_,module,exports){
-module.exports = _glvis_('./distance')
 
-},{"./distance":159}],159:[function(_glvis_,module,exports){
+/***/ }),
+
+/***/ 5981:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(8288)
+
+
+/***/ }),
+
+/***/ 8288:
+/***/ (function(module) {
+
 module.exports = distance;
 
 /**
@@ -26594,10 +27320,20 @@ function distance(a, b) {
         z = b[2] - a[2]
     return Math.sqrt(x*x + y*y + z*z)
 }
-},{}],160:[function(_glvis_,module,exports){
-module.exports = _glvis_('./divide')
 
-},{"./divide":161}],161:[function(_glvis_,module,exports){
+/***/ }),
+
+/***/ 8629:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(7979)
+
+
+/***/ }),
+
+/***/ 7979:
+/***/ (function(module) {
+
 module.exports = divide;
 
 /**
@@ -26614,7 +27350,12 @@ function divide(out, a, b) {
     out[2] = a[2] / b[2]
     return out
 }
-},{}],162:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9305:
+/***/ (function(module) {
+
 module.exports = dot;
 
 /**
@@ -26627,13 +27368,23 @@ module.exports = dot;
 function dot(a, b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 }
-},{}],163:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 154:
+/***/ (function(module) {
+
 module.exports = 0.000001
 
-},{}],164:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4932:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = equals
 
-var EPSILON = _glvis_('./epsilon')
+var EPSILON = __webpack_require__(154)
 
 /**
  * Returns whether or not the vectors have approximately the same elements in the same position.
@@ -26654,7 +27405,12 @@ function equals(a, b) {
           Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)))
 }
 
-},{"./epsilon":163}],165:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5777:
+/***/ (function(module) {
+
 module.exports = exactEquals
 
 /**
@@ -26668,7 +27424,12 @@ function exactEquals(a, b) {
   return a[0] === b[0] && a[1] === b[1] && a[2] === b[2]
 }
 
-},{}],166:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3306:
+/***/ (function(module) {
+
 module.exports = floor
 
 /**
@@ -26685,10 +27446,15 @@ function floor(out, a) {
   return out
 }
 
-},{}],167:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7447:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = forEach;
 
-var vec = _glvis_('./create')()
+var vec = __webpack_require__(8501)()
 
 /**
  * Perform some operation over an array of vec3s.
@@ -26730,7 +27496,12 @@ function forEach(a, stride, offset, count, fn, arg) {
         
         return a
 }
-},{"./create":156}],168:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5415:
+/***/ (function(module) {
+
 module.exports = fromValues;
 
 /**
@@ -26748,56 +27519,66 @@ function fromValues(x, y, z) {
     out[2] = z
     return out
 }
-},{}],169:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2858:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = {
-  EPSILON: _glvis_('./epsilon')
-  , create: _glvis_('./create')
-  , clone: _glvis_('./clone')
-  , angle: _glvis_('./angle')
-  , fromValues: _glvis_('./fromValues')
-  , copy: _glvis_('./copy')
-  , set: _glvis_('./set')
-  , equals: _glvis_('./equals')
-  , exactEquals: _glvis_('./exactEquals')
-  , add: _glvis_('./add')
-  , subtract: _glvis_('./subtract')
-  , sub: _glvis_('./sub')
-  , multiply: _glvis_('./multiply')
-  , mul: _glvis_('./mul')
-  , divide: _glvis_('./divide')
-  , div: _glvis_('./div')
-  , min: _glvis_('./min')
-  , max: _glvis_('./max')
-  , floor: _glvis_('./floor')
-  , ceil: _glvis_('./ceil')
-  , round: _glvis_('./round')
-  , scale: _glvis_('./scale')
-  , scaleAndAdd: _glvis_('./scaleAndAdd')
-  , distance: _glvis_('./distance')
-  , dist: _glvis_('./dist')
-  , squaredDistance: _glvis_('./squaredDistance')
-  , sqrDist: _glvis_('./sqrDist')
-  , length: _glvis_('./length')
-  , len: _glvis_('./len')
-  , squaredLength: _glvis_('./squaredLength')
-  , sqrLen: _glvis_('./sqrLen')
-  , negate: _glvis_('./negate')
-  , inverse: _glvis_('./inverse')
-  , normalize: _glvis_('./normalize')
-  , dot: _glvis_('./dot')
-  , cross: _glvis_('./cross')
-  , lerp: _glvis_('./lerp')
-  , random: _glvis_('./random')
-  , transformMat4: _glvis_('./transformMat4')
-  , transformMat3: _glvis_('./transformMat3')
-  , transformQuat: _glvis_('./transformQuat')
-  , rotateX: _glvis_('./rotateX')
-  , rotateY: _glvis_('./rotateY')
-  , rotateZ: _glvis_('./rotateZ')
-  , forEach: _glvis_('./forEach')
+  EPSILON: __webpack_require__(154)
+  , create: __webpack_require__(8501)
+  , clone: __webpack_require__(7622)
+  , angle: __webpack_require__(5879)
+  , fromValues: __webpack_require__(5415)
+  , copy: __webpack_require__(8782)
+  , set: __webpack_require__(831)
+  , equals: __webpack_require__(4932)
+  , exactEquals: __webpack_require__(5777)
+  , add: __webpack_require__(2598)
+  , subtract: __webpack_require__(911)
+  , sub: __webpack_require__(8921)
+  , multiply: __webpack_require__(105)
+  , mul: __webpack_require__(5733)
+  , divide: __webpack_require__(7979)
+  , div: __webpack_require__(8629)
+  , min: __webpack_require__(3605)
+  , max: __webpack_require__(1716)
+  , floor: __webpack_require__(3306)
+  , ceil: __webpack_require__(8827)
+  , round: __webpack_require__(1624)
+  , scale: __webpack_require__(5685)
+  , scaleAndAdd: __webpack_require__(6722)
+  , distance: __webpack_require__(8288)
+  , dist: __webpack_require__(5981)
+  , squaredDistance: __webpack_require__(6403)
+  , sqrDist: __webpack_require__(5294)
+  , length: __webpack_require__(4693)
+  , len: __webpack_require__(1468)
+  , squaredLength: __webpack_require__(4337)
+  , sqrLen: __webpack_require__(3303)
+  , negate: __webpack_require__(435)
+  , inverse: __webpack_require__(2073)
+  , normalize: __webpack_require__(899)
+  , dot: __webpack_require__(9305)
+  , cross: __webpack_require__(903)
+  , lerp: __webpack_require__(1868)
+  , random: __webpack_require__(6660)
+  , transformMat4: __webpack_require__(3255)
+  , transformMat3: __webpack_require__(9908)
+  , transformQuat: __webpack_require__(6568)
+  , rotateX: __webpack_require__(392)
+  , rotateY: __webpack_require__(3222)
+  , rotateZ: __webpack_require__(3388)
+  , forEach: __webpack_require__(7447)
 }
 
-},{"./add":151,"./angle":152,"./ceil":153,"./clone":154,"./copy":155,"./create":156,"./cross":157,"./dist":158,"./distance":159,"./div":160,"./divide":161,"./dot":162,"./epsilon":163,"./equals":164,"./exactEquals":165,"./floor":166,"./forEach":167,"./fromValues":168,"./inverse":170,"./len":171,"./length":172,"./lerp":173,"./max":174,"./min":175,"./mul":176,"./multiply":177,"./negate":178,"./normalize":179,"./random":180,"./rotateX":181,"./rotateY":182,"./rotateZ":183,"./round":184,"./scale":185,"./scaleAndAdd":186,"./set":187,"./sqrDist":188,"./sqrLen":189,"./squaredDistance":190,"./squaredLength":191,"./sub":192,"./subtract":193,"./transformMat3":194,"./transformMat4":195,"./transformQuat":196}],170:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2073:
+/***/ (function(module) {
+
 module.exports = inverse;
 
 /**
@@ -26813,10 +27594,20 @@ function inverse(out, a) {
   out[2] = 1.0 / a[2]
   return out
 }
-},{}],171:[function(_glvis_,module,exports){
-module.exports = _glvis_('./length')
 
-},{"./length":172}],172:[function(_glvis_,module,exports){
+/***/ }),
+
+/***/ 1468:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(4693)
+
+
+/***/ }),
+
+/***/ 4693:
+/***/ (function(module) {
+
 module.exports = length;
 
 /**
@@ -26831,7 +27622,12 @@ function length(a) {
         z = a[2]
     return Math.sqrt(x*x + y*y + z*z)
 }
-},{}],173:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1868:
+/***/ (function(module) {
+
 module.exports = lerp;
 
 /**
@@ -26852,7 +27648,12 @@ function lerp(out, a, b, t) {
     out[2] = az + t * (b[2] - az)
     return out
 }
-},{}],174:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1716:
+/***/ (function(module) {
+
 module.exports = max;
 
 /**
@@ -26869,7 +27670,12 @@ function max(out, a, b) {
     out[2] = Math.max(a[2], b[2])
     return out
 }
-},{}],175:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3605:
+/***/ (function(module) {
+
 module.exports = min;
 
 /**
@@ -26886,10 +27692,20 @@ function min(out, a, b) {
     out[2] = Math.min(a[2], b[2])
     return out
 }
-},{}],176:[function(_glvis_,module,exports){
-module.exports = _glvis_('./multiply')
 
-},{"./multiply":177}],177:[function(_glvis_,module,exports){
+/***/ }),
+
+/***/ 5733:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(105)
+
+
+/***/ }),
+
+/***/ 105:
+/***/ (function(module) {
+
 module.exports = multiply;
 
 /**
@@ -26906,7 +27722,12 @@ function multiply(out, a, b) {
     out[2] = a[2] * b[2]
     return out
 }
-},{}],178:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 435:
+/***/ (function(module) {
+
 module.exports = negate;
 
 /**
@@ -26922,7 +27743,12 @@ function negate(out, a) {
     out[2] = -a[2]
     return out
 }
-},{}],179:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 899:
+/***/ (function(module) {
+
 module.exports = normalize;
 
 /**
@@ -26946,7 +27772,12 @@ function normalize(out, a) {
     }
     return out
 }
-},{}],180:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6660:
+/***/ (function(module) {
+
 module.exports = random;
 
 /**
@@ -26968,7 +27799,12 @@ function random(out, scale) {
     out[2] = z * scale
     return out
 }
-},{}],181:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 392:
+/***/ (function(module) {
+
 module.exports = rotateX;
 
 /**
@@ -26998,7 +27834,12 @@ function rotateX(out, a, b, c){
     return out
 }
 
-},{}],182:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3222:
+/***/ (function(module) {
+
 module.exports = rotateY;
 
 /**
@@ -27028,7 +27869,12 @@ function rotateY(out, a, b, c){
     return out
 }
 
-},{}],183:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3388:
+/***/ (function(module) {
+
 module.exports = rotateZ;
 
 /**
@@ -27058,7 +27904,12 @@ function rotateZ(out, a, b, c){
     return out
 }
 
-},{}],184:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1624:
+/***/ (function(module) {
+
 module.exports = round
 
 /**
@@ -27075,7 +27926,12 @@ function round(out, a) {
   return out
 }
 
-},{}],185:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5685:
+/***/ (function(module) {
+
 module.exports = scale;
 
 /**
@@ -27092,7 +27948,12 @@ function scale(out, a, b) {
     out[2] = a[2] * b
     return out
 }
-},{}],186:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6722:
+/***/ (function(module) {
+
 module.exports = scaleAndAdd;
 
 /**
@@ -27110,7 +27971,12 @@ function scaleAndAdd(out, a, b, scale) {
     out[2] = a[2] + (b[2] * scale)
     return out
 }
-},{}],187:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 831:
+/***/ (function(module) {
+
 module.exports = set;
 
 /**
@@ -27128,13 +27994,28 @@ function set(out, x, y, z) {
     out[2] = z
     return out
 }
-},{}],188:[function(_glvis_,module,exports){
-module.exports = _glvis_('./squaredDistance')
 
-},{"./squaredDistance":190}],189:[function(_glvis_,module,exports){
-module.exports = _glvis_('./squaredLength')
+/***/ }),
 
-},{"./squaredLength":191}],190:[function(_glvis_,module,exports){
+/***/ 5294:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(6403)
+
+
+/***/ }),
+
+/***/ 3303:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(4337)
+
+
+/***/ }),
+
+/***/ 6403:
+/***/ (function(module) {
+
 module.exports = squaredDistance;
 
 /**
@@ -27150,7 +28031,12 @@ function squaredDistance(a, b) {
         z = b[2] - a[2]
     return x*x + y*y + z*z
 }
-},{}],191:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4337:
+/***/ (function(module) {
+
 module.exports = squaredLength;
 
 /**
@@ -27165,10 +28051,20 @@ function squaredLength(a) {
         z = a[2]
     return x*x + y*y + z*z
 }
-},{}],192:[function(_glvis_,module,exports){
-module.exports = _glvis_('./subtract')
 
-},{"./subtract":193}],193:[function(_glvis_,module,exports){
+/***/ }),
+
+/***/ 8921:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(911)
+
+
+/***/ }),
+
+/***/ 911:
+/***/ (function(module) {
+
 module.exports = subtract;
 
 /**
@@ -27185,7 +28081,12 @@ function subtract(out, a, b) {
     out[2] = a[2] - b[2]
     return out
 }
-},{}],194:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9908:
+/***/ (function(module) {
+
 module.exports = transformMat3;
 
 /**
@@ -27203,7 +28104,12 @@ function transformMat3(out, a, m) {
     out[2] = x * m[2] + y * m[5] + z * m[8]
     return out
 }
-},{}],195:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3255:
+/***/ (function(module) {
+
 module.exports = transformMat4;
 
 /**
@@ -27224,7 +28130,12 @@ function transformMat4(out, a, m) {
     out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w
     return out
 }
-},{}],196:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6568:
+/***/ (function(module) {
+
 module.exports = transformQuat;
 
 /**
@@ -27253,7 +28164,12 @@ function transformQuat(out, a, q) {
     out[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx
     return out
 }
-},{}],197:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3433:
+/***/ (function(module) {
+
 module.exports = add
 
 /**
@@ -27272,7 +28188,12 @@ function add (out, a, b) {
   return out
 }
 
-},{}],198:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1413:
+/***/ (function(module) {
+
 module.exports = clone
 
 /**
@@ -27290,7 +28211,12 @@ function clone (a) {
   return out
 }
 
-},{}],199:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3470:
+/***/ (function(module) {
+
 module.exports = copy
 
 /**
@@ -27308,7 +28234,12 @@ function copy (out, a) {
   return out
 }
 
-},{}],200:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5313:
+/***/ (function(module) {
+
 module.exports = create
 
 /**
@@ -27325,7 +28256,12 @@ function create () {
   return out
 }
 
-},{}],201:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5446:
+/***/ (function(module) {
+
 module.exports = distance
 
 /**
@@ -27343,7 +28279,12 @@ function distance (a, b) {
   return Math.sqrt(x * x + y * y + z * z + w * w)
 }
 
-},{}],202:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 205:
+/***/ (function(module) {
+
 module.exports = divide
 
 /**
@@ -27362,7 +28303,12 @@ function divide (out, a, b) {
   return out
 }
 
-},{}],203:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4242:
+/***/ (function(module) {
+
 module.exports = dot
 
 /**
@@ -27376,7 +28322,12 @@ function dot (a, b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]
 }
 
-},{}],204:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5680:
+/***/ (function(module) {
+
 module.exports = fromValues
 
 /**
@@ -27397,36 +28348,46 @@ function fromValues (x, y, z, w) {
   return out
 }
 
-},{}],205:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4020:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = {
-  create: _glvis_('./create'),
-  clone: _glvis_('./clone'),
-  fromValues: _glvis_('./fromValues'),
-  copy: _glvis_('./copy'),
-  set: _glvis_('./set'),
-  add: _glvis_('./add'),
-  subtract: _glvis_('./subtract'),
-  multiply: _glvis_('./multiply'),
-  divide: _glvis_('./divide'),
-  min: _glvis_('./min'),
-  max: _glvis_('./max'),
-  scale: _glvis_('./scale'),
-  scaleAndAdd: _glvis_('./scaleAndAdd'),
-  distance: _glvis_('./distance'),
-  squaredDistance: _glvis_('./squaredDistance'),
-  length: _glvis_('./length'),
-  squaredLength: _glvis_('./squaredLength'),
-  negate: _glvis_('./negate'),
-  inverse: _glvis_('./inverse'),
-  normalize: _glvis_('./normalize'),
-  dot: _glvis_('./dot'),
-  lerp: _glvis_('./lerp'),
-  random: _glvis_('./random'),
-  transformMat4: _glvis_('./transformMat4'),
-  transformQuat: _glvis_('./transformQuat')
+  create: __webpack_require__(5313),
+  clone: __webpack_require__(1413),
+  fromValues: __webpack_require__(5680),
+  copy: __webpack_require__(3470),
+  set: __webpack_require__(6453),
+  add: __webpack_require__(3433),
+  subtract: __webpack_require__(2705),
+  multiply: __webpack_require__(746),
+  divide: __webpack_require__(205),
+  min: __webpack_require__(2170),
+  max: __webpack_require__(3030),
+  scale: __webpack_require__(5510),
+  scaleAndAdd: __webpack_require__(4224),
+  distance: __webpack_require__(5446),
+  squaredDistance: __webpack_require__(1542),
+  length: __webpack_require__(8177),
+  squaredLength: __webpack_require__(9037),
+  negate: __webpack_require__(6459),
+  inverse: __webpack_require__(8057),
+  normalize: __webpack_require__(381),
+  dot: __webpack_require__(4242),
+  lerp: __webpack_require__(8746),
+  random: __webpack_require__(3770),
+  transformMat4: __webpack_require__(6342),
+  transformQuat: __webpack_require__(5022)
 }
 
-},{"./add":197,"./clone":198,"./copy":199,"./create":200,"./distance":201,"./divide":202,"./dot":203,"./fromValues":204,"./inverse":206,"./length":207,"./lerp":208,"./max":209,"./min":210,"./multiply":211,"./negate":212,"./normalize":213,"./random":214,"./scale":215,"./scaleAndAdd":216,"./set":217,"./squaredDistance":218,"./squaredLength":219,"./subtract":220,"./transformMat4":221,"./transformQuat":222}],206:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8057:
+/***/ (function(module) {
+
 module.exports = inverse
 
 /**
@@ -27444,7 +28405,12 @@ function inverse (out, a) {
   return out
 }
 
-},{}],207:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8177:
+/***/ (function(module) {
+
 module.exports = length
 
 /**
@@ -27461,7 +28427,12 @@ function length (a) {
   return Math.sqrt(x * x + y * y + z * z + w * w)
 }
 
-},{}],208:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8746:
+/***/ (function(module) {
+
 module.exports = lerp
 
 /**
@@ -27485,7 +28456,12 @@ function lerp (out, a, b, t) {
   return out
 }
 
-},{}],209:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3030:
+/***/ (function(module) {
+
 module.exports = max
 
 /**
@@ -27504,7 +28480,12 @@ function max (out, a, b) {
   return out
 }
 
-},{}],210:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2170:
+/***/ (function(module) {
+
 module.exports = min
 
 /**
@@ -27523,7 +28504,12 @@ function min (out, a, b) {
   return out
 }
 
-},{}],211:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 746:
+/***/ (function(module) {
+
 module.exports = multiply
 
 /**
@@ -27542,7 +28528,12 @@ function multiply (out, a, b) {
   return out
 }
 
-},{}],212:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6459:
+/***/ (function(module) {
+
 module.exports = negate
 
 /**
@@ -27560,7 +28551,12 @@ function negate (out, a) {
   return out
 }
 
-},{}],213:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 381:
+/***/ (function(module) {
+
 module.exports = normalize
 
 /**
@@ -27586,9 +28582,14 @@ function normalize (out, a) {
   return out
 }
 
-},{}],214:[function(_glvis_,module,exports){
-var vecNormalize = _glvis_('./normalize')
-var vecScale = _glvis_('./scale')
+
+/***/ }),
+
+/***/ 3770:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var vecNormalize = __webpack_require__(381)
+var vecScale = __webpack_require__(5510)
 
 module.exports = random
 
@@ -27612,7 +28613,12 @@ function random (out, scale) {
   return out
 }
 
-},{"./normalize":213,"./scale":215}],215:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5510:
+/***/ (function(module) {
+
 module.exports = scale
 
 /**
@@ -27631,7 +28637,12 @@ function scale (out, a, b) {
   return out
 }
 
-},{}],216:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4224:
+/***/ (function(module) {
+
 module.exports = scaleAndAdd
 
 /**
@@ -27651,7 +28662,12 @@ function scaleAndAdd (out, a, b, scale) {
   return out
 }
 
-},{}],217:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6453:
+/***/ (function(module) {
+
 module.exports = set
 
 /**
@@ -27672,7 +28688,12 @@ function set (out, x, y, z, w) {
   return out
 }
 
-},{}],218:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1542:
+/***/ (function(module) {
+
 module.exports = squaredDistance
 
 /**
@@ -27690,7 +28711,12 @@ function squaredDistance (a, b) {
   return x * x + y * y + z * z + w * w
 }
 
-},{}],219:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9037:
+/***/ (function(module) {
+
 module.exports = squaredLength
 
 /**
@@ -27707,7 +28733,12 @@ function squaredLength (a) {
   return x * x + y * y + z * z + w * w
 }
 
-},{}],220:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2705:
+/***/ (function(module) {
+
 module.exports = subtract
 
 /**
@@ -27726,7 +28757,12 @@ function subtract (out, a, b) {
   return out
 }
 
-},{}],221:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6342:
+/***/ (function(module) {
+
 module.exports = transformMat4
 
 /**
@@ -27746,7 +28782,12 @@ function transformMat4 (out, a, m) {
   return out
 }
 
-},{}],222:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5022:
+/***/ (function(module) {
+
 module.exports = transformQuat
 
 /**
@@ -27775,9 +28816,14 @@ function transformQuat (out, a, q) {
   return out
 }
 
-},{}],223:[function(_glvis_,module,exports){
-var tokenize = _glvis_('glsl-tokenizer')
-var atob     = _glvis_('atob-lite')
+
+/***/ }),
+
+/***/ 9365:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var tokenize = __webpack_require__(8096)
+var atob     = __webpack_require__(7896)
 
 module.exports = getName
 
@@ -27800,14 +28846,19 @@ function getName(src) {
   }
 }
 
-},{"atob-lite":13,"glsl-tokenizer":230}],224:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3193:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = tokenize
 
-var literals100 = _glvis_('./lib/literals')
-  , operators = _glvis_('./lib/operators')
-  , builtins100 = _glvis_('./lib/builtins')
-  , literals300es = _glvis_('./lib/literals-300es')
-  , builtins300es = _glvis_('./lib/builtins-300es')
+var literals100 = __webpack_require__(399)
+  , operators = __webpack_require__(9746)
+  , builtins100 = __webpack_require__(9525)
+  , literals300es = __webpack_require__(9458)
+  , builtins300es = __webpack_require__(3585)
 
 var NORMAL = 999          // <-- never emitted
   , TOKEN = 9999          // <-- never emitted
@@ -28177,9 +29228,14 @@ function tokenize(opt) {
   }
 }
 
-},{"./lib/builtins":226,"./lib/builtins-300es":225,"./lib/literals":228,"./lib/literals-300es":227,"./lib/operators":229}],225:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3585:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 // 300es builtins/reserved words that were previously valid in v100
-var v100 = _glvis_('./builtins')
+var v100 = __webpack_require__(9525)
 
 // The texture2D|Cube functions have been removed
 // And the gl_ features are updated
@@ -28248,7 +29304,12 @@ module.exports = v100.concat([
   , 'textureProjGradOffset'
 ])
 
-},{"./builtins":226}],226:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9525:
+/***/ (function(module) {
+
 module.exports = [
   // Keep this list sorted
   'abs'
@@ -28400,8 +29461,13 @@ module.exports = [
   , 'textureCubeGradEXT'
 ]
 
-},{}],227:[function(_glvis_,module,exports){
-var v100 = _glvis_('./literals')
+
+/***/ }),
+
+/***/ 9458:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var v100 = __webpack_require__(399)
 
 module.exports = v100.slice().concat([
    'layout'
@@ -28489,7 +29555,12 @@ module.exports = v100.slice().concat([
   , 'usampler2DMSArray'
 ])
 
-},{"./literals":228}],228:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 399:
+/***/ (function(module) {
+
 module.exports = [
   // current
     'precision'
@@ -28585,7 +29656,12 @@ module.exports = [
   , 'using'
 ]
 
-},{}],229:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9746:
+/***/ (function(module) {
+
 module.exports = [
     '<<='
   , '>>='
@@ -28634,8 +29710,13 @@ module.exports = [
   , '}'
 ]
 
-},{}],230:[function(_glvis_,module,exports){
-var tokenize = _glvis_('./index')
+
+/***/ }),
+
+/***/ 8096:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var tokenize = __webpack_require__(3193)
 
 module.exports = tokenizeString
 
@@ -28649,7 +29730,12 @@ function tokenizeString(str, opt) {
   return tokens
 }
 
-},{"./index":224}],231:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6832:
+/***/ (function(module) {
+
 module.exports = function(strings) {
   if (typeof strings === 'string') strings = [strings]
   var exprs = [].slice.call(arguments,1)
@@ -28661,10 +29747,16 @@ module.exports = function(strings) {
   return parts.join('')
 }
 
-},{}],232:[function(_glvis_,module,exports){
-'use strict'
 
-var isBrowser = _glvis_('is-browser')
+/***/ }),
+
+/***/ 5233:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var isBrowser = __webpack_require__(4846)
 
 function detect() {
 	var supported = false
@@ -28687,8 +29779,14 @@ function detect() {
 
 module.exports = isBrowser && detect()
 
-},{"is-browser":236}],233:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 2183:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 //High level idea:
 // 1. Use Clarkson's incremental construction to find convex hull
@@ -28696,8 +29794,8 @@ module.exports = isBrowser && detect()
 
 module.exports = incrementalConvexHull
 
-var orient = _glvis_("robust-orientation")
-var compareCell = _glvis_("simplicial-complex").compareCells
+var orient = __webpack_require__(417)
+var compareCell = (__webpack_require__(8211)/* .compareCells */ .H)
 
 function Simplex(vertices, adjacent, boundary) {
   this.vertices = vertices
@@ -29127,10 +30225,16 @@ function incrementalConvexHull(points, randomSearch) {
   //Extract boundary cells
   return triangles.boundary()
 }
-},{"robust-orientation":284,"simplicial-complex":293}],234:[function(_glvis_,module,exports){
-"use strict"
 
-var bounds = _glvis_("binary-search-bounds")
+/***/ }),
+
+/***/ 9014:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bounds = __webpack_require__(5070)
 
 var NOT_FOUND = 0
 var SUCCESS = 1
@@ -29494,8 +30598,14 @@ function createWrapper(intervals) {
   return new IntervalTree(createIntervalTree(intervals))
 }
 
-},{"binary-search-bounds":31}],235:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 9560:
+/***/ (function(module) {
+
+"use strict";
+
 
 function iota(n) {
   var result = new Array(n)
@@ -29506,9 +30616,19 @@ function iota(n) {
 }
 
 module.exports = iota
-},{}],236:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4846:
+/***/ (function(module) {
+
 module.exports = true;
-},{}],237:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4780:
+/***/ (function(module) {
+
 /*!
  * Determine if an object is a Buffer
  *
@@ -29531,45 +30651,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],238:[function(_glvis_,module,exports){
-'use strict'
 
-module.exports = isMobile
-module.exports.isMobile = isMobile
-module.exports.default = isMobile
+/***/ }),
 
-var mobileRE = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i
+/***/ 3596:
+/***/ (function(module) {
 
-var tabletRE = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android|ipad|playbook|silk/i
+"use strict";
 
-function isMobile (opts) {
-  if (!opts) opts = {}
-  var ua = opts.ua
-  if (!ua && typeof navigator !== 'undefined') ua = navigator.userAgent
-  if (ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
-    ua = ua.headers['user-agent']
-  }
-  if (typeof ua !== 'string') return false
-
-  var result = opts.tablet ? tabletRE.test(ua) : mobileRE.test(ua)
-
-  if (
-    !result &&
-    opts.tablet &&
-    opts.featureDetect &&
-    navigator &&
-    navigator.maxTouchPoints > 1 &&
-    ua.indexOf('Macintosh') !== -1 &&
-    ua.indexOf('Safari') !== -1
-  ) {
-    result = true
-  }
-
-  return result
-}
-
-},{}],239:[function(_glvis_,module,exports){
-'use strict';
 
 /**
  * Is this string all whitespace?
@@ -29605,12 +30694,22 @@ module.exports = function(str){
     return true;
 }
 
-},{}],240:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3578:
+/***/ (function(module) {
+
 function lerp(v0, v1, t) {
     return v0*(1-t)+v1*t
 }
 module.exports = lerp
-},{}],241:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7191:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 /*jshint unused:true*/
 /*
 Input:  matrix      ; a 4x4 matrix
@@ -29628,18 +30727,18 @@ https://github.com/ChromiumWebApps/chromium/blob/master/ui/gfx/transform_util.cc
 http://www.w3.org/TR/css3-transforms/#decomposing-a-3d-matrix
 */
 
-var normalize = _glvis_('./normalize')
+var normalize = __webpack_require__(4690)
 
-var create = _glvis_('gl-mat4/create')
-var clone = _glvis_('gl-mat4/clone')
-var determinant = _glvis_('gl-mat4/determinant')
-var invert = _glvis_('gl-mat4/invert')
-var transpose = _glvis_('gl-mat4/transpose')
+var create = __webpack_require__(9823)
+var clone = __webpack_require__(7332)
+var determinant = __webpack_require__(7787)
+var invert = __webpack_require__(7437)
+var transpose = __webpack_require__(2142)
 var vec3 = {
-    length: _glvis_('gl-vec3/length'),
-    normalize: _glvis_('gl-vec3/normalize'),
-    dot: _glvis_('gl-vec3/dot'),
-    cross: _glvis_('gl-vec3/cross')
+    length: __webpack_require__(4693),
+    normalize: __webpack_require__(899),
+    dot: __webpack_require__(9305),
+    cross: __webpack_require__(903)
 }
 
 var tmp = create()
@@ -29790,7 +30889,12 @@ function combine(out, a, b, scale1, scale2) {
     out[1] = a[1] * scale1 + b[1] * scale2
     out[2] = a[2] * scale1 + b[2] * scale2
 }
-},{"./normalize":242,"gl-mat4/clone":92,"gl-mat4/create":93,"gl-mat4/determinant":94,"gl-mat4/invert":98,"gl-mat4/transpose":109,"gl-vec3/cross":157,"gl-vec3/dot":162,"gl-vec3/length":172,"gl-vec3/normalize":179}],242:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4690:
+/***/ (function(module) {
+
 module.exports = function normalize(out, mat) {
     var m44 = mat[15]
     // Cannot normalize.
@@ -29801,13 +30905,18 @@ module.exports = function normalize(out, mat) {
         out[i] = mat[i] * scale
     return true
 }
-},{}],243:[function(_glvis_,module,exports){
-var lerp = _glvis_('gl-vec3/lerp')
 
-var recompose = _glvis_('mat4-recompose')
-var decompose = _glvis_('mat4-decompose')
-var determinant = _glvis_('gl-mat4/determinant')
-var slerp = _glvis_('quat-slerp')
+/***/ }),
+
+/***/ 7649:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var lerp = __webpack_require__(1868)
+
+var recompose = __webpack_require__(1102)
+var decompose = __webpack_require__(7191)
+var determinant = __webpack_require__(7787)
+var slerp = __webpack_require__(1116)
 
 var state0 = state()
 var state1 = state()
@@ -29854,7 +30963,12 @@ function vec3(n) {
 function vec4() {
     return [0,0,0,1]
 }
-},{"gl-mat4/determinant":94,"gl-vec3/lerp":173,"mat4-decompose":241,"mat4-recompose":244,"quat-slerp":271}],244:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1102:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 /*
 Input:  translation ; a 3 component vector
         scale       ; a 3 component vector
@@ -29867,12 +30981,12 @@ From: http://www.w3.org/TR/css3-transforms/#recomposing-to-a-3d-matrix
 */
 
 var mat4 = {
-    identity: _glvis_('gl-mat4/identity'),
-    translate: _glvis_('gl-mat4/translate'),
-    multiply: _glvis_('gl-mat4/multiply'),
-    create: _glvis_('gl-mat4/create'),
-    scale: _glvis_('gl-mat4/scale'),
-    fromRotationTranslation: _glvis_('gl-mat4/fromRotationTranslation')
+    identity: __webpack_require__(9947),
+    translate: __webpack_require__(998),
+    multiply: __webpack_require__(104),
+    create: __webpack_require__(9823),
+    scale: __webpack_require__(3668),
+    fromRotationTranslation: __webpack_require__(7280)
 }
 
 var rotationMatrix = mat4.create()
@@ -29915,19 +31029,25 @@ module.exports = function recomposeMat4(matrix, translation, scale, skew, perspe
     mat4.scale(matrix, matrix, scale)
     return matrix
 }
-},{"gl-mat4/create":93,"gl-mat4/fromRotationTranslation":96,"gl-mat4/identity":97,"gl-mat4/multiply":100,"gl-mat4/scale":107,"gl-mat4/translate":108}],245:[function(_glvis_,module,exports){
-'use strict'
 
-var bsearch   = _glvis_('binary-search-bounds')
-var m4interp  = _glvis_('mat4-interpolate')
-var invert44  = _glvis_('gl-mat4/invert')
-var rotateX   = _glvis_('gl-mat4/rotateX')
-var rotateY   = _glvis_('gl-mat4/rotateY')
-var rotateZ   = _glvis_('gl-mat4/rotateZ')
-var lookAt    = _glvis_('gl-mat4/lookAt')
-var translate = _glvis_('gl-mat4/translate')
-var scale     = _glvis_('gl-mat4/scale')
-var normalize = _glvis_('gl-vec3/normalize')
+/***/ }),
+
+/***/ 9298:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bsearch   = __webpack_require__(5070)
+var m4interp  = __webpack_require__(7649)
+var invert44  = __webpack_require__(7437)
+var rotateX   = __webpack_require__(6109)
+var rotateY   = __webpack_require__(7115)
+var rotateZ   = __webpack_require__(5240)
+var lookAt    = __webpack_require__(3012)
+var translate = __webpack_require__(998)
+var scale     = __webpack_require__(3668)
+var normalize = __webpack_require__(899)
 
 var DEFAULT_CENTER = [0,0,0]
 
@@ -30115,12 +31235,18 @@ function createMatrixCameraController(options) {
   return new MatrixCameraController(matrix)
 }
 
-},{"binary-search-bounds":31,"gl-mat4/invert":98,"gl-mat4/lookAt":99,"gl-mat4/rotateX":104,"gl-mat4/rotateY":105,"gl-mat4/rotateZ":106,"gl-mat4/scale":107,"gl-mat4/translate":108,"gl-vec3/normalize":179,"mat4-interpolate":243}],246:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3266:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = monotoneConvexHull2D
 
-var orient = _glvis_('robust-orientation')[3]
+var orient = (__webpack_require__(417)[3])
 
 function monotoneConvexHull2D(points) {
   var n = points.length
@@ -30197,12 +31323,18 @@ function monotoneConvexHull2D(points) {
   //Return result
   return result
 }
-},{"robust-orientation":284}],247:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 6145:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = mouseListen
 
-var mouse = _glvis_('mouse-event')
+var mouse = __webpack_require__(4110)
 
 function mouseListen (element, callback) {
   if (!callback) {
@@ -30404,7 +31536,12 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":249}],248:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2565:
+/***/ (function(module) {
+
 var rootPosition = { left: 0, top: 0 }
 
 module.exports = mouseEventOffset
@@ -30431,8 +31568,14 @@ function getBoundingClientOffset (element) {
   }
 }
 
-},{}],249:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 4110:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 
 function mouseButtons(ev) {
   if(typeof ev === 'object') {
@@ -30493,10 +31636,16 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],250:[function(_glvis_,module,exports){
-'use strict'
 
-var toPX = _glvis_('to-px')
+/***/ }),
+
+/***/ 6475:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var toPX = __webpack_require__(14)
 
 module.exports = mouseWheelListen
 
@@ -30535,10 +31684,16 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":304}],251:[function(_glvis_,module,exports){
-"use strict"
 
-var pool = _glvis_("typedarray-pool")
+/***/ }),
+
+/***/ 9284:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var pool = __webpack_require__(5306)
 
 module.exports = createSurfaceExtractor
 
@@ -30917,10 +32072,16 @@ function createSurfaceExtractor(args) {
     order,
     typesig)
 }
-},{"typedarray-pool":308}],252:[function(_glvis_,module,exports){
-'use strict'
 
-var dup = _glvis_('dup')
+/***/ }),
+
+/***/ 9144:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var dup = __webpack_require__(3094)
 
 var CACHED_CWiseOp = {
   zero: function(SS, a0, t0, p0) {
@@ -31045,7 +32206,7 @@ function generateTemplate(d) {
 function CACHED_link(diff, zero, grad1, grad2) {
   return function(dst, src) {
     var s = src.shape.slice()
-    if (1 && s[0] > 2 && s[1] > 2) {
+    if ( true && s[0] > 2 && s[1] > 2) {
       grad2(
         src
           .pick(-1, -1)
@@ -31061,7 +32222,7 @@ function CACHED_link(diff, zero, grad1, grad2) {
           .hi(s[0] - 2, s[1] - 2)
       )
     }
-    if (1 && s[1] > 2) {
+    if ( true && s[1] > 2) {
       grad1(
         src
           .pick(0, -1)
@@ -31079,7 +32240,7 @@ function CACHED_link(diff, zero, grad1, grad2) {
           .hi(s[1] - 2)
       )
     }
-    if (1 && s[1] > 2) {
+    if ( true && s[1] > 2) {
       grad1(
         src
           .pick(s[0] - 1, -1)
@@ -31097,7 +32258,7 @@ function CACHED_link(diff, zero, grad1, grad2) {
           .hi(s[1] - 2)
       )
     }
-    if (1 && s[0] > 2) {
+    if ( true && s[0] > 2) {
       grad1(
         src
           .pick(-1, 0)
@@ -31115,7 +32276,7 @@ function CACHED_link(diff, zero, grad1, grad2) {
           .hi(s[0] - 2)
       )
     }
-    if (1 && s[0] > 2) {
+    if ( true && s[0] > 2) {
       grad1(
         src
           .pick(-1, s[1] - 1)
@@ -31186,8 +32347,14 @@ module.exports = function gradient(out, inp, bc) {
   var cached = generateGradient(bc)
   return cached(out, inp)
 }
-},{"dup":65}],253:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 3581:
+/***/ (function(module) {
+
+"use strict";
+
 
 function interp1d(arr, x) {
   var ix = Math.floor(x)
@@ -31297,8 +32464,14 @@ module.exports.d1 = interp1d
 module.exports.d2 = interp2d
 module.exports.d3 = interp3d
 
-},{}],254:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 7498:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 
 var CACHED_CWiseOp = {
   'float64,2,1,0': function () {
@@ -31689,11 +32862,17 @@ var assign_ops = {
 exports.assign = makeOp({
   funcName: "assign" })
 
-},{}],255:[function(_glvis_,module,exports){
-"use strict"
 
-var ndarray = _glvis_("ndarray")
-var do_convert = _glvis_("./doConvert.js")
+/***/ }),
+
+/***/ 7382:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var ndarray = __webpack_require__(5050)
+var do_convert = __webpack_require__(9262)
 
 module.exports = function convert(arr, result) {
   var shape = [], c = arr, sz = 1
@@ -31712,8 +32891,14 @@ module.exports = function convert(arr, result) {
   return result
 }
 
-},{"./doConvert.js":256,"ndarray":259}],256:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 9262:
+/***/ (function(module) {
+
+"use strict";
+
 
 function CwiseOp() {
   return function (SS, a0, t0, p0, Y0) {
@@ -31801,10 +32986,16 @@ module.exports = compileCwise({
   funcName: "convert"
 });
 
-},{}],257:[function(_glvis_,module,exports){
-"use strict"
 
-var pool = _glvis_("typedarray-pool")
+/***/ }),
+
+/***/ 8139:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var pool = __webpack_require__(5306)
 
 function getMallocFree(dtype) {
   switch(dtype) {
@@ -32554,10 +33745,16 @@ function compileSort(order, dtype) {
 }
 
 module.exports = compileSort
-},{"typedarray-pool":308}],258:[function(_glvis_,module,exports){
-"use strict"
 
-var compile = _glvis_("./lib/compile_sort.js")
+/***/ }),
+
+/***/ 8729:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var compile = __webpack_require__(8139)
 var CACHE = {}
 
 function sort(array) {
@@ -32574,8 +33771,13 @@ function sort(array) {
 }
 
 module.exports = sort
-},{"./lib/compile_sort.js":257}],259:[function(_glvis_,module,exports){
-var isBuffer = _glvis_("is-buffer")
+
+/***/ }),
+
+/***/ 5050:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var isBuffer = __webpack_require__(4780)
 
 var hasTypedArrays  = ((typeof Float64Array) !== "undefined")
 
@@ -33575,10 +34777,16 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"is-buffer":237}],260:[function(_glvis_,module,exports){
-"use strict"
 
-var doubleBits = _glvis_("double-bits")
+/***/ }),
+
+/***/ 8551:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var doubleBits = __webpack_require__(8362)
 
 var SMALLEST_DENORM = Math.pow(2, -1074)
 var UINT_MAX = (-1)>>>0
@@ -33618,7 +34826,12 @@ function nextafter(x, y) {
   }
   return doubleBits.pack(lo, hi)
 }
-},{"double-bits":64}],261:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 115:
+/***/ (function(__unused_webpack_module, exports) {
+
 var DEFAULT_NORMALS_EPSILON = 1e-6;
 var DEFAULT_FACE_EPSILON = 1e-6;
 
@@ -33743,8 +34956,14 @@ exports.faceNormals = function(faces, positions, specifiedEpsilon) {
 
 
 
-},{}],262:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 567:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = quatFromFrame
 
@@ -33785,16 +35004,22 @@ function quatFromFrame(
   }
   return out
 }
-},{}],263:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 7774:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createOrbitController
 
-var filterVector  = _glvis_('filtered-vector')
-var lookAt        = _glvis_('gl-mat4/lookAt')
-var mat4FromQuat  = _glvis_('gl-mat4/fromQuat')
-var invert44      = _glvis_('gl-mat4/invert')
-var quatFromFrame = _glvis_('./lib/quatFromFrame')
+var filterVector  = __webpack_require__(8444)
+var lookAt        = __webpack_require__(3012)
+var mat4FromQuat  = __webpack_require__(5950)
+var invert44      = __webpack_require__(7437)
+var quatFromFrame = __webpack_require__(567)
 
 function len3(x,y,z) {
   return Math.sqrt(Math.pow(x,2) + Math.pow(y,2) + Math.pow(z,2))
@@ -34179,7 +35404,13 @@ function createOrbitController(options) {
 
   return result
 }
-},{"./lib/quatFromFrame":262,"filtered-vector":68,"gl-mat4/fromQuat":95,"gl-mat4/invert":98,"gl-mat4/lookAt":99}],264:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4930:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
 /*!
  * pad-left <https://github.com/jonschlinkert/pad-left>
  *
@@ -34187,15 +35418,20 @@ function createOrbitController(options) {
  * Licensed under the MIT license.
  */
 
-'use strict';
 
-var repeat = _glvis_('repeat-string');
+
+var repeat = __webpack_require__(6184);
 
 module.exports = function padLeft(str, num, ch) {
   ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
   return repeat(ch, num) + str;
 };
-},{"repeat-string":277}],265:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4405:
+/***/ (function(module) {
+
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -34206,12 +35442,18 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],266:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 4166:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = planarDual
 
-var compareAngle = _glvis_("compare-angle")
+var compareAngle = __webpack_require__(9398)
 
 function planarDual(cells, positions) {
 
@@ -34337,12 +35579,18 @@ function planarDual(cells, positions) {
   //Combine paths and loops together
   return cycles
 }
-},{"compare-angle":54}],267:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3959:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = trimLeaves
 
-var e2a = _glvis_('edges-to-adjacency-list')
+var e2a = __webpack_require__(8348)
 
 function trimLeaves(edges, positions) {
   var adj = e2a(edges, positions.length)
@@ -34393,18 +35641,24 @@ function trimLeaves(edges, positions) {
   
   return [ nedges, npositions ]
 }
-},{"edges-to-adjacency-list":66}],268:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 8040:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = planarGraphToPolyline
 
-var e2a = _glvis_('edges-to-adjacency-list')
-var planarDual = _glvis_('planar-dual')
-var preprocessPolygon = _glvis_('point-in-big-polygon')
-var twoProduct = _glvis_('two-product')
-var robustSum = _glvis_('robust-sum')
-var uniq = _glvis_('uniq')
-var trimLeaves = _glvis_('./lib/trim-leaves')
+var e2a = __webpack_require__(8348)
+var planarDual = __webpack_require__(4166)
+var preprocessPolygon = __webpack_require__(211)
+var twoProduct = __webpack_require__(9660)
+var robustSum = __webpack_require__(9662)
+var uniq = __webpack_require__(1215)
+var trimLeaves = __webpack_require__(3959)
 
 function makeArray(length, fill) {
   var result = new Array(length)
@@ -34598,13 +35852,18 @@ function planarGraphToPolyline(edges, positions) {
 
   return result
 }
-},{"./lib/trim-leaves":267,"edges-to-adjacency-list":66,"planar-dual":266,"point-in-big-polygon":269,"robust-sum":289,"two-product":306,"uniq":310}],269:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 211:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = preprocessPolygon
 
-var orient = _glvis_('robust-orientation')[3]
-var makeSlabs = _glvis_('slab-decomposition')
-var makeIntervalTree = _glvis_('interval-tree-1d')
-var bsearch = _glvis_('binary-search-bounds')
+var orient = (__webpack_require__(417)[3])
+var makeSlabs = __webpack_require__(4385)
+var makeIntervalTree = __webpack_require__(9014)
+var bsearch = __webpack_require__(5070)
 
 function visitInterval() {
   return true
@@ -34750,11 +36009,17 @@ function preprocessPolygon(loops) {
       testSlab)
   }
 }
-},{"binary-search-bounds":31,"interval-tree-1d":234,"robust-orientation":284,"slab-decomposition":299}],270:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7309:
+/***/ (function(module) {
+
+"use strict";
 //Optimized version for triangle closest point
 // Based on Eberly's WildMagick codes
 // http://www.geometrictools.com/LibMathematics/Distance/Distance.html
-"use strict";
+
 
 var diff = new Float64Array(4);
 var edge0 = new Float64Array(4);
@@ -34948,12 +36213,23 @@ function closestPoint2d(V0, V1, V2, point, result) {
 
 module.exports = closestPoint2d;
 
-},{}],271:[function(_glvis_,module,exports){
-module.exports = _glvis_('gl-quat/slerp')
-},{"gl-quat/slerp":124}],272:[function(_glvis_,module,exports){
-'use strict'
 
-var bnadd = _glvis_('big-rat/add')
+/***/ }),
+
+/***/ 1116:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(6093)
+
+/***/ }),
+
+/***/ 7584:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bnadd = __webpack_require__(1539)
 
 module.exports = add
 
@@ -34966,12 +36242,18 @@ function add (a, b) {
   return r
 }
 
-},{"big-rat/add":15}],273:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2826:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = float2rat
 
-var rat = _glvis_('big-rat')
+var rat = __webpack_require__(5125)
 
 function float2rat(v) {
   var result = new Array(v.length)
@@ -34981,11 +36263,17 @@ function float2rat(v) {
   return result
 }
 
-},{"big-rat":18}],274:[function(_glvis_,module,exports){
-'use strict'
 
-var rat = _glvis_('big-rat')
-var mul = _glvis_('big-rat/mul')
+/***/ }),
+
+/***/ 4469:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var rat = __webpack_require__(5125)
+var mul = __webpack_require__(3962)
 
 module.exports = muls
 
@@ -34999,10 +36287,16 @@ function muls(a, x) {
   return r
 }
 
-},{"big-rat":18,"big-rat/mul":27}],275:[function(_glvis_,module,exports){
-'use strict'
 
-var bnsub = _glvis_('big-rat/sub')
+/***/ }),
+
+/***/ 6695:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bnsub = __webpack_require__(4354)
 
 module.exports = sub
 
@@ -35015,12 +36309,18 @@ function sub(a, b) {
   return r
 }
 
-},{"big-rat/sub":29}],276:[function(_glvis_,module,exports){
-'use strict'
 
-var compareCell = _glvis_('compare-cell')
-var compareOrientedCell = _glvis_('compare-oriented-cell')
-var orientation = _glvis_('cell-orientation')
+/***/ }),
+
+/***/ 7037:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var compareCell = __webpack_require__(9209)
+var compareOrientedCell = __webpack_require__(1284)
+var orientation = __webpack_require__(9887)
 
 module.exports = reduceCellComplex
 
@@ -35048,7 +36348,13 @@ function reduceCellComplex(cells) {
   return cells
 }
 
-},{"cell-orientation":47,"compare-cell":56,"compare-oriented-cell":57}],277:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6184:
+/***/ (function(module) {
+
+"use strict";
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -35056,7 +36362,7 @@ function reduceCellComplex(cells) {
  * Licensed under the MIT License.
  */
 
-'use strict';
+
 
 /**
  * Results cache
@@ -35120,19 +36426,28 @@ function repeat(str, num) {
   return res;
 }
 
-},{}],278:[function(_glvis_,module,exports){
-(function (global){(function (){
+
+/***/ }),
+
+/***/ 8161:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports =
-  global.performance &&
-  global.performance.now ? function now() {
+  __webpack_require__.g.performance &&
+  __webpack_require__.g.performance.now ? function now() {
     return performance.now()
   } : Date.now || function now() {
     return +new Date
   }
 
-}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],279:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 402:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = compressExpansion
 
@@ -35166,13 +36481,19 @@ function compressExpansion(e) {
   e.length = top
   return e
 }
-},{}],280:[function(_glvis_,module,exports){
-"use strict"
 
-var twoProduct = _glvis_("two-product")
-var robustSum = _glvis_("robust-sum")
-var robustScale = _glvis_("robust-scale")
-var compress = _glvis_("robust-compress")
+/***/ }),
+
+/***/ 8167:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(9660)
+var robustSum = __webpack_require__(9662)
+var robustScale = __webpack_require__(8289)
+var compress = __webpack_require__(402)
 
 var NUM_EXPANDED = 6
 
@@ -35248,11 +36569,17 @@ function generateDispatch() {
 }
 
 generateDispatch()
-},{"robust-compress":279,"robust-scale":286,"robust-sum":289,"two-product":306}],281:[function(_glvis_,module,exports){
-"use strict"
 
-var twoProduct = _glvis_("two-product")
-var robustSum = _glvis_("robust-sum")
+/***/ }),
+
+/***/ 9130:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(9660)
+var robustSum = __webpack_require__(9662)
 
 module.exports = robustDotProduct
 
@@ -35263,13 +36590,19 @@ function robustDotProduct(a, b) {
   }
   return r
 }
-},{"robust-sum":289,"two-product":306}],282:[function(_glvis_,module,exports){
-"use strict"
 
-var twoProduct = _glvis_("two-product")
-var robustSum = _glvis_("robust-sum")
-var robustDiff = _glvis_("robust-subtract")
-var robustScale = _glvis_("robust-scale")
+/***/ }),
+
+/***/ 2227:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(9660)
+var robustSum = __webpack_require__(9662)
+var robustDiff = __webpack_require__(4078)
+var robustScale = __webpack_require__(8289)
 
 var NUM_EXPAND = 6
 
@@ -35467,10 +36800,16 @@ function generateInSphereTest() {
 }
 
 generateInSphereTest()
-},{"robust-scale":286,"robust-subtract":288,"robust-sum":289,"two-product":306}],283:[function(_glvis_,module,exports){
-"use strict"
 
-var determinant = _glvis_("robust-determinant")
+/***/ }),
+
+/***/ 6606:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var determinant = __webpack_require__(8167)
 
 var NUM_EXPAND = 6
 
@@ -35557,13 +36896,19 @@ function generateDispatch() {
 }
 
 generateDispatch()
-},{"robust-determinant":280}],284:[function(_glvis_,module,exports){
-"use strict"
 
-var twoProduct = _glvis_("two-product")
-var robustSum = _glvis_("robust-sum")
-var robustScale = _glvis_("robust-scale")
-var robustSubtract = _glvis_("robust-subtract")
+/***/ }),
+
+/***/ 417:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(9660)
+var robustSum = __webpack_require__(9662)
+var robustScale = __webpack_require__(8289)
+var robustSubtract = __webpack_require__(4078)
 
 var NUM_EXPAND = 5
 
@@ -35714,11 +37059,17 @@ function generateOrientationProc() {
 }
 
 generateOrientationProc()
-},{"robust-scale":286,"robust-subtract":288,"robust-sum":289,"two-product":306}],285:[function(_glvis_,module,exports){
-"use strict"
 
-var robustSum = _glvis_("robust-sum")
-var robustScale = _glvis_("robust-scale")
+/***/ }),
+
+/***/ 2019:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var robustSum = __webpack_require__(9662)
+var robustScale = __webpack_require__(8289)
 
 module.exports = robustProduct
 
@@ -35744,11 +37095,17 @@ function robustProduct(a, b) {
   }
   return r
 }
-},{"robust-scale":286,"robust-sum":289}],286:[function(_glvis_,module,exports){
-"use strict"
 
-var twoProduct = _glvis_("two-product")
-var twoSum = _glvis_("two-sum")
+/***/ }),
+
+/***/ 8289:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(9660)
+var twoSum = __webpack_require__(87)
 
 module.exports = scaleLinearExpansion
 
@@ -35795,12 +37152,18 @@ function scaleLinearExpansion(e, scale) {
   g.length = count
   return g
 }
-},{"two-product":306,"two-sum":307}],287:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 4434:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = segmentsIntersect
 
-var orient = _glvis_("robust-orientation")[3]
+var orient = (__webpack_require__(417)[3])
 
 function checkCollinear(a0, a1, b0, b1) {
 
@@ -35843,8 +37206,14 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
   return true
 }
-},{"robust-orientation":284}],288:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 4078:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = robustSubtract
 
@@ -36000,8 +37369,14 @@ function robustSubtract(e, f) {
   g.length = count
   return g
 }
-},{}],289:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 9662:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = linearExpansionSum
 
@@ -36157,28 +37532,40 @@ function linearExpansionSum(e, f) {
   g.length = count
   return g
 }
-},{}],290:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 8691:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = boundary
 
-var bnd = _glvis_('boundary-cells')
-var reduce = _glvis_('reduce-simplicial-complex')
+var bnd = __webpack_require__(2692)
+var reduce = __webpack_require__(7037)
 
 function boundary(cells) {
   return reduce(bnd(cells))
 }
 
-},{"boundary-cells":34,"reduce-simplicial-complex":276}],291:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 7212:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = extractContour
 
-var ndarray = _glvis_('ndarray')
-var pool    = _glvis_('typedarray-pool')
-var ndsort  = _glvis_('ndarray-sort')
+var ndarray = __webpack_require__(5050)
+var pool    = __webpack_require__(5306)
+var ndsort  = __webpack_require__(8729)
 
-var contourAlgorithm = _glvis_('./lib/codegen')
+var contourAlgorithm = __webpack_require__(1168)
 
 function getDimension(cells) {
   var numCells = cells.length
@@ -36332,8 +37719,14 @@ function extractContour(cells, values, level, d) {
     vertexWeights: uweights
   }
 }
-},{"./lib/codegen":292,"ndarray":259,"ndarray-sort":258,"typedarray-pool":308}],292:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 1168:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = getPolygonizer
 
@@ -36633,11 +38026,580 @@ function getPolygonizer(d) {
   return allFns[d]();
 }
 
-},{}],293:[function(_glvis_,module,exports){
-"use strict"; "use restrict";
 
-var bits      = _glvis_("bit-twiddle")
-  , UnionFind = _glvis_("union-find")
+/***/ }),
+
+/***/ 8211:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+var __webpack_unused_export__;
+ "use restrict";
+
+var bits      = __webpack_require__(2288)
+  , UnionFind = __webpack_require__(1731)
+
+//Returns the dimension of a cell complex
+function dimension(cells) {
+  var d = 0
+    , max = Math.max
+  for(var i=0, il=cells.length; i<il; ++i) {
+    d = max(d, cells[i].length)
+  }
+  return d-1
+}
+__webpack_unused_export__ = dimension
+
+//Counts the number of vertices in faces
+function countVertices(cells) {
+  var vc = -1
+    , max = Math.max
+  for(var i=0, il=cells.length; i<il; ++i) {
+    var c = cells[i]
+    for(var j=0, jl=c.length; j<jl; ++j) {
+      vc = max(vc, c[j])
+    }
+  }
+  return vc+1
+}
+__webpack_unused_export__ = countVertices
+
+//Returns a deep copy of cells
+function cloneCells(cells) {
+  var ncells = new Array(cells.length)
+  for(var i=0, il=cells.length; i<il; ++i) {
+    ncells[i] = cells[i].slice(0)
+  }
+  return ncells
+}
+__webpack_unused_export__ = cloneCells
+
+//Ranks a pair of cells up to permutation
+function compareCells(a, b) {
+  var n = a.length
+    , t = a.length - b.length
+    , min = Math.min
+  if(t) {
+    return t
+  }
+  switch(n) {
+    case 0:
+      return 0;
+    case 1:
+      return a[0] - b[0];
+    case 2:
+      var d = a[0]+a[1]-b[0]-b[1]
+      if(d) {
+        return d
+      }
+      return min(a[0],a[1]) - min(b[0],b[1])
+    case 3:
+      var l1 = a[0]+a[1]
+        , m1 = b[0]+b[1]
+      d = l1+a[2] - (m1+b[2])
+      if(d) {
+        return d
+      }
+      var l0 = min(a[0], a[1])
+        , m0 = min(b[0], b[1])
+        , d  = min(l0, a[2]) - min(m0, b[2])
+      if(d) {
+        return d
+      }
+      return min(l0+a[2], l1) - min(m0+b[2], m1)
+    
+    //TODO: Maybe optimize n=4 as well?
+    
+    default:
+      var as = a.slice(0)
+      as.sort()
+      var bs = b.slice(0)
+      bs.sort()
+      for(var i=0; i<n; ++i) {
+        t = as[i] - bs[i]
+        if(t) {
+          return t
+        }
+      }
+      return 0
+  }
+}
+exports.H = compareCells
+
+function compareZipped(a, b) {
+  return compareCells(a[0], b[0])
+}
+
+//Puts a cell complex into normal order for the purposes of findCell queries
+function normalize(cells, attr) {
+  if(attr) {
+    var len = cells.length
+    var zipped = new Array(len)
+    for(var i=0; i<len; ++i) {
+      zipped[i] = [cells[i], attr[i]]
+    }
+    zipped.sort(compareZipped)
+    for(var i=0; i<len; ++i) {
+      cells[i] = zipped[i][0]
+      attr[i] = zipped[i][1]
+    }
+    return cells
+  } else {
+    cells.sort(compareCells)
+    return cells
+  }
+}
+__webpack_unused_export__ = normalize
+
+//Removes all duplicate cells in the complex
+function unique(cells) {
+  if(cells.length === 0) {
+    return []
+  }
+  var ptr = 1
+    , len = cells.length
+  for(var i=1; i<len; ++i) {
+    var a = cells[i]
+    if(compareCells(a, cells[i-1])) {
+      if(i === ptr) {
+        ptr++
+        continue
+      }
+      cells[ptr++] = a
+    }
+  }
+  cells.length = ptr
+  return cells
+}
+__webpack_unused_export__ = unique;
+
+//Finds a cell in a normalized cell complex
+function findCell(cells, c) {
+  var lo = 0
+    , hi = cells.length-1
+    , r  = -1
+  while (lo <= hi) {
+    var mid = (lo + hi) >> 1
+      , s   = compareCells(cells[mid], c)
+    if(s <= 0) {
+      if(s === 0) {
+        r = mid
+      }
+      lo = mid + 1
+    } else if(s > 0) {
+      hi = mid - 1
+    }
+  }
+  return r
+}
+__webpack_unused_export__ = findCell;
+
+//Builds an index for an n-cell.  This is more general than dual, but less efficient
+function incidence(from_cells, to_cells) {
+  var index = new Array(from_cells.length)
+  for(var i=0, il=index.length; i<il; ++i) {
+    index[i] = []
+  }
+  var b = []
+  for(var i=0, n=to_cells.length; i<n; ++i) {
+    var c = to_cells[i]
+    var cl = c.length
+    for(var k=1, kn=(1<<cl); k<kn; ++k) {
+      b.length = bits.popCount(k)
+      var l = 0
+      for(var j=0; j<cl; ++j) {
+        if(k & (1<<j)) {
+          b[l++] = c[j]
+        }
+      }
+      var idx=findCell(from_cells, b)
+      if(idx < 0) {
+        continue
+      }
+      while(true) {
+        index[idx++].push(i)
+        if(idx >= from_cells.length || compareCells(from_cells[idx], b) !== 0) {
+          break
+        }
+      }
+    }
+  }
+  return index
+}
+__webpack_unused_export__ = incidence
+
+//Computes the dual of the mesh.  This is basically an optimized version of buildIndex for the situation where from_cells is just the list of vertices
+function dual(cells, vertex_count) {
+  if(!vertex_count) {
+    return incidence(unique(skeleton(cells, 0)), cells, 0)
+  }
+  var res = new Array(vertex_count)
+  for(var i=0; i<vertex_count; ++i) {
+    res[i] = []
+  }
+  for(var i=0, len=cells.length; i<len; ++i) {
+    var c = cells[i]
+    for(var j=0, cl=c.length; j<cl; ++j) {
+      res[c[j]].push(i)
+    }
+  }
+  return res
+}
+__webpack_unused_export__ = dual
+
+//Enumerates all cells in the complex
+function explode(cells) {
+  var result = []
+  for(var i=0, il=cells.length; i<il; ++i) {
+    var c = cells[i]
+      , cl = c.length|0
+    for(var j=1, jl=(1<<cl); j<jl; ++j) {
+      var b = []
+      for(var k=0; k<cl; ++k) {
+        if((j >>> k) & 1) {
+          b.push(c[k])
+        }
+      }
+      result.push(b)
+    }
+  }
+  return normalize(result)
+}
+__webpack_unused_export__ = explode
+
+//Enumerates all of the n-cells of a cell complex
+function skeleton(cells, n) {
+  if(n < 0) {
+    return []
+  }
+  var result = []
+    , k0     = (1<<(n+1))-1
+  for(var i=0; i<cells.length; ++i) {
+    var c = cells[i]
+    for(var k=k0; k<(1<<c.length); k=bits.nextCombination(k)) {
+      var b = new Array(n+1)
+        , l = 0
+      for(var j=0; j<c.length; ++j) {
+        if(k & (1<<j)) {
+          b[l++] = c[j]
+        }
+      }
+      result.push(b)
+    }
+  }
+  return normalize(result)
+}
+__webpack_unused_export__ = skeleton;
+
+//Computes the boundary of all cells, does not remove duplicates
+function boundary(cells) {
+  var res = []
+  for(var i=0,il=cells.length; i<il; ++i) {
+    var c = cells[i]
+    for(var j=0,cl=c.length; j<cl; ++j) {
+      var b = new Array(c.length-1)
+      for(var k=0, l=0; k<cl; ++k) {
+        if(k !== j) {
+          b[l++] = c[k]
+        }
+      }
+      res.push(b)
+    }
+  }
+  return normalize(res)
+}
+__webpack_unused_export__ = boundary;
+
+//Computes connected components for a dense cell complex
+function connectedComponents_dense(cells, vertex_count) {
+  var labels = new UnionFind(vertex_count)
+  for(var i=0; i<cells.length; ++i) {
+    var c = cells[i]
+    for(var j=0; j<c.length; ++j) {
+      for(var k=j+1; k<c.length; ++k) {
+        labels.link(c[j], c[k])
+      }
+    }
+  }
+  var components = []
+    , component_labels = labels.ranks
+  for(var i=0; i<component_labels.length; ++i) {
+    component_labels[i] = -1
+  }
+  for(var i=0; i<cells.length; ++i) {
+    var l = labels.find(cells[i][0])
+    if(component_labels[l] < 0) {
+      component_labels[l] = components.length
+      components.push([cells[i].slice(0)])
+    } else {
+      components[component_labels[l]].push(cells[i].slice(0))
+    }
+  }
+  return components
+}
+
+//Computes connected components for a sparse graph
+function connectedComponents_sparse(cells) {
+  var vertices  = unique(normalize(skeleton(cells, 0)))
+    , labels    = new UnionFind(vertices.length)
+  for(var i=0; i<cells.length; ++i) {
+    var c = cells[i]
+    for(var j=0; j<c.length; ++j) {
+      var vj = findCell(vertices, [c[j]])
+      for(var k=j+1; k<c.length; ++k) {
+        labels.link(vj, findCell(vertices, [c[k]]))
+      }
+    }
+  }
+  var components        = []
+    , component_labels  = labels.ranks
+  for(var i=0; i<component_labels.length; ++i) {
+    component_labels[i] = -1
+  }
+  for(var i=0; i<cells.length; ++i) {
+    var l = labels.find(findCell(vertices, [cells[i][0]]));
+    if(component_labels[l] < 0) {
+      component_labels[l] = components.length
+      components.push([cells[i].slice(0)])
+    } else {
+      components[component_labels[l]].push(cells[i].slice(0))
+    }
+  }
+  return components
+}
+
+//Computes connected components for a cell complex
+function connectedComponents(cells, vertex_count) {
+  if(vertex_count) {
+    return connectedComponents_dense(cells, vertex_count)
+  }
+  return connectedComponents_sparse(cells)
+}
+__webpack_unused_export__ = connectedComponents
+
+
+/***/ }),
+
+/***/ 9392:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+/**
+ * Bit twiddling hacks for JavaScript.
+ *
+ * Author: Mikola Lysenko
+ *
+ * Ported from Stanford bit twiddling hack library:
+ *    http://graphics.stanford.edu/~seander/bithacks.html
+ */
+
+ "use restrict";
+
+//Number of bits in an integer
+var INT_BITS = 32;
+
+//Constants
+exports.INT_BITS  = INT_BITS;
+exports.INT_MAX   =  0x7fffffff;
+exports.INT_MIN   = -1<<(INT_BITS-1);
+
+//Returns -1, 0, +1 depending on sign of x
+exports.sign = function(v) {
+  return (v > 0) - (v < 0);
+}
+
+//Computes absolute value of integer
+exports.abs = function(v) {
+  var mask = v >> (INT_BITS-1);
+  return (v ^ mask) - mask;
+}
+
+//Computes minimum of integers x and y
+exports.min = function(x, y) {
+  return y ^ ((x ^ y) & -(x < y));
+}
+
+//Computes maximum of integers x and y
+exports.max = function(x, y) {
+  return x ^ ((x ^ y) & -(x < y));
+}
+
+//Checks if a number is a power of two
+exports.isPow2 = function(v) {
+  return !(v & (v-1)) && (!!v);
+}
+
+//Computes log base 2 of v
+exports.log2 = function(v) {
+  var r, shift;
+  r =     (v > 0xFFFF) << 4; v >>>= r;
+  shift = (v > 0xFF  ) << 3; v >>>= shift; r |= shift;
+  shift = (v > 0xF   ) << 2; v >>>= shift; r |= shift;
+  shift = (v > 0x3   ) << 1; v >>>= shift; r |= shift;
+  return r | (v >> 1);
+}
+
+//Computes log base 10 of v
+exports.log10 = function(v) {
+  return  (v >= 1000000000) ? 9 : (v >= 100000000) ? 8 : (v >= 10000000) ? 7 :
+          (v >= 1000000) ? 6 : (v >= 100000) ? 5 : (v >= 10000) ? 4 :
+          (v >= 1000) ? 3 : (v >= 100) ? 2 : (v >= 10) ? 1 : 0;
+}
+
+//Counts number of bits
+exports.popCount = function(v) {
+  v = v - ((v >>> 1) & 0x55555555);
+  v = (v & 0x33333333) + ((v >>> 2) & 0x33333333);
+  return ((v + (v >>> 4) & 0xF0F0F0F) * 0x1010101) >>> 24;
+}
+
+//Counts number of trailing zeros
+function countTrailingZeros(v) {
+  var c = 32;
+  v &= -v;
+  if (v) c--;
+  if (v & 0x0000FFFF) c -= 16;
+  if (v & 0x00FF00FF) c -= 8;
+  if (v & 0x0F0F0F0F) c -= 4;
+  if (v & 0x33333333) c -= 2;
+  if (v & 0x55555555) c -= 1;
+  return c;
+}
+exports.countTrailingZeros = countTrailingZeros;
+
+//Rounds to next power of 2
+exports.nextPow2 = function(v) {
+  v += v === 0;
+  --v;
+  v |= v >>> 1;
+  v |= v >>> 2;
+  v |= v >>> 4;
+  v |= v >>> 8;
+  v |= v >>> 16;
+  return v + 1;
+}
+
+//Rounds down to previous power of 2
+exports.prevPow2 = function(v) {
+  v |= v >>> 1;
+  v |= v >>> 2;
+  v |= v >>> 4;
+  v |= v >>> 8;
+  v |= v >>> 16;
+  return v - (v>>>1);
+}
+
+//Computes parity of word
+exports.parity = function(v) {
+  v ^= v >>> 16;
+  v ^= v >>> 8;
+  v ^= v >>> 4;
+  v &= 0xf;
+  return (0x6996 >>> v) & 1;
+}
+
+var REVERSE_TABLE = new Array(256);
+
+(function(tab) {
+  for(var i=0; i<256; ++i) {
+    var v = i, r = i, s = 7;
+    for (v >>>= 1; v; v >>>= 1) {
+      r <<= 1;
+      r |= v & 1;
+      --s;
+    }
+    tab[i] = (r << s) & 0xff;
+  }
+})(REVERSE_TABLE);
+
+//Reverse bits in a 32 bit word
+exports.reverse = function(v) {
+  return  (REVERSE_TABLE[ v         & 0xff] << 24) |
+          (REVERSE_TABLE[(v >>> 8)  & 0xff] << 16) |
+          (REVERSE_TABLE[(v >>> 16) & 0xff] << 8)  |
+           REVERSE_TABLE[(v >>> 24) & 0xff];
+}
+
+//Interleave bits of 2 coordinates with 16 bits.  Useful for fast quadtree codes
+exports.interleave2 = function(x, y) {
+  x &= 0xFFFF;
+  x = (x | (x << 8)) & 0x00FF00FF;
+  x = (x | (x << 4)) & 0x0F0F0F0F;
+  x = (x | (x << 2)) & 0x33333333;
+  x = (x | (x << 1)) & 0x55555555;
+
+  y &= 0xFFFF;
+  y = (y | (y << 8)) & 0x00FF00FF;
+  y = (y | (y << 4)) & 0x0F0F0F0F;
+  y = (y | (y << 2)) & 0x33333333;
+  y = (y | (y << 1)) & 0x55555555;
+
+  return x | (y << 1);
+}
+
+//Extracts the nth interleaved component
+exports.deinterleave2 = function(v, n) {
+  v = (v >>> n) & 0x55555555;
+  v = (v | (v >>> 1))  & 0x33333333;
+  v = (v | (v >>> 2))  & 0x0F0F0F0F;
+  v = (v | (v >>> 4))  & 0x00FF00FF;
+  v = (v | (v >>> 16)) & 0x000FFFF;
+  return (v << 16) >> 16;
+}
+
+
+//Interleave bits of 3 coordinates, each with 10 bits.  Useful for fast octree codes
+exports.interleave3 = function(x, y, z) {
+  x &= 0x3FF;
+  x  = (x | (x<<16)) & 4278190335;
+  x  = (x | (x<<8))  & 251719695;
+  x  = (x | (x<<4))  & 3272356035;
+  x  = (x | (x<<2))  & 1227133513;
+
+  y &= 0x3FF;
+  y  = (y | (y<<16)) & 4278190335;
+  y  = (y | (y<<8))  & 251719695;
+  y  = (y | (y<<4))  & 3272356035;
+  y  = (y | (y<<2))  & 1227133513;
+  x |= (y << 1);
+  
+  z &= 0x3FF;
+  z  = (z | (z<<16)) & 4278190335;
+  z  = (z | (z<<8))  & 251719695;
+  z  = (z | (z<<4))  & 3272356035;
+  z  = (z | (z<<2))  & 1227133513;
+  
+  return x | (z << 2);
+}
+
+//Extracts nth interleaved component of a 3-tuple
+exports.deinterleave3 = function(v, n) {
+  v = (v >>> n)       & 1227133513;
+  v = (v | (v>>>2))   & 3272356035;
+  v = (v | (v>>>4))   & 251719695;
+  v = (v | (v>>>8))   & 4278190335;
+  v = (v | (v>>>16))  & 0x3FF;
+  return (v<<22)>>22;
+}
+
+//Computes next combination in colexicographic order (this is mistakenly called nextPermutation on the bit twiddling hacks page)
+exports.nextCombination = function(v) {
+  var t = v | (v - 1);
+  return (t + 1) | (((~t & -~t) - 1) >>> (countTrailingZeros(v) + 1));
+}
+
+
+
+/***/ }),
+
+/***/ 6656:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+ "use restrict";
+
+var bits      = __webpack_require__(9392)
+  , UnionFind = __webpack_require__(9521)
 
 //Returns the dimension of a cell complex
 function dimension(cells) {
@@ -36977,12 +38939,14 @@ function connectedComponents(cells, vertex_count) {
 }
 exports.connectedComponents = connectedComponents
 
-},{"bit-twiddle":32,"union-find":309}],294:[function(_glvis_,module,exports){
-arguments[4][32][0].apply(exports,arguments)
-},{"dup":32}],295:[function(_glvis_,module,exports){
-arguments[4][293][0].apply(exports,arguments)
-},{"bit-twiddle":294,"dup":293,"union-find":296}],296:[function(_glvis_,module,exports){
-"use strict"; "use restrict";
+
+/***/ }),
+
+/***/ 9521:
+/***/ (function(module) {
+
+"use strict";
+ "use restrict";
 
 module.exports = UnionFind;
 
@@ -37038,13 +39002,19 @@ UnionFind.prototype.link = function(x, y) {
 }
 
 
-},{}],297:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 8243:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = simplifyPolygon
 
-var orient = _glvis_("robust-orientation")
-var sc = _glvis_("simplicial-complex")
+var orient = __webpack_require__(417)
+var sc = __webpack_require__(6656)
 
 function errorWeight(base, a, b) {
   var area = Math.abs(orient(base, a, b))
@@ -37310,12 +39280,18 @@ function simplifyPolygon(cells, positions, minArea) {
     edges: ncells
   }
 }
-},{"robust-orientation":284,"simplicial-complex":295}],298:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 6638:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = orderSegments
 
-var orient = _glvis_("robust-orientation")
+var orient = __webpack_require__(417)
 
 function horizontalOrder(a, b) {
   var bl, br
@@ -37406,15 +39382,21 @@ function orderSegments(b, a) {
   }
   return ar[0] - br[0]
 }
-},{"robust-orientation":284}],299:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 4385:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createSlabDecomposition
 
-var bounds = _glvis_("binary-search-bounds")
-var createRBTree = _glvis_("functional-red-black-tree")
-var orient = _glvis_("robust-orientation")
-var orderSegments = _glvis_("./lib/order-segments")
+var bounds = __webpack_require__(5070)
+var createRBTree = __webpack_require__(7080)
+var orient = __webpack_require__(417)
+var orderSegments = __webpack_require__(6638)
 
 function SlabDecomposition(slabs, coordinates, horizontal) {
   this.slabs = slabs
@@ -37637,11 +39619,17 @@ function createSlabDecomposition(segments) {
   }
   return new SlabDecomposition(slabs, lines, horizontal)
 }
-},{"./lib/order-segments":298,"binary-search-bounds":31,"functional-red-black-tree":69,"robust-orientation":284}],300:[function(_glvis_,module,exports){
-"use strict"
 
-var robustDot = _glvis_("robust-dot-product")
-var robustSum = _glvis_("robust-sum")
+/***/ }),
+
+/***/ 4670:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var robustDot = __webpack_require__(9130)
+var robustSum = __webpack_require__(9662)
 
 module.exports = splitPolygon
 module.exports.positive = positive
@@ -37729,8 +39717,13 @@ function negative(points, plane) {
   }
   return neg
 }
-},{"robust-dot-product":281,"robust-sum":289}],301:[function(_glvis_,module,exports){
-/* global window, exports, define */
+
+/***/ }),
+
+/***/ 8974:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
 
 !function() {
     'use strict'
@@ -37942,33 +39935,40 @@ function negative(points, plane) {
      * export to either browser or node.js
      */
     /* eslint-disable quote-props */
-    if (typeof exports !== 'undefined') {
-        exports['sprintf'] = sprintf
-        exports['vsprintf'] = vsprintf
+    if (true) {
+        exports.sprintf = sprintf
+        exports.vsprintf = vsprintf
     }
     if (typeof window !== 'undefined') {
         window['sprintf'] = sprintf
         window['vsprintf'] = vsprintf
 
-        if (typeof define === 'function' && define['amd']) {
-            define(function() {
+        if (true) {
+            !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
                 return {
                     'sprintf': sprintf,
                     'vsprintf': vsprintf
                 }
-            })
+            }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
         }
     }
     /* eslint-enable quote-props */
 }(); // eslint-disable-line
 
-},{}],302:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 4162:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = surfaceNets
 
-var generateContourExtractor = _glvis_("ndarray-extract-contour")
-var zeroCrossings = _glvis_("zero-crossings")
+var generateContourExtractor = __webpack_require__(9284)
+var zeroCrossings = __webpack_require__(9584)
 
 var allFns = {
   "2d": function (genContour, order, dtype) {
@@ -38090,13 +40090,18 @@ function surfaceNets(array,level) {
   }
   return proc(array,level)
 }
-},{"ndarray-extract-contour":251,"zero-crossings":318}],303:[function(_glvis_,module,exports){
-(function (process){(function (){
-'use strict'
+
+/***/ }),
+
+/***/ 6946:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = textGet
 
-var vectorizeText = _glvis_('vectorize-text')
+var vectorizeText = __webpack_require__(875)
 
 var globals = window || process.global || {}
 var __TEXT_CACHE  = globals.__TEXT_CACHE || {}
@@ -38186,11 +40191,16 @@ function textGet(font, text, opts) {
    return mesh
 }
 
-}).call(this)}).call(this,_glvis_('_process'))
-},{"_process":5,"vectorize-text":311}],304:[function(_glvis_,module,exports){
-'use strict'
 
-var parseUnit = _glvis_('parse-unit')
+/***/ }),
+
+/***/ 14:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var parseUnit = __webpack_require__(4405)
 
 module.exports = toPX
 
@@ -38248,17 +40258,23 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":265}],305:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3440:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createTurntableController
 
-var filterVector = _glvis_('filtered-vector')
-var invert44     = _glvis_('gl-mat4/invert')
-var rotateM      = _glvis_('gl-mat4/rotate')
-var cross        = _glvis_('gl-vec3/cross')
-var normalize3   = _glvis_('gl-vec3/normalize')
-var dot3         = _glvis_('gl-vec3/dot')
+var filterVector = __webpack_require__(8444)
+var invert44     = __webpack_require__(7437)
+var rotateM      = __webpack_require__(4422)
+var cross        = __webpack_require__(903)
+var normalize3   = __webpack_require__(899)
+var dot3         = __webpack_require__(9305)
 
 function len3(x, y, z) {
   return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2))
@@ -38821,8 +40837,14 @@ function createTurntableController(options) {
     theta,
     phi)
 }
-},{"filtered-vector":68,"gl-mat4/invert":98,"gl-mat4/rotate":103,"gl-vec3/cross":157,"gl-vec3/dot":162,"gl-vec3/normalize":179}],306:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 9660:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = twoProduct
 
@@ -38855,8 +40877,14 @@ function twoProduct(a, b, result) {
 
   return [ y, x ]
 }
-},{}],307:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 87:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = fastTwoSum
 
@@ -38873,17 +40901,22 @@ function fastTwoSum(a, b, result) {
 	}
 	return [ar+br, x]
 }
-},{}],308:[function(_glvis_,module,exports){
-(function (global){(function (){
-'use strict'
 
-var bits = _glvis_('bit-twiddle')
-var dup = _glvis_('dup')
-var Buffer = _glvis_('buffer').Buffer
+/***/ }),
+
+/***/ 5306:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var bits = __webpack_require__(2288)
+var dup = __webpack_require__(3094)
+var Buffer = (__webpack_require__(2146)/* .Buffer */ .lW)
 
 //Legacy pool support
-if(!global.__TYPEDARRAY_POOL) {
-  global.__TYPEDARRAY_POOL = {
+if(!__webpack_require__.g.__TYPEDARRAY_POOL) {
+  __webpack_require__.g.__TYPEDARRAY_POOL = {
       UINT8     : dup([32, 0])
     , UINT16    : dup([32, 0])
     , UINT32    : dup([32, 0])
@@ -38903,7 +40936,7 @@ if(!global.__TYPEDARRAY_POOL) {
 var hasUint8C = (typeof Uint8ClampedArray) !== 'undefined'
 var hasBigUint64 = (typeof BigUint64Array) !== 'undefined'
 var hasBigInt64 = (typeof BigInt64Array) !== 'undefined'
-var POOL = global.__TYPEDARRAY_POOL
+var POOL = __webpack_require__.g.__TYPEDARRAY_POOL
 
 //Upgrade pool
 if(!POOL.UINT8C) {
@@ -39127,9 +41160,14 @@ exports.clearCache = function clearCache() {
   }
 }
 
-}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bit-twiddle":32,"buffer":3,"dup":65}],309:[function(_glvis_,module,exports){
-"use strict"; "use restrict";
+
+/***/ }),
+
+/***/ 1731:
+/***/ (function(module) {
+
+"use strict";
+ "use restrict";
 
 module.exports = UnionFind;
 
@@ -39191,8 +41229,14 @@ proto.link = function(x, y) {
     ++ranks[xr];
   }
 }
-},{}],310:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 1215:
+/***/ (function(module) {
+
+"use strict";
+
 
 function unique_pred(list, compare) {
   var ptr = 1
@@ -39250,12 +41294,18 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],311:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 875:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createText
 
-var vectorizeText = _glvis_("./lib/vtext")
+var vectorizeText = __webpack_require__(712)
 var defaultCanvas = null
 var defaultContext = null
 
@@ -39277,16 +41327,21 @@ function createText(str, options) {
     options)
 }
 
-},{"./lib/vtext":312}],312:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 712:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = vectorizeText
 module.exports.processPixels = processPixels
 
-var surfaceNets = _glvis_('surface-nets')
-var ndarray = _glvis_('ndarray')
-var simplify = _glvis_('simplify-planar-graph')
-var cleanPSLG = _glvis_('clean-pslg')
-var cdt2d = _glvis_('cdt2d')
-var toPolygonCrappy = _glvis_('planar-graph-to-polyline')
+var surfaceNets = __webpack_require__(4162)
+var ndarray = __webpack_require__(5050)
+var simplify = __webpack_require__(8243)
+var cleanPSLG = __webpack_require__(197)
+var cdt2d = __webpack_require__(7761)
+var toPolygonCrappy = __webpack_require__(8040)
 
 var TAG_bold = "b"
 var CHR_bold = 'b|'
@@ -39732,7 +41787,12 @@ function vectorizeText(str, canvas, context, options) {
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":42,"clean-pslg":50,"ndarray":259,"planar-graph-to-polyline":268,"simplify-planar-graph":297,"surface-nets":302}],313:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5346:
+/***/ (function(module) {
+
 // Copyright (C) 2011 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -40419,8 +42479,13 @@ function vectorizeText(str, canvas, context, options) {
   }
 })();
 
-},{}],314:[function(_glvis_,module,exports){
-var hiddenStore = _glvis_('./hidden-store.js');
+
+/***/ }),
+
+/***/ 9222:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var hiddenStore = __webpack_require__(7178);
 
 module.exports = createStore;
 
@@ -40440,7 +42505,12 @@ function createStore() {
     };
 }
 
-},{"./hidden-store.js":315}],315:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7178:
+/***/ (function(module) {
+
 module.exports = hiddenStore;
 
 function hiddenStore(obj, key) {
@@ -40458,12 +42528,17 @@ function hiddenStore(obj, key) {
     return store;
 }
 
-},{}],316:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4037:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 // Original - @Gozola.
 // https://gist.github.com/Gozala/1269991
 // This is a reimplemented version (with a few bug fixes).
 
-var createStore = _glvis_('./create-store.js');
+var createStore = __webpack_require__(9222);
 
 module.exports = weakMap;
 
@@ -40489,8 +42564,14 @@ function weakMap() {
     }
 }
 
-},{"./create-store.js":314}],317:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 6183:
+/***/ (function(module) {
+
+"use strict";
+
 
 function CWiseOp() {
   return function(SS, a0, t0, p0, Y0, Y1) {
@@ -40552,12 +42633,18 @@ module.exports = compileCwise({
     funcName: 'zeroCrossings'
 })
 
-},{}],318:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 9584:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = findZeroCrossings
 
-var core = _glvis_("./lib/zc-core")
+var core = __webpack_require__(6183)
 
 function findZeroCrossings(array, level) {
   var cross = []
@@ -40565,5 +42652,75 @@ function findZeroCrossings(array, level) {
   core(array.hi(array.shape[0]-1), cross, level)
   return cross
 }
-},{"./lib/zc-core":317}]},{},[6])(6)
+
+/***/ }),
+
+/***/ 6601:
+/***/ (function() {
+
+/* (ignored) */
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/global */
+/******/ 	!function() {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/node module decorator */
+/******/ 	!function() {
+/******/ 		__webpack_require__.nmd = function(module) {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__(7386);
+/******/ 	
+/******/ 	return __webpack_exports__;
+/******/ })()
+;
 });

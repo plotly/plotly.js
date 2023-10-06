@@ -24,7 +24,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     if(trace._hasZ) {
         pixel = cd0.z[ny][nx];
     } else if(trace._hasSource) {
-        pixel = trace._canvas.el.getContext('2d').getImageData(nx, ny, 1, 1).data;
+        pixel = trace._canvas.el.getContext('2d', {willReadFrequently: true}).getImageData(nx, ny, 1, 1).data;
     }
 
     // return early if pixel is undefined
@@ -79,8 +79,8 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         zLabelVal: zLabel,
         text: text,
         hovertemplateLabels: {
-            'zLabel': zLabel,
-            'colorLabel': colorstring,
+            zLabel: zLabel,
+            colorLabel: colorstring,
             'color[0]Label': c[0] + s[0],
             'color[1]Label': c[1] + s[1],
             'color[2]Label': c[2] + s[2],

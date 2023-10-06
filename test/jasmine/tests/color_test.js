@@ -1,4 +1,4 @@
-var Color = require('@src/components/color');
+var Color = require('../../../src/components/color');
 
 
 describe('Test color:', function() {

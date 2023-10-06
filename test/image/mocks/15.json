@@ -417,6 +417,7 @@
         "width": 800,
         "height": 420,
         "xaxis": {
+            "minor": { "ticks": "outside" },
             "title": {
                 "text": "Year"
             },

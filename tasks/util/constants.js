@@ -20,6 +20,7 @@ function startsWithLowerCase(v) {
 var pathToPlotlyIndex = path.join(pathToLib, 'index.js');
 var pathToPlotlyStrict = path.join(pathToLib, 'index-strict.js');
 var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
+var strictIndex = fs.readFileSync(pathToPlotlyStrict, 'utf-8');
 var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
     .filter(startsWithLowerCase);
 
@@ -191,6 +192,7 @@ module.exports = {
     allTransforms: allTransforms,
     allTraces: allTraces,
     mainIndex: mainIndex,
+    strictIndex: strictIndex,
     pathToPlotlyIndex: pathToPlotlyIndex,
     pathToPlotlyStrict: pathToPlotlyStrict,
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
@@ -237,7 +239,7 @@ module.exports = {
 
     // this mapbox access token is 'public', no need to hide it
     // more info: https://www.mapbox.com/help/define-access-token/
-    mapboxAccessToken: 'pk.eyJ1IjoicGxvdGx5LWpzLXRlc3RzIiwiYSI6ImNrNG9meTJmOTAxa3UzZm10dWdteDQ2eWMifQ.2REjOFyIrleMqwS8H8y1-A',
+    mapboxAccessToken: 'pk.eyJ1IjoicGxvdGx5LWRvY3MiLCJhIjoiY2xpMGYyNWgxMGJhdzNzbXhtNGI0Nnk0aSJ9.0oBvi_UUZ0O1N0xk0yfRwg',
     pathToCredentials: path.join(pathToBuild, 'credentials.json'),
 
     testContainerImage: 'plotly/testbed:latest',

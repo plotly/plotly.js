@@ -11,6 +11,8 @@ var tinycolor = require('tinycolor2');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 function performPlot(parcatsModels, graphDiv, layout, svg) {
+    var isStatic = graphDiv._context.staticPlot;
+
     var viewModels = parcatsModels.map(createParcatsViewModel.bind(0, graphDiv, layout));
 
     // Get (potentially empty) parcatslayer selection with bound data to single element array
@@ -20,7 +22,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     layerSelection.enter()
         .append('g')
         .attr('class', 'parcatslayer')
-        .style('pointer-events', 'all');
+        .style('pointer-events', isStatic ? 'none' : 'all');
 
     // Bind data to children of layerSelection and get reference to traceSelection
     var traceSelection = layerSelection

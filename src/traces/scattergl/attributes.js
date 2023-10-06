@@ -67,6 +67,7 @@ var attrs = module.exports = overrideAll({
     },
     marker: extendFlat({}, colorScaleAttrs('marker'), {
         symbol: scatterMarkerAttrs.symbol,
+        angle: scatterMarkerAttrs.angle,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,

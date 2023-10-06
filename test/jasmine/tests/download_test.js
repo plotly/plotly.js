@@ -1,11 +1,11 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
-var textchartMock = require('@mocks/text_chart_arrays.json');
+var textchartMock = require('../../image/mocks/text_chart_arrays.json');
 var LONG_TIMEOUT_INTERVAL = 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe('Plotly.downloadImage', function() {

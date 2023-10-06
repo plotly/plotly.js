@@ -41,6 +41,32 @@
       "font": {
         "size": 24
       }
+    },
+    "xaxis": {
+      "zerolinecolor": "white",
+      "zerolinewidth": "2",
+      "gridwidth": "2",
+      "gridcolor": "black",
+      "minor": {
+        "griddash": "dot",
+        "ticks": "inside",
+        "ticklen": 12,
+        "tickwidth": 3,
+        "tickcolor": "green"
+      }
+    },
+    "yaxis": {
+      "zerolinecolor": "white",
+      "zerolinewidth": "2",
+      "gridwidth": "2",
+      "gridcolor": "black",
+      "minor": {
+        "griddash": "dot",
+        "ticks": "outside",
+        "ticklen": 12,
+        "tickwidth": 3,
+        "tickcolor": "green"
+      }
     }
   }
 }

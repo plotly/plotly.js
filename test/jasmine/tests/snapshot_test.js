@@ -1,5 +1,5 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -72,7 +72,7 @@ describe('Plotly.Snapshot', function() {
                 height: 150,
                 title: {text: ''},
                 showlegend: false,
-                margin: {'l': 5, 'r': 5, 't': 5, 'b': 5, 'pad': 0},
+                margin: {l: 5, r: 5, t: 5, b: 5, pad: 0},
                 annotations: []
             };
 
@@ -100,16 +100,16 @@ describe('Plotly.Snapshot', function() {
             };
 
             var THUMBNAIL_DEFAULT_LAYOUT = {
-                'title': {text: ''},
-                'hidesources': true,
-                'showlegend': false,
-                'hovermode': false,
-                'dragmode': false,
-                'zoom': false,
-                'borderwidth': 0,
-                'bordercolor': '',
-                'margin': {'l': 1, 'r': 1, 't': 1, 'b': 1, 'pad': 0},
-                'annotations': []
+                title: {text: ''},
+                hidesources: true,
+                showlegend: false,
+                hovermode: false,
+                dragmode: false,
+                zoom: false,
+                borderwidth: 0,
+                bordercolor: '',
+                margin: {l: 1, r: 1, t: 1, b: 1, pad: 0},
+                annotations: []
             };
 
             var thumbTile = Plotly.Snapshot.clone(dummyGraphObj, thumbnailOptions);
@@ -306,7 +306,7 @@ describe('Plotly.Snapshot', function() {
             });
 
             it('- legend with contour items case', function(done) {
-                var fig = Lib.extendDeep({}, require('@mocks/contour_legend.json'));
+                var fig = Lib.extendDeep({}, require('../../image/mocks/contour_legend.json'));
                 var fillItemIndices = [0, 4, 5];
 
                 Plotly.newPlot(gd, fig)
@@ -326,7 +326,7 @@ describe('Plotly.Snapshot', function() {
             });
 
             it('- colorbar case', function(done) {
-                var fig = Lib.extendDeep({}, require('@mocks/16.json'));
+                var fig = Lib.extendDeep({}, require('../../image/mocks/16.json'));
 
                 Plotly.newPlot(gd, fig)
                 .then(function() { return Plotly.Snapshot.toSVG(gd); })
@@ -343,7 +343,7 @@ describe('Plotly.Snapshot', function() {
             });
 
             it('- legend3dandfriends case', function(done) {
-                var fig = Lib.extendDeep({}, require('@mocks/geo_choropleth-legend.json'));
+                var fig = Lib.extendDeep({}, require('../../image/mocks/geo_choropleth-legend.json'));
 
                 Plotly.newPlot(gd, fig)
                 .then(function() { return Plotly.Snapshot.toSVG(gd); })

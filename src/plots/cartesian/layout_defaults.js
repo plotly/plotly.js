@@ -146,6 +146,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutOut._traceIndices = traces.map(function(t) { return t._expandedIndex; });
         axLayoutOut._annIndices = [];
         axLayoutOut._shapeIndices = [];
+        axLayoutOut._selectionIndices = [];
         axLayoutOut._imgIndices = [];
         axLayoutOut._subplotsWith = [];
         axLayoutOut._counterAxes = [];
@@ -229,6 +230,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
               ));
 
         var defaultOptions = {
+            hasMinor: true,
             letter: axLetter,
             font: layoutOut.font,
             outerTicks: outerTicks[axName],
@@ -264,11 +266,24 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             delete axLayoutOut.spikesnap;
         }
 
+        // If it exists, the the domain of the axis for the anchor of the overlaying axis
+        var overlayingAxis = id2name(axLayoutIn.overlaying);
+        var overlayingAnchorDomain = [0, 1];
+
+        if(layoutOut[overlayingAxis] !== undefined) {
+            var overlayingAnchor = id2name(layoutOut[overlayingAxis].anchor);
+            if(layoutOut[overlayingAnchor] !== undefined) {
+                overlayingAnchorDomain = layoutOut[overlayingAnchor].domain;
+            }
+        }
+
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, {
             letter: axLetter,
             counterAxes: counterAxes[axLetter],
             overlayableAxes: getOverlayableAxes(axLetter, axName),
-            grid: layoutOut.grid
+            grid: layoutOut.grid,
+            overlayingDomain: overlayingAnchorDomain
+
         });
 
         coerce('title.standoff');

@@ -30,7 +30,7 @@ function resizeText(gd, gTrace, traceType) {
                 transform.scale = (shouldHide && transform.hide) ? 0 : minSize / transform.fontSize;
 
                 var el = d3.select(this).select('text');
-                el.attr('transform', Lib.getTextTransform(transform));
+                Lib.setTransormAndDisplay(el, transform);
             }
         });
     }

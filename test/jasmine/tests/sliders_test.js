@@ -1,10 +1,10 @@
-var Sliders = require('@src/components/sliders');
-var constants = require('@src/components/sliders/constants');
+var Sliders = require('../../../src/components/sliders');
+var constants = require('../../../src/components/sliders/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var touchEvent = require('../assets/touch_event');
@@ -314,7 +314,7 @@ describe('ugly internal manipulation of steps', function() {
 describe('sliders interactions', function() {
     'use strict';
 
-    var mock = require('@mocks/sliders.json');
+    var mock = require('../../image/mocks/sliders.json');
     var mockCopy;
 
     var gd;

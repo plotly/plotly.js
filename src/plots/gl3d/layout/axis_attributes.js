@@ -65,7 +65,17 @@ module.exports = overrideAll({
     }),
     autotypenumbers: axesAttrs.autotypenumbers,
     autorange: axesAttrs.autorange,
+    autorangeoptions: {
+        minallowed: axesAttrs.autorangeoptions.minallowed,
+        maxallowed: axesAttrs.autorangeoptions.maxallowed,
+        clipmin: axesAttrs.autorangeoptions.clipmin,
+        clipmax: axesAttrs.autorangeoptions.clipmax,
+        include: axesAttrs.autorangeoptions.include,
+        editType: 'plot'
+    },
     rangemode: axesAttrs.rangemode,
+    minallowed: axesAttrs.minallowed,
+    maxallowed: axesAttrs.maxallowed,
     range: extendFlat({}, axesAttrs.range, {
         items: [
             {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
@@ -74,7 +84,7 @@ module.exports = overrideAll({
         anim: false
     }),
     // ticks
-    tickmode: axesAttrs.tickmode,
+    tickmode: axesAttrs.minor.tickmode,
     nticks: axesAttrs.nticks,
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
@@ -86,6 +96,7 @@ module.exports = overrideAll({
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
     showticklabels: axesAttrs.showticklabels,
+    labelalias: axesAttrs.labelalias,
     tickfont: axesAttrs.tickfont,
     tickangle: axesAttrs.tickangle,
     tickprefix: axesAttrs.tickprefix,

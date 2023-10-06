@@ -136779,19 +136779,13 @@
     "height": 800,
     "xaxis": {
       "type": "linear",
-      "range": [
-        -291004659.97729975,
-        4918589252.903031
-      ],
-      "autorange": true
+      "minallowed": 0,
+      "maxallowed": 4000000000
     },
     "yaxis": {
       "type": "linear",
-      "range": [
-        -4316.259331857845,
-        72693.25968258428
-      ],
-      "autorange": true
+      "minallowed": 0,
+      "maxallowed": 70000
     }
   }
 }
