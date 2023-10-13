@@ -14,7 +14,18 @@ module.exports = function handleRangeDefaults(containerIn, containerOut, coerce,
         var insiderange;
         if(!options.noInsiderange && axType !== 'log') {
             insiderange = coerce('insiderange');
-            range = coerce('range', insiderange);
+
+            // We may support partial insideranges in future
+            // For now it is out of scope
+            if(insiderange && (
+                    insiderange[0] === null ||
+                    insiderange[1] === null
+            )) {
+                containerOut.insiderange = false;
+                insiderange = undefined;
+            }
+
+            if(insiderange) range = coerce('range', insiderange);
         }
     }
 
