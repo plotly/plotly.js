@@ -1581,6 +1581,103 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
 
+        it('can relayout one partial range without affecting other subplots', function(done) {
+            var rangeX2;
+            var rangeX3;
+            var rangeX4;
+            var autorangeX2;
+            var autorangeX3;
+            var autorangeX4;
+
+            Plotly.newPlot(gd, {
+                data: [
+                    {
+                        xaxis: 'x',
+                        yaxis: 'y',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x2',
+                        yaxis: 'y2',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x3',
+                        yaxis: 'y3',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x4',
+                        yaxis: 'y4',
+                        y: [1000, 10, 100, 1],
+                    },
+                ],
+                layout: {
+                    xaxis: {
+                        range: [-1, null],
+                        anchor: 'y',
+                        domain: [0, 0.45],
+                    },
+                    yaxis: {
+                        anchor: 'x',
+                        domain: [0, 0.45],
+                        side: 'right',
+                    },
+                    xaxis2: {
+                        range: [null, 4],
+                        anchor: 'y2',
+                        domain: [0, 0.45],
+                    },
+                    yaxis2: {
+                        anchor: 'x2',
+                        domain: [0.55, 1],
+                        side: 'left',
+                    },
+                    xaxis3: {
+                        range: [null, -1],
+                        autorange: 'max reversed',
+                        anchor: 'y3',
+                        domain: [0.55, 1],
+                    },
+                    yaxis3: {
+                        anchor: 'x3',
+                        domain: [0, 0.45],
+                        side: 'left',
+                    },
+                    xaxis4: {
+                        range: [4, null],
+                        autorange: 'min reversed',
+                        anchor: 'y4',
+                        domain: [0.55, 1],
+                    },
+                    yaxis4: {
+                        anchor: 'x4',
+                        domain: [0.55, 1],
+                        side: 'right',
+                    }
+                }
+            }).then(function() {
+                rangeX2 = gd._fullLayout.xaxis2.range.slice();
+                rangeX3 = gd._fullLayout.xaxis3.range.slice();
+                rangeX4 = gd._fullLayout.xaxis4.range.slice();
+
+                autorangeX2 = gd._fullLayout.xaxis2.autorange;
+                autorangeX3 = gd._fullLayout.xaxis3.autorange;
+                autorangeX4 = gd._fullLayout.xaxis4.autorange;
+
+                return Plotly.relayout(gd, 'xaxis.range', [1, 2]);
+            }).then(function() {
+                expect(gd._fullLayout.xaxis2.range).toEqual(rangeX2);
+                expect(gd._fullLayout.xaxis3.range).toEqual(rangeX3);
+                expect(gd._fullLayout.xaxis4.range).toEqual(rangeX4);
+
+                expect(gd._fullLayout.xaxis2.autorange).toEqual(autorangeX2);
+                expect(gd._fullLayout.xaxis3.autorange).toEqual(autorangeX3);
+                expect(gd._fullLayout.xaxis4.autorange).toEqual(autorangeX4);
+            })
+            .then(done, done.fail);
+        });
+
         it('should make room for the inside labels of the counter axes', function(done) {
             Plotly.newPlot(gd, {
                 data: [{

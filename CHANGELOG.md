@@ -9,6 +9,32 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.26.2] -- 2023-10-04
+
+### Fixed
+ - Fix range interactions affecting partial ranges in other subplots [[#6743](https://github.com/plotly/plotly.js/pull/6743)]
+ - Fix to emit `plotly_click` event on touchscreens with "select" `dragmode` [[#6724](https://github.com/plotly/plotly.js/pull/6724)]),
+   with thanks to @lvlte for the contribution!
+ - Fix error display for failing builds [[#6739](https://github.com/plotly/plotly.js/pull/6739)],
+   with thanks to @dmt0 for the contribution!
+ - Use the "willReadFrequently" 2d context creation attribute to optimize readback performance for heat map traces [[#6741](https://github.com/plotly/plotly.js/pull/6741)],
+   with thanks to @bebeal for the contribution!
+
+
+## [2.26.1] -- 2023-09-22
+
+### Fixed
+ - Fix horizontal title alignment [[#6725](https://github.com/plotly/plotly.js/issues/6725)],
+   with thanks to @28raining for the contribution!
+ - Fix single-point histogram when user has provided bin widths [[#6725](https://github.com/plotly/plotly.js/issues/6725)],
+   with thanks to @28raining for the contribution!
+ - Fix to allow custom `plotly_legenddoubleclick` handlers to execute even when the default `plotly_legendclick` event is cancelled (returns false) [[#6727](https://github.com/plotly/plotly.js/pull/6727)], with thanks to @andrej-vasilj for the contribution!
+ - Fix Finnish translation for "Download plot" in `fi` locale [[#6723](https://github.com/plotly/plotly.js/issues/6723)],
+   with thanks to @wkmor1 for the contribution!
+ - Fix Czech number separators in `cs` locale [[#6734](https://github.com/plotly/plotly.js/pull/6734)],
+   with thanks to @vlastimil-dolejs for the contribution!
+
+
 ## [2.26.0] -- 2023-08-24
 
 ### Added

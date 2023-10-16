@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.26.0
+* plotly.js (gl3d) v2.26.2
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -11254,6 +11254,23 @@ module.exports = function draw(gd, opts) {
     }
   }
 };
+
+// After legend dimensions are calculated the title can be aligned horizontally left, center, right
+function horizontalAlignTitle(titleEl, legendObj, bw) {
+  if (legendObj.title.side !== 'top center' && legendObj.title.side !== 'top right') return;
+  var font = legendObj.title.font;
+  var lineHeight = font.size * LINE_SPACING;
+  var titleOffset = 0;
+  var textNode = titleEl.node();
+  var width = Drawing.bBox(textNode).width; // width of the title text
+
+  if (legendObj.title.side === 'top center') {
+    titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
+  } else if (legendObj.title.side === 'top right') {
+    titleOffset = legendObj._width - 2 * bw - 2 * constants.titlePad - width;
+  }
+  svgTextUtils.positionText(titleEl, bw + constants.titlePad + titleOffset, bw + lineHeight);
+}
 function drawOne(gd, opts) {
   var legendObj = opts || {};
   var fullLayout = gd._fullLayout;
@@ -11330,8 +11347,9 @@ function drawOne(gd, opts) {
   var title = legendObj.title;
   legendObj._titleWidth = 0;
   legendObj._titleHeight = 0;
+  var titleEl;
   if (title.text) {
-    var titleEl = Lib.ensureSingle(scrollBox, 'text', legendId + 'titletext');
+    titleEl = Lib.ensureSingle(scrollBox, 'text', legendId + 'titletext');
     titleEl.attr('text-anchor', 'start').call(Drawing.font, title.font).text(title.text);
     textLayout(titleEl, scrollBox, gd, legendObj, MAIN_TITLE); // handle mathjax or multi-line text and compute title height
   } else {
@@ -11365,6 +11383,11 @@ function drawOne(gd, opts) {
     var bw = legendObj.borderwidth;
     var isPaperX = legendObj.xref === 'paper';
     var isPaperY = legendObj.yref === 'paper';
+
+    // re-calculate title position after legend width is derived. To allow for horizontal alignment
+    if (title.text) {
+      horizontalAlignTitle(titleEl, legendObj, bw);
+    }
     if (!inHover) {
       var lx, ly;
       if (isPaperX) {
@@ -11581,8 +11604,8 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     evtData.label = legendItem.datum()[0].label;
   }
   var clickVal = Events.triggerHandler(gd, 'plotly_legendclick', evtData);
-  if (clickVal === false) return;
   if (numClicks === 1) {
+    if (clickVal === false) return;
     legend._clickTimeout = setTimeout(function () {
       if (!gd._fullLayout) return;
       handleClick(legendItem, gd, numClicks);
@@ -11591,7 +11614,8 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     if (legend._clickTimeout) clearTimeout(legend._clickTimeout);
     gd._legendMouseDownTime = 0;
     var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
-    if (dblClickVal !== false) handleClick(legendItem, gd, numClicks);
+    // Activate default double click behaviour only when both single click and double click values are not false
+    if (dblClickVal !== false && clickVal !== false) handleClick(legendItem, gd, numClicks);
   }
 }
 function drawTexts(g, gd, legendObj) {
@@ -11743,16 +11767,11 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
     // approximation to height offset to center the font
     // to avoid getBoundingClientRect
     if (aTitle === MAIN_TITLE) {
-      var titleOffset = 0;
       if (legendObj.title.side === 'left') {
         // add extra space between legend title and itmes
         width += constants.itemGap * 2;
-      } else if (legendObj.title.side === 'top center') {
-        if (legendObj._width) titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
-      } else if (legendObj.title.side === 'top right') {
-        if (legendObj._width) titleOffset = legendObj._width - 2 * bw - 2 * constants.titlePad - width;
       }
-      svgTextUtils.positionText(textEl, bw + constants.titlePad + titleOffset, bw + lineHeight);
+      svgTextUtils.positionText(textEl, bw + constants.titlePad, bw + lineHeight);
     } else {
       // legend item
       var x = constants.itemGap * 2 + legendObj.itemwidth;
@@ -16639,7 +16658,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
           emitSelected(gd, undefined);
         }
       }
-      Fx.click(gd, evt);
+      Fx.click(gd, evt, plotinfo.id);
     }).catch(Lib.error);
   };
   dragOptions.doneFn = function () {
@@ -30443,6 +30462,8 @@ var Registry = __webpack_require__(3972);
 var PlotSchema = __webpack_require__(6281);
 var Plots = __webpack_require__(4875);
 var Axes = __webpack_require__(9298);
+var handleRangeDefaults = __webpack_require__(3608);
+var cartesianLayoutAttributes = __webpack_require__(3838);
 var Drawing = __webpack_require__(1424);
 var Color = __webpack_require__(7901);
 var initInteractions = (__webpack_require__(4305).initInteractions);
@@ -32060,21 +32081,17 @@ function axRangeSupplyDefaultsByPass(gd, flags, specs) {
   for (var k in flags) {
     if (k !== 'axrange' && flags[k]) return false;
   }
+  var axIn, axOut;
+  var coerce = function (attr, dflt) {
+    return Lib.coerce(axIn, axOut, cartesianLayoutAttributes, attr, dflt);
+  };
+  var options = {}; // passing empty options for now!
+
   for (var axId in specs.rangesAltered) {
     var axName = Axes.id2name(axId);
-    var axIn = gd.layout[axName];
-    var axOut = fullLayout[axName];
-    axOut.autorange = axIn.autorange;
-    var r0 = axOut._rangeInitial0;
-    var r1 = axOut._rangeInitial1;
-    // partial range needs supplyDefaults
-    if (r0 === undefined && r1 !== undefined || r0 !== undefined && r1 === undefined) {
-      return false;
-    }
-    if (axIn.range) {
-      axOut.range = axIn.range.slice();
-    }
-    axOut.cleanRange();
+    axIn = gd.layout[axName];
+    axOut = fullLayout[axName];
+    handleRangeDefaults(axIn, axOut, coerce, options);
     if (axOut._matchGroup) {
       for (var axId2 in axOut._matchGroup) {
         if (axId2 !== axId) {
@@ -41688,7 +41705,7 @@ var handleTickLabelDefaults = __webpack_require__(6115);
 var handlePrefixSuffixDefaults = __webpack_require__(9426);
 var handleCategoryOrderDefaults = __webpack_require__(5258);
 var handleLineGridDefaults = __webpack_require__(2128);
-var handleAutorangeOptionsDefaults = __webpack_require__(3074);
+var handleRangeDefaults = __webpack_require__(3608);
 var setConvert = __webpack_require__(1994);
 var DAY_OF_WEEK = (__webpack_require__(5555).WEEKDAY_PATTERN);
 var HOUR = (__webpack_require__(5555).HOUR_PATTERN);
@@ -41740,29 +41757,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('ticklabeloverflow', ticklabelposition.indexOf('inside') !== -1 ? 'hide past domain' : axType === 'category' || axType === 'multicategory' ? 'allow' : 'hide past div');
   }
   setConvert(containerOut, layoutOut);
-  coerce('minallowed');
-  coerce('maxallowed');
-  var range = coerce('range');
-  var autorangeDflt = containerOut.getAutorangeDflt(range, options);
-  var autorange = coerce('autorange', autorangeDflt);
-  var shouldAutorange;
-
-  // validate range and set autorange true for invalid partial ranges
-  if (range && (range[0] === null && range[1] === null || (range[0] === null || range[1] === null) && (autorange === 'reversed' || autorange === true) || range[0] !== null && (autorange === 'min' || autorange === 'max reversed') || range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))) {
-    range = undefined;
-    delete containerOut.range;
-    containerOut.autorange = true;
-    shouldAutorange = true;
-  }
-  if (!shouldAutorange) {
-    autorangeDflt = containerOut.getAutorangeDflt(range, options);
-    autorange = coerce('autorange', autorangeDflt);
-  }
-  if (autorange) {
-    handleAutorangeOptionsDefaults(coerce, autorange, range);
-    if (axType === 'linear' || axType === '-') coerce('rangemode');
-  }
-  containerOut.cleanRange();
+  handleRangeDefaults(containerIn, containerOut, coerce, options);
   handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
   if (axType !== 'category' && !options.noHover) coerce('hoverformat');
   var dfltColor = coerce('color');
@@ -46023,6 +46018,43 @@ module.exports = function handlePrefixSuffixDefaults(containerIn, containerOut, 
   if (tickPrefix) coerce('showtickprefix', showAttrDflt);
   var tickSuffix = coerce('ticksuffix', tickSuffixDflt);
   if (tickSuffix) coerce('showticksuffix', showAttrDflt);
+};
+
+/***/ }),
+
+/***/ 3608:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var handleAutorangeOptionsDefaults = __webpack_require__(3074);
+module.exports = function handleRangeDefaults(containerIn, containerOut, coerce, options) {
+  var axTemplate = containerOut._template || {};
+  var axType = containerOut.type || axTemplate.type || '-';
+  coerce('minallowed');
+  coerce('maxallowed');
+  var range = coerce('range');
+  var autorangeDflt = containerOut.getAutorangeDflt(range, options);
+  var autorange = coerce('autorange', autorangeDflt);
+  var shouldAutorange;
+
+  // validate range and set autorange true for invalid partial ranges
+  if (range && (range[0] === null && range[1] === null || (range[0] === null || range[1] === null) && (autorange === 'reversed' || autorange === true) || range[0] !== null && (autorange === 'min' || autorange === 'max reversed') || range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))) {
+    range = undefined;
+    delete containerOut.range;
+    containerOut.autorange = true;
+    shouldAutorange = true;
+  }
+  if (!shouldAutorange) {
+    autorangeDflt = containerOut.getAutorangeDflt(range, options);
+    autorange = coerce('autorange', autorangeDflt);
+  }
+  if (autorange) {
+    handleAutorangeOptionsDefaults(coerce, autorange, range);
+    if (axType === 'linear' || axType === '-') coerce('rangemode');
+  }
+  containerOut.cleanRange();
 };
 
 /***/ }),
@@ -63991,7 +64023,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.26.0';
+exports.version = '2.26.2';
 
 /***/ }),
 

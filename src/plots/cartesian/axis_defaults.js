@@ -15,7 +15,7 @@ var handleTickLabelDefaults = require('./tick_label_defaults');
 var handlePrefixSuffixDefaults = require('./prefix_suffix_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
 var handleLineGridDefaults = require('./line_grid_defaults');
-var handleAutorangeOptionsDefaults = require('./autorange_options_defaults');
+var handleRangeDefaults = require('./range_defaults');
 var setConvert = require('./set_convert');
 
 var DAY_OF_WEEK = require('./constants').WEEKDAY_PATTERN;
@@ -92,38 +92,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     setConvert(containerOut, layoutOut);
 
-    coerce('minallowed');
-    coerce('maxallowed');
-    var range = coerce('range');
-    var autorangeDflt = containerOut.getAutorangeDflt(range, options);
-    var autorange = coerce('autorange', autorangeDflt);
-
-    var shouldAutorange;
-
-    // validate range and set autorange true for invalid partial ranges
-    if(range && (
-        (range[0] === null && range[1] === null) ||
-        ((range[0] === null || range[1] === null) && (autorange === 'reversed' || autorange === true)) ||
-        (range[0] !== null && (autorange === 'min' || autorange === 'max reversed')) ||
-        (range[1] !== null && (autorange === 'max' || autorange === 'min reversed'))
-    )) {
-        range = undefined;
-        delete containerOut.range;
-        containerOut.autorange = true;
-        shouldAutorange = true;
-    }
-
-    if(!shouldAutorange) {
-        autorangeDflt = containerOut.getAutorangeDflt(range, options);
-        autorange = coerce('autorange', autorangeDflt);
-    }
-
-    if(autorange) {
-        handleAutorangeOptionsDefaults(coerce, autorange, range);
-        if(axType === 'linear' || axType === '-') coerce('rangemode');
-    }
-
-    containerOut.cleanRange();
+    handleRangeDefaults(containerIn, containerOut, coerce, options);
 
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
 

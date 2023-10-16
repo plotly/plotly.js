@@ -2742,6 +2742,38 @@ describe('legend with custom doubleClickDelay', function() {
         .then(_assert('[short] after click + (1.1*t) delay + click', 2, 0))
         .then(done, done.fail);
     }, 3 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+
+    it('custom plotly_legenddoubleclick handler should fire even when plotly_legendclick has been cancelled', function(done) {
+        var tShort = 0.75 * DBLCLICKDELAY;
+        var dblClickCnt = 0;
+        var newPlot = function(fig) {
+            return Plotly.newPlot(gd, fig).then(function() {
+                gd.on('plotly_legendclick', function() { return false; });
+                gd.on('plotly_legenddoubleclick', function() { dblClickCnt++; });
+            });
+        };
+
+        function _assert(msg, _dblClickCnt) {
+            return function() {
+                expect(dblClickCnt).toBe(_dblClickCnt, msg + '| dblClickCnt');
+                dblClickCnt = 0;
+            };
+        }
+
+        newPlot({
+            data: [
+                {y: [1, 2, 1]},
+                {y: [2, 1, 2]}
+            ],
+            layout: {},
+            config: {}
+        })
+        .then(click(0))
+        .then(delay(tShort))
+        .then(click(0))
+        .then(_assert('Double click increases count', 1))
+        .then(done);
+    }, 3 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });
 
 describe('legend with custom legendwidth', function() {
