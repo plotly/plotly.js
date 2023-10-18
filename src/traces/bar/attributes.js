@@ -42,7 +42,16 @@ var marker = extendFlat({
         editType: 'style',
         description: 'Sets the opacity of the bars.'
     },
-    pattern: pattern
+    pattern: pattern,
+    cornerradius: {
+        valType: 'any',
+        dflt: 0,
+        editType: 'plot',
+        description: [
+            'Sets the rounding of corners. May be an integer number of pixels,',
+            'or a percentage of bar width(as a string).'
+        ].join(' ')
+    },
 });
 
 module.exports = {

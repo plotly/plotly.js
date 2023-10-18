@@ -232,10 +232,49 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 y1 = fixpx(y1, y0, !isHorizontal);
             }
 
+            // Here is where bar is drawn
+            // TODO: Implement rounded corners here
+
+            function calcCornerRadius(radiusParam) {
+                var barWidth = isHorizontal ? Math.abs(y1 - y0) : Math.abs(x1 - x0);
+                if(!radiusParam) {
+                    return 0;
+                } else if(typeof radiusParam === "string") { // if it's a percentage string
+                    var rPercent = parseFloat(radiusParam.replace('%', ''));
+                    return barWidth * (rPercent / 100);
+                } else { // otherwise, it's a number
+                    return Math.min(
+                        radiusParam,
+                        barWidth/2,
+                    );
+                }
+            }
+            var r = calcCornerRadius(trace.marker.cornerradius);
+            
+            var path;
+            if(r && isHorizontal) {
+                path = 'M' + x0 + ',' + y0
+                    + 'V' + y1
+                    + 'H' + (x1 - r)
+                    + 'a ' + r + ',' + r + ' 0 0 1 ' + r + ',' + r
+                    + 'V' + (y0 - r)
+                    + 'a ' + r + ',' + r + ' 0 0 1 ' + -r + ',' + r
+                    + 'Z';
+            } else if(r) { 
+                path = 'M' + x0 + ',' + y0
+                    + 'V' + (y1 + r)
+                    + 'a ' + r + ',' + r + ' 0 0 1 ' + r + ',' + -r
+                    + 'H' + (x1 - r)
+                    + 'a ' + r + ',' + r + ' 0 0 1 ' + r + ',' + r
+                    + 'V' + y0 + 'Z';
+            } else {
+                path = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
+            }
+
             var sel = transition(Lib.ensureSingle(bar, 'path'), fullLayout, opts, makeOnCompleteCallback);
             sel
                 .style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke')
-                .attr('d', (isNaN((x1 - x0) * (y1 - y0)) || (isBlank && gd._context.staticPlot)) ? 'M0,0Z' : 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
+                .attr('d', (isNaN((x1 - x0) * (y1 - y0)) || (isBlank && gd._context.staticPlot)) ? 'M0,0Z' : path)
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
             if(!fullLayout.uniformtext.mode && withTransition) {
@@ -350,6 +389,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     if(textPosition === 'auto') {
         if(isOutmostBar) {
             // draw text using insideTextFont and check if it fits inside bar
+            // TODO: Need to consider `cornerradius` here
             textPosition = 'inside';
 
             font = Lib.ensureUniformFontSize(gd, insideTextFont);
