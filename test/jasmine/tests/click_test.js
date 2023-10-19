@@ -1047,31 +1047,29 @@ describe('Test click interactions:', function() {
             .then(done, done.fail);
         });
 
-        it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (case of partial ranges reversed)', function(done) {
+        it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (insiderange and inside tick lables)', function(done) {
             mockCopy = setRanges(mockCopy);
 
             Plotly.newPlot(gd, [{
-                y: [1, 2, 3, 4]}
+                y: [0, 1, 2, 3]}
             ], {
-                xaxis: {range: [null, 1], autorange: 'max reversed'},
-                yaxis: {range: [3, null], autorange: 'min reversed'},
+                xaxis: {insiderange: [1, 2]},
+                yaxis: {ticks: 'inside', ticklabelposition: 'inside', side: 'right'},
+                plot_bgcolor: 'lightgray',
                 width: 600,
                 height: 600
             }).then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([3.2, 1]);
-                expect(gd.layout.yaxis.range).toBeCloseToArray([3, 0.8]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068]);
 
                 return doubleClick(300, 300);
             })
             .then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([3.2, -0.2]);
-                expect(gd.layout.yaxis.range).toBeCloseToArray([4.2, 0.8]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.2019, 3.249]);
 
                 return doubleClick(300, 300);
             })
             .then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([3.2, 1]);
-                expect(gd.layout.yaxis.range).toBeCloseToArray([3, 0.8]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068]);
             })
             .then(done, done.fail);
         });
