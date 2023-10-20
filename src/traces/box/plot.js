@@ -81,7 +81,7 @@ function plotBoxAndWhiskers(sel, axes, trace, t, isStatic) {
     paths.exit().remove();
 
     paths.each(function(d) {
-        if(d.empty) return 'M0,0Z';
+        if(d.empty) return d3.select(this).attr('d', 'M0,0Z');
 
         var lcenter = posAxis.c2l(d.pos + bPos, true);
 
