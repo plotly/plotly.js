@@ -1744,6 +1744,9 @@ function formatDate(ax, out, hover, extraPrecision) {
     var tr = ax._tickround;
     var fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
 
+    // Only apply extra precision if no explicit format was provided.
+    extraPrecision = !fmt && extraPrecision;
+
     if(extraPrecision) {
         // second or sub-second precision: extra always shows max digits.
         // for other fields, extra precision just adds one field.
@@ -1768,7 +1771,7 @@ function formatDate(ax, out, hover, extraPrecision) {
         // anything to be uniform with!)
 
         // can we remove the whole time part?
-        if(dateStr === '00:00:00' || dateStr === '00:00') {
+        if(headStr !== undefined && (dateStr === '00:00:00' || dateStr === '00:00')) {
             dateStr = headStr;
             headStr = '';
         } else if(dateStr.length === 8) {
