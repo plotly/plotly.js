@@ -9,6 +9,20 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.27.0] -- 2023-10-20
+
+### Added
+ - Add `insiderange` to cartesian axes to help avoid overlap between visible grid lines and tick labels of the counter axis when they are positioned inside [[#6735](https://github.com/plotly/plotly.js/pull/6735)],
+   this feature was anonymously sponsored: thank you to our sponsor!
+
+### Fixed
+ - Fix column order changes on hover [[#6718](https://github.com/plotly/plotly.js/pull/6718)],
+   with thanks to @bhavinpatel1109 for the contribution!
+ - Fix hover at timestamp '1970-01-01 00:00:00' [[#6752](https://github.com/plotly/plotly.js/pull/6752)],
+   with thanks to @adamjhawley for the contribution!
+ - Fix clearing empty `candlestick` using react [[#6757](https://github.com/plotly/plotly.js/pull/6757)]
+
+
 ## [2.26.2] -- 2023-10-04
 
 ### Fixed

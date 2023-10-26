@@ -72,6 +72,9 @@ exports.cleanLayout = function(layout) {
                 ax.autorange = true;
                 ax.rangemode = 'tozero';
             }
+
+            if(ax.insiderange) delete ax.range;
+
             delete ax.islog;
             delete ax.isdate;
             delete ax.categories; // replaced by _categories

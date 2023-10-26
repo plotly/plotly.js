@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.26.2
+* plotly.js (cartesian) v2.27.0
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -3641,6 +3641,7 @@ function mockColorBarAxis(gd, opts, zrange) {
     noHover: true,
     noTickson: true,
     noTicklabelmode: true,
+    noInsideRange: true,
     calendar: fullLayout.calendar // not really necessary (yet?)
   };
 
@@ -29579,6 +29580,7 @@ exports.cleanLayout = function (layout) {
         ax.autorange = true;
         ax.rangemode = 'tozero';
       }
+      if (ax.insiderange) delete ax.range;
       delete ax.islog;
       delete ax.isdate;
       delete ax.categories; // replaced by _categories
@@ -30671,9 +30673,11 @@ function _doPlot(gd, data, layout, config) {
   seq.push(subroutines.layoutStyles);
   if (hasCartesian) {
     seq.push(drawAxes, function insideTickLabelsAutorange(gd) {
-      if (gd._fullLayout._insideTickLabelsAutorange) {
-        relayout(gd, gd._fullLayout._insideTickLabelsAutorange).then(function () {
-          gd._fullLayout._insideTickLabelsAutorange = undefined;
+      var insideTickLabelsUpdaterange = gd._fullLayout._insideTickLabelsUpdaterange;
+      if (insideTickLabelsUpdaterange) {
+        gd._fullLayout._insideTickLabelsUpdaterange = undefined;
+        return relayout(gd, insideTickLabelsUpdaterange).then(function () {
+          Axes.saveRangeInitial(gd, true);
         });
       }
     });
@@ -30683,12 +30687,7 @@ function _doPlot(gd, data, layout, config) {
   // happens outside of marginPushers where all the other automargins are
   // calculated. Would be much better to separate margin calculations from
   // component drawing - see https://github.com/plotly/plotly.js/issues/2704
-  Plots.doAutoMargin, saveRangeInitialForInsideTickLabels, Plots.previousPromises);
-  function saveRangeInitialForInsideTickLabels(gd) {
-    if (gd._fullLayout._insideTickLabelsAutorange) {
-      if (graphWasEmpty) Axes.saveRangeInitial(gd, true);
-    }
-  }
+  Plots.doAutoMargin, Plots.previousPromises);
 
   // even if everything we did was synchronous, return a promise
   // so that the caller doesn't care which route we took
@@ -39251,6 +39250,9 @@ function tickTextObj(ax, x, text) {
 function formatDate(ax, out, hover, extraPrecision) {
   var tr = ax._tickround;
   var fmt = hover && ax.hoverformat || axes.getTickFormat(ax);
+
+  // Only apply extra precision if no explicit format was provided.
+  extraPrecision = !fmt && extraPrecision;
   if (extraPrecision) {
     // second or sub-second precision: extra always shows max digits.
     // for other fields, extra precision just adds one field.
@@ -39277,7 +39279,7 @@ function formatDate(ax, out, hover, extraPrecision) {
     // anything to be uniform with!)
 
     // can we remove the whole time part?
-    if (dateStr === '00:00:00' || dateStr === '00:00') {
+    if (headStr !== undefined && (dateStr === '00:00:00' || dateStr === '00:00')) {
       dateStr = headStr;
       headStr = '';
     } else if (dateStr.length === 8) {
@@ -41037,21 +41039,72 @@ axes.drawLabels = function (gd, ax, opts) {
       ax._tickAngles[cls] = autoangle === null ? isNumeric(tickAngle) ? tickAngle : 0 : autoangle;
     });
   }
-  var anchorAx = ax._anchorAxis;
-  if (anchorAx && anchorAx.autorange && insideTicklabelposition(ax) && !isLinked(fullLayout, ax._id)) {
-    if (!fullLayout._insideTickLabelsAutorange) {
-      fullLayout._insideTickLabelsAutorange = {};
-    }
-    fullLayout._insideTickLabelsAutorange[anchorAx._name + '.autorange'] = anchorAx.autorange;
-    seq.push(function computeFinalTickLabelBoundingBoxes() {
-      tickLabels.each(function (d, i) {
-        var thisLabel = selectTickLabel(this);
-        var mathjaxGroup = thisLabel.select('.text-math-group');
-        if (mathjaxGroup.empty()) {
-          ax._vals[i].bb = Drawing.bBox(thisLabel.node());
+  var computeTickLabelBoundingBoxes = function () {
+    var labelsMaxW = 0;
+    var labelsMaxH = 0;
+    tickLabels.each(function (d, i) {
+      var thisLabel = selectTickLabel(this);
+      var mathjaxGroup = thisLabel.select('.text-math-group');
+      if (mathjaxGroup.empty()) {
+        var bb;
+        if (ax._vals[i]) {
+          bb = ax._vals[i].bb || Drawing.bBox(thisLabel.node());
+          ax._vals[i].bb = bb;
         }
-      });
+        labelsMaxW = Math.max(labelsMaxW, bb.width);
+        labelsMaxH = Math.max(labelsMaxH, bb.height);
+      }
     });
+    return {
+      labelsMaxW: labelsMaxW,
+      labelsMaxH: labelsMaxH
+    };
+  };
+  var anchorAx = ax._anchorAxis;
+  if (anchorAx && (anchorAx.autorange || anchorAx.insiderange) && insideTicklabelposition(ax) && !isLinked(fullLayout, ax._id)) {
+    if (!fullLayout._insideTickLabelsUpdaterange) {
+      fullLayout._insideTickLabelsUpdaterange = {};
+    }
+    if (anchorAx.autorange) {
+      fullLayout._insideTickLabelsUpdaterange[anchorAx._name + '.autorange'] = anchorAx.autorange;
+      seq.push(computeTickLabelBoundingBoxes);
+    }
+    if (anchorAx.insiderange) {
+      var BBs = computeTickLabelBoundingBoxes();
+      var move = ax._id.charAt(0) === 'y' ? BBs.labelsMaxW : BBs.labelsMaxH;
+      move += 2 * TEXTPAD;
+      if (ax.ticklabelposition === 'inside') {
+        move += ax.ticklen || 0;
+      }
+      var sgn = ax.side === 'right' || ax.side === 'top' ? 1 : -1;
+      var index = sgn === 1 ? 1 : 0;
+      var otherIndex = sgn === 1 ? 0 : 1;
+      var newRange = [];
+      newRange[otherIndex] = anchorAx.range[otherIndex];
+      var p0 = anchorAx.d2p(anchorAx.range[index]);
+      var p1 = anchorAx.d2p(anchorAx.range[otherIndex]);
+      var dist = Math.abs(p1 - p0);
+      if (dist - move > 0) {
+        dist -= move;
+        move *= 1 + move / dist;
+      } else {
+        move = 0;
+      }
+      if (ax._id.charAt(0) !== 'y') move = -move;
+      newRange[index] = anchorAx.p2d(anchorAx.d2p(anchorAx.range[index]) + sgn * move);
+
+      // handle partial ranges in insiderange
+      if (anchorAx.autorange === 'min' || anchorAx.autorange === 'max reversed') {
+        newRange[0] = null;
+        anchorAx._rangeInitial0 = undefined;
+        anchorAx._rangeInitial1 = undefined;
+      } else if (anchorAx.autorange === 'max' || anchorAx.autorange === 'min reversed') {
+        newRange[1] = null;
+        anchorAx._rangeInitial0 = undefined;
+        anchorAx._rangeInitial1 = undefined;
+      }
+      fullLayout._insideTickLabelsUpdaterange[anchorAx._name + '.range'] = newRange;
+    }
   }
   var done = Lib.syncOrAsync(seq);
   if (done && done.then) gd._promises.push(done);
@@ -44992,6 +45045,17 @@ module.exports = {
     dflt: false,
     editType: 'calc'
   },
+  insiderange: {
+    valType: 'info_array',
+    items: [{
+      valType: 'any',
+      editType: 'plot'
+    }, {
+      valType: 'any',
+      editType: 'plot'
+    }],
+    editType: 'plot'
+  },
   // scaleanchor: not used directly, just put here for reference
   // values are any opposite-letter axis id, or `false`.
   scaleanchor: {
@@ -45958,6 +46022,20 @@ module.exports = function handleRangeDefaults(containerIn, containerOut, coerce,
   coerce('minallowed');
   coerce('maxallowed');
   var range = coerce('range');
+  if (!range) {
+    var insiderange;
+    if (!options.noInsiderange && axType !== 'log') {
+      insiderange = coerce('insiderange');
+
+      // We may support partial insideranges in future
+      // For now it is out of scope
+      if (insiderange && (insiderange[0] === null || insiderange[1] === null)) {
+        containerOut.insiderange = false;
+        insiderange = undefined;
+      }
+      if (insiderange) range = coerce('range', insiderange);
+    }
+  }
   var autorangeDflt = containerOut.getAutorangeDflt(range, options);
   var autorange = coerce('autorange', autorangeDflt);
   var shouldAutorange;
@@ -51174,6 +51252,12 @@ function sortAxisCategoriesByValue(axList, gd) {
       return Lib.median(values);
     }
   };
+  function sortAscending(a, b) {
+    return a[1] - b[1];
+  }
+  function sortDescending(a, b) {
+    return b[1] - a[1];
+  }
   for (i = 0; i < axList.length; i++) {
     var ax = axList[i];
     if (ax.type !== 'category') continue;
@@ -51281,20 +51365,13 @@ function sortAxisCategoriesByValue(axList, gd) {
       }
 
       // Sort by aggregated value
-      categoriesAggregatedValue.sort(function (a, b) {
-        return a[1] - b[1];
-      });
+      categoriesAggregatedValue.sort(order === 'descending' ? sortDescending : sortAscending);
       ax._categoriesAggregatedValue = categoriesAggregatedValue;
 
       // Set new category order
       ax._initialCategories = categoriesAggregatedValue.map(function (c) {
         return c[0];
       });
-
-      // Reverse if descending
-      if (order === 'descending') {
-        ax._initialCategories.reverse();
-      }
 
       // Sort all matching axes
       affectedTraces = affectedTraces.concat(ax.sortByInitialCategories());
@@ -57666,7 +57743,7 @@ function plotBoxAndWhiskers(sel, axes, trace, t, isStatic) {
   paths.enter().append('path').style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').attr('class', 'box');
   paths.exit().remove();
   paths.each(function (d) {
-    if (d.empty) return 'M0,0Z';
+    if (d.empty) return d3.select(this).attr('d', 'M0,0Z');
     var lcenter = posAxis.c2l(d.pos + bPos, true);
     var pos0 = posAxis.l2p(lcenter - bdPos0) + bPosPxOffset;
     var pos1 = posAxis.l2p(lcenter + bdPos1) + bPosPxOffset;
@@ -71012,7 +71089,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.26.2';
+exports.version = '2.27.0';
 
 /***/ }),
 
