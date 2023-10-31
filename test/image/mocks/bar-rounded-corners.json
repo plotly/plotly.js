@@ -21,13 +21,12 @@
               ],
               "x": [20, 14, 2, 18],
               "type": "bar",
-              "marker": {"cornerradius": "30%"},
               "orientation": "h",
             "xaxis": "x2",
             "yaxis": "y2"
           }
 
     ],
-    "layout": {"grid": {"rows": 1, "columns": 2, "pattern": "independent"}}
+    "layout": {"grid": {"rows": 1, "columns": 2, "pattern": "independent"}, "barcornerradius": "30%"}
   }
   

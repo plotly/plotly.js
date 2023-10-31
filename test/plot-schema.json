@@ -14776,6 +14776,12 @@
     "zoomScale"
    ],
    "layoutAttributes": {
+    "barcornerradius": {
+     "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "any"
+    },
     "bargap": {
      "description": "Sets the gap (in plot fraction) between bars of adjacent location coordinates.",
      "editType": "calc",
@@ -32068,6 +32074,12 @@
     "showLegend"
    ],
    "layoutAttributes": {
+    "barcornerradius": {
+     "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "any"
+    },
     "bargap": {
      "description": "Sets the gap (in plot fraction) between bars of adjacent location coordinates.",
      "editType": "calc",

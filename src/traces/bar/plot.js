@@ -249,7 +249,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                     );
                 }
             }
-            var r = calcCornerRadius(trace.marker.cornerradius);
+            var r = calcCornerRadius(trace.marker.cornerradius || fullLayout.barcornerradius);
             
             var path;
             if(r && isHorizontal) {
