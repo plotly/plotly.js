@@ -731,7 +731,7 @@ function calcMaxHalfSize(a, halfAngle, r, ring) {
 }
 
 function getInscribedRadiusFraction(pt, cd0) {
-    if(pt.v === cd0.vTotal && !cd0.trace.hole) return 1;// special case of 100% with no hole
+    if(pt.v === cd0.vTotal && !(cd0.trace.hole[0] || cd0.trace.hole)) return 1;// special case of 100% with no hole
 
     return Math.min(1 / (1 + 1 / Math.sin(pt.halfangle)), pt.ring / 2);
 }
@@ -761,7 +761,7 @@ function positionTitleInside(cd0) {
     return {
         x: cd0.cx,
         y: cd0.cy,
-        scale: cd0.trace.hole * cd0.r * 2 / textDiameter,
+        scale: (cd0.trace.hole[0] || cd0.trace.hole) * cd0.r * 2 / textDiameter,
         tx: 0,
         ty: - cd0.titleBox.height / 2 + cd0.trace.title.font.size
     };
@@ -1089,7 +1089,7 @@ function setCoords(cd) {
         cdi.largeArc = (cdi.v > cd0.vTotal / 2) ? 1 : 0;
 
         cdi.halfangle = Math.PI * Math.min(cdi.v / cd0.vTotal, 0.5);
-        cdi.ring = 1 - trace.hole;
+        cdi.ring = 1 - (trace.hole[i] || trace.hole);
         cdi.rInscribed = getInscribedRadiusFraction(cdi, cd0);
     }
 }
