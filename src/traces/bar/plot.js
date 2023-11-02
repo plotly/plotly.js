@@ -239,14 +239,11 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 var barWidth = isHorizontal ? Math.abs(y1 - y0) : Math.abs(x1 - x0);
                 if(!radiusParam) {
                     return 0;
-                } else if(typeof radiusParam === "string") { // if it's a percentage string
+                } else if(typeof radiusParam === 'string') { // if it's a percentage string
                     var rPercent = parseFloat(radiusParam.replace('%', ''));
                     return barWidth * (rPercent / 100);
                 } else { // otherwise, it's a number
-                    return Math.min(
-                        radiusParam,
-                        barWidth/2,
-                    );
+                    return Math.max(Math.min(radiusParam, barWidth / 2), 0);
                 }
             }
             var r = calcCornerRadius(trace.marker.cornerradius || fullLayout.barcornerradius);
@@ -255,20 +252,20 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
 
             var path;
             if(r && isHorizontal) {
-                path = 'M' + x0 + ',' + y0
-                    + 'V' + y1
-                    + 'H' + (x1 - r*bardir)
-                    + 'a ' + r + ',' + r + ' 0 0 '+cornersweep+' ' + r*bardir + ',' + r
-                    + 'V' + (y0 - r)
-                    + 'a ' + r + ',' + r + ' 0 0 '+cornersweep+' ' + -r*bardir + ',' + r
-                    + 'Z';
-            } else if(r) { 
-                path = 'M' + x0 + ',' + y0
-                    + 'V' + (y1 + r*bardir)
-                    + 'a ' + r + ',' + r + ' 0 0 '+cornersweep+' ' + r + ',' + -r*bardir
-                    + 'H' + (x1 - r)
-                    + 'a ' + r + ',' + r + ' 0 0 '+cornersweep+' ' + r + ',' + r*bardir
-                    + 'V' + y0 + 'Z';
+                path = 'M' + x0 + ',' + y0 +
+                    'V' + y1 +
+                    'H' + (x1 - r * bardir) +
+                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * bardir + ',' + r +
+                    'V' + (y0 - r) +
+                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + -r * bardir + ',' + r +
+                    'Z';
+            } else if(r) {
+                path = 'M' + x0 + ',' + y0 +
+                    'V' + (y1 + r * bardir) +
+                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r + ',' + -r * bardir +
+                    'H' + (x1 - r) +
+                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r + ',' + r * bardir +
+                    'V' + y0 + 'Z';
             } else {
                 path = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
             }
