@@ -244,6 +244,7 @@ module.exports = {
         max: 1,
         dflt: 0,
         editType: 'calc',
+        arrayOk: true,
         description: [
             'Sets the fraction of the radius to cut out of the pie.',
             'Use this to make a donut chart.'
