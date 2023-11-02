@@ -250,22 +250,24 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 }
             }
             var r = calcCornerRadius(trace.marker.cornerradius || fullLayout.barcornerradius);
-            
+            var bardir = isHorizontal ? Math.sign(x1 - x0) : Math.sign(y0 - y1);
+            var cornersweep = bardir >= 0 ? 1 : 0;
+
             var path;
             if(r && isHorizontal) {
                 path = 'M' + x0 + ',' + y0
                     + 'V' + y1
-                    + 'H' + (x1 - r)
-                    + 'a ' + r + ',' + r + ' 0 0 1 ' + r + ',' + r
+                    + 'H' + (x1 - r*bardir)
+                    + 'a ' + r + ',' + r + ' 0 0 '+cornersweep+' ' + r*bardir + ',' + r
                     + 'V' + (y0 - r)
-                    + 'a ' + r + ',' + r + ' 0 0 1 ' + -r + ',' + r
+                    + 'a ' + r + ',' + r + ' 0 0 '+cornersweep+' ' + -r*bardir + ',' + r
                     + 'Z';
             } else if(r) { 
                 path = 'M' + x0 + ',' + y0
-                    + 'V' + (y1 + r)
-                    + 'a ' + r + ',' + r + ' 0 0 1 ' + r + ',' + -r
+                    + 'V' + (y1 + r*bardir)
+                    + 'a ' + r + ',' + r + ' 0 0 '+cornersweep+' ' + r + ',' + -r*bardir
                     + 'H' + (x1 - r)
-                    + 'a ' + r + ',' + r + ' 0 0 1 ' + r + ',' + r
+                    + 'a ' + r + ',' + r + ' 0 0 '+cornersweep+' ' + r + ',' + r*bardir
                     + 'V' + y0 + 'Z';
             } else {
                 path = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';

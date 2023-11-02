@@ -7,7 +7,7 @@
                 "monkeys",
                 "capybaras"
               ],
-              "y": [20, 14, 2, 18
+              "y": [20, -14, 2, 18
               ],
               "type": "bar",
               "marker": {"cornerradius": 10}
@@ -19,7 +19,7 @@
                 "monkeys",
                 "capybaras"
               ],
-              "x": [20, 14, 2, 18],
+              "x": [20, -4, -12, 18],
               "type": "bar",
               "orientation": "h",
             "xaxis": "x2",
