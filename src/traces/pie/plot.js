@@ -97,7 +97,7 @@ function plot(gd, cdModule) {
                         pt.largeArc + (cw ? ' 1 ' : ' 0 ') + dx + ',' + dy;
                 }
 
-                var hole = trace.hole;
+                var hole = trace.hole[i] || trace.hole;
                 if(pt.v === cd0.vTotal) { // 100% fails bcs arc start and end are identical
                     var outerCircle = 'M' + (cx + pt.px0[0]) + ',' + (cy + pt.px0[1]) +
                         arc(pt.px0, pt.pxmid, true, 1) +
