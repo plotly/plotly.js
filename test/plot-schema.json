@@ -4368,6 +4368,7 @@
      ]
     },
     "hole": {
+     "arrayOk": true,
      "description": "Sets the fraction of the radius to cut out of the polar subplot.",
      "dflt": 0,
      "editType": "plot",
