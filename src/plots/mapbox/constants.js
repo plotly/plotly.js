@@ -110,7 +110,7 @@ var stylesNonMapbox = {
             'plotly-stamen-terrain': {
                 type: 'raster',
                 attribution: stamenTerrainOrToner,
-                tiles: ['https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png'],
+                tiles: ['https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
         },
@@ -130,7 +130,7 @@ var stylesNonMapbox = {
             'plotly-stamen-toner': {
                 type: 'raster',
                 attribution: stamenTerrainOrToner,
-                tiles: ['https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'],
+                tiles: ['https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
         },
@@ -150,7 +150,7 @@ var stylesNonMapbox = {
             'plotly-stamen-watercolor': {
                 type: 'raster',
                 attribution: stamenWaterColor,
-                tiles: ['https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png'],
+                tiles: ['https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'],
                 tileSize: 256
             }
         },
