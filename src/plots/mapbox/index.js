@@ -222,11 +222,11 @@ function findAccessToken(gd, mapboxIds) {
         var opts = fullLayout[mapboxIds[i]];
         var token = opts.accesstoken;
 
-        if(isMapboxStyle(opts.style)) {
+        if(isStyleRequireAccessToken(opts.style)) {
             if(token) {
                 Lib.pushUnique(tokensUseful, token);
             } else {
-                if(isMapboxStyle(opts._input.style)) {
+                if(isStyleRequireAccessToken(opts._input.style)) {
                     Lib.error('Uses Mapbox map style, but did not set an access token.');
                     hasOneSetMapboxStyle = true;
                 }
@@ -263,10 +263,11 @@ function findAccessToken(gd, mapboxIds) {
     }
 }
 
-function isMapboxStyle(s) {
+function isStyleRequireAccessToken(s) {
     return typeof s === 'string' && (
         constants.styleValuesMapbox.indexOf(s) !== -1 ||
-        s.indexOf('mapbox://') === 0
+        s.indexOf('mapbox://') === 0 ||
+        s.indexOf('stamen') === 0
     );
 }
 
