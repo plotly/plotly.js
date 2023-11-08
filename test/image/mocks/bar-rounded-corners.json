@@ -1,32 +1,60 @@
 {
     "data": [
-        {
-            "x": [
-                "giraffes",
-                "orangutans",
-                "monkeys",
-                "capybaras"
-              ],
-              "y": [20, -14, 2, 18
-              ],
-              "type": "bar",
-              "marker": {"cornerradius": 10}
-          },
-          {
-            "y": [
-                "giraffes",
-                "orangutans",
-                "monkeys",
-                "capybaras"
-              ],
-              "x": [20, -4, -12, 18],
-              "type": "bar",
-              "orientation": "h",
-            "xaxis": "x2",
-            "yaxis": "y2"
-          }
-
+      {
+        "x": [
+            "giraffes",
+            "orangutans",
+            "monkeys",
+            "capybaras"
+          ],
+          "y": [20, -14, 2, 18],
+          "type": "bar",
+          "marker": {"cornerradius": 10}
+      },
+      {
+        "y": [
+            "giraffes",
+            "orangutans",
+            "monkeys",
+            "capybaras"
+          ],
+          "x": [20, -4, 1, 18],
+          "type": "bar",
+          "orientation": "h",
+        "xaxis": "x2",
+        "yaxis": "y2"
+      },
+      {
+        "x": [
+            "giraffes",
+            "orangutans",
+            "monkeys",
+            "capybaras"
+          ],
+          "y": [20, -14, 2, 18],
+          "type": "bar",
+          "marker": {"cornerradius": 10},
+          "xaxis": "x3",
+          "yaxis": "y3"
+      },
+      {
+        "x": [
+            "giraffes",
+            "orangutans",
+            "monkeys",
+            "capybaras"
+          ],
+          "y": [20, -14, 2, 18],
+          "type": "bar",
+          "marker": {"cornerradius": 10},
+          "xaxis": "x3",
+          "yaxis": "y3"
+      }
     ],
-    "layout": {"grid": {"rows": 1, "columns": 2, "pattern": "independent"}, "barcornerradius": "30%"}
+    "layout": {
+      "grid": {"rows": 2, "columns": 2, "pattern": "independent"}, 
+      "barmode": "stack",
+      "barcornerradius": "50%"
+    }
   }
   

@@ -232,9 +232,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 y1 = fixpx(y1, y0, !isHorizontal);
             }
 
-            // Here is where bar is drawn
-            // TODO: Implement rounded corners here
-
+            // Construct path string for bar
             function calcCornerRadius(radiusParam) {
                 var barWidth = isHorizontal ? Math.abs(y1 - y0) : Math.abs(x1 - x0);
                 if(!radiusParam) {
@@ -246,7 +244,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                     return Math.max(Math.min(radiusParam, barWidth / 2), 0);
                 }
             }
-            var r = calcCornerRadius(trace.marker.cornerradius || fullLayout.barcornerradius);
+            var r = calcCornerRadius(trace.marker.cornerradius);
             var bardir = isHorizontal ? Math.sign(x1 - x0) : Math.sign(y0 - y1);
             var cornersweep = bardir >= 0 ? 1 : 0;
 

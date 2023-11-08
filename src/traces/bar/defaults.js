@@ -47,7 +47,6 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     });
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
-
     var lineColor = (traceOut.marker.line || {}).color;
 
     // override defaultColor for error bars with defaultLine
@@ -61,16 +60,19 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 function crossTraceDefaults(fullData, fullLayout) {
     var traceIn, traceOut;
 
-    function coerce(attr) {
-        return Lib.coerce(traceOut._input, traceOut, attributes, attr);
+    function coerce(attr, dflt) {
+        return Lib.coerce(traceOut._input, traceOut, attributes, attr, dflt);
     }
 
-    if(fullLayout.barmode === 'group') {
-        for(var i = 0; i < fullData.length; i++) {
-            traceOut = fullData[i];
+    for(var i = 0; i < fullData.length; i++) {
+        traceOut = fullData[i];
 
-            if(traceOut.type === 'bar') {
-                traceIn = traceOut._input;
+        if(traceOut.type === 'bar') {
+            traceIn = traceOut._input;
+            // This needs to happen here rather than in handleStyleDefaults() because
+            // it needs to happen after `layout.barcornerradius` has been coerced
+            coerce('marker.cornerradius', fullLayout.barcornerradius);
+            if(fullLayout.barmode === 'group') {
                 handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
             }
         }
