@@ -42623,6 +42623,11 @@
      "min": 0,
      "valType": "number"
     },
+    "holesrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `hole`.",
+     "editType": "none",
+     "valType": "string"
+    },
     "hoverinfo": {
      "arrayOk": true,
      "description": "Determines which trace information appear on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.",
