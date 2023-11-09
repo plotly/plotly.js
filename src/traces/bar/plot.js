@@ -244,25 +244,31 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                     return Math.max(Math.min(radiusParam, barWidth / 2), 0);
                 }
             }
+
+            // Parameters for rounded corners
             var r = calcCornerRadius(trace.marker.cornerradius);
-            var bardir = isHorizontal ? Math.sign(x1 - x0) : Math.sign(y0 - y1);
-            var cornersweep = bardir >= 0 ? 1 : 0;
+            var xdir = dirSign(x0, x1);
+            var ydir = dirSign(y0, y1);
+            // Whether bar goes in positive or negative direction
+            var bardir = isHorizontal ? xdir : -ydir;
+            // Sweep direction for rounded corner arcs
+            var cornersweep = (xdir === -ydir) ? 1 : 0;
 
             var path;
             if(r && isHorizontal) {
                 path = 'M' + x0 + ',' + y0 +
                     'V' + y1 +
                     'H' + (x1 - r * bardir) +
-                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * bardir + ',' + r +
-                    'V' + (y0 - r) +
-                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + -r * bardir + ',' + r +
+                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * bardir + ',' + r * -ydir +
+                    'V' + (y0 + r * ydir) +
+                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + -r * bardir + ',' + r * -ydir +
                     'Z';
             } else if(r) {
                 path = 'M' + x0 + ',' + y0 +
                     'V' + (y1 + r * bardir) +
-                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r + ',' + -r * bardir +
-                    'H' + (x1 - r) +
-                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r + ',' + r * bardir +
+                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * xdir + ',' + -r * bardir +
+                    'H' + (x1 - r * xdir) +
+                    'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * xdir + ',' + r * bardir +
                     'V' + y0 + 'Z';
             } else {
                 path = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';

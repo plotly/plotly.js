@@ -9,7 +9,8 @@
           ],
           "y": [20, -14, 2, 18],
           "type": "bar",
-          "marker": {"cornerradius": 10}
+          "marker": {"cornerradius": 10},
+          "name": "Both axes reversed"
       },
       {
         "y": [
@@ -19,10 +20,12 @@
             "capybaras"
           ],
           "x": [20, -4, 1, 18],
+          "base": [1, 2, 1, 2],
           "type": "bar",
           "orientation": "h",
         "xaxis": "x2",
-        "yaxis": "y2"
+        "yaxis": "y2",
+        "name": "Both axes normal"
       },
       {
         "x": [
@@ -35,7 +38,8 @@
           "type": "bar",
           "marker": {"cornerradius": 10},
           "xaxis": "x3",
-          "yaxis": "y3"
+          "yaxis": "y3",
+          "name": "Both axes normal"
       },
       {
         "x": [
@@ -48,13 +52,33 @@
           "type": "bar",
           "marker": {"cornerradius": 10},
           "xaxis": "x3",
-          "yaxis": "y3"
+          "yaxis": "y3",
+          "name": "Both axes normal"
+      },
+      {
+        "y": [
+            "giraffes",
+            "orangutans",
+            "monkeys",
+            "capybaras"
+          ],
+          "x": [20, -4, 1, 18],
+          "base": [1, 2, 1, 2],
+          "type": "bar",
+          "orientation": "h",
+        "xaxis": "x4",
+        "yaxis": "y4",
+        "name": "Both axes reversed"
       }
     ],
     "layout": {
       "grid": {"rows": 2, "columns": 2, "pattern": "independent"}, 
       "barmode": "stack",
-      "barcornerradius": "50%"
+      "barcornerradius": "50%",
+      "xaxis": {"autorange": "reversed"},
+      "yaxis": {"autorange": "reversed"},
+      "xaxis4": {"autorange": "reversed"},
+      "yaxis4": {"autorange": "reversed"}
     }
   }
   
