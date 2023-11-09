@@ -58874,19 +58874,6 @@
      },
      "editType": "calc",
      "role": "object",
-     "shape": {
-      "description": "Determines the line shape. The values correspond to step-wise line shapes.",
-      "dflt": "linear",
-      "editType": "calc",
-      "valType": "enumerated",
-      "values": [
-       "linear",
-       "hv",
-       "vh",
-       "hvh",
-       "vhv"
-      ]
-     },
      "width": {
       "description": "Sets the line width (in px).",
       "dflt": 2,
