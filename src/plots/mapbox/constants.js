@@ -2,7 +2,7 @@
 
 var sortObjectKeys = require('../../lib/sort_object_keys');
 
-var requiredVersion = '1.10.1';
+var requiredVersion = '1.13.1';
 
 var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 var carto = [
