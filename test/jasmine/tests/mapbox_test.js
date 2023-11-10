@@ -1693,7 +1693,9 @@ describe('mapbox plots', function() {
 
     function _mouseEvent(type, pos, cb) {
         return new Promise(function(resolve) {
-            mouseEvent(type, pos[0], pos[1]);
+            mouseEvent(type, pos[0], pos[1], {
+                buttons: 1 // left button
+            });
 
             setTimeout(function() {
                 cb();
