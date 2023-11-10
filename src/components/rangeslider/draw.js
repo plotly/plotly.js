@@ -225,10 +225,10 @@ module.exports = function(gd) {
 };
 
 function eventX(event) {
-    if (typeof event.clientX === 'number') {
+    if(typeof event.clientX === 'number') {
         return event.clientX;
     }
-    if (event.touches && event.touches.length > 0) {
+    if(event.touches && event.touches.length > 0) {
         return event.touches[0].clientX;
     }
     return 0;
