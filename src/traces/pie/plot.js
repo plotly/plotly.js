@@ -764,7 +764,7 @@ function positionTitleInside(cd0) {
     return {
         x: cd0.cx,
         y: cd0.cy,
-        scale: (cd0.trace.hole[0] || cd0.trace.hole) * cd0.r * 2 / textDiameter,
+        scale: (Lib.isArrayOrTypedArray(cd0.trace.hole) ? Math.min.apply(null, cd0.trace.hole) : cd0.trace.hole) * cd0.r * 2 / textDiameter,
         tx: 0,
         ty: - cd0.titleBox.height / 2 + cd0.trace.title.font.size
     };
@@ -1092,7 +1092,7 @@ function setCoords(cd) {
         cdi.largeArc = (cdi.v > cd0.vTotal / 2) ? 1 : 0;
 
         cdi.halfangle = Math.PI * Math.min(cdi.v / cd0.vTotal, 0.5);
-        cdi.ring = 1 - (trace.hole[i] || trace.hole);
+        cdi.ring = 1 - (Lib.isArrayOrTypedArray(cd0.trace.hole) ? trace.hole[i] : trace.hole);
         cdi.rInscribed = getInscribedRadiusFraction(cdi, cd0);
     }
 }
