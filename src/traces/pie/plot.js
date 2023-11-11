@@ -734,7 +734,7 @@ function calcMaxHalfSize(a, halfAngle, r, ring) {
 }
 
 function getInscribedRadiusFraction(pt, cd0) {
-    if(pt.v === cd0.vTotal && !(cd0.trace.hole[0] || cd0.trace.hole)) return 1;// special case of 100% with no hole
+    if(pt.v === cd0.vTotal && !(Lib.isArrayOrTypedArray(cd0.trace.hole) ? [pt.i] : cd0.trace.hole)) return 1;// special case of 100% with no hole
 
     return Math.min(1 / (1 + 1 / Math.sin(pt.halfangle)), pt.ring / 2);
 }
