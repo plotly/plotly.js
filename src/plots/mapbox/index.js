@@ -1,6 +1,6 @@
 'use strict';
 
-var mapboxgl = require('mapbox-gl/dist/mapbox-gl-unminified');
+var mapboxgl = require('@plotly/mapbox-gl/dist/mapbox-gl-unminified');
 
 var Lib = require('../../lib');
 var strTranslate = Lib.strTranslate;
