@@ -1607,7 +1607,10 @@ function getMarkerAngle(d, trace) {
     var angle = d.ma;
 
     if(angle === undefined) {
-        angle = trace.marker.angle || 0;
+        angle = trace.marker.angle;
+        if(!angle || Lib.isArrayOrTypedArray(angle)) {
+            angle = 0;
+        }
     }
 
     var x, y;
