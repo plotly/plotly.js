@@ -3806,8 +3806,8 @@ axes.drawLabels = function(gd, ax, opts) {
     // N.B. during auto-margin redraws, if the axis fixed its label overlaps
     // by rotating 90 degrees, do not attempt to re-fix its label overlaps
     // as this can lead to infinite redraw loops!
-    if(ax.automargin && fullLayout._redrawFromAutoMarginCount && prevAngle === 90) {
-        autoangle = 90;
+    if(ax.automargin && fullLayout._redrawFromAutoMarginCount && Math.abs(prevAngle) === 90) {
+        autoangle = prevAngle;
         seq.push(function() {
             positionLabels(tickLabels, prevAngle);
         });
