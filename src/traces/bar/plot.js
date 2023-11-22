@@ -248,7 +248,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             }
             var r = calcCornerRadius(trace.marker.cornerradius);
             var path;
-            if(r) {
+            if(r && (di._outmost || di.hasB)) {
                 // Bar has cornerradius
                 // Calculate parameters for rounded corners
                 var xdir = dirSign(x0, x1);
