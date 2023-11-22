@@ -809,6 +809,17 @@ module.exports = {
             'vertically.'
         ].join(' ')
     },
+    autotickangles: {
+        valType: 'data_array',
+        coerceNumber: true,
+        dflt: [30, 90],
+        editType: 'ticks',
+        description: [
+            'When `tickangle` is set to *auto*, it will be set to the first',
+            'angle in this array that is large enough to prevent label',
+            'overlap.'
+        ].join(' ')
+    },
     tickprefix: {
         valType: 'string',
         dflt: '',

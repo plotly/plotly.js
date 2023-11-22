@@ -3479,6 +3479,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
+    var autoTickAngles = ax.autotickangles;
     var prevAngle = (ax._prevTickAngles || {})[cls];
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
@@ -3780,12 +3781,24 @@ axes.drawLabels = function(gd, ax, opts) {
                 var pad = !isAligned ? 0 :
                     (ax.tickwidth || 0) + 2 * TEXTPAD;
 
-                var rotate90 = (tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory' || ax._name === 'realaxis';
+                const adjacent = tickSpacing;
+                const opposite = maxFontSize * 1.25;
+                const hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
+                // sin(angle) = opposite / hypotenuse
+                const minAngle = Math.asin(opposite / hypotenuse) * (180 / Math.PI /* to degrees */);
 
-                // any overlap at all - set 30 degrees or 90 degrees
+                var angle = autoTickAngles.find(angle => Math.abs(angle) >= minAngle);
+                if(angle === undefined) {
+                    // no angle larger than minAngle, just pick the largest angle
+                    angle = autoTickAngles.reduce(
+                        (currentMax, nextAngle) => Math.abs(currentMax) < Math.abs(nextAngle) ? nextAngle : currentMax
+                        , autoTickAngles[0]
+                    );
+                }
+
                 for(i = 0; i < lbbArray.length - 1; i++) {
                     if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
-                        autoangle = rotate90 ? 90 : 30;
+                        autoangle = angle;
                         break;
                     }
                 }

@@ -40,7 +40,10 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             coerce('ticklabelstep');
         }
 
-        if(!options.noAng) coerce('tickangle');
+        if(!options.noAng) {
+            coerce('tickangle');
+            coerce('autotickangles');
+        }
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
