@@ -3728,13 +3728,14 @@ axes.drawLabels = function(gd, ax, opts) {
             var maxFontSize = 0;
             var lbbArray = [];
             var i;
-
+            var maxLines = 1;
             tickLabels.each(function(d) {
                 maxFontSize = Math.max(maxFontSize, d.fontSize);
 
                 var x = ax.l2p(d.x);
                 var thisLabel = selectTickLabel(this);
                 var bb = Drawing.bBox(thisLabel.node());
+                maxLines = Math.max(maxLines, svgTextUtils.lineCount(thisLabel));
 
                 lbbArray.push({
                     // ignore about y, just deal with x overlaps
@@ -3782,7 +3783,7 @@ axes.drawLabels = function(gd, ax, opts) {
                     (ax.tickwidth || 0) + 2 * TEXTPAD;
 
                 const adjacent = tickSpacing;
-                const opposite = maxFontSize * 1.25;
+                const opposite = maxFontSize * 1.25 * maxLines;
                 const hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
                 // sin(angle) = opposite / hypotenuse
                 const minAngle = Math.asin(opposite / hypotenuse) * (180 / Math.PI /* to degrees */);
