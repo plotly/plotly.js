@@ -3479,7 +3479,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
-    var autoTickAngles = ax.autotickangles;
+    var autoTickAngles = ax.autotickangles || [30, 90];
     var prevAngle = (ax._prevTickAngles || {})[cls];
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
