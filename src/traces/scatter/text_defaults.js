@@ -10,7 +10,7 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
     opts = opts || {};
 
     coerce('textposition');
-    Lib.coerceFont(coerce, 'textfont', layout.font);
+    Lib.coerceFont(coerce, 'textfont', opts.font || layout.font);
 
     if(!opts.noSelect) {
         coerce('selected.textfont.color');

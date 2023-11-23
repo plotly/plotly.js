@@ -54,6 +54,30 @@ module.exports = function draw(gd, opts) {
     }
 };
 
+// After legend dimensions are calculated the title can be aligned horizontally left, center, right
+function horizontalAlignTitle(titleEl, legendObj, bw) {
+    if((legendObj.title.side !== 'top center') && (legendObj.title.side !== 'top right')) return;
+
+    var font = legendObj.title.font;
+    var lineHeight = font.size * LINE_SPACING;
+    var titleOffset = 0;
+    var textNode = titleEl.node();
+
+    var width = Drawing.bBox(textNode).width;  // width of the title text
+
+    if(legendObj.title.side === 'top center') {
+        titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
+    } else if(legendObj.title.side === 'top right') {
+        titleOffset = legendObj._width - 2 * bw - 2 * constants.titlePad - width;
+    }
+
+    svgTextUtils.positionText(titleEl,
+        bw + constants.titlePad + titleOffset,
+        bw + lineHeight
+    );
+}
+
+
 function drawOne(gd, opts) {
     var legendObj = opts || {};
 
@@ -77,8 +101,44 @@ function drawOne(gd, opts) {
 
     var legendData;
     if(!inHover) {
-        if(!gd.calcdata) return;
-        legendData = fullLayout.showlegend && getLegendData(gd.calcdata, legendObj, fullLayout._legends.length > 1);
+        var calcdata = (gd.calcdata || []).slice();
+
+        var shapes = fullLayout.shapes;
+        for(var i = 0; i < shapes.length; i++) {
+            var shape = shapes[i];
+            if(!shape.showlegend) continue;
+
+            var shapeLegend = {
+                _isShape: true,
+                _fullInput: shape,
+                index: shape._index,
+                name: shape.name || shape.label.text || ('shape ' + shape._index),
+                legend: shape.legend,
+                legendgroup: shape.legendgroup,
+                legendgrouptitle: shape.legendgrouptitle,
+                legendrank: shape.legendrank,
+                legendwidth: shape.legendwidth,
+                showlegend: shape.showlegend,
+                visible: shape.visible,
+                opacity: shape.opacity,
+                mode: shape.type === 'line' ? 'lines' : 'markers',
+                line: shape.line,
+                marker: {
+                    line: shape.line,
+                    color: shape.fillcolor,
+                    size: 12,
+                    symbol:
+                        shape.type === 'rect' ? 'square' :
+                        shape.type === 'circle' ? 'circle' :
+                        // case of path
+                        'hexagon2'
+                },
+            };
+
+            calcdata.push([{ trace: shapeLegend }]);
+        }
+
+        legendData = fullLayout.showlegend && getLegendData(calcdata, legendObj, fullLayout._legends.length > 1);
     } else {
         if(!legendObj.entries) return;
         legendData = getLegendData(legendObj.entries, legendObj);
@@ -112,8 +172,9 @@ function drawOne(gd, opts) {
     var title = legendObj.title;
     legendObj._titleWidth = 0;
     legendObj._titleHeight = 0;
+    var titleEl;
     if(title.text) {
-        var titleEl = Lib.ensureSingle(scrollBox, 'text', legendId + 'titletext');
+        titleEl = Lib.ensureSingle(scrollBox, 'text', legendId + 'titletext');
         titleEl.attr('text-anchor', 'start')
             .call(Drawing.font, title.font)
             .text(title.text);
@@ -154,24 +215,42 @@ function drawOne(gd, opts) {
         function() {
             var gs = fullLayout._size;
             var bw = legendObj.borderwidth;
+            var isPaperX = legendObj.xref === 'paper';
+            var isPaperY = legendObj.yref === 'paper';
+
+            // re-calculate title position after legend width is derived. To allow for horizontal alignment
+            if(title.text) {
+                horizontalAlignTitle(titleEl, legendObj, bw);
+            }
 
             if(!inHover) {
-                var expMargin = expandMargin(gd, legendId);
+                var lx, ly;
+
+                if(isPaperX) {
+                    lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+                } else {
+                    lx = fullLayout.width * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+                }
+
+                if(isPaperY) {
+                    ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+                } else {
+                    ly = fullLayout.height * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+                }
+
+                var expMargin = expandMargin(gd, legendId, lx, ly);
 
                 // IF expandMargin return a Promise (which is truthy),
                 // we're under a doAutoMargin redraw, so we don't have to
                 // draw the remaining pieces below
                 if(expMargin) return;
 
-                var lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
-                var ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
-
                 if(fullLayout.margin.autoexpand) {
                     var lx0 = lx;
                     var ly0 = ly;
 
-                    lx = Lib.constrain(lx, 0, fullLayout.width - legendObj._width);
-                    ly = Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight);
+                    lx = isPaperX ? Lib.constrain(lx, 0, fullLayout.width - legendObj._width) : lx0;
+                    ly = isPaperY ? Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight) : ly0;
 
                     if(lx !== lx0) {
                         Lib.log('Constrain ' + legendId + '.x to make legend fit inside graph');
@@ -366,7 +445,7 @@ function drawOne(gd, opts) {
                         }
                     },
                     clickFn: function(numClicks, e) {
-                        var clickedTrace = groups.selectAll('g.traces').filter(function() {
+                        var clickedTrace = layer.selectAll('g.traces').filter(function() {
                             var bbox = this.getBoundingClientRect();
                             return (
                                 e.clientX >= bbox.left && e.clientX <= bbox.right &&
@@ -415,11 +494,9 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     if(Registry.traceIs(trace, 'pie-like')) {
         evtData.label = legendItem.datum()[0].label;
     }
-
     var clickVal = Events.triggerHandler(gd, 'plotly_legendclick', evtData);
-    if(clickVal === false) return;
-
     if(numClicks === 1) {
+        if(clickVal === false) return;
         legend._clickTimeout = setTimeout(function() {
             if(!gd._fullLayout) return;
             handleClick(legendItem, gd, numClicks);
@@ -429,7 +506,8 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         gd._legendMouseDownTime = 0;
 
         var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
-        if(dblClickVal !== false) handleClick(legendItem, gd, numClicks);
+        // Activate default double click behaviour only when both single click and double click values are not false
+        if(dblClickVal !== false && clickVal !== false) handleClick(legendItem, gd, numClicks);
     }
 }
 
@@ -478,9 +556,9 @@ function drawTexts(g, gd, legendObj) {
 
                 if(Registry.hasTransform(fullInput, 'groupby')) {
                     var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
-                    var index = groupbyIndices[groupbyIndices.length - 1];
+                    var _index = groupbyIndices[groupbyIndices.length - 1];
 
-                    var kcont = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
+                    var kcont = Lib.keyedContainer(fullInput, 'transforms[' + _index + '].styles', 'target', 'value.name');
 
                     kcont.set(legendItem.trace._group, newName);
 
@@ -489,7 +567,11 @@ function drawTexts(g, gd, legendObj) {
                     update.name = newName;
                 }
 
-                return Registry.call('_guiRestyle', gd, update, trace.index);
+                if(fullInput._isShape) {
+                    return Registry.call('_guiRelayout', gd, 'shapes[' + trace.index + '].name', update.name);
+                } else {
+                    return Registry.call('_guiRestyle', gd, update, trace.index);
+                }
             });
     } else {
         textLayout(textEl, g, gd, legendObj);
@@ -876,20 +958,45 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     });
 }
 
-function expandMargin(gd, legendId) {
+function expandMargin(gd, legendId, lx, ly) {
     var fullLayout = gd._fullLayout;
     var legendObj = fullLayout[legendId];
     var xanchor = getXanchor(legendObj);
     var yanchor = getYanchor(legendObj);
 
-    return Plots.autoMargin(gd, legendId, {
-        x: legendObj.x,
-        y: legendObj.y,
-        l: legendObj._width * (FROM_TL[xanchor]),
-        r: legendObj._width * (FROM_BR[xanchor]),
-        b: legendObj._effHeight * (FROM_BR[yanchor]),
-        t: legendObj._effHeight * (FROM_TL[yanchor])
-    });
+    var isPaperX = legendObj.xref === 'paper';
+    var isPaperY = legendObj.yref === 'paper';
+
+    gd._fullLayout._reservedMargin[legendId] = {};
+    var sideY = legendObj.y < 0.5 ? 'b' : 't';
+    var sideX = legendObj.x < 0.5 ? 'l' : 'r';
+    var possibleReservedMargins = {
+        r: (fullLayout.width - lx),
+        l: lx + legendObj._width,
+        b: (fullLayout.height - ly),
+        t: ly + legendObj._effHeight
+    };
+
+    if(isPaperX && isPaperY) {
+        return Plots.autoMargin(gd, legendId, {
+            x: legendObj.x,
+            y: legendObj.y,
+            l: legendObj._width * (FROM_TL[xanchor]),
+            r: legendObj._width * (FROM_BR[xanchor]),
+            b: legendObj._effHeight * (FROM_BR[yanchor]),
+            t: legendObj._effHeight * (FROM_TL[yanchor])
+        });
+    } else if(isPaperX) {
+        gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
+    } else if(isPaperY) {
+        gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
+    } else {
+        if(legendObj.orientation === 'v') {
+            gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
+        } else {
+            gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
+        }
+    }
 }
 
 function getXanchor(legendObj) {

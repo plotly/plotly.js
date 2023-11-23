@@ -9,6 +9,44 @@ var handleTextDefaults = require('../scatter/text_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var attributes = require('./attributes');
 
+// Must use one of the following fonts as the family, else default to 'Open Sans Regular'
+// See https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
+var supportedFonts = [
+    'Metropolis Black Italic',
+    'Metropolis Black',
+    'Metropolis Bold Italic',
+    'Metropolis Bold',
+    'Metropolis Extra Bold Italic',
+    'Metropolis Extra Bold',
+    'Metropolis Extra Light Italic',
+    'Metropolis Extra Light',
+    'Metropolis Light Italic',
+    'Metropolis Light',
+    'Metropolis Medium Italic',
+    'Metropolis Medium',
+    'Metropolis Regular Italic',
+    'Metropolis Regular',
+    'Metropolis Semi Bold Italic',
+    'Metropolis Semi Bold',
+    'Metropolis Thin Italic',
+    'Metropolis Thin',
+    'Open Sans Bold Italic',
+    'Open Sans Bold',
+    'Open Sans Extra Bold Italic',
+    'Open Sans Extra Bold',
+    'Open Sans Italic',
+    'Open Sans Light Italic',
+    'Open Sans Light',
+    'Open Sans Regular',
+    'Open Sans Semibold Italic',
+    'Open Sans Semibold',
+    'Klokantech Noto Sans Bold',
+    'Klokantech Noto Sans CJK Bold',
+    'Klokantech Noto Sans CJK Regular',
+    'Klokantech Noto Sans Italic',
+    'Klokantech Noto Sans Regular'
+];
+
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -66,7 +104,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('cluster.enabled', clusterEnabledDflt);
 
     if(subTypes.hasText(traceOut)) {
-        handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
+        handleTextDefaults(traceIn, traceOut, layout, coerce,
+            {noSelect: true,
+                font: {
+                    family: supportedFonts.indexOf(layout.font.family) !== -1 ? layout.font.family : 'Open Sans Regular',
+                    size: layout.font.size,
+                    color: layout.font.color
+                }
+            });
     }
 
     coerce('fill');

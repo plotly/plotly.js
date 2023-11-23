@@ -547,7 +547,8 @@
         "size": 11.9552
       },
       "y": -0.4,
-      "orientation": "h"
+      "orientation": "h",
+      "title": { "text": "Legend Title", "side": "top right" }
     },
     "hovermode": "closest",
     "width": 680,

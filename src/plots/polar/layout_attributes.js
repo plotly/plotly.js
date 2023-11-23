@@ -58,6 +58,14 @@ var radialAxisAttrs = {
     }),
     autotypenumbers: axesAttrs.autotypenumbers,
 
+    autorangeoptions: {
+        minallowed: axesAttrs.autorangeoptions.minallowed,
+        maxallowed: axesAttrs.autorangeoptions.maxallowed,
+        clipmin: axesAttrs.autorangeoptions.clipmin,
+        clipmax: axesAttrs.autorangeoptions.clipmax,
+        include: axesAttrs.autorangeoptions.include,
+        editType: 'plot'
+    },
     autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
     rangemode: {
         valType: 'enumerated',
@@ -73,6 +81,8 @@ var radialAxisAttrs = {
             'of the input data (same behavior as for cartesian axes).'
         ].join(' ')
     },
+    minallowed: extendFlat({}, axesAttrs.minallowed, {editType: 'plot'}),
+    maxallowed: extendFlat({}, axesAttrs.maxallowed, {editType: 'plot'}),
     range: extendFlat({}, axesAttrs.range, {
         items: [
             {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},

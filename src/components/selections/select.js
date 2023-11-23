@@ -25,7 +25,7 @@ var newShapeHelpers = require('../shapes/draw_newshape/helpers');
 var handleEllipse = newShapeHelpers.handleEllipse;
 var readPaths = newShapeHelpers.readPaths;
 
-var newShapes = require('../shapes/draw_newshape/newshapes');
+var newShapes = require('../shapes/draw_newshape/newshapes').newShapes;
 
 var newSelections = require('./draw_newselection/newselections');
 var activateLastSelection = require('./draw').activateLastSelection;
@@ -112,6 +112,10 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         fullLayout.newshape :
         fullLayout.newselection;
 
+    if(isDrawMode) {
+        dragOptions.hasText = newStyle.label.text || newStyle.label.texttemplate;
+    }
+
     var fillC = (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'rgba(0,0,0,0)';
 
     var strokeC = newStyle.line.color || (
@@ -146,6 +150,16 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         .attr('transform', transform)
         .attr('d', 'M0,0Z');
 
+    // create & style group for text label
+    if(isDrawMode && dragOptions.hasText) {
+        var shapeGroup = zoomLayer.select('.label-temp');
+        if(shapeGroup.empty()) {
+            shapeGroup = zoomLayer.append('g')
+                .classed('label-temp', true)
+                .classed('select-outline', true)
+                .style({ opacity: 0.8 });
+        }
+    }
 
     var throttleID = fullLayout._uid + constants.SELECTID;
     var selection = [];
@@ -442,7 +456,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                 }
             }
 
-            Fx.click(gd, evt);
+            Fx.click(gd, evt, plotinfo.id);
         }).catch(Lib.error);
     };
 

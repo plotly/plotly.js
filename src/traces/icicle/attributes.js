@@ -10,6 +10,7 @@ var sunburstAttrs = require('../sunburst/attributes');
 var treemapAttrs = require('../treemap/attributes');
 var constants = require('../treemap/constants');
 var extendFlat = require('../../lib/extend').extendFlat;
+var pattern = require('../../components/drawing/attributes').pattern;
 
 module.exports = {
     labels: sunburstAttrs.labels,
@@ -60,6 +61,8 @@ module.exports = {
         colors: sunburstAttrs.marker.colors,
 
         line: sunburstAttrs.marker.line,
+
+        pattern: pattern,
 
         editType: 'calc'
     },

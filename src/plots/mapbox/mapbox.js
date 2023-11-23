@@ -86,7 +86,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     var opts = fullLayout[self.id];
 
     // store style id and URL or object
-    var styleObj = self.styleObj = getStyleObj(opts.style);
+    var styleObj = self.styleObj = getStyleObj(opts.style, fullLayout);
 
     // store access token associated with this map
     self.accessToken = opts.accesstoken;
@@ -152,7 +152,7 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
     self.rejectOnError(reject);
 
     var promises = [];
-    var styleObj = getStyleObj(opts.style);
+    var styleObj = getStyleObj(opts.style, fullLayout);
 
     if(JSON.stringify(self.styleObj) !== JSON.stringify(styleObj)) {
         self.styleObj = styleObj;
@@ -768,7 +768,7 @@ proto.getViewEditsWithDerived = function(cont) {
     return obj;
 };
 
-function getStyleObj(val) {
+function getStyleObj(val, fullLayout) {
     var styleObj = {};
 
     if(Lib.isPlainObject(val)) {
@@ -781,6 +781,16 @@ function getStyleObj(val) {
             styleObj.style = convertStyleVal(val);
         } else if(constants.stylesNonMapbox[val]) {
             styleObj.style = constants.stylesNonMapbox[val];
+            var spec = styleObj.style.sources['plotly-' + val];
+            var tiles = spec ? spec.tiles : undefined;
+            if(
+                tiles &&
+                tiles[0] &&
+                tiles[0].slice(-9) === '?api_key='
+            ) {
+                // provide api_key for stamen styles
+                tiles[0] += fullLayout._mapboxAccessToken;
+            }
         } else {
             styleObj.style = val;
         }

@@ -34,6 +34,7 @@ exports.projNames = {
     eckert5: 'eckert5',
     eckert6: 'eckert6',
     eisenlohr: 'eisenlohr',
+    'equal earth': 'equalEarth',
     equirectangular: 'equirectangular',
     fahey: 'fahey',
     'foucaut sinusoidal': 'foucautSinusoidal',

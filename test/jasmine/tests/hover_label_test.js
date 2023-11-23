@@ -4380,6 +4380,21 @@ describe('hover distance', function() {
                 })
                 .then(done, done.fail);
         });
+
+        it('correctly format the epoch timestamp in a given hover format', function(done) {
+            var x = ['1970-01-01 00:00:00'];
+            var mock = {
+                data: [{type: 'scatter', x: x, y: [1]}],
+                layout: {width: 400, height: 400, xaxis: {hoverformat: '%H:%M:%S'}}
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    Fx.hover(gd, {xpx: 120, ypx: 110});
+                    assertHoverLabelContent({nums: '(00:00:00, 1)'});
+                })
+                .then(done, done.fail);
+        });
     });
 });
 
@@ -4722,6 +4737,40 @@ describe('hovermode: (x|y)unified', function() {
             assertLabel({title: '0', items: [
                 'A : 1'
             ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should not fail if only hoverinfo: "none" are current visible', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'A',
+                x: [1, 100],
+                y: [1, 1]
+            }, {
+                name: 'B',
+                y: [1],
+                x: [50],
+                hoverinfo: 'none'
+            }],
+            layout: {
+                xaxis: {range: [40, 60]},
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            expect(gd._hoverdata, undefined);
+            assertHoverLabelContent({});
         })
         .then(done, done.fail);
     });

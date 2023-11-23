@@ -2303,7 +2303,9 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         // see mapbox_test.js for rationale
         function _mouseEvent(type, pos) {
             return new Promise(function(resolve) {
-                mouseEvent(type, pos[0], pos[1]);
+                mouseEvent(type, pos[0], pos[1], {
+                    buttons: 1 // left button
+                });
                 setTimeout(resolve, 100);
             });
         }

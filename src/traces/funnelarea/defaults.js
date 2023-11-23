@@ -5,6 +5,7 @@ var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
 var handleLabelsAndValues = require('../pie/defaults').handleLabelsAndValues;
+var handleMarkerDefaults = require('../pie/defaults').handleMarkerDefaults;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -32,10 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
     traceOut._length = len;
 
-    var lineWidth = coerce('marker.line.width');
-    if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
-
-    coerce('marker.colors');
+    handleMarkerDefaults(traceIn, traceOut, layout, coerce);
 
     coerce('scalegroup');
 

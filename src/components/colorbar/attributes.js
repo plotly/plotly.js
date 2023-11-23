@@ -57,12 +57,25 @@ module.exports = overrideAll({
     },
     x: {
         valType: 'number',
-        min: -2,
-        max: 3,
         description: [
-            'Sets the x position of the color bar (in plot fraction).',
-            'Defaults to 1.02 when `orientation` is *v* and',
-            '0.5 when `orientation` is *h*.'
+            'Sets the x position with respect to `xref` of the color bar (in plot fraction).',
+            'When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and',
+            '0.5 when `orientation` is *h*.',
+            'When `xref` is *container*, defaults to *1* when `orientation` is *v* and',
+            '0.5 when `orientation` is *h*.',
+            'Must be between *0* and *1* if `xref` is *container*',
+            'and between *-2* and *3* if `xref` is *paper*.'
+        ].join(' ')
+    },
+    xref: {
+        valType: 'enumerated',
+        dflt: 'paper',
+        values: ['container', 'paper'],
+        editType: 'layoutstyle',
+        description: [
+            'Sets the container `x` refers to.',
+            '*container* spans the entire `width` of the plot.',
+            '*paper* refers to the width of the plotting area only.'
         ].join(' ')
     },
     xanchor: {
@@ -84,13 +97,26 @@ module.exports = overrideAll({
     },
     y: {
         valType: 'number',
-        min: -2,
-        max: 3,
         description: [
-            'Sets the y position of the color bar (in plot fraction).',
-            'Defaults to 0.5 when `orientation` is *v* and',
-            '1.02 when `orientation` is *h*.'
+            'Sets the y position with respect to `yref` of the color bar (in plot fraction).',
+            'When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and',
+            '1.02 when `orientation` is *h*.',
+            'When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and',
+            '1 when `orientation` is *h*.',
+            'Must be between *0* and *1* if `yref` is *container*',
+            'and between *-2* and *3* if `yref` is *paper*.'
         ].join(' ')
+    },
+    yref: {
+        valType: 'enumerated',
+        dflt: 'paper',
+        values: ['container', 'paper'],
+        editType: 'layoutstyle',
+        description: [
+            'Sets the container `y` refers to.',
+            '*container* spans the entire `height` of the plot.',
+            '*paper* refers to the height of the plotting area only.'
+        ].join(' '),
     },
     yanchor: {
         valType: 'enumerated',

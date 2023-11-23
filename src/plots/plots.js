@@ -2010,13 +2010,6 @@ plots.doAutoMargin = function(gd) {
     var reservedMargins = {t: 0, b: 0, l: 0, r: 0};
     var oldMargins = Lib.extendFlat({}, gs);
 
-    var margins = gd._fullLayout._reservedMargin;
-    for(var key in margins) {
-        for(var side in margins[key]) {
-            var val = margins[key][side];
-            reservedMargins[side] = Math.max(reservedMargins[side], val);
-        }
-    }
     // adjust margins for outside components
     // fullLayout.margin is the requested margin,
     // fullLayout._size has margins and plotsize after adjustment
@@ -2029,11 +2022,18 @@ plots.doAutoMargin = function(gd) {
     var minreducedwidth = fullLayout.minreducedwidth;
     var minreducedheight = fullLayout.minreducedheight;
 
-    if(fullLayout.margin.autoexpand !== false) {
+    if(margin.autoexpand !== false) {
         for(var k in pushMargin) {
             if(!pushMarginIds[k]) delete pushMargin[k];
         }
 
+        var margins = gd._fullLayout._reservedMargin;
+        for(var key in margins) {
+            for(var side in margins[key]) {
+                var val = margins[key][side];
+                reservedMargins[side] = Math.max(reservedMargins[side], val);
+            }
+        }
         // fill in the requested margins
         pushMargin.base = {
             l: {val: 0, size: ml},
@@ -2042,9 +2042,23 @@ plots.doAutoMargin = function(gd) {
             b: {val: 0, size: mb}
         };
 
+
+        // make sure that the reservedMargin is the minimum needed
+        for(var s in reservedMargins) {
+            var autoMarginPush = 0;
+            for(var m in pushMargin) {
+                if(m !== 'base') {
+                    if(isNumeric(pushMargin[m][s].size)) {
+                        autoMarginPush = pushMargin[m][s].size > autoMarginPush ? pushMargin[m][s].size : autoMarginPush;
+                    }
+                }
+            }
+            var extraMargin = Math.max(0, (margin[s] - autoMarginPush));
+            reservedMargins[s] = Math.max(0, reservedMargins[s] - extraMargin);
+        }
+
         // now cycle through all the combinations of l and r
         // (and t and b) to find the required margins
-
         for(var k1 in pushMargin) {
             var pushleft = pushMargin[k1].l || {};
             var pushbottom = pushMargin[k1].b || {};
@@ -3193,6 +3207,14 @@ function sortAxisCategoriesByValue(axList, gd) {
         median: function(values) {return Lib.median(values);}
     };
 
+    function sortAscending(a, b) {
+        return a[1] - b[1];
+    }
+
+    function sortDescending(a, b) {
+        return b[1] - a[1];
+    }
+
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
         if(ax.type !== 'category') continue;
@@ -3314,9 +3336,7 @@ function sortAxisCategoriesByValue(axList, gd) {
             }
 
             // Sort by aggregated value
-            categoriesAggregatedValue.sort(function(a, b) {
-                return a[1] - b[1];
-            });
+            categoriesAggregatedValue.sort(order === 'descending' ? sortDescending : sortAscending);
 
             ax._categoriesAggregatedValue = categoriesAggregatedValue;
 
@@ -3324,11 +3344,6 @@ function sortAxisCategoriesByValue(axList, gd) {
             ax._initialCategories = categoriesAggregatedValue.map(function(c) {
                 return c[0];
             });
-
-            // Reverse if descending
-            if(order === 'descending') {
-                ax._initialCategories.reverse();
-            }
 
             // Sort all matching axes
             affectedTraces = affectedTraces.concat(ax.sortByInitialCategories());

@@ -718,13 +718,22 @@ describe('Test axes', function() {
         it('should set autorange to true when input range is invalid', function() {
             layoutIn = {
                 xaxis: { range: 'not-gonna-work' },
-                xaxis2: { range: [1, 2, 3] },
+                xaxis2: { range: [1] },
+                xaxis3: { range: [null, null] },
                 yaxis: { range: ['a', 2] },
                 yaxis2: { range: [1, 'b'] },
-                yaxis3: { range: [null, {}] }
+                yaxis3: { range: [undefined, {}] },
+                yaxis4: { range: [1, null], autorange: 'min' }, // second range is null not first
+                yaxis5: { range: [null, 2], autorange: 'max' }, // first range is null not second
+                yaxis6: { range: [1, null], autorange: 'max reversed' }, // second range is null not first
+                yaxis7: { range: [null, 2], autorange: 'min reversed' }, // first range is null not second
+                yaxis8: { range: [1, null], autorange: 'reversed' },
+                yaxis9: { range: [null, 2], autorange: 'reversed' },
+                yaxis10: { range: [1, null], autorange: true },
+                yaxis11: { range: [null, 2], autorange: true },
             };
-            layoutOut._subplots.cartesian.push('x2y2', 'xy3');
-            layoutOut._subplots.yaxis.push('x2', 'y2', 'y3');
+            layoutOut._subplots.cartesian.push('x2y2', 'xy3', 'x3y4', 'x3y5', 'x3y6', 'x3y7', 'x3y9', 'x3y9', 'x3y10', 'x3y11');
+            layoutOut._subplots.yaxis.push('x2', 'x3', 'y2', 'y3', 'y4', 'y5', 'y6', 'y7', 'y8', 'y9', 'y10', 'y11');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -748,6 +757,36 @@ describe('Test axes', function() {
             Axes.list({ _fullLayout: layoutOut }).forEach(function(ax) {
                 expect(ax.autorange).toBe(false, ax._name);
             });
+        });
+
+        it('should set autorange to true when range[0] and range[1] are set to null', function() {
+            layoutIn = {
+                xaxis: { range: [null, null] }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.autorange).toBe(true);
+        });
+
+        it('should set autorange to min when range[0] is set to null', function() {
+            layoutIn = {
+                xaxis: { range: [null, 1] }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.autorange).toBe('min');
+        });
+
+        it('should set autorange to max when range[1] is set to null', function() {
+            layoutIn = {
+                xaxis: { range: [1, null] }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.autorange).toBe('max');
         });
 
         it('only allows rangemode with linear axes', function() {
@@ -1542,6 +1581,103 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
 
+        it('can relayout one partial range without affecting other subplots', function(done) {
+            var rangeX2;
+            var rangeX3;
+            var rangeX4;
+            var autorangeX2;
+            var autorangeX3;
+            var autorangeX4;
+
+            Plotly.newPlot(gd, {
+                data: [
+                    {
+                        xaxis: 'x',
+                        yaxis: 'y',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x2',
+                        yaxis: 'y2',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x3',
+                        yaxis: 'y3',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x4',
+                        yaxis: 'y4',
+                        y: [1000, 10, 100, 1],
+                    },
+                ],
+                layout: {
+                    xaxis: {
+                        range: [-1, null],
+                        anchor: 'y',
+                        domain: [0, 0.45],
+                    },
+                    yaxis: {
+                        anchor: 'x',
+                        domain: [0, 0.45],
+                        side: 'right',
+                    },
+                    xaxis2: {
+                        range: [null, 4],
+                        anchor: 'y2',
+                        domain: [0, 0.45],
+                    },
+                    yaxis2: {
+                        anchor: 'x2',
+                        domain: [0.55, 1],
+                        side: 'left',
+                    },
+                    xaxis3: {
+                        range: [null, -1],
+                        autorange: 'max reversed',
+                        anchor: 'y3',
+                        domain: [0.55, 1],
+                    },
+                    yaxis3: {
+                        anchor: 'x3',
+                        domain: [0, 0.45],
+                        side: 'left',
+                    },
+                    xaxis4: {
+                        range: [4, null],
+                        autorange: 'min reversed',
+                        anchor: 'y4',
+                        domain: [0.55, 1],
+                    },
+                    yaxis4: {
+                        anchor: 'x4',
+                        domain: [0.55, 1],
+                        side: 'right',
+                    }
+                }
+            }).then(function() {
+                rangeX2 = gd._fullLayout.xaxis2.range.slice();
+                rangeX3 = gd._fullLayout.xaxis3.range.slice();
+                rangeX4 = gd._fullLayout.xaxis4.range.slice();
+
+                autorangeX2 = gd._fullLayout.xaxis2.autorange;
+                autorangeX3 = gd._fullLayout.xaxis3.autorange;
+                autorangeX4 = gd._fullLayout.xaxis4.autorange;
+
+                return Plotly.relayout(gd, 'xaxis.range', [1, 2]);
+            }).then(function() {
+                expect(gd._fullLayout.xaxis2.range).toEqual(rangeX2);
+                expect(gd._fullLayout.xaxis3.range).toEqual(rangeX3);
+                expect(gd._fullLayout.xaxis4.range).toEqual(rangeX4);
+
+                expect(gd._fullLayout.xaxis2.autorange).toEqual(autorangeX2);
+                expect(gd._fullLayout.xaxis3.autorange).toEqual(autorangeX3);
+                expect(gd._fullLayout.xaxis4.autorange).toEqual(autorangeX4);
+            })
+            .then(done, done.fail);
+        });
+
         it('should make room for the inside labels of the counter axes', function(done) {
             Plotly.newPlot(gd, {
                 data: [{
@@ -1564,6 +1700,36 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.37, 3.22], 1);
             })
             .then(done, done.fail);
+        });
+    });
+
+    describe('insiderange relayout', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('can relayout insiderange', function(done) {
+            Plotly.newPlot(gd, [{
+                y: [1, 3, 2, 4]}
+            ], {
+                xaxis: {insiderange: [0, 2]},
+                yaxis: {ticklabelposition: 'inside'},
+                plot_bgcolor: 'lightgray',
+                width: 600,
+                height: 600
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
+
+                return Plotly.relayout(gd, {
+                    'xaxis.insiderange': [1, 3]
+                });
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.889, 3]);
+            }).then(done, done.fail);
         });
     });
 
@@ -2494,7 +2660,7 @@ describe('Test axes', function() {
             };
         });
 
-        it('should save range when autosize turned off and rangeInitial isn\'t defined', function() {
+        it('should save range when autosize turned off and rangeInitials are not defined', function() {
             ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
                 gd._fullLayout[ax].autorange = false;
             });
@@ -2502,39 +2668,64 @@ describe('Test axes', function() {
             hasOneAxisChanged = saveRangeInitial(gd);
 
             expect(hasOneAxisChanged).toBe(true);
-            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.5, 1]);
-            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+            expect(gd._fullLayout.xaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.xaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.yaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.yaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.xaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.xaxis2._rangeInitial1).toEqual(1);
+
+            expect(gd._fullLayout.yaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.yaxis2._rangeInitial1).toEqual(1);
         });
 
-        it('should not overwrite saved range if rangeInitial is defined', function() {
+        it('should not overwrite saved range if rangeInitials are defined', function() {
             ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
-                gd._fullLayout[ax]._rangeInitial = gd._fullLayout[ax].range.slice();
+                gd._fullLayout[ax]._rangeInitial0 = gd._fullLayout[ax].range[0];
+                gd._fullLayout[ax]._rangeInitial1 = gd._fullLayout[ax].range[1];
                 gd._fullLayout[ax].range = [0, 1];
             });
 
             hasOneAxisChanged = saveRangeInitial(gd);
 
             expect(hasOneAxisChanged).toBe(false);
-            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.5, 1]);
-            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+
+            expect(gd._fullLayout.xaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.xaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.yaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.yaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.xaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.xaxis2._rangeInitial1).toEqual(1);
+
+            expect(gd._fullLayout.yaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.yaxis2._rangeInitial1).toEqual(1);
         });
 
         it('should save range when overwrite option is on and range has changed', function() {
             ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
-                gd._fullLayout[ax]._rangeInitial = gd._fullLayout[ax].range.slice();
+                gd._fullLayout[ax]._rangeInitial0 = gd._fullLayout[ax].range[0];
+                gd._fullLayout[ax]._rangeInitial1 = gd._fullLayout[ax].range[1];
             });
             gd._fullLayout.xaxis2.range = [0.2, 0.4];
 
             hasOneAxisChanged = saveRangeInitial(gd, true);
             expect(hasOneAxisChanged).toBe(true);
-            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.2, 0.4]);
-            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+
+            expect(gd._fullLayout.xaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.xaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.yaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.yaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.xaxis2._rangeInitial0).toEqual(0.2);
+            expect(gd._fullLayout.xaxis2._rangeInitial1).toEqual(0.4);
+
+            expect(gd._fullLayout.yaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.yaxis2._rangeInitial1).toEqual(1);
         });
     });
 
@@ -7859,6 +8050,40 @@ describe('more react tests', function() {
             expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
         })
         .then(done, done.fail);
+    });
+
+    it('insiderange react to new data', function(done) {
+        var layout = {
+            xaxis: {
+                insiderange: [0, 2]
+            },
+            yaxis: {
+                ticklabelposition: 'inside'
+            },
+            plot_bgcolor: 'lightgray',
+            width: 600,
+            height: 600
+        };
+
+        var data1 = [{
+            y: [1, 3, 2]
+        }];
+
+        var data2 = [{
+            y: [1000, 3000, 2000]
+        }];
+
+        var fig1 = {data: data1, layout: layout};
+        var fig2 = {data: data2, layout: layout};
+
+        Plotly.newPlot(gd, fig1)
+        .then(function() {
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
+
+            return Plotly.react(gd, fig2);
+        }).then(function() {
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.164, 2]);
+        }).then(done, done.fail);
     });
 });
 

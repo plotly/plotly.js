@@ -77,7 +77,9 @@ allNames += [item for item, had_item in zip(LAST, HAD) if had_item]
 # unable to generate baselines for the following mocks
 blacklist = [
     'mapbox_density0-legend',
-    'mapbox_osm-style'
+    'mapbox_osm-style',
+    'mapbox_stamen-style', # Could pass by setting mapboxAccessToken to a stadiamaps.com token
+    'mapbox_custom-style' # Figure out why needed this in https://github.com/plotly/plotly.js/pull/6610
 ]
 allNames = [a for a in allNames if a not in blacklist]
 

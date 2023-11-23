@@ -321,14 +321,20 @@ axes.saveRangeInitial = function(gd, overwrite) {
 
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
-        var isNew = (ax._rangeInitial === undefined);
-        var hasChanged = isNew || !(
-            ax.range[0] === ax._rangeInitial[0] &&
-            ax.range[1] === ax._rangeInitial[1]
+        var isNew =
+            ax._rangeInitial0 === undefined &&
+            ax._rangeInitial1 === undefined;
+
+        var hasChanged = isNew || (
+            ax.range[0] !== ax._rangeInitial0 ||
+            ax.range[1] !== ax._rangeInitial1
         );
 
-        if((isNew && ax.autorange === false) || (overwrite && hasChanged)) {
-            ax._rangeInitial = ax.range.slice();
+        var autorange = ax.autorange;
+        if((isNew && autorange !== true) || (overwrite && hasChanged)) {
+            ax._rangeInitial0 = (autorange === 'min' || autorange === 'max reversed') ? undefined : ax.range[0];
+            ax._rangeInitial1 = (autorange === 'max' || autorange === 'min reversed') ? undefined : ax.range[1];
+            ax._autorangeInitial = autorange;
             hasOneAxisChanged = true;
         }
     }
@@ -1738,6 +1744,9 @@ function formatDate(ax, out, hover, extraPrecision) {
     var tr = ax._tickround;
     var fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
 
+    // Only apply extra precision if no explicit format was provided.
+    extraPrecision = !fmt && extraPrecision;
+
     if(extraPrecision) {
         // second or sub-second precision: extra always shows max digits.
         // for other fields, extra precision just adds one field.
@@ -1762,7 +1771,7 @@ function formatDate(ax, out, hover, extraPrecision) {
         // anything to be uniform with!)
 
         // can we remove the whole time part?
-        if(dateStr === '00:00:00' || dateStr === '00:00') {
+        if(headStr !== undefined && (dateStr === '00:00:00' || dateStr === '00:00')) {
             dateStr = headStr;
             headStr = '';
         } else if(dateStr.length === 8) {
@@ -3815,28 +3824,105 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
+    var computeTickLabelBoundingBoxes = function() {
+        var labelsMaxW = 0;
+        var labelsMaxH = 0;
+        tickLabels.each(function(d, i) {
+            var thisLabel = selectTickLabel(this);
+            var mathjaxGroup = thisLabel.select('.text-math-group');
+
+            if(mathjaxGroup.empty()) {
+                var bb;
+
+                if(ax._vals[i]) {
+                    bb = ax._vals[i].bb || Drawing.bBox(thisLabel.node());
+                    ax._vals[i].bb = bb;
+                }
+
+                labelsMaxW = Math.max(labelsMaxW, bb.width);
+                labelsMaxH = Math.max(labelsMaxH, bb.height);
+            }
+        });
+
+        return {
+            labelsMaxW: labelsMaxW,
+            labelsMaxH: labelsMaxH
+        };
+    };
+
     var anchorAx = ax._anchorAxis;
     if(
-        anchorAx && anchorAx.autorange &&
+        anchorAx && (anchorAx.autorange || anchorAx.insiderange) &&
         insideTicklabelposition(ax) &&
         !isLinked(fullLayout, ax._id)
     ) {
-        if(!fullLayout._insideTickLabelsAutorange) {
-            fullLayout._insideTickLabelsAutorange = {};
+        if(!fullLayout._insideTickLabelsUpdaterange) {
+            fullLayout._insideTickLabelsUpdaterange = {};
         }
-        fullLayout._insideTickLabelsAutorange[anchorAx._name + '.autorange'] = anchorAx.autorange;
 
-        seq.push(
-            function computeFinalTickLabelBoundingBoxes() {
-                tickLabels.each(function(d, i) {
-                    var thisLabel = selectTickLabel(this);
-                    var mathjaxGroup = thisLabel.select('.text-math-group');
-                    if(mathjaxGroup.empty()) {
-                        ax._vals[i].bb = Drawing.bBox(thisLabel.node());
-                    }
-                });
+        if(anchorAx.autorange) {
+            fullLayout._insideTickLabelsUpdaterange[anchorAx._name + '.autorange'] = anchorAx.autorange;
+
+            seq.push(computeTickLabelBoundingBoxes);
+        }
+
+        if(anchorAx.insiderange) {
+            var BBs = computeTickLabelBoundingBoxes();
+            var move = ax._id.charAt(0) === 'y' ?
+                BBs.labelsMaxW :
+                BBs.labelsMaxH;
+
+            move += 2 * TEXTPAD;
+
+            if(ax.ticklabelposition === 'inside') {
+                move += ax.ticklen || 0;
             }
-        );
+
+            var sgn = (ax.side === 'right' || ax.side === 'top') ? 1 : -1;
+            var index = sgn === 1 ? 1 : 0;
+            var otherIndex = sgn === 1 ? 0 : 1;
+
+            var newRange = [];
+            newRange[otherIndex] = anchorAx.range[otherIndex];
+
+            var p0 = anchorAx.d2p(anchorAx.range[index]);
+            var p1 = anchorAx.d2p(anchorAx.range[otherIndex]);
+            var dist = Math.abs(p1 - p0);
+            if(dist - move > 0) {
+                dist -= move;
+                move *= 1 + move / dist;
+            } else {
+                move = 0;
+            }
+
+            if(ax._id.charAt(0) !== 'y') move = -move;
+
+            newRange[index] = anchorAx.p2d(
+                anchorAx.d2p(anchorAx.range[index]) +
+                sgn * move
+            );
+
+            // handle partial ranges in insiderange
+            if(
+                anchorAx.autorange === 'min' ||
+                anchorAx.autorange === 'max reversed'
+            ) {
+                newRange[0] = null;
+
+                anchorAx._rangeInitial0 = undefined;
+                anchorAx._rangeInitial1 = undefined;
+            } else if(
+                anchorAx.autorange === 'max' ||
+                anchorAx.autorange === 'min reversed'
+            ) {
+                newRange[1] = null;
+
+                anchorAx._rangeInitial0 = undefined;
+                anchorAx._rangeInitial1 = undefined;
+            }
+
+            fullLayout._insideTickLabelsUpdaterange[anchorAx._name + '.range'] = newRange;
+        }
     }
 
     var done = Lib.syncOrAsync(seq);

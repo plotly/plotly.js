@@ -79,7 +79,7 @@ module.exports = {
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the trace name.',
-            'The trace name appear as the legend item and on hover.',
+            'The trace name appears as the legend item and on hover.',
             'For box traces, the name will also be used for the position',
             'coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are',
             'missing and the position axis is categorical'
@@ -218,7 +218,30 @@ module.exports = {
             'right (left) for vertical boxes and above (below) for horizontal boxes'
         ].join(' ')
     },
-
+    sdmultiple: {
+        valType: 'number',
+        min: 0,
+        editType: 'calc',
+        dflt: 1,
+        description: [
+            'Scales the box size when sizemode=sd',
+            'Allowing boxes to be drawn across any stddev range',
+            'For example 1-stddev, 3-stddev, 5-stddev',
+        ].join(' ')
+    },
+    sizemode: {
+        valType: 'enumerated',
+        values: ['quartiles', 'sd'],
+        editType: 'calc',
+        dflt: 'quartiles',
+        description: [
+            'Sets the upper and lower bound for the boxes',
+            'quartiles means box is drawn between Q1 and Q3',
+            'SD means the box is drawn between Mean +- Standard Deviation',
+            'Argument sdmultiple (default 1) to scale the box size',
+            'So it could be drawn 1-stddev, 3-stddev etc',
+        ].join(' ')
+    },
     boxmean: {
         valType: 'enumerated',
         values: [true, 'sd', false],
@@ -375,6 +398,15 @@ module.exports = {
             'Sets the width of the whiskers relative to',
             'the box\' width.',
             'For example, with 1, the whiskers are as wide as the box(es).'
+        ].join(' ')
+    },
+
+    showwhiskers: {
+        valType: 'boolean',
+        editType: 'calc',
+        description: [
+            'Determines whether or not whiskers are visible.',
+            'Defaults to true for `sizemode` *quartiles*, false for *sd*.'
         ].join(' ')
     },
 

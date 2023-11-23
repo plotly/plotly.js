@@ -12,7 +12,8 @@
         }
     ],
     "layout": {
-        "width": 800,
+        "showlegend": true,
+        "width": 1000,
         "height": 600,
         "margin": {
             "t": 100,
@@ -27,6 +28,7 @@
             "layout": {
                 "shapes": [
                     {
+                        "showlegend": true,
                         "label": {"text": "label"},
                         "name": "myPath",
                         "editable": true,
@@ -45,6 +47,7 @@
         },
         "shapes": [
             {
+                "showlegend": true,
                 "label": {"text": "label 1 (top right)", "textposition": "top right"},
                 "editable": true,
                 "layer": "below",
@@ -60,6 +63,7 @@
                 "y1": 75
             },
             {
+                "showlegend": true,
                 "label": {"text": "label 2"},
                 "editable": true,
                 "type": "circle",
@@ -74,6 +78,7 @@
                 "y1": 75
             },
             {
+                "showlegend": true,
                 "label": {"text": "label 3"},
                 "editable": true,
                 "line": {
@@ -83,6 +88,7 @@
                 "path": "M250,25L225,75L275,75Z"
             },
             {
+                "showlegend": true,
                 "label": {"text": "label 4"},
                 "editable": true,
                 "line": {
@@ -91,6 +97,9 @@
                 "path": "M250,225L225,275L275,275"
             },
             {
+                "showlegend": true,
+                "legendgroup": "group 1",
+                "legendgrouptitle": { "text": "group 1" },
                 "label": {"text": "label 5"},
                 "editable": true,
                 "layer": "below",
@@ -101,6 +110,8 @@
                 }
             },
             {
+                "showlegend": true,
+                "legendgroup": "group 1",
                 "label": {"text": "label 6"},
                 "editable": true,
                 "line": {
@@ -111,6 +122,8 @@
                 "path": "M0,100V200H50L0,300Q100,300 100,200T150,200C100,300 200,300 200,200S150,200 150,100Z"
             },
             {
+                "showlegend": true,
+                "legend": "legend2",
                 "label": {"text": "label 7"},
                 "editable": true,
                 "line": {
@@ -124,6 +137,20 @@
         "newshape": {
             "label": {
                 "text": "TEXT"
+            },
+            "line": {
+                "color": "pink"
+            },
+            "showlegend": true,
+            "legend": "legend2",
+            "legendgroup": "group 2",
+            "legendgrouptitle": { "text": "new shapes group" }
+        },
+        "legend2": {
+            "y": 0,
+            "bgcolor": "lightblue",
+            "title": {
+                "text": "Legend 2"
             }
         }
     },

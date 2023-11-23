@@ -13,6 +13,7 @@ var getFromId = axIds.getFromId;
 var isLinked = axIds.isLinked;
 
 module.exports = {
+    applyAutorangeOptions: applyAutorangeOptions,
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
     doAutoRange: doAutoRange,
@@ -75,16 +76,20 @@ function getAutoRange(gd, ax) {
         maxmax = Math.max(maxmax, maxArray[i].val);
     }
 
-    var axReverse = false;
+    var autorange = ax.autorange;
+    var axReverse =
+        autorange === 'reversed' ||
+        autorange === 'min reversed' ||
+        autorange === 'max reversed';
 
-    if(ax.range) {
+    if(!axReverse && ax.range) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         axReverse = rng[1] < rng[0];
     }
+
     // one-time setting to easily reverse the axis
     // when plotting from code
     if(ax.autorange === 'reversed') {
-        axReverse = true;
         ax.autorange = true;
     }
 
@@ -176,6 +181,10 @@ function getAutoRange(gd, ax) {
         ];
     }
 
+    newRange = applyAutorangeOptions(newRange, ax);
+
+    if(ax.limitRange) ax.limitRange();
+
     // maintain reversal
     if(axReverse) newRange.reverse();
 
@@ -209,7 +218,7 @@ function makePadFn(fullLayout, ax, max) {
         (ax.ticklabelposition || '').indexOf('inside') !== -1 ||
         (anchorAxis.ticklabelposition || '').indexOf('inside') !== -1
     ) {
-        var axReverse = ax.autorange === 'reversed';
+        var axReverse = ax.isReversed();
         if(!axReverse) {
             var rng = Lib.simpleMap(ax.range, ax.r2l);
             axReverse = rng[1] < rng[0];
@@ -623,3 +632,91 @@ function goodNumber(v) {
 
 function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
+
+function applyAutorangeMinOptions(v, ax) {
+    var autorangeoptions = ax.autorangeoptions;
+    if(
+        autorangeoptions &&
+        autorangeoptions.minallowed !== undefined &&
+        hasValidMinAndMax(ax, autorangeoptions.minallowed, autorangeoptions.maxallowed)
+    ) {
+        return autorangeoptions.minallowed;
+    }
+
+    if(
+        autorangeoptions &&
+        autorangeoptions.clipmin !== undefined &&
+        hasValidMinAndMax(ax, autorangeoptions.clipmin, autorangeoptions.clipmax)
+    ) {
+        return Math.max(v, ax.d2l(autorangeoptions.clipmin));
+    }
+    return v;
+}
+
+function applyAutorangeMaxOptions(v, ax) {
+    var autorangeoptions = ax.autorangeoptions;
+
+    if(
+        autorangeoptions &&
+        autorangeoptions.maxallowed !== undefined &&
+        hasValidMinAndMax(ax, autorangeoptions.minallowed, autorangeoptions.maxallowed)
+    ) {
+        return autorangeoptions.maxallowed;
+    }
+
+    if(
+        autorangeoptions &&
+        autorangeoptions.clipmax !== undefined &&
+        hasValidMinAndMax(ax, autorangeoptions.clipmin, autorangeoptions.clipmax)
+    ) {
+        return Math.min(v, ax.d2l(autorangeoptions.clipmax));
+    }
+
+    return v;
+}
+
+function hasValidMinAndMax(ax, min, max) {
+    // in case both min and max are defined, ensure min < max
+    if(
+        min !== undefined &&
+        max !== undefined
+    ) {
+        min = ax.d2l(min);
+        max = ax.d2l(max);
+        return min < max;
+    }
+    return true;
+}
+
+// this function should be (and is) called before reversing the range
+// so range[0] is the minimum and range[1] is the maximum
+function applyAutorangeOptions(range, ax) {
+    if(!ax || !ax.autorangeoptions) return range;
+
+    var min = range[0];
+    var max = range[1];
+
+    var include = ax.autorangeoptions.include;
+    if(include !== undefined) {
+        var lMin = ax.d2l(min);
+        var lMax = ax.d2l(max);
+
+        if(!Lib.isArrayOrTypedArray(include)) include = [include];
+        for(var i = 0; i < include.length; i++) {
+            var v = ax.d2l(include[i]);
+            if(lMin >= v) {
+                lMin = v;
+                min = v;
+            }
+            if(lMax <= v) {
+                lMax = v;
+                max = v;
+            }
+        }
+    }
+
+    min = applyAutorangeMinOptions(min, ax);
+    max = applyAutorangeMaxOptions(max, ax);
+
+    return [min, max];
+}

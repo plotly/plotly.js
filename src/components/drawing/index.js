@@ -619,19 +619,21 @@ drawing.getPatternAttr = function(mp, i, dflt) {
     return mp;
 };
 
-drawing.pointStyle = function(s, trace, gd) {
+drawing.pointStyle = function(s, trace, gd, pt) {
     if(!s.size()) return;
 
     var fns = drawing.makePointStyleFns(trace);
 
     s.each(function(d) {
-        drawing.singlePointStyle(d, d3.select(this), trace, fns, gd);
+        drawing.singlePointStyle(d, d3.select(this), trace, fns, gd, pt);
     });
 };
 
-drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
+drawing.singlePointStyle = function(d, sel, trace, fns, gd, pt) {
     var marker = trace.marker;
     var markerLine = marker.line;
+
+    if(pt && pt.i >= 0 && d.i === undefined) d.i = pt.i;
 
     sel.style('opacity',
         fns.selectedOpacityFn ? fns.selectedOpacityFn(d) :
@@ -699,7 +701,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         if('mc' in d) {
             fillColor = d.mcc = fns.markerScale(d.mc);
         } else {
-            fillColor = marker.color || 'rgba(0,0,0,0)';
+            fillColor = marker.color || marker.colors || 'rgba(0,0,0,0)';
         }
 
         if(fns.selectedColorFn) {
@@ -745,14 +747,22 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
             drawing.gradient(sel, gd, gradientID, gradientType,
                 [[0, gradientColor], [1, fillColor]], 'fill');
         } else if(patternShape) {
+            var perPointPattern = false;
+            var fgcolor = markerPattern.fgcolor;
+            if(!fgcolor && pt && pt.color) {
+                fgcolor = pt.color;
+                perPointPattern = true;
+            }
+            var patternFGColor = drawing.getPatternAttr(fgcolor, d.i, (pt && pt.color) || null);
+
             var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
-            var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
             var patternFGOpacity = markerPattern.fgopacity;
             var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
             var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
-            var perPointPattern = d.mcc ||
+            perPointPattern = perPointPattern || d.mcc ||
                 Lib.isArrayOrTypedArray(markerPattern.shape) ||
                 Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
+                Lib.isArrayOrTypedArray(markerPattern.fgcolor) ||
                 Lib.isArrayOrTypedArray(markerPattern.size) ||
                 Lib.isArrayOrTypedArray(markerPattern.solidity);
 
@@ -766,7 +776,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
                 patternBGColor, patternFGColor, patternFGOpacity
             );
         } else {
-            Color.fill(sel, fillColor);
+            Lib.isArrayOrTypedArray(fillColor) ? Color.fill(sel, fillColor[d.i]) : Color.fill(sel, fillColor);
         }
 
         if(lineWidth) {
@@ -1597,7 +1607,10 @@ function getMarkerAngle(d, trace) {
     var angle = d.ma;
 
     if(angle === undefined) {
-        angle = trace.marker.angle || 0;
+        angle = trace.marker.angle;
+        if(!angle || Lib.isArrayOrTypedArray(angle)) {
+            angle = 0;
+        }
     }
 
     var x, y;
