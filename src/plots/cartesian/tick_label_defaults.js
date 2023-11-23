@@ -42,7 +42,9 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
 
         if(!options.noAng) {
             coerce('tickangle');
-            coerce('autotickangles');
+            if(!options.noAutotickangles) {
+                coerce('autotickangles');
+            }
         }
 
         if(axType !== 'category') {

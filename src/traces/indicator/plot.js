@@ -823,6 +823,7 @@ function mockAxis(gd, opts, zrange) {
     var axisOptions = {
         letter: 'x',
         font: fullLayout.font,
+        noAutotickangles: true,
         noHover: true,
         noTickson: true
     };
