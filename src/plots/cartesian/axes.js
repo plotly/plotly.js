@@ -3782,17 +3782,17 @@ axes.drawLabels = function(gd, ax, opts) {
                 var pad = !isAligned ? 0 :
                     (ax.tickwidth || 0) + 2 * TEXTPAD;
 
-                const adjacent = tickSpacing;
-                const opposite = maxFontSize * 1.25 * maxLines;
-                const hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
+                var adjacent = tickSpacing;
+                var opposite = maxFontSize * 1.25 * maxLines;
+                var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
                 // sin(angle) = opposite / hypotenuse
-                const minAngle = Math.asin(opposite / hypotenuse) * (180 / Math.PI /* to degrees */);
+                var minAngle = Math.asin(opposite / hypotenuse) * (180 / Math.PI /* to degrees */);
 
-                var angle = autoTickAngles.find(angle => Math.abs(angle) >= minAngle);
+                var angle = autoTickAngles.find(function(angle) { return Math.abs(angle) >= minAngle; });
                 if(angle === undefined) {
                     // no angle larger than minAngle, just pick the largest angle
                     angle = autoTickAngles.reduce(
-                        (currentMax, nextAngle) => Math.abs(currentMax) < Math.abs(nextAngle) ? nextAngle : currentMax
+                        function(currentMax, nextAngle) { return Math.abs(currentMax) < Math.abs(nextAngle) ? nextAngle : currentMax; }
                         , autoTickAngles[0]
                     );
                 }
