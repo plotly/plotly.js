@@ -811,7 +811,6 @@ module.exports = {
     },
     autotickangles: {
         valType: 'data_array',
-        coerceNumber: true,
         dflt: [30, 90],
         editType: 'ticks',
         description: [
