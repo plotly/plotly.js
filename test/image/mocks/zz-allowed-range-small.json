@@ -38,7 +38,8 @@
         "xaxis": {
             "anchor": "y",
             "domain": [0, 0.45],
-            "minallowed": 6
+            "maxallowed": 6.2,
+            "minallowed": 5.8
         },
         "yaxis": {
             "anchor": "x",
@@ -48,7 +49,8 @@
             "autorange": "reversed",
             "anchor": "y2",
             "domain": [0, 0.45],
-            "minallowed": 6
+            "maxallowed": 6.2,
+            "minallowed": 5.8
         },
         "yaxis2": {
             "anchor": "x2",
@@ -60,7 +62,8 @@
                 "y": [0, 0.45]
             },
             "radialaxis": {
-                "minallowed": 6
+                "maxallowed": 6.2,
+                "minallowed": 5.8
             }
         },
         "polar2": {
@@ -70,7 +73,8 @@
             },
             "radialaxis": {
                 "autorange": "reversed",
-                "minallowed": 6
+                "maxallowed": 6.2,
+                "minallowed": 5.8
             }
         }
     }
