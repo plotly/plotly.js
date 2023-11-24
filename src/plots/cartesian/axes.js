@@ -3479,7 +3479,8 @@ axes.drawLabels = function(gd, ax, opts) {
 
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
-    var autoTickAngles = ax.autotickangles || [30, 90];
+
+    var autoTickAngles = ax.autotickangles;
     var prevAngle = (ax._prevTickAngles || {})[cls];
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
@@ -3782,19 +3783,24 @@ axes.drawLabels = function(gd, ax, opts) {
                 var pad = !isAligned ? 0 :
                     (ax.tickwidth || 0) + 2 * TEXTPAD;
 
-                var adjacent = tickSpacing;
-                var opposite = maxFontSize * 1.25 * maxLines;
-                var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
-                // sin(angle) = opposite / hypotenuse
-                var minAngle = Math.asin(opposite / hypotenuse) * (180 / Math.PI /* to degrees */);
+                // old behavior for backwards-compatibility
+                var angle = ((tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory' || ax._name === 'realaxis') ? 90 : 30;
+                // autotickangles
+                if(autoTickAngles !== undefined) {
+                    var adjacent = tickSpacing;
+                    var opposite = maxFontSize * 1.25 * maxLines;
+                    var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
+                    // sin(angle) = opposite / hypotenuse
+                    var minAngle = Math.asin(opposite / hypotenuse) * (180 / Math.PI /* to degrees */);
 
-                var angle = autoTickAngles.find(function(angle) { return Math.abs(angle) >= minAngle; });
-                if(angle === undefined) {
-                    // no angle larger than minAngle, just pick the largest angle
-                    angle = autoTickAngles.reduce(
-                        function(currentMax, nextAngle) { return Math.abs(currentMax) < Math.abs(nextAngle) ? nextAngle : currentMax; }
-                        , autoTickAngles[0]
-                    );
+                    angle = autoTickAngles.find(function(angle) { return Math.abs(angle) >= minAngle; });
+                    if(angle === undefined) {
+                        // no angle larger than minAngle, just pick the largest angle
+                        angle = autoTickAngles.reduce(
+                            function(currentMax, nextAngle) { return Math.abs(currentMax) < Math.abs(nextAngle) ? nextAngle : currentMax; }
+                            , autoTickAngles[0]
+                        );
+                    }
                 }
                 if(prevAngle !== undefined) {
                     angle = Math.abs(angle) > Math.abs(prevAngle) ? angle : prevAngle;

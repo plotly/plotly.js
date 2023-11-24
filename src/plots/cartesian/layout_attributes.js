@@ -806,17 +806,20 @@ module.exports = {
         description: [
             'Sets the angle of the tick labels with respect to the horizontal.',
             'For example, a `tickangle` of -90 draws the tick labels',
-            'vertically.'
+            'vertically. If `tickangle` is auto, the angle will be chosen from',
+            'autotickangles if provided. If `autotickangles` is not provided,',
+            'the angle will be 30 or 90 degrees.'
         ].join(' ')
     },
     autotickangles: {
         valType: 'data_array',
-        dflt: [30, 90],
+        dflt: null,
         editType: 'ticks',
         description: [
             'When `tickangle` is set to *auto*, it will be set to the first',
             'angle in this array that is large enough to prevent label',
-            'overlap.'
+            'overlap. If undefined, tickangle *auto* will instead choose',
+            'between 30 and 90 degrees.'
         ].join(' ')
     },
     tickprefix: {
