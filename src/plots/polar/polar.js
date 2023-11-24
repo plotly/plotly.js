@@ -391,8 +391,8 @@ proto.doAutoRange = function(fullLayout, polarLayout) {
         radialAxis.r2l(rng[1], null, 'gregorian')
     ];
 
-    var minallowed = radialAxis.minallowed;
-    if(minallowed !== undefined) {
+    if(radialAxis.minallowed !== undefined) {
+        var minallowed = radialAxis.r2l(radialAxis.minallowed);
         if(radialAxis._rl[0] > radialAxis._rl[1]) {
             radialAxis._rl[1] = Math.max(radialAxis._rl[1], minallowed);
         } else {
@@ -400,8 +400,8 @@ proto.doAutoRange = function(fullLayout, polarLayout) {
         }
     }
 
-    var maxallowed = radialAxis.maxallowed;
-    if(maxallowed !== undefined) {
+    if(radialAxis.maxallowed !== undefined) {
+        var maxallowed = radialAxis.r2l(radialAxis.maxallowed);
         if(radialAxis._rl[0] < radialAxis._rl[1]) {
             radialAxis._rl[1] = Math.min(radialAxis._rl[1], maxallowed);
         } else {
