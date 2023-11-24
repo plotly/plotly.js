@@ -3796,7 +3796,9 @@ axes.drawLabels = function(gd, ax, opts) {
                         , autoTickAngles[0]
                     );
                 }
-
+                if(prevAngle !== undefined) {
+                    angle = Math.abs(angle) > Math.abs(prevAngle) ? angle : prevAngle;
+                }
                 for(i = 0; i < lbbArray.length - 1; i++) {
                     if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
                         autoangle = angle;
@@ -3815,19 +3817,7 @@ axes.drawLabels = function(gd, ax, opts) {
         ax._selections[cls] = tickLabels;
     }
 
-    var seq = [allLabelsReady];
-
-    // N.B. during auto-margin redraws, if the axis fixed its label overlaps
-    // by rotating 90 degrees, do not attempt to re-fix its label overlaps
-    // as this can lead to infinite redraw loops!
-    if(ax.automargin && fullLayout._redrawFromAutoMarginCount && Math.abs(prevAngle) === 90) {
-        autoangle = prevAngle;
-        seq.push(function() {
-            positionLabels(tickLabels, prevAngle);
-        });
-    } else {
-        seq.push(fixLabelOverlaps);
-    }
+    var seq = [allLabelsReady, fixLabelOverlaps];
 
     // save current tick angle for future redraws
     if(ax._tickAngles) {
