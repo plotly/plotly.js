@@ -247,8 +247,14 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 }
             }
             var r = calcCornerRadius(trace.marker.cornerradius);
+
+            var inStackOrRelativeMode =
+                opts.mode === 'stack' ||
+                opts.mode === 'relative';
+            var isOutmostBar = !inStackOrRelativeMode || di._outmost;
+
             var path;
-            if(r && (di._outmost || di.hasB)) {
+            if(r && isOutmostBar) {
                 // Bar has cornerradius
                 // Calculate parameters for rounded corners
                 var xdir = dirSign(x0, x1);
