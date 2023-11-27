@@ -68,7 +68,7 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
         }
     });
 
-    sankeyLink.each((curLink => {
+    sankeyLink.each(function(curLink) {
         var label = curLink.link.label;
         if(label) {
             ownTrace(sankey, d)
@@ -80,7 +80,7 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
                     }
                 });
         }
-    }))
+    });
 
     if(visitNodes) {
         ownTrace(sankey, d)
@@ -93,7 +93,7 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
     sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
-    sankeyLink.each(curLink => {
+    sankeyLink.each(function(curLink) {
         var label = curLink.link.label;
         if(label) {
             ownTrace(sankey, d)
@@ -101,7 +101,7 @@ function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
                 .filter(function(l) {return l.link.label === label;})
                 .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
         }
-    })
+    });
 
     if(visitNodes) {
         ownTrace(sankey, d)
