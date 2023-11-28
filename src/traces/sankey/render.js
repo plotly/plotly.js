@@ -36,10 +36,10 @@ function sankeyModel(layout, d, traceIndex) {
     var nodePad = trace.node.pad;
     var nodeThickness = trace.node.thickness;
     var nodeAlign = {
-        'justify': d3Sankey.sankeyJustify,
-        'left': d3Sankey.sankeyLeft,
-        'right': d3Sankey.sankeyRight,
-        'center': d3Sankey.sankeyCenter
+        justify: d3Sankey.sankeyJustify,
+        left: d3Sankey.sankeyLeft,
+        right: d3Sankey.sankeyRight,
+        center: d3Sankey.sankeyCenter
     }[trace.node.align];
 
     var width = layout.width * (domain.x[1] - domain.x[0]);
