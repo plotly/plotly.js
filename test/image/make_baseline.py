@@ -29,7 +29,7 @@ if 'mathjax3' in sys.argv or 'mathjax3=' in sys.argv :
     # until https://github.com/plotly/Kaleido/issues/124 is addressed
     # we are uanble to use local mathjax v3 installed in node_modules
     # for now let's download it from the internet:
-    pio.kaleido.scope.mathjax = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-svg.js'
+    pio.kaleido.scope.mathjax = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js'
     mathjax_version = 3
     print('Kaleido using MathJax v3')
 
