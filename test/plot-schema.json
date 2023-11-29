@@ -10703,12 +10703,11 @@
      "description": "When `tickangle` is set to *auto*, it will be set to the first angle in this array that is large enough to prevent label overlap. If undefined, tickangle *auto* will instead choose between 30 and 90 degrees.",
      "dflt": null,
      "editType": "ticks",
-     "valType": "data_array"
-    },
-    "autotickanglessrc": {
-     "description": "Sets the source reference on Chart Studio Cloud for `autotickangles`.",
-     "editType": "none",
-     "valType": "string"
+     "freeLength": true,
+     "items": {
+      "valType": "angle"
+     },
+     "valType": "info_array"
     },
     "autotypenumbers": {
      "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -12054,12 +12053,11 @@
      "description": "When `tickangle` is set to *auto*, it will be set to the first angle in this array that is large enough to prevent label overlap. If undefined, tickangle *auto* will instead choose between 30 and 90 degrees.",
      "dflt": null,
      "editType": "ticks",
-     "valType": "data_array"
-    },
-    "autotickanglessrc": {
-     "description": "Sets the source reference on Chart Studio Cloud for `autotickangles`.",
-     "editType": "none",
-     "valType": "string"
+     "freeLength": true,
+     "items": {
+      "valType": "angle"
+     },
+     "valType": "info_array"
     },
     "autotypenumbers": {
      "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",

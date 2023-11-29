@@ -812,7 +812,11 @@ module.exports = {
         ].join(' ')
     },
     autotickangles: {
-        valType: 'data_array',
+        valType: 'info_array',
+        freeLength: true,
+        items: {
+            valType: 'angle'
+        },
         dflt: null,
         editType: 'ticks',
         description: [
