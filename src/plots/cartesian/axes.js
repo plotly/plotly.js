@@ -3786,14 +3786,14 @@ axes.drawLabels = function(gd, ax, opts) {
                     (ax.tickwidth || 0) + 2 * TEXTPAD;
 
                 // old behavior for backwards-compatibility
-                var angleRadians = (((tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory' || ax._name === 'realaxis') ? 90 : 30) * Math.PI / 180;
+                var newAngle = ((tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory' || ax._name === 'realaxis') ? 90 : 30;
                 // autotickangles
                 if(autoTickAnglesRadians !== undefined) {
                     var adjacent = tickSpacing;
                     var opposite = maxFontSize * 1.25 * maxLines;
                     var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
                     var maxCos = adjacent / hypotenuse;
-                    angleRadians = autoTickAnglesRadians.find(function(angle) { return Math.abs(Math.cos(angle)) <= maxCos; });
+                    var angleRadians = autoTickAnglesRadians.find(function(angle) { return Math.abs(Math.cos(angle)) <= maxCos; });
                     if(angleRadians === undefined) {
                         // no angle with smaller cosine than maxCos, just pick the angle with smallest cosine
                         angleRadians = autoTickAnglesRadians.reduce(
@@ -3803,15 +3803,15 @@ axes.drawLabels = function(gd, ax, opts) {
                             , autoTickAnglesRadians[0]
                         );
                     }
+                    newAngle = angleRadians * (180 / Math.PI /* to degrees */);
                 }
-                var angleDegrees = angleRadians * (180 / Math.PI /* to degrees */);
                 if(prevAngle !== undefined) {
                     var prevAngleRadians = prevAngle * Math.PI / 180;
-                    angleDegrees = Math.abs(Math.cos(angleRadians)) < Math.abs(Math.cos(prevAngleRadians)) ? angleDegrees : prevAngle;
+                    newAngle = Math.abs(Math.cos(newAngle * 180 / Math.PI)) < Math.abs(Math.cos(prevAngleRadians)) ? newAngle : prevAngle;
                 }
                 for(i = 0; i < lbbArray.length - 1; i++) {
                     if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
-                        autoangle = angleDegrees;
+                        autoangle = newAngle;
                         break;
                     }
                 }
