@@ -3805,7 +3805,8 @@ axes.drawLabels = function(gd, ax, opts) {
                     }
                 }
                 if(prevAngle !== undefined) {
-                    angleRadians = Math.abs(Math.cos(angleRadians)) < Math.abs(Math.cos(prevAngle)) ? angleRadians : prevAngle;
+                    var prevAngleRadians = prevAngle * Math.PI / 180;
+                    angleRadians = Math.abs(Math.cos(angleRadians)) < Math.abs(Math.cos(prevAngleRadians)) ? angleRadians : prevAngleRadians;
                 }
                 for(i = 0; i < lbbArray.length - 1; i++) {
                     if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
