@@ -3804,13 +3804,14 @@ axes.drawLabels = function(gd, ax, opts) {
                         );
                     }
                 }
+                var angleDegrees = angleRadians * (180 / Math.PI /* to degrees */);
                 if(prevAngle !== undefined) {
                     var prevAngleRadians = prevAngle * Math.PI / 180;
-                    angleRadians = Math.abs(Math.cos(angleRadians)) < Math.abs(Math.cos(prevAngleRadians)) ? angleRadians : prevAngleRadians;
+                    angleDegrees = Math.abs(Math.cos(angleRadians)) < Math.abs(Math.cos(prevAngleRadians)) ? angleDegrees : prevAngle;
                 }
                 for(i = 0; i < lbbArray.length - 1; i++) {
                     if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
-                        autoangle = angleRadians * (180 / Math.PI /* to degrees */);
+                        autoangle = angleDegrees;
                         break;
                     }
                 }
