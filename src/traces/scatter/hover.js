@@ -120,7 +120,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 
     // even if hoveron is 'fills', only use it if we have polygons too
-    if(hoveron.indexOf('fills') !== -1 && trace._polygons) {
+    if(hoveron.indexOf('fills') !== -1 && trace._polygons && trace._polygons.length > 0) {
         var polygons = trace._polygons;
         var polygonsIn = [];
         var inside = false;
