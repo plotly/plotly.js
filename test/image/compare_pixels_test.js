@@ -113,18 +113,6 @@ for(var i = 0; i < allMockList.length; i++) {
         continue;
     }
 
-    // the following mocks than only have regl-line2d lines (no morkers),
-    // do not render at first draw when using virtual webgl. TODO: find a fix
-    if(virtualWebgl && [
-        'gl2d_connect_gaps',
-        'gl2d_line_select',
-        'gl2d_lines_almost_horizontal_vertical',
-        'gl2d_scattergl_simple_line_reversed_ranges',
-        'gl2d_subplots_anchor'
-    ].indexOf(mockName) !== -1) {
-        continue;
-    }
-
     var isMapbox = mockName.substr(0, 7) === 'mapbox_';
     var isOtherFlaky = [
         // list flaky mocks other than mapbox:
