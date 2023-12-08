@@ -2,7 +2,7 @@
 
 var sortObjectKeys = require('../../lib/sort_object_keys');
 
-var requiredVersion = '1.13.1';
+var requiredVersion = '1.13.4';
 
 var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 var carto = [
@@ -183,7 +183,7 @@ module.exports = {
 
     wrongVersionErrorMsg: [
         'Your custom plotly.js bundle is not using the correct mapbox-gl version',
-        'Please install mapbox-gl@' + requiredVersion + '.'
+        'Please install @plotly/mapbox-gl@' + requiredVersion + '.'
     ].join('\n'),
 
     noAccessTokenErrorMsg: [
