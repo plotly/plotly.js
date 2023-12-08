@@ -806,9 +806,7 @@ module.exports = {
         description: [
             'Sets the angle of the tick labels with respect to the horizontal.',
             'For example, a `tickangle` of -90 draws the tick labels',
-            'vertically. If `tickangle` is auto, the angle will be chosen from',
-            'autotickangles if provided. If `autotickangles` is not provided,',
-            'the angle will be 30 or 90 degrees.'
+            'vertically.'
         ].join(' ')
     },
     autotickangles: {
