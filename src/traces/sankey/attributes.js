@@ -164,6 +164,12 @@ var attrs = module.exports = overrideAll({
             description: 'Variables `sourceLinks` and `targetLinks` are arrays of link objects.',
             keys: ['value', 'label']
         }),
+        align: {
+            valType: 'enumerated',
+            values: ['justify', 'left', 'right', 'center'],
+            dflt: 'justify',
+            description: 'Sets the alignment method used to position the nodes along the horizontal axis.'
+        },
         description: 'The nodes of the Sankey plot.'
     },
 
