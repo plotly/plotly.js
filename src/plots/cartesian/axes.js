@@ -3885,8 +3885,29 @@ axes.drawLabels = function(gd, ax, opts) {
             var newRange = [];
             newRange[otherIndex] = anchorAx.range[otherIndex];
 
-            var p0 = anchorAx.d2p(anchorAx.range[index]);
-            var p1 = anchorAx.d2p(anchorAx.range[otherIndex]);
+            var anchorAxRange = anchorAx.range;
+
+            var p0 = anchorAx.d2p(anchorAxRange[index]);
+            var p1 = anchorAx.d2p(anchorAxRange[otherIndex]);
+
+            var _tempNewRange = fullLayout._insideTickLabelsUpdaterange[anchorAx._name + '.range'];
+            if(_tempNewRange) { // case of having multiple anchored axes having insideticklabel
+                var q0 = anchorAx.d2p(_tempNewRange[index]);
+                var q1 = anchorAx.d2p(_tempNewRange[otherIndex]);
+
+                var dir = sgn * (ax._id.charAt(0) === 'y' ? 1 : -1);
+
+                if(dir * p0 < dir * q0) {
+                    p0 = q0;
+                    newRange[index] = anchorAxRange[index] = _tempNewRange[index];
+                }
+
+                if(dir * p1 > dir * q1) {
+                    p1 = q1;
+                    newRange[otherIndex] = anchorAxRange[otherIndex] = _tempNewRange[otherIndex];
+                }
+            }
+
             var dist = Math.abs(p1 - p0);
             if(dist - move > 0) {
                 dist -= move;
@@ -3898,7 +3919,7 @@ axes.drawLabels = function(gd, ax, opts) {
             if(ax._id.charAt(0) !== 'y') move = -move;
 
             newRange[index] = anchorAx.p2d(
-                anchorAx.d2p(anchorAx.range[index]) +
+                anchorAx.d2p(anchorAxRange[index]) +
                 sgn * move
             );
 
