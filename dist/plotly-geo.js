@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.27.0
+* plotly.js (geo) v2.27.1
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -35628,6 +35628,17 @@ exports.drawMainTitle = function (gd) {
         'text-anchor': textAnchor,
         dy: getMainTitleDyAdj(title.yanchor)
       }).call(svgTextUtils.positionText, x, y);
+      var extraLines = (title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
+      if (extraLines) {
+        var delta = alignmentConstants.LINE_SPACING * extraLines + alignmentConstants.MID_SHIFT;
+        if (title.y === 0) {
+          delta = -delta;
+        }
+        titleObj.selectAll('.line').each(function () {
+          var newDy = +this.getAttribute('dy').slice(0, -2) - delta + 'em';
+          this.setAttribute('dy', newDy);
+        });
+      }
     }
   }
 };
@@ -60658,7 +60669,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.27.0';
+exports.version = '2.27.1';
 
 /***/ }),
 

@@ -9,6 +9,15 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.27.1] -- 2023-11-08
+
+### Changed
+ - Adjust stamen styles to point to `stadiamaps.com`, the users may also need to provide their own API_KEY via `config.mapboxAccessToken` [[#6776](https://github.com/plotly/plotly.js/pull/6776), [#6778](https://github.com/plotly/plotly.js/pull/6778)]
+
+### Fixed
+ - Fix handling multi-line text in title `automargin` [[#6758](https://github.com/plotly/plotly.js/pull/6758)]
+
+
 ## [2.27.0] -- 2023-10-20
 
 ### Added

@@ -224,6 +224,16 @@ module.exports = function(gd) {
     });
 };
 
+function eventX(event) {
+    if(typeof event.clientX === 'number') {
+        return event.clientX;
+    }
+    if(event.touches && event.touches.length > 0) {
+        return event.touches[0].clientX;
+    }
+    return 0;
+}
+
 function setupDragElement(rangeSlider, gd, axisOpts, opts) {
     if(gd._context.staticPlot) return;
 
@@ -234,7 +244,7 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
     function mouseDownHandler() {
         var event = d3.event;
         var target = event.target;
-        var startX = event.clientX || event.touches[0].clientX;
+        var startX = eventX(event);
         var offsetX = startX - rangeSlider.node().getBoundingClientRect().left;
         var minVal = opts.d2p(axisOpts._rl[0]);
         var maxVal = opts.d2p(axisOpts._rl[1]);
@@ -247,7 +257,7 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
         dragCover.addEventListener('mouseup', mouseUp);
 
         function mouseMove(e) {
-            var clientX = e.clientX || e.touches[0].clientX;
+            var clientX = eventX(e);
             var delta = +clientX - startX;
             var pixelMin, pixelMax, cursor;
 

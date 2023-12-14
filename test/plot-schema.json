@@ -44358,6 +44358,18 @@
      "valType": "string"
     },
     "node": {
+     "align": {
+      "description": "Sets the alignment method used to position the nodes along the horizontal axis.",
+      "dflt": "justify",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "justify",
+       "left",
+       "right",
+       "center"
+      ]
+     },
      "color": {
       "arrayOk": true,
       "description": "Sets the `node` color. It can be a single value, or an array for specifying color for each `node`. If `node.color` is omitted, then the default `Plotly` color palette will be cycled through to have a variety of colors. These defaults are not fully opaque, to allow some visibility of what is beneath the node.",
@@ -58874,19 +58886,6 @@
      },
      "editType": "calc",
      "role": "object",
-     "shape": {
-      "description": "Determines the line shape. The values correspond to step-wise line shapes.",
-      "dflt": "linear",
-      "editType": "calc",
-      "valType": "enumerated",
-      "values": [
-       "linear",
-       "hv",
-       "vh",
-       "hvh",
-       "vhv"
-      ]
-     },
      "width": {
       "description": "Sets the line width (in px).",
       "dflt": 2,

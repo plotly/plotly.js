@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "2.27.0",
+  "version": "2.27.1",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -74,6 +74,7 @@
     "@plotly/d3": "3.8.1",
     "@plotly/d3-sankey": "0.7.2",
     "@plotly/d3-sankey-circular": "0.33.1",
+    "@plotly/mapbox-gl": "v1.13.4",
     "@turf/area": "^6.4.0",
     "@turf/bbox": "^6.4.0",
     "@turf/centroid": "^6.0.2",
@@ -99,7 +100,6 @@
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
     "is-mobile": "^4.0.0",
-    "mapbox-gl": "1.10.1",
     "mouse-change": "^1.4.0",
     "mouse-event-offset": "^3.0.2",
     "mouse-wheel": "^1.2.0",
@@ -177,6 +177,7 @@
     "through2": "^4.0.2",
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
+    "virtual-webgl": "^1.0.6",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
   }
