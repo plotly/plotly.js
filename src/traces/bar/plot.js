@@ -98,6 +98,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         var trace = cd[0].trace;
         var isWaterfall = (trace.type === 'waterfall');
         var isFunnel = (trace.type === 'funnel');
+        var isHistogram = (trace.type === 'histogram');
         var isBar = (trace.type === 'bar');
         var shouldDisplayZeros = (isBar || isFunnel);
 
@@ -215,6 +216,8 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 (v > vc ? Math.ceil(v) : Math.floor(v));
             }
 
+            var op = Color.opacity(mc);
+            var fixpx = (op < 1 || lw > 0.01) ? roundWithLine : expandToVisible;
             if(!gd._context.staticPlot) {
                 // if bars are not fully opaque or they have a line
                 // around them, round to integer pixels, mainly for
@@ -222,90 +225,121 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 // pixelation. if the bars ARE fully opaque and have
                 // no line, expand to a full pixel to make sure we
                 // can see them
-
-                var op = Color.opacity(mc);
-                var fixpx = (op < 1 || lw > 0.01) ? roundWithLine : expandToVisible;
-
                 x0 = fixpx(x0, x1, isHorizontal);
                 x1 = fixpx(x1, x0, isHorizontal);
                 y0 = fixpx(y0, y1, !isHorizontal);
                 y1 = fixpx(y1, y0, !isHorizontal);
             }
 
-            // Construct path string for bar
+            // Function to convert from size axis values to pixels
+            var c2p = isHorizontal ? xa.c2p : ya.c2p;
+
+            // Calculate corner radius of bar in pixels
             function calcCornerRadius(radiusParam) {
                 var barWidth = isHorizontal ? Math.abs(y1 - y0) : Math.abs(x1 - x0);
                 var barLength = isHorizontal ? Math.abs(x1 - x0) : Math.abs(y1 - y0);
-                var maxRadius = di.hasB ? Math.min(barWidth / 2, barLength / 2) : Math.min(barWidth / 2, barLength);
+                var stackedBarTotalLength = fixpx(Math.abs(
+                    di.s > 0 ? c2p(di._sMax, true) - c2p(0, true) : c2p(di._sMin, true) - c2p(0, true)
+                ));
+                var maxRadius = di.hasB ? Math.min(barWidth / 2, barLength / 2) : Math.min(barWidth / 2, stackedBarTotalLength);
+                var rPx;
                 if(!radiusParam) {
                     return 0;
-                } else if(typeof radiusParam === 'string') { // if it's a percentage string
+                } else if(typeof radiusParam === 'string') {
+                    // If radius is given as a percentage string, convert to number of pixels
                     var rPercent = Math.min(parseFloat(radiusParam.replace('%', '')), 50);
-                    return Math.max(Math.min(barWidth * (rPercent / 100), maxRadius), 0);
-                } else { // otherwise, it's a number
-                    return Math.max(Math.min(radiusParam, maxRadius), 0);
+                    rPx = barWidth * (rPercent / 100);
+                } else {
+                    // Otherwise, it's already a number of pixels
+                    rPx = radiusParam;
                 }
+                return fixpx(Math.max(Math.min(rPx, maxRadius), 0));
             }
-            var r = calcCornerRadius(trace.marker.cornerradius);
+            // Exclude waterfall and funnel charts from rounding
+            // Could potentially support rounded waterfall charts in the future,
+            // but need to make sure trace.marker.cornerradius is set in the defaults
+            // and also check visuals with respect to the lines connecting the waterfall bars
+            var r = (isBar || isHistogram) ? calcCornerRadius(trace.marker.cornerradius) : 0;
 
-            var inStackOrRelativeMode =
-                opts.mode === 'stack' ||
-                opts.mode === 'relative';
-            var isOutmostBar = !inStackOrRelativeMode || di._outmost;
-
-            var path;
-            if(r && isOutmostBar) {
+            // Construct path string for bar
+            var path, h;
+            if(r && di.s) {
                 // Bar has cornerradius
-                // Calculate parameters for rounded corners
-                var xdir = dirSign(x0, x1);
-                var ydir = dirSign(y0, y1);
-                // Sweep direction for rounded corner arcs
-                var cornersweep = (xdir === -ydir) ? 1 : 0;
-                if(isHorizontal) {
-                    // Horizontal bars
-                    if(di.hasB) {
-                        // Floating base: Round 1st & 2nd, and 3rd & 4th corners
-                        path = 'M' + (x0 + r * xdir) + ',' + y0 +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * -xdir + ',' + r * ydir +
-                            'V' + (y1 - r * ydir) +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * xdir + ',' + r * ydir +
-                            'H' + (x1 - r * xdir) +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * xdir + ',' + r * -ydir +
-                            'V' + (y0 + r * ydir) +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * -xdir + ',' + r * -ydir +
-                            'Z';
+                // Check amount of 'overhead' (bars stacked above this one)
+                // to see whether we need to round or not
+                var overhead = fixpx(Math.abs(
+                    di.s > 0 ? c2p(di._sMax, true) - c2p(di.s1, true) : c2p(di._sMin, true) - c2p(di.s1, true)
+                ));
+
+                if(overhead < r) {
+                    // Calculate parameters for rounded corners
+                    var xdir = dirSign(x0, x1);
+                    var ydir = dirSign(y0, y1);
+                    // Sweep direction for rounded corner arcs
+                    var cornersweep = (xdir === -ydir) ? 1 : 0;
+                    if(isHorizontal) {
+                        // Horizontal bars
+                        if(di.hasB) {
+                            // Floating base: Round 1st & 2nd, and 3rd & 4th corners
+                            path = 'M' + (x0 + r * xdir) + ',' + y0 +
+                                'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * -xdir + ',' + r * ydir +
+                                'V' + (y1 - r * ydir) +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x0 + r * xdir) + ',' + y1 +
+                                'H' + (x1 - r * xdir) +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + x1 + ',' + (y1 - r * ydir) +
+                                'V' + (y0 + r * ydir) +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - r * xdir) + ',' + y0 +
+                                'Z';
+                        } else {
+                            // Base on axis: Round 3rd and 4th corners
+
+                            // Helper variables to help with extending rounding down to lower bars
+                            h = Math.abs(x1 - x0) + overhead;
+                            var dy1 = (h < r) ? r - Math.sqrt(h * (2 * r - h)) : 0;
+                            var dy2 = (overhead > 0) ? Math.sqrt(overhead * (2 * r - overhead)) : 0;
+                            var xminfunc = xdir > 0 ? Math.max : Math.min;
+
+                            path = 'M' + x0 + ',' + y0 +
+                                'V' + (y1 - dy1 * ydir) +
+                                'H' + xminfunc(x1 - (r - overhead) * xdir, x0) +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + x1 + ',' + (y1 - r * ydir - dy2) +
+                                'V' + (y0 + r * ydir + dy2) +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + xminfunc(x1 - (r - overhead) * xdir, x0) + ',' + (y0 + dy1 * ydir) +
+                                'Z';
+                        }
                     } else {
-                        // Base on axis: Round 3rd and 4th corners
-                        path = 'M' + x0 + ',' + y0 +
-                            'V' + y1 +
-                            'H' + (x1 - r * xdir) +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * xdir + ',' + r * -ydir +
-                            'V' + (y0 + r * ydir) +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * -xdir + ',' + r * -ydir +
-                            'Z';
+                        // Vertical bars
+                        if(di.hasB) {
+                            // Floating base: Round 1st & 4th, and 2nd & 3rd corners
+                            path = 'M' + (x0 + r * xdir) + ',' + y0 +
+                                'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * -xdir + ',' + r * ydir +
+                                'V' + (y1 - r * ydir) +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x0 + r * xdir) + ',' + y1 +
+                                'H' + (x1 - r * xdir) +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + x1 + ',' + (y1 - r * ydir) +
+                                'V' + (y0 + r * ydir) +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - r * xdir) + ',' + y0 +
+                                'Z';
+                        } else {
+                            // Base on axis: Round 2nd and 3rd corners
+
+                            // Helper variables to help with extending rounding down to lower bars
+                            h = Math.abs(y1 - y0) + overhead;
+                            var dx1 = (h < r) ? r - Math.sqrt(h * (2 * r - h)) : 0;
+                            var dx2 = (overhead > 0) ? Math.sqrt(overhead * (2 * r - overhead)) : 0;
+                            var yminfunc = ydir > 0 ? Math.max : Math.min;
+
+                            path = 'M' + (x0 + dx1 * xdir) + ',' + y0 +
+                                'V' + yminfunc(y1 - (r - overhead) * ydir, y0) +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x0 + r * xdir - dx2) + ',' + y1 +
+                                'H' + (x1 - r * xdir + dx2) +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - dx1 * xdir) + ',' + yminfunc(y1 - (r - overhead) * ydir, y0) +
+                                'V' + y0 + 'Z';
+                        }
                     }
                 } else {
-                    // Vertical bars
-                    if(di.hasB) {
-                        // Floating base: Round 1st & 4th, and 2nd & 3rd corners
-                        path = 'M' + (x0 + r * xdir) + ',' + y0 +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * -xdir + ',' + r * ydir +
-                            'V' + (y1 - r * ydir) +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * xdir + ',' + r * ydir +
-                            'H' + (x1 - r * xdir) +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * xdir + ',' + r * -ydir +
-                            'V' + (y0 + r * ydir) +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * -xdir + ',' + r * -ydir +
-                            'Z';
-                    } else {
-                    // Base on axis: Round 2nd and 3rd corners
-                        path = 'M' + x0 + ',' + y0 +
-                            'V' + (y1 - r * ydir) +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * xdir + ',' + r * ydir +
-                            'H' + (x1 - r * xdir) +
-                            'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * xdir + ',' + r * -ydir +
-                            'V' + y0 + 'Z';
-                    }
+                    // There is a cornerradius, but bar is too far down the stack to be rounded; just draw a rectangle
+                    path = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
                 }
             } else {
                 // No cornerradius, just draw a rectangle

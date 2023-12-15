@@ -119,7 +119,6 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
             }
             break;
     }
-
     collectExtents(calcTraces, pa);
 }
 
@@ -713,6 +712,21 @@ function normalizeBars(sa, sieve, opts) {
     }
 }
 
+// Add an `_sMin` and `_sMax` value for each bar representing the min and max size value
+// across all bars sharing the same position as that bar. These values are used for rounded
+// bar corners, to carry rounding down to lower bars in the stack as needed.
+function setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos) {
+    // Set `_sMin` and `_sMax` value for each bar
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        for(var j = 0; j < calcTrace.length; j++) {
+            var bar = calcTrace[j];
+            bar._sMin = sMinByPos[bar.p];
+            bar._sMax = sMaxByPos[bar.p];
+        }
+    }
+}
+
 // find the full position span of bars at each position
 // for use by hover, to ensure labels move in if bars are
 // narrower than the space they're in.
@@ -745,6 +759,12 @@ function collectExtents(calcTraces, pa) {
         return String(Math.round(roundFactor * (p - pMin)));
     };
 
+    // Find min and max size axis extent for each position
+    // This is used for rounded bar corners, to carry rounding
+    // down to lower bars in the case of stacked bars
+    var sMinByPos = {};
+    var sMaxByPos = {};
+
     for(i = 0; i < calcTraces.length; i++) {
         cd = calcTraces[i];
         cd[0].t.extents = extents;
@@ -770,8 +790,15 @@ function collectExtents(calcTraces, pa) {
             di.p1 = di.p0 + di.w;
             di.s0 = di.b;
             di.s1 = di.s0 + di.s;
+
+            var sMin = Math.min(di.s0, di.s1);
+            var sMax = Math.max(di.s0, di.s1);
+
+            sMinByPos[di.p] = (di.p in sMinByPos) ? Math.min(sMinByPos[di.p], sMin) : sMin;
+            sMaxByPos[di.p] = (di.p in sMaxByPos) ? Math.max(sMaxByPos[di.p], sMax) : sMax;
         }
     }
+    setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos);
 }
 
 function getAxisLetter(ax) {
