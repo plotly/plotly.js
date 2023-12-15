@@ -25,10 +25,20 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
             if(isContour || isGL2D) arrayOut = arrayIn.slice(0, numbricks);
             else if(numbricks === 1) {
                 arrayOut = [arrayIn[0] - 0.5, arrayIn[0] + 0.5];
+            } else if(ax.type === 'log') {
+                arrayOut = [Math.pow(arrayIn[0], 1.5) / Math.pow(arrayIn[1], 0.5)];
+
+                for(i = 1; i < len; i++) {
+                    // Geomean
+                    arrayOut.push(Math.sqrt(arrayIn[i - 1] * arrayIn[i]));
+                }
+
+                arrayOut.push(Math.pow(arrayIn[len - 1], 1.5) / Math.pow(arrayIn[len - 2], 0.5));
             } else {
                 arrayOut = [1.5 * arrayIn[0] - 0.5 * arrayIn[1]];
 
                 for(i = 1; i < len; i++) {
+                    // Arithmetic mean
                     arrayOut.push((arrayIn[i - 1] + arrayIn[i]) * 0.5);
                 }
 
