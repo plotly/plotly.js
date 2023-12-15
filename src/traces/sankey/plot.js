@@ -70,7 +70,7 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 
     sankeyLink.each(function(curLink) {
         var label = curLink.link.label;
-        if(label !== undefined) {
+        if(label !== '') {
             ownTrace(sankey, d)
                 .selectAll('.' + cn.sankeyLink)
                 .filter(function(l) {return l.link.label === label;})
@@ -95,7 +95,7 @@ function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 
     sankeyLink.each(function(curLink) {
         var label = curLink.link.label;
-        if(label !== undefined) {
+        if(label !== '') {
             ownTrace(sankey, d)
                 .selectAll('.' + cn.sankeyLink)
                 .filter(function(l) {return l.link.label === label;})
