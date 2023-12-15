@@ -1080,7 +1080,7 @@ describe('sankey tests', function() {
 
             Plotly.newPlot(gd, mockCopy)
                 .then(function() {
-                    _hover(1000, 400);
+                    _hover(200, 250);
                 })
                 .then(function() {
                     d3SelectAll('.sankey-link')
@@ -1090,7 +1090,7 @@ describe('sankey tests', function() {
                             expect(l.style.fillOpacity).toEqual('0.4');
                         });
                 }).then(function() {
-                    mouseEvent('mouseout', 1000, 400);
+                    mouseEvent('mouseout', 200, 250);
                 }).then(function() {
                     d3SelectAll('.sankey-link')
                         .filter(function(obj) {
