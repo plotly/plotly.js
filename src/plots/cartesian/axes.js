@@ -3805,10 +3805,6 @@ axes.drawLabels = function(gd, ax, opts) {
                     }
                     newAngle = angleRadians * (180 / Math.PI /* to degrees */);
                 }
-                if(prevAngle !== undefined) {
-                    var prevAngleRadians = prevAngle * Math.PI / 180;
-                    newAngle = Math.abs(Math.cos(newAngle * 180 / Math.PI)) < Math.abs(Math.cos(prevAngleRadians)) ? newAngle : prevAngle;
-                }
                 for(i = 0; i < lbbArray.length - 1; i++) {
                     if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
                         autoangle = newAngle;
@@ -3827,7 +3823,19 @@ axes.drawLabels = function(gd, ax, opts) {
         ax._selections[cls] = tickLabels;
     }
 
-    var seq = [allLabelsReady, fixLabelOverlaps];
+    var seq = [allLabelsReady];
+
+    // N.B. during auto-margin redraws, if the axis fixed its label overlaps
+    // by rotating 90 degrees, do not attempt to re-fix its label overlaps
+    // as this can lead to infinite redraw loops!
+    if(ax.automargin && fullLayout._redrawFromAutoMarginCount && prevAngle === 90) {
+        autoangle = prevAngle;
+        seq.push(function() {
+            positionLabels(tickLabels, prevAngle);
+        });
+    } else {
+        seq.push(fixLabelOverlaps);
+    }
 
     // save current tick angle for future redraws
     if(ax._tickAngles) {
