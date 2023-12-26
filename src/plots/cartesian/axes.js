@@ -951,17 +951,18 @@ axes.calcTicks = function calcTicks(ax, opts) {
         if (mockAx.tickmode === 'array' ||  mockAx.tickmode === 'proportional') {
 
           // Mapping proportions to array:
-          var valsProp
-          var proportionalVals
-          var mappedVals
+          var valsProp, proportionalVals, mappedVals;
           var distance = maxRange - minRange;
+          var start = !axrev ? minRange : maxRange
+          if (axrev) distance *= -1;
           if (mockAx.tickmode === 'proportional') {
             valsProp = major ? Lib.nestedProperty(ax, "tickvals") : Lib.nestedProperty(ax.minor, "tickvals")
             proportionalVals = valsProp.get()
-            mappedVals = proportionalVals.map(function(v) { return minRange+(distance*v) })
+            mappedVals = proportionalVals.map(function(v) { return start + (distance*v) })
             valsProp.set(mappedVals)
           }
-          // Original
+
+          // Original 'array' only code
           if(major) {
               tickVals = [];
               ticksOut = arrayTicks(ax);
