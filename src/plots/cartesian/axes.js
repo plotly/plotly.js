@@ -944,33 +944,35 @@ axes.calcTicks = function calcTicks(ax, opts) {
             axes.prepTicks(mockAx, opts);
         }
 
-        console.log("mode:" + mockAx.tickmode)
-        if (mockAx.tickmode === 'proportional') { // TODO: if we look at autorange, can we get rid of buffer
-          var distance = maxRange - minRange;
-          var vals = []
-          if(major) {
-            vals = Lib.nestedProperty(ax, "tickvals")
-          } else {
-            vals = Lib.nestedProperty(ax.minor, "tickvals")
-          }
-          var mappedVals = vals.get().map(function(x) { return minRange+(distance*x) })
-          vals.set(mappedVals)
-          // TODO: What happens if range reversed
-          // TODO: Needs to be recalculated on auto
-          // TODO: Disappears on double click
-        }
-
+        // tickmode 'proportional' is just 'array' but with a pre-calc step
+        // original comment:
         // now that we've figured out the auto values for formatting
         // in case we're missing some ticktext, we can break out for array ticks
-        if(mockAx.tickmode === 'array' || mockAx.tickmode === 'proportional') {
-            if(major) {
-                tickVals = [];
-                ticksOut = arrayTicks(ax);
-            } else {
-                minorTickVals = [];
-                minorTicks = arrayTicks(ax);
-            }
-            continue;
+        if (mockAx.tickmode === 'array' ||  mockAx.tickmode === 'proportional') {
+
+          // Mapping proportions to array:
+          var valsProp
+          var proportionalVals
+          var mappedVals
+          var distance = maxRange - minRange;
+          if (mockAx.tickmode === 'proportional') {
+            valsProp = major ? Lib.nestedProperty(ax, "tickvals") : Lib.nestedProperty(ax.minor, "tickvals")
+            proportionalVals = valsProp.get()
+            mappedVals = proportionalVals.map(function(v) { return minRange+(distance*v) })
+            valsProp.set(mappedVals)
+          }
+          // Original
+          if(major) {
+              tickVals = [];
+              ticksOut = arrayTicks(ax);
+          } else {
+              minorTickVals = [];
+              minorTicks = arrayTicks(ax);
+          }
+
+          // Reset tickvals back to proportional
+          if (mockAx.tickmode === 'proportional') valsProp.set(proportionalVals)
+          continue;
         }
 
         // fill tickVals based on overlaying axis
