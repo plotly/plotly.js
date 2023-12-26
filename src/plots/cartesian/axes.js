@@ -953,15 +953,18 @@ axes.calcTicks = function calcTicks(ax, opts) {
             // Mapping proportions to array:
             var valsProp, fractionalVals;
             var width = maxRange - minRange;
+            console.log("minRange = " + minRange + " maxRange = " + maxRange)
             var offset = !axrev ? minRange : maxRange;
             if (axrev) width *= -1;
             if (mockAx.tickmode === 'proportional') {
                 valsProp = major ? Lib.nestedProperty(ax, "tickvals") : Lib.nestedProperty(ax.minor, "tickvals");
                 fractionalVals = valsProp.get();
-                
-                var mappedVals = Lib.simpleMap(fractionalVals, function(fraction, offset, width) { 
-                    return offset + (width*fraction);
-                }, offset, width);
+                var mappedVals = Lib.simpleMap(fractionalVals, function(fraction, offset, width, type) {
+                    var mapped = offset + (width*fraction);
+                    console.log(mapped)
+                    console.log(type)
+                    return (type === "log") ? Math.pow(10, mapped) : mapped
+                }, offset, width, type);
                 valsProp.set(mappedVals);
             }
 
