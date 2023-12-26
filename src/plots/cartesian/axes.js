@@ -948,19 +948,18 @@ axes.calcTicks = function calcTicks(ax, opts) {
         // original comment:
         // now that we've figured out the auto values for formatting
         // in case we're missing some ticktext, we can break out for array ticks
-        if (mockAx.tickmode === 'array' ||  mockAx.tickmode === 'proportional') {
-
+        if(mockAx.tickmode === 'array' || mockAx.tickmode === 'proportional') {
             // Mapping proportions to array:
             var valsProp, fractionalVals;
             var width = maxRange - minRange;
             var offset = !axrev ? minRange : maxRange;
-            if (axrev) width *= -1;
-            if (mockAx.tickmode === 'proportional') {
-                valsProp = major ? Lib.nestedProperty(ax, "tickvals") : Lib.nestedProperty(ax.minor, "tickvals");
+            if(axrev) width *= -1;
+            if(mockAx.tickmode === 'proportional') {
+                valsProp = major ? Lib.nestedProperty(ax, 'tickvals') : Lib.nestedProperty(ax.minor, 'tickvals');
                 fractionalVals = valsProp.get();
                 var mappedVals = Lib.simpleMap(fractionalVals, function(fraction, offset, width, type) {
-                    var mapped = offset + (width*fraction);
-                    return (type === "log") ? Math.pow(10, mapped) : mapped
+                    var mapped = offset + (width * fraction);
+                    return (type === 'log') ? Math.pow(10, mapped) : mapped;
                 }, offset, width, type);
                 valsProp.set(mappedVals);
             }
@@ -975,7 +974,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
 
             // Reset tickvals back to proportional
-            if (mockAx.tickmode === 'proportional') valsProp.set(fractionalVals);
+            if(mockAx.tickmode === 'proportional') valsProp.set(fractionalVals);
             continue;
         }
 
