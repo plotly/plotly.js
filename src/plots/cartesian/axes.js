@@ -920,7 +920,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var minorTicks = [];
 
     var tickVals = [];
+    var tickFractionalVals = [];
+    tickFractionalVals._isSet = false
+
     var minorTickVals = [];
+    var minorTickFractionalVals = [];
+    minorTickFractionalVals._isSet = false
 
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
 
@@ -950,18 +955,29 @@ axes.calcTicks = function calcTicks(ax, opts) {
         // in case we're missing some ticktext, we can break out for array ticks
         if(mockAx.tickmode === 'array' || mockAx.tickmode === 'proportional') {
             // Mapping proportions to array:
-            var valsProp, fractionalVals;
-            var width = maxRange - minRange;
-            var offset = !axrev ? minRange : maxRange;
-            if(axrev) width *= -1;
             if(mockAx.tickmode === 'proportional') {
-                valsProp = major ? Lib.nestedProperty(ax, 'tickvals') : Lib.nestedProperty(ax.minor, 'tickvals');
-                fractionalVals = valsProp.get();
-                var mappedVals = Lib.simpleMap(fractionalVals, function(fraction, offset, width, type) {
-                    var mapped = offset + (width * fraction);
-                    return (type === 'log') ? Math.pow(10, mapped) : mapped;
-                }, offset, width, type);
-                valsProp.set(mappedVals);
+                var width = (maxRange - minRange);
+                if(axrev) width *= -1;
+                var offset = !axrev ? minRange : maxRange;
+               
+                var currentFractionalVals = [];
+                var currentValsProp;
+                if(major) {
+                    currentValsProp = Lib.nestedProperty(ax, 'tickvals'); // Do we need this?
+                    currentFractionalVals = tickFractionalVals = currentValsProp.get();
+                    tickFractionalVals._isSet = true
+                } else {
+                    currentValsProp = Lib.nestedProperty(ax.minor, 'tickvals');
+                    currentFractionalVals = minorTickFractionalVals = currentValsProp.get();
+                    minorTickFractionalVals._isSet = true
+                }
+
+                var mappedVals = Lib.simpleMap(currentFractionalVals, 
+                    function(fraction, offset, width, type) {
+                        var mapped = offset + (width * fraction);
+                        return (type === 'log') ? Math.pow(10, mapped) : mapped;
+                    }, offset, width, type);
+                currentValsProp.set(mappedVals);
             }
 
             // Original 'array' only code
@@ -972,11 +988,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 minorTickVals = [];
                 minorTicks = arrayTicks(ax);
             }
-
-            // Reset tickvals back to proportional
-            if(mockAx.tickmode === 'proportional') valsProp.set(fractionalVals);
             continue;
-        }
+        } 
 
         // fill tickVals based on overlaying axis
         if(mockAx.tickmode === 'sync') {
@@ -1225,6 +1238,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             ticksOut.push(t);
         }
     }
+    
     ticksOut = ticksOut.concat(minorTicks);
 
     ax._inCalcTicks = false;
@@ -1234,6 +1248,14 @@ axes.calcTicks = function calcTicks(ax, opts) {
         ticksOut[0].noTick = true;
     }
 
+    // Reset tickvals back to proportional
+    if (tickFractionalVals._isSet) {
+        Lib.nestedProperty(ax, 'tickvals').set(tickFractionalVals)
+    }
+    if (minorTickFractionalVals._isSet){
+        Lib.nestedProperty(ax.minor, 'tickvals').set(minorTickFractionalVals);
+    }
+    
     return ticksOut;
 };
 
