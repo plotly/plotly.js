@@ -949,10 +949,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
         if(mockAx.tickmode === 'array') {
             if(major) {
                 tickVals = [];
-                ticksOut = arrayTicks(ax);
+                ticksOut = arrayTicks(ax, major);
             } else {
                 minorTickVals = [];
-                minorTicks = arrayTicks(ax);
+                minorTicks = arrayTicks(ax, false);
             }
             continue;
         }
@@ -1261,7 +1261,7 @@ function syncTicks(ax) {
     return ticksOut;
 }
 
-function arrayTicks(ax) {
+function arrayTicks(ax, major) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
     var exRng = expandRange(rng);
     var tickMin = Math.min(exRng[0], exRng[1]);
@@ -1279,7 +1279,8 @@ function arrayTicks(ax) {
 
     var ticksOut = [];
     for(var isMinor = 0; isMinor <= 1; isMinor++) {
-        if(isMinor && !ax.minor) continue;
+        if(!isMinor && !major) continue;
+        if(isMinor && (!ax.minor || major)) continue;
         var vals = !isMinor ? ax.tickvals : ax.minor.tickvals;
         var text = !isMinor ? ax.ticktext : [];
 
