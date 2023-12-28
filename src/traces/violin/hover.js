@@ -1,5 +1,6 @@
 'use strict';
 
+var Color = require('../../components/color');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var boxHoverPoints = require('../box/hover');
@@ -75,7 +76,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
 
                 closeData.push(kdePointData);
 
-                violinLineAttrs = {stroke: pointData.color};
+                violinLineAttrs = {};
                 violinLineAttrs[pLetter + '1'] = Lib.constrain(paOffset + pOnPath[0], paOffset, paOffset + paLength);
                 violinLineAttrs[pLetter + '2'] = Lib.constrain(paOffset + pOnPath[1], paOffset, paOffset + paLength);
                 violinLineAttrs[vLetter + '1'] = violinLineAttrs[vLetter + '2'] = vAxis._offset + vValPx;
@@ -98,7 +99,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
         .classed('violinline-' + trace.uid, true)
         .attr('stroke-width', 1.5);
     violinLine.exit().remove();
-    violinLine.attr(violinLineAttrs);
+    violinLine.attr(violinLineAttrs).call(Color.stroke, pointData.color);
 
     // same combine logic as box hoverPoints
     if(hovermode === 'closest') {

@@ -67,7 +67,7 @@ module.exports = function calc(gd, trace) {
     }
 
     calcColorscale(gd, trace);
-    Lib.extendFlat(opts, convertMarkerStyle(trace));
+    Lib.extendFlat(opts, convertMarkerStyle(gd, trace));
 
     var visibleLength = cdata.length;
     var hasTooManyPoints = (visibleLength * commonLength) > TOO_MANY_POINTS;
@@ -94,8 +94,8 @@ module.exports = function calc(gd, trace) {
     if(!scene.matrix) scene.matrix = true;
     scene.matrixOptions = opts;
 
-    scene.selectedOptions = convertMarkerSelection(trace, trace.selected);
-    scene.unselectedOptions = convertMarkerSelection(trace, trace.unselected);
+    scene.selectedOptions = convertMarkerSelection(gd, trace, trace.selected);
+    scene.unselectedOptions = convertMarkerSelection(gd, trace, trace.unselected);
 
     return [{x: false, y: false, t: {}, trace: trace}];
 };

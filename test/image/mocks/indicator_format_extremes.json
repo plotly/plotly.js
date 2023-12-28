@@ -171,6 +171,13 @@
         {
             "type": "indicator",
             "mode": "number+delta+gauge",
+            "gauge": {
+                "axis": {
+                    "labelalias": {
+                        "1": "ONE"
+                    }
+                }
+            },
             "title": {
                 "text": "null"
             },

@@ -1,6 +1,6 @@
-var supplyDefaults = require('@src/traces/heatmapgl').supplyDefaults;
-var Plots = require('@src/plots/plots');
-var Plotly = require('@lib/index');
+var supplyDefaults = require('../../../src/traces/heatmapgl').supplyDefaults;
+var Plots = require('../../../src/plots/plots');
+var Plotly = require('../../../lib/index');
 var schema = Plotly.PlotSchema.get();
 var attributeList = Object.getOwnPropertyNames(schema.traces.heatmapgl.attributes);
 

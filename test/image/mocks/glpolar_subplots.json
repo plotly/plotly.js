@@ -6,7 +6,7 @@
     "theta": [0, 45, 180],
     "text": ["A0", "B0", "C0"],
     "hovertext": ["hover A0", "hover B0", "hover C0"],
-    "marker": {"symbol": "square", "size": 15},
+    "marker": {"symbol": "arrow", "angle": [0, 135, 180], "size": 15},
     "textfont": {
       "color": ["red", "green", "blue"],
       "size": 20

@@ -21,8 +21,9 @@
       },
       "marker": {
         "color": "#8090c7",
-        "symbol": "square",
-        "size": 8
+        "symbol": "arrow",
+        "angleref": "previous",
+        "size": 12
       },
       "subplot": "polar",
       "text": "sector: 0->360<br>rotation: -90<br>direction: clockwise"
@@ -48,8 +49,9 @@
       },
       "marker": {
         "color": "#8090c7",
-        "symbol": "square",
-        "size": 8
+        "symbol": "arrow",
+        "angleref": "previous",
+        "size": 12
       },
       "subplot": "polar2",
       "text": "sector: 0->360<br>rotation: 90<br>direction: clockwise"
@@ -75,8 +77,9 @@
       },
       "marker": {
         "color": "#8090c7",
-        "symbol": "square",
-        "size": 8
+        "symbol": "arrow",
+        "angleref": "previous",
+        "size": 12
       },
       "subplot": "polar3",
       "text": "sector: 45->135<br>rotation: 90<br>direction: clockwise"
@@ -102,8 +105,9 @@
       },
       "marker": {
         "color": "#8090c7",
-        "symbol": "square",
-        "size": 8
+        "symbol": "arrow",
+        "angleref": "previous",
+        "size": 12
       },
       "subplot": "polar4",
       "text": "sector: 135->225<br>rotation: 90<br>direction: clockwise"
@@ -129,8 +133,9 @@
       },
       "marker": {
         "color": "#8090c7",
-        "symbol": "square",
-        "size": 8
+        "symbol": "arrow",
+        "angleref": "previous",
+        "size": 12
       },
       "subplot": "polar5",
       "text": "sector: 135->225<br>rotation: 90<br>direction: counterclockwise"
@@ -156,8 +161,9 @@
       },
       "marker": {
         "color": "#8090c7",
-        "symbol": "square",
-        "size": 8
+        "symbol": "arrow",
+        "angleref": "previous",
+        "size": 12
       },
       "subplot": "polar6",
       "text": "sector: 45->135<br>rotation: 90<br>direction: counterclockwise"
@@ -183,8 +189,9 @@
       },
       "marker": {
         "color": "#8090c7",
-        "symbol": "square",
-        "size": 8
+        "symbol": "arrow",
+        "angleref": "previous",
+        "size": 12
       },
       "subplot": "polar7",
       "text": "sector: 0->360<br>rotation: 90<br>direction: counterclockwise"
@@ -210,8 +217,9 @@
       },
       "marker": {
         "color": "#8090c7",
-        "symbol": "square",
-        "size": 8
+        "symbol": "arrow",
+        "angleref": "previous",
+        "size": 12
       },
       "subplot": "polar8",
       "text": "sector: 0->360<br>rotation: 0<br>direction: clockwise"
@@ -237,8 +245,9 @@
       },
       "marker": {
         "color": "#8090c7",
-        "symbol": "square",
-        "size": 8
+        "symbol": "arrow",
+        "angleref": "previous",
+        "size": 12
       },
       "subplot": "polar9",
       "text": "sector: 0->360<br>rotation: 0<br>direction: counterclockwise"
@@ -271,12 +280,12 @@
       },
       "radialaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         }
       },
       "angularaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         },
         "rotation": -90,
         "direction": "clockwise"
@@ -299,12 +308,12 @@
       },
       "radialaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         }
       },
       "angularaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         },
         "rotation": 90,
         "direction": "clockwise"
@@ -327,12 +336,12 @@
       },
       "radialaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         }
       },
       "angularaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         },
         "rotation": 90,
         "direction": "clockwise"
@@ -355,12 +364,12 @@
       },
       "radialaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         }
       },
       "angularaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         },
         "rotation": 90,
         "direction": "clockwise"
@@ -383,12 +392,12 @@
       },
       "radialaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         }
       },
       "angularaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         },
         "rotation": 90,
         "direction": "counterclockwise"
@@ -411,12 +420,12 @@
       },
       "radialaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         }
       },
       "angularaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         },
         "rotation": 90,
         "direction": "counterclockwise"
@@ -439,12 +448,12 @@
       },
       "radialaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         }
       },
       "angularaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         },
         "rotation": 90,
         "direction": "counterclockwise"
@@ -467,12 +476,12 @@
       },
       "radialaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         }
       },
       "angularaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         },
         "rotation": 0,
         "direction": "clockwise"
@@ -495,12 +504,12 @@
       },
       "radialaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         }
       },
       "angularaxis": {
         "tickfont": {
-          "size": 8
+          "size": 12
         },
         "rotation": 0,
         "direction": "counterclockwise"

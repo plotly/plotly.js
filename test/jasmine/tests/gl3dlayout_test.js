@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Gl3d = require('@src/plots/gl3d');
+var Plotly = require('../../../lib/index');
+var Gl3d = require('../../../src/plots/gl3d');
 
 var tinycolor = require('tinycolor2');
-var Color = require('@src/components/color');
+var Color = require('../../../src/components/color');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -11,7 +11,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 describe('Test gl3d axes defaults', function() {
     'use strict';
 
-    var supplyLayoutDefaults = require('@src/plots/gl3d/layout/axis_defaults');
+    var supplyLayoutDefaults = require('../../../src/plots/gl3d/layout/axis_defaults');
 
     describe('supplyLayoutDefaults supplies defaults', function() {
         var layoutIn,
@@ -35,41 +35,41 @@ describe('Test gl3d axes defaults', function() {
             layoutIn = {};
 
             var expected = {
-                'xaxis': {
-                    'showline': false,
-                    'showgrid': true,
-                    'gridcolor': 'rgb(204, 204, 204)',
-                    'gridwidth': 1,
-                    'showspikes': true,
-                    'spikesides': true,
-                    'spikethickness': 2,
-                    'spikecolor': '#444',
-                    'showbackground': false,
-                    'showaxeslabels': true
+                xaxis: {
+                    showline: false,
+                    showgrid: true,
+                    gridcolor: 'rgb(204, 204, 204)',
+                    gridwidth: 1,
+                    showspikes: true,
+                    spikesides: true,
+                    spikethickness: 2,
+                    spikecolor: '#444',
+                    showbackground: false,
+                    showaxeslabels: true
                 },
-                'yaxis': {
-                    'showline': false,
-                    'showgrid': true,
-                    'gridcolor': 'rgb(204, 204, 204)',
-                    'gridwidth': 1,
-                    'showspikes': true,
-                    'spikesides': true,
-                    'spikethickness': 2,
-                    'spikecolor': '#444',
-                    'showbackground': false,
-                    'showaxeslabels': true
+                yaxis: {
+                    showline: false,
+                    showgrid: true,
+                    gridcolor: 'rgb(204, 204, 204)',
+                    gridwidth: 1,
+                    showspikes: true,
+                    spikesides: true,
+                    spikethickness: 2,
+                    spikecolor: '#444',
+                    showbackground: false,
+                    showaxeslabels: true
                 },
-                'zaxis': {
-                    'showline': false,
-                    'showgrid': true,
-                    'gridcolor': 'rgb(204, 204, 204)',
-                    'gridwidth': 1,
-                    'showspikes': true,
-                    'spikesides': true,
-                    'spikethickness': 2,
-                    'spikecolor': '#444',
-                    'showbackground': false,
-                    'showaxeslabels': true
+                zaxis: {
+                    showline: false,
+                    showgrid: true,
+                    gridcolor: 'rgb(204, 204, 204)',
+                    gridwidth: 1,
+                    showspikes: true,
+                    spikesides: true,
+                    spikethickness: 2,
+                    spikecolor: '#444',
+                    showbackground: false,
+                    showaxeslabels: true
                 }
             };
 

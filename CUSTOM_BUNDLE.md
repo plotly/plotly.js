@@ -30,6 +30,11 @@ Or use `transforms none` to exclude them all.
 npm run custom-bundle -- --transforms none
 ```
 
+Use the `strict` option to use strict trace types where possible.
+```sh
+npm run custom-bundle -- --traces scatter,scattergl --strict
+```
+
 Use the `out` option to change the bundle filename (default `custom`).
 The new bundle will be created in the `dist/` directory and named `plotly-<out>.min.js` or `plotly-<out>.js` if unminified.
 ```sh

@@ -25,7 +25,7 @@ module.exports = {
     meta: {
         description: [
             'The data visualized by the span of the bars is set in `y`',
-            'if `orientation` is set th *v* (the default)',
+            'if `orientation` is set to *v* (the default)',
             'and the labels are set in `x`.',
             'By setting `orientation` to *h*, the roles are interchanged.'
         ].join(' ')

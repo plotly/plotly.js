@@ -12,7 +12,7 @@ var constants = require('./constants');
 var HOUR = constants.HOUR_PATTERN;
 var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 
-var tickmode = {
+var minorTickmode = {
     valType: 'enumerated',
     values: ['auto', 'linear', 'array'],
     editType: 'ticks',
@@ -28,6 +28,15 @@ var tickmode = {
         '(*array* is the default value if `tickvals` is provided).'
     ].join(' ')
 };
+
+var tickmode = extendFlat({}, minorTickmode, {
+    values: minorTickmode.values.slice().concat(['sync']),
+    description: [
+        minorTickmode.description,
+        'If *sync*, the number of ticks will sync with the overlayed axis',
+        'set by `overlaying` property.'
+    ].join(' ')
+});
 
 function makeNticks(minor) {
     return {
@@ -263,7 +272,7 @@ module.exports = {
     },
     autorange: {
         valType: 'enumerated',
-        values: [true, false, 'reversed'],
+        values: [true, false, 'reversed', 'min reversed', 'max reversed', 'min', 'max'],
         dflt: true,
         editType: 'axrange',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
@@ -271,8 +280,60 @@ module.exports = {
             'Determines whether or not the range of this axis is',
             'computed in relation to the input data.',
             'See `rangemode` for more info.',
-            'If `range` is provided, then `autorange` is set to *false*.'
+            'If `range` is provided and it has a value for both the',
+            'lower and upper bound, `autorange` is set to *false*.',
+            'Using *min* applies autorange only to set the minimum.',
+            'Using *max* applies autorange only to set the maximum.',
+            'Using *min reversed* applies autorange only to set the minimum on a reversed axis.',
+            'Using *max reversed* applies autorange only to set the maximum on a reversed axis.',
+            'Using *reversed* applies autorange on both ends and reverses the axis direction.',
         ].join(' ')
+    },
+    autorangeoptions: {
+        minallowed: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Use this value exactly as autorange minimum.'
+            ].join(' ')
+        },
+        maxallowed: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Use this value exactly as autorange maximum.'
+            ].join(' ')
+        },
+        clipmin: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Clip autorange minimum if it goes beyond this value.',
+                'Has no effect when `autorangeoptions.minallowed` is provided.'
+            ].join(' ')
+        },
+        clipmax: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Clip autorange maximum if it goes beyond this value.',
+                'Has no effect when `autorangeoptions.maxallowed` is provided.'
+            ].join(' ')
+        },
+        include: {
+            valType: 'any',
+            arrayOk: true,
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Ensure this value is included in autorange.'
+            ].join(' ')
+        },
+        editType: 'plot'
     },
     rangemode: {
         valType: 'enumerated',
@@ -296,7 +357,7 @@ module.exports = {
             {valType: 'any', editType: 'axrange', impliedEdits: {'^autorange': false}, anim: true}
         ],
         editType: 'axrange',
-        impliedEdits: {'autorange': false},
+        impliedEdits: {autorange: false},
         anim: true,
         description: [
             'Sets the range of this axis.',
@@ -308,7 +369,24 @@ module.exports = {
             'will be accepted and converted to strings.',
             'If the axis `type` is *category*, it should be numbers,',
             'using the scale where each category is assigned a serial',
-            'number from zero in the order it appears.'
+            'number from zero in the order it appears.',
+            'Leaving either or both elements `null` impacts the default `autorange`.',
+        ].join(' ')
+    },
+    minallowed: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'^autorange': false},
+        description: [
+            'Determines the minimum range of this axis.'
+        ].join(' ')
+    },
+    maxallowed: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'^autorange': false},
+        description: [
+            'Determines the maximum range of this axis.'
         ].join(' ')
     },
     fixedrange: {
@@ -320,13 +398,29 @@ module.exports = {
             'If true, then zoom is disabled.'
         ].join(' ')
     },
+    insiderange: {
+        valType: 'info_array',
+        items: [
+            {valType: 'any', editType: 'plot'},
+            {valType: 'any', editType: 'plot'}
+        ],
+        editType: 'plot',
+        description: [
+            'Could be used to set the desired inside range of this axis',
+            '(excluding the labels) when `ticklabelposition` of',
+            'the anchored axis has *inside*.',
+            'Not implemented for axes with `type` *log*.',
+            'This would be ignored when `range` is provided.'
+        ].join(' ')
+    },
     // scaleanchor: not used directly, just put here for reference
-    // values are any opposite-letter axis id
+    // values are any opposite-letter axis id, or `false`.
     scaleanchor: {
         valType: 'enumerated',
         values: [
             constants.idRegex.x.toString(),
-            constants.idRegex.y.toString()
+            constants.idRegex.y.toString(),
+            false
         ],
         editType: 'plot',
         description: [
@@ -344,7 +438,12 @@ module.exports = {
             'and the last constraint encountered will be ignored to avoid possible',
             'inconsistent constraints via `scaleratio`.',
             'Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint',
-            'is currently forbidden.'
+            'is currently forbidden.',
+            'Setting `false` allows to remove a default constraint (occasionally,',
+            'you may need to prevent a default `scaleanchor` constraint from',
+            'being applied, eg. when having an image trace `yaxis: {scaleanchor: "x"}`',
+            'is set automatically in order for pixels to be rendered as squares,',
+            'setting `yaxis: {scaleanchor: false}` allows to remove the constraint).'
         ].join(' ')
     },
     scaleratio: {
@@ -623,6 +722,21 @@ module.exports = {
         dflt: true,
         editType: 'ticks',
         description: 'Determines whether or not the tick labels are drawn.'
+    },
+    labelalias: {
+        valType: 'any',
+        dflt: false,
+        editType: 'ticks',
+        description: [
+            'Replacement text for specific tick or hover labels.',
+            'For example using {US: \'USA\', CA: \'Canada\'} changes US to USA',
+            'and CA to Canada. The labels we would have shown must match',
+            'the keys exactly, after adding any tickprefix or ticksuffix.',
+            'For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash.',
+            'That means you need to use −1 instead of -1.',
+            'labelalias can be used with any axis type, and both keys (if needed)',
+            'and values (if desired) can include html-like tags or MathJax.'
+        ].join(' ')
     },
     automargin: {
         valType: 'flaglist',
@@ -947,7 +1061,7 @@ module.exports = {
     },
 
     minor: {
-        tickmode: tickmode,
+        tickmode: minorTickmode,
         nticks: makeNticks('minor'),
         tick0: tick0,
         dtick: dtick,
@@ -1000,6 +1114,30 @@ module.exports = {
         description: [
             'Sets the position of this axis in the plotting space',
             '(in normalized coordinates).',
+            'Only has an effect if `anchor` is set to *free*.'
+        ].join(' ')
+    },
+    autoshift: {
+        valType: 'boolean',
+        dflt: false,
+        editType: 'plot',
+        description: [
+            'Automatically reposition the axis to avoid',
+            'overlap with other axes with the same `overlaying` value.',
+            'This repositioning will account for any `shift` amount applied to other',
+            'axes on the same side with `autoshift` is set to true.',
+            'Only has an effect if `anchor` is set to *free*.',
+        ].join(' ')
+    },
+    shift: {
+        valType: 'number',
+        editType: 'plot',
+        description: [
+            'Moves the axis a given number of pixels from where it would have been otherwise.',
+            'Accepts both positive and negative values, which will shift the axis either right',
+            'or left, respectively.',
+            'If `autoshift` is set to true, then this defaults to a padding of -3 if `side` is set to *left*.',
+            'and defaults to +3 if `side` is set to *right*. Defaults to 0 if `autoshift` is set to false.',
             'Only has an effect if `anchor` is set to *free*.'
         ].join(' ')
     },

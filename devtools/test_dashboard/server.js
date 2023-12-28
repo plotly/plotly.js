@@ -3,12 +3,12 @@ var path = require('path');
 var http = require('http');
 var ecstatic = require('ecstatic');
 var open = require('open');
-var browserify = require('browserify');
+var webpack = require('webpack');
 var minimist = require('minimist');
 
 var constants = require('../../tasks/util/constants');
-var makeWatchifiedBundle = require('../../tasks/util/watchified_bundle');
-var shortcutPaths = require('../../tasks/util/shortcut_paths');
+var config = require('../../webpack.config.js');
+config.optimization = { minimize: false };
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
@@ -16,41 +16,91 @@ var strict = args.strict;
 var mathjax3 = args.mathjax3;
 var mathjax3chtml = args.mathjax3chtml;
 
-// Create server
-var server = http.createServer(ecstatic({
-    root: constants.pathToRoot,
-    cache: 0,
-    gzip: true,
-    cors: true
-}));
+if(strict) config.entry = './lib/index-strict.js';
 
-// Make watchified bundle for plotly.js
-var bundlePlotly = makeWatchifiedBundle(strict, function() {
-    // open up browser window on first bundle callback
-    open('http://localhost:' + PORT + '/devtools/test_dashboard/index' + (
-        strict ? '-strict' :
-        mathjax3 ? '-mathjax3' :
-        mathjax3chtml ? '-mathjax3chtml' : ''
-    ) + '.html');
-});
+if(!strict) {
+    config.mode = 'development';
+    config.devtool = 'eval';
+}
 
-// Bundle devtools code
-var devtoolsPath = path.join(constants.pathToRoot, 'devtools/test_dashboard');
-var devtools = browserify(path.join(devtoolsPath, 'devtools.js'), {
-    transform: [shortcutPaths]
-});
 
-// Start the server up!
-server.listen(PORT);
-
-// Build and bundle all the things!
+// mock list
 getMockFiles()
     .then(readFiles)
     .then(createMocksList)
-    .then(saveToFile)
-    .then(bundleDevtools)
-    .then(bundlePlotly);
+    .then(saveMockListToFile);
 
+// Devtools config
+var devtoolsConfig = {};
+
+var devtoolsPath = path.join(constants.pathToRoot, 'devtools/test_dashboard');
+devtoolsConfig.entry = path.join(devtoolsPath, 'devtools.js');
+
+devtoolsConfig.output = {
+    path: config.output.path,
+    filename: 'test_dashboard-bundle.js',
+    library: {
+        name: 'Tabs',
+        type: 'umd'
+    }
+};
+
+devtoolsConfig.target = config.target;
+devtoolsConfig.plugins = config.plugins;
+devtoolsConfig.optimization = config.optimization;
+devtoolsConfig.mode = config.mode;
+
+var compiler;
+
+compiler = webpack(devtoolsConfig);
+compiler.run(function(devtoolsErr, devtoolsStats) {
+    if(devtoolsErr) {
+        console.log('err:', devtoolsErr);
+    } else if(devtoolsStats.errors && devtoolsStats.errors.length) {
+        console.log('stats.errors:', devtoolsStats.errors);
+    } else {
+        console.log('success:', devtoolsConfig.output.path + '/' + devtoolsConfig.output.filename);
+    }
+
+    compiler.close(function(closeErr) {
+        if(!closeErr) {
+            var firstBundle = true;
+
+            compiler = webpack(config);
+            compiler.watch({}, function(err, stats) {
+                if(err) {
+                    console.log('err:', err);
+                } else if(stats.errors && stats.errors.length) {
+                    console.log('stats.errors:', stats.errors);
+                } else {
+                    console.log('success:', config.output.path + '/' + config.output.filename);
+
+                    if(firstBundle) {
+                        // Create server
+                        var server = http.createServer(ecstatic({
+                            root: constants.pathToRoot,
+                            cache: 0,
+                            gzip: true,
+                            cors: true
+                        }));
+
+                        // Start the server up!
+                        server.listen(PORT);
+
+                        // open up browser window
+                        open('http://localhost:' + PORT + '/devtools/test_dashboard/index' + (
+                            strict ? '-strict' :
+                            mathjax3 ? '-mathjax3' :
+                            mathjax3chtml ? '-mathjax3chtml' : ''
+                        ) + '.html');
+
+                        firstBundle = false;
+                    }
+                }
+            });
+        }
+    });
+});
 
 function getMockFiles() {
     return new Promise(function(resolve, reject) {
@@ -104,7 +154,7 @@ function createMocksList(files) {
     return mocksList;
 }
 
-function saveToFile(mocksList) {
+function saveMockListToFile(mocksList) {
     var filePath = path.join(constants.pathToBuild, 'test_dashboard_mocks.json');
     var content = JSON.stringify(mocksList, null, 4);
 
@@ -135,18 +185,5 @@ function writeFilePromise(path, contents) {
                 resolve(path);
             }
         });
-    });
-}
-
-function bundleDevtools() {
-    return new Promise(function(resolve, reject) {
-        devtools.bundle(function(err) {
-            if(err) {
-                console.error('Error while bundling!', JSON.stringify(String(err)));
-                return reject(err);
-            } else {
-                return resolve();
-            }
-        }).pipe(fs.createWriteStream(constants.pathToTestDashboardBundle));
     });
 }

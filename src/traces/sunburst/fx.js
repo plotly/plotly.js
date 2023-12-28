@@ -174,7 +174,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
         if(isTreemapOrIcicle) {
             var slice = sliceTop.select('path.surface');
-            opts.styleOne(slice, pt, traceNow, {
+            opts.styleOne(slice, pt, traceNow, gd, {
                 hovered: true
             });
         }
@@ -207,7 +207,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
         if(isTreemapOrIcicle) {
             var slice = sliceTop.select('path.surface');
-            opts.styleOne(slice, pt, traceNow, {
+            opts.styleOne(slice, pt, traceNow, gd, {
                 hovered: false
             });
         }

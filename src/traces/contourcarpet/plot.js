@@ -134,6 +134,7 @@ function mapPathinfo(pathinfo, map) {
 }
 
 function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, plotinfo, carpet) {
+    var isStatic = gd._context.staticPlot;
     var lineContainer = Lib.ensureSingle(plotgroup, 'g', 'contourlines');
     var showLines = contours.showlines !== false;
     var showLabels = contours.showlabels;
@@ -143,7 +144,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, plotinfo, ca
     // if we're showing labels, because the fill paths include the perimeter
     // so can't be used to position the labels correctly.
     // In this case we'll remove the lines after making the labels.
-    var linegroup = contourPlot.createLines(lineContainer, showLines || showLabels, pathinfo);
+    var linegroup = contourPlot.createLines(lineContainer, showLines || showLabels, pathinfo, isStatic);
 
     var lineClip = contourPlot.createLineClip(lineContainer, clipLinesForLabels, gd, cd0.trace.uid);
 

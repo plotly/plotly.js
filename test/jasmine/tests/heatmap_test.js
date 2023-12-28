@@ -1,10 +1,10 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var setConvert = require('@src/plots/cartesian/set_convert');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var setConvert = require('../../../src/plots/cartesian/set_convert');
 
-var convertColumnXYZ = require('@src/traces/heatmap/convert_column_xyz');
-var Heatmap = require('@src/traces/heatmap');
+var convertColumnXYZ = require('../../../src/traces/heatmap/convert_column_xyz');
+var Heatmap = require('../../../src/traces/heatmap');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -75,7 +75,7 @@ describe('heatmap supplyDefaults', function() {
         expect(traceOut.visible).toBe(false);
     });
 
-    it('should set visible to false when z isn\'t column not a 2d array', function() {
+    it('should set visible to false when z isn\'t column nor a 2d array', function() {
         traceIn = {
             x: [1, 1, 1, 2, 2],
             y: [1, 2, 3, 1, 2],
@@ -530,7 +530,7 @@ describe('heatmap calc', function() {
 
     ['heatmap', 'heatmapgl'].forEach(function(traceType) {
         it('should sort z data based on axis categoryorder for ' + traceType, function() {
-            var mock = require('@mocks/heatmap_categoryorder');
+            var mock = require('../../image/mocks/heatmap_categoryorder');
             var mockCopy = Lib.extendDeep({}, mock);
             var data = mockCopy.data[0];
             data.type = traceType;
@@ -560,7 +560,7 @@ describe('heatmap calc', function() {
         });
 
         it('should sort z data based on axis categoryarray ' + traceType, function() {
-            var mock = require('@mocks/heatmap_categoryorder');
+            var mock = require('../../image/mocks/heatmap_categoryorder');
             var mockCopy = Lib.extendDeep({}, mock);
             var data = mockCopy.data[0];
             data.type = traceType;
@@ -669,7 +669,7 @@ describe('heatmap plot', function() {
     afterEach(destroyGraphDiv);
 
     it('should not draw traces that are off-screen', function(done) {
-        var mock = require('@mocks/heatmap_multi-trace.json');
+        var mock = require('../../image/mocks/heatmap_multi-trace.json');
         var mockCopy = Lib.extendDeep({}, mock);
 
         function assertImageCnt(cnt) {
@@ -722,7 +722,7 @@ describe('heatmap plot', function() {
     });
 
     it('should be able to restyle', function(done) {
-        var mock = require('@mocks/13.json');
+        var mock = require('../../image/mocks/13.json');
         var mockCopy = Lib.extendDeep({}, mock);
 
         function getImageURL() {
@@ -756,15 +756,19 @@ describe('heatmap plot', function() {
     });
 
     it('draws canvas with correct margins', function(done) {
-        var mockWithPadding = require('@mocks/heatmap_brick_padding.json');
+        var mockWithPadding = require('../../image/mocks/heatmap_brick_padding.json');
         var mockWithoutPadding = Lib.extendDeep({}, mockWithPadding);
         var getContextStub = {
             fillRect: jasmine.createSpy()
         };
         var originalCreateElement = document.createElement;
 
-        mockWithoutPadding.data[0].xgap = 0;
-        mockWithoutPadding.data[0].ygap = 0;
+        // We actually need to set a non-zero gap to ensure both mockWithPadding
+        // and mockWithoutPadding relies on the same drawing method (ie. default
+        // method using fillRect)
+        var nearZeroGap = 0.1;
+        mockWithoutPadding.data[0].xgap = nearZeroGap;
+        mockWithoutPadding.data[0].ygap = nearZeroGap;
 
         spyOn(document, 'createElement').and.callFake(function(elementType) {
             var element = originalCreateElement.call(document, elementType);
@@ -782,8 +786,8 @@ describe('heatmap plot', function() {
         }).then(function() {
             var xGap = mockWithPadding.data[0].xgap;
             var yGap = mockWithPadding.data[0].ygap;
-            var xGapLeft = xGap / 2;
-            var yGapTop = yGap / 2;
+            var xGapLeft = Math.floor(xGap / 2);
+            var yGapTop = Math.floor(yGap / 2);
 
             argumentsWithPadding = getContextStub.fillRect.calls.allArgs()
                 .slice(getContextStub.fillRect.calls.allArgs().length - 25);
@@ -793,8 +797,8 @@ describe('heatmap plot', function() {
             argumentsWithPadding.forEach(function(args, i) {
                 expect(args[0]).toBe(argumentsWithoutPadding[i][0] + xGapLeft, i);
                 expect(args[1]).toBe(argumentsWithoutPadding[i][1] + yGapTop, i);
-                expect(args[2]).toBe(argumentsWithoutPadding[i][2] - xGap, i);
-                expect(args[3]).toBe(argumentsWithoutPadding[i][3] - yGap, i);
+                expect(args[2]).toBe(argumentsWithoutPadding[i][2] + nearZeroGap - xGap, i);
+                expect(args[3]).toBe(argumentsWithoutPadding[i][3] + nearZeroGap - yGap, i);
             });
         })
         .then(done, done.fail);
@@ -825,6 +829,115 @@ describe('heatmap plot', function() {
             expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2]]);
         })
         .then(done, done.fail);
+    });
+
+    it('should set canvas dimensions according to z data shape when using fast drawing method', function(done) {
+        var mock1 = require('../../image/mocks/zsmooth_methods.json');
+        var mock2 = require('../../image/mocks/heatmap_small_layout_zsmooth_fast.json');
+
+        var canvasStub;
+        var originalCreateElement = document.createElement;
+
+        spyOn(document, 'createElement').and.callFake(function(elementType) {
+            var element = originalCreateElement.call(document, elementType);
+            if(elementType === 'canvas') {
+                canvasStub = {
+                    width: spyOnProperty(element, 'width', 'set').and.callThrough(),
+                    height: spyOnProperty(element, 'height', 'set').and.callThrough()
+                };
+            }
+            return element;
+        });
+
+        function assertCanvas(z) {
+            expect(canvasStub.width.calls.count()).toBe(1);
+            expect(canvasStub.height.calls.count()).toBe(1);
+            var m = z.length;
+            var n = Lib.maxRowLength(z);
+            var canvasW = canvasStub.width.calls.argsFor(0)[0];
+            var canvasH = canvasStub.height.calls.argsFor(0)[0];
+            expect([canvasW, canvasH]).toEqual([n, m]);
+        }
+
+        Plotly.newPlot(gd, [mock1.data[1]]).then(function() {
+            assertCanvas(mock1.data[1].z);
+            return Plotly.newPlot(gd, mock2.data, mock2.layout);
+        }).then(function() {
+            assertCanvas(mock2.data[0].z);
+        }).then(done, done.fail);
+    });
+
+    it('should create imageData that fits the canvas dimensions if zsmooth is set and/or drawing method is fast', function(done) {
+        var mock1 = require('../../image/mocks/zsmooth_methods.json');
+        var mock2 = require('../../image/mocks/heatmap_small_layout_zsmooth_fast.json');
+
+        var imageDataStub = {
+            data: {
+                set: jasmine.createSpy()
+            }
+        };
+
+        var getContextStub = {
+            createImageData: jasmine.createSpy().and.returnValue(imageDataStub),
+            putImageData: function() {},
+            fillRect: function() {},
+        };
+
+        function checkPixels(pixels) {
+            for(var j = 0, px, check; j < pixels.length; j += 4) {
+                px = pixels.slice(j, j + 4);
+                check = px.every(function(c) { return c === 0; });
+                if(check) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        var canvasStubs = [];
+        var originalCreateElement = document.createElement;
+
+        spyOn(document, 'createElement').and.callFake(function(elementType) {
+            var element = originalCreateElement.call(document, elementType);
+            if(elementType === 'canvas') {
+                spyOn(element, 'getContext').and.returnValue(getContextStub);
+                canvasStubs.push({
+                    width: spyOnProperty(element, 'width', 'set').and.callThrough(),
+                    height: spyOnProperty(element, 'height', 'set').and.callThrough()
+                });
+            }
+            return element;
+        });
+
+        function assertImageData(traceIndices) {
+            expect(getContextStub.createImageData.calls.count()).toBe(traceIndices.length);
+            expect(imageDataStub.data.set.calls.count()).toBe(traceIndices.length);
+
+            traceIndices.forEach(function(i) {
+                var createImageDataArgs = getContextStub.createImageData.calls.argsFor(i);
+                var setImageDataArgs = imageDataStub.data.set.calls.argsFor(i);
+
+                var canvasW = canvasStubs[i].width.calls.argsFor(0)[0];
+                var canvasH = canvasStubs[i].height.calls.argsFor(0)[0];
+                expect(createImageDataArgs).toEqual([canvasW, canvasH]);
+
+                var pixels = setImageDataArgs[0];
+                expect(pixels.length).toBe(canvasW * canvasH * 4);
+                expect(checkPixels(pixels)).toBe(true);
+            });
+        }
+
+        Plotly.newPlot(gd, mock1.data, mock1.layout).then(function() {
+            assertImageData([0, 1, 2]);
+
+            getContextStub.createImageData.calls.reset();
+            imageDataStub.data.set.calls.reset();
+            canvasStubs = [];
+
+            return Plotly.newPlot(gd, mock2.data, mock2.layout);
+        }).then(function() {
+            assertImageData([0]);
+        }).then(done, done.fail);
     });
 });
 
@@ -866,7 +979,7 @@ describe('heatmap hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = require('@mocks/heatmap_multi-trace.json');
+            var mock = require('../../image/mocks/heatmap_multi-trace.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
@@ -893,7 +1006,7 @@ describe('heatmap hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = require('@mocks/heatmap_categoryorder.json');
+            var mock = require('../../image/mocks/heatmap_categoryorder.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
@@ -944,7 +1057,7 @@ describe('heatmap hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = require('@mocks/heatmap_contour_irregular_bricks.json');
+            var mock = require('../../image/mocks/heatmap_contour_irregular_bricks.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);

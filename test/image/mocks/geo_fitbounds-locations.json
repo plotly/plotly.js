@@ -647,6 +647,29 @@
       "hoverinfo": "skip"
     },
     {
+      "name": "equal earth",
+      "geo": "geo84",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "equal earth"
+    },
+    {
+      "geo": "geo84",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "equal earth",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
       "name": "equirectangular",
       "geo": "geo28",
       "type": "choropleth",
@@ -2009,7 +2032,7 @@
     },
     "geo83": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 10
       },
       "projection": {
@@ -2555,9 +2578,31 @@
       "showcoastlines": false,
       "showocean": true
     },
-    "geo28": {
+    "geo84": {
       "domain": {
         "row": 3,
+        "column": 3
+      },
+      "projection": {
+        "type": "eisenlohr"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo28": {
+      "domain": {
+        "row": 4,
         "column": 3
       },
       "projection": {
@@ -2579,7 +2624,7 @@
     },
     "geo29": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 3
       },
       "projection": {
@@ -2601,7 +2646,7 @@
     },
     "geo30": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 3
       },
       "projection": {
@@ -2623,7 +2668,7 @@
     },
     "geo31": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 3
       },
       "projection": {
@@ -2645,8 +2690,8 @@
     },
     "geo32": {
       "domain": {
-        "row": 7,
-        "column": 3
+        "row": 0,
+        "column": 4
       },
       "projection": {
         "type": "ginzburg4"
@@ -2667,7 +2712,7 @@
     },
     "geo33": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 4
       },
       "projection": {
@@ -2689,7 +2734,7 @@
     },
     "geo34": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 4
       },
       "projection": {
@@ -2711,7 +2756,7 @@
     },
     "geo35": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 4
       },
       "projection": {
@@ -2733,7 +2778,7 @@
     },
     "geo36": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 4
       },
       "projection": {
@@ -2755,7 +2800,7 @@
     },
     "geo37": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 4
       },
       "projection": {
@@ -2777,7 +2822,7 @@
     },
     "geo38": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 4
       },
       "projection": {
@@ -2799,7 +2844,7 @@
     },
     "geo39": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 4
       },
       "projection": {
@@ -2821,8 +2866,8 @@
     },
     "geo40": {
       "domain": {
-        "row": 7,
-        "column": 4
+        "row": 0,
+        "column": 5
       },
       "projection": {
         "type": "guyou"
@@ -2843,7 +2888,7 @@
     },
     "geo41": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 5
       },
       "projection": {
@@ -2865,7 +2910,7 @@
     },
     "geo42": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 5
       },
       "projection": {
@@ -2887,7 +2932,7 @@
     },
     "geo43": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 5
       },
       "projection": {
@@ -2909,7 +2954,7 @@
     },
     "geo44": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 5
       },
       "projection": {
@@ -2931,7 +2976,7 @@
     },
     "geo45": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 5
       },
       "projection": {
@@ -2953,7 +2998,7 @@
     },
     "geo46": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 5
       },
       "projection": {
@@ -2975,7 +3020,7 @@
     },
     "geo47": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 5
       },
       "projection": {
@@ -2997,8 +3042,8 @@
     },
     "geo48": {
       "domain": {
-        "row": 7,
-        "column": 5
+        "row": 0,
+        "column": 6
       },
       "projection": {
         "type": "larrivee"
@@ -3019,7 +3064,7 @@
     },
     "geo49": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 6
       },
       "projection": {
@@ -3041,7 +3086,7 @@
     },
     "geo50": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 6
       },
       "projection": {
@@ -3063,7 +3108,7 @@
     },
     "geo51": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 6
       },
       "projection": {
@@ -3085,7 +3130,7 @@
     },
     "geo52": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 6
       },
       "projection": {
@@ -3107,7 +3152,7 @@
     },
     "geo53": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 6
       },
       "projection": {
@@ -3129,7 +3174,7 @@
     },
     "geo54": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 6
       },
       "projection": {
@@ -3151,7 +3196,7 @@
     },
     "geo55": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 6
       },
       "projection": {
@@ -3173,8 +3218,8 @@
     },
     "geo56": {
       "domain": {
-        "row": 7,
-        "column": 6
+        "row": 0,
+        "column": 7
       },
       "projection": {
         "type": "mt flat polar sinusoidal"
@@ -3195,7 +3240,7 @@
     },
     "geo57": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 7
       },
       "projection": {
@@ -3217,7 +3262,7 @@
     },
     "geo58": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 7
       },
       "projection": {
@@ -3239,7 +3284,7 @@
     },
     "geo59": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 7
       },
       "projection": {
@@ -3261,7 +3306,7 @@
     },
     "geo60": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 7
       },
       "projection": {
@@ -3283,7 +3328,7 @@
     },
     "geo61": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 7
       },
       "projection": {
@@ -3305,7 +3350,7 @@
     },
     "geo62": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 7
       },
       "projection": {
@@ -3327,7 +3372,7 @@
     },
     "geo63": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 7
       },
       "projection": {
@@ -3349,8 +3394,8 @@
     },
     "geo64": {
       "domain": {
-        "row": 7,
-        "column": 7
+        "row": 0,
+        "column": 8
       },
       "projection": {
         "type": "peirce quincuncial"
@@ -3371,7 +3416,7 @@
     },
     "geo65": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 8
       },
       "projection": {
@@ -3393,7 +3438,7 @@
     },
     "geo66": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 8
       },
       "projection": {
@@ -3415,7 +3460,7 @@
     },
     "geo67": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 8
       },
       "projection": {
@@ -3437,7 +3482,7 @@
     },
     "geo68": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 8
       },
       "projection": {
@@ -3459,7 +3504,7 @@
     },
     "geo69": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 8
       },
       "projection": {
@@ -3481,7 +3526,7 @@
     },
     "geo70": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 8
       },
       "projection": {
@@ -3503,7 +3548,7 @@
     },
     "geo71": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 8
       },
       "projection": {
@@ -3525,8 +3570,8 @@
     },
     "geo72": {
       "domain": {
-        "row": 7,
-        "column": 8
+        "row": 0,
+        "column": 9
       },
       "projection": {
         "type": "times"
@@ -3547,7 +3592,7 @@
     },
     "geo73": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 9
       },
       "projection": {
@@ -3569,7 +3614,7 @@
     },
     "geo74": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 9
       },
       "projection": {
@@ -3591,7 +3636,7 @@
     },
     "geo75": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 9
       },
       "projection": {
@@ -3613,7 +3658,7 @@
     },
     "geo76": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 9
       },
       "projection": {
@@ -3635,7 +3680,7 @@
     },
     "geo77": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 9
       },
       "projection": {
@@ -3657,7 +3702,7 @@
     },
     "geo78": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 9
       },
       "projection": {
@@ -3679,7 +3724,7 @@
     },
     "geo79": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 9
       },
       "projection": {
@@ -3701,8 +3746,8 @@
     },
     "geo80": {
       "domain": {
-        "row": 7,
-        "column": 9
+        "row": 0,
+        "column": 10
       },
       "projection": {
         "type": "wiechel"
@@ -3723,7 +3768,7 @@
     },
     "geo81": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 10
       },
       "projection": {
@@ -3745,7 +3790,7 @@
     },
     "geo82": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 10
       },
       "projection": {

@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
-var constants = require('@src/components/legend/constants');
-var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Drawing = require('../../../src/components/drawing');
+var constants = require('../../../src/components/legend/constants');
+var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
 var d3Select = require('../../strict-d3').select;
 var createGraph = require('../assets/create_graph_div');

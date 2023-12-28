@@ -153,7 +153,7 @@ function plot(gd, cdModule) {
 
                     sliceText.text(pt.text)
                         .attr({
-                            'class': 'slicetext',
+                            class: 'slicetext',
                             transform: '',
                             'text-anchor': 'middle'
                         })
@@ -199,7 +199,7 @@ function plot(gd, cdModule) {
                     recordMinTextSize(trace.type, transform, fullLayout);
                     cd[i].transform = transform;
 
-                    sliceText.attr('transform', Lib.getTextTransform(transform));
+                    Lib.setTransormAndDisplay(sliceText, transform);
                 });
             });
 
@@ -224,7 +224,7 @@ function plot(gd, cdModule) {
 
                 titleText.text(txt)
                     .attr({
-                        'class': 'titletext',
+                        class: 'titletext',
                         transform: '',
                         'text-anchor': 'middle',
                     })
@@ -307,7 +307,7 @@ function plotTextLines(slices, trace) {
         pt.transform.targetX += pt.labelExtraX;
         pt.transform.targetY += pt.labelExtraY;
 
-        sliceText.attr('transform', Lib.getTextTransform(pt.transform));
+        Lib.setTransormAndDisplay(sliceText, pt.transform);
 
         // then add a line to the new location
         var lineStartX = pt.cxFinal + pt.pxmid[0];

@@ -28,7 +28,7 @@ module.exports = {
         hrName: 'bar_polar',
         description: [
             'The data visualized by the radial span of the bars is set in `r`'
-            // 'if `orientation` is set th *radial* (the default)',
+            // 'if `orientation` is set to *radial* (the default)',
             // 'and the labels are set in `theta`.',
             // 'By setting `orientation` to *angular*, the roles are interchanged.'
         ].join(' ')

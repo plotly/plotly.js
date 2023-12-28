@@ -145,8 +145,6 @@ function isTransformableElement(element) {
 function equalDomRects(a, b) {
     return (
         a && b &&
-        a.x === b.x &&
-        a.y === b.y &&
         a.top === b.top &&
         a.left === b.left &&
         a.right === b.right &&

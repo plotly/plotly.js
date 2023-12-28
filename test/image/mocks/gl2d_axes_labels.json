@@ -53,6 +53,10 @@
     ],
     "layout": {
         "xaxis": {
+            "autorangeoptions": {
+                "clipmin": 0.5,
+                "clipmax": 7.5
+            },
             "tickfont": {
                 "color": "black",
                 "family": "Old Standard TT, serif",
@@ -72,6 +76,10 @@
             "exponentformat": "e"
         },
         "yaxis": {
+            "autorangeoptions": {
+                "clipmin": "5e-1",
+                "clipmax": "7.5"
+            },
             "tickfont": {
                 "color": "black",
                 "family": "Old Standard TT, serif",

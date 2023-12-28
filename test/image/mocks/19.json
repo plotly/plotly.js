@@ -1,6 +1,11 @@
 {
     "data": [
         {
+            "marker": {
+                "size": 10,
+                "symbol": "arrow-wide",
+                "angleref": "previous"
+            },
             "x": [
                 1,
                 2,
@@ -15,6 +20,12 @@
             "type": "scatter"
         },
         {
+            "marker": {
+                "size": 10,
+                "symbol": "arrow",
+                "angleref": "up",
+                "angle": [180, 0, 180]
+            },
             "x": [
                 20,
                 30,

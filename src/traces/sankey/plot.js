@@ -62,24 +62,25 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
 }
 
 function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-    var label = sankeyLink.datum().link.label;
-
     sankeyLink.style('fill-opacity', function(l) {
         if(!l.link.concentrationscale) {
             return 0.4;
         }
     });
 
-    if(label) {
-        ownTrace(sankey, d)
-            .selectAll('.' + cn.sankeyLink)
-            .filter(function(l) {return l.link.label === label;})
-            .style('fill-opacity', function(l) {
-                if(!l.link.concentrationscale) {
-                    return 0.4;
-                }
-            });
-    }
+    sankeyLink.each(function(curLink) {
+        var label = curLink.link.label;
+        if(label !== '') {
+            ownTrace(sankey, d)
+                .selectAll('.' + cn.sankeyLink)
+                .filter(function(l) {return l.link.label === label;})
+                .style('fill-opacity', function(l) {
+                    if(!l.link.concentrationscale) {
+                        return 0.4;
+                    }
+                });
+        }
+    });
 
     if(visitNodes) {
         ownTrace(sankey, d)
@@ -90,15 +91,17 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 }
 
 function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-    var label = sankeyLink.datum().link.label;
-
     sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
-    if(label) {
-        ownTrace(sankey, d)
-            .selectAll('.' + cn.sankeyLink)
-            .filter(function(l) {return l.link.label === label;})
-            .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
-    }
+
+    sankeyLink.each(function(curLink) {
+        var label = curLink.link.label;
+        if(label !== '') {
+            ownTrace(sankey, d)
+                .selectAll('.' + cn.sankeyLink)
+                .filter(function(l) {return l.link.label === label;})
+                .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+        }
+    });
 
     if(visitNodes) {
         ownTrace(sankey, d)

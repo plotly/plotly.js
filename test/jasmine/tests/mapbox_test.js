@@ -1,9 +1,9 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Fx = require('@src/components/fx');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Fx = require('../../../src/components/fx');
 
-var constants = require('@src/plots/mapbox/constants');
-var supplyLayoutDefaults = require('@src/plots/mapbox/layout_defaults');
+var constants = require('../../../src/plots/mapbox/constants');
+var supplyLayoutDefaults = require('../../../src/plots/mapbox/layout_defaults');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -25,7 +25,7 @@ var SORTED_EVENT_KEYS = [
     'bbox'
 ].sort();
 
-var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
+var MAPBOX_ACCESS_TOKEN = require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN;
 var TRANSITION_DELAY = 500;
 var MOUSE_DELAY = 100;
 var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -407,7 +407,7 @@ describe('mapbox credentials', function() {
         });
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should not throw when using a custom mapbox style URL with an access token in the layout', function(done) {
+    it('@noCI @gl should not throw when using a custom mapbox style URL with an access token in the layout', function(done) {
         var cnt = 0;
 
         Plotly.newPlot(gd, [{
@@ -494,7 +494,7 @@ describe('mapbox credentials', function() {
 });
 
 describe('mapbox plots', function() {
-    var mock = require('@mocks/mapbox_0.json');
+    var mock = require('../../image/mocks/mapbox_0.json');
     var gd;
 
     var pointPos = [579, 276];
@@ -782,7 +782,7 @@ describe('mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to add, update and remove layers', function(done) {
-        var mockWithLayers = require('@mocks/mapbox_layers');
+        var mockWithLayers = require('../../image/mocks/mapbox_layers');
 
         var layer0 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[0]);
         var layer1 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[1]);
@@ -952,14 +952,14 @@ describe('mapbox plots', function() {
                 layout: {
                     mapbox: {
                         layers: [{
-                            'sourcetype': 'raster',
-                            'source': ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
-                            'below': 'traces',
+                            sourcetype: 'raster',
+                            source: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                            below: 'traces',
                         }, {
-                            'sourcetype': 'image',
-                            'coordinates': coords,
-                            'source': source,
-                            'below': 'traces',
+                            sourcetype: 'image',
+                            coordinates: coords,
+                            source: source,
+                            below: 'traces',
                         }],
                     }
                 }
@@ -1300,7 +1300,7 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should respond drag / scroll / double-click interactions', function(done) {
+    it('@noCI @gl should respond drag / scroll / double-click interactions', function(done) {
         var relayoutCnt = 0;
         var doubleClickCnt = 0;
         var relayoutingCnt = 0;
@@ -1409,7 +1409,7 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should respect scrollZoom config option', function(done) {
+    it('@noCI @gl should respect scrollZoom config option', function(done) {
         var mockCopy2 = Lib.extendDeep({}, mock);
         mockCopy2.config = {scrollZoom: false};
 
@@ -1496,7 +1496,7 @@ describe('mapbox plots', function() {
         });
 
         ['stamen-terrain', 'stamen-toner'].forEach(function(style) {
-            it('@gl should be displayed for style "' + style + '"', function(done) {
+            it('@noCI @gl should be displayed for style "' + style + '"', function(done) {
                 Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: style}})
                 .then(function() {
                     var s = d3SelectAll('.mapboxgl-ctrl-attrib');
@@ -1513,7 +1513,7 @@ describe('mapbox plots', function() {
             });
         });
 
-        it('@gl should be displayed for style "stamen-watercolor"', function(done) {
+        it('@noCI @gl should be displayed for style "stamen-watercolor"', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'stamen-watercolor'}})
             .then(function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
@@ -1559,27 +1559,27 @@ describe('mapbox plots', function() {
 
         function mockLayoutCustomStyle() {
             return {
-                'mapbox': {
-                    'style': {
-                        'id': 'osm',
-                        'version': 8,
-                        'sources': {
+                mapbox: {
+                    style: {
+                        id: 'osm',
+                        version: 8,
+                        sources: {
                             'simple-tiles': {
-                                'type': 'raster',
-                                'tiles': [
+                                type: 'raster',
+                                tiles: [
                                     'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
                                     'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
                                 ],
-                                'tileSize': 256
+                                tileSize: 256
                             }
                         },
-                        'layers': [
+                        layers: [
                             {
-                                'id': 'simple-tiles',
-                                'type': 'raster',
-                                'source': 'simple-tiles',
-                                'minzoom': 0,
-                                'maxzoom': 22
+                                id: 'simple-tiles',
+                                type: 'raster',
+                                source: 'simple-tiles',
+                                minzoom: 0,
+                                maxzoom: 22
                             }
                         ]
                     }
@@ -1611,7 +1611,7 @@ describe('mapbox plots', function() {
         });
 
         it('@gl should be displayed for attributions defined in layers\' sourceattribution', function(done) {
-            var mock = require('@mocks/mapbox_layers.json');
+            var mock = require('../../image/mocks/mapbox_layers.json');
             var customMock = Lib.extendDeep(mock);
 
             var attr = 'custom attribution';
@@ -1693,7 +1693,9 @@ describe('mapbox plots', function() {
 
     function _mouseEvent(type, pos, cb) {
         return new Promise(function(resolve) {
-            mouseEvent(type, pos[0], pos[1]);
+            mouseEvent(type, pos[0], pos[1], {
+                buttons: 1 // left button
+            });
 
             setTimeout(function() {
                 cb();

@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -1044,6 +1044,48 @@ describe('finance charts updates:', function() {
         .then(function() {
             expect(countOHLCTraces()).toBe(1, '# of ohlc traces');
             expect(countBoxTraces()).toBe(1, '# of candlestick traces');
+        })
+        .then(done, done.fail);
+    });
+
+    it('should clear empty candlestick boxes using react', function(done) {
+        var type = 'candlestick';
+        var x = [0, 1];
+
+        var steps = [{
+            data: [{
+                close: [132, null],
+                high: [204, 20],
+                low: [30, 193],
+                open: [78, 79],
+                type: type,
+                x: x
+            }],
+            layout: {}
+        },
+        {
+            data: [{
+                close: [140, 78],
+                high: [91, 117],
+                low: [115, 78],
+                open: [null, 97],
+                type: type,
+                x: x
+            }],
+            layout: {}
+        }];
+
+        Plotly.newPlot(gd, steps[0])
+        .then(function() {
+            return Plotly.react(gd, steps[1]);
+        }).then(function() {
+            expect(
+                d3Select('g.cartesianlayer')
+                .selectAll('g.trace.boxes')
+                .selectAll('path')
+                .node()
+                .getAttribute('d')
+            ).toEqual('M0,0Z');
         })
         .then(done, done.fail);
     });

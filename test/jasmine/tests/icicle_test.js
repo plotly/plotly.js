@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -703,7 +703,7 @@ describe('Test icicle restyle:', function() {
     }
 
     it('should be able to toggle visibility', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/icicle_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/icicle_first.json'));
 
         function _assert(msg, exp) {
             return function() {
@@ -714,15 +714,15 @@ describe('Test icicle restyle:', function() {
 
         Plotly.newPlot(gd, mock)
         .then(_assert('base', 2))
-        .then(_restyle({'visible': false}))
+        .then(_restyle({visible: false}))
         .then(_assert('both visible:false', 0))
-        .then(_restyle({'visible': true}))
+        .then(_restyle({visible: true}))
         .then(_assert('back to visible:true', 2))
         .then(done, done.fail);
     });
 
     it('should be able to restyle *maxdepth* and *level* w/o recomputing the hierarchy', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/icicle_coffee.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/icicle_coffee.json'));
 
         function _assert(msg, exp) {
             return function() {

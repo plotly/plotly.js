@@ -35,6 +35,12 @@ function sankeyModel(layout, d, traceIndex) {
     var horizontal = trace.orientation === 'h';
     var nodePad = trace.node.pad;
     var nodeThickness = trace.node.thickness;
+    var nodeAlign = {
+        justify: d3Sankey.sankeyJustify,
+        left: d3Sankey.sankeyLeft,
+        right: d3Sankey.sankeyRight,
+        center: d3Sankey.sankeyCenter
+    }[trace.node.align];
 
     var width = layout.width * (domain.x[1] - domain.x[0]);
     var height = layout.height * (domain.y[1] - domain.y[0]);
@@ -61,6 +67,7 @@ function sankeyModel(layout, d, traceIndex) {
       .nodeId(function(d) {
           return d.pointNumber;
       })
+      .nodeAlign(nodeAlign)
       .nodes(nodes)
       .links(links);
 
