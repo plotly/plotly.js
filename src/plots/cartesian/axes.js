@@ -1250,9 +1250,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     // Reset tickvals back to proportional
     if (tickFractionalVals._isSet) {
+        delete tickFractionalVals._isSet
         Lib.nestedProperty(ax, 'tickvals').set(tickFractionalVals)
     }
     if (minorTickFractionalVals._isSet){
+        delete tickFractionalVals._isSet
         Lib.nestedProperty(ax.minor, 'tickvals').set(minorTickFractionalVals);
     }
     
