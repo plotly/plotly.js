@@ -958,7 +958,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             if(mockAx.tickmode === 'proportional') {
                 var width = (maxRange - minRange);
                 if(axrev) width *= -1;
-                var offset = !axrev ? minRange : maxRange
+                var offset = !axrev ? minRange : maxRange;
 
                 var currentFractionalVals = [];
                 var currentValsProp;
@@ -1238,7 +1238,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             ticksOut.push(t);
         }
     }
-    
+
     ticksOut = ticksOut.concat(minorTicks);
 
     ax._inCalcTicks = false;
