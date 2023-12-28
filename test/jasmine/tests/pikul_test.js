@@ -15,8 +15,9 @@ describe('When generating axes w/ `tickmode`:"proportional",', function() {
   afterEach(destroyGraphDiv);
   
   // These enums are `ticklen`s- it's how DOM analysis differentiates wrt major/minor
-  // Passed as tickLen argument to specify major or minor tick config
-  const MAJOR = 10, MINOR = 5; 
+  // Passed as tickLen argument to specify a major or minor tick config
+  const MAJOR = 10;
+  const MINOR = 5; 
   function generateTickConfig(tickLen){
     // Intentionally configure to produce a single `(x|y)tick` class per tick
     // labels and tick marks each produce one, so one or the other
@@ -54,8 +55,8 @@ describe('When generating axes w/ `tickmode`:"proportional",', function() {
 
   // the var `tickConfig` represents every possible configuration. It is in an int 0-15.
   // The binary is 0001, 0010, 0011, etc. IE every possible combination of 4 booleans.
-  // We add a fourth to switch between linear and log
   for(let tickConfig = 1; tickConfig <= 0b1111; tickConfig++) {
+      // Parameterize graph types as well
       var graphTypes = [
         { type:'linear' },
         { type:'log'},
@@ -63,24 +64,24 @@ describe('When generating axes w/ `tickmode`:"proportional",', function() {
         { type:'category'},
       ];
       for (let graphTypeIndex = 0; graphTypeIndex < graphTypes.length; graphTypeIndex++) {
-          var xGraphType = graphTypes[graphTypeIndex]; // Only with X for now
           (function(tickConfig, xGraphType) { // wrap in func or else it() can't see variable because of javascript closure scope
               it('fraction mapping to geometries for config ' + binaryToTickType(tickConfig) , function(done) {
-                  // We will check all four tick sets, these will resolve to true or false:
-                  var xMajor = tickConfig & XMAJOR;
-                  var xMinor = tickConfig & XMINOR;
-                  var yMajor = tickConfig & YMAJOR;
+                  var xMajor = tickConfig & XMAJOR; // does this config include xmajor?
+                  var xMinor = tickConfig & XMINOR; // does this config include xminor?
+                  var yMajor = tickConfig & YMAJOR; // ... etc
                   var yMinor = tickConfig & YMINOR;
                   ticksOff = {ticklen: 0, showticklabels: false};
-                  var xMajorConfig = xMajor ? generateTickConfig(MAJOR) : ticksOff; // generate separate configs for each
+                  var xMajorConfig = xMajor ? generateTickConfig(MAJOR) : ticksOff; // generate configs
                   var xMinorConfig = xMinor ? generateTickConfig(MINOR) : ticksOff;
                   var yMajorConfig = yMajor ? generateTickConfig(MAJOR) : ticksOff;
                   var yMinorConfig = yMinor ? generateTickConfig(MINOR) : ticksOff;
-                  var configInfo = ""
+                  var configInfo = "" // for debugging
                   configInfo += xMajor ? "\n " + `xMajor: ${[...new Set(xMajorConfig['tickvals'])].length} unique vals` : "";
                   configInfo += xMinor ? "\n " + `xMinor: ${[...new Set(xMinorConfig['tickvals'])].length} unique vals` : "";
                   configInfo += yMajor ? "\n " + `yMajor: ${[...new Set(yMajorConfig['tickvals'])].length} unique vals` : "";
                   configInfo += yMinor ? "\n " + `yMinor: ${[...new Set(yMinorConfig['tickvals'])].length} unique vals` : "";
+
+                  // stolen from axes_test.js
                   Plotly.newPlot(gd, {
                       data: [{
                           x: [0, 1],
@@ -102,8 +103,7 @@ describe('When generating axes w/ `tickmode`:"proportional",', function() {
                               minor: yMinorConfig,
                           },
                   }}).then(function() {
-                      // This regex is for extracting geometric position of... should have used getBoundingClientRect()
-                      // 
+                      // This regex is for extracting geometric position of a tick
                       // regex: `.source` converts to string, laid out this way to make for easier reading
                       const funcName = "translate" + /\(/.source; // literally simplest way to regex '('
                       const integerPart = /\d+/.source; // numbers left of decimal
@@ -111,8 +111,8 @@ describe('When generating axes w/ `tickmode`:"proportional",', function() {
                       const floatNum = integerPart + fractionalPart; // all together
                       const any = /.+/.source;
                       const close = /\)/.source;
-                      const reX = new RegExp(funcName + '(' + floatNum + '),' + any + close); // parens are capture not fn()
-                      const reY = new RegExp(funcName + any + ',(' + floatNum + ')' + close); // parens are capture not fn()
+                      const reX = new RegExp(funcName + '(' + floatNum + '),' + any + close); // parens () are capture not fn()
+                      const reY = new RegExp(funcName + any + ',(' + floatNum + ')' + close);
 
                       for(let runNumber = 0b1; runNumber <= 0b1000; runNumber <<= 0b1) { // Check all ticks on all axes ☺
                           var runInfo = "\n Checking: " + binaryToTickType(runNumber);
@@ -155,12 +155,13 @@ describe('When generating axes w/ `tickmode`:"proportional",', function() {
                           
                           expect(transformVals.length).toBe(tickValsUnique.length, 
                             "filtered tick elements vs tickvals failed" + runInfo + configInfo + debugInfo);
+                          
                           if(transformVals.length < 2) return; // Can't test proportions with < 2 ticks (since no fixed reference)
 
                           
-                          // To test geometries without using fixed point or data values
-                          // We can check consistency of y = mx+b
-                          // if x = 0 then y = b, but we may not have a 0 valued x
+                          // To test geometries without using fixed point or data values...
+                          // we can check consistency of y = mx+b! (y is DOM position, x is proportion)
+                          // If x = 0 then y = b, but we may not have a 0 valued x
                           // m = (y1 - y2) / (x1 - x2)
                           // b = y1 - mx1
                           y = transformVals;
@@ -173,7 +174,6 @@ describe('When generating axes w/ `tickmode`:"proportional",', function() {
                           
                           calculatedY = [];
                           for(let i = 0; i < x.length; i++) calculatedY.push(m*x[i] + b);
-                          
 
                           /* **** Close this comment line to manually inspect output --> 
                           yout = [];
@@ -188,7 +188,7 @@ describe('When generating axes w/ `tickmode`:"proportional",', function() {
                       }
                   }).then(done, done.fail);
               }); 
-          })(tickConfig, xGraphType);
+          })(tickConfig, graphTypes[graphTypeIndex]);
       }
   }
 });
