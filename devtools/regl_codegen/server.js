@@ -3,16 +3,23 @@ var path = require('path');
 var http = require('http');
 var ecstatic = require('ecstatic');
 var open = require('open');
-var browserify = require('browserify');
+var webpack = require('webpack');
 var minimist = require('minimist');
 
 var constants = require('../../tasks/util/constants');
-var makeWatchifiedBundle = require('../../tasks/util/watchified_bundle');
-var shortcutPaths = require('../../tasks/util/shortcut_paths');
+var config = require('../../webpack.config.js');
+config.optimization = { minimize: false };
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
 var strict = args.strict;
+
+var reglTraceList = [
+    'parcoords',
+    'scattergl',
+    'scatterpolargl',
+    'splom'
+];
 
 // Create server
 var static = ecstatic({
@@ -51,38 +58,53 @@ var server = http.createServer(function(req, res) {
 });
 
 
-// Make watchified bundle for plotly.js
-var bundlePlotly = makeWatchifiedBundle(strict, function() {
-    // open up browser window on first bundle callback
-    open('http://localhost:' + PORT + '/devtools/regl_codegen/index' + (strict ? '-strict' : '') + '.html');
-});
-
-// Bundle devtools code
-var devtoolsPath = path.join(constants.pathToRoot, 'devtools/regl_codegen');
-var devtools = browserify(path.join(devtoolsPath, 'devtools.js'), {
-    transform: [shortcutPaths]
-});
-
 // Start the server up!
 server.listen(PORT);
 
-var reglTraceList = [
-    'parcoords',
-    'scattergl',
-    'scatterpolargl',
-    'splom'
-];
-
-purgeGeneratedCode(reglTraceList);
+// open up browser window
+open('http://localhost:' + PORT + '/devtools/regl_codegen/index' + (strict ? '-strict' : '') + '.html');
 
 // Build and bundle all the things!
 getMockFiles()
     .then(readFiles)
     .then(createMocksList)
     .then(saveMockListToFile)
-    .then(saveReglTracesToFile.bind(null, reglTraceList))
-    .then(bundleDevtools)
-    .then(bundlePlotly);
+    .then(saveReglTracesToFile.bind(null, reglTraceList));
+
+// Devtools config
+var devtoolsConfig = {};
+
+var devtoolsPath = path.join(constants.pathToRoot, 'devtools/regl_codegen');
+devtoolsConfig.entry = path.join(devtoolsPath, 'devtools.js');
+
+devtoolsConfig.output = {
+    path: config.output.path,
+    filename: 'regl_codegen-bundle.js',
+    library: {
+        name: 'Tabs',
+        type: 'umd'
+    }
+};
+
+devtoolsConfig.target = config.target;
+devtoolsConfig.plugins = config.plugins;
+devtoolsConfig.optimization = config.optimization;
+devtoolsConfig.mode = 'production';
+
+var compiler;
+
+compiler = webpack(devtoolsConfig);
+compiler.run(function(devtoolsErr, devtoolsStats) {
+    if(devtoolsErr) {
+        console.log('err:', devtoolsErr);
+    } else if(devtoolsStats.errors && devtoolsStats.errors.length) {
+        console.log('stats.errors:', devtoolsStats.errors);
+    } else {
+        console.log('success:', devtoolsConfig.output.path + '/' + devtoolsConfig.output.filename);
+
+        purgeGeneratedCode(reglTraceList);
+    }
+});
 
 
 function getMockFiles() {
@@ -178,19 +200,6 @@ function writeFilePromise(path, contents) {
     });
 }
 
-function bundleDevtools() {
-    return new Promise(function(resolve, reject) {
-        devtools.bundle(function(err) {
-            if(err) {
-                console.error('Error while bundling!', JSON.stringify(String(err)));
-                return reject(err);
-            } else {
-                return resolve();
-            }
-        }).pipe(fs.createWriteStream(constants.pathToReglCodegenBundle));
-    });
-}
-
 function handleCodegen(data) {
     var trace = data.trace;
     var generated = data.generated;
@@ -198,9 +207,17 @@ function handleCodegen(data) {
     var pathToReglCodegenSrc = constants.pathToReglCodegenSrc;
     var pathToReglPrecompiledSrc = path.join(constants.pathToSrc, 'traces', trace, 'regl_precompiled.js');
 
-    var header = '\'use strict\';\n';
+    var header = [
+        '\'use strict\';',
+        '',
+    ].join('\n');
     var imports = '';
-    var exports = '\nmodule.exports = {\n';
+    var exports = [
+        '',
+        '/* eslint-disable quote-props */',
+        'module.exports = {',
+        '',
+    ].join('\n');
     var varId = 0;
 
     Object.entries(generated).forEach(function(kv) {

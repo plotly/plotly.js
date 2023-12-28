@@ -1,10 +1,10 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Axes = require('@src/plots/cartesian/axes');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Axes = require('../../../src/plots/cartesian/axes');
 
-var ScatterMapbox = require('@src/traces/scattermapbox');
-var convert = require('@src/traces/scattermapbox/convert');
+var ScatterMapbox = require('../../../src/traces/scattermapbox');
+var convert = require('../../../src/traces/scattermapbox/convert');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -14,7 +14,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
-var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
+var HOVERMINTIME = require('../../../src/components/fx').constants.HOVERMINTIME;
 
 function move(fromX, fromY, toX, toY, delay) {
     return new Promise(function(resolve) {
@@ -189,11 +189,11 @@ describe('scattermapbox convert', function() {
 
         // N.B repeated values have same geojson props
         expect(circleProps).toEqual([
-            { 'mcc': 'rgb(220, 220, 220)', 'mrc': 5 },
-            { 'mcc': '#444', 'mrc': 10 },
-            { 'mcc': 'rgb(178, 10, 28)', 'mrc': 0 },
-            { 'mcc': '#444', 'mrc': 0 },
-            { 'mcc': '#444', 'mrc': 0 }
+            { mcc: 'rgb(220, 220, 220)', mrc: 5 },
+            { mcc: '#444', mrc: 10 },
+            { mcc: 'rgb(178, 10, 28)', mrc: 0 },
+            { mcc: '#444', mrc: 0 },
+            { mcc: '#444', mrc: 0 }
         ], 'geojson feature properties');
     });
 
@@ -223,13 +223,13 @@ describe('scattermapbox convert', function() {
         });
 
         expect(circleProps).toEqual([
-            { 'mo': 0.5 },
-            { 'mo': 0 },
-            { 'mo': 0.25 },
+            { mo: 0.5 },
+            { mo: 0 },
+            { mo: 0.25 },
             // lat === null
             // lon === null
-            { 'mo': 0 },
-            { 'mo': 0.4 },
+            { mo: 0 },
+            { mo: 0.4 },
         ], 'geojson feature properties');
     });
 
@@ -554,14 +554,14 @@ describe('scattermapbox convert', function() {
 
     it('should generate correct output for texttemplate', function() {
         var mock = {
-            'type': 'scattermapbox',
-            'mode': 'markers+text',
-            'lon': [-73.57, -79.24, -123.06],
-            'lat': [45.5, 43.4, 49.13],
-            'text': ['Montreal', 'Toronto', 'Vancouver'],
-            'texttemplate': '%{text} (%{lon}, %{lat}): %{customdata:.2s}',
-            'textposition': 'top center',
-            'customdata': [1780000, 2930000, 675218]
+            type: 'scattermapbox',
+            mode: 'markers+text',
+            lon: [-73.57, -79.24, -123.06],
+            lat: [45.5, 43.4, 49.13],
+            text: ['Montreal', 'Toronto', 'Vancouver'],
+            texttemplate: '%{text} (%{lon}, %{lat}): %{customdata:.2s}',
+            textposition: 'top center',
+            customdata: [1780000, 2930000, 675218]
         };
         var opts = _convert(mock);
         var actualText = opts.symbol.geojson.features.map(function(f) {
@@ -656,6 +656,53 @@ describe('scattermapbox convert', function() {
         expect(opts.line.geojson.coordinates).toEqual([], 'line coords');
         expect(opts.fill.geojson.coordinates).toEqual([], 'fill coords');
     });
+
+    it('cluster options', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            cluster: {
+                enabled: true
+            }
+        }));
+
+        // Ensure that cluster and clusterCount options is added to options
+        expect(opts.cluster).toBeInstanceOf(Object);
+        expect(opts.clusterCount).toBeInstanceOf(Object);
+
+        // Ensure correct type of layers
+        expect(opts.cluster.type).toEqual('circle');
+        expect(opts.clusterCount.type).toEqual('symbol');
+    });
+
+    it('cluster colors, sizes, opacities - array', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            cluster: {
+                enabled: true,
+                color: 'red',
+                size: 20,
+                opacity: 0.25
+            }
+        }));
+
+        expect(opts.cluster.paint['circle-color']).toEqual('red');
+        expect(opts.cluster.paint['circle-radius']).toEqual(20);
+        expect(opts.cluster.paint['circle-opacity']).toEqual(0.25);
+    });
+
+    it('cluster colors, sizes, opacities - array', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            cluster: {
+                enabled: true,
+                step: [10],
+                color: ['red', 'green'],
+                size: [20, 40],
+                opacity: [0.25, 0.75]
+            }
+        }));
+
+        expect(opts.cluster.paint['circle-color']).toEqual(['step', ['get', 'point_count'], 'red', 10, 'green']);
+        expect(opts.cluster.paint['circle-radius']).toEqual(['step', ['get', 'point_count'], 20, 10, 40]);
+        expect(opts.cluster.paint['circle-opacity']).toEqual(['step', ['get', 'point_count'], 0.25, 10, 0.75]);
+    });
 });
 
 describe('scattermapbox hover', function() {
@@ -664,7 +711,7 @@ describe('scattermapbox hover', function() {
 
     beforeAll(function(done) {
         Plotly.setPlotConfig({
-            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
         });
 
         gd = createGraphDiv();
@@ -908,7 +955,7 @@ describe('scattermapbox hover', function() {
 });
 
 describe('Test plotly events on a scattermapbox plot:', function() {
-    var mock = require('@mocks/mapbox_0.json');
+    var mock = require('../../image/mocks/mapbox_0.json');
     var pointPos = [440, 290];
     var nearPos = [460, 290];
     var blankPos = [10, 10];
@@ -917,7 +964,7 @@ describe('Test plotly events on a scattermapbox plot:', function() {
 
     beforeAll(function() {
         Plotly.setPlotConfig({
-            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
         });
     });
 
@@ -1078,7 +1125,7 @@ describe('Test plotly events on a scattermapbox plot:', function() {
 });
 
 describe('Test plotly events on a scattermapbox plot when css transform is present:', function() {
-    var mock = require('@mocks/mapbox_0.json');
+    var mock = require('../../image/mocks/mapbox_0.json');
     var pointPos = [440 / 2, 290 / 2];
     var nearPos = [460 / 2, 290 / 2];
     var blankPos = [10 / 2, 10 / 2];
@@ -1095,7 +1142,7 @@ describe('Test plotly events on a scattermapbox plot when css transform is prese
 
     beforeAll(function() {
         Plotly.setPlotConfig({
-            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
         });
     });
 
@@ -1204,5 +1251,49 @@ describe('Test plotly events on a scattermapbox plot when css transform is prese
             })
             .then(done, done.fail);
         });
+    });
+});
+
+describe('scattermapbox restyle', function() {
+    var gd;
+
+    beforeAll(function() {
+        Plotly.setPlotConfig({
+            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
+        });
+
+        gd = createGraphDiv();
+    });
+
+    afterAll(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@gl should be able to update legendonly to visible', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                lat: [0, 2], lon: [0, 2],
+                type: 'scattermapbox',
+                mode: 'lines',
+                visible: 'legendonly'
+            },
+            {
+                lat: [0, 2], lon: [2, 0],
+                type: 'scattermapbox',
+                mode: 'lines',
+                visible: true
+            }
+            ], layout: {
+                mapbox: {
+                    style: 'open-street-map',
+                    zoom: 6,
+                    center: { lat: 1, lon: 1 }
+                },
+                showlegend: true
+            }
+        }).then(function() {
+            return Plotly.restyle(gd, 'visible', true);
+        }).then(done, done.fail);
     });
 });

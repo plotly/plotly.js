@@ -1,16 +1,16 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
-var plotApiHelpers = require('@src/plot_api/helpers');
-var Axes = require('@src/plots/cartesian/axes');
-var Registry = require('@src/registry');
-var Drawing = require('@src/components/drawing');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
+var plotApiHelpers = require('../../../src/plot_api/helpers');
+var Axes = require('../../../src/plots/cartesian/axes');
+var Registry = require('../../../src/registry');
+var Drawing = require('../../../src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var delay = require('../assets/delay');
-var mock = require('@mocks/animation');
+var mock = require('../../image/mocks/animation');
 
 describe('Plots.transition', function() {
     'use strict';
@@ -632,7 +632,7 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 
-    it('@flaky should only transition the layout when both traces and layout have animatable changes by default', function(done) {
+    it('@noCI should only transition the layout when both traces and layout have animatable changes by default', function(done) {
         var data = [{y: [1, 2, 1]}];
         var layout = {
             transition: {duration: 10},
@@ -790,7 +790,7 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 
-    it('@flaky should transition layout when one or more axis auto-ranged value changed', function(done) {
+    it('@noCI should transition layout when one or more axis auto-ranged value changed', function(done) {
         var data = [{y: [1, 2, 1]}];
         var layout = {transition: {duration: 10}};
 

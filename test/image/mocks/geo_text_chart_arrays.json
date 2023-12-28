@@ -40,7 +40,9 @@
                 "Regina"
             ],
             "marker": {
-                "size": 10,
+                "symbol": "arrow",
+                "angleref": "north",
+                "size": 20,
                 "color": [
                     "#bebada",
                     "#fdb462",

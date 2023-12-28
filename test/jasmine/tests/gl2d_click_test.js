@@ -1,5 +1,5 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -18,8 +18,8 @@ var hover = require('../assets/hover');
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 
-var mock0 = require('@mocks/gl2d_scatter-continuous-clustering.json');
-var mock1 = require('@mocks/gl2d_14.json');
+var mock0 = require('../../image/mocks/gl2d_scatter-continuous-clustering.json');
+var mock1 = require('../../image/mocks/gl2d_14.json');
 
 var mock2 = {
     data: [{
@@ -388,7 +388,7 @@ describe('Test hover and click interactions', function() {
     });
 
     it('@gl should output correct event data for pointcloud', function(done) {
-        var _mock = Lib.extendDeep({}, require('@mocks/gl2d_pointcloud-basic.json'));
+        var _mock = Lib.extendDeep({}, require('../../image/mocks/gl2d_pointcloud-basic.json'));
 
         _mock.layout.hoverlabel = { font: {size: 8} };
         _mock.data[2].hoverlabel = {
@@ -626,7 +626,7 @@ describe('hover with (x|y)period positioning', function() {
     }
 
     it('@gl shows hover info for scattergl', function(done) {
-        Plotly.newPlot(gd, require('@mocks/gl2d_period_positioning.json'))
+        Plotly.newPlot(gd, require('../../image/mocks/gl2d_period_positioning.json'))
         .then(function() { _hover(100, 255); })
         .then(function() {
             assertHoverLabelContent({

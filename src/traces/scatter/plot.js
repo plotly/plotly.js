@@ -105,6 +105,7 @@ function createFills(gd, traceJoin, plotinfo) {
 }
 
 function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transitionOpts) {
+    var isStatic = gd._context.staticPlot;
     var i;
 
     // Since this has been reorganized and we're executing this on individual traces,
@@ -209,9 +210,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         segments = linePoints(cdscatter, {
             xaxis: xa,
             yaxis: ya,
+            trace: trace,
             connectGaps: trace.connectgaps,
             baseTolerance: Math.max(line.width || 1, 3) / 4,
             shape: line.shape,
+            backoff: line.backoff,
             simplify: line.simplify,
             fill: trace.fill
         });
@@ -246,7 +249,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     revpath = thisrevpath + 'Z' + revpath;
                 }
 
-                if(subTypes.hasLines(trace) && pts.length > 1) {
+                if(subTypes.hasLines(trace)) {
                     var el = d3.select(this);
 
                     // This makes the coloring work correctly:
@@ -277,7 +280,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     lineJoin.enter().append('path')
         .classed('js-line', true)
-        .style('vector-effect', 'non-scaling-stroke')
+        .style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke')
         .call(Drawing.lineGroupStyle)
         .each(makeUpdate(true));
 

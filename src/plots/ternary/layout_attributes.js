@@ -15,7 +15,7 @@ var ternaryAxesAttrs = {
     },
     color: axesAttrs.color,
     // ticks
-    tickmode: axesAttrs.tickmode,
+    tickmode: axesAttrs.minor.tickmode,
     nticks: extendFlat({}, axesAttrs.nticks, {dflt: 6, min: 1}),
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
@@ -27,6 +27,7 @@ var ternaryAxesAttrs = {
     tickcolor: axesAttrs.tickcolor,
     ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
+    labelalias: axesAttrs.labelalias,
     showtickprefix: axesAttrs.showtickprefix,
     tickprefix: axesAttrs.tickprefix,
     showticksuffix: axesAttrs.showticksuffix,

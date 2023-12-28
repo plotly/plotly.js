@@ -55,6 +55,7 @@
     "no-floating-decimal": [2],
     "space-infix-ops": [2, {"int32Hint": true}],
     "quotes": [2, "single"],
+    "quote-props": ["error", "as-needed"],
     "dot-notation": [2],
     "dot-location": [2, "property"],
     "operator-linebreak": [2, "after"],

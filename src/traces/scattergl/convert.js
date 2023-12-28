@@ -50,9 +50,9 @@ function convertStyle(gd, trace) {
     }
 
     if(subTypes.hasMarkers(trace)) {
-        opts.marker = convertMarkerStyle(trace);
-        opts.markerSel = convertMarkerSelection(trace, trace.selected);
-        opts.markerUnsel = convertMarkerSelection(trace, trace.unselected);
+        opts.marker = convertMarkerStyle(gd, trace);
+        opts.markerSel = convertMarkerSelection(gd, trace, trace.selected);
+        opts.markerUnsel = convertMarkerSelection(gd, trace, trace.unselected);
 
         if(!trace.unselected && Lib.isArrayOrTypedArray(trace.marker.opacity)) {
             var mo = trace.marker.opacity;
@@ -207,13 +207,14 @@ function convertTextStyle(gd, trace) {
 }
 
 
-function convertMarkerStyle(trace) {
+function convertMarkerStyle(gd, trace) {
     var count = trace._length;
     var optsIn = trace.marker;
     var optsOut = {};
     var i;
 
     var multiSymbol = Lib.isArrayOrTypedArray(optsIn.symbol);
+    var multiAngle = Lib.isArrayOrTypedArray(optsIn.angle);
     var multiColor = Lib.isArrayOrTypedArray(optsIn.color);
     var multiLineColor = Lib.isArrayOrTypedArray(optsIn.line.color);
     var multiOpacity = Lib.isArrayOrTypedArray(optsIn.opacity);
@@ -224,10 +225,14 @@ function convertMarkerStyle(trace) {
     if(!multiSymbol) isOpen = helpers.isOpenSymbol(optsIn.symbol);
 
     // prepare colors
-    if(multiSymbol || multiColor || multiLineColor || multiOpacity) {
+    if(multiSymbol || multiColor || multiLineColor || multiOpacity || multiAngle) {
+        optsOut.symbols = new Array(count);
+        optsOut.angles = new Array(count);
         optsOut.colors = new Array(count);
         optsOut.borderColors = new Array(count);
 
+        var symbols = optsIn.symbol;
+        var angles = optsIn.angle;
         var colors = formatColor(optsIn, optsIn.opacity, count);
         var borderColors = formatColor(optsIn.line, optsIn.opacity, count);
 
@@ -245,14 +250,29 @@ function convertMarkerStyle(trace) {
                 colors[i] = color;
             }
         }
+        if(!Array.isArray(symbols)) {
+            var symbol = symbols;
+            symbols = Array(count);
+            for(i = 0; i < count; i++) {
+                symbols[i] = symbol;
+            }
+        }
+        if(!Array.isArray(angles)) {
+            var angle = angles;
+            angles = Array(count);
+            for(i = 0; i < count; i++) {
+                angles[i] = angle;
+            }
+        }
 
+        optsOut.symbols = symbols;
+        optsOut.angles = angles;
         optsOut.colors = colors;
         optsOut.borderColors = borderColors;
 
         for(i = 0; i < count; i++) {
             if(multiSymbol) {
-                var symbol = optsIn.symbol[i];
-                isOpen = helpers.isOpenSymbol(symbol);
+                isOpen = helpers.isOpenSymbol(optsIn.symbol[i]);
             }
             if(isOpen) {
                 borderColors[i] = colors[i].slice();
@@ -262,6 +282,14 @@ function convertMarkerStyle(trace) {
         }
 
         optsOut.opacity = trace.opacity;
+
+        optsOut.markers = new Array(count);
+        for(i = 0; i < count; i++) {
+            optsOut.markers[i] = getSymbolSdf({
+                mx: optsOut.symbols[i],
+                ma: optsOut.angles[i]
+            }, trace);
+        }
     } else {
         if(isOpen) {
             optsOut.color = rgba(optsIn.color, 'uint8');
@@ -273,16 +301,11 @@ function convertMarkerStyle(trace) {
         }
 
         optsOut.opacity = trace.opacity * optsIn.opacity;
-    }
 
-    // prepare symbols
-    if(multiSymbol) {
-        optsOut.markers = new Array(count);
-        for(i = 0; i < count; i++) {
-            optsOut.markers[i] = getSymbolSdf(optsIn.symbol[i]);
-        }
-    } else {
-        optsOut.marker = getSymbolSdf(optsIn.symbol);
+        optsOut.marker = getSymbolSdf({
+            mx: optsIn.symbol,
+            ma: optsIn.angle
+        }, trace);
     }
 
     // prepare sizes
@@ -330,14 +353,14 @@ function convertMarkerStyle(trace) {
     return optsOut;
 }
 
-function convertMarkerSelection(trace, target) {
+function convertMarkerSelection(gd, trace, target) {
     var optsIn = trace.marker;
     var optsOut = {};
 
     if(!target) return optsOut;
 
     if(target.marker && target.marker.symbol) {
-        optsOut = convertMarkerStyle(Lib.extendFlat({}, optsIn, target.marker));
+        optsOut = convertMarkerStyle(gd, Lib.extendFlat({}, optsIn, target.marker));
     } else if(target.marker) {
         if(target.marker.size) optsOut.size = target.marker.size;
         if(target.marker.color) optsOut.colors = target.marker.color;
@@ -389,7 +412,8 @@ var SYMBOL_STROKE = constants.SYMBOL_STROKE;
 var SYMBOL_SDF = {};
 var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
 
-function getSymbolSdf(symbol) {
+function getSymbolSdf(d, trace) {
+    var symbol = d.mx;
     if(symbol === 'circle') return null;
 
     var symbolPath, symbolSdf;
@@ -400,13 +424,17 @@ function getSymbolSdf(symbol) {
 
     var isDot = helpers.isDotSymbol(symbol);
 
+    // until we may handle angles in shader?
+    if(d.ma) symbol += '_' + d.ma;
+
     // get symbol sdf from cache or generate it
     if(SYMBOL_SDF[symbol]) return SYMBOL_SDF[symbol];
 
+    var angle = Drawing.getMarkerAngle(d, trace);
     if(isDot && !symbolNoDot) {
-        symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE;
+        symbolPath = symbolFunc(SYMBOL_SIZE * 1.1, angle) + SYMBOL_SVG_CIRCLE;
     } else {
-        symbolPath = symbolFunc(SYMBOL_SIZE);
+        symbolPath = symbolFunc(SYMBOL_SIZE, angle);
     }
 
     symbolSdf = svgSdf(symbolPath, {
@@ -415,6 +443,7 @@ function getSymbolSdf(symbol) {
         viewBox: [-SYMBOL_SIZE, -SYMBOL_SIZE, SYMBOL_SIZE, SYMBOL_SIZE],
         stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
     });
+
     SYMBOL_SDF[symbol] = symbolSdf;
 
     return symbolSdf || null;
@@ -545,8 +574,8 @@ function convertLinePositions(gd, trace, positions) {
 
 function convertErrorBarPositions(gd, trace, positions, x, y) {
     var makeComputeError = Registry.getComponentMethod('errorbars', 'makeComputeError');
-    var xa = AxisIDs.getFromId(gd, trace.xaxis);
-    var ya = AxisIDs.getFromId(gd, trace.yaxis);
+    var xa = AxisIDs.getFromId(gd, trace.xaxis, 'x');
+    var ya = AxisIDs.getFromId(gd, trace.yaxis, 'y');
     var count = positions.length / 2;
     var out = {};
 

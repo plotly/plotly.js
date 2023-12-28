@@ -99,7 +99,7 @@ module.exports = function plot(gd, cdModule) {
 
                     sliceText.text(pt.text)
                         .attr({
-                            'class': 'slicetext',
+                            class: 'slicetext',
                             transform: '',
                             'text-anchor': 'middle'
                         })
@@ -128,7 +128,7 @@ module.exports = function plot(gd, cdModule) {
                     recordMinTextSize(trace.type, transform, fullLayout);
                     cd[i].transform = transform;
 
-                    sliceText.attr('transform', Lib.getTextTransform(transform));
+                    Lib.setTransormAndDisplay(sliceText, transform);
                 });
             });
 
@@ -153,7 +153,7 @@ module.exports = function plot(gd, cdModule) {
 
                 titleText.text(txt)
                     .attr({
-                        'class': 'titletext',
+                        class: 'titletext',
                         transform: '',
                         'text-anchor': 'middle',
                     })

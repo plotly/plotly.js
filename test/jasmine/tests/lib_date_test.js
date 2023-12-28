@@ -1,11 +1,11 @@
 var isNumeric = require('fast-isnumeric');
 
-var Lib = require('@src/lib');
-var Loggers = require('@src/lib/loggers');
-var calComponent = require('@src/components/calendars');
+var Lib = require('../../../src/lib');
+var Loggers = require('../../../src/lib/loggers');
+var calComponent = require('../../../src/components/calendars');
 
 // use only the parts of world-calendars that we've imported for our tests
-var calendars = require('@src/components/calendars/calendars');
+var calendars = require('../../../src/components/calendars/calendars');
 
 var utcFormat = require('d3-time-format').utcFormat;
 

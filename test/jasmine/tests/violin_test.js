@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
 
-var Violin = require('@src/traces/violin');
+var Violin = require('../../../src/traces/violin');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -413,7 +413,7 @@ describe('Test violin hover:', function() {
 
         var fig = Lib.extendDeep(
             {width: 700, height: 500},
-            specs.mock || require('@mocks/violin_grouped.json')
+            specs.mock || require('../../image/mocks/violin_grouped.json')
         );
 
         if(specs.patch) {
@@ -596,7 +596,7 @@ describe('Test violin hover:', function() {
         // hoveron: 'kde+points'
         // width: 400
         // height: 700
-        mock: require('@mocks/violin_side-by-side.json'),
+        mock: require('../../image/mocks/violin_side-by-side.json'),
         pos: [250, 300],
         nums: '(x: 42.43046, kde: 0.083, Saturday)',
         name: ''
@@ -605,7 +605,7 @@ describe('Test violin hover:', function() {
         // hoveron: 'kde+points'
         // width: 400
         // height: 700
-        mock: require('@mocks/violin_side-by-side.json'),
+        mock: require('../../image/mocks/violin_side-by-side.json'),
         patch: function(fig) {
             fig.layout.hovermode = 'y';
             return fig;
@@ -616,7 +616,7 @@ describe('Test violin hover:', function() {
         axis: 'Saturday'
     }, {
         desc: 'one-sided violin under hovermode y (ridgeplot case)',
-        mock: require('@mocks/violin_ridgeplot.json'),
+        mock: require('../../image/mocks/violin_ridgeplot.json'),
         patch: function(fig) {
             fig.data.forEach(function(t) { t.hoveron = 'violins'; });
             fig.layout.hovermode = 'y';
@@ -639,7 +639,7 @@ describe('Test violin hover:', function() {
         ]
     }, {
         desc: 'single horizontal violin',
-        mock: require('@mocks/violin_non-linear.json'),
+        mock: require('../../image/mocks/violin_non-linear.json'),
         patch: function(fig) {
             fig.layout.hovermode = 'y';
             return fig;
@@ -651,7 +651,7 @@ describe('Test violin hover:', function() {
         isRotated: true
     }, {
         desc: 'multiple horizontal violins',
-        mock: require('@mocks/box_grouped_horz.json'),
+        mock: require('../../image/mocks/box_grouped_horz.json'),
         patch: function(fig) {
             fig.data.forEach(function(t) {
                 t.type = 'violin';
@@ -667,7 +667,7 @@ describe('Test violin hover:', function() {
         isRotated: true
     }, {
         desc: 'multiple horizontal violins (under hovermode:closest)',
-        mock: require('@mocks/box_grouped_horz.json'),
+        mock: require('../../image/mocks/box_grouped_horz.json'),
         patch: function(fig) {
             fig.data.forEach(function(t) {
                 t.type = 'violin';
@@ -685,7 +685,7 @@ describe('Test violin hover:', function() {
         isRotated: true
     }, {
         desc: 'hovering over single pt on horizontal violin should not rotate labels',
-        mock: require('@mocks/violin_old-faithful.json'),
+        mock: require('../../image/mocks/violin_old-faithful.json'),
         patch: function(fig) {
             fig.data[0].x = fig.data[0].y;
             delete fig.data[0].y;
@@ -700,7 +700,7 @@ describe('Test violin hover:', function() {
         isRotated: false
     }, {
         desc: 'orientation:h | hovermode:y',
-        mock: require('@mocks/violin_grouped_horz-multicategory.json'),
+        mock: require('../../image/mocks/violin_grouped_horz-multicategory.json'),
         patch: function(fig) {
             // don't hover on kde, to avoid local vs CI discrepancies
             fig.data.forEach(function(t) {
@@ -715,7 +715,7 @@ describe('Test violin hover:', function() {
         axis: '2018 - day 2',
     }, {
         desc: 'orientation:h | hovermode:closest',
-        mock: require('@mocks/violin_grouped_horz-multicategory.json'),
+        mock: require('../../image/mocks/violin_grouped_horz-multicategory.json'),
         patch: function(fig) {
             // don't hover on kde, to avoid local vs CI discrepancies
             fig.data.forEach(function(t) {
@@ -772,7 +772,7 @@ describe('Test violin hover:', function() {
         beforeEach(function() {
             gd = createGraphDiv();
 
-            fig = Lib.extendDeep({}, require('@mocks/violin_old-faithful.json'), {
+            fig = Lib.extendDeep({}, require('../../image/mocks/violin_old-faithful.json'), {
                 layout: {width: 500, height: 500}
             });
             fig.data[0].points = false;
@@ -821,7 +821,7 @@ describe('Test violin hover:', function() {
     it('labels should avoid overlaps', function(done) {
         gd = createGraphDiv();
 
-        var fig = Lib.extendDeep({}, require('@mocks/violin_zoomed-in.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/violin_zoomed-in.json'));
         fig.layout.width = 700;
         fig.layout.height = 450;
 
@@ -862,7 +862,7 @@ describe('Test violin restyle:', function() {
     afterEach(destroyGraphDiv);
 
     it('should be able to add/remove innner parts', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/violin_old-faithful.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/violin_old-faithful.json'));
         // start with just 1 violin
         delete fig.data[0].meanline;
         delete fig.data[0].points;

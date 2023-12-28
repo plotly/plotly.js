@@ -1,4 +1,4 @@
-var preserveDrawingBuffer = require('@src/lib').preserveDrawingBuffer;
+var preserveDrawingBuffer = require('../../../src/lib').preserveDrawingBuffer;
 
 describe('preserveDrawingBuffer for gl3d scenes depending on device', function() {
     'use strict';

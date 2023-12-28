@@ -196,27 +196,8 @@ module.exports = {
 
     marker: marker,
 
-    offsetgroup: {
-        valType: 'string',
-        dflt: '',
-        editType: 'calc',
-        description: [
-            'Set several traces linked to the same position axis',
-            'or matching axes to the same',
-            'offsetgroup where bars of the same position coordinate will line up.'
-        ].join(' ')
-    },
-    alignmentgroup: {
-        valType: 'string',
-        dflt: '',
-        editType: 'calc',
-        description: [
-            'Set several traces linked to the same position axis',
-            'or matching axes to the same',
-            'alignmentgroup. This controls whether bars compute their positional',
-            'range dependently or independently.'
-        ].join(' ')
-    },
+    offsetgroup: scatterAttrs.offsetgroup,
+    alignmentgroup: scatterAttrs.alignmentgroup,
 
     selected: {
         marker: {

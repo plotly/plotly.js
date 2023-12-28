@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var ScatterPolarGl = require('@src/traces/scatterpolargl');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var ScatterPolarGl = require('../../../src/traces/scatterpolargl');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -53,7 +53,7 @@ describe('Test scatterpolargl hover:', function() {
 
         var fig = Lib.extendDeep(
             {width: 700, height: 500},
-            specs.mock || require('@mocks/glpolar_scatter.json')
+            specs.mock || require('../../image/mocks/glpolar_scatter.json')
         );
 
         if(specs.patch) {
@@ -107,7 +107,7 @@ describe('Test scatterpolargl hover:', function() {
         name: 'Trial 3'
     }, {
         desc: 'on category axes',
-        mock: require('@mocks/polar_categories.json'),
+        mock: require('../../image/mocks/polar_categories.json'),
         patch: function(fig) {
             fig.data.forEach(function(t) {
                 t.type = 'scatterpolargl';
@@ -306,7 +306,7 @@ describe('Test scatterpolargl interactions:', function() {
           ['category', ['A', 'B']],
         ].forEach(function(test) {
             var axType = test[0];
-            var axNames = {'r': 'radialaxis', 'theta': 'angularaxis'};
+            var axNames = {r: 'radialaxis', theta: 'angularaxis'};
             it('@gl should return the same eventData as scatter on ' + axType + ' ' + ax + ' axis', function(done) {
                 var _mock = {
                     data: [{type: 'scatterpolar', r: [5, 10], theta: [0, 180]}],
@@ -359,8 +359,8 @@ describe('Test scatterpolargl autorange:', function() {
 
     describe('should return the same value as SVG scatter for ~small~ data', function() {
         var specs = [
-            {name: 'markers', fig: require('@mocks/polar_scatter.json')},
-            {name: 'lines', fig: require('@mocks/polar_line.json')},
+            {name: 'markers', fig: require('../../image/mocks/polar_scatter.json')},
+            {name: 'lines', fig: require('../../image/mocks/polar_line.json')},
         ];
 
         specs.forEach(function(s) {
@@ -460,12 +460,12 @@ describe('Test scatterpolargl autorange:', function() {
 
 describe('Test scatterpolargl texttemplate:', function() {
     checkTextTemplate([{
-        'type': 'scatterpolargl',
-        'mode': 'markers+text',
-        'text': ['A', 'B', 'C'],
-        'textposition': 'top center',
-        'r': [1, 0.5, 1],
-        'theta': [0, 90, 180],
+        type: 'scatterpolargl',
+        mode: 'markers+text',
+        text: ['A', 'B', 'C'],
+        textposition: 'top center',
+        r: [1, 0.5, 1],
+        theta: [0, 90, 180],
     }], 'g.textpoint', [
         ['%{text}: (%{r:0.2f}, %{theta:0.1f})', ['A: (1.00, 0.0)', 'B: (0.50, 90.0)', 'C: (1.00, 180.0)']],
         [['', 'b%{theta:0.2f}', '%{theta:0.2f}'], ['', 'b90.00', '180.00']]
