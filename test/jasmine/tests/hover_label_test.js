@@ -6010,6 +6010,7 @@ describe('hovermode: (x|y)unified', function() {
         var mockOhlc = require('../../image/mocks/finance_multicategory.json');
         var mockCopy = Lib.extendDeep({}, mockOhlc);
         mockCopy.layout.hovermode = 'x unified';
+
         Plotly.newPlot(gd, mockCopy)
             .then(function(gd) {
                 _hover(gd, {curveNumber: 0, pointNumber: 0});

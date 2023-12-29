@@ -1,4 +1,8 @@
+# This config is equivalent to both the '.circleci/extended/orb-free.yml' and the base '.circleci/config.yml'
 version: 2.1
+
+# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
+# See: https://circleci.com/docs/2.0/orb-intro/
 orbs:
   browser-tools: circleci/browser-tools@1.2.2
 
@@ -190,7 +194,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          firefox-version: '81.0'
+          firefox-version: "81.0"
           install-chrome: false
           install-chromedriver: false
       - attach_workspace:
@@ -209,7 +213,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          firefox-version: '82.0'
+          firefox-version: "82.0"
           install-chrome: false
           install-chromedriver: false
       - attach_workspace:
@@ -347,8 +351,8 @@ jobs:
       - run:
           name: Install poppler-utils to have pdftops for exporting eps
           command: |
-              sudo apt-get update --allow-releaseinfo-change
-              sudo apt-get install poppler-utils
+            sudo apt-get update --allow-releaseinfo-change
+            sudo apt-get install poppler-utils
       - run:
           name: Create svg, jpg, jpeg, webp, pdf and eps files
           command: python3 test/image/make_exports.py
@@ -467,8 +471,8 @@ jobs:
           command: npm run no-new-func
 
 workflows:
-  version: 2
-  build-and-test:
+  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
+    # Inside the workflow, you define the jobs you want to run.
     jobs:
       - install-and-cibuild-node12
 
