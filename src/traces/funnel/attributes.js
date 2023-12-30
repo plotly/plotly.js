@@ -115,5 +115,6 @@ module.exports = {
 function funnelMarker() {
     var marker = extendFlat({}, barAttrs.marker);
     delete marker.pattern;
+    delete marker.cornerradius;
     return marker;
 }

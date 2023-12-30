@@ -257,10 +257,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 }
                 return fixpx(Math.max(Math.min(rPx, maxRadius), 0));
             }
-            // Exclude waterfall and funnel charts from rounding
-            // Could potentially support rounded waterfall charts in the future,
-            // but need to make sure trace.marker.cornerradius is set in the defaults
-            // and also check visuals with respect to the lines connecting the waterfall bars
+            // Exclude anything which is not explicitly a bar or histogram chart from rounding
             var r = (isBar || isHistogram) ? calcCornerRadius(trace.marker.cornerradius) : 0;
 
             // Construct path string for bar
