@@ -765,6 +765,12 @@ function collectExtents(calcTraces, pa) {
     var sMinByPos = {};
     var sMaxByPos = {};
 
+    // Check whether any trace has rounded corners
+    var anyTraceHasCornerradius = calcTraces.map(x => {
+        var trace = x[0].trace;
+        return 'marker' in trace && Boolean(trace.marker.cornerradius);
+    }).some(x => x === true);
+
     for(i = 0; i < calcTraces.length; i++) {
         cd = calcTraces[i];
         cd[0].t.extents = extents;
@@ -791,14 +797,18 @@ function collectExtents(calcTraces, pa) {
             di.s0 = di.b;
             di.s1 = di.s0 + di.s;
 
-            var sMin = Math.min(di.s0, di.s1);
-            var sMax = Math.max(di.s0, di.s1);
-
-            sMinByPos[di.p] = (di.p in sMinByPos) ? Math.min(sMinByPos[di.p], sMin) : sMin;
-            sMaxByPos[di.p] = (di.p in sMaxByPos) ? Math.max(sMaxByPos[di.p], sMax) : sMax;
+            if(anyTraceHasCornerradius) {
+                var sMin = Math.min(di.s0, di.s1);
+                var sMax = Math.max(di.s0, di.s1);
+                var pos = di.p;
+                sMinByPos[pos] = (pos in sMinByPos) ? Math.min(sMinByPos[pos], sMin) : sMin;
+                sMaxByPos[pos] = (pos in sMaxByPos) ? Math.max(sMaxByPos[pos], sMax) : sMax;    
+            }
         }
     }
-    setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos);
+    if(anyTraceHasCornerradius) {
+        setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos);
+    }
 }
 
 function getAxisLetter(ax) {
