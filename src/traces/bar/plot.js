@@ -101,6 +101,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         var isHistogram = (trace.type === 'histogram');
         var isBar = (trace.type === 'bar');
         var shouldDisplayZeros = (isBar || isFunnel);
+        var isStacked = opts.mode === 'stack';
 
         var adjustPixel = 0;
         if(isWaterfall && trace.connector.visible && trace.connector.mode === 'between') {
@@ -238,9 +239,9 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             function calcCornerRadius(radiusParam) {
                 var barWidth = isHorizontal ? Math.abs(y1 - y0) : Math.abs(x1 - x0);
                 var barLength = isHorizontal ? Math.abs(x1 - x0) : Math.abs(y1 - y0);
-                var stackedBarTotalLength = fixpx(Math.abs(
-                    di.s > 0 ? c2p(di._sMax, true) - c2p(0, true) : c2p(di._sMin, true) - c2p(0, true)
-                ));
+                var stackedBarTotalLength = fixpx(isStacked ? Math.abs(
+                    di.s > 0 ? c2p(di._sMax, true) - c2p(0, true) : c2p(di._sMin, true) - c2p(0, true)) : barLength
+                );
                 var maxRadius = di.hasB ? Math.min(barWidth / 2, barLength / 2) : Math.min(barWidth / 2, stackedBarTotalLength);
                 var rPx;
                 if(!radiusParam) {
@@ -259,16 +260,17 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             }
             // Exclude anything which is not explicitly a bar or histogram chart from rounding
             var r = (isBar || isHistogram) ? calcCornerRadius(trace.marker.cornerradius) : 0;
-
             // Construct path string for bar
             var path, h;
+            // Default rectangular path (used if no rounding)
+            var rectanglePath = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
             if(r && di.s) {
                 // Bar has cornerradius
                 // Check amount of 'overhead' (bars stacked above this one)
                 // to see whether we need to round or not
-                var overhead = fixpx(Math.abs(
+                var overhead = fixpx(isStacked ? Math.abs(
                     di.s > 0 ? c2p(di._sMax, true) - c2p(di.s1, true) : c2p(di._sMin, true) - c2p(di.s1, true)
-                ));
+                ) : 0);
 
                 if(overhead < r) {
                     // Calculate parameters for rounded corners
@@ -338,11 +340,11 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                     }
                 } else {
                     // There is a cornerradius, but bar is too far down the stack to be rounded; just draw a rectangle
-                    path = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
+                    path = rectanglePath;
                 }
             } else {
                 // No cornerradius, just draw a rectangle
-                path = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
+                path = rectanglePath;
             }
 
             var sel = transition(Lib.ensureSingle(bar, 'path'), fullLayout, opts, makeOnCompleteCallback);

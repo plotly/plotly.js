@@ -119,7 +119,7 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
             }
             break;
     }
-    collectExtents(calcTraces, pa);
+    collectExtents(calcTraces, pa, opts);
 }
 
 function initBase(sa, calcTraces) {
@@ -732,9 +732,10 @@ function setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos) {
 // narrower than the space they're in.
 // run once per trace group (subplot & direction) and
 // the same mapping is attached to all calcdata traces
-function collectExtents(calcTraces, pa) {
+function collectExtents(calcTraces, pa, opts) {
     var pLetter = getAxisLetter(pa);
     var extents = {};
+    var isStacked = opts && opts.mode == 'stack';
     var i, j, cd;
 
     var pMin = Infinity;
@@ -797,7 +798,7 @@ function collectExtents(calcTraces, pa) {
             di.s0 = di.b;
             di.s1 = di.s0 + di.s;
 
-            if(anyTraceHasCornerradius) {
+            if(anyTraceHasCornerradius && isStacked) {
                 var sMin = Math.min(di.s0, di.s1);
                 var sMax = Math.max(di.s0, di.s1);
                 var pos = di.p;
@@ -806,7 +807,7 @@ function collectExtents(calcTraces, pa) {
             }
         }
     }
-    if(anyTraceHasCornerradius) {
+    if(anyTraceHasCornerradius && isStacked) {
         setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos);
     }
 }
