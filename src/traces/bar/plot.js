@@ -245,13 +245,15 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 var rPx;
                 if(!radiusParam) {
                     return 0;
-                } else if(typeof radiusParam === 'string') {
-                    // If radius is given as a percentage string, convert to number of pixels
-                    var rPercent = Math.min(parseFloat(radiusParam.replace('%', '')), 50);
+                } else if(isNumeric(radiusParam)) {
+                    // If radius is already given as a number of pixels, use the given value
+                    rPx = radiusParam;
+                } else if(typeof radiusParam === 'string' && radiusParam.slice(-1) === '%') {
+                    // Otherwise, if % string, convert to number of pixels
+                    var rPercent = Math.min(50, +radiusParam.slice(0, -1));
                     rPx = barWidth * (rPercent / 100);
                 } else {
-                    // Otherwise, it's already a number of pixels
-                    rPx = radiusParam;
+                    return 0;
                 }
                 return fixpx(Math.max(Math.min(rPx, maxRadius), 0));
             }
