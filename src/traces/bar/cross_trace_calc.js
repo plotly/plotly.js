@@ -111,6 +111,10 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
                 else excluded.push(calcTrace);
             }
 
+            // If first trace in `included` has a cornerradius, set all bars 
+            // to that cornerradius
+            standardizeCornerradius(included);
+
             if(included.length) {
                 setGroupPositionsInStackOrRelativeMode(gd, pa, sa, included, opts);
             }
@@ -120,6 +124,34 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
             break;
     }
     collectExtents(calcTraces, pa, opts);
+}
+
+function standardizeCornerradius(calcTraces) {
+    if(!calcTraces.length) return;
+    var i, calcTrace, fullTrace;
+    var firstTrace = calcTraces[0][0].trace;
+    // If first trace has cornerradius, set all other traces to same cornerradius
+    if(firstTrace.marker && firstTrace.marker.cornerradius) {
+        var cr = firstTrace.marker.cornerradius;
+        for(i = 0; i < calcTraces.length; i++) {
+            calcTrace = calcTraces[i];
+            fullTrace = calcTrace[0].trace;
+
+            fullTrace.marker = fullTrace.marker || {};
+            fullTrace.marker.cornerradius = cr;
+        }
+    // Otherwise, remove cornerradius from all other traces
+    } else {
+        for(i = 0; i < calcTraces.length; i++) {
+            calcTrace = calcTraces[i];
+            fullTrace = calcTrace[0].trace;
+
+            if(fullTrace.marker && fullTrace.marker.cornerradius) {
+                delete fullTrace.marker.cornerradius;
+            }
+        }
+    }
+
 }
 
 function initBase(sa, calcTraces) {

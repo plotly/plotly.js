@@ -268,7 +268,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 // Bar has cornerradius
                 // Check amount of 'overhead' (bars stacked above this one)
                 // to see whether we need to round or not
-                var overhead = fixpx(isStacked ? Math.abs(
+                var overhead = fixpx((isStacked && !di.hasB) ? Math.abs(
                     di.s > 0 ? c2p(di._sMax, true) - c2p(di.s1, true) : c2p(di._sMin, true) - c2p(di.s1, true)
                 ) : 0);
 
