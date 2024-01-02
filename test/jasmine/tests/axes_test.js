@@ -28,7 +28,6 @@ var supplyDefaults = require('../assets/supply_defaults');
 
 describe('Test axes', function() {
     'use strict';
-
     describe('swap', function() {
         it('should swap most attributes and fix placeholder titles', function() {
             var gd = {
@@ -8215,5 +8214,67 @@ describe('shift tests', function() {
             expect(gd._fullLayout.yaxis3._shift).toBeCloseTo(-100, 2);
             expect(gd._fullLayout.yaxis4._shift).toBeCloseTo(100, 2);
         });
+    });
+});
+describe('test tickmode calculator', function() {
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function generateTickConfig(){
+      standardConfig = {tickmode: 'array', ticks: 'inside', ticklen: 1, showticklabels: false};
+
+      // Number of ticks will be random
+      var n = Math.floor(Math.random() * 99) + 1;
+      tickVals = [];
+      for(let i = 0; i <= n; i++) tickVals.push(i);
+      standardConfig['tickvals'] = tickVals;
+      standardConfig['ticktext'] = tickVals;
+      return standardConfig;
+    }
+    var ticksOff = {tickmode:"array", ticks: '', tickvals:[], ticktext:[], ticklen: 0, showticklabels: false};
+    // the goal is target the arrayTicks() function, the subject of PR: https://github.com/plotly/plotly.js/pull/6829 
+    // we test xMajor and xMinor in on/on on/off off/on and off/off
+    // since we can't unit test functions that are not exported, we shim functions we don't care about instead and
+    // test the nearest exported functions (calcTicks)
+    describe('arrayTicks', function() {
+        for(let i = 0; i < 4; i++) {
+            (function(i) {
+                it('should return the specified correct number of major ticks and minor ticks', function() {
+                  const BOTH = 0;
+                  const MAJOR = 1;
+                  const MINOR = 2;
+                  const NEITHER = 3;
+                  var xMajorConfig = ticksOff;
+                  var xMinorConfig = ticksOff;
+                  if(i == BOTH) {
+                    xMajorConfig = generateTickConfig();
+                    xMinorConfig = generateTickConfig();
+                  } else if(i == MAJOR) {
+                    xMajorConfig = generateTickConfig();
+                  } else if(i==MINOR) {
+                    xMinorConfig = generateTickConfig();
+                  } else if(i == NEITHER) {
+                    // Do nothing, all ticks off
+                  }
+                  xaxis = {
+                      r2l: Lib.cleanNumber,
+                      d2l: Lib.cleanNumber,
+                      _separators: ',',
+                      range: [0, 1000],
+                      ...xMajorConfig, 
+                      minor: {
+                        ...xMinorConfig,
+                      },
+                  };
+                  Axes.prepMinorTicks = function() { return }; // Not part of this test
+                  Axes.prepTicks = function() { return }; // Not part of this test
+                  ticksOut = Axes.calcTicks(xaxis);
+                  expect(ticksOut.length).toEqual(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
+                });
+            })(i);
+        }
     });
 });
