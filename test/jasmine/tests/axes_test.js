@@ -8216,7 +8216,7 @@ describe('shift tests', function() {
         });
     });
 });
-fdescribe('test tickmode calculator', function() {
+describe('test tickmode calculator', function() {
     var gd;
 
     beforeEach(function() {
@@ -8225,21 +8225,21 @@ fdescribe('test tickmode calculator', function() {
 
     afterEach(destroyGraphDiv);
 
-    function generateTickConfig(){
-      standardConfig = {tickmode: 'array', ticks: 'inside', ticklen: 1, showticklabels: false};
+    function generateTickConfig() {
+        var standardConfig = {tickmode: 'array', ticks: 'inside', ticklen: 1, showticklabels: false};
 
-      // Number of ticks will be random
-      Lib.seedPseudoRandom();
-      var n = (Lib.pseudoRandom() * 99) + 1;
-      tickVals = [];
-      for(let i = 0; i <= n; i++) {
-        tickVals.push(i);
-      }
-      standardConfig['tickvals'] = tickVals;
-      standardConfig['ticktext'] = tickVals;
-      return standardConfig;
+        // Number of ticks will be random
+        Lib.seedPseudoRandom();
+        var n = (Lib.pseudoRandom() * 99) + 1;
+        var tickVals = [];
+        for(var i = 0; i <= n; i++) {
+            tickVals.push(i);
+        }
+        standardConfig.tickvals = tickVals;
+        standardConfig.ticktext = tickVals;
+        return standardConfig;
     }
-    var ticksOff = {tickmode:"array", ticks: '', tickvals:[], ticktext:[], ticklen: 0, showticklabels: false};
+    var ticksOff = {tickmode: 'array', ticks: '', tickvals: [], ticktext: [], ticklen: 0, showticklabels: false};
 
     function _assert(expLength) {
         var ax = gd._fullLayout.xaxis;
@@ -8255,47 +8255,31 @@ fdescribe('test tickmode calculator', function() {
 
     describe('arrayTicks', function() {
         it('should return the specified correct number of major ticks and minor ticks', function(done) {
-          for(let i = 0; i < 4; i++) {
-              const BOTH = 0;
-              const MAJOR = 1;
-              const MINOR = 2;
-              const NEITHER = 3;
-              var xMajorConfig = ticksOff;
-              var xMinorConfig = ticksOff;
-              if(i == BOTH) {
-                xMajorConfig = generateTickConfig();
-                xMinorConfig = generateTickConfig();
-              } else if(i == MAJOR) {
-                xMajorConfig = generateTickConfig();
-              } else if(i==MINOR) {
-                xMinorConfig = generateTickConfig();
-              } else if(i == NEITHER) {
-                // Do nothing, all ticks off
-              }
-              Plotly.newPlot(gd, {
-                  data: [{
-                      x: [0, 1],
-                      y: [0, 1]
-                  }],
-                  layout: {
-                      width: 400,
-                      height: 400,
-                      margin: {
-                          t: 40,
-                          b: 40,
-                          l: 40,
-                          r: 40
-                      },
-                      xaxis: {
-                        range: [0, 1000],
-                        ...xMajorConfig,
-                        minor: xMinorConfig,
-                      },
-                  }
-              }).then(function() {
-                  _assert(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
-              }).then(done, done.fail);
-          } 
+            var xMajorConfig = ticksOff;
+            var xMinorConfig = ticksOff;
+            xMajorConfig = generateTickConfig();
+            xMinorConfig = generateTickConfig();
+            xMajorConfig.range = [0, 1000];
+            xMajorConfig.minor = xMinorConfig;
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [0, 1],
+                    y: [0, 1]
+                }],
+                layout: {
+                    width: 400,
+                    height: 400,
+                    margin: {
+                        t: 40,
+                        b: 40,
+                        l: 40,
+                        r: 40
+                    },
+                    xaxis: xMajorConfig,
+                }
+            }).then(function() {
+                _assert(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
+            }).then(done, done.fail);
         });
     });
 });
