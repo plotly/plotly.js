@@ -101,15 +101,15 @@ module.exports = function calc(gd, trace) {
             if(cdi.med !== BADNUM && cdi.q1 !== BADNUM && cdi.q3 !== BADNUM &&
                 cdi.med >= cdi.q1 && cdi.q3 >= cdi.med
             ) {
-                var lf = d2c('lowerfence');
+                var lf = d2c('lowerwhisker');
                 cdi.lf = (lf !== BADNUM && lf <= cdi.q1) ?
                     lf :
-                    computeLowerFence(cdi, boxVals, N);
+                    computeLowerWhisker(cdi, boxVals, N);
 
-                var uf = d2c('upperfence');
+                var uf = d2c('upperwhisker');
                 cdi.uf = (uf !== BADNUM && uf >= cdi.q3) ?
                     uf :
-                    computeUpperFence(cdi, boxVals, N);
+                    computeUpperWhisker(cdi, boxVals, N);
 
                 var mean = d2c('mean');
                 cdi.mean = (mean !== BADNUM) ?
@@ -245,9 +245,9 @@ module.exports = function calc(gd, trace) {
                     cdi.q3 = Lib.interp(boxVals, 0.75);
                 }
 
-                // lower and upper fences
-                cdi.lf = computeLowerFence(cdi, boxVals, N);
-                cdi.uf = computeUpperFence(cdi, boxVals, N);
+                // lower and upper whiskers
+                cdi.lf = computeLowerWhisker(cdi, boxVals, N);
+                cdi.uf = computeUpperWhisker(cdi, boxVals, N);
 
                 // lower and upper outliers bounds
                 cdi.lo = computeLowerOutlierBound(cdi);
@@ -289,8 +289,8 @@ module.exports = function calc(gd, trace) {
                 mean: (trace.boxmean === 'sd') || (trace.sizemode === 'sd') ?
                     _(gd, 'mean ± σ:').replace('σ', trace.sdmultiple === 1 ? 'σ' : (trace.sdmultiple + 'σ')) : // displaying mean +- Nσ whilst supporting translations
                     _(gd, 'mean:'),
-                lf: _(gd, 'lower fence:'),
-                uf: _(gd, 'upper fence:')
+                lf: _(gd, 'lower whisker:'),
+                uf: _(gd, 'upper whisker:')
             }
         };
 
@@ -403,8 +403,9 @@ function sortByVal(a, b) { return a.v - b.v; }
 
 function extractVal(o) { return o.v; }
 
-// last point below 1.5 * IQR
-function computeLowerFence(cdi, boxVals, N) {
+// Whisker: smallest point within 1.5 * IQR range around median
+// Fence := q ± 1.5IQR
+function computeLowerWhisker(cdi, boxVals, N) {
     if(N === 0) return cdi.q1;
     return Math.min(
         cdi.q1,
@@ -415,8 +416,8 @@ function computeLowerFence(cdi, boxVals, N) {
     );
 }
 
-// last point above 1.5 * IQR
-function computeUpperFence(cdi, boxVals, N) {
+// Whisker: largest point within 1.5 * IQR range around median
+function computeUpperWhisker(cdi, boxVals, N) {
     if(N === 0) return cdi.q3;
     return Math.max(
         cdi.q3,
