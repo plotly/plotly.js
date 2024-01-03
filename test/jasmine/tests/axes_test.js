@@ -8229,7 +8229,8 @@ fdescribe('test tickmode calculator', function() {
       standardConfig = {tickmode: 'array', ticks: 'inside', ticklen: 1, showticklabels: false};
 
       // Number of ticks will be random
-      var n = Math.floor(Math.random() * 99) + 1;
+      Lib.seedPseudoRandom();
+      var n = (Lib.pseudoRandom() * 99) + 1;
       tickVals = [];
       for(let i = 0; i <= n; i++) {
         tickVals.push(i);
