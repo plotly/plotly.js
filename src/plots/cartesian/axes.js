@@ -1262,7 +1262,7 @@ function syncTicks(ax) {
 }
 
 function arrayTicks(ax, major) {
-    if (major === undefined) throw new Error("arrayTicks must specify ticktype")
+    if(major === undefined) throw new Error('arrayTicks must specify ticktype');
     var rng = Lib.simpleMap(ax.range, ax.r2l);
     var exRng = expandRange(rng);
     var tickMin = Math.min(exRng[0], exRng[1]);
