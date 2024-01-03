@@ -8253,50 +8253,48 @@ fdescribe('test tickmode calculator', function() {
     }
 
     describe('arrayTicks', function() {
-        for(let i = 0; i < 4; i++) {
-            (function(i) {
-                it('should return the specified correct number of major ticks and minor ticks', function(done) {
-                  const BOTH = 0;
-                  const MAJOR = 1;
-                  const MINOR = 2;
-                  const NEITHER = 3;
-                  var xMajorConfig = ticksOff;
-                  var xMinorConfig = ticksOff;
-                  if(i == BOTH) {
-                    xMajorConfig = generateTickConfig();
-                    xMinorConfig = generateTickConfig();
-                  } else if(i == MAJOR) {
-                    xMajorConfig = generateTickConfig();
-                  } else if(i==MINOR) {
-                    xMinorConfig = generateTickConfig();
-                  } else if(i == NEITHER) {
-                    // Do nothing, all ticks off
+        it('should return the specified correct number of major ticks and minor ticks', function(done) {
+          for(let i = 0; i < 4; i++) {
+              const BOTH = 0;
+              const MAJOR = 1;
+              const MINOR = 2;
+              const NEITHER = 3;
+              var xMajorConfig = ticksOff;
+              var xMinorConfig = ticksOff;
+              if(i == BOTH) {
+                xMajorConfig = generateTickConfig();
+                xMinorConfig = generateTickConfig();
+              } else if(i == MAJOR) {
+                xMajorConfig = generateTickConfig();
+              } else if(i==MINOR) {
+                xMinorConfig = generateTickConfig();
+              } else if(i == NEITHER) {
+                // Do nothing, all ticks off
+              }
+              Plotly.newPlot(gd, {
+                  data: [{
+                      x: [0, 1],
+                      y: [0, 1]
+                  }],
+                  layout: {
+                      width: 400,
+                      height: 400,
+                      margin: {
+                          t: 40,
+                          b: 40,
+                          l: 40,
+                          r: 40
+                      },
+                      xaxis: {
+                        range: [0, 1000],
+                        ...xMajorConfig,
+                        minor: xMinorConfig,
+                      },
                   }
-                  Plotly.newPlot(gd, {
-                      data: [{
-                          x: [0, 1],
-                          y: [0, 1]
-                      }],
-                      layout: {
-                          width: 400,
-                          height: 400,
-                          margin: {
-                              t: 40,
-                              b: 40,
-                              l: 40,
-                              r: 40
-                          },
-                          xaxis: {
-                            range: [0, 1000],
-                            ...xMajorConfig,
-                            minor: xMinorConfig,
-                          },
-                      }
-                  }).then(function() {
-                      _assert(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
-                  }).then(done, done.fail);
-                });
-            })(i);
-        }
+              }).then(function() {
+                  _assert(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
+              }).then(done, done.fail);
+          } 
+        });
     });
 });
