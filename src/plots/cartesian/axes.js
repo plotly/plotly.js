@@ -951,9 +951,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
         } else {
             axes.prepTicks(mockAx, opts);
         }
-        
+
         if(mockAx.tickmode === 'full domain'){
-            nt = mockAx.nticks;  // does mockAx have nitkcs?
+            var nt = mockAx.nticks;  // does mockAx have nitkcs?
+            if(nt === undefined) nt = 0;
             var tickVals = []; 
             if (nt == 0) {
               // pass
@@ -962,10 +963,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
             } else if (nt == 2) {
                 tickVals = [0, 1];
             } else {
-                var increment = 1/(nt-2);
+                var increment = 1/(nt-1); // (nt-2) + 1
                 tickVals.push(0);
                 for (let i = 0; i < nt-2; i++) {
-                    tickVals.push((i+1)*incremente);
+                    tickVals.push((i+1)*increment);
                 }
                 tickVals.push(1);
             }
