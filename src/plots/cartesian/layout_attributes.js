@@ -14,7 +14,7 @@ var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 
 var minorTickmode = {
     valType: 'enumerated',
-    values: ['auto', 'linear', 'array', 'proportional'],
+    values: ['auto', 'linear', 'array', 'domain array'],
     editType: 'ticks',
     impliedEdits: {tick0: undefined, dtick: undefined},
     description: [
@@ -26,7 +26,7 @@ var minorTickmode = {
         'If *array*, the placement of the ticks is set via `tickvals`,',
         'which are actual values, and the tick text is `ticktext`.',
         '(*array* is the default value if `tickvals` is provided).',
-        'If *proportional*, the placement is similiar to *array* except that',
+        'If *domain array*, the placement is similiar to *array* except that',
         '`tickvals` are fractions between 0 and 1 representing distance on',
         'the corresponding axis.'
     ].join(' ')

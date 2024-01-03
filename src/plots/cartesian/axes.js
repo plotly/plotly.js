@@ -682,10 +682,10 @@ axes.prepTicks = function(ax, opts) {
             if(ax._name === 'radialaxis') nt *= 2;
         }
 
-        if(!(ax.minor && (ax.minor.tickmode !== 'array' && ax.minor.tickmode !== 'proportional'))) {
+        if(!(ax.minor && (ax.minor.tickmode !== 'array' && ax.minor.tickmode !== 'domain array'))) {
             // add a couple of extra digits for filling in ticks when we
             // have explicit tickvals without tick text
-            if(ax.tickmode === 'array' || ax.tickmode === 'proportional') nt *= 100;
+            if(ax.tickmode === 'array' || ax.tickmode === 'domain array') nt *= 100;
         }
 
         ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
@@ -949,13 +949,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
             axes.prepTicks(mockAx, opts);
         }
 
-        // tickmode 'proportional' is just 'array' but with a pre-calc step
+        // tickmode 'domain array' is just 'array' but with a pre-calc step
         // original comment:
         // now that we've figured out the auto values for formatting
         // in case we're missing some ticktext, we can break out for array ticks
-        if(mockAx.tickmode === 'array' || mockAx.tickmode === 'proportional') {
+        if(mockAx.tickmode === 'array' || mockAx.tickmode === 'domain array') {
             // Mapping proportions to array:
-            if(mockAx.tickmode === 'proportional') {
+            if(mockAx.tickmode === 'domain array') {
                 var width = (maxRange - minRange);
                 if(axrev) width *= -1;
                 var offset = !axrev ? minRange : maxRange;
@@ -1248,7 +1248,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         ticksOut[0].noTick = true;
     }
 
-    // Reset tickvals back to proportional
+    // Reset tickvals back to domain array
     if(tickFractionalVals._isSet) {
         delete tickFractionalVals._isSet;
         Lib.nestedProperty(ax, 'tickvals').set(tickFractionalVals);
@@ -1662,7 +1662,7 @@ axes.tickFirst = function(ax, opts) {
 // more precision for hovertext
 axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     var out = tickTextObj(ax, x);
-    var arrayMode = (ax.tickmode === 'array' || ax.tickmode === 'proportional');
+    var arrayMode = (ax.tickmode === 'array' || ax.tickmode === 'domain array');
     var extraPrecision = hover || arrayMode;
     var axType = ax.type;
     // TODO multicategory, if we allow ticktext / tickvals
@@ -3378,7 +3378,7 @@ axes.drawGrid = function(gd, ax, opts) {
 
     var counterAx = opts.counterAxis;
     if(counterAx && axes.shouldShowZeroLine(gd, ax, counterAx)) {
-        var isArrayMode = (ax.tickmode === 'array' || ax.tickmode === 'proportional');
+        var isArrayMode = (ax.tickmode === 'array' || ax.tickmode === 'domain array');
         for(var i = 0; i < majorVals.length; i++) {
             var xi = majorVals[i].x;
             if(isArrayMode ? !xi : (Math.abs(xi) < ax.dtick / 100)) {
