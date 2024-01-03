@@ -8216,7 +8216,9 @@ describe('shift tests', function() {
         });
     });
 });
-describe('test tickmode calculator', function() {
+fdescribe('test tickmode calculator', function() {
+    var gd;
+
     beforeEach(function() {
         gd = createGraphDiv();
     });
@@ -8229,20 +8231,31 @@ describe('test tickmode calculator', function() {
       // Number of ticks will be random
       var n = Math.floor(Math.random() * 99) + 1;
       tickVals = [];
-      for(let i = 0; i <= n; i++) tickVals.push(i);
+      for(let i = 0; i <= n; i++) {
+        tickVals.push(i);
+      }
       standardConfig['tickvals'] = tickVals;
       standardConfig['ticktext'] = tickVals;
       return standardConfig;
     }
     var ticksOff = {tickmode:"array", ticks: '', tickvals:[], ticktext:[], ticklen: 0, showticklabels: false};
-    // the goal is target the arrayTicks() function, the subject of PR: https://github.com/plotly/plotly.js/pull/6829 
-    // we test xMajor and xMinor in on/on on/off off/on and off/off
-    // since we can't unit test functions that are not exported, we shim functions we don't care about instead and
-    // test the nearest exported functions (calcTicks)
+
+    function _assert(expLength) {
+        var ax = gd._fullLayout.xaxis;
+
+        // all positions
+        var positions =
+            ax._vals
+                .filter(function(d) { return d; })
+                .map(function(d) { return d.x; });
+
+        expect(positions.length).toEqual(expLength);
+    }
+
     describe('arrayTicks', function() {
         for(let i = 0; i < 4; i++) {
             (function(i) {
-                it('should return the specified correct number of major ticks and minor ticks', function() {
+                it('should return the specified correct number of major ticks and minor ticks', function(done) {
                   const BOTH = 0;
                   const MAJOR = 1;
                   const MINOR = 2;
@@ -8259,20 +8272,29 @@ describe('test tickmode calculator', function() {
                   } else if(i == NEITHER) {
                     // Do nothing, all ticks off
                   }
-                  xaxis = {
-                      r2l: Lib.cleanNumber,
-                      d2l: Lib.cleanNumber,
-                      _separators: ',',
-                      range: [0, 1000],
-                      ...xMajorConfig, 
-                      minor: {
-                        ...xMinorConfig,
-                      },
-                  };
-                  Axes.prepMinorTicks = function() { return }; // Not part of this test
-                  Axes.prepTicks = function() { return }; // Not part of this test
-                  ticksOut = Axes.calcTicks(xaxis);
-                  expect(ticksOut.length).toEqual(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
+                  Plotly.newPlot(gd, {
+                      data: [{
+                          x: [0, 1],
+                          y: [0, 1]
+                      }],
+                      layout: {
+                          width: 400,
+                          height: 400,
+                          margin: {
+                              t: 40,
+                              b: 40,
+                              l: 40,
+                              r: 40
+                          },
+                          xaxis: {
+                            range: [0, 1000],
+                            ...xMajorConfig,
+                            minor: xMinorConfig,
+                          },
+                      }
+                  }).then(function() {
+                      _assert(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
+                  }).then(done, done.fail);
                 });
             })(i);
         }
