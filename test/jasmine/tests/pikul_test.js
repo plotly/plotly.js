@@ -5,7 +5,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 // Boilerplate taken from axes_test.js
-describe('When generating axes w/ `tickmode`:"proportional",', function() {
+describe('When generating axes w/ `tickmode`:"domain array",', function() {
   var gd;
 
   beforeEach(function() {
@@ -21,7 +21,7 @@ describe('When generating axes w/ `tickmode`:"proportional",', function() {
   function generateTickConfig(tickLen){
     // Intentionally configure to produce a single `(x|y)tick` class per tick
     // labels and tick marks each produce one, so one or the other
-    standardConfig = {tickmode: 'proportional', ticklen: tickLen, showticklabels: false};
+    standardConfig = {tickmode: 'domain array', ticklen: tickLen, showticklabels: false};
 
     // Tick values will be random:
     var n = Math.floor(Math.random() * 100);

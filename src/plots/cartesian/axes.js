@@ -682,10 +682,13 @@ axes.prepTicks = function(ax, opts) {
             if(ax._name === 'radialaxis') nt *= 2;
         }
 
-        if(!(ax.minor && (ax.minor.tickmode !== 'array' && ax.minor.tickmode !== 'domain array'))) {
+        if(!(ax.minor &&
+          (ax.minor.tickmode !== 'array' 
+            && ax.minor.tickmode !== 'domain array' 
+            && ax.minor.tickmode !== 'full domain'))) {
             // add a couple of extra digits for filling in ticks when we
             // have explicit tickvals without tick text
-            if(ax.tickmode === 'array' || ax.tickmode === 'domain array') nt *= 100;
+            if(ax.tickmode === 'array' || ax.tickmode === 'domain array' || ax.tickmode === 'full domain') nt *= 100;
         }
 
         ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
@@ -948,14 +951,37 @@ axes.calcTicks = function calcTicks(ax, opts) {
         } else {
             axes.prepTicks(mockAx, opts);
         }
-
+        
+        if(mockAx.tickmode === 'full domain'){
+            nt = mockAx.nticks;  // does mockAx have nitkcs?
+            var tickVals = []; 
+            if (nt == 0) {
+              // pass
+            } else if (nt == 1) {
+                tickVals = [0];
+            } else if (nt == 2) {
+                tickVals = [0, 1];
+            } else {
+                var increment = 1/(nt-2);
+                tickVals.push(0);
+                for (let i = 0; i < nt-2; i++) {
+                    tickVals.push((i+1)*incremente);
+                }
+                tickVals.push(1);
+            }
+            if (major) {
+                Lib.nestedProperty(ax, 'tickvals').set(tickVals);
+            } else {
+                Lib.nestedProperty(ax.minor, 'tickvals').set(tickVals);
+            }
+        }
         // tickmode 'domain array' is just 'array' but with a pre-calc step
         // original comment:
         // now that we've figured out the auto values for formatting
         // in case we're missing some ticktext, we can break out for array ticks
-        if(mockAx.tickmode === 'array' || mockAx.tickmode === 'domain array') {
+        if(mockAx.tickmode === 'array' || mockAx.tickmode === 'domain array' || mockAx.tickmode === 'full domain' ) {
             // Mapping proportions to array:
-            if(mockAx.tickmode === 'domain array') {
+            if(mockAx.tickmode === 'domain array' || mockAx.tickmode === 'full domain') {
                 var width = (maxRange - minRange);
                 if(axrev) width *= -1;
                 var offset = !axrev ? minRange : maxRange;
@@ -1251,10 +1277,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
     // Reset tickvals back to domain array
     if(tickFractionalVals._isSet) {
         delete tickFractionalVals._isSet;
+        if (ax.tickmode === 'full domain') tickFractionalVals = [];
         Lib.nestedProperty(ax, 'tickvals').set(tickFractionalVals);
     }
     if(minorTickFractionalVals._isSet) {
         delete tickFractionalVals._isSet;
+        if (ax.minor.tickmode === 'full domain') tickFractionalVals = [];
         Lib.nestedProperty(ax.minor, 'tickvals').set(minorTickFractionalVals);
     }
 
@@ -1662,7 +1690,7 @@ axes.tickFirst = function(ax, opts) {
 // more precision for hovertext
 axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     var out = tickTextObj(ax, x);
-    var arrayMode = (ax.tickmode === 'array' || ax.tickmode === 'domain array');
+    var arrayMode = (ax.tickmode === 'array' || ax.tickmode === 'domain array' || ax.tickmode === 'full domain');
     var extraPrecision = hover || arrayMode;
     var axType = ax.type;
     // TODO multicategory, if we allow ticktext / tickvals
@@ -3378,7 +3406,7 @@ axes.drawGrid = function(gd, ax, opts) {
 
     var counterAx = opts.counterAxis;
     if(counterAx && axes.shouldShowZeroLine(gd, ax, counterAx)) {
-        var isArrayMode = (ax.tickmode === 'array' || ax.tickmode === 'domain array');
+        var isArrayMode = (ax.tickmode === 'array' || ax.tickmode === 'domain array' || ax.tickmode === 'full domain');
         for(var i = 0; i < majorVals.length; i++) {
             var xi = majorVals[i].x;
             if(isArrayMode ? !xi : (Math.abs(xi) < ax.dtick / 100)) {
