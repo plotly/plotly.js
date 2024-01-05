@@ -600,9 +600,9 @@ function columnMoved(gd, calcdata, indices) {
 }
 
 function gridPick(spec, col, row) {
-    if(Array.isArray(spec)) {
+    if(Lib.isArrayOrTypedArray(spec)) {
         var column = spec[Math.min(col, spec.length - 1)];
-        if(Array.isArray(column)) {
+        if(Lib.isArrayOrTypedArray(column)) {
             return column[Math.min(row, column.length - 1)];
         } else {
             return column;

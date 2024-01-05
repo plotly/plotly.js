@@ -292,6 +292,25 @@ jobs:
           paths:
             - plotly.js
 
+  make-baselines-b64:
+    parallelism: 4
+    docker:
+      - image: circleci/python:3.8.9
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install kaleido, plotly.io and required fonts
+          command: .circleci/env_image.sh
+      - run:
+          name: Create all png files
+          command: .circleci/test.sh make-baselines-b64
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - plotly.js
+
   test-baselines:
     docker:
       - image: circleci/node:16.9.0
@@ -316,6 +335,20 @@ jobs:
       - run:
           name: Compare pixels
           command: .circleci/test.sh test-image-virtual-webgl ; find build -maxdepth 1 -type f -delete
+      - store_artifacts:
+          path: build
+          destination: /
+
+  test-baselines-b64:
+    docker:
+      - image: circleci/node:16.9.0
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Compare pixels
+          command: .circleci/test.sh test-image ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
           destination: /
@@ -512,6 +545,12 @@ workflows:
       - test-baselines-mathjax3:
           requires:
             - make-baselines-mathjax3
+      - make-baselines-b64:
+          requires:
+            - install-and-cibuild
+      - test-baselines-b64:
+          requires:
+            - make-baselines-b64
       - make-baselines:
           requires:
             - install-and-cibuild

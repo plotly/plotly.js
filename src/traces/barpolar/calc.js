@@ -2,6 +2,7 @@
 
 var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleCalc = require('../../components/colorscale/calc');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var arraysToCalcdata = require('../bar/arrays_to_calcdata');
 var setGroupPositions = require('../bar/cross_trace_calc').setGroupPositions;
 var calcSelection = require('../scatter/calc_selection');
@@ -33,7 +34,7 @@ function calc(gd, trace) {
     function d2c(attr) {
         var val = trace[attr];
         if(val !== undefined) {
-            trace['_' + attr] = Array.isArray(val) ?
+            trace['_' + attr] = isArrayOrTypedArray(val) ?
                 angularAxis.makeCalcdata(trace, attr) :
                 angularAxis.d2c(val, trace.thetaunit);
         }

@@ -23,6 +23,7 @@ if(!strict) {
     config.devtool = 'eval';
 }
 
+var mockFolder = constants.pathToTestImageMocks;
 
 // mock list
 getMockFiles()
@@ -104,7 +105,7 @@ compiler.run(function(devtoolsErr, devtoolsStats) {
 
 function getMockFiles() {
     return new Promise(function(resolve, reject) {
-        fs.readdir(constants.pathToTestImageMocks, function(err, files) {
+        fs.readdir(mockFolder, function(err, files) {
             if(err) {
                 reject(err);
             } else {
@@ -116,7 +117,7 @@ function getMockFiles() {
 
 function readFiles(files) {
     var promises = files.map(function(file) {
-        var filePath = path.join(constants.pathToTestImageMocks, file);
+        var filePath = path.join(mockFolder, file);
         return readFilePromise(filePath);
     });
 

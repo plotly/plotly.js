@@ -17,6 +17,9 @@ var constants = require('./constants');
 var axisNames = constants.axisNames;
 
 var makeImagDflt = memoize(function(realTickvals) {
+    // TODO: handle this case outside supply defaults step
+    if(Lib.isTypedArray(realTickvals)) realTickvals = Array.from(realTickvals);
+
     return realTickvals.slice().reverse().map(function(x) { return -x; })
         .concat([0])
         .concat(realTickvals);
@@ -68,6 +71,9 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
                 coerceAxis('tickvals', imagTickvalsDflt);
             }
+
+            // TODO: handle this case outside supply defaults step
+            if(Lib.isTypedArray(axOut.tickvals)) axOut.tickvals = Array.from(axOut.tickvals);
 
             var dfltColor;
             var dfltFontColor;

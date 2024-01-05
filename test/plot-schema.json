@@ -479,7 +479,7 @@
     "requiredOpts": []
    },
    "data_array": {
-    "description": "An {array} of data. The value MUST be an {array}, or we ignore it. Note that typed arrays (e.g. Float32Array) are supported.",
+    "description": "An {array} of data. The value must represent an {array} or it will be ignored, but this array can be provided in several forms: (1) a regular {array} object (2) a typed array (e.g. Float32Array) (3) an object with keys dtype, bdata, and optionally shape. In this 3rd form, dtype is one of *f8*, *f4*. *i4*, *u4*, *i2*, *u2*, *i1*, *u1* or *u1c* for Uint8ClampedArray. In addition to shorthand `dtype` above one could also use the following forms: *float64*, *float32*, *int32*, *uint32*, *int16*, *uint16*, *int8*, *uint8* or *uint8c* for Uint8ClampedArray. `bdata` is either a base64-encoded string or the ArrayBuffer of an integer or float typed array. For either multi-dimensional arrays you must also provide its dimensions separated by comma via `shape`. For example using `dtype`: *f4* and `shape`: *5,100* you can declare a 2-D array that has 5 rows and 100 columns containing float32 values i.e. 4 bits per value. `shape` is optional for one dimensional arrays.",
     "otherOpts": [
      "dflt"
     ],

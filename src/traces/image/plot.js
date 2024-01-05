@@ -186,7 +186,11 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         .then(function() {
             var href, canvas;
             if(trace._hasZ) {
-                canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {return z[j][i];});
+                canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {
+                    var _z = z[j][i];
+                    if(Lib.isTypedArray(_z)) _z = Array.from(_z);
+                    return _z;
+                });
                 href = canvas.toDataURL('image/png');
             } else if(trace._hasSource) {
                 if(realImage) {

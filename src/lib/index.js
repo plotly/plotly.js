@@ -62,6 +62,7 @@ lib.toLogRange = require('./to_log_range');
 lib.relinkPrivateKeys = require('./relink_private');
 
 var arrayModule = require('./array');
+lib.isArrayBuffer = arrayModule.isArrayBuffer;
 lib.isTypedArray = arrayModule.isTypedArray;
 lib.isArrayOrTypedArray = arrayModule.isArrayOrTypedArray;
 lib.isArray1D = arrayModule.isArray1D;
@@ -684,8 +685,8 @@ lib.getTargetArray = function(trace, transformOpts) {
 
     if(typeof target === 'string' && target) {
         var array = lib.nestedProperty(trace, target).get();
-        return Array.isArray(array) ? array : false;
-    } else if(Array.isArray(target)) {
+        return lib.isArrayOrTypedArray(array) ? array : false;
+    } else if(lib.isArrayOrTypedArray(target)) {
         return target;
     }
 
