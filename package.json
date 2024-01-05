@@ -123,7 +123,7 @@
     "world-calendars": "^1.0.3"
   },
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.22.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.23.3",
     "@babel/preset-env": "^7.22.9",
     "amdefine": "^1.0.1",
     "babel": "^6.23.0",
