@@ -124,7 +124,7 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.23.3",
-    "@babel/preset-env": "^7.22.9",
+    "@babel/preset-env": "^7.23.7",
     "amdefine": "^1.0.1",
     "babel": "^6.23.0",
     "babel-loader": "^9.1.2",
