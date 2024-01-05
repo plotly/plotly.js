@@ -178,7 +178,7 @@
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
     "virtual-webgl": "^1.0.6",
-    "webpack": "^5.88.2",
+    "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   }
 }
