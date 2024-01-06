@@ -14084,8 +14084,7 @@
       "valType": "string"
      },
      "cornerradius": {
-      "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
-      "dflt": 0,
+      "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string). Defaults to `layout.barcornerradius`.",
       "editType": "plot",
       "valType": "any"
      },
@@ -14777,8 +14776,7 @@
    ],
    "layoutAttributes": {
     "barcornerradius": {
-     "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
-     "dflt": 0,
+     "description": "Sets the rounding of bar corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
      "editType": "plot",
      "valType": "any"
     },
@@ -15643,12 +15641,6 @@
       "description": "Sets the source reference on Chart Studio Cloud for `color`.",
       "editType": "none",
       "valType": "string"
-     },
-     "cornerradius": {
-      "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
-      "dflt": 0,
-      "editType": "plot",
-      "valType": "any"
      },
      "editType": "calc",
      "line": {
@@ -26847,12 +26839,6 @@
       "editType": "none",
       "valType": "string"
      },
-     "cornerradius": {
-      "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
-      "dflt": 0,
-      "editType": "plot",
-      "valType": "any"
-     },
      "editType": "calc",
      "line": {
       "autocolorscale": {
@@ -31464,8 +31450,7 @@
       "valType": "string"
      },
      "cornerradius": {
-      "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
-      "dflt": 0,
+      "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string). Defaults to `layout.barcornerradius`.",
       "editType": "plot",
       "valType": "any"
      },
@@ -32075,8 +32060,7 @@
    ],
    "layoutAttributes": {
     "barcornerradius": {
-     "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
-     "dflt": 0,
+     "description": "Sets the rounding of bar corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
      "editType": "plot",
      "valType": "any"
     },
