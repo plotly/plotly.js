@@ -264,7 +264,8 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             var path, h;
             // Functions which return x-dimension and y-dimension of bar at a given x/y,
             // to be used for positioning text
-            var lxFunc = null, lyFunc = null;
+            var lxFunc = null;
+            var lyFunc = null;
             // Default rectangular path (used if no rounding)
             var rectanglePath = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
             if(r && di.s) {
