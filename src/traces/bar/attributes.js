@@ -48,8 +48,7 @@ var marker = extendFlat({
         editType: 'plot',
         description: [
             'Sets the rounding of corners. May be an integer number of pixels,',
-            'or a percentage of bar width(as a string). Defaults to `layout.barcornerradius` if set; ',
-            'otherwise 0.'
+            'or a percentage of bar width(as a string). Defaults to `layout.barcornerradius`.'
         ].join(' ')
     },
 });
