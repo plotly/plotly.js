@@ -24,7 +24,6 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
 
     coerce('marker.line.width');
     coerce('marker.opacity');
-    coerce('marker.cornerradius');
     coercePattern(coerce, 'marker.pattern', markerColor, hasMarkerColorscale);
     coerce('selected.marker.color');
     coerce('unselected.marker.color');
