@@ -123,7 +123,7 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
             }
             break;
     }
-    collectExtents(calcTraces, pa, opts);
+    collectExtents(calcTraces, pa);
 }
 
 function standardizeCornerradius(calcTraces) {
@@ -760,8 +760,9 @@ function setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos) {
         var calcTrace = calcTraces[i];
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
-            bar._sMin = sMinByPos[bar.p];
-            bar._sMax = sMaxByPos[bar.p];
+            var pos = bar.p0;
+            bar._sMin = sMinByPos[pos];
+            bar._sMax = sMaxByPos[pos];
         }
     }
 }
@@ -771,10 +772,9 @@ function setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos) {
 // narrower than the space they're in.
 // run once per trace group (subplot & direction) and
 // the same mapping is attached to all calcdata traces
-function collectExtents(calcTraces, pa, opts) {
+function collectExtents(calcTraces, pa) {
     var pLetter = getAxisLetter(pa);
     var extents = {};
-    var inStackOrRelativeMode = opts && (opts.mode === 'stack' || opts.mode === 'relative');
     var i, j, cd;
 
     var pMin = Infinity;
@@ -837,16 +837,16 @@ function collectExtents(calcTraces, pa, opts) {
             di.s0 = di.b;
             di.s1 = di.s0 + di.s;
 
-            if(anyTraceHasCornerradius && inStackOrRelativeMode) {
+            if(anyTraceHasCornerradius) {
                 var sMin = Math.min(di.s0, di.s1) || 0;
                 var sMax = Math.max(di.s0, di.s1) || 0;
-                var pos = di.p;
+                var pos = di.p0;
                 sMinByPos[pos] = (pos in sMinByPos) ? Math.min(sMinByPos[pos], sMin) : sMin;
                 sMaxByPos[pos] = (pos in sMaxByPos) ? Math.max(sMaxByPos[pos], sMax) : sMax;
             }
         }
     }
-    if(anyTraceHasCornerradius && inStackOrRelativeMode) {
+    if(anyTraceHasCornerradius) {
         setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos);
     }
 }
