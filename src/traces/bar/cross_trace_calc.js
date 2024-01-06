@@ -838,8 +838,8 @@ function collectExtents(calcTraces, pa, opts) {
             di.s1 = di.s0 + di.s;
 
             if(anyTraceHasCornerradius && inStackOrRelativeMode) {
-                var sMin = Math.min(di.s0, di.s1);
-                var sMax = Math.max(di.s0, di.s1);
+                var sMin = Math.min(di.s0, di.s1) || 0;
+                var sMax = Math.max(di.s0, di.s1) || 0;
                 var pos = di.p;
                 sMinByPos[pos] = (pos in sMinByPos) ? Math.min(sMinByPos[pos], sMin) : sMin;
                 sMaxByPos[pos] = (pos in sMaxByPos) ? Math.max(sMaxByPos[pos], sMax) : sMax;
