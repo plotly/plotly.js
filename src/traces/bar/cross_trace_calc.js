@@ -774,7 +774,7 @@ function setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos) {
 function collectExtents(calcTraces, pa, opts) {
     var pLetter = getAxisLetter(pa);
     var extents = {};
-    var isStacked = opts && opts.mode === 'stack';
+    var inStackOrRelativeMode = opts && (opts.mode === 'stack' || opts.mode === 'relative');
     var i, j, cd;
 
     var pMin = Infinity;
@@ -837,7 +837,7 @@ function collectExtents(calcTraces, pa, opts) {
             di.s0 = di.b;
             di.s1 = di.s0 + di.s;
 
-            if(anyTraceHasCornerradius && isStacked) {
+            if(anyTraceHasCornerradius && inStackOrRelativeMode) {
                 var sMin = Math.min(di.s0, di.s1);
                 var sMax = Math.max(di.s0, di.s1);
                 var pos = di.p;
@@ -846,7 +846,7 @@ function collectExtents(calcTraces, pa, opts) {
             }
         }
     }
-    if(anyTraceHasCornerradius && isStacked) {
+    if(anyTraceHasCornerradius && inStackOrRelativeMode) {
         setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos);
     }
 }

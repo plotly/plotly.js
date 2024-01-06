@@ -101,8 +101,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         var isHistogram = (trace.type === 'histogram');
         var isBar = (trace.type === 'bar');
         var shouldDisplayZeros = (isBar || isFunnel);
-        var isStacked = opts.mode === 'stack';
-
+        var inStackOrRelativeMode = (opts.mode === 'stack' || opts.mode === 'relative');
         var adjustPixel = 0;
         if(isWaterfall && trace.connector.visible && trace.connector.mode === 'between') {
             adjustPixel = trace.connector.line.width / 2;
@@ -239,7 +238,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             function calcCornerRadius(radiusParam) {
                 var barWidth = isHorizontal ? Math.abs(y1 - y0) : Math.abs(x1 - x0);
                 var barLength = isHorizontal ? Math.abs(x1 - x0) : Math.abs(y1 - y0);
-                var stackedBarTotalLength = fixpx(isStacked ? Math.abs(
+                var stackedBarTotalLength = fixpx(inStackOrRelativeMode ? Math.abs(
                     di.s > 0 ? c2p(di._sMax, true) - c2p(0, true) : c2p(di._sMin, true) - c2p(0, true)) : barLength
                 );
                 var maxRadius = di.hasB ? Math.min(barWidth / 2, barLength / 2) : Math.min(barWidth / 2, stackedBarTotalLength);
@@ -272,7 +271,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 // Bar has cornerradius
                 // Check amount of 'overhead' (bars stacked above this one)
                 // to see whether we need to round or not
-                var overhead = fixpx((isStacked && !di.hasB) ? Math.abs(
+                var overhead = fixpx((inStackOrRelativeMode && !di.hasB) ? Math.abs(
                     di.s > 0 ? c2p(di._sMax, true) - c2p(di.s1, true) : c2p(di._sMin, true) - c2p(di.s1, true)
                 ) : 0);
 
