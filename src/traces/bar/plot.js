@@ -294,7 +294,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                                 'V' + (y0 + r * ydir) +
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - r * xdir) + ',' + y0 +
                                 'Z';
-                            lyFunc = (x) => {
+                            lyFunc = function(x) {
                                 var _dy2 = (x > 0) ? Math.sqrt(x * (2 * r - x)) : 0;
                                 return Math.abs(y1 - y0) - 2 * (r - _dy2);
                             };
@@ -314,7 +314,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                                 'V' + (y0 + r * ydir + dy2) +
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + xminfunc(x1 - (r - overhead) * xdir, x0) + ',' + (y0 + dy1 * ydir) +
                                 'Z';
-                            lyFunc = (x) => {
+                            lyFunc = function(x) {
                                 var _overhead = overhead + x;
                                 if(_overhead > r) return Math.abs(y1 - y0);
                                 var _dy2 = (_overhead > 0) ? Math.sqrt(_overhead * (2 * r - _overhead)) : 0;
@@ -334,7 +334,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                                 'V' + (y0 + r * ydir) +
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - r * xdir) + ',' + y0 +
                                 'Z';
-                            lxFunc = (y) => {
+                            lxFunc = function(y) {
                                 var _dx2 = (y > 0) ? Math.sqrt(y * (2 * r - y)) : 0;
                                 return Math.abs(x1 - x0) - 2 * (r - _dx2);
                             };
@@ -353,7 +353,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                                 'H' + (x1 - r * xdir + dx2) +
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - dx1 * xdir) + ',' + yminfunc(y1 - (r - overhead) * ydir, y0) +
                                 'V' + y0 + 'Z';
-                            lxFunc = (y) => {
+                            lxFunc = function(y) {
                                 var _overhead = overhead + y;
                                 if(_overhead > r) return Math.abs(x1 - x0);
                                 var _dx2 = (_overhead > 0) ? Math.sqrt(_overhead * (2 * r - _overhead)) : 0;

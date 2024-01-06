@@ -807,10 +807,10 @@ function collectExtents(calcTraces, pa, opts) {
     var sMaxByPos = {};
 
     // Check whether any trace has rounded corners
-    var anyTraceHasCornerradius = calcTraces.map(x => {
+    var anyTraceHasCornerradius = calcTraces.map(function(x) {
         var trace = x[0].trace;
         return 'marker' in trace && Boolean(trace.marker.cornerradius);
-    }).some(x => x === true);
+    }).some(function(x) { return x === true; });
 
     for(i = 0; i < calcTraces.length; i++) {
         cd = calcTraces[i];
