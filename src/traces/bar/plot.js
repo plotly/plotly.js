@@ -560,7 +560,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
             trace.constraintext === 'both' ||
             trace.constraintext === 'inside';
 
-        transform = toMoveInsideBar(x0, x1, y0, y1, textBB, lxFunc, lyFunc, {
+        transform = toMoveInsideBarWithCornerradius(x0, x1, y0, y1, textBB, lxFunc, lyFunc, {
             isHorizontal: isHorizontal,
             constrained: constrained,
             angle: angle,
