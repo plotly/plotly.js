@@ -9,8 +9,8 @@
           ],
           "y": [20, -14, 2, 18],
           "type": "bar",
-          "marker": {"cornerradius": 10},
-          "name": "Both axes reversed"
+          "marker": {"cornerradius": 15},
+          "name": "Reversed"
       },
       {
         "y": [
@@ -25,7 +25,7 @@
           "orientation": "h",
         "xaxis": "x2",
         "yaxis": "y2",
-        "name": "Both axes normal"
+        "name": "Normal"
       },
       {
         "x": [
@@ -36,10 +36,10 @@
           ],
           "y": [20, -14, 2, 18],
           "type": "bar",
-          "marker": {"cornerradius": 10},
+          "marker": {"cornerradius": "40%"},
           "xaxis": "x3",
           "yaxis": "y3",
-          "name": "Both axes normal"
+          "name": "Normal"
       },
       {
         "x": [
@@ -48,12 +48,13 @@
             "monkeys",
             "capybaras"
           ],
-          "y": [20, -14, 2, 18],
+          "y": [20, -14, 2, 10],
+          "text": ["aaaaa", "aaaaaaaaa", "aaaaaaaaa", "aaaaaaaaaaaa"],
           "type": "bar",
-          "marker": {"cornerradius": 10},
+          "marker": {"cornerradius": 5000},
           "xaxis": "x3",
           "yaxis": "y3",
-          "name": "Both axes normal"
+          "name": "Normal"
       },
       {
         "y": [
@@ -65,16 +66,17 @@
           "x": [20, -4, 1, 18],
           "base": [1, 2, 1, 2],
           "type": "bar",
+          "marker": {"cornerradius": "20.5%"},
           "orientation": "h",
         "xaxis": "x4",
         "yaxis": "y4",
-        "name": "Both axes reversed"
+        "name": "Reversed"
       }
     ],
     "layout": {
       "grid": {"rows": 2, "columns": 2, "pattern": "independent"}, 
       "barmode": "stack",
-      "barcornerradius": "50%",
+      "barcornerradius": "10",
       "xaxis": {"autorange": "reversed"},
       "yaxis": {"autorange": "reversed"},
       "xaxis4": {"autorange": "reversed"},
