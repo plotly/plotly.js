@@ -100,7 +100,9 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
             // https://github.com/plotly/plotly.js/issues/749
             delete traceOut._xautoBinFinished;
             delete traceOut._yautoBinFinished;
-            coerce('marker.cornerradius', fullLayout.barcornerradius);
+            if(traceOut.type === 'histogram') {
+                coerce('marker.cornerradius', fullLayout.barcornerradius);
+            }
 
             // N.B. need to coerce *alignmentgroup* before *bingroup*, as traces
             // in same alignmentgroup "have to match"
