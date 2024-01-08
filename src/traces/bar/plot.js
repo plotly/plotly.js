@@ -241,7 +241,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             } else if(di.s0 < 0) {
                 outerBound = di._sMin;
             } else {
-                outerBound = di.s > 0 ? di._sMax : di._sMin;
+                outerBound = di.s1 > 0 ? di._sMax : di._sMin;
             }
 
             // Calculate corner radius of bar in pixels
@@ -279,7 +279,8 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 // Bar has cornerradius
                 // Check amount of 'overhead' (bars stacked above this one)
                 // to see whether we need to round or not
-                var overhead = fixpx(!di.hasB ? Math.abs(c2p(outerBound, true) - c2p(di.s1, true)) : 0);
+                var refPoint = Math.sign(di.s0) === 0 || Math.sign(di.s) === Math.sign(di.s0) ? di.s1 : di.s0;
+                var overhead = fixpx(!di.hasB ? Math.abs(c2p(outerBound, true) - c2p(refPoint, true)) : 0);
                 if(overhead < r) {
                     // Calculate parameters for rounded corners
                     var xdir = dirSign(x0, x1);
