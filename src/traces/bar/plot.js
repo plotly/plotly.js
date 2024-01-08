@@ -233,13 +233,22 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             // Function to convert from size axis values to pixels
             var c2p = isHorizontal ? xa.c2p : ya.c2p;
 
+            // Decide whether to use upper or lower bound of current bar stack
+            // as reference point for rounding
+            var outerBound;
+            if(di.s0 > 0) {
+                outerBound = di._sMax;
+            } else if(di.s0 < 0) {
+                outerBound = di._sMin;
+            } else {
+                outerBound = di.s > 0 ? di._sMax : di._sMin;
+            }
+
             // Calculate corner radius of bar in pixels
             function calcCornerRadius(radiusParam) {
                 var barWidth = isHorizontal ? Math.abs(y1 - y0) : Math.abs(x1 - x0);
                 var barLength = isHorizontal ? Math.abs(x1 - x0) : Math.abs(y1 - y0);
-                var stackedBarTotalLength = fixpx(Math.abs(
-                    di.s > 0 ? c2p(di._sMax, true) - c2p(0, true) : c2p(di._sMin, true) - c2p(0, true))
-                );
+                var stackedBarTotalLength = fixpx(Math.abs(c2p(outerBound, true) - c2p(0, true)));
                 var maxRadius = di.hasB ? Math.min(barWidth / 2, barLength / 2) : Math.min(barWidth / 2, stackedBarTotalLength);
                 var rPx;
                 if(!radiusParam) {
@@ -270,9 +279,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 // Bar has cornerradius
                 // Check amount of 'overhead' (bars stacked above this one)
                 // to see whether we need to round or not
-                var overhead = fixpx(!di.hasB ? Math.abs(
-                    di.s > 0 ? c2p(di._sMax, true) - c2p(di.s1, true) : c2p(di._sMin, true) - c2p(di.s1, true)
-                ) : 0);
+                var overhead = fixpx(!di.hasB ? Math.abs(c2p(outerBound, true) - c2p(di.s1, true)) : 0);
                 if(overhead < r) {
                     // Calculate parameters for rounded corners
                     var xdir = dirSign(x0, x1);
