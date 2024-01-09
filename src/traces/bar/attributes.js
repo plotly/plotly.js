@@ -45,7 +45,7 @@ var marker = extendFlat({
     pattern: pattern,
     cornerradius: {
         valType: 'any',
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Sets the rounding of corners. May be an integer number of pixels,',
             'or a percentage of bar width(as a string). Defaults to `layout.barcornerradius`.'
