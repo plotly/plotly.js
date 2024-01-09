@@ -274,7 +274,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             // Default rectangular path (used if no rounding)
             var rectanglePath = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
             if(r && di.s) {
-                // Bar has cornerradius
+                // Bar has cornerradius, and nonzero size
                 // Check amount of 'overhead' (bars stacked above this one)
                 // to see whether we need to round or not
                 var refPoint = Math.sign(di.s0) === 0 || Math.sign(di.s) === Math.sign(di.s0) ? di.s1 : di.s0;
@@ -299,6 +299,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - r * xdir) + ',' + y0 +
                                 'Z';
                             lyFunc = function(x) {
+                                if(x > r) return Math.abs(y1 - y0);
                                 var _dy2 = (x > 0) ? Math.sqrt(x * (2 * r - x)) : 0;
                                 return Math.abs(y1 - y0) - 2 * (r - _dy2);
                             };
@@ -339,6 +340,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - r * xdir) + ',' + y0 +
                                 'Z';
                             lxFunc = function(y) {
+                                if(y > r) return Math.abs(x1 - x0);
                                 var _dx2 = (y > 0) ? Math.sqrt(y * (2 * r - y)) : 0;
                                 return Math.abs(x1 - x0) - 2 * (r - _dx2);
                             };
@@ -453,6 +455,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
     var barColor = style.getBarColor(cd[i], trace);
     var insideTextFont = style.getInsideTextFont(trace, i, layoutFont, barColor);
     var outsideTextFont = style.getOutsideTextFont(trace, i, layoutFont);
+    var insidetextanchor = trace.insidetextanchor || 'end';
 
     // Special case: don't use the c2p(v, true) value on log size axes,
     // so that we can get correctly inside text scaling
@@ -475,9 +478,18 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
         }
     }
 
+    // Get width and height of bar at text position
+    var lx, ly, refPos;
+    if(isHorizontal) {
+        refPos = (insidetextanchor === 'middle') ? Math.abs(x1 - x0) / 2 : TEXTPAD;
+        lx = Math.abs(x1 - x0);
+        ly = lyFunc ? lyFunc(refPos) : Math.abs(y1 - y0);
+    } else {
+        refPos = (insidetextanchor === 'middle') ? Math.abs(y1 - y0) / 2 : TEXTPAD;
+        lx = lxFunc ? lxFunc(TEXTPAD) : Math.abs(x1 - x0);
+        ly = Math.abs(y1 - y0);
+    }
     // padding excluded
-    var lx = lxFunc ? lxFunc(TEXTPAD) : Math.abs(x1 - x0);
-    var ly = lyFunc ? lyFunc(TEXTPAD) : Math.abs(y1 - y0);
     var barWidth = lx - 2 * TEXTPAD;
     var barHeight = ly - 2 * TEXTPAD;
 
@@ -568,7 +580,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
             isHorizontal: isHorizontal,
             constrained: constrained,
             angle: angle,
-            anchor: trace.insidetextanchor
+            anchor: insidetextanchor,
         });
     }
 
@@ -604,7 +616,7 @@ function toMoveInsideBarWithCornerradius(x0, x1, y0, y1, textBB, lxFunc, lyFunc,
     var isHorizontal = !!opts.isHorizontal;
     var constrained = !!opts.constrained;
     var angle = opts.angle || 0;
-    var anchor = opts.anchor || 'end';
+    var anchor = opts.anchor;
     var isEnd = anchor === 'end';
     var isStart = anchor === 'start';
     var leftToRight = opts.leftToRight || 0; // left: -1, center: 0, right: 1
@@ -613,8 +625,17 @@ function toMoveInsideBarWithCornerradius(x0, x1, y0, y1, textBB, lxFunc, lyFunc,
 
     var textWidth = textBB.width;
     var textHeight = textBB.height;
-    var lx = lxFunc ? lxFunc(TEXTPAD) : Math.abs(x1 - x0);
-    var ly = lyFunc ? lyFunc(TEXTPAD) : Math.abs(y1 - y0);
+
+    var lx, ly, refPos;
+    if(isHorizontal) {
+        refPos = (anchor === 'middle') ? Math.abs(x1 - x0) / 2 : TEXTPAD;
+        lx = Math.abs(x1 - x0);
+        ly = lyFunc ? lyFunc(refPos) : Math.abs(y1 - y0);
+    } else {
+        refPos = (anchor === 'middle') ? Math.abs(y1 - y0) / 2 : TEXTPAD;
+        lx = lxFunc ? lxFunc(TEXTPAD) : Math.abs(x1 - x0);
+        ly = Math.abs(y1 - y0);
+    }
 
     // compute remaining space
     var textpad = (
