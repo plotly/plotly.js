@@ -54,7 +54,7 @@ module.exports = {
     },
     barcornerradius: {
         valType: 'any',
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Sets the rounding of bar corners. May be an integer number of pixels,',
             'or a percentage of bar width(as a string).'
