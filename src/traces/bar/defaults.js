@@ -161,5 +161,6 @@ function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
 module.exports = {
     supplyDefaults: supplyDefaults,
     crossTraceDefaults: crossTraceDefaults,
-    handleText: handleText
+    handleText: handleText,
+    validateCornerradius: validateCornerradius,
 };
