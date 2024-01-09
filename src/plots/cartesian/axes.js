@@ -683,9 +683,9 @@ axes.prepTicks = function(ax, opts) {
         }
 
         if(!(ax.minor &&
-          (ax.minor.tickmode !== 'array' 
-            && ax.minor.tickmode !== 'domain array' 
-            && ax.minor.tickmode !== 'full domain'))) {
+          (ax.minor.tickmode !== 'array' &&
+            ax.minor.tickmode !== 'domain array' &&
+            ax.minor.tickmode !== 'full domain'))) {
             // add a couple of extra digits for filling in ticks when we
             // have explicit tickvals without tick text
             if(ax.tickmode === 'array' || ax.tickmode === 'domain array' || ax.tickmode === 'full domain') nt *= 100;
@@ -952,25 +952,24 @@ axes.calcTicks = function calcTicks(ax, opts) {
             axes.prepTicks(mockAx, opts);
         }
 
-        if(mockAx.tickmode === 'full domain'){
+        if(mockAx.tickmode === 'full domain') {
             var nt = mockAx.nticks;  // does mockAx have nitkcs?
             if(nt === undefined) nt = 0;
-            var tickVals = []; 
-            if (nt == 0) {
+            if(nt === 0) {
               // pass
-            } else if (nt == 1) {
+            } else if(nt === 1) {
                 tickVals = [0];
-            } else if (nt == 2) {
+            } else if(nt === 2) {
                 tickVals = [0, 1];
             } else {
-                var increment = 1/(nt-1); // (nt-2) + 1
+                var increment = 1 / (nt - 1); // (nt-2) + 1
                 tickVals.push(0);
-                for (let i = 0; i < nt-2; i++) {
-                    tickVals.push((i+1)*increment);
+                for(var tickIndex = 0; tickIndex < nt - 2; tickIndex++) {
+                    tickVals.push((tickIndex + 1) * increment);
                 }
                 tickVals.push(1);
             }
-            if (major) {
+            if(major) {
                 Lib.nestedProperty(ax, 'tickvals').set(tickVals);
             } else {
                 Lib.nestedProperty(ax.minor, 'tickvals').set(tickVals);
@@ -980,7 +979,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         // original comment:
         // now that we've figured out the auto values for formatting
         // in case we're missing some ticktext, we can break out for array ticks
-        if(mockAx.tickmode === 'array' || mockAx.tickmode === 'domain array' || mockAx.tickmode === 'full domain' ) {
+        if(mockAx.tickmode === 'array' || mockAx.tickmode === 'domain array' || mockAx.tickmode === 'full domain') {
             // Mapping proportions to array:
             if(mockAx.tickmode === 'domain array' || mockAx.tickmode === 'full domain') {
                 var width = (maxRange - minRange);
@@ -1278,12 +1277,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
     // Reset tickvals back to domain array
     if(tickFractionalVals._isSet) {
         delete tickFractionalVals._isSet;
-        if (ax.tickmode === 'full domain') tickFractionalVals = [];
+        if(ax.tickmode === 'full domain') tickFractionalVals = [];
         Lib.nestedProperty(ax, 'tickvals').set(tickFractionalVals);
     }
     if(minorTickFractionalVals._isSet) {
         delete tickFractionalVals._isSet;
-        if (ax.minor.tickmode === 'full domain') tickFractionalVals = [];
+        if(ax.minor.tickmode === 'full domain') tickFractionalVals = [];
         Lib.nestedProperty(ax.minor, 'tickvals').set(minorTickFractionalVals);
     }
 
