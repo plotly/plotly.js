@@ -1,5 +1,7 @@
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Registry = require('../../registry');
@@ -69,14 +71,38 @@ function crossTraceDefaults(fullData, fullLayout) {
 
         if(traceOut.type === 'bar') {
             traceIn = traceOut._input;
-            // This needs to happen here rather than in handleStyleDefaults() because
-            // it needs to happen after `layout.barcornerradius` has been coerced
-            coerce('marker.cornerradius', fullLayout.barcornerradius);
+            // `marker.cornerradius` needs to be coerced here rather than in handleStyleDefaults()
+            // because it needs to happen after `layout.barcornerradius` has been coerced
+            var r = coerce('marker.cornerradius', fullLayout.barcornerradius);
+            traceOut.marker.cornerradius = validateCornerradius(r);
+
             if(fullLayout.barmode === 'group') {
                 handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
             }
         }
     }
+}
+
+// Returns a value equivalent to the given cornerradius value, if valid;
+// otherwise returns`undefined`.
+// Valid cornerradius values must be either:
+//   - a numeric value (string or number) >= 0, or
+//   - a string consisting of a number >= 0 followed by a % sign
+// If the given cornerradius value is a numeric string, it will be converted
+// to a number.
+function validateCornerradius(r) {
+    var validR = false;
+    if(isNumeric(r)) {
+        r = +r;
+        if(r >= 0) validR = true;
+    } else if(typeof r === 'string' && r.slice(-1) === '%') {
+        r = +r.slice(0, -1);
+        if(r >= 0) {
+            r += '%';
+            validR = true;
+        }
+    }
+    return validR ? r : undefined;
 }
 
 function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {

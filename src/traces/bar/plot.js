@@ -256,7 +256,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 } else if(isNumeric(radiusParam)) {
                     // If radius is already given as a number of pixels, use the given value
                     rPx = +radiusParam;
-                } else if(typeof radiusParam === 'string' && radiusParam.slice(-1) === '%') {
+                } else if(typeof radiusParam === 'string') {
                     // Otherwise, if % string, convert to number of pixels
                     var rPercent = Math.min(50, +radiusParam.slice(0, -1));
                     rPx = barWidth * (rPercent / 100);
