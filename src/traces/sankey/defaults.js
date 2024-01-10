@@ -67,7 +67,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 'rgba(255, 255, 255, 0.6)' :
                 'rgba(0, 0, 0, 0.2)';
 
+    var defaultHoverColor = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
+                'rgba(128, 128, 128, 1.0)' :
+                'rgba(128, 128, 128, 1.0)';
+
     coerceLink('color', Lib.repeat(defaultLinkColor, linkOut.value.length));
+    coerceLink('hovercolor', Lib.repeat(defaultHoverColor, linkOut.value.length));
     coerceLink('customdata');
 
     handleArrayContainerDefaults(linkIn, linkOut, {

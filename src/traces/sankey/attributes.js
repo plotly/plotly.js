@@ -195,6 +195,15 @@ var attrs = module.exports = overrideAll({
                 'If `link.color` is omitted, then by default, a translucent grey link will be used.'
             ].join(' ')
         },
+        hovercolor: {
+            valType: 'color',
+            arrayOk: true,
+            description: [
+                'Sets the `link` hover color. It can be a single value, or an array for specifying hovor colors for',
+                'each `link`. If `link.hovercolor` is omitted, then by default, links will become solid grey when',
+                'hovered over.'
+            ].join(' ')
+        },
         customdata: {
             valType: 'data_array',
             editType: 'calc',

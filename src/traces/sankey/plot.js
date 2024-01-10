@@ -62,9 +62,13 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
 }
 
 function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-    sankeyLink.style('fill-opacity', function(l) {
+    sankeyLink.style('fill', function(l) {
         if(!l.link.concentrationscale) {
-            return 0.4;
+            return l.tinyColorHoverHue;
+        }
+    }).style('fill-opacity', function(l) {
+        if(!l.link.concentrationscale) {
+            return l.tinyColorHoverAlpha;
         }
     });
 
@@ -74,9 +78,13 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
             ownTrace(sankey, d)
                 .selectAll('.' + cn.sankeyLink)
                 .filter(function(l) {return l.link.label === label;})
-                .style('fill-opacity', function(l) {
+                .style('fill', function(l) {
                     if(!l.link.concentrationscale) {
-                        return 0.4;
+                        return l.tinyColorHoverHue;
+                    }
+                }).style('fill-opacity', function(l) {
+                    if(!l.link.concentrationscale) {
+                        return l.tinyColorHoverAlpha;
                     }
                 });
         }
@@ -91,7 +99,11 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 }
 
 function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-    sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+    sankeyLink.style('fill', function(l) {
+        return l.tinyColorHue;
+    }).style('fill-opacity', function(l) {
+        return l.tinyColorAlpha;
+    });
 
     sankeyLink.each(function(curLink) {
         var label = curLink.link.label;
@@ -99,7 +111,8 @@ function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
             ownTrace(sankey, d)
                 .selectAll('.' + cn.sankeyLink)
                 .filter(function(l) {return l.link.label === label;})
-                .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+                .style('fill', function(l) {return l.tinyColorHue;})
+                .style('fill-opacity', function(l) {return l.tinyColorAlpha;});
         }
     });
 
