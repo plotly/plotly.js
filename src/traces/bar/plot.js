@@ -34,6 +34,9 @@ function getKeyFunc(trace) {
     }
 }
 
+function sign(v) {
+    return (v > 0) - (v < 0);}
+
 function dirSign(a, b) {
     return (a < b) ? 1 : -1;
 }
@@ -277,7 +280,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 // Bar has cornerradius, and nonzero size
                 // Check amount of 'overhead' (bars stacked above this one)
                 // to see whether we need to round or not
-                var refPoint = Math.sign(di.s0) === 0 || Math.sign(di.s) === Math.sign(di.s0) ? di.s1 : di.s0;
+                var refPoint = sign(di.s0) === 0 || sign(di.s) === sign(di.s0) ? di.s1 : di.s0;
                 var overhead = fixpx(!di.hasB ? Math.abs(c2p(outerBound, true) - c2p(refPoint, true)) : 0);
                 if(overhead < r) {
                     // Calculate parameters for rounded corners
