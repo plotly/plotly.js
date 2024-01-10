@@ -35,7 +35,8 @@ function getKeyFunc(trace) {
 }
 
 function sign(v) {
-    return (v > 0) - (v < 0);}
+    return (v > 0) - (v < 0);
+}
 
 function dirSign(a, b) {
     return (a < b) ? 1 : -1;
