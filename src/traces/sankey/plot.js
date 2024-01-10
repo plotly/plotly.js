@@ -10,6 +10,8 @@ var cn = require('./constants').cn;
 
 var _ = Lib._;
 
+var linkStyleInitialized = false;
+
 function renderableValuePresent(d) {return d !== '';}
 
 function ownTrace(selection, d) {
@@ -62,9 +64,38 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
 }
 
 function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-    sankeyLink.style('fill-opacity', function(l) {
+    if (!linkStyleInitialized) {
+        // Figure out whether the user has provided their own sankey-link-hover style.
+        let styleExists = false;
+        for (let i=0; i<document.styleSheets.length; i++) {
+            const rules = document.styleSheets[i].cssRules;
+            for (let j=0; j < rules.length; j++) {
+                if (rules[j].selectorText === '.sankey-link-hover') {
+                    styleExists = true;
+                    break;
+                }
+            }
+            if (styleExists) break;
+        }
+        
+        // If not, insert a default one
+        if (!styleExists) {
+            var style = document.querySelector('style');
+            if (!style) {
+                style = document.createElement('style');
+                document.head.appendChild(style);
+            }
+            const sheet = style.sheet;
+            // If these are not flagged as !important chrome won't render the change
+            sheet.insertRule('.sankey-link-hover { fill-opacity: 0.4 !important; }', 0);
+        }
+
+        linkStyleInitialized = true;
+    }
+
+    sankeyLink.classed('sankey-link-hover', function(l) {
         if(!l.link.concentrationscale) {
-            return 0.4;
+            return true;
         }
     });
 
@@ -74,9 +105,9 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
             ownTrace(sankey, d)
                 .selectAll('.' + cn.sankeyLink)
                 .filter(function(l) {return l.link.label === label;})
-                .style('fill-opacity', function(l) {
+                .classed('sankey-link-hover', function(l) {
                     if(!l.link.concentrationscale) {
-                        return 0.4;
+                        return true;
                     }
                 });
         }
@@ -91,7 +122,7 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 }
 
 function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-    sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+    sankeyLink.classed('sankey-link-hover', false);
 
     sankeyLink.each(function(curLink) {
         var label = curLink.link.label;
@@ -99,7 +130,7 @@ function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
             ownTrace(sankey, d)
                 .selectAll('.' + cn.sankeyLink)
                 .filter(function(l) {return l.link.label === label;})
-                .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+                .classed('sankey-link-hover', false);
         }
     });
 
