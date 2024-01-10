@@ -14085,7 +14085,7 @@
      },
      "cornerradius": {
       "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string). Defaults to `layout.barcornerradius`.",
-      "editType": "plot",
+      "editType": "calc",
       "valType": "any"
      },
      "editType": "calc",
@@ -14777,7 +14777,7 @@
    "layoutAttributes": {
     "barcornerradius": {
      "description": "Sets the rounding of bar corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
-     "editType": "plot",
+     "editType": "calc",
      "valType": "any"
     },
     "bargap": {
@@ -31451,7 +31451,7 @@
      },
      "cornerradius": {
       "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width(as a string). Defaults to `layout.barcornerradius`.",
-      "editType": "plot",
+      "editType": "calc",
       "valType": "any"
      },
      "editType": "calc",
@@ -32061,7 +32061,7 @@
    "layoutAttributes": {
     "barcornerradius": {
      "description": "Sets the rounding of bar corners. May be an integer number of pixels, or a percentage of bar width(as a string).",
-     "editType": "plot",
+     "editType": "calc",
      "valType": "any"
     },
     "bargap": {
