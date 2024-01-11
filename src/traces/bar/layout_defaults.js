@@ -5,6 +5,8 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
 var layoutAttributes = require('./layout_attributes');
+var validateCornerradius = require('./defaults').validateCornerradius;
+
 
 module.exports = function(layoutIn, layoutOut, fullData) {
     function coerce(attr, dflt) {
@@ -47,5 +49,6 @@ module.exports = function(layoutIn, layoutOut, fullData) {
 
     coerce('bargap', (shouldBeGapless && !gappedAnyway) ? 0 : 0.2);
     coerce('bargroupgap');
-    coerce('barcornerradius');
+    var r = coerce('barcornerradius');
+    layoutOut.barcornerradius = validateCornerradius(r);
 };

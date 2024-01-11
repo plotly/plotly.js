@@ -100,6 +100,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
     var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
         var trace = cd[0].trace;
+        var t = cd[0].t;
         var isWaterfall = (trace.type === 'waterfall');
         var isFunnel = (trace.type === 'funnel');
         var isHistogram = (trace.type === 'histogram');
@@ -249,26 +250,26 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             }
 
             // Calculate corner radius of bar in pixels
-            function calcCornerRadius(radiusParam) {
+            function calcCornerRadius(crValue, crForm) {
                 var barWidth = isHorizontal ? Math.abs(y1 - y0) : Math.abs(x1 - x0);
                 var barLength = isHorizontal ? Math.abs(x1 - x0) : Math.abs(y1 - y0);
                 var stackedBarTotalLength = fixpx(Math.abs(c2p(outerBound, true) - c2p(0, true)));
                 var maxRadius = di.hasB ? Math.min(barWidth / 2, barLength / 2) : Math.min(barWidth / 2, stackedBarTotalLength);
-                var rPx;
-                if(!radiusParam) {
+                var crPx;
+                if(!crValue) {
                     return 0;
-                } else if(typeof radiusParam === 'string') {
+                } else if(crForm === '%') {
                     // If radius is given as a % string, convert to number of pixels
-                    var rPercent = Math.min(50, +radiusParam.slice(0, -1));
-                    rPx = barWidth * (rPercent / 100);
+                    var crPercent = Math.min(50, crValue);
+                    crPx = barWidth * (crPercent / 100);
                 } else {
                     // Otherwise, it's already a number of pixels, use the given value
-                    rPx = +radiusParam;
+                    crPx = crValue;
                 }
-                return fixpx(Math.max(Math.min(rPx, maxRadius), 0));
+                return fixpx(Math.max(Math.min(crPx, maxRadius), 0));
             }
             // Exclude anything which is not explicitly a bar or histogram chart from rounding
-            var r = (isBar || isHistogram) ? calcCornerRadius(trace.marker.cornerradius) : 0;
+            var r = (isBar || isHistogram) ? calcCornerRadius(t.cornerradiusvalue, t.cornerradiusform) : 0;
             // Construct path string for bar
             var path, h;
             // Functions which return x-dimension and y-dimension of bar at a given x/y,
@@ -580,11 +581,13 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
             trace.constraintext === 'both' ||
             trace.constraintext === 'inside';
 
-        transform = toMoveInsideBarWithCornerradius(x0, x1, y0, y1, textBB, lxFunc, lyFunc, {
+        transform = toMoveInsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal: isHorizontal,
             constrained: constrained,
             angle: angle,
             anchor: insidetextanchor,
+            lxFunc: lxFunc,
+            lyFunc: lyFunc,
         });
     }
 
@@ -612,11 +615,6 @@ function getRotatedTextSize(textBB, rotate) {
 }
 
 function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
-    // Wrapper for export
-    return toMoveInsideBarWithCornerradius(x0, x1, y0, y1, textBB, null, null, opts);
-}
-
-function toMoveInsideBarWithCornerradius(x0, x1, y0, y1, textBB, lxFunc, lyFunc, opts) {
     var isHorizontal = !!opts.isHorizontal;
     var constrained = !!opts.constrained;
     var angle = opts.angle || 0;
@@ -626,6 +624,8 @@ function toMoveInsideBarWithCornerradius(x0, x1, y0, y1, textBB, lxFunc, lyFunc,
     var leftToRight = opts.leftToRight || 0; // left: -1, center: 0, right: 1
     var toRight = (leftToRight + 1) / 2;
     var toLeft = 1 - toRight;
+    var lxFunc = opts.lxFunc;
+    var lyFunc = opts.lyFunc;
 
     var textWidth = textBB.width;
     var textHeight = textBB.height;

@@ -123,40 +123,53 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
             }
             break;
     }
+    setCornerradius(calcTraces);
     collectExtents(calcTraces, pa);
 }
 
-function standardizeCornerradius(calcTraces) {
-    if(calcTraces.length < 2) return;
-    var i, calcTrace, fullTrace;
-    var cr;
+// Set cornerradiusvalue and cornerradiusform in calcTraces[0].t
+function setCornerradius(calcTraces) {
+    var i, calcTrace, fullTrace, t, cr, crValue, crForm;
+
     for(i = 0; i < calcTraces.length; i++) {
         calcTrace = calcTraces[i];
         fullTrace = calcTrace[0].trace;
+        t = calcTrace[0].t;
 
-        fullTrace.marker = fullTrace.marker || {};
-        cr = fullTrace.marker.cornerradius;
+        if(t.cornerradiusvalue === undefined) {
+            cr = fullTrace.marker ? fullTrace.marker.cornerradius : undefined;
+            if(cr !== undefined) {
+                crValue = isNumeric(cr) ? +cr : +cr.slice(0, -1);
+                crForm = isNumeric(cr) ? 'px' : '%';
+                t.cornerradiusvalue = crValue;
+                t.cornerradiusform = crForm;
+            }
+        }
+    }
+}
+
+// Make sure all traces in a stack use the same cornerradius
+function standardizeCornerradius(calcTraces) {
+    if(calcTraces.length < 2) return;
+    var i, calcTrace, fullTrace, t;
+    var cr, crValue, crForm;
+    for(i = 0; i < calcTraces.length; i++) {
+        calcTrace = calcTraces[i];
+        fullTrace = calcTrace[0].trace;
+        cr = fullTrace.marker ? fullTrace.marker.cornerradius : undefined;
         if(cr !== undefined) break;
     }
-    // If any trace has cornerradius, set all other traces
-    // to match first trace which has cornerradius
+    // If any trace has cornerradius, store first cornerradius
+    // in calcTrace[0].t so that all traces in stack use same cornerradius
     if(cr !== undefined) {
+        crValue = isNumeric(cr) ? +cr : +cr.slice(0, -1);
+        crForm = isNumeric(cr) ? 'px' : '%';
         for(i = 0; i < calcTraces.length; i++) {
             calcTrace = calcTraces[i];
-            fullTrace = calcTrace[0].trace;
+            t = calcTrace[0].t;
 
-            fullTrace.marker = fullTrace.marker || {};
-            fullTrace.marker.cornerradius = cr;
-        }
-    // Otherwise, remove cornerradius from all other traces
-    } else {
-        for(i = 0; i < calcTraces.length; i++) {
-            calcTrace = calcTraces[i];
-            fullTrace = calcTrace[0].trace;
-
-            if(fullTrace.marker && fullTrace.marker.cornerradius) {
-                delete fullTrace.marker.cornerradius;
-            }
+            t.cornerradiusvalue = crValue;
+            t.cornerradiusform = crForm;
         }
     }
 }
@@ -754,13 +767,14 @@ function normalizeBars(sa, sieve, opts) {
 // Add an `_sMin` and `_sMax` value for each bar representing the min and max size value
 // across all bars sharing the same position as that bar. These values are used for rounded
 // bar corners, to carry rounding down to lower bars in the stack as needed.
-function setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos) {
+function setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos, pa) {
+    var pLetter = getAxisLetter(pa);
     // Set `_sMin` and `_sMax` value for each bar
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
-            var pos = bar.p0;
+            var pos = bar[pLetter];
             bar._sMin = sMinByPos[pos];
             bar._sMax = sMaxByPos[pos];
         }
@@ -840,14 +854,14 @@ function collectExtents(calcTraces, pa) {
             if(anyTraceHasCornerradius) {
                 var sMin = Math.min(di.s0, di.s1) || 0;
                 var sMax = Math.max(di.s0, di.s1) || 0;
-                var pos = di.p0;
+                var pos = di[pLetter];
                 sMinByPos[pos] = (pos in sMinByPos) ? Math.min(sMinByPos[pos], sMin) : sMin;
                 sMaxByPos[pos] = (pos in sMaxByPos) ? Math.max(sMaxByPos[pos], sMax) : sMax;
             }
         }
     }
     if(anyTraceHasCornerradius) {
-        setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos);
+        setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos, pa);
     }
 }
 

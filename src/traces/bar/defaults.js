@@ -93,18 +93,17 @@ function crossTraceDefaults(fullData, fullLayout) {
 // If the given cornerradius value is a numeric string, it will be converted
 // to a number.
 function validateCornerradius(r) {
-    var validR = false;
     if(isNumeric(r)) {
         r = +r;
-        if(r >= 0) validR = true;
-    } else if(typeof r === 'string' && r.slice(-1) === '%') {
-        r = +r.slice(0, -1);
-        if(r >= 0) {
-            r += '%';
-            validR = true;
+        if(r >= 0) return r;
+    } else if(typeof r === 'string') {
+        r = r.trim();
+        if(r.slice(-1) === '%' && isNumeric(r.slice(0, -1))) {
+            r = +r.slice(0, -1);
+            if(r >= 0) return r + '%';
         }
     }
-    return validR ? r : undefined;
+    return undefined;
 }
 
 function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
