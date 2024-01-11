@@ -64,24 +64,24 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
 }
 
 function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-    if (!linkStyleInitialized) {
+    if(!linkStyleInitialized) {
         // Figure out whether the user has provided their own sankey-link-hover style.
         var styleExists = false;
-        for (var i=0; i<document.styleSheets.length; i++) {
+        for(var i = 0; i < document.styleSheets.length; i++) {
             var rules = document.styleSheets[i].cssRules;
-            for (var j=0; j < rules.length; j++) {
-                if (rules[j].selectorText === '.sankey-link-hover') {
+            for(var j = 0; j < rules.length; j++) {
+                if(rules[j].selectorText === '.sankey-link-hover') {
                     styleExists = true;
                     break;
                 }
             }
-            if (styleExists) break;
+            if(styleExists) break;
         }
-        
+
         // If not, insert a default one
-        if (!styleExists) {
+        if(!styleExists) {
             var style = document.querySelector('style');
-            if (!style) {
+            if(!style) {
                 style = document.createElement('style');
                 document.head.appendChild(style);
             }
