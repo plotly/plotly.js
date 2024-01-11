@@ -74,7 +74,9 @@ function crossTraceDefaults(fullData, fullLayout) {
             // `marker.cornerradius` needs to be coerced here rather than in handleStyleDefaults()
             // because it needs to happen after `layout.barcornerradius` has been coerced
             var r = coerce('marker.cornerradius', fullLayout.barcornerradius);
-            traceOut.marker.cornerradius = validateCornerradius(r);
+            if(traceOut.marker) {
+                traceOut.marker.cornerradius = validateCornerradius(r);
+            }
 
             if(fullLayout.barmode === 'group') {
                 handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
