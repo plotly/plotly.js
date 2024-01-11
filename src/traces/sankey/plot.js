@@ -66,10 +66,10 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
 function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
     if (!linkStyleInitialized) {
         // Figure out whether the user has provided their own sankey-link-hover style.
-        let styleExists = false;
-        for (let i=0; i<document.styleSheets.length; i++) {
+        var styleExists = false;
+        for (var i=0; i<document.styleSheets.length; i++) {
             const rules = document.styleSheets[i].cssRules;
-            for (let j=0; j < rules.length; j++) {
+            for (var j=0; j < rules.length; j++) {
                 if (rules[j].selectorText === '.sankey-link-hover') {
                     styleExists = true;
                     break;
