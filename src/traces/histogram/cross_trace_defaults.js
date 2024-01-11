@@ -104,7 +104,9 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
 
             if(traceOut.type === 'histogram') {
                 var r = coerce('marker.cornerradius', fullLayout.barcornerradius);
-                traceOut.marker.cornerradius = validateCornerradius(r);
+                if(traceOut.marker) {
+                    traceOut.marker.cornerradius = validateCornerradius(r);
+                }
             }
 
             // N.B. need to coerce *alignmentgroup* before *bingroup*, as traces
