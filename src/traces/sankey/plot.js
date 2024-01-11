@@ -68,7 +68,7 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
         // Figure out whether the user has provided their own sankey-link-hover style.
         var styleExists = false;
         for (var i=0; i<document.styleSheets.length; i++) {
-            const rules = document.styleSheets[i].cssRules;
+            var rules = document.styleSheets[i].cssRules;
             for (var j=0; j < rules.length; j++) {
                 if (rules[j].selectorText === '.sankey-link-hover') {
                     styleExists = true;
@@ -85,7 +85,7 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
                 style = document.createElement('style');
                 document.head.appendChild(style);
             }
-            const sheet = style.sheet;
+            var sheet = style.sheet;
             // If these are not flagged as !important chrome won't render the change
             sheet.insertRule('.sankey-link-hover { fill-opacity: 0.4 !important; }', 0);
         }
