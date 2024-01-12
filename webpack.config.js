@@ -34,19 +34,6 @@ module.exports = {
                 }
             },
         }, {
-            test: /accessibility\.js$/,
-            include: /src[\\\/]plot_api/,
-            use: {
-                loader: 'babel-loader',
-                options: {
-                    babelrc: false,
-                    configFile: false,
-                    presets: [
-                        '@babel/preset-env'
-                    ]
-                }
-            },
-        }, {
             test: /\.glsl$/,
             include: /node_modules/,
             use: {
