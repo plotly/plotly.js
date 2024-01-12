@@ -129,7 +129,7 @@ module.exports = {
             'There should be as many items as the number of boxes desired.',
             'This attribute has effect only under the q1/median/q3 signature.',
             'If `upperfence` is not provided but a sample (in `y` or `x`) is set,',
-            'we compute the lower as the last sample point above 1.5 times the IQR.'
+            'we compute the upper as the last sample point above 1.5 times the IQR.'
         ].join(' ')
     },
 

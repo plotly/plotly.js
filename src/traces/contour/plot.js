@@ -403,7 +403,7 @@ exports.labelFormatter = function(gd, cd0) {
         } else {
             if(contours.type === 'constraint') {
                 var value = contours.value;
-                if(Array.isArray(value)) {
+                if(Lib.isArrayOrTypedArray(value)) {
                     formatAxis.range = [value[0], value[value.length - 1]];
                 } else formatAxis.range = [value, value];
             } else {

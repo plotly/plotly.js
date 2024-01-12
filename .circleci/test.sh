@@ -106,6 +106,12 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
+    make-baselines-b64)
+        SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | sed 's/\.json$//1' | circleci tests split)
+        python3 test/image/make_baseline.py b64 $SUITE || EXIT_STATE=$?
+        exit $EXIT_STATE
+        ;;
+
     make-baselines)
         SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | sed 's/\.json$//1' | circleci tests split)
         python3 test/image/make_baseline.py $SUITE || EXIT_STATE=$?

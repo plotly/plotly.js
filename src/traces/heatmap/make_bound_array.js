@@ -22,7 +22,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
         // and extend it linearly based on the last two points
         if(len <= numbricks) {
             // contour plots only want the centers
-            if(isContour || isGL2D) arrayOut = arrayIn.slice(0, numbricks);
+            if(isContour || isGL2D) arrayOut = Array.from(arrayIn).slice(0, numbricks);
             else if(numbricks === 1) {
                 arrayOut = [arrayIn[0] - 0.5, arrayIn[0] + 0.5];
             } else {

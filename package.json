@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "2.27.1",
+  "version": "2.28.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -52,6 +52,7 @@
     "test-requirejs": "node tasks/test_requirejs.js",
     "test-plain-obj": "node tasks/test_plain_obj.js",
     "test": "npm run test-jasmine -- --nowatch && npm run test-bundle && npm run test-image && npm run test-export && npm run test-syntax && npm run lint",
+    "b64": "python3 test/image/generate_b64_mocks.py && node devtools/test_dashboard/server.js",
     "mathjax3": "node devtools/test_dashboard/server.js --mathjax3",
     "mathjax3chtml": "node devtools/test_dashboard/server.js --mathjax3chtml",
     "strict": "node devtools/test_dashboard/server.js --strict",
@@ -77,6 +78,7 @@
     "@turf/area": "^6.4.0",
     "@turf/bbox": "^6.4.0",
     "@turf/centroid": "^6.0.2",
+    "base64-arraybuffer": "^1.0.2",
     "canvas-fit": "^1.5.0",
     "color-alpha": "1.0.4",
     "color-normalize": "1.5.0",
@@ -121,8 +123,8 @@
     "world-calendars": "^1.0.3"
   },
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.22.5",
-    "@babel/preset-env": "^7.22.9",
+    "@babel/plugin-transform-modules-commonjs": "^7.23.3",
+    "@babel/preset-env": "^7.23.7",
     "amdefine": "^1.0.1",
     "babel": "^6.23.0",
     "babel-loader": "^9.1.2",
@@ -133,7 +135,7 @@
     "chttps": "^1.0.6",
     "deep-equal": "^2.2.1",
     "ecstatic": "^4.1.4",
-    "eslint": "^8.45.0",
+    "eslint": "^8.56.0",
     "extra-iterable": "^2.5.22",
     "falafel": "^2.2.5",
     "fs-extra": "^10.1.0",
@@ -170,13 +172,13 @@
     "read-last-lines": "^1.8.0",
     "run-series": "^1.1.9",
     "sane-topojson": "^4.0.0",
-    "sass": "^1.63.6",
+    "sass": "^1.69.7",
     "stream-browserify": "^3.0.0",
     "through2": "^4.0.2",
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
     "virtual-webgl": "^1.0.6",
-    "webpack": "^5.88.2",
+    "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   }
 }

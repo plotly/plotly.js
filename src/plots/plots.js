@@ -4,6 +4,7 @@ var d3 = require('@plotly/d3');
 var timeFormatLocale = require('d3-time-format').timeFormatLocale;
 var formatLocale = require('d3-format').formatLocale;
 var isNumeric = require('fast-isnumeric');
+var b64encode = require('base64-arraybuffer');
 
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
@@ -1356,7 +1357,10 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
         }
 
         if(_module && _module.selectPoints) {
-            coerce('selectedpoints');
+            var selectedpoints = coerce('selectedpoints');
+            if(Lib.isTypedArray(selectedpoints)) {
+                traceOut.selectedpoints = Array.from(selectedpoints);
+            }
         }
 
         plots.supplyTransformDefaults(traceIn, traceOut, layout);
@@ -2278,11 +2282,29 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
             return o;
         }
 
-        if(Array.isArray(d)) {
+        var dIsArray = Array.isArray(d);
+        var dIsTypedArray = Lib.isTypedArray(d);
+
+        if((dIsArray || dIsTypedArray) && d.dtype && d.shape) {
+            var bdata = d.bdata;
+            return stripObj({
+                dtype: d.dtype,
+                shape: d.shape,
+
+                bdata:
+                    // case of ArrayBuffer
+                    Lib.isArrayBuffer(bdata) ? b64encode.encode(bdata) :
+                    // case of b64 string
+                    bdata
+
+            }, keepFunction);
+        }
+
+        if(dIsArray) {
             return d.map(function(x) {return stripObj(x, keepFunction);});
         }
 
-        if(Lib.isTypedArray(d)) {
+        if(dIsTypedArray) {
             return Lib.simpleMap(d, Lib.identity);
         }
 

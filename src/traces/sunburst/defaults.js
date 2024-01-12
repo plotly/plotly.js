@@ -47,7 +47,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var text = coerce('text');
     coerce('texttemplate');
-    if(!traceOut.texttemplate) coerce('textinfo', Array.isArray(text) ? 'text+label' : 'label');
+    if(!traceOut.texttemplate) coerce('textinfo', Lib.isArrayOrTypedArray(text) ? 'text+label' : 'label');
 
     coerce('hovertext');
     coerce('hovertemplate');

@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import plotly.io as pio
+from convert_b64 import arraysToB64
 
 args = []
 if len(sys.argv) == 2 :
@@ -129,6 +130,12 @@ for name in allNames :
                         width = layout['width']
                     if 'height' in layout :
                         height = layout['height']
+
+            if 'b64' in sys.argv or 'b64=' in sys.argv or 'b64-json' in sys.argv :
+                newFig = dict()
+                arraysToB64(fig, newFig)
+                fig = newFig
+                if 'b64-json' in sys.argv and attempt == 0 : print(json.dumps(fig, indent = 2))
 
             try :
                 pio.write_image(
