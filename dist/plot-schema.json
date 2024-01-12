@@ -479,7 +479,7 @@
     "requiredOpts": []
    },
    "data_array": {
-    "description": "An {array} of data. The value MUST be an {array}, or we ignore it. Note that typed arrays (e.g. Float32Array) are supported.",
+    "description": "An {array} of data. The value must represent an {array} or it will be ignored, but this array can be provided in several forms: (1) a regular {array} object (2) a typed array (e.g. Float32Array) (3) an object with keys dtype, bdata, and optionally shape. In this 3rd form, dtype is one of *f8*, *f4*. *i4*, *u4*, *i2*, *u2*, *i1*, *u1* or *u1c* for Uint8ClampedArray. In addition to shorthand `dtype` above one could also use the following forms: *float64*, *float32*, *int32*, *uint32*, *int16*, *uint16*, *int8*, *uint8* or *uint8c* for Uint8ClampedArray. `bdata` is either a base64-encoded string or the ArrayBuffer of an integer or float typed array. For either multi-dimensional arrays you must also provide its dimensions separated by comma via `shape`. For example using `dtype`: *f4* and `shape`: *5,100* you can declare a 2-D array that has 5 rows and 100 columns containing float32 values i.e. 4 bits per value. `shape` is optional for one dimensional arrays.",
     "otherOpts": [
      "dflt"
     ],
@@ -1201,7 +1201,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -2189,6 +2189,7 @@
        "eckert5",
        "eckert6",
        "eisenlohr",
+       "equal earth",
        "equirectangular",
        "fahey",
        "foucaut",
@@ -2922,13 +2923,15 @@
      },
      "role": "object",
      "side": {
-      "description": "Determines the location of legend's title with respect to the legend items. Defaulted to *top* with `orientation` is *h*. Defaulted to *left* with `orientation` is *v*. The *top left* options could be used to expand legend area in both x and y sides.",
+      "description": "Determines the location of legend's title with respect to the legend items. Defaulted to *top* with `orientation` is *h*. Defaulted to *left* with `orientation` is *v*. The *top left* options could be used to expand top center and top right are for horizontal alignment legend area in both x and y sides.",
       "editType": "legend",
       "valType": "enumerated",
       "values": [
        "top",
        "left",
-       "top left"
+       "top left",
+       "top center",
+       "top right"
       ]
      },
      "text": {
@@ -3650,7 +3653,7 @@
      },
      "role": "object",
      "text": {
-      "description": "Sets the text to display with the new shape.",
+      "description": "Sets the text to display with the new shape. It is also used for legend item if `name` is not provided.",
       "dflt": "",
       "editType": "none",
       "valType": "string"
@@ -3719,6 +3722,61 @@
       "above"
      ]
     },
+    "legend": {
+     "description": "Sets the reference to a legend to show new shape in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
+     "editType": "none",
+     "valType": "subplotid"
+    },
+    "legendgroup": {
+     "description": "Sets the legend group for new shape. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "legendgrouptitle": {
+     "editType": "none",
+     "font": {
+      "color": {
+       "editType": "none",
+       "valType": "color"
+      },
+      "description": "Sets this legend group's title font.",
+      "editType": "none",
+      "family": {
+       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+       "editType": "none",
+       "noBlank": true,
+       "strict": true,
+       "valType": "string"
+      },
+      "role": "object",
+      "size": {
+       "editType": "none",
+       "min": 1,
+       "valType": "number"
+      }
+     },
+     "role": "object",
+     "text": {
+      "description": "Sets the title of the legend group.",
+      "dflt": "",
+      "editType": "none",
+      "valType": "string"
+     }
+    },
+    "legendrank": {
+     "description": "Sets the legend rank for new shape. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "dflt": 1000,
+     "editType": "none",
+     "valType": "number"
+    },
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for new shape.",
+     "editType": "none",
+     "min": 0,
+     "valType": "number"
+    },
     "line": {
      "color": {
       "description": "Sets the line color. By default uses either dark grey or white to increase contrast with background color.",
@@ -3749,6 +3807,11 @@
       "valType": "number"
      }
     },
+    "name": {
+     "description": "Sets new shape name. The name appears as the legend item.",
+     "editType": "none",
+     "valType": "string"
+    },
     "opacity": {
      "description": "Sets the opacity of new shapes.",
      "dflt": 1,
@@ -3757,7 +3820,24 @@
      "min": 0,
      "valType": "number"
     },
-    "role": "object"
+    "role": "object",
+    "showlegend": {
+     "description": "Determines whether or not new shape is shown in the legend.",
+     "dflt": false,
+     "editType": "none",
+     "valType": "boolean"
+    },
+    "visible": {
+     "description": "Determines whether or not new shape is visible. If *legendonly*, the shape is not drawn, but can appear as a legend item (provided that the legend itself is visible).",
+     "dflt": true,
+     "editType": "none",
+     "valType": "enumerated",
+     "values": [
+      true,
+      false,
+      "legendonly"
+     ]
+    }
    },
    "paper_bgcolor": {
     "description": "Sets the background color of the paper where the graph is drawn.",
@@ -3891,7 +3971,7 @@
       "valType": "string"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "plot",
       "valType": "any"
@@ -4329,7 +4409,7 @@
       "valType": "angle"
      },
      "autorange": {
-      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided and it has a value for both the lower and upper bound, `autorange` is set to *false*. Using *min* applies autorange only to set the minimum. Using *max* applies autorange only to set the maximum. Using *min reversed* applies autorange only to set the minimum on a reversed axis. Using *max reversed* applies autorange only to set the maximum on a reversed axis. Using *reversed* applies autorange on both ends and reverses the axis direction.",
       "dflt": true,
       "editType": "plot",
       "impliedEdits": {},
@@ -4337,8 +4417,52 @@
       "values": [
        true,
        false,
-       "reversed"
+       "reversed",
+       "min reversed",
+       "max reversed",
+       "min",
+       "max"
       ]
+     },
+     "autorangeoptions": {
+      "clipmax": {
+       "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "clipmin": {
+       "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "editType": "plot",
+      "include": {
+       "arrayOk": true,
+       "description": "Ensure this value is included in autorange.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "includesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "maxallowed": {
+       "description": "Use this value exactly as autorange maximum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "minallowed": {
+       "description": "Use this value exactly as autorange minimum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "role": "object"
      },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -4471,7 +4595,7 @@
       "valType": "string"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "plot",
       "valType": "any"
@@ -4499,6 +4623,22 @@
       "min": 0,
       "valType": "number"
      },
+     "maxallowed": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
      "minexponent": {
       "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
       "dflt": 3,
@@ -4515,7 +4655,7 @@
      },
      "range": {
       "anim": true,
-      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
       "editType": "plot",
       "impliedEdits": {
        "autorange": false
@@ -5440,7 +5580,7 @@
       }
      },
      "autorange": {
-      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided and it has a value for both the lower and upper bound, `autorange` is set to *false*. Using *min* applies autorange only to set the minimum. Using *max* applies autorange only to set the maximum. Using *min reversed* applies autorange only to set the minimum on a reversed axis. Using *max reversed* applies autorange only to set the maximum on a reversed axis. Using *reversed* applies autorange on both ends and reverses the axis direction.",
       "dflt": true,
       "editType": "plot",
       "impliedEdits": {},
@@ -5448,8 +5588,52 @@
       "values": [
        true,
        false,
-       "reversed"
+       "reversed",
+       "min reversed",
+       "max reversed",
+       "min",
+       "max"
       ]
+     },
+     "autorangeoptions": {
+      "clipmax": {
+       "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "clipmin": {
+       "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "editType": "plot",
+      "include": {
+       "arrayOk": true,
+       "description": "Ensure this value is included in autorange.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "includesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "maxallowed": {
+       "description": "Use this value exactly as autorange maximum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "minallowed": {
+       "description": "Use this value exactly as autorange minimum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "role": "object"
      },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -5574,7 +5758,7 @@
       "valType": "string"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "plot",
       "valType": "any"
@@ -5591,6 +5775,22 @@
       "editType": "plot",
       "min": 0,
       "valType": "number"
+     },
+     "maxallowed": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
      },
      "minexponent": {
       "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
@@ -5621,7 +5821,7 @@
      },
      "range": {
       "anim": false,
-      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
       "editType": "plot",
       "impliedEdits": {
        "autorange": false
@@ -6008,7 +6208,7 @@
       }
      },
      "autorange": {
-      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided and it has a value for both the lower and upper bound, `autorange` is set to *false*. Using *min* applies autorange only to set the minimum. Using *max* applies autorange only to set the maximum. Using *min reversed* applies autorange only to set the minimum on a reversed axis. Using *max reversed* applies autorange only to set the maximum on a reversed axis. Using *reversed* applies autorange on both ends and reverses the axis direction.",
       "dflt": true,
       "editType": "plot",
       "impliedEdits": {},
@@ -6016,8 +6216,52 @@
       "values": [
        true,
        false,
-       "reversed"
+       "reversed",
+       "min reversed",
+       "max reversed",
+       "min",
+       "max"
       ]
+     },
+     "autorangeoptions": {
+      "clipmax": {
+       "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "clipmin": {
+       "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "editType": "plot",
+      "include": {
+       "arrayOk": true,
+       "description": "Ensure this value is included in autorange.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "includesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "maxallowed": {
+       "description": "Use this value exactly as autorange maximum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "minallowed": {
+       "description": "Use this value exactly as autorange minimum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "role": "object"
      },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -6142,7 +6386,7 @@
       "valType": "string"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "plot",
       "valType": "any"
@@ -6159,6 +6403,22 @@
       "editType": "plot",
       "min": 0,
       "valType": "number"
+     },
+     "maxallowed": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
      },
      "minexponent": {
       "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
@@ -6189,7 +6449,7 @@
      },
      "range": {
       "anim": false,
-      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
       "editType": "plot",
       "impliedEdits": {
        "autorange": false
@@ -6576,7 +6836,7 @@
       }
      },
      "autorange": {
-      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided and it has a value for both the lower and upper bound, `autorange` is set to *false*. Using *min* applies autorange only to set the minimum. Using *max* applies autorange only to set the maximum. Using *min reversed* applies autorange only to set the minimum on a reversed axis. Using *max reversed* applies autorange only to set the maximum on a reversed axis. Using *reversed* applies autorange on both ends and reverses the axis direction.",
       "dflt": true,
       "editType": "plot",
       "impliedEdits": {},
@@ -6584,8 +6844,52 @@
       "values": [
        true,
        false,
-       "reversed"
+       "reversed",
+       "min reversed",
+       "max reversed",
+       "min",
+       "max"
       ]
+     },
+     "autorangeoptions": {
+      "clipmax": {
+       "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "clipmin": {
+       "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "editType": "plot",
+      "include": {
+       "arrayOk": true,
+       "description": "Ensure this value is included in autorange.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "includesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "maxallowed": {
+       "description": "Use this value exactly as autorange maximum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "minallowed": {
+       "description": "Use this value exactly as autorange minimum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "role": "object"
      },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -6710,7 +7014,7 @@
       "valType": "string"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "plot",
       "valType": "any"
@@ -6727,6 +7031,22 @@
       "editType": "plot",
       "min": 0,
       "valType": "number"
+     },
+     "maxallowed": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
      },
      "minexponent": {
       "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
@@ -6757,7 +7077,7 @@
      },
      "range": {
       "anim": false,
-      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
       "editType": "plot",
       "impliedEdits": {
        "autorange": false
@@ -7307,7 +7627,7 @@
        },
        "role": "object",
        "text": {
-        "description": "Sets the text to display with shape.",
+        "description": "Sets the text to display with shape. It is also used for legend item if `name` is not provided.",
         "dflt": "",
         "editType": "arraydraw",
         "valType": "string"
@@ -7376,6 +7696,61 @@
         "above"
        ]
       },
+      "legend": {
+       "description": "Sets the reference to a legend to show this shape in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+       "dflt": "legend",
+       "editType": "calc+arraydraw",
+       "valType": "subplotid"
+      },
+      "legendgroup": {
+       "description": "Sets the legend group for this shape. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
+       "dflt": "",
+       "editType": "calc+arraydraw",
+       "valType": "string"
+      },
+      "legendgrouptitle": {
+       "editType": "calc+arraydraw",
+       "font": {
+        "color": {
+         "editType": "calc+arraydraw",
+         "valType": "color"
+        },
+        "description": "Sets this legend group's title font.",
+        "editType": "calc+arraydraw",
+        "family": {
+         "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+         "editType": "calc+arraydraw",
+         "noBlank": true,
+         "strict": true,
+         "valType": "string"
+        },
+        "role": "object",
+        "size": {
+         "editType": "calc+arraydraw",
+         "min": 1,
+         "valType": "number"
+        }
+       },
+       "role": "object",
+       "text": {
+        "description": "Sets the title of the legend group.",
+        "dflt": "",
+        "editType": "calc+arraydraw",
+        "valType": "string"
+       }
+      },
+      "legendrank": {
+       "description": "Sets the legend rank for this shape. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
+       "dflt": 1000,
+       "editType": "calc+arraydraw",
+       "valType": "number"
+      },
+      "legendwidth": {
+       "description": "Sets the width (in px or fraction) of the legend for this shape.",
+       "editType": "calc+arraydraw",
+       "min": 0,
+       "valType": "number"
+      },
       "line": {
        "color": {
         "anim": true,
@@ -7427,6 +7802,12 @@
        "valType": "string"
       },
       "role": "object",
+      "showlegend": {
+       "description": "Determines whether or not this shape is shown in the legend.",
+       "dflt": false,
+       "editType": "calc+arraydraw",
+       "valType": "boolean"
+      },
       "templateitemname": {
        "description": "Used to refer to a named item in this array in the template. Named items from the template will be created even without a matching item in the input figure, but you can modify one by making an item with `templateitemname` matching its `name`, alongside your modifications (including `visible: false` or `enabled: false` to hide it). If there is no template or no matching item, this item will be hidden unless you explicitly show it with `visible: true`.",
        "editType": "calc",
@@ -7444,10 +7825,15 @@
        ]
       },
       "visible": {
-       "description": "Determines whether or not this shape is visible.",
+       "description": "Determines whether or not this shape is visible. If *legendonly*, the shape is not drawn, but can appear as a legend item (provided that the legend itself is visible).",
        "dflt": true,
        "editType": "calc+arraydraw",
-       "valType": "boolean"
+       "valType": "enumerated",
+       "values": [
+        true,
+        false,
+        "legendonly"
+       ]
       },
       "x0": {
        "description": "Sets the shape's starting x position. See `type` and `xsizemode` for more info.",
@@ -8019,7 +8405,7 @@
       "valType": "string"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "plot",
       "valType": "any"
@@ -8218,7 +8604,7 @@
       "valType": "string"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "plot",
       "valType": "any"
@@ -8505,7 +8891,7 @@
       "valType": "string"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "plot",
       "valType": "any"
@@ -8909,7 +9295,7 @@
       "valType": "string"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "plot",
       "valType": "any"
@@ -9319,7 +9705,7 @@
       "valType": "string"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "plot",
       "valType": "any"
@@ -10258,7 +10644,7 @@
      "valType": "flaglist"
     },
     "autorange": {
-     "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+     "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided and it has a value for both the lower and upper bound, `autorange` is set to *false*. Using *min* applies autorange only to set the minimum. Using *max* applies autorange only to set the maximum. Using *min reversed* applies autorange only to set the minimum on a reversed axis. Using *max reversed* applies autorange only to set the maximum on a reversed axis. Using *reversed* applies autorange on both ends and reverses the axis direction.",
      "dflt": true,
      "editType": "axrange",
      "impliedEdits": {},
@@ -10266,8 +10652,52 @@
      "values": [
       true,
       false,
-      "reversed"
+      "reversed",
+      "min reversed",
+      "max reversed",
+      "min",
+      "max"
      ]
+    },
+    "autorangeoptions": {
+     "clipmax": {
+      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "clipmin": {
+      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "editType": "plot",
+     "include": {
+      "arrayOk": true,
+      "description": "Ensure this value is included in autorange.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "includesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "maxallowed": {
+      "description": "Use this value exactly as autorange maximum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Use this value exactly as autorange minimum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "role": "object"
     },
     "autotypenumbers": {
      "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -10462,8 +10892,23 @@
      "editType": "none",
      "valType": "string"
     },
+    "insiderange": {
+     "description": "Could be used to set the desired inside range of this axis (excluding the labels) when `ticklabelposition` of the anchored axis has *inside*. Not implemented for axes with `type` *log*. This would be ignored when `range` is provided.",
+     "editType": "plot",
+     "items": [
+      {
+       "editType": "plot",
+       "valType": "any"
+      },
+      {
+       "editType": "plot",
+       "valType": "any"
+      }
+     ],
+     "valType": "info_array"
+    },
     "labelalias": {
-     "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+     "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
      "dflt": false,
      "editType": "ticks",
      "valType": "any"
@@ -10499,6 +10944,22 @@
       "/^x([2-9]|[1-9][0-9]+)?( domain)?$/",
       "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
      ]
+    },
+    "maxallowed": {
+     "description": "Determines the maximum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
+    },
+    "minallowed": {
+     "description": "Determines the minimum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
     },
     "minexponent": {
      "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
@@ -10654,7 +11115,7 @@
     },
     "range": {
      "anim": true,
-     "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+     "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
      "editType": "axrange",
      "impliedEdits": {
       "autorange": false
@@ -11013,12 +11474,13 @@
     },
     "role": "object",
     "scaleanchor": {
-     "description": "If set to another axis id (e.g. `x2`, `y`), the range of this axis changes together with the range of the corresponding axis such that the scale of pixels per unit is in a constant ratio. Both axes are still zoomable, but when you zoom one, the other will zoom the same amount, keeping a fixed midpoint. `constrain` and `constraintoward` determine how we enforce the constraint. You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}` but you can only link axes of the same `type`. The linked axis can have the opposite letter (to constrain the aspect ratio) or the same letter (to match scales across subplots). Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant and the last constraint encountered will be ignored to avoid possible inconsistent constraints via `scaleratio`. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden.",
+     "description": "If set to another axis id (e.g. `x2`, `y`), the range of this axis changes together with the range of the corresponding axis such that the scale of pixels per unit is in a constant ratio. Both axes are still zoomable, but when you zoom one, the other will zoom the same amount, keeping a fixed midpoint. `constrain` and `constraintoward` determine how we enforce the constraint. You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}` but you can only link axes of the same `type`. The linked axis can have the opposite letter (to constrain the aspect ratio) or the same letter (to match scales across subplots). Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant and the last constraint encountered will be ignored to avoid possible inconsistent constraints via `scaleratio`. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden. Setting `false` allows to remove a default constraint (occasionally, you may need to prevent a default `scaleanchor` constraint from being applied, eg. when having an image trace `yaxis: {scaleanchor: \"x\"}` is set automatically in order for pixels to be rendered as squares, setting `yaxis: {scaleanchor: false}` allows to remove the constraint).",
      "editType": "plot",
      "valType": "enumerated",
      "values": [
       "/^x([2-9]|[1-9][0-9]+)?( domain)?$/",
-      "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
+      "/^y([2-9]|[1-9][0-9]+)?( domain)?$/",
+      false
      ]
     },
     "scaleratio": {
@@ -11516,7 +11978,7 @@
      "valType": "flaglist"
     },
     "autorange": {
-     "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+     "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided and it has a value for both the lower and upper bound, `autorange` is set to *false*. Using *min* applies autorange only to set the minimum. Using *max* applies autorange only to set the maximum. Using *min reversed* applies autorange only to set the minimum on a reversed axis. Using *max reversed* applies autorange only to set the maximum on a reversed axis. Using *reversed* applies autorange on both ends and reverses the axis direction.",
      "dflt": true,
      "editType": "axrange",
      "impliedEdits": {},
@@ -11524,8 +11986,52 @@
      "values": [
       true,
       false,
-      "reversed"
+      "reversed",
+      "min reversed",
+      "max reversed",
+      "min",
+      "max"
      ]
+    },
+    "autorangeoptions": {
+     "clipmax": {
+      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "clipmin": {
+      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "editType": "plot",
+     "include": {
+      "arrayOk": true,
+      "description": "Ensure this value is included in autorange.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "includesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "maxallowed": {
+      "description": "Use this value exactly as autorange maximum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Use this value exactly as autorange minimum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "role": "object"
     },
     "autoshift": {
      "description": "Automatically reposition the axis to avoid overlap with other axes with the same `overlaying` value. This repositioning will account for any `shift` amount applied to other axes on the same side with `autoshift` is set to true. Only has an effect if `anchor` is set to *free*.",
@@ -11726,8 +12232,23 @@
      "editType": "none",
      "valType": "string"
     },
+    "insiderange": {
+     "description": "Could be used to set the desired inside range of this axis (excluding the labels) when `ticklabelposition` of the anchored axis has *inside*. Not implemented for axes with `type` *log*. This would be ignored when `range` is provided.",
+     "editType": "plot",
+     "items": [
+      {
+       "editType": "plot",
+       "valType": "any"
+      },
+      {
+       "editType": "plot",
+       "valType": "any"
+      }
+     ],
+     "valType": "info_array"
+    },
     "labelalias": {
-     "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+     "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
      "dflt": false,
      "editType": "ticks",
      "valType": "any"
@@ -11763,6 +12284,22 @@
       "/^x([2-9]|[1-9][0-9]+)?( domain)?$/",
       "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
      ]
+    },
+    "maxallowed": {
+     "description": "Determines the maximum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
+    },
+    "minallowed": {
+     "description": "Determines the minimum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
     },
     "minexponent": {
      "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
@@ -11918,7 +12455,7 @@
     },
     "range": {
      "anim": true,
-     "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+     "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
      "editType": "axrange",
      "impliedEdits": {
       "autorange": false
@@ -12023,12 +12560,13 @@
     },
     "role": "object",
     "scaleanchor": {
-     "description": "If set to another axis id (e.g. `x2`, `y`), the range of this axis changes together with the range of the corresponding axis such that the scale of pixels per unit is in a constant ratio. Both axes are still zoomable, but when you zoom one, the other will zoom the same amount, keeping a fixed midpoint. `constrain` and `constraintoward` determine how we enforce the constraint. You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}` but you can only link axes of the same `type`. The linked axis can have the opposite letter (to constrain the aspect ratio) or the same letter (to match scales across subplots). Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant and the last constraint encountered will be ignored to avoid possible inconsistent constraints via `scaleratio`. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden.",
+     "description": "If set to another axis id (e.g. `x2`, `y`), the range of this axis changes together with the range of the corresponding axis such that the scale of pixels per unit is in a constant ratio. Both axes are still zoomable, but when you zoom one, the other will zoom the same amount, keeping a fixed midpoint. `constrain` and `constraintoward` determine how we enforce the constraint. You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}` but you can only link axes of the same `type`. The linked axis can have the opposite letter (to constrain the aspect ratio) or the same letter (to match scales across subplots). Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant and the last constraint encountered will be ignored to avoid possible inconsistent constraints via `scaleratio`. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden. Setting `false` allows to remove a default constraint (occasionally, you may need to prevent a default `scaleanchor` constraint from being applied, eg. when having an image trace `yaxis: {scaleanchor: \"x\"}` is set automatically in order for pixels to be rendered as squares, setting `yaxis: {scaleanchor: false}` allows to remove the constraint).",
      "editType": "plot",
      "valType": "enumerated",
      "values": [
       "/^x([2-9]|[1-9][0-9]+)?( domain)?$/",
-      "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
+      "/^y([2-9]|[1-9][0-9]+)?( domain)?$/",
+      false
      ]
     },
     "scaleratio": {
@@ -12952,7 +13490,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -12989,7 +13527,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -13135,7 +13673,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -13799,7 +14337,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -14501,7 +15039,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -14538,7 +15076,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -14684,7 +15222,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -15347,7 +15885,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -15829,7 +16367,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -15866,7 +16404,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -16501,7 +17039,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover. For box traces, the name will also be used for the position coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are missing and the position axis is categorical",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover. For box traces, the name will also be used for the position coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are missing and the position axis is categorical",
      "editType": "calc+clearAxisTypes",
      "valType": "string"
     },
@@ -16594,6 +17132,13 @@
      "editType": "calc",
      "valType": "data_array"
     },
+    "sdmultiple": {
+     "description": "Scales the box size when sizemode=sd Allowing boxes to be drawn across any stddev range For example 1-stddev, 3-stddev, 5-stddev",
+     "dflt": 1,
+     "editType": "calc",
+     "min": 0,
+     "valType": "number"
+    },
     "sdsrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `sd`.",
      "editType": "none",
@@ -16635,6 +17180,21 @@
      "dflt": true,
      "editType": "style",
      "valType": "boolean"
+    },
+    "showwhiskers": {
+     "description": "Determines whether or not whiskers are visible. Defaults to true for `sizemode` *quartiles*, false for *sd*.",
+     "editType": "calc",
+     "valType": "boolean"
+    },
+    "sizemode": {
+     "description": "Sets the upper and lower bound for the boxes quartiles means box is drawn between Q1 and Q3 SD means the box is drawn between Mean +- Standard Deviation Argument sdmultiple (default 1) to scale the box size So it could be drawn 1-stddev, 3-stddev etc",
+     "dflt": "quartiles",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "quartiles",
+      "sd"
+     ]
     },
     "stream": {
      "editType": "calc",
@@ -16715,7 +17275,7 @@
      "role": "object"
     },
     "upperfence": {
-     "description": "Sets the upper fence values. There should be as many items as the number of boxes desired. This attribute has effect only under the q1/median/q3 signature. If `upperfence` is not provided but a sample (in `y` or `x`) is set, we compute the lower as the last sample point above 1.5 times the IQR.",
+     "description": "Sets the upper fence values. There should be as many items as the number of boxes desired. This attribute has effect only under the q1/median/q3 signature. If `upperfence` is not provided but a sample (in `y` or `x`) is set, we compute the upper as the last sample point above 1.5 times the IQR.",
      "editType": "calc",
      "valType": "data_array"
     },
@@ -17179,7 +17739,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -17216,7 +17776,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -17260,7 +17820,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -17675,7 +18235,7 @@
       "valType": "number"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "calc",
       "valType": "any"
@@ -18243,7 +18803,7 @@
       "valType": "number"
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "calc",
       "valType": "any"
@@ -18736,7 +19296,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -18759,7 +19319,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -18960,7 +19520,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -19581,7 +20141,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -19618,7 +20178,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -19710,7 +20270,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -19987,7 +20547,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -20602,7 +21162,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -20639,7 +21199,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -20719,7 +21279,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -21043,7 +21603,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -21652,7 +22212,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -21689,7 +22249,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -21800,7 +22360,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -22117,7 +22677,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -22878,7 +23438,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -22915,7 +23475,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -22975,7 +23535,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -23532,7 +24092,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -24150,7 +24710,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -24187,7 +24747,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -24247,7 +24807,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -24518,7 +25078,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -25133,7 +25693,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -25170,7 +25730,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -25203,7 +25763,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -25676,7 +26236,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -25713,7 +26273,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -25859,7 +26419,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -26429,7 +26989,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -27131,7 +27691,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -27168,7 +27728,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -27327,7 +27887,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -27696,7 +28256,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -28328,7 +28888,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -28365,7 +28925,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -28388,7 +28948,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -28894,7 +29454,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "calc",
       "valType": "any"
@@ -29524,7 +30084,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -29547,7 +30107,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -30286,7 +30846,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -30323,7 +30883,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -30469,7 +31029,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -31132,7 +31692,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -31675,7 +32235,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -32294,7 +32854,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -32331,7 +32891,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -32368,7 +32928,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -32845,7 +33405,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -33588,7 +34148,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -33625,7 +34185,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -33700,7 +34260,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -34388,7 +34948,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -34534,7 +35094,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -35134,7 +35694,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -35724,7 +36284,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -35747,7 +36307,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -36127,7 +36687,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "plot",
        "valType": "any"
@@ -36601,7 +37161,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -36635,7 +37195,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -36980,7 +37540,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "calc",
       "valType": "any"
@@ -37625,7 +38185,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -37662,7 +38222,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -37773,7 +38333,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -38230,7 +38790,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -38936,7 +39496,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -38973,7 +39533,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -39084,7 +39644,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -39570,7 +40130,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -39607,7 +40167,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -39665,7 +40225,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -40252,7 +40812,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -40735,7 +41295,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -41097,7 +41657,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -41243,7 +41803,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -41779,7 +42339,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -42289,7 +42849,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -42326,7 +42886,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -42485,7 +43045,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -42984,7 +43544,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -43021,7 +43581,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -43102,7 +43662,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -43491,7 +44051,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -43793,11 +44353,23 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
     "node": {
+     "align": {
+      "description": "Sets the alignment method used to position the nodes along the horizontal axis.",
+      "dflt": "justify",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "justify",
+       "left",
+       "right",
+       "center"
+      ]
+     },
      "color": {
       "arrayOk": true,
       "description": "Sets the `node` color. It can be a single value, or an array for specifying color for each `node`. If `node.color` is omitted, then the default `Plotly` color palette will be cycled through to have a variety of colors. These defaults are not fully opaque, to allow some visibility of what is beneath the node.",
@@ -44668,7 +45240,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -44705,7 +45277,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -44949,7 +45521,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -46124,7 +46696,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -47047,7 +47619,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -47084,7 +47656,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -47230,7 +47802,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "calc",
        "valType": "any"
@@ -47841,7 +48413,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "calc",
        "valType": "any"
@@ -48471,7 +49043,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -49086,7 +49658,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -49123,7 +49695,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -49352,7 +49924,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -50523,7 +51095,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -51001,7 +51573,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -51038,7 +51610,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -51269,7 +51841,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "calc",
        "valType": "any"
@@ -52433,7 +53005,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -53083,7 +53655,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -53120,7 +53692,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -53321,7 +53893,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "calc",
        "valType": "any"
@@ -54438,7 +55010,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -55108,7 +55680,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -55145,7 +55717,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -55335,7 +55907,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "calc",
        "valType": "any"
@@ -55877,7 +56449,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -56307,7 +56879,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -56344,7 +56916,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -56573,7 +57145,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -57743,7 +58315,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -58244,7 +58816,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -58281,7 +58853,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -58314,19 +58886,6 @@
      },
      "editType": "calc",
      "role": "object",
-     "shape": {
-      "description": "Determines the line shape. The values correspond to step-wise line shapes.",
-      "dflt": "linear",
-      "editType": "calc",
-      "valType": "enumerated",
-      "values": [
-       "linear",
-       "hv",
-       "vh",
-       "hvh",
-       "vhv"
-      ]
-     },
      "width": {
       "description": "Sets the line width (in px).",
       "dflt": 2,
@@ -58482,7 +59041,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "calc",
        "valType": "any"
@@ -59599,7 +60158,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -60112,7 +60671,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -60149,7 +60708,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -60378,7 +60937,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -61548,7 +62107,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -62047,7 +62606,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -62084,7 +62643,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -62313,7 +62872,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -63484,7 +64043,7 @@
      "valType": "flaglist"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -63984,7 +64543,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -64021,7 +64580,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -64179,7 +64738,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -65283,7 +65842,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -65612,7 +66171,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "colorbars",
       "valType": "any"
@@ -66216,7 +66775,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -66253,7 +66812,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -66371,7 +66930,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -66965,7 +67524,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -67111,7 +67670,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -67711,7 +68270,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -68099,7 +68658,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "calc",
       "valType": "any"
@@ -68993,7 +69552,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -69030,7 +69589,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -69125,7 +69684,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -69935,7 +70494,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -69958,7 +70517,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -70353,7 +70912,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -70499,7 +71058,7 @@
        ]
       },
       "labelalias": {
-       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
        "dflt": false,
        "editType": "colorbars",
        "valType": "any"
@@ -71144,7 +71703,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -71767,7 +72326,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -71804,7 +72363,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -72430,7 +72989,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover. For violin traces, the name will also be used for the position coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are missing and the position axis is categorical. Note that the trace name is also used as a default value for attribute `scalegroup` (please see its description for details).",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover. For violin traces, the name will also be used for the position coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are missing and the position axis is categorical. Note that the trace name is also used as a default value for attribute `scalegroup` (please see its description for details).",
      "editType": "calc+clearAxisTypes",
      "valType": "string"
     },
@@ -72959,7 +73518,7 @@
       ]
      },
      "labelalias": {
-      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+      "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
       "dflt": false,
       "editType": "calc",
       "valType": "any"
@@ -73604,7 +74163,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -73641,7 +74200,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -73752,7 +74311,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },
@@ -74455,7 +75014,7 @@
      "valType": "subplotid"
     },
     "legendgroup": {
-     "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
      "editType": "style",
      "valType": "string"
@@ -74492,7 +75051,7 @@
      }
     },
     "legendrank": {
-     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
@@ -74526,7 +75085,7 @@
      "valType": "string"
     },
     "name": {
-     "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
      "editType": "style",
      "valType": "string"
     },

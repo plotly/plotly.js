@@ -44,7 +44,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     });
 
     if(traceOut.textposition !== 'none' && !traceOut.texttemplate) {
-        coerce('textinfo', Array.isArray(text) ? 'text+value' : 'value');
+        coerce('textinfo', Lib.isArrayOrTypedArray(text) ? 'text+value' : 'value');
     }
 
     var markerColor = coerce('marker.color', defaultColor);

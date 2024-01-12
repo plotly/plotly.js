@@ -29,14 +29,20 @@ var getMockList = require('./assets/get_mock_list');
  *
  *      npm run baseline mathjax3
  *
- */
+ *  Generate or (re-generate) baselines using b64 typed arrays:
+ *
+ *      npm run baseline b64
+ *
+*/
 
 var argv = minimist(process.argv.slice(2), {});
 
 var allMockList = [];
-var mathjax3;
+var mathjax3, b64;
 argv._.forEach(function(pattern) {
-    if(pattern === 'mathjax3') {
+    if(pattern === 'b64') {
+        b64 = true;
+    } else if(pattern === 'mathjax3') {
         mathjax3 = true;
     } else {
         var mockList = getMockList(pattern);
@@ -67,7 +73,9 @@ console.log('Please wait for the process to complete.');
 var p = spawn(
     'python3', [
         path.join('test', 'image', 'make_baseline.py'),
-        (mathjax3 ? 'mathjax3' : '') + '= ' + allMockList.join(' ')
+        (mathjax3 ? 'mathjax3' : '') +
+        (b64 ? 'b64' : '') +
+        '= ' + allMockList.join(' ')
     ]
 );
 try {

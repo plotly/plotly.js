@@ -63,6 +63,9 @@
   ],
   "layout": {
       "width": 600,
+      "yaxis": {
+        "autorangeoptions" : {"maxallowed": 1100}
+      },
       "title": {
           "text": "Bar chart error bars inherit color from marker.line not marker"
       }

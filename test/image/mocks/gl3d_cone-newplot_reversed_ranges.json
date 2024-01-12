@@ -134,7 +134,20 @@
       "text": "Cone objects with Y-axis using autorange: 'reversed'"
     },
     "scene": {
+      "zaxis": {
+        "autorangeoptions": {
+          "clipmin": -0.6
+        }
+      },
+      "xaxis": {
+        "autorangeoptions": {
+          "clipmin": -0.6
+        }
+      },
       "yaxis": {
+        "autorangeoptions": {
+          "clipmax": 0.6
+        },
         "autorange": "reversed"
       },
       "camera": {

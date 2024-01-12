@@ -432,9 +432,9 @@ function setBarCenterAndWidth(pa, sieve) {
         var calcTrace = calcTraces[i];
         var t = calcTrace[0].t;
         var poffset = t.poffset;
-        var poffsetIsArray = Array.isArray(poffset);
+        var poffsetIsArray = isArrayOrTypedArray(poffset);
         var barwidth = t.barwidth;
-        var barwidthIsArray = Array.isArray(barwidth);
+        var barwidthIsArray = isArrayOrTypedArray(barwidth);
 
         for(var j = 0; j < calcTrace.length; j++) {
             var calcBar = calcTrace[j];
@@ -478,8 +478,8 @@ function updatePositionAxis(pa, sieve, allowMinDtick) {
             var t = calcTrace0.t;
             var poffset = t.poffset;
             var barwidth = t.barwidth;
-            var poffsetIsArray = Array.isArray(poffset);
-            var barwidthIsArray = Array.isArray(barwidth);
+            var poffsetIsArray = isArrayOrTypedArray(poffset);
+            var barwidthIsArray = isArrayOrTypedArray(barwidth);
 
             for(j = 0; j < calcTrace.length; j++) {
                 bar = calcTrace[j];
@@ -750,7 +750,7 @@ function collectExtents(calcTraces, pa) {
         cd[0].t.extents = extents;
 
         var poffset = cd[0].t.poffset;
-        var poffsetIsArray = Array.isArray(poffset);
+        var poffsetIsArray = isArrayOrTypedArray(poffset);
 
         for(j = 0; j < cd.length; j++) {
             var di = cd[j];

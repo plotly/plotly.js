@@ -125,6 +125,18 @@ function createShapeObj(outlines, dragOptions, dragmode) {
     var newShape = {
         editable: true,
 
+        visible: newStyle.visible,
+        name: newStyle.name,
+        showlegend: newStyle.showlegend,
+        legend: newStyle.legend,
+        legendwidth: newStyle.legendwidth,
+        legendgroup: newStyle.legendgroup,
+        legendgrouptitle: {
+            text: newStyle.legendgrouptitle.text,
+            font: newStyle.legendgrouptitle.font
+        },
+        legendrank: newStyle.legendrank,
+
         label: newStyle.label,
 
         xref: xPaper ? 'paper' : xaxis._id,
