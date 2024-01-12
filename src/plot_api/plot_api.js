@@ -382,19 +382,20 @@ function _doPlot(gd, data, layout, config) {
         // happens outside of marginPushers where all the other automargins are
         // calculated. Would be much better to separate margin calculations from
         // component drawing - see https://github.com/plotly/plotly.js/issues/2704
-        Plots.doAutoMargin,
-        saveRangeInitialForInsideTickLabels
+        Plots.doAutoMargin
     );
-
-    if(gd._context.accessibility.enabled) seq.push(accessibility.enable);
-
-    seq.push(Plots.previousPromises);
 
     function saveRangeInitialForInsideTickLabels(gd) {
         if(gd._fullLayout._insideTickLabelsAutorange) {
             if(graphWasEmpty) Axes.saveRangeInitial(gd, true);
         }
     }
+    seq.push(saveRangeInitialForInsideTickLabels(gd));
+
+    if(gd._context.accessibility.enabled) seq.push(accessibility.enable);
+
+    seq.push(Plots.previousPromises);
+
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
