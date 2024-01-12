@@ -1087,7 +1087,7 @@ describe('sankey tests', function() {
                         .filter(function(obj) {
                             return obj.link.label === 'stream 1';
                         })[0].forEach(function(l) {
-                            expect(l.style.fillOpacity).toEqual('0.4');
+                            expect(l.classList.contains('sankey-link-hover')).toBe(true);
                         });
                 }).then(function() {
                     mouseEvent('mouseout', 200, 250);
@@ -1096,7 +1096,7 @@ describe('sankey tests', function() {
                         .filter(function(obj) {
                             return obj.link.label === 'stream 1';
                         })[0].forEach(function(l) {
-                            expect(l.style.fillOpacity).toEqual('0.2');
+                            expect(l.classList.contains('sankey-link-hover')).toBe(false);
                         });
                 })
                 .then(done, done.fail);

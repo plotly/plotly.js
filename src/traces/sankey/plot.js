@@ -68,14 +68,18 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
         // Figure out whether the user has provided their own sankey-link-hover style.
         var styleExists = false;
         for(var i = 0; i < document.styleSheets.length; i++) {
-            var rules = document.styleSheets[i].cssRules;
-            for(var j = 0; j < rules.length; j++) {
-                if(rules[j].selectorText === '.sankey-link-hover') {
-                    styleExists = true;
-                    break;
+            try {
+                var rules = document.styleSheets[i].cssRules;
+                for(var j = 0; j < rules.length; j++) {
+                    if(rules[j].selectorText === '.sankey-link-hover') {
+                        styleExists = true;
+                        break;
+                    }
                 }
+                if(styleExists) break;
+            } catch(e) {
+                // This particular style sheet cannot be accessed (due to CORS policy)
             }
-            if(styleExists) break;
         }
 
         // If not, insert a default one
