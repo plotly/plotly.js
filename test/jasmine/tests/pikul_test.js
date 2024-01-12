@@ -4,115 +4,153 @@ var Plotly = require('../../../lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-function makeSet(data) { // Returns array of only unique values from array
+
+// ******* UTILTIES ******* //
+
+// makeSet() returns array copy w/o duplicates.
+function makeSet(data) {
     if(data === undefined || data.length === undefined || data.length === 0) return [];
     return data.filter(function(value, index, array) { return array.indexOf(value) === index; });
 }
-// Boilerplate taken from axes_test.js
-describe('Generating ticks with `tickmode`,', function() {
-    var gd;
 
-    beforeEach(function() {
-        gd = createGraphDiv();
-    });
+// `reX` is regex to get position of an 'xtick', `reY` is for a 'ytick'
+// Note: `.source` converts regex to string, laid out this way to make for easier reading
+var funcName = 'translate' + /\(/.source; // "translate("
+var integerPart = /\d+/.source; // numbers left of decimal
+var fractionalPart = /(?:\.\d+)?/.source; // decimal + numbers to right
+var floatNum = integerPart + fractionalPart; // all together
+var any = /.+/.source; // any text
+var close = /\)/.source; // ")"
+var reX = new RegExp(funcName + '(' + floatNum + '),' + any + close); // parens '(', '),' are regex capture symbols not characters
+var reY = new RegExp(funcName + any + ',(' + floatNum + ')' + close);
 
-    afterEach(destroyGraphDiv);
 
-    /* ***** THIS SECTION ALL HAS TO DO WITH PARAMETERIZATION ***** */
+/* ****** PARAMETERIZATION ******* */
 
-    /* SECTION 1: PARAMETERIZE POSSIBLE TICK CONFIGURATIONS: */
-    // These enums are `ticklen`s- it's how DOM analysis differentiates wrt major/minor
-    // Passed as tickLen argument to specify a major or minor tick config
-    var MAJOR = 10;
-    var MINOR = 5;
-    function ticksOff() { return {ticklen: 0, showticklabels: false, nticks: 0}; } // es5 neither has copy() nor const
-    function generateTickConfig(tickLen, tickmode, nticks) {
-        if(tickmode === undefined) tickmode = 'domain array';
-        // Intentionally configure to produce a single `(x|y)tick` class per tick
-        // labels and tick marks each produce one, so one or the other
-        var standardConfig = {tickmode: tickmode, ticklen: tickLen, showticklabels: false};
-        // Tick values will be random:
-        if(tickmode === 'domain array') {
-            var n = Math.floor(Math.random() * 100);
-            var tickVals = [];
+/* TICK CONFIG GENERATORS */
+var MAJOR = 10; // `ticklen:10`
+var MINOR = 5; // `ticklen:5`
 
-            for(var i = 0; i <= n; i++) {
-                var intermediate = (Math.trunc(Math.random() * 150) - 25) / 100; // Number between -.25 and 1.25 w/ 2 decimals max
-                tickVals.push(Math.min(Math.max(intermediate, 0), 1)); // 2 decimal number between 0 and 1 w/ higher odds of 0 or 1
-            }
-            standardConfig.tickvals = tickVals;
-        } else if(tickmode === 'full domain') {
-            standardConfig.nticks = nticks;
+// ticksOff() generates a config for no ticks
+function ticksOff() { return {ticklen: 0, showticklabels: false, nticks: 0}; }
+
+// generateTickConfig() can generate randomized but valid configs for `tickmode` "domain array" and "full domain"
+function generateTickConfig(tickLen, tickmode, nticks) {
+    if(tickmode === undefined) tickmode = 'domain array'; // default
+
+    var standardConfig = {tickmode: tickmode, ticklen: tickLen, showticklabels: false}; // no labels!
+    // We analyze DOM to find number and position of ticks, labels make it harder.
+
+
+    // Tick values will be random:
+    if(tickmode === 'domain array') { // 'domain array' will have random tick proportions
+        var n = Math.floor(Math.random() * 100);
+        var tickVals = [];
+
+        for(var i = 0; i <= n; i++) {
+            // NOTE: MEANT TO BE DIFFERENT EVERYTIME
+            var intermediate = (Math.trunc(Math.random() * 150) - 25) / 100; // Number between -.25 and 1.25 w/ 2 decimals max
+            tickVals.push(Math.min(Math.max(intermediate, 0), 1)); // 2 decimal number between 0 and 1 w/ higher odds of 0 or 1
         }
-        console.log("Generated Config:");
-        console.log(standardConfig);
-        return standardConfig;
+        standardConfig.tickvals = tickVals;
+    } else if(tickmode === 'full domain') { // TODO: full domain _could_ have a random number of ticks
+        standardConfig.nticks = nticks;
     }
-    function areTicks(config) {
-        return (config !== undefined && config.ticklen !== undefined && config.ticklen !== 0);
+    return standardConfig;
+}
+
+// areTicks() returns true if `config`, an axis config, contains ticks: false otherwise.
+function areTicks(config) { // Check if ticks exists in a generated config
+    return (config !== undefined && config.ticklen !== undefined && config.ticklen !== 0);
+}
+
+/* LOOP THROUGH ALL POSSIBLE COMBINATIONS:
+ * xAxis major has ticks, xAxis minor has ticks, yAxis major does not, yAxis minor does, etc */
+
+// numbers 0 through 15 are all possible combination of 4 boolean values (0001, 0010, 0011, 0100, 0101, etc)
+var XMAJOR = 1;// 0b0001;
+var XMINOR = 2;// 0b0010;
+var YMAJOR = 4;// 0b0100;
+var YMINOR = 8;// 0b1000;
+
+// binaryToTickType converts binary to info string
+function binaryToTickType(bin) {
+    var str = [];
+    if(bin & XMAJOR) str.push('xMajor');
+    if(bin & XMINOR) str.push('xMinor');
+    if(bin & YMAJOR) str.push('yMajor');
+    if(bin & YMINOR) str.push('yMinor');
+    if(str.length) {
+        return str.join(', ');
     }
+    return 'None';
+}
 
-    // numbers 0 through 15 are all possible combination of 4 boolean values (0001, 0010, 0011, 0100, 0101 ,etc)
-    var XMAJOR = 1;// 0b0001;
-    var XMINOR = 2;// 0b0010;
-    var YMAJOR = 4;// 0b0100;
-    var YMINOR = 8;// 0b1000;
-    // Converts binary to list of tick types indicated by binary
-    function binaryToTickType(bin) {
-        var str = [];
-        if(bin & XMAJOR) str.push('xMajor');
-        if(bin & XMINOR) str.push('xMinor');
-        if(bin & YMAJOR) str.push('yMajor');
-        if(bin & YMINOR) str.push('yMinor');
-        if(str.length) {
-            return str.join(', ');
-        }
-        return '';
-    }
+/* PARAMETERIZE POSSIBLE TYPES OF GRAPH */
+var graphTypes = [
+    { type: 'linear' },
+    { type: 'log'},
+    { type: 'date'},
+    { type: 'category'},
+];
 
-    /* SECTION TWO: PARAMETERIZE POSSIBLE TYPES OF GRAPH */
-    var graphTypes = [
-        { type: 'linear' },
-        { type: 'log'},
-        { type: 'date'},
-        { type: 'category'},
-    ];
+/* getParameters() will loop through all possible parameters, initializing it the first time, and return false the last */
+/* it's for for-loops */
+function getParameters(op) {
+    // Initializize
+    if(op === undefined) return {tickConfig: 0, graphTypeIndex: 0};
 
-    /* SECTION THREE: This function will return parameterized values */
+    // Loop through 15 possible tickConfigs
+    if(++op.tickConfig > 15) op.tickConfig = 0;
+    else return op;
 
-    function getParameters(op) {
-        // the var `tickConfig` represents every possible configuration. It is in an int 0-15.
-        // The binary is 0001, 0010, 0011, etc. IE every possible combination of 4 booleans.
-        if(op === undefined) return {tickConfig: 15, graphTypeIndex: 4}; // only run one parameterization
-        if(++op.tickConfig > 15) op.tickConfig = 0;
-        else return op;
-        if(++op.graphTypeIndex >= graphTypes.length) return false;
-        return op;
-    }
-    // DO TESTS
-    it('"domain array" and config', function(done) {
-        for(var parameters = getParameters(); parameters; parameters = getParameters(parameters)) {
-            console.log("domain array");
-            console.log(parameters); //view parameterization
-            var xGraphType = graphTypes[parameters.graphTypeIndex];
-            var tickConfig = parameters.tickConfig;
+    // Loop through 4 graph types after each full loop above
+    if(++op.graphTypeIndex >= graphTypes.length) return false;
+    return op;
+}
+// Loops MUST be outside tests do to scopes (and better for output, honestly)
+for(var parameters = getParameters(); parameters; parameters = getParameters(parameters)) {
+    // Give parameters there own variable
+    var xGraphType = graphTypes[parameters.graphTypeIndex];
+    var tickConfig = parameters.tickConfig;
 
-            var xConfig = (tickConfig & XMAJOR) ? generateTickConfig(MAJOR) : ticksOff(); // generate configs
-            xConfig.minor = (tickConfig & XMINOR) ? generateTickConfig(MINOR) : ticksOff();
+    // Linters don't like variable redeclaration in subscope so make all testing same scope
+    var paramInfo = 'on axes ' + binaryToTickType(tickConfig) + ' for graph type: ' + xGraphType.type;
 
-            var yConfig = (tickConfig & MAJOR) ? generateTickConfig(MAJOR) : ticksOff();
-            yConfig.minor = (tickConfig & YMINOR) ? generateTickConfig(MINOR) : ticksOff();
+    var xConfig = (tickConfig & XMAJOR) ? generateTickConfig(MAJOR) : ticksOff(); // generate configs
+    xConfig.minor = (tickConfig & XMINOR) ? generateTickConfig(MINOR) : ticksOff();
 
-            var configInfo = ''; // for debugging
-            configInfo += areTicks(xConfig) ? '\n ' + 'xMajor: ' + makeSet(xConfig.tickvals).length + ' unique vals' : '';
-            configInfo += areTicks(xConfig.minor) ? '\n ' + 'xMinor: ' + makeSet(xConfig.minor.tickvals).length + ' unique vals' : '';
-            configInfo += areTicks(yConfig) ? '\n ' + 'yMajor: ' + makeSet(yConfig.tickvals).length + ' unique vals' : '';
-            configInfo += areTicks(yConfig.minor) ? '\n ' + 'yMinor: ' + makeSet(yConfig.minor.tickvals).length + ' unique vals' : '';
+    var yConfig = (tickConfig & YMAJOR) ? generateTickConfig(MAJOR) : ticksOff();
+    yConfig.minor = (tickConfig & YMINOR) ? generateTickConfig(MINOR) : ticksOff();
 
-            var variablesToInject = {configInfo: configInfo, gd: gd, parameters: parameters, xconfig: xConfig, yconfig: yConfig, xGraphType: xGraphType};
-            (function(scopeLock) {
-            // stolen from axes_test.js
-                Plotly.newPlot(scopeLock.gd, {
+    // Configs are random, so we should inspect if test fails:
+    var configInfo = '';
+    configInfo += areTicks(xConfig) ? '\n ' + 'xMajor: ' + makeSet(xConfig.tickvals).length + ' unique vals' : '';
+    configInfo += areTicks(xConfig.minor) ? '\n ' + 'xMinor: ' + makeSet(xConfig.minor.tickvals).length + ' unique vals' : '';
+    configInfo += areTicks(yConfig) ? '\n ' + 'yMajor: ' + makeSet(yConfig.tickvals).length + ' unique vals' : '';
+    configInfo += areTicks(yConfig.minor) ? '\n ' + 'yMinor: ' + makeSet(yConfig.minor.tickvals).length + ' unique vals' : '';
+
+    // variablesToInject + closure function(scopeLock) is a necessary result of using a version w promises but w/o `let`
+    var variablesToInject = {
+        xConfig: xConfig, // Generated xConfig
+        yConfig: yConfig, // Generated yConfig
+        xGraphType: xGraphType, // graphType parameter
+        tickConfig: tickConfig, // tickConfig parameter
+        paramInfo: paramInfo, // info string
+        configInfo: configInfo // info string
+    };
+    (function(scopeLock) {
+        describe('`tickmode`:"domain array"', function() {
+            var gd;
+
+            beforeEach(function() {
+                gd = createGraphDiv();
+            });
+
+            afterEach(destroyGraphDiv);
+
+            it('should create ticks correctly ' + scopeLock.paramInfo, function(done) {
+                Plotly.newPlot(gd, {
                     data: [{
                         x: [0, 1],
                         y: [0, 1]
@@ -121,37 +159,26 @@ describe('Generating ticks with `tickmode`,', function() {
                         width: 400,
                         height: 400,
                         margin: { t: 40, b: 40, l: 40, r: 40, },
-                        type: scopelock.xGraphType,
-                        xaxis: scopelock.xConfig, // explode config into this key
-                        yaxis: yConfig,
+                        type: scopeLock.xGraphType,
+                        xaxis: scopeLock.xConfig,
+                        yaxis: scopeLock.yConfig,
                     }
                 }
-
                 ).then(function() {
-                    var tickConfig = scopeLock.parameters.tickConfig;
-                    var xConfig = scopeLock.parameters.xConfig;
-                    var yConfig = scopeLock.parameters.yConfig;
+                    var tickConfig = scopeLock.tickConfig;
+                    var xConfig = scopeLock.xConfig;
+                    var yConfig = scopeLock.yConfig;
                     var configInfo = scopeLock.configInfo;
-                    // This regex is for extracting geometric position of a tick
-                    // regex: `.source` converts to string, laid out this way to make for easier reading
-                    var funcName = 'translate' + /\(/.source; // literally simplest way to regex '('
-                    var integerPart = /\d+/.source; // numbers left of decimal
-                    var fractionalPart = /(?:\.\d+)?/.source; // decimal + numbers to right
-                    var floatNum = integerPart + fractionalPart; // all together
-                    var any = /.+/.source;
-                    var close = /\)/.source;
-                    var reX = new RegExp(funcName + '(' + floatNum + '),' + any + close); // parens () are capture not fn()
-                    var reY = new RegExp(funcName + any + ',(' + floatNum + ')' + close);
+                    for(var runNumber = 1; runNumber <= 15; runNumber <<= 1) {
+                        if(!(runNumber & tickConfig)) continue;
+                        var debugInfo = 'Configured Axes: ' + binaryToTickType(tickConfig);
+                        debugInfo += '\n Checking: ' + binaryToTickType(runNumber);
 
-                    for(var runNumber = 1; runNumber <= 8; runNumber <<= 1) { // Check all ticks on all axes ☺
-                        if(!(runNumber & tickConfig)) {
-                            console.log("Continuing because..." + String(runNumber) + " & " + String(tickConfig))
-                            continue;
-                        }
-                        var runInfo = '\n Checking: ' + binaryToTickType(runNumber);
                         var elementName = '';
                         var targetConfig;
                         var re;
+
+                        // Determine which runNumber we're in
                         if(runNumber & XMAJOR) { // ie. (this run wants xMajor) & (xMajor was set in config above)
                             elementName = 'xtick';
                             targetConfig = xConfig;
@@ -168,32 +195,30 @@ describe('Generating ticks with `tickmode`,', function() {
                             elementName = 'ytick';
                             targetConfig = yConfig.minor;
                             re = reY;
-                        } else {
-                            console.log("Shouldn't have gotten here");
-                            continue; // This run would have been to check ticks that don't exist
-                        }
-
-                        var tickElements = document.getElementsByClassName(elementName);
+                        } else continue;
+                        var tickElements = gd.getElementsByClassName(elementName);
                         var tickValsUnique = makeSet(targetConfig.tickvals);
                         var expectedTickLen = String(targetConfig.ticklen);
 
+                        // This is the info I want to see on any failed test
+                        debugInfo += '\n Found ' + String(tickElements.length) + ' tick DOM elements.';
+                        debugInfo += '\n Expecting ' + String(tickValsUnique.length) + ' legitimate elements:';
+                        debugInfo += String(tickValsUnique);
+                        debugInfo += '\n Original Length: ' + String(targetConfig.tickvals.length);
 
                         // Filter out major/minor and grab geometry
                         var transformVals = []; // "transform" ie the positional property
-                        for(var i = 0; i < tickElements.length; i++) {
+                        for(var i = 0; i < tickElements.length; i++) { // TODO it is helpful to dump html here if there is a problem
                             if(!tickElements[i].getAttribute('d').endsWith(expectedTickLen)) continue;
                             var translate = tickElements[i].getAttribute('transform');
                             transformVals.push(Number(translate.match(re)[1]));
                         }
-
-                        var debugInfo = '\n ' + 'tickElements: (' + tickElements.length + ') ' + tickElements + '\n ' +
-                            'tickVals/Unique: (' + targetConfig.tickvals.length + '/' + tickValsUnique.length + ') ' + tickValsUnique;
+                        debugInfo += '\n Filtered Elements Length: ' + String(transformVals.length) + ':';
+                        debugInfo += transformVals;
 
                         expect(transformVals.length).toBe(tickValsUnique.length,
-                            'filtered tick elements vs tickvals failed' + runInfo + configInfo + debugInfo);
-
+                            'filtered tick elements vs tickvals failed\n' + debugInfo + configInfo);
                         if(transformVals.length < 2) return; // Can't test proportions with < 2 ticks (since no fixed reference)
-
 
                         // To test geometries without using fixed point or data values...
                         // we can check consistency of y = mx+b! (y is DOM position, x is proportion)
@@ -225,80 +250,67 @@ describe('Generating ticks with `tickmode`,', function() {
                         expect(y).toBeCloseToArray(calculatedY, 'y=mx+b test failed comparing\n' + y + '\n' + calculatedY);
                     }
                 }).then(done, done.fail);
-            })(variablesToInject);
-        }
-    });
-    fit('"full domain" and config ', function(done) {
-        for(var parameters = getParameters(); parameters; parameters = getParameters(parameters)) {
-            console.log("\nMain Loop Start:");
-            console.log(parameters); // for viewing parameterization
-            var xGraphType = graphTypes[parameters.graphTypeIndex];
-            var tickConfig = parameters.tickConfig;
-            for(var nTicksParameter = 1; nTicksParameter < 3; nTicksParameter++) { // TODO
-                console.log("Nticks loop start:");
-                console.log(" " + String(nTicksParameter)); // for viewing parameterization
+            });
+        });
+    })(variablesToInject);
+}
 
-                console.log("xConfig");
-                var xConfig = (tickConfig & XMAJOR) ? generateTickConfig(MAJOR, 'full domain', nTicksParameter) : ticksOff();
-                xConfig.minor = (tickConfig & XMINOR) ? generateTickConfig(MINOR, 'full domain', nTicksParameter) : ticksOff();
-                console.log("returned");
-                console.log(xConfig);
-                console.log("yConfig");
-                var yConfig = (tickConfig & MAJOR) ? generateTickConfig(MAJOR, 'full domain', nTicksParameter) : ticksOff();
-                yConfig.minor = (tickConfig & YMINOR) ? generateTickConfig(MINOR, 'full domain', nTicksParameter) : ticksOff();
-                console.log("returned");
-                console.log(yConfig);
-                var variablesToInject = {gd: JSON.parse(JSON.stringify(gd)), xConfig: xConfig, yConfig: yConfig, xGraphType: xGraphType, tickConfig: tickConfig, nTicksParameter: nTicksParameter};
-                (function(scopeLock) {
-                    console.log("Variables received by scope locking function:");
-                    console.log(" nTicks "+ scopeLock.nTicksParameter);
-                    console.log(" xConfig ");
-                    console.log(scopeLock.xConfig);
-                    console.log(" yConfig ")
-                    console.log(scopeLock.yConfig);
-                    console.log(" xGraphType "+ scopeLock.xGraphType);
-                    console.log(" tickConfig "+ scopeLock.tickConfig);
-                    Plotly.newPlot(scopeLock.gd, {
-                        data: [{
-                            x: [0, 1],
-                            y: [0, 1]
-                        }],
-                        layout: {
-                            width: 400,
-                            height: 400,
-                            margin: { t: 40, b: 40, l: 40, r: 40, },
-                            type: scopeLock.xGraphType,
-                            xaxis: scopeLock.xConfig,
-                            yaxis: scopeLock.yConfig,
-                        }
-                    }).then(function() {
-                            console.log("\n-full domain");
-                            console.log("tickConfig: " + String(scopeLock.tickConfig)); // view parameterization
-                            console.log("nTicks: " + String(scopeLock.nTicksParameter));
+// One loop should be separated from the other loop by scope, but we still have not `let`!
+(function() {
+    for(var parameters = getParameters(); parameters; parameters = getParameters(parameters)) {
+        // Give parameters there own variable
+        var xGraphType = graphTypes[parameters.graphTypeIndex];
+        var tickConfig = parameters.tickConfig;
+        // This next test has another parameter, since we can test it with multiple numbers of ticks
+        for(var nTicksParameter = 0; nTicksParameter < 5; nTicksParameter++) {
+            var xConfig = (tickConfig & XMAJOR) ? generateTickConfig(MAJOR, 'full domain', nTicksParameter) : ticksOff();
+            xConfig.minor = (tickConfig & XMINOR) ? generateTickConfig(MINOR, 'full domain', nTicksParameter) : ticksOff();
+            var yConfig = (tickConfig & MAJOR) ? generateTickConfig(MAJOR, 'full domain', nTicksParameter) : ticksOff();
+            yConfig.minor = (tickConfig & YMINOR) ? generateTickConfig(MINOR, 'full domain', nTicksParameter) : ticksOff();
+
+            var paramInfo = 'on axes ' + binaryToTickType(tickConfig) + ' with ' + String(nTicksParameter) + ' ticks each, for graph type: ' + xGraphType.type;
+
+            // variablesToInject + closurer function(scopeLock) is a necessary result of using a version w promises but w/o `let`
+            var variablesToInject = {xConfig: xConfig, yConfig: yConfig, xGraphType: xGraphType, tickConfig: tickConfig, nTicksParameter: nTicksParameter, paramInfo: paramInfo};
+            (function(scopeLock) {
+                describe('`tickmode`:"full domain"', function() {
+                    var gd;
+
+                    beforeEach(function() {
+                        gd = createGraphDiv();
+                    });
+
+                    afterEach(destroyGraphDiv);
+
+                    it('should create ticks correctly ' + scopeLock.paramInfo, function(done) {
+                        Plotly.newPlot(gd, {
+                            data: [{
+                                x: [0, 1],
+                                y: [0, 1]
+                            }],
+                            layout: {
+                                width: 400,
+                                height: 400,
+                                margin: { t: 40, b: 40, l: 40, r: 40, },
+                                type: scopeLock.xGraphType,
+                                xaxis: scopeLock.xConfig,
+                                yaxis: scopeLock.yConfig,
+                            }
+                        }).then(function() {
                             var tickConfig = scopeLock.tickConfig;
                             var xConfig = scopeLock.xConfig;
                             var yConfig = scopeLock.yConfig;
-                            var configInfo = scopeLock.configInfo;
-                            // This regex is for extracting geometric position of a tick
-                            // regex: `.source` converts to string, laid out this way to make for easier reading
-                            var funcName = 'translate' + /\(/.source; // literally simplest way to regex '('
-                            var integerPart = /\d+/.source; // numbers left of decimal
-                            var fractionalPart = /(?:\.\d+)?/.source; // decimal + numbers to right
-                            var floatNum = integerPart + fractionalPart; // all together
-                            var any = /.+/.source;
-                            var close = /\)/.source;
-                            var reX = new RegExp(funcName + '(' + floatNum + '),' + any + close); // parens () are capture not fn()
-                            var reY = new RegExp(funcName + any + ',(' + floatNum + ')' + close);
 
-                            for(var runNumber = 1; runNumber <= 15; runNumber <<= 1) { // Check all ticks on all axes ☺
-                                if(!(runNumber & tickConfig)) {
-                                    console.log("Skipping a run number " + String(runNumber) + " because config doesn't include it");
-                                    continue;
-                                }
+                            // This for loop only executes four times! It's bitshift, not increment! It's to checks all 4 axes.
+                            for(var runNumber = 1; runNumber <= 15; runNumber <<= 1) {
+                                if(!(runNumber & tickConfig)) continue;
                                 var runInfo = '\n Checking: ' + binaryToTickType(runNumber);
+
                                 var elementName = '';
                                 var targetConfig;
                                 var re;
+
+                                // Determine which runNumber we're in
                                 if(runNumber & XMAJOR) { // ie. (this run wants xMajor) & (xMajor was set in config above)
                                     elementName = 'xtick';
                                     targetConfig = xConfig;
@@ -315,20 +327,14 @@ describe('Generating ticks with `tickmode`,', function() {
                                     elementName = 'ytick';
                                     targetConfig = yConfig.minor;
                                     re = reY;
-                                } else {
-                                    console.log("Shouldn't reach this continue");
-                                    continue;
-                                }
+                                } else continue;
 
-                                var tickElements = scopeLock.gd.getElementsByClassName(elementName); // Document may have changed and there is nothing we can do about that.
-                                console.log("Found elements");
-                                console.log("For run: " + String(runNumber) + " " + runInfo);
-                                console.log(targetConfig);
+                                // Determine where ticks _should be_
                                 var nt = targetConfig.nticks;
                                 var expectedTickLen = String(targetConfig.ticklen);
                                 var tickValsUnique = new Array();
                                 if(nt === 0) {
-                                // pass
+                                    // pass
                                 } else if(nt === 1) {
                                     tickValsUnique = [0];
                                 } else if(nt === 2) {
@@ -341,26 +347,25 @@ describe('Generating ticks with `tickmode`,', function() {
                                     }
                                     tickValsUnique.push(1);
                                 }
-                                console.log("Expecting tick vals: " + String(tickValsUnique));
-                                console.log("Length: " + String(tickValsUnique.length));
-                                // Filter out major/minor and grab geometry
+
+                                // Get actual geometries
+                                var tickElements = gd.getElementsByClassName(elementName);
                                 var transformVals = []; // "transform" ie the positional property
-                                console.log("Found ticks: " + String(tickElements.length));
-                                for(var i = 0; i < tickElements.length; i++) {
-                                    if(!tickElements[i].getAttribute('d').endsWith(expectedTickLen)) continue;
-                                    console.log("Found a relevant tick:");
-                                    console.log(tickElements[i]);
-                                    var translate = tickElements[i].getAttribute('transform');
+
+                                // Figure out which ticks are relevant to us for this config
+                                for(var j = 0; j < tickElements.length; j++) {
+                                    if(!tickElements[j].getAttribute('d').endsWith(expectedTickLen)) continue;
+                                    var translate = tickElements[j].getAttribute('transform');
                                     var match = translate.match(re);
                                     if(match === null) continue;
                                     transformVals.push(Number(match[1]));
                                 }
-                                console.log("Found filtered ticks: " + String(transformVals.length));
+
                                 var debugInfo = '\n ' + 'tickElements: (' + tickElements.length + ') ' + tickElements + '\n ' +
-                                'nticks: ' + tickValsUnique.length; // Why is this 0
+                                    'nticks: ' + tickValsUnique.length; // Could contain whole html, more helpful
 
                                 expect(transformVals.length).toBe(tickValsUnique.length,
-                                'filtered tick elements vs tickvals failed' + runInfo + configInfo + debugInfo);
+                                    'filtered tick elements vs tickvals failed' + runInfo + + debugInfo);
 
                                 if(transformVals.length < 2) return; // Can't test proportions with < 2 ticks (since no fixed reference)
 
@@ -376,10 +381,10 @@ describe('Generating ticks with `tickmode`,', function() {
                                 var bIndex = x.indexOf(0);
 
                                 m = (y[0] - y[1]) / (x[0] - x[1]);
-                                b = (bIndex != -1) ? b = y[bIndex] : y[0] - m * x[0];
+                                b = (bIndex !== -1) ? b = y[bIndex] : y[0] - m * x[0];
 
-                                calculatedY = [];
-                                for(var i = 0; i < x.length; i++) calculatedY.push(m * x[i] + b);
+                                var calculatedY = [];
+                                for(var k = 0; k < x.length; k++) calculatedY.push(m * x[k] + b);
 
                                 /* **** Close this comment line to manually inspect output --> */
                                 // yout = [];
@@ -392,9 +397,10 @@ describe('Generating ticks with `tickmode`,', function() {
                                 // console.log(ycalcout);
                                 expect(y).toBeCloseToArray(calculatedY, 1, 'y=mx+b test failed comparing\n' + y + '\n' + calculatedY);
                             }
-                    }).then(done, done.fail);
-                }(variablesToInject));
-            }
+                        }).then(done, done.fail);
+                    });
+                });
+            }(variablesToInject));
         }
-    });
-});
+    }
+})();
