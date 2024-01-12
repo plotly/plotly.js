@@ -29,7 +29,8 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
         _dtick ? 'linear' :
         'auto';
     var tickmode = coerce(prefix + 'tickmode', tickmodeDefault);
-    if(tickmode === 'auto' || tickmode === 'sync' || tickmode === 'full domain') {
+
+    if(tickmode === 'auto' || tickmode === 'sync') {
         coerce(prefix + 'nticks');
     } else if(tickmode === 'linear') {
         // dtick is usually a positive number, but there are some

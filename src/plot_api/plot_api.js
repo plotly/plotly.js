@@ -2945,11 +2945,7 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         // so newContainer won't have them.
         if((key === 'tick0' || key === 'dtick') && outerparts[0] !== 'geo') {
             var tickMode = newContainer.tickmode;
-            if(tickMode === 'auto' ||
-              tickMode === 'array' ||
-              tickMode === 'domain array' ||
-              tickMode === 'full domain' ||
-              !tickMode) continue;
+            if(tickMode === 'auto' || tickMode === 'array' || !tickMode) continue;
         }
         // FIXME: Similarly for axis ranges for 3D
         // contourcarpet doesn't HAVE zmin/zmax, they're just auto-added. It needs them.
