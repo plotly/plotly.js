@@ -390,7 +390,7 @@ function _doPlot(gd, data, layout, config) {
             if(graphWasEmpty) Axes.saveRangeInitial(gd, true);
         }
     }
-    seq.push(saveRangeInitialForInsideTickLabels(gd));
+    seq.push(saveRangeInitialForInsideTickLabels);
 
     if(gd._context.accessibility.enabled) seq.push(accessibility.enable);
 
