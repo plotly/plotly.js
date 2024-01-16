@@ -1576,7 +1576,7 @@ describe('scatter hoverFills', function() {
         var traceOffset = 0;
 
         var testPoints = [ // all the following points should be in fill region of corresponding tozeroy traces 0-4
-            [[1.5, 1.24], [1.5, 1.06]], // single point has "fill" along line to zero
+            [], // single point has no "fill" when using SVG element containment tests
             [[0.1, 0.9], [0.1, 0.8], [1.5, 0.9], [1.5, 1.04], [2, 0.8], [2, 1.09], [3, 0.8]],
             [[0.1, 0.75], [0.1, 0.61], [1.01, 0.501], [1.5, 0.8], [1.5, 0.55], [2, 0.74], [2, 0.55], [3, 0.74], [3, 0.51]],
             [[0.1, 0.599], [0.1, 0.5], [0.1, 0.3], [0.99, 0.59], [1, 0.49], [1, 0.36], [1.5, 0.26], [2, 0.49], [2, 0.16], [3, 0.49], [3, 0.26]],
@@ -1584,7 +1584,7 @@ describe('scatter hoverFills', function() {
         ];
 
         var outsidePoints = [ // all these should not result in a hover detection, for any trace
-            [1, 1.1], [2, 1.14],
+            [1, 1.1], [2, 1.14], [1.5, 1.24], [1.5, 1.06]
         ];
 
         Plotly.newPlot(gd, mock).then(function() {

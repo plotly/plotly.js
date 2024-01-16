@@ -159,12 +159,14 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     var prevPolygons = [];
     var prevtrace = trace._prevtrace;
     var prevFillsegments = null;
+    var prevFillElement = null;
 
     if(prevtrace) {
         prevRevpath = prevtrace._prevRevpath || '';
         tonext = prevtrace._nextFill;
         prevPolygons = prevtrace._ownPolygons;
         prevFillsegments = prevtrace._fillsegments;
+        prevFillElement = prevtrace._fillElement;
     }
 
     var thispath;
@@ -257,6 +259,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 curpoints.push.apply(curpoints, pts);
             }
         }
+
+        trace._fillElement = null;
+        trace._fillExclusionElement = prevFillElement;
+
         trace._fillsegments = fillsegments.slice(0, fillsegmentCount);
         fillsegments = trace._fillsegments;
 
@@ -398,6 +404,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 }
             }
             trace._polygons = thisPolygons;
+            trace._fillElement = ownFillEl3;
         } else if(tonext) {
             if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
                 // fill to next: full trace path, plus the previous path reversed
@@ -409,7 +416,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z')
                         .call(Drawing.singleFillStyle, gd);
 
-                    // and simply emit hover polygons for each segment
+                                            // and simply emit hover polygons for each segment
                     thisPolygons = makeSelfPolygons();
 
                     // we add the polygons of the previous trace which causes hover
@@ -431,6 +438,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // so must not include previous trace polygons for hover detection.
                     trace._polygons = thisPolygons;
                 }
+                trace._fillElement = tonext;
             } else {
                 clearFill(tonext);
             }
