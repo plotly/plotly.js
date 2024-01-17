@@ -456,7 +456,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                 }
             }
 
-            Fx.click(gd, evt);
+            Fx.click(gd, evt, plotinfo.id);
         }).catch(Lib.error);
     };
 

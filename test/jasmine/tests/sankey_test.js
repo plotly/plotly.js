@@ -1073,6 +1073,34 @@ describe('sankey tests', function() {
             })
             .then(done, done.fail);
         });
+
+        it('should (un-)highlight all traces ending in a (un-)hovered node', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.newPlot(gd, mockCopy)
+                .then(function() {
+                    _hover(200, 250);
+                })
+                .then(function() {
+                    d3SelectAll('.sankey-link')
+                        .filter(function(obj) {
+                            return obj.link.label === 'stream 1';
+                        })[0].forEach(function(l) {
+                            expect(l.style.fillOpacity).toEqual('0.4');
+                        });
+                }).then(function() {
+                    mouseEvent('mouseout', 200, 250);
+                }).then(function() {
+                    d3SelectAll('.sankey-link')
+                        .filter(function(obj) {
+                            return obj.link.label === 'stream 1';
+                        })[0].forEach(function(l) {
+                            expect(l.style.fillOpacity).toEqual('0.2');
+                        });
+                })
+                .then(done, done.fail);
+        });
     });
 
     describe('Test hover/click event data:', function() {

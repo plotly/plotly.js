@@ -15,6 +15,9 @@ var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
 
 var Axes = require('../plots/cartesian/axes');
+var handleRangeDefaults = require('../plots/cartesian/range_defaults');
+
+var cartesianLayoutAttributes = require('../plots/cartesian/layout_attributes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
@@ -354,9 +357,12 @@ function _doPlot(gd, data, layout, config) {
         seq.push(
             drawAxes,
             function insideTickLabelsAutorange(gd) {
-                if(gd._fullLayout._insideTickLabelsAutorange) {
-                    relayout(gd, gd._fullLayout._insideTickLabelsAutorange).then(function() {
-                        gd._fullLayout._insideTickLabelsAutorange = undefined;
+                var insideTickLabelsUpdaterange = gd._fullLayout._insideTickLabelsUpdaterange;
+                if(insideTickLabelsUpdaterange) {
+                    gd._fullLayout._insideTickLabelsUpdaterange = undefined;
+
+                    return relayout(gd, insideTickLabelsUpdaterange).then(function() {
+                        Axes.saveRangeInitial(gd, true);
                     });
                 }
             }
@@ -376,15 +382,8 @@ function _doPlot(gd, data, layout, config) {
         // calculated. Would be much better to separate margin calculations from
         // component drawing - see https://github.com/plotly/plotly.js/issues/2704
         Plots.doAutoMargin,
-        saveRangeInitialForInsideTickLabels,
         Plots.previousPromises
     );
-
-    function saveRangeInitialForInsideTickLabels(gd) {
-        if(gd._fullLayout._insideTickLabelsAutorange) {
-            if(graphWasEmpty) Axes.saveRangeInitial(gd, true);
-        }
-    }
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
@@ -1790,7 +1789,6 @@ function relayout(gd, astr, val) {
     // something may have happened within relayout that we
     // need to wait for
     var seq = [Plots.previousPromises];
-
     if(flags.layoutReplot) {
         seq.push(subroutines.layoutReplot);
     } else if(Object.keys(aobj).length) {
@@ -1838,26 +1836,19 @@ function axRangeSupplyDefaultsByPass(gd, flags, specs) {
         if(k !== 'axrange' && flags[k]) return false;
     }
 
+    var axIn, axOut;
+    var coerce = function(attr, dflt) {
+        return Lib.coerce(axIn, axOut, cartesianLayoutAttributes, attr, dflt);
+    };
+
+    var options = {}; // passing empty options for now!
+
     for(var axId in specs.rangesAltered) {
         var axName = Axes.id2name(axId);
-        var axIn = gd.layout[axName];
-        var axOut = fullLayout[axName];
-        axOut.autorange = axIn.autorange;
+        axIn = gd.layout[axName];
+        axOut = fullLayout[axName];
 
-        var r0 = axOut._rangeInitial0;
-        var r1 = axOut._rangeInitial1;
-        // partial range needs supplyDefaults
-        if(
-            (r0 === undefined && r1 !== undefined) ||
-            (r0 !== undefined && r1 === undefined)
-        ) {
-            return false;
-        }
-
-        if(axIn.range) {
-            axOut.range = axIn.range.slice();
-        }
-        axOut.cleanRange();
+        handleRangeDefaults(axIn, axOut, coerce, options);
 
         if(axOut._matchGroup) {
             for(var axId2 in axOut._matchGroup) {

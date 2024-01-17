@@ -1496,7 +1496,7 @@ describe('mapbox plots', function() {
         });
 
         ['stamen-terrain', 'stamen-toner'].forEach(function(style) {
-            it('@gl should be displayed for style "' + style + '"', function(done) {
+            it('@noCI @gl should be displayed for style "' + style + '"', function(done) {
                 Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: style}})
                 .then(function() {
                     var s = d3SelectAll('.mapboxgl-ctrl-attrib');
@@ -1693,7 +1693,9 @@ describe('mapbox plots', function() {
 
     function _mouseEvent(type, pos, cb) {
         return new Promise(function(resolve) {
-            mouseEvent(type, pos[0], pos[1]);
+            mouseEvent(type, pos[0], pos[1], {
+                buttons: 1 // left button
+            });
 
             setTimeout(function() {
                 cb();

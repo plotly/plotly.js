@@ -28,7 +28,6 @@ var supplyDefaults = require('../assets/supply_defaults');
 
 describe('Test axes', function() {
     'use strict';
-
     describe('swap', function() {
         it('should swap most attributes and fix placeholder titles', function() {
             var gd = {
@@ -1581,6 +1580,103 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
 
+        it('can relayout one partial range without affecting other subplots', function(done) {
+            var rangeX2;
+            var rangeX3;
+            var rangeX4;
+            var autorangeX2;
+            var autorangeX3;
+            var autorangeX4;
+
+            Plotly.newPlot(gd, {
+                data: [
+                    {
+                        xaxis: 'x',
+                        yaxis: 'y',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x2',
+                        yaxis: 'y2',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x3',
+                        yaxis: 'y3',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x4',
+                        yaxis: 'y4',
+                        y: [1000, 10, 100, 1],
+                    },
+                ],
+                layout: {
+                    xaxis: {
+                        range: [-1, null],
+                        anchor: 'y',
+                        domain: [0, 0.45],
+                    },
+                    yaxis: {
+                        anchor: 'x',
+                        domain: [0, 0.45],
+                        side: 'right',
+                    },
+                    xaxis2: {
+                        range: [null, 4],
+                        anchor: 'y2',
+                        domain: [0, 0.45],
+                    },
+                    yaxis2: {
+                        anchor: 'x2',
+                        domain: [0.55, 1],
+                        side: 'left',
+                    },
+                    xaxis3: {
+                        range: [null, -1],
+                        autorange: 'max reversed',
+                        anchor: 'y3',
+                        domain: [0.55, 1],
+                    },
+                    yaxis3: {
+                        anchor: 'x3',
+                        domain: [0, 0.45],
+                        side: 'left',
+                    },
+                    xaxis4: {
+                        range: [4, null],
+                        autorange: 'min reversed',
+                        anchor: 'y4',
+                        domain: [0.55, 1],
+                    },
+                    yaxis4: {
+                        anchor: 'x4',
+                        domain: [0.55, 1],
+                        side: 'right',
+                    }
+                }
+            }).then(function() {
+                rangeX2 = gd._fullLayout.xaxis2.range.slice();
+                rangeX3 = gd._fullLayout.xaxis3.range.slice();
+                rangeX4 = gd._fullLayout.xaxis4.range.slice();
+
+                autorangeX2 = gd._fullLayout.xaxis2.autorange;
+                autorangeX3 = gd._fullLayout.xaxis3.autorange;
+                autorangeX4 = gd._fullLayout.xaxis4.autorange;
+
+                return Plotly.relayout(gd, 'xaxis.range', [1, 2]);
+            }).then(function() {
+                expect(gd._fullLayout.xaxis2.range).toEqual(rangeX2);
+                expect(gd._fullLayout.xaxis3.range).toEqual(rangeX3);
+                expect(gd._fullLayout.xaxis4.range).toEqual(rangeX4);
+
+                expect(gd._fullLayout.xaxis2.autorange).toEqual(autorangeX2);
+                expect(gd._fullLayout.xaxis3.autorange).toEqual(autorangeX3);
+                expect(gd._fullLayout.xaxis4.autorange).toEqual(autorangeX4);
+            })
+            .then(done, done.fail);
+        });
+
         it('should make room for the inside labels of the counter axes', function(done) {
             Plotly.newPlot(gd, {
                 data: [{
@@ -1603,6 +1699,36 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.37, 3.22], 1);
             })
             .then(done, done.fail);
+        });
+    });
+
+    describe('insiderange relayout', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('can relayout insiderange', function(done) {
+            Plotly.newPlot(gd, [{
+                y: [1, 3, 2, 4]}
+            ], {
+                xaxis: {insiderange: [0, 2]},
+                yaxis: {ticklabelposition: 'inside'},
+                plot_bgcolor: 'lightgray',
+                width: 600,
+                height: 600
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
+
+                return Plotly.relayout(gd, {
+                    'xaxis.insiderange': [1, 3]
+                });
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.889, 3]);
+            }).then(done, done.fail);
         });
     });
 
@@ -7924,6 +8050,40 @@ describe('more react tests', function() {
         })
         .then(done, done.fail);
     });
+
+    it('insiderange react to new data', function(done) {
+        var layout = {
+            xaxis: {
+                insiderange: [0, 2]
+            },
+            yaxis: {
+                ticklabelposition: 'inside'
+            },
+            plot_bgcolor: 'lightgray',
+            width: 600,
+            height: 600
+        };
+
+        var data1 = [{
+            y: [1, 3, 2]
+        }];
+
+        var data2 = [{
+            y: [1000, 3000, 2000]
+        }];
+
+        var fig1 = {data: data1, layout: layout};
+        var fig2 = {data: data2, layout: layout};
+
+        Plotly.newPlot(gd, fig1)
+        .then(function() {
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
+
+            return Plotly.react(gd, fig2);
+        }).then(function() {
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.164, 2]);
+        }).then(done, done.fail);
+    });
 });
 
 describe('category preservation tests on gd passed to Plotly.react()', function() {
@@ -8053,6 +8213,73 @@ describe('shift tests', function() {
             checkLine('path.xy4-y.crisp', 616);
             expect(gd._fullLayout.yaxis3._shift).toBeCloseTo(-100, 2);
             expect(gd._fullLayout.yaxis4._shift).toBeCloseTo(100, 2);
+        });
+    });
+});
+describe('test tickmode calculator', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function generateTickConfig() {
+        var standardConfig = {tickmode: 'array', ticks: 'inside', ticklen: 1, showticklabels: false};
+
+        // Number of ticks will be random
+        Lib.seedPseudoRandom();
+        var n = (Lib.pseudoRandom() * 99) + 1;
+        var tickVals = [];
+        for(var i = 0; i <= n; i++) {
+            tickVals.push(i);
+        }
+        standardConfig.tickvals = tickVals;
+        standardConfig.ticktext = tickVals;
+        return standardConfig;
+    }
+    var ticksOff = {tickmode: 'array', ticks: '', tickvals: [], ticktext: [], ticklen: 0, showticklabels: false};
+
+    function _assert(expLength) {
+        var ax = gd._fullLayout.xaxis;
+
+        // all positions
+        var positions =
+            ax._vals
+                .filter(function(d) { return d; })
+                .map(function(d) { return d.x; });
+
+        expect(positions.length).toEqual(expLength);
+    }
+
+    describe('arrayTicks', function() {
+        it('should return the specified correct number of major ticks and minor ticks', function(done) {
+            var xMajorConfig = ticksOff;
+            var xMinorConfig = ticksOff;
+            xMajorConfig = generateTickConfig();
+            xMinorConfig = generateTickConfig();
+            xMajorConfig.range = [0, 1000];
+            xMajorConfig.minor = xMinorConfig;
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [0, 1],
+                    y: [0, 1]
+                }],
+                layout: {
+                    width: 400,
+                    height: 400,
+                    margin: {
+                        t: 40,
+                        b: 40,
+                        l: 40,
+                        r: 40
+                    },
+                    xaxis: xMajorConfig,
+                }
+            }).then(function() {
+                _assert(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
+            }).then(done, done.fail);
         });
     });
 });

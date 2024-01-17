@@ -6,6 +6,7 @@ var rgba = require('color-normalize');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 var Drawing = require('../../components/drawing');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
 
@@ -54,7 +55,7 @@ function convertStyle(gd, trace) {
         opts.markerSel = convertMarkerSelection(gd, trace, trace.selected);
         opts.markerUnsel = convertMarkerSelection(gd, trace, trace.unselected);
 
-        if(!trace.unselected && Lib.isArrayOrTypedArray(trace.marker.opacity)) {
+        if(!trace.unselected && isArrayOrTypedArray(trace.marker.opacity)) {
             var mo = trace.marker.opacity;
             opts.markerUnsel.opacity = new Array(mo.length);
             for(i = 0; i < mo.length; i++) {
@@ -102,7 +103,7 @@ function convertTextStyle(gd, trace) {
     var count = trace._length;
     var textfontIn = trace.textfont;
     var textpositionIn = trace.textposition;
-    var textPos = Array.isArray(textpositionIn) ? textpositionIn : [textpositionIn];
+    var textPos = isArrayOrTypedArray(textpositionIn) ? textpositionIn : [textpositionIn];
     var tfc = textfontIn.color;
     var tfs = textfontIn.size;
     var tff = textfontIn.family;
@@ -130,7 +131,7 @@ function convertTextStyle(gd, trace) {
             optsOut.text.push(Lib.texttemplateString(txt(i), labels, d3locale, pointValues, d, meta));
         }
     } else {
-        if(Array.isArray(trace.text) && trace.text.length < count) {
+        if(isArrayOrTypedArray(trace.text) && trace.text.length < count) {
             // if text array is shorter, we'll need to append to it, so let's slice to prevent mutating
             optsOut.text = trace.text.slice();
         } else {
@@ -138,7 +139,7 @@ function convertTextStyle(gd, trace) {
         }
     }
     // pad text array with empty strings
-    if(Array.isArray(optsOut.text)) {
+    if(isArrayOrTypedArray(optsOut.text)) {
         for(i = optsOut.text.length; i < count; i++) {
             optsOut.text[i] = '';
         }
@@ -174,7 +175,7 @@ function convertTextStyle(gd, trace) {
         }
     }
 
-    if(Array.isArray(tfc)) {
+    if(isArrayOrTypedArray(tfc)) {
         optsOut.color = new Array(count);
         for(i = 0; i < count; i++) {
             optsOut.color[i] = tfc[i];
@@ -183,7 +184,7 @@ function convertTextStyle(gd, trace) {
         optsOut.color = tfc;
     }
 
-    if(Lib.isArrayOrTypedArray(tfs) || Array.isArray(tff)) {
+    if(isArrayOrTypedArray(tfs) || isArrayOrTypedArray(tff)) {
         // if any textfont param is array - make render a batch
         optsOut.font = new Array(count);
         for(i = 0; i < count; i++) {
@@ -191,12 +192,12 @@ function convertTextStyle(gd, trace) {
 
             fonti.size = (
                 Lib.isTypedArray(tfs) ? tfs[i] :
-                Array.isArray(tfs) ? (
+                isArrayOrTypedArray(tfs) ? (
                     isNumeric(tfs[i]) ? tfs[i] : 0
                 ) : tfs
             ) * plotGlPixelRatio;
 
-            fonti.family = Array.isArray(tff) ? tff[i] : tff;
+            fonti.family = isArrayOrTypedArray(tff) ? tff[i] : tff;
         }
     } else {
         // if both are single values, make render fast single-value
@@ -213,13 +214,13 @@ function convertMarkerStyle(gd, trace) {
     var optsOut = {};
     var i;
 
-    var multiSymbol = Lib.isArrayOrTypedArray(optsIn.symbol);
-    var multiAngle = Lib.isArrayOrTypedArray(optsIn.angle);
-    var multiColor = Lib.isArrayOrTypedArray(optsIn.color);
-    var multiLineColor = Lib.isArrayOrTypedArray(optsIn.line.color);
-    var multiOpacity = Lib.isArrayOrTypedArray(optsIn.opacity);
-    var multiSize = Lib.isArrayOrTypedArray(optsIn.size);
-    var multiLineWidth = Lib.isArrayOrTypedArray(optsIn.line.width);
+    var multiSymbol = isArrayOrTypedArray(optsIn.symbol);
+    var multiAngle = isArrayOrTypedArray(optsIn.angle);
+    var multiColor = isArrayOrTypedArray(optsIn.color);
+    var multiLineColor = isArrayOrTypedArray(optsIn.line.color);
+    var multiOpacity = isArrayOrTypedArray(optsIn.opacity);
+    var multiSize = isArrayOrTypedArray(optsIn.size);
+    var multiLineWidth = isArrayOrTypedArray(optsIn.line.width);
 
     var isOpen;
     if(!multiSymbol) isOpen = helpers.isOpenSymbol(optsIn.symbol);
@@ -236,28 +237,28 @@ function convertMarkerStyle(gd, trace) {
         var colors = formatColor(optsIn, optsIn.opacity, count);
         var borderColors = formatColor(optsIn.line, optsIn.opacity, count);
 
-        if(!Array.isArray(borderColors[0])) {
+        if(!isArrayOrTypedArray(borderColors[0])) {
             var borderColor = borderColors;
             borderColors = Array(count);
             for(i = 0; i < count; i++) {
                 borderColors[i] = borderColor;
             }
         }
-        if(!Array.isArray(colors[0])) {
+        if(!isArrayOrTypedArray(colors[0])) {
             var color = colors;
             colors = Array(count);
             for(i = 0; i < count; i++) {
                 colors[i] = color;
             }
         }
-        if(!Array.isArray(symbols)) {
+        if(!isArrayOrTypedArray(symbols)) {
             var symbol = symbols;
             symbols = Array(count);
             for(i = 0; i < count; i++) {
                 symbols[i] = symbol;
             }
         }
-        if(!Array.isArray(angles)) {
+        if(!isArrayOrTypedArray(angles)) {
             var angle = angles;
             angles = Array(count);
             for(i = 0; i < count; i++) {
@@ -642,12 +643,12 @@ function convertTextPosition(gd, trace, textOpts, markerOpts) {
 
         for(i = 0; i < count; i++) {
             var ms = markerOpts.sizes ? markerOpts.sizes[i] : markerOpts.size;
-            var fs = Array.isArray(fontOpts) ? fontOpts[i].size : fontOpts.size;
+            var fs = isArrayOrTypedArray(fontOpts) ? fontOpts[i].size : fontOpts.size;
 
-            var a = Array.isArray(align) ?
+            var a = isArrayOrTypedArray(align) ?
                 (align.length > 1 ? align[i] : align[0]) :
                 align;
-            var b = Array.isArray(baseline) ?
+            var b = isArrayOrTypedArray(baseline) ?
                 (baseline.length > 1 ? baseline[i] : baseline[0]) :
                 baseline;
 

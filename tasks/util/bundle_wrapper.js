@@ -76,6 +76,8 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
                         console.log('err:', err);
                     } else if(stats.errors && stats.errors.length) {
                         console.log('stats.errors:', stats.errors);
+                    } else if(stats.compilation && stats.compilation.errors && stats.compilation.errors.length) {
+                        console.log('stats.compilation.errors:', stats.compilation.errors);
                     } else {
                         console.log('success:', config.output.path + '/' + config.output.filename);
 

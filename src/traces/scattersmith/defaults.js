@@ -28,14 +28,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     if(traceOut.hoveron !== 'fills') coerce('hovertemplate');
 
+    if(subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
+    }
+
     if(subTypes.hasLines(traceOut)) {
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {backoff: true});
         handleLineShapeDefaults(traceIn, traceOut, coerce);
         coerce('connectgaps');
-    }
-
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
     }
 
     if(subTypes.hasText(traceOut)) {
@@ -73,6 +73,14 @@ function handleRealImagDefaults(traceIn, traceOut, layout, coerce) {
 
     if(real && imag) {
         len = Math.min(real.length, imag.length);
+    }
+
+    // TODO: handle this case outside supply defaults step
+    if(Lib.isTypedArray(real)) {
+        traceOut.real = real = Array.from(real);
+    }
+    if(Lib.isTypedArray(imag)) {
+        traceOut.imag = imag = Array.from(imag);
     }
 
     traceOut._length = len;

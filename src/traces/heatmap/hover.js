@@ -2,6 +2,7 @@
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 var Axes = require('../../plots/cartesian/axes');
 var extractOpts = require('../../components/colorscale').extractOpts;
 
@@ -96,9 +97,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
     if(zVal === undefined && !trace.hoverongaps) return;
 
     var text;
-    if(Array.isArray(cd0.hovertext) && Array.isArray(cd0.hovertext[ny])) {
+    if(isArrayOrTypedArray(cd0.hovertext) && isArrayOrTypedArray(cd0.hovertext[ny])) {
         text = cd0.hovertext[ny][nx];
-    } else if(Array.isArray(cd0.text) && Array.isArray(cd0.text[ny])) {
+    } else if(isArrayOrTypedArray(cd0.text) && isArrayOrTypedArray(cd0.text[ny])) {
         text = cd0.text[ny][nx];
     }
 

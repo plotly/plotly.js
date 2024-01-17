@@ -398,6 +398,21 @@ module.exports = {
             'If true, then zoom is disabled.'
         ].join(' ')
     },
+    insiderange: {
+        valType: 'info_array',
+        items: [
+            {valType: 'any', editType: 'plot'},
+            {valType: 'any', editType: 'plot'}
+        ],
+        editType: 'plot',
+        description: [
+            'Could be used to set the desired inside range of this axis',
+            '(excluding the labels) when `ticklabelposition` of',
+            'the anchored axis has *inside*.',
+            'Not implemented for axes with `type` *log*.',
+            'This would be ignored when `range` is provided.'
+        ].join(' ')
+    },
     // scaleanchor: not used directly, just put here for reference
     // values are any opposite-letter axis id, or `false`.
     scaleanchor: {

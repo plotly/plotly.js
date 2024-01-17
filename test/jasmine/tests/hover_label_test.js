@@ -4380,6 +4380,21 @@ describe('hover distance', function() {
                 })
                 .then(done, done.fail);
         });
+
+        it('correctly format the epoch timestamp in a given hover format', function(done) {
+            var x = ['1970-01-01 00:00:00'];
+            var mock = {
+                data: [{type: 'scatter', x: x, y: [1]}],
+                layout: {width: 400, height: 400, xaxis: {hoverformat: '%H:%M:%S'}}
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    Fx.hover(gd, {xpx: 120, ypx: 110});
+                    assertHoverLabelContent({nums: '(00:00:00, 1)'});
+                })
+                .then(done, done.fail);
+        });
     });
 });
 

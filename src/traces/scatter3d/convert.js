@@ -58,7 +58,7 @@ proto.handlePick = function(selection) {
 
         selection.textLabel = '';
         if(this.textLabels) {
-            if(Array.isArray(this.textLabels)) {
+            if(Lib.isArrayOrTypedArray(this.textLabels)) {
                 if(this.textLabels[ind] || this.textLabels[ind] === 0) {
                     selection.textLabel = this.textLabels[ind];
                 }
@@ -227,8 +227,11 @@ function convertPlotlyOptions(scene, data) {
     }
 
     // convert text
-    if(Array.isArray(data.text)) text = data.text;
-    else if(data.text !== undefined) {
+    if(Array.isArray(data.text)) {
+        text = data.text;
+    } else if(Lib.isTypedArray(data.text)) {
+        text = Array.from(data.text);
+    } else if(data.text !== undefined) {
         text = new Array(len);
         for(i = 0; i < len; i++) text[i] = data.text;
     }
