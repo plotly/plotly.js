@@ -393,6 +393,9 @@ function _doPlot(gd, data, layout, config) {
     seq.push(saveRangeInitialForInsideTickLabels);
 
     if(gd._context.accessibility.enabled) seq.push(accessibility.enable);
+    seq.push(function(gd) {
+        console.log("This should come after the thing is senabled");
+    });
 
     seq.push(Plots.previousPromises);
 
