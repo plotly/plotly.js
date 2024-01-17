@@ -23,10 +23,10 @@ function enable(gd) {
         for(var i = 0; i < fullData.length; i++) {
             var trace = fullData[i] ? fullData[i] : {};
             var type = trace.type;
-            var x = trace.x ? trace.x : [];
-            var y = trace.y ? trace.y : [];
-            var name = trace.name ? trace.name : i;
-            var text = trace.text ? trace.text : [];
+            var x = trace.x !== undefined ? trace.x : [];
+            var y = trace.y !== undefined ? trace.y : [];
+            var name = trace.name !== undefined ? trace.name : i;
+            var text = trace.text !== undefined ? trace.text : [];
             if(type === 'scatter') {
                 var traceData = [];
                 if('y' in trace) {
@@ -52,9 +52,25 @@ function enable(gd) {
         closedCaptions.className = 'closed_captions';
         gd.appendChild(closedCaptions); // this does get generated
 
-        var titleText = gd._fullLayout.title.text ? gd._fullLayout.title.text : 'Chart';
-        var xaxisText = gd._fullLayout.xaxis.title.text ? gd._fullLayout.xaxis.title.text : 'X Axis';
-        var yaxisText = gd._fullLayout.yaxis.title.text ? gd._fullLayout.yaxis.title.text : 'Y Axis';
+        var titleText = 'Chart';
+        if((gd._fullLayout.title !== undefined) && (gd._fullLayout.title.text !== undefined)) {
+            titleText = gd._fullLayout.title.text;
+        }
+
+        var xAxisText = 'X Axis';
+        if((gd._fullLayout.xaxis !== undefined) &&
+            (gd._fullLayout.xaxis.title !== undefined) &&
+            (gd._fullLayout.xaxis.title.text !== undefined)) {
+            xAxisText = gd._fullLayout.xaxis.title.text;
+        }
+
+        var yAxisText = 'Y Axis';
+        if((gd._fullLayout.yaxis !== undefined) &&
+            (gd._fullLayout.yaxis.title !== undefined) &&
+            (gd._fullLayout.yaxis.title.text !== undefined)) {
+            yAxisText = gd._fullLayout.yaxis.title.text;
+        }
+
         options.onFocusCallback = function(dataInfo) {
             Fx.hover(gd, [{
                 curveNumber: labels.indexOf(dataInfo.slice),
@@ -66,10 +82,10 @@ function enable(gd) {
             type: 'line',
             axes: {
                 x: {
-                    label: xaxisText
+                    label: xAxisText
                 },
                 y: {
-                    label: yaxisText
+                    label: yAxisText
                 },
             },
             element: gd,
