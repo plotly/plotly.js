@@ -53,7 +53,7 @@ exports.coerceEnumerated = function(attributeDefinition, value, defaultValue) {
 
 exports.getValue = function(arrayOrScalar, index) {
     var value;
-    if(!Array.isArray(arrayOrScalar)) value = arrayOrScalar;
+    if(!isArrayOrTypedArray(arrayOrScalar)) value = arrayOrScalar;
     else if(index < arrayOrScalar.length) value = arrayOrScalar[index];
     return value;
 };

@@ -21,7 +21,7 @@ exports.formatPieValue = function formatPieValue(v, separators) {
 };
 
 exports.getFirstFilled = function getFirstFilled(array, indices) {
-    if(!Array.isArray(array)) return;
+    if(!Lib.isArrayOrTypedArray(array)) return;
     for(var i = 0; i < indices.length; i++) {
         var v = array[indices[i]];
         if(v || v === 0 || v === '') return v;
@@ -29,7 +29,7 @@ exports.getFirstFilled = function getFirstFilled(array, indices) {
 };
 
 exports.castOption = function castOption(item, indices) {
-    if(Array.isArray(item)) return exports.getFirstFilled(item, indices);
+    if(Lib.isArrayOrTypedArray(item)) return exports.getFirstFilled(item, indices);
     else if(item) return item;
 };
 

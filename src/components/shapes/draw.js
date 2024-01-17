@@ -58,7 +58,7 @@ function draw(gd) {
     }
 
     for(var i = 0; i < fullLayout.shapes.length; i++) {
-        if(fullLayout.shapes[i].visible) {
+        if(fullLayout.shapes[i].visible === true) {
             drawOne(gd, i);
         }
     }
@@ -89,7 +89,7 @@ function drawOne(gd, index) {
 
     // this shape is gone - quit now after deleting it
     // TODO: use d3 idioms instead of deleting and redrawing every time
-    if(!options._input || options.visible === false) return;
+    if(!options._input || options.visible !== true) return;
 
     if(options.layer !== 'below') {
         drawShape(gd._fullLayout._shapeUpperLayer);
@@ -669,7 +669,7 @@ function eraseActiveShape(gd) {
 
         delete gd._fullLayout._activeShapeIndex;
 
-        Registry.call('_guiRelayout', gd, {
+        return Registry.call('_guiRelayout', gd, {
             shapes: list
         });
     }

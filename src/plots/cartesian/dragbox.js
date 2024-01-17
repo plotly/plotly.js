@@ -565,6 +565,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(xActive === 'ew' || yActive === 'ns') {
             var spDx = xActive ? -dx : 0;
             var spDy = yActive ? -dy : 0;
+
             if(matches.isSubplotConstrained) {
                 if(xActive && yActive) {
                     var frac = (dx / pw - dy / ph) / 2;
@@ -772,7 +773,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(matches.yaxes) axList = axList.concat(matches.yaxes);
 
         var attrs = {};
-        var ax, i, rangeInitial;
+        var ax, i;
 
         // For reset+autosize mode:
         // If *any* of the main axes is not at its initial range
@@ -784,11 +785,17 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
-                if((ax._rangeInitial && (
-                        ax.range[0] !== ax._rangeInitial[0] ||
-                        ax.range[1] !== ax._rangeInitial[1]
+                var r0 = ax._rangeInitial0;
+                var r1 = ax._rangeInitial1;
+                var hasRangeInitial =
+                    r0 !== undefined ||
+                    r1 !== undefined;
+
+                if((hasRangeInitial && (
+                        (r0 !== undefined && r0 !== ax.range[0]) ||
+                        (r1 !== undefined && r1 !== ax.range[1])
                     )) ||
-                    (!ax._rangeInitial && !ax.autorange)
+                    (!hasRangeInitial && ax.autorange !== true)
                 ) {
                     doubleClickConfig = 'reset';
                     break;
@@ -818,12 +825,19 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 ax = axList[i];
 
                 if(!ax.fixedrange) {
-                    if(!ax._rangeInitial) {
-                        attrs[ax._name + '.autorange'] = true;
+                    var axName = ax._name;
+
+                    var autorangeInitial = ax._autorangeInitial;
+                    if(ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined) {
+                        attrs[axName + '.autorange'] = true;
+                    } else if(ax._rangeInitial0 === undefined) {
+                        attrs[axName + '.autorange'] = autorangeInitial;
+                        attrs[axName + '.range'] = [null, ax._rangeInitial1];
+                    } else if(ax._rangeInitial1 === undefined) {
+                        attrs[axName + '.range'] = [ax._rangeInitial0, null];
+                        attrs[axName + '.autorange'] = autorangeInitial;
                     } else {
-                        rangeInitial = ax._rangeInitial;
-                        attrs[ax._name + '.range[0]'] = rangeInitial[0];
-                        attrs[ax._name + '.range[1]'] = rangeInitial[1];
+                        attrs[axName + '.range'] = [ax._rangeInitial0, ax._rangeInitial1];
                     }
                 }
             }
@@ -874,6 +888,13 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 if(sp._scene) {
                     var xrng = Lib.simpleMap(xa.range, xa.r2l);
                     var yrng = Lib.simpleMap(ya.range, ya.r2l);
+
+                    if(xa.limitRange) xa.limitRange();
+                    if(ya.limitRange) ya.limitRange();
+
+                    xrng = xa.range;
+                    yrng = ya.range;
+
                     sp._scene.update({range: [xrng[0], yrng[0], xrng[1], yrng[1]]});
                 }
             }
@@ -915,6 +936,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     clipDx = scaleAndGetShift(xa, xScaleFactor2);
                 }
 
+                if(xScaleFactor2 > 1 && (
+                    (xa.maxallowed !== undefined && editX === (xa.range[0] < xa.range[1] ? 'e' : 'w')) ||
+                    (xa.minallowed !== undefined && editX === (xa.range[0] < xa.range[1] ? 'w' : 'e'))
+                )) {
+                    xScaleFactor2 = 1;
+                    clipDx = 0;
+                }
+
                 if(editY2) {
                     yScaleFactor2 = yScaleFactor;
                     clipDy = ns || matches.isSubplotConstrained ? viewBox[1] : getShift(ya, yScaleFactor2);
@@ -929,6 +958,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 } else {
                     yScaleFactor2 = getLinkedScaleFactor(ya, xScaleFactor, yScaleFactor);
                     clipDy = scaleAndGetShift(ya, yScaleFactor2);
+                }
+
+                if(yScaleFactor2 > 1 && (
+                    (ya.maxallowed !== undefined && editY === (ya.range[0] < ya.range[1] ? 'n' : 's')) ||
+                    (ya.minallowed !== undefined && editY === (ya.range[0] < ya.range[1] ? 's' : 'n'))
+                )) {
+                    yScaleFactor2 = 1;
+                    clipDy = 0;
                 }
 
                 // don't scale at all if neither axis is scalable here
@@ -1096,6 +1133,8 @@ function dragAxList(axList, pix) {
                     axi.l2r(axi._rl[1] - pix / axi._m)
                 ];
             }
+
+            if(axi.limitRange) axi.limitRange();
         }
     }
 }

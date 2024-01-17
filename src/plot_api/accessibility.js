@@ -1,84 +1,83 @@
-"use strict";
+'use strict';
 
-import c2mChart from "chart2music";
+var c2m = require('chart2music');
+var Fx = require('../components/fx');
 
-const supportedAccessibilityLibraries = ['chart2music'];
+var supportedAccessibilityLibraries = ['chart2music'];
 
-export function enable (gd) {
-
-    const {library, options} = gd._context.accessibility;
-    if (!supportedAccessibilityLibraries.includes(library)) {
+function enable(gd) {
+    var accessibilityVars = gd._context.accessibility;
+    var library = accessibilityVars.library;
+    var options = accessibilityVars.options;
+    if(!supportedAccessibilityLibraries.includes(library)) {
         // 'Accessibility not implemented for library: ' + library
         return;
     }
-
-    if (library === 'chart2music') {
-        const c2mData = {};
-        const labels = [];
-        const info = options.info;
+    if(library === 'chart2music') {
+        var c2mData = {};
+        var labels = [];
+        var info = options.info;
         delete options.info;
-        const fullData = gd._fullData;
+        var fullData = gd._fullData;
 
         for(var i = 0; i < fullData.length; i++) {
-            var trace = fullData[i] ?? {};
-            var {type, x = [], y = [], name = i, text = []} = trace;
+            var trace = fullData[i] ? fullData[i] : {};
+            var type = trace.type;
+            var x = trace.x ? trace.x : [];
+            var y = trace.y ? trace.y : [];
+            var name = trace.name ? trace.name : i;
+            var text = trace.text ? trace.text : [];
             if(type === 'scatter') {
                 var traceData = [];
-                if ('y' in trace) {
+                if('y' in trace) {
                     for(var p = 0; p < y.length; p++) {
                         traceData.push(
                             {
                                 x: x.length > 0 ? x[p] : p,
                                 y: y[p],
-                                label: text[p] ?? p
-                            })
+                                label: text[p] ? text[p] : p
+                            });
                     }
                     c2mData[name] = traceData;
                     labels.push(name);
                 }
-            }
-            else {
+            } else {
                 // 'Accessibility not implemented for trace type: ' + trace.type
                 return;
-            };
-        };
-        
-        var closed_captions = document.createElement('div');
-        closed_captions.id = 'cc';
-        closed_captions.className = 'closed_captions';
-        gd.appendChild(closed_captions);
+            }
+        }
 
-        const {
-            title: {text: title_text = ''} = {},
-            xaxis: {title: {text: xaxis_text = ''} = {}} = {},
-            yaxis: {title: {text: yaxis_text = ''} = {}} = {},
-        } = gd._fullLayout;
-        
-        c2mChart({
-            title: title_text,
-            type: "line",
+        var closedCaptions = document.createElement('div');
+        closedCaptions.id = 'cc';
+        closedCaptions.className = 'closed_captions';
+        gd.appendChild(closedCaptions); // this does get generated
+
+        var titleText = gd._fullLayout.title.text ? gd._fullLayout.title.text : 'Chart';
+        var xaxisText = gd._fullLayout.xaxis.title.text ? gd._fullLayout.xaxis.title.text : 'X Axis';
+        var yaxisText = gd._fullLayout.yaxis.title.text ? gd._fullLayout.yaxis.title.text : 'Y Axis';
+        options.onFocusCallback = function(dataInfo) {
+            Fx.hover(gd, [{
+                curveNumber: labels.indexOf(dataInfo.slice),
+                pointNumber: dataInfo.index
+            }]);
+        };
+        c2m.c2mChart({
+            title: titleText,
+            type: 'line',
             axes: {
                 x: {
-                label: xaxis_text
+                    label: xaxisText
                 },
                 y: {
-                label: yaxis_text
-                }
+                    label: yaxisText
+                },
             },
             element: gd,
-            cc: closed_captions,
+            cc: closedCaptions,
             data: c2mData,
-            options: {
-                onFocusCallback: ({slice, index}) => {
-                Plotly.Fx.hover(gd, [{
-                    curveNumber: labels.indexOf(slice), 
-                    pointNumber: index
-                }])
-                },
-                ...options
-            },
+            options: options,
             info: info
-        }
-        );      
-    };
-};
+        });
+    }
+}
+exports.enable = enable;

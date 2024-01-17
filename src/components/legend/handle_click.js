@@ -39,25 +39,32 @@ module.exports = function handleClick(g, gd, numClicks) {
     if(legendItem.groupTitle && legendItem.noClick) return;
 
     var fullData = gd._fullData;
+    var shapesWithLegend = (fullLayout.shapes || []).filter(function(d) { return d.showlegend; });
+    var allLegendItems = fullData.concat(shapesWithLegend);
+
     var fullTrace = legendItem.trace;
+    if(fullTrace._isShape) {
+        fullTrace = fullTrace._fullInput;
+    }
+
     var legendgroup = fullTrace.legendgroup;
 
     var i, j, kcont, key, keys, val;
-    var attrUpdate = {};
-    var attrIndices = [];
+    var dataUpdate = {};
+    var dataIndices = [];
     var carrs = [];
     var carrIdx = [];
 
-    function insertUpdate(traceIndex, key, value) {
-        var attrIndex = attrIndices.indexOf(traceIndex);
-        var valueArray = attrUpdate[key];
+    function insertDataUpdate(traceIndex, value) {
+        var attrIndex = dataIndices.indexOf(traceIndex);
+        var valueArray = dataUpdate.visible;
         if(!valueArray) {
-            valueArray = attrUpdate[key] = [];
+            valueArray = dataUpdate.visible = [];
         }
 
-        if(attrIndices.indexOf(traceIndex) === -1) {
-            attrIndices.push(traceIndex);
-            attrIndex = attrIndices.length - 1;
+        if(dataIndices.indexOf(traceIndex) === -1) {
+            dataIndices.push(traceIndex);
+            attrIndex = dataIndices.length - 1;
         }
 
         valueArray[attrIndex] = value;
@@ -65,17 +72,32 @@ module.exports = function handleClick(g, gd, numClicks) {
         return attrIndex;
     }
 
+    var updatedShapes = (fullLayout.shapes || []).map(function(d) {
+        return d._input;
+    });
+
+    var shapesUpdated = false;
+
+    function insertShapesUpdate(shapeIndex, value) {
+        updatedShapes[shapeIndex].visible = value;
+        shapesUpdated = true;
+    }
+
     function setVisibility(fullTrace, visibility) {
         if(legendItem.groupTitle && !toggleGroup) return;
 
-        var fullInput = fullTrace._fullInput;
+        var fullInput = fullTrace._fullInput || fullTrace;
+        var isShape = fullInput._isShape;
+        var index = fullInput.index;
+        if(index === undefined) index = fullInput._index;
+
         if(Registry.hasTransform(fullInput, 'groupby')) {
-            var kcont = carrs[fullInput.index];
+            var kcont = carrs[index];
             if(!kcont) {
                 var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
                 var lastGroupbyIndex = groupbyIndices[groupbyIndices.length - 1];
                 kcont = Lib.keyedContainer(fullInput, 'transforms[' + lastGroupbyIndex + '].styles', 'target', 'value.visible');
-                carrs[fullInput.index] = kcont;
+                carrs[index] = kcont;
             }
 
             var curState = kcont.get(fullTrace._group);
@@ -93,20 +115,27 @@ module.exports = function handleClick(g, gd, numClicks) {
                 // true -> legendonly. All others toggle to true:
                 kcont.set(fullTrace._group, visibility);
             }
-            carrIdx[fullInput.index] = insertUpdate(fullInput.index, 'visible', fullInput.visible === false ? false : true);
+            carrIdx[index] = insertDataUpdate(index, fullInput.visible === false ? false : true);
         } else {
             // false -> false (not possible since will not be visible in legend)
             // true -> legendonly
             // legendonly -> true
             var nextVisibility = fullInput.visible === false ? false : visibility;
 
-            insertUpdate(fullInput.index, 'visible', nextVisibility);
+            if(isShape) {
+                insertShapesUpdate(index, nextVisibility);
+            } else {
+                insertDataUpdate(index, nextVisibility);
+            }
         }
     }
 
     var thisLegend = fullTrace.legend;
 
-    if(Registry.traceIs(fullTrace, 'pie-like')) {
+    var fullInput = fullTrace._fullInput;
+    var isShape = fullInput && fullInput._isShape;
+
+    if(!isShape && Registry.traceIs(fullTrace, 'pie-like')) {
         var thisLabel = legendItem.label;
         var thisLabelIndex = hiddenSlices.indexOf(thisLabel);
 
@@ -149,8 +178,8 @@ module.exports = function handleClick(g, gd, numClicks) {
         var traceIndicesInGroup = [];
         var tracei;
         if(hasLegendgroup) {
-            for(i = 0; i < fullData.length; i++) {
-                tracei = fullData[i];
+            for(i = 0; i < allLegendItems.length; i++) {
+                tracei = allLegendItems[i];
                 if(!tracei.visible) continue;
                 if(tracei.legendgroup === legendgroup) {
                     traceIndicesInGroup.push(i);
@@ -175,9 +204,10 @@ module.exports = function handleClick(g, gd, numClicks) {
 
             if(hasLegendgroup) {
                 if(toggleGroup) {
-                    for(i = 0; i < fullData.length; i++) {
-                        if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
-                            setVisibility(fullData[i], nextVisibility);
+                    for(i = 0; i < allLegendItems.length; i++) {
+                        var item = allLegendItems[i];
+                        if(item.visible !== false && item.legendgroup === legendgroup) {
+                            setVisibility(item, nextVisibility);
                         }
                     }
                 } else {
@@ -189,40 +219,43 @@ module.exports = function handleClick(g, gd, numClicks) {
         } else if(mode === 'toggleothers') {
             // Compute the clicked index. expandedIndex does what we want for expanded traces
             // but also culls hidden traces. That means we have some work to do.
-            var isClicked, isInGroup, notInLegend, otherState;
+            var isClicked, isInGroup, notInLegend, otherState, _item;
             var isIsolated = true;
-            for(i = 0; i < fullData.length; i++) {
-                isClicked = fullData[i] === fullTrace;
-                notInLegend = fullData[i].showlegend !== true;
+            for(i = 0; i < allLegendItems.length; i++) {
+                _item = allLegendItems[i];
+                isClicked = _item === fullTrace;
+                notInLegend = _item.showlegend !== true;
                 if(isClicked || notInLegend) continue;
 
-                isInGroup = (hasLegendgroup && fullData[i].legendgroup === legendgroup);
+                isInGroup = (hasLegendgroup && _item.legendgroup === legendgroup);
 
-                if(!isInGroup && fullData[i].visible === true && !Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
+                if(!isInGroup && _item.legend === thisLegend && _item.visible === true && !Registry.traceIs(_item, 'notLegendIsolatable')) {
                     isIsolated = false;
                     break;
                 }
             }
 
-            for(i = 0; i < fullData.length; i++) {
-                // False is sticky; we don't change it. Also ensure we don't change states of itmes in other legend
-                if(fullData[i].visible === false || fullData[i].legend !== thisLegend) continue;
+            for(i = 0; i < allLegendItems.length; i++) {
+                _item = allLegendItems[i];
 
-                if(Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
+                // False is sticky; we don't change it. Also ensure we don't change states of itmes in other legend
+                if(_item.visible === false || _item.legend !== thisLegend) continue;
+
+                if(Registry.traceIs(_item, 'notLegendIsolatable')) {
                     continue;
                 }
 
                 switch(fullTrace.visible) {
                     case 'legendonly':
-                        setVisibility(fullData[i], true);
+                        setVisibility(_item, true);
                         break;
                     case true:
                         otherState = isIsolated ? true : 'legendonly';
-                        isClicked = fullData[i] === fullTrace;
+                        isClicked = _item === fullTrace;
                         // N.B. consider traces that have a set legendgroup as toggleable
-                        notInLegend = (fullData[i].showlegend !== true && !fullData[i].legendgroup);
-                        isInGroup = isClicked || (hasLegendgroup && fullData[i].legendgroup === legendgroup);
-                        setVisibility(fullData[i], (isInGroup || notInLegend) ? true : otherState);
+                        notInLegend = (_item.showlegend !== true && !_item.legendgroup);
+                        isInGroup = isClicked || (hasLegendgroup && _item.legendgroup === legendgroup);
+                        setVisibility(_item, (isInGroup || notInLegend) ? true : otherState);
                         break;
                 }
             }
@@ -236,7 +269,7 @@ module.exports = function handleClick(g, gd, numClicks) {
             var updateKeys = Object.keys(update);
             for(j = 0; j < updateKeys.length; j++) {
                 key = updateKeys[j];
-                val = attrUpdate[key] = attrUpdate[key] || [];
+                val = dataUpdate[key] = dataUpdate[key] || [];
                 val[carrIdx[i]] = update[key];
             }
         }
@@ -245,17 +278,21 @@ module.exports = function handleClick(g, gd, numClicks) {
         // values should be explicitly undefined for them to get properly culled
         // as updates and not accidentally reset to the default value. This fills
         // out sparse arrays with the required number of undefined values:
-        keys = Object.keys(attrUpdate);
+        keys = Object.keys(dataUpdate);
         for(i = 0; i < keys.length; i++) {
             key = keys[i];
-            for(j = 0; j < attrIndices.length; j++) {
+            for(j = 0; j < dataIndices.length; j++) {
                 // Use hasOwnProperty to protect against falsy values:
-                if(!attrUpdate[key].hasOwnProperty(j)) {
-                    attrUpdate[key][j] = undefined;
+                if(!dataUpdate[key].hasOwnProperty(j)) {
+                    dataUpdate[key][j] = undefined;
                 }
             }
         }
 
-        Registry.call('_guiRestyle', gd, attrUpdate, attrIndices);
+        if(shapesUpdated) {
+            Registry.call('_guiUpdate', gd, dataUpdate, {shapes: updatedShapes}, dataIndices);
+        } else {
+            Registry.call('_guiRestyle', gd, dataUpdate, dataIndices);
+        }
     }
 };

@@ -228,7 +228,7 @@ var getDataConversions = axes.getDataConversions = function(gd, trace, target, t
     // In the case of an array target, make a mock data array
     // and call supplyDefaults to the data type and
     // setup the data-to-calc method.
-    if(Array.isArray(d2cTarget)) {
+    if(Lib.isArrayOrTypedArray(d2cTarget)) {
         ax = {
             type: autoType(targetArray, undefined, {
                 autotypenumbers: gd._fullLayout.autotypenumbers
@@ -321,14 +321,20 @@ axes.saveRangeInitial = function(gd, overwrite) {
 
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
-        var isNew = (ax._rangeInitial === undefined);
-        var hasChanged = isNew || !(
-            ax.range[0] === ax._rangeInitial[0] &&
-            ax.range[1] === ax._rangeInitial[1]
+        var isNew =
+            ax._rangeInitial0 === undefined &&
+            ax._rangeInitial1 === undefined;
+
+        var hasChanged = isNew || (
+            ax.range[0] !== ax._rangeInitial0 ||
+            ax.range[1] !== ax._rangeInitial1
         );
 
-        if((isNew && ax.autorange === false) || (overwrite && hasChanged)) {
-            ax._rangeInitial = ax.range.slice();
+        var autorange = ax.autorange;
+        if((isNew && autorange !== true) || (overwrite && hasChanged)) {
+            ax._rangeInitial0 = (autorange === 'min' || autorange === 'max reversed') ? undefined : ax.range[0];
+            ax._rangeInitial1 = (autorange === 'max' || autorange === 'min reversed') ? undefined : ax.range[1];
+            ax._autorangeInitial = autorange;
             hasOneAxisChanged = true;
         }
     }
@@ -943,10 +949,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
         if(mockAx.tickmode === 'array') {
             if(major) {
                 tickVals = [];
-                ticksOut = arrayTicks(ax);
+                ticksOut = arrayTicks(ax, !isMinor);
             } else {
                 minorTickVals = [];
-                minorTicks = arrayTicks(ax);
+                minorTicks = arrayTicks(ax, !isMinor);
             }
             continue;
         }
@@ -1255,7 +1261,7 @@ function syncTicks(ax) {
     return ticksOut;
 }
 
-function arrayTicks(ax) {
+function arrayTicks(ax, majorOnly) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
     var exRng = expandRange(rng);
     var tickMin = Math.min(exRng[0], exRng[1]);
@@ -1273,16 +1279,16 @@ function arrayTicks(ax) {
 
     var ticksOut = [];
     for(var isMinor = 0; isMinor <= 1; isMinor++) {
+        if((majorOnly !== undefined) && ((majorOnly && isMinor) || (majorOnly === false && !isMinor))) continue;
         if(isMinor && !ax.minor) continue;
         var vals = !isMinor ? ax.tickvals : ax.minor.tickvals;
         var text = !isMinor ? ax.ticktext : [];
-
         if(!vals) continue;
 
 
         // without a text array, just format the given values as any other ticks
         // except with more precision to the numbers
-        if(!Array.isArray(text)) text = [];
+        if(!Lib.isArrayOrTypedArray(text)) text = [];
 
         for(var i = 0; i < vals.length; i++) {
             var vali = tickVal2l(vals[i]);
@@ -1618,7 +1624,7 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     var tickVal2l = axType === 'category' ? ax.d2l_noadd : ax.d2l;
     var i;
 
-    if(arrayMode && Array.isArray(ax.ticktext)) {
+    if(arrayMode && Lib.isArrayOrTypedArray(ax.ticktext)) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         var minDiff = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / 10000;
 
@@ -1697,8 +1703,8 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
 axes.hoverLabelText = function(ax, values, hoverformat) {
     if(hoverformat) ax = Lib.extendFlat({}, ax, {hoverformat: hoverformat});
 
-    var val = Array.isArray(values) ? values[0] : values;
-    var val2 = Array.isArray(values) ? values[1] : undefined;
+    var val = Lib.isArrayOrTypedArray(values) ? values[0] : values;
+    var val2 = Lib.isArrayOrTypedArray(values) ? values[1] : undefined;
     if(val2 !== undefined && val2 !== val) {
         return (
             axes.hoverLabelText(ax, val, hoverformat) + ' - ' +
@@ -1738,6 +1744,9 @@ function formatDate(ax, out, hover, extraPrecision) {
     var tr = ax._tickround;
     var fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
 
+    // Only apply extra precision if no explicit format was provided.
+    extraPrecision = !fmt && extraPrecision;
+
     if(extraPrecision) {
         // second or sub-second precision: extra always shows max digits.
         // for other fields, extra precision just adds one field.
@@ -1762,7 +1771,7 @@ function formatDate(ax, out, hover, extraPrecision) {
         // anything to be uniform with!)
 
         // can we remove the whole time part?
-        if(dateStr === '00:00:00' || dateStr === '00:00') {
+        if(headStr !== undefined && (dateStr === '00:00:00' || dateStr === '00:00')) {
             dateStr = headStr;
             headStr = '';
         } else if(dateStr.length === 8) {
@@ -3815,28 +3824,105 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
+    var computeTickLabelBoundingBoxes = function() {
+        var labelsMaxW = 0;
+        var labelsMaxH = 0;
+        tickLabels.each(function(d, i) {
+            var thisLabel = selectTickLabel(this);
+            var mathjaxGroup = thisLabel.select('.text-math-group');
+
+            if(mathjaxGroup.empty()) {
+                var bb;
+
+                if(ax._vals[i]) {
+                    bb = ax._vals[i].bb || Drawing.bBox(thisLabel.node());
+                    ax._vals[i].bb = bb;
+                }
+
+                labelsMaxW = Math.max(labelsMaxW, bb.width);
+                labelsMaxH = Math.max(labelsMaxH, bb.height);
+            }
+        });
+
+        return {
+            labelsMaxW: labelsMaxW,
+            labelsMaxH: labelsMaxH
+        };
+    };
+
     var anchorAx = ax._anchorAxis;
     if(
-        anchorAx && anchorAx.autorange &&
+        anchorAx && (anchorAx.autorange || anchorAx.insiderange) &&
         insideTicklabelposition(ax) &&
         !isLinked(fullLayout, ax._id)
     ) {
-        if(!fullLayout._insideTickLabelsAutorange) {
-            fullLayout._insideTickLabelsAutorange = {};
+        if(!fullLayout._insideTickLabelsUpdaterange) {
+            fullLayout._insideTickLabelsUpdaterange = {};
         }
-        fullLayout._insideTickLabelsAutorange[anchorAx._name + '.autorange'] = anchorAx.autorange;
 
-        seq.push(
-            function computeFinalTickLabelBoundingBoxes() {
-                tickLabels.each(function(d, i) {
-                    var thisLabel = selectTickLabel(this);
-                    var mathjaxGroup = thisLabel.select('.text-math-group');
-                    if(mathjaxGroup.empty()) {
-                        ax._vals[i].bb = Drawing.bBox(thisLabel.node());
-                    }
-                });
+        if(anchorAx.autorange) {
+            fullLayout._insideTickLabelsUpdaterange[anchorAx._name + '.autorange'] = anchorAx.autorange;
+
+            seq.push(computeTickLabelBoundingBoxes);
+        }
+
+        if(anchorAx.insiderange) {
+            var BBs = computeTickLabelBoundingBoxes();
+            var move = ax._id.charAt(0) === 'y' ?
+                BBs.labelsMaxW :
+                BBs.labelsMaxH;
+
+            move += 2 * TEXTPAD;
+
+            if(ax.ticklabelposition === 'inside') {
+                move += ax.ticklen || 0;
             }
-        );
+
+            var sgn = (ax.side === 'right' || ax.side === 'top') ? 1 : -1;
+            var index = sgn === 1 ? 1 : 0;
+            var otherIndex = sgn === 1 ? 0 : 1;
+
+            var newRange = [];
+            newRange[otherIndex] = anchorAx.range[otherIndex];
+
+            var p0 = anchorAx.d2p(anchorAx.range[index]);
+            var p1 = anchorAx.d2p(anchorAx.range[otherIndex]);
+            var dist = Math.abs(p1 - p0);
+            if(dist - move > 0) {
+                dist -= move;
+                move *= 1 + move / dist;
+            } else {
+                move = 0;
+            }
+
+            if(ax._id.charAt(0) !== 'y') move = -move;
+
+            newRange[index] = anchorAx.p2d(
+                anchorAx.d2p(anchorAx.range[index]) +
+                sgn * move
+            );
+
+            // handle partial ranges in insiderange
+            if(
+                anchorAx.autorange === 'min' ||
+                anchorAx.autorange === 'max reversed'
+            ) {
+                newRange[0] = null;
+
+                anchorAx._rangeInitial0 = undefined;
+                anchorAx._rangeInitial1 = undefined;
+            } else if(
+                anchorAx.autorange === 'max' ||
+                anchorAx.autorange === 'min reversed'
+            ) {
+                newRange[1] = null;
+
+                anchorAx._rangeInitial0 = undefined;
+                anchorAx._rangeInitial1 = undefined;
+            }
+
+            fullLayout._insideTickLabelsUpdaterange[anchorAx._name + '.range'] = newRange;
+        }
     }
 
     var done = Lib.syncOrAsync(seq);

@@ -481,8 +481,8 @@ var configAttributes = {
             options: {info: {}}
         },
         description: ['Accessibility options: which library to use; whether to enable and the options to pass to the library.',
-        'chart2music is supported and options here include Options and Info from https://www.chart2music.com/docs/API/Config. '
-    ].join(' ')
+            'chart2music is supported and options here include Options and Info from https://www.chart2music.com/docs/API/Config. '
+        ].join(' ')
     },
 };
 

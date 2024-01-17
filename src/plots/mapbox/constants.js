@@ -2,7 +2,7 @@
 
 var sortObjectKeys = require('../../lib/sort_object_keys');
 
-var requiredVersion = '1.10.1';
+var requiredVersion = '1.13.4';
 
 var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 var carto = [
@@ -110,7 +110,7 @@ var stylesNonMapbox = {
             'plotly-stamen-terrain': {
                 type: 'raster',
                 attribution: stamenTerrainOrToner,
-                tiles: ['https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png'],
+                tiles: ['https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}.png?api_key='],
                 tileSize: 256
             }
         },
@@ -130,7 +130,7 @@ var stylesNonMapbox = {
             'plotly-stamen-toner': {
                 type: 'raster',
                 attribution: stamenTerrainOrToner,
-                tiles: ['https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'],
+                tiles: ['https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}.png?api_key='],
                 tileSize: 256
             }
         },
@@ -150,7 +150,7 @@ var stylesNonMapbox = {
             'plotly-stamen-watercolor': {
                 type: 'raster',
                 attribution: stamenWaterColor,
-                tiles: ['https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png'],
+                tiles: ['https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg?api_key='],
                 tileSize: 256
             }
         },
@@ -183,7 +183,7 @@ module.exports = {
 
     wrongVersionErrorMsg: [
         'Your custom plotly.js bundle is not using the correct mapbox-gl version',
-        'Please install mapbox-gl@' + requiredVersion + '.'
+        'Please install @plotly/mapbox-gl@' + requiredVersion + '.'
     ].join('\n'),
 
     noAccessTokenErrorMsg: [

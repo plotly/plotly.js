@@ -140,7 +140,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     pointData.spikeDistance = dxy(di) * spikePseudoDistance / hoverPseudoDistance;
     pointData[spikePosAttr] = pAxis.c2p(di.pos, true);
 
-    var hasMean = trace.boxmean || (trace.meanline || {}).visible;
+    var hasMean = trace.boxmean || (trace.sizemode === 'sd') || (trace.meanline || {}).visible;
     var hasFences = trace.boxpoints || trace.points;
 
     // labels with equal values (e.g. when min === q1) should still be presented in the order they have when they're unequal
@@ -179,7 +179,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         // clicked point from a box during click-to-select
         pointData2.hoverOnBox = true;
 
-        if(attr === 'mean' && ('sd' in di) && trace.boxmean === 'sd') {
+        if(attr === 'mean' && ('sd' in di) && ((trace.boxmean === 'sd') || (trace.sizemode === 'sd'))) {
             pointData2[vLetter + 'err'] = di.sd;
         }
 

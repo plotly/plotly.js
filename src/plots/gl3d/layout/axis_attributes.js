@@ -65,7 +65,17 @@ module.exports = overrideAll({
     }),
     autotypenumbers: axesAttrs.autotypenumbers,
     autorange: axesAttrs.autorange,
+    autorangeoptions: {
+        minallowed: axesAttrs.autorangeoptions.minallowed,
+        maxallowed: axesAttrs.autorangeoptions.maxallowed,
+        clipmin: axesAttrs.autorangeoptions.clipmin,
+        clipmax: axesAttrs.autorangeoptions.clipmax,
+        include: axesAttrs.autorangeoptions.include,
+        editType: 'plot'
+    },
     rangemode: axesAttrs.rangemode,
+    minallowed: axesAttrs.minallowed,
+    maxallowed: axesAttrs.maxallowed,
     range: extendFlat({}, axesAttrs.range, {
         items: [
             {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},

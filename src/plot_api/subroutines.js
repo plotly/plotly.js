@@ -430,6 +430,19 @@ exports.drawMainTitle = function(gd) {
                 'text-anchor': textAnchor,
                 dy: getMainTitleDyAdj(title.yanchor)
             }).call(svgTextUtils.positionText, x, y);
+
+            var extraLines = (title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
+            if(extraLines) {
+                var delta = alignmentConstants.LINE_SPACING * extraLines + alignmentConstants.MID_SHIFT;
+                if(title.y === 0) {
+                    delta = -delta;
+                }
+
+                titleObj.selectAll('.line').each(function() {
+                    var newDy = +(this.getAttribute('dy')).slice(0, -2) - delta + 'em';
+                    this.setAttribute('dy', newDy);
+                });
+            }
         }
     }
 };

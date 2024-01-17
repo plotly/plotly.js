@@ -29,8 +29,20 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
     }
 
+    shapeOut._isShape = true;
+
     var visible = coerce('visible');
     if(!visible) return;
+
+    var showlegend = coerce('showlegend');
+    if(showlegend) {
+        coerce('legend');
+        coerce('legendwidth');
+        coerce('legendgroup');
+        coerce('legendgrouptitle.text');
+        Lib.coerceFont(coerce, 'legendgrouptitle.font');
+        coerce('legendrank');
+    }
 
     var path = coerce('path');
     var dfltType = path ? 'path' : 'rect';

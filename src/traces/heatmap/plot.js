@@ -162,7 +162,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var canvas = document.createElement('canvas');
         canvas.width = canvasW;
         canvas.height = canvasH;
-        var context = canvas.getContext('2d');
+        var context = canvas.getContext('2d', {willReadFrequently: true});
 
         var sclFunc = makeColorScaleFuncFromTrace(trace, {noNumericCheck: true, returnArray: true});
 

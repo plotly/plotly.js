@@ -1,3 +1,4 @@
+var webpack = require('webpack');
 var path = require('path');
 var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
@@ -21,21 +22,19 @@ module.exports = {
                 loader: 'babel-loader'
             }
         }, {
-            test: /\.js$/,
-            include: /node_modules[\\\/](buffer|d3-color|d3-interpolate|is-mobile)[\\\/]/,
+            test: /\.mjs$/,
+            include: /node_modules[\\\/]chart2music[\\\/]/,
             use: {
                 loader: 'babel-loader',
                 options: {
                     babelrc: false,
                     configFile: false,
-                    presets: [
-                        '@babel/preset-env'
-                    ]
-                }
+                    presets: ['@babel/preset-env',],
+                },
             },
         }, {
-            test: /accessibility\.js$/,
-            include: /src[\\\/]plot_api/,
+            test: /\.js$/,
+            include: /node_modules[\\\/](buffer|d3-color|d3-interpolate|is-mobile)[\\\/]/,
             use: {
                 loader: 'babel-loader',
                 options: {
@@ -65,7 +64,10 @@ module.exports = {
         }
     },
     plugins: [
-        new NodePolyfillPlugin({ includeAliases: ['process'] })
+        new NodePolyfillPlugin({ includeAliases: ['process'] }),
+        new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 1,
+        }),
     ],
     watchOptions: {
         ignored: [

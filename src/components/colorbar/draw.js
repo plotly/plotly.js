@@ -117,6 +117,7 @@ function makeColorBarData(gd) {
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         trace = cd[0].trace;
+        if(!trace._module) continue;
         var moduleOpts = trace._module.colorbar;
 
         if(trace.visible === true && moduleOpts) {
@@ -1003,6 +1004,7 @@ function mockColorBarAxis(gd, opts, zrange) {
         noHover: true,
         noTickson: true,
         noTicklabelmode: true,
+        noInsideRange: true,
         calendar: fullLayout.calendar  // not really necessary (yet?)
     };
 

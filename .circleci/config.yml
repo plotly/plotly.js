@@ -122,6 +122,26 @@ jobs:
           name: Run jasmine tests (part B)
           command: .circleci/test.sh webgl-jasmine
 
+  virtual-webgl-jasmine:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: cimg/node:16.17.1-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    parallelism: 8
+    working_directory: ~/plotly.js
+    steps:
+      - browser-tools/install-browser-tools: &browser-versions
+          chrome-version: 110.0.5481.100
+          install-firefox: false
+          install-geckodriver: false
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run jasmine tests (part B)
+          command: .circleci/test.sh virtual-webgl-jasmine
+
   flaky-no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
@@ -216,6 +236,25 @@ jobs:
           name: Test MathJax on firefox-latest
           command: .circleci/test.sh mathjax-firefox82+
 
+  make-baselines-virtual-webgl:
+    parallelism: 2
+    docker:
+      - image: circleci/python:3.8.9
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install kaleido, plotly.io and required fonts
+          command: .circleci/env_image.sh
+      - run:
+          name: Create png files using virtual-webgl & WebGL v1
+          command: .circleci/test.sh make-baselines-virtual-webgl
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - plotly.js
+
   make-baselines-mathjax3:
     docker:
       - image: circleci/python:3.8.9
@@ -253,7 +292,54 @@ jobs:
           paths:
             - plotly.js
 
+  make-baselines-b64:
+    parallelism: 4
+    docker:
+      - image: circleci/python:3.8.9
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install kaleido, plotly.io and required fonts
+          command: .circleci/env_image.sh
+      - run:
+          name: Create all png files
+          command: .circleci/test.sh make-baselines-b64
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - plotly.js
+
   test-baselines:
+    docker:
+      - image: circleci/node:16.9.0
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Compare pixels
+          command: .circleci/test.sh test-image ; find build -maxdepth 1 -type f -delete
+      - store_artifacts:
+          path: build
+          destination: /
+
+  test-baselines-virtual-webgl:
+    docker:
+      - image: circleci/node:16.9.0
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Compare pixels
+          command: .circleci/test.sh test-image-virtual-webgl ; find build -maxdepth 1 -type f -delete
+      - store_artifacts:
+          path: build
+          destination: /
+
+  test-baselines-b64:
     docker:
       - image: circleci/node:16.9.0
     working_directory: ~/plotly.js
@@ -441,15 +527,30 @@ workflows:
       - webgl-jasmine:
           requires:
             - install-and-cibuild
+      - virtual-webgl-jasmine:
+          requires:
+            - install-and-cibuild
       - flaky-no-gl-jasmine:
           requires:
             - install-and-cibuild
+      - make-baselines-virtual-webgl:
+          requires:
+            - install-and-cibuild
+      - test-baselines-virtual-webgl:
+          requires:
+            - make-baselines-virtual-webgl
       - make-baselines-mathjax3:
           requires:
             - install-and-cibuild
       - test-baselines-mathjax3:
           requires:
             - make-baselines-mathjax3
+      - make-baselines-b64:
+          requires:
+            - install-and-cibuild
+      - test-baselines-b64:
+          requires:
+            - make-baselines-b64
       - make-baselines:
           requires:
             - install-and-cibuild
