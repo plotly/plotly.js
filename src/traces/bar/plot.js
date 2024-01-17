@@ -34,10 +34,13 @@ function getKeyFunc(trace) {
     }
 }
 
+// Returns -1 if v < 0, 1 if v > 0, and 0 if v == 0
 function sign(v) {
     return (v > 0) - (v < 0);
 }
 
+// Returns 1 if a < b and -1 otherwise
+// (For the purposes of this module we don't care about the case where a == b)
 function dirSign(a, b) {
     return (a < b) ? 1 : -1;
 }
@@ -251,14 +254,15 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
 
             // Calculate corner radius of bar in pixels
             function calcCornerRadius(crValue, crForm) {
+                if(!crValue) return 0;
+
                 var barWidth = isHorizontal ? Math.abs(y1 - y0) : Math.abs(x1 - x0);
                 var barLength = isHorizontal ? Math.abs(x1 - x0) : Math.abs(y1 - y0);
                 var stackedBarTotalLength = fixpx(Math.abs(c2p(outerBound, true) - c2p(0, true)));
                 var maxRadius = di.hasB ? Math.min(barWidth / 2, barLength / 2) : Math.min(barWidth / 2, stackedBarTotalLength);
                 var crPx;
-                if(!crValue) {
-                    return 0;
-                } else if(crForm === '%') {
+
+                if(crForm === '%') {
                     // If radius is given as a % string, convert to number of pixels
                     var crPercent = Math.min(50, crValue);
                     crPx = barWidth * (crPercent / 100);
