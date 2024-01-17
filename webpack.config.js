@@ -1,3 +1,4 @@
+var webpack = require('webpack');
 var path = require('path');
 var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
@@ -63,7 +64,10 @@ module.exports = {
         }
     },
     plugins: [
-        new NodePolyfillPlugin({ includeAliases: ['process'] })
+        new NodePolyfillPlugin({ includeAliases: ['process'] }),
+        new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 1,
+        }),
     ],
     watchOptions: {
         ignored: [
