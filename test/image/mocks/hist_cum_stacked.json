@@ -40,6 +40,7 @@
         "yaxis2": {"domain": [0.8, 1], "showline": false, "showticklabels": false},
         "height": 300,
         "width": 400,
+        "barcornerradius": "50%",
         "barmode": "stack"
     }
 }
