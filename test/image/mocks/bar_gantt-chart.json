@@ -68,6 +68,7 @@
         }
     ],
     "layout": {
+        "barcornerradius": "50%",
         "width": 1000,
         "height": 500,
         "title": {
