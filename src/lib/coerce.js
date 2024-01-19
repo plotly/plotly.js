@@ -12,21 +12,46 @@ var nestedProperty = require('./nested_property');
 var counterRegex = require('./regex').counter;
 var modHalf = require('./mod').modHalf;
 var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
+var isTypedArraySpec = require('./array').isTypedArraySpec;
+var decodeTypedArraySpec = require('./array').decodeTypedArraySpec;
 
 exports.valObjectMeta = {
     data_array: {
         // You can use *dflt=[] to force said array to exist though.
         description: [
             'An {array} of data.',
-            'The value MUST be an {array}, or we ignore it.',
-            'Note that typed arrays (e.g. Float32Array) are supported.'
+            'The value must represent an {array} or it will be ignored,',
+            'but this array can be provided in several forms:',
+            '(1) a regular {array} object',
+            '(2) a typed array (e.g. Float32Array)',
+            '(3) an object with keys dtype, bdata, and optionally shape.',
+            'In this 3rd form, dtype is one of',
+            '*f8*, *f4*.',
+            '*i4*, *u4*,',
+            '*i2*, *u2*,',
+            '*i1*, *u1* or *u1c* for Uint8ClampedArray.',
+            'In addition to shorthand `dtype` above one could also use the following forms:',
+            '*float64*, *float32*,',
+            '*int32*, *uint32*,',
+            '*int16*, *uint16*,',
+            '*int8*, *uint8* or *uint8c* for Uint8ClampedArray.',
+            '`bdata` is either a base64-encoded string or the ArrayBuffer of',
+            'an integer or float typed array.',
+            'For either multi-dimensional arrays you must also',
+            'provide its dimensions separated by comma via `shape`.',
+            'For example using `dtype`: *f4* and `shape`: *5,100* you can',
+            'declare a 2-D array that has 5 rows and 100 columns',
+            'containing float32 values i.e. 4 bits per value.',
+            '`shape` is optional for one dimensional arrays.'
         ].join(' '),
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            // TODO maybe `v: {type: 'float32', vals: [/* ... */]}` also
-            if(isArrayOrTypedArray(v)) propOut.set(v);
-            else if(dflt !== undefined) propOut.set(dflt);
+            propOut.set(
+                isArrayOrTypedArray(v) ? v :
+                isTypedArraySpec(v) ? decodeTypedArraySpec(v) :
+                dflt
+            );
         }
     },
     enumerated: {
@@ -240,8 +265,14 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt', 'values', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt) {
-            if(v === undefined) propOut.set(dflt);
-            else propOut.set(v);
+            if(v === undefined) {
+                propOut.set(dflt);
+            } else {
+                propOut.set(
+                    isTypedArraySpec(v) ? decodeTypedArraySpec(v) :
+                    v
+                );
+            }
         }
     },
     info_array: {
@@ -268,17 +299,19 @@ exports.valObjectMeta = {
                 return out;
             }
 
-            var twoD = opts.dimensions === 2 || (opts.dimensions === '1-2' && Array.isArray(v) && Array.isArray(v[0]));
+            if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
 
-            if(!Array.isArray(v)) {
+            if(!isArrayOrTypedArray(v)) {
                 propOut.set(dflt);
                 return;
             }
 
+            var twoD = opts.dimensions === 2 || (opts.dimensions === '1-2' && Array.isArray(v) && isArrayOrTypedArray(v[0]));
+
             var items = opts.items;
             var vOut = [];
             var arrayItems = Array.isArray(items);
-            var arrayItems2D = arrayItems && twoD && Array.isArray(items[0]);
+            var arrayItems2D = arrayItems && twoD && isArrayOrTypedArray(items[0]);
             var innerItemsOnly = twoD && arrayItems && !arrayItems2D;
             var len = (arrayItems && !innerItemsOnly) ? items.length : v.length;
 
@@ -289,7 +322,7 @@ exports.valObjectMeta = {
             if(twoD) {
                 for(i = 0; i < len; i++) {
                     vOut[i] = [];
-                    row = Array.isArray(v[i]) ? v[i] : [];
+                    row = isArrayOrTypedArray(v[i]) ? v[i] : [];
                     if(innerItemsOnly) len2 = items.length;
                     else if(arrayItems) len2 = items[i].length;
                     else len2 = row.length;
@@ -313,7 +346,7 @@ exports.valObjectMeta = {
             propOut.set(vOut);
         },
         validateFunction: function(v, opts) {
-            if(!Array.isArray(v)) return false;
+            if(!isArrayOrTypedArray(v)) return false;
 
             var items = opts.items;
             var arrayItems = Array.isArray(items);
@@ -325,7 +358,7 @@ exports.valObjectMeta = {
             // valid when all input items are valid
             for(var i = 0; i < v.length; i++) {
                 if(twoD) {
-                    if(!Array.isArray(v[i]) || (!opts.freeLength && v[i].length !== items[i].length)) {
+                    if(!isArrayOrTypedArray(v[i]) || (!opts.freeLength && v[i].length !== items[i].length)) {
                         return false;
                     }
                     for(var j = 0; j < v[i].length; j++) {
@@ -368,15 +401,24 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
 
     if(dflt === undefined) dflt = opts.dflt;
 
-    /**
-     * arrayOk: value MAY be an array, then we do no value checking
-     * at this point, because it can be more complicated than the
-     * individual form (eg. some array vals can be numbers, even if the
-     * single values must be color strings)
-     */
-    if(opts.arrayOk && isArrayOrTypedArray(v)) {
-        propOut.set(v);
-        return v;
+    if(opts.arrayOk) {
+        if(isArrayOrTypedArray(v)) {
+            /**
+             * arrayOk: value MAY be an array, then we do no value checking
+             * at this point, because it can be more complicated than the
+             * individual form (eg. some array vals can be numbers, even if the
+             * single values must be color strings)
+             */
+
+            propOut.set(v);
+            return v;
+        } else {
+            if(isTypedArraySpec(v)) {
+                v = decodeTypedArraySpec(v);
+                propOut.set(v);
+                return v;
+            }
+        }
     }
 
     var coerceFunction = exports.valObjectMeta[opts.valType].coerceFunction;

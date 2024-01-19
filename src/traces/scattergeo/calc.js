@@ -6,6 +6,7 @@ var BADNUM = require('../../constants/numerical').BADNUM;
 var calcMarkerColorscale = require('../scatter/colorscale_calc');
 var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 var _ = require('../../lib')._;
 
@@ -14,7 +15,7 @@ function isNonBlankString(v) {
 }
 
 module.exports = function calc(gd, trace) {
-    var hasLocationData = Array.isArray(trace.locations);
+    var hasLocationData = isArrayOrTypedArray(trace.locations);
     var len = hasLocationData ? trace.locations.length : trace._length;
     var calcTrace = new Array(len);
 

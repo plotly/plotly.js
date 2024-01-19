@@ -28,7 +28,6 @@ var supplyDefaults = require('../assets/supply_defaults');
 
 describe('Test axes', function() {
     'use strict';
-
     describe('swap', function() {
         it('should swap most attributes and fix placeholder titles', function() {
             var gd = {
@@ -8214,6 +8213,73 @@ describe('shift tests', function() {
             checkLine('path.xy4-y.crisp', 616);
             expect(gd._fullLayout.yaxis3._shift).toBeCloseTo(-100, 2);
             expect(gd._fullLayout.yaxis4._shift).toBeCloseTo(100, 2);
+        });
+    });
+});
+describe('test tickmode calculator', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function generateTickConfig() {
+        var standardConfig = {tickmode: 'array', ticks: 'inside', ticklen: 1, showticklabels: false};
+
+        // Number of ticks will be random
+        Lib.seedPseudoRandom();
+        var n = (Lib.pseudoRandom() * 99) + 1;
+        var tickVals = [];
+        for(var i = 0; i <= n; i++) {
+            tickVals.push(i);
+        }
+        standardConfig.tickvals = tickVals;
+        standardConfig.ticktext = tickVals;
+        return standardConfig;
+    }
+    var ticksOff = {tickmode: 'array', ticks: '', tickvals: [], ticktext: [], ticklen: 0, showticklabels: false};
+
+    function _assert(expLength) {
+        var ax = gd._fullLayout.xaxis;
+
+        // all positions
+        var positions =
+            ax._vals
+                .filter(function(d) { return d; })
+                .map(function(d) { return d.x; });
+
+        expect(positions.length).toEqual(expLength);
+    }
+
+    describe('arrayTicks', function() {
+        it('should return the specified correct number of major ticks and minor ticks', function(done) {
+            var xMajorConfig = ticksOff;
+            var xMinorConfig = ticksOff;
+            xMajorConfig = generateTickConfig();
+            xMinorConfig = generateTickConfig();
+            xMajorConfig.range = [0, 1000];
+            xMajorConfig.minor = xMinorConfig;
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [0, 1],
+                    y: [0, 1]
+                }],
+                layout: {
+                    width: 400,
+                    height: 400,
+                    margin: {
+                        t: 40,
+                        b: 40,
+                        l: 40,
+                        r: 40
+                    },
+                    xaxis: xMajorConfig,
+                }
+            }).then(function() {
+                _assert(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
+            }).then(done, done.fail);
         });
     });
 });

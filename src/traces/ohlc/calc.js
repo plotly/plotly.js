@@ -50,8 +50,8 @@ function calcCommon(gd, trace, origX, x, ya, ptFunc) {
     var l = ya.makeCalcdata(trace, 'low');
     var c = ya.makeCalcdata(trace, 'close');
 
-    var hasTextArray = Array.isArray(trace.text);
-    var hasHovertextArray = Array.isArray(trace.hovertext);
+    var hasTextArray = Lib.isArrayOrTypedArray(trace.text);
+    var hasHovertextArray = Lib.isArrayOrTypedArray(trace.hovertext);
 
     // we're optimists - before we have any changing data, assume increasing
     var increasing = true;

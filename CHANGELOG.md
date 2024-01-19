@@ -9,6 +9,30 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.28.0] -- 2024-01-05
+
+### Added
+ - Add `align` option to sankey nodes to control horizontal alignment [[#6800](https://github.com/plotly/plotly.js/pull/6800)],
+   with thanks to @adamreeve for the contribution!
+ - Add the possibility of loading "virtual-webgl" script for WebGL 1 to help display several WebGL contexts on a page [[#6784](https://github.com/plotly/plotly.js/pull/6784)], with thanks to @greggman for the contribution!
+ - Add options to use base64 encoding (`bdata`) and `shape` (for 2 dimensional arrays) to declare various typed arrays i.e. `dtype=(float64|float32|int32|int16|int8|uint32|uint16|uint8)` [[#5230](https://github.com/plotly/plotly.js/pull/5230)]
+
+### Fixed
+ - Fix scattergl rendering bug on M1 mac devices [[#6830](https://github.com/plotly/plotly.js/pull/6830)],
+   with thanks to @justinjhendrick for the contribution!
+ - Fix hovering over sankey node only fully highlights first trace [[#6799](https://github.com/plotly/plotly.js/pull/6799)],
+   with thanks to @DominicWuest for the contribution!
+ - Fix error when the mouse moves to x=0 while dragging a rangeslider [[#6780](https://github.com/plotly/plotly.js/pull/6780)],
+   with thanks to @david-bezero for the contribution!
+ - Fix duplicated of major and minor ticks in calc data [[#6829](https://github.com/plotly/plotly.js/pull/6829)],
+   with thanks to @ayjayt for the contribution!
+ - Fix charset test dashboard [[#6826](https://github.com/plotly/plotly.js/pull/6826)],
+   with thanks to @ayjayt for the contribution!
+ - Fix range defaults to take into account `minallowed` and `maxallowed` values of the axis [[#6796](https://github.com/plotly/plotly.js/pull/6796)]
+ - Fix `scattergl` legend when `marker.angle` is an array [[#6787](https://github.com/plotly/plotly.js/pull/6787)]
+ - Fix plot schema not to show `line.shape` options for `scatterpolargl` trace [[#6781](https://github.com/plotly/plotly.js/pull/6781)]
+
+
 ## [2.27.1] -- 2023-11-08
 
 ### Changed

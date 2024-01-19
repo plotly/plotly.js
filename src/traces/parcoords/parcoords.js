@@ -2,6 +2,7 @@
 
 var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 var numberFormat = Lib.numberFormat;
 var rgba = require('color-rgba');
 
@@ -237,7 +238,7 @@ function viewModel(state, callbacks, model) {
         var key = dimension.label + (foundKey ? '__' + foundKey : '');
         var specifiedConstraint = dimension.constraintrange;
         var filterRangeSpecified = specifiedConstraint && specifiedConstraint.length;
-        if(filterRangeSpecified && !Array.isArray(specifiedConstraint[0])) {
+        if(filterRangeSpecified && !isArrayOrTypedArray(specifiedConstraint[0])) {
             specifiedConstraint = [specifiedConstraint];
         }
         var filterRange = filterRangeSpecified ?
@@ -265,11 +266,13 @@ function viewModel(state, callbacks, model) {
         var ticktext;
         function makeTickItem(v, i) { return {val: v, text: ticktext[i]}; }
         function sortTickItem(a, b) { return a.val - b.val; }
-        if(Array.isArray(tickvals) && tickvals.length) {
+        if(isArrayOrTypedArray(tickvals) && tickvals.length) {
+            if(Lib.isTypedArray(tickvals)) tickvals = Array.from(tickvals);
+
             ticktext = dimension.ticktext;
 
             // ensure ticktext and tickvals have same length
-            if(!Array.isArray(ticktext) || !ticktext.length) {
+            if(!isArrayOrTypedArray(ticktext) || !ticktext.length) {
                 ticktext = tickvals.map(numberFormat(dimension.tickformat));
             } else if(ticktext.length > tickvals.length) {
                 ticktext = ticktext.slice(0, tickvals.length);

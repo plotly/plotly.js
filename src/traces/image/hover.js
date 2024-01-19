@@ -2,6 +2,7 @@
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 var constants = require('./constants');
 
 module.exports = function hoverPoints(pointData, xval, yval) {
@@ -54,9 +55,9 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     }
 
     var text;
-    if(Array.isArray(trace.hovertext) && Array.isArray(trace.hovertext[ny])) {
+    if(isArrayOrTypedArray(trace.hovertext) && isArrayOrTypedArray(trace.hovertext[ny])) {
         text = trace.hovertext[ny][nx];
-    } else if(Array.isArray(trace.text) && Array.isArray(trace.text[ny])) {
+    } else if(isArrayOrTypedArray(trace.text) && isArrayOrTypedArray(trace.text[ny])) {
         text = trace.text[ny][nx];
     }
 
