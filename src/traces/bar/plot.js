@@ -495,7 +495,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
         ly = lyFunc ? lyFunc(refPos) : Math.abs(y1 - y0);
     } else {
         refPos = (insidetextanchor === 'middle') ? Math.abs(y1 - y0) / 2 : TEXTPAD;
-        lx = lxFunc ? lxFunc(TEXTPAD) : Math.abs(x1 - x0);
+        lx = lxFunc ? lxFunc(refPos) : Math.abs(x1 - x0);
         ly = Math.abs(y1 - y0);
     }
     // padding excluded
@@ -641,7 +641,7 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
         ly = lyFunc ? lyFunc(refPos) : Math.abs(y1 - y0);
     } else {
         refPos = (anchor === 'middle') ? Math.abs(y1 - y0) / 2 : TEXTPAD;
-        lx = lxFunc ? lxFunc(TEXTPAD) : Math.abs(x1 - x0);
+        lx = lxFunc ? lxFunc(refPos) : Math.abs(x1 - x0);
         ly = Math.abs(y1 - y0);
     }
 
