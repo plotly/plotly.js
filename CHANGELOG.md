@@ -572,7 +572,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
    with thanks to Kitware and @waxlamp for kicking off this effort.
 
 ### Changed
- - Improve drawing the contour lines in non-linear space e.g. on log axes [[#5985](https://github.com/plotly/plotly.js/pull/5985)], with thanks to @andrew-matteson for the contribution!!
+ - Improve drawing the contour lines in non-linear space e.g. on log axes [[#5985](https://github.com/plotly/plotly.js/pull/5985)], with thanks to @andrew-matteson for the contribution!
  - Bump eslint to v8 release candidate including fixes for `no-new-func` test [[#5969](https://github.com/plotly/plotly.js/pull/5969)]
 
 ### Fixed
