@@ -1,0 +1,1 @@
+- Update Sankey trace to allow user-defined link hover style override [[#6864](https://github.com/plotly/plotly.js/pull/6864)]
