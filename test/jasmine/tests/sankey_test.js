@@ -1087,7 +1087,7 @@ describe('sankey tests', function() {
                         .filter(function(obj) {
                             return obj.link.label === 'stream 1';
                         })[0].forEach(function(l) {
-                            expect(l.style.fillOpacity).toEqual('1.0');
+                            expect(l.style.fillOpacity).toEqual('1');
                         });
                 }).then(function() {
                     mouseEvent('mouseout', 200, 250);
