@@ -151,16 +151,12 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         var xmax = -Infinity;
         var ymin = Infinity;
         var ymax = -Infinity;
-        var yminAll = Infinity;
-        var ymaxAll = -Infinity;
         var yPos;
 
         for(i = 0; i < polygons.length; i++) {
             var polygon = polygons[i];
             // This is not going to work right for curved or jagged edges, it will
             // act as though they're straight.
-            yminAll = Math.min(yminAll, polygon.ymin);
-            ymaxAll = Math.max(ymaxAll, polygon.ymax);
             if(polygon.contains(pt)) {
                 polygonsIn.push(polygon);
                 ymin = Math.min(ymin, polygon.ymin);
@@ -170,14 +166,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
         // The above found no polygon that contains the cursor, but we know that
         // the cursor must be inside the fill as determined by the SVGElement
-        // (so we are probably close to a curved/jagged edge...). In this case
-        // as a crude approximation, simply consider all polygons for determination
-        // of the hover label position.
-        // TODO: This might cause some jumpiness of the label close to edges...
+        // (so we are probably close to a curved/jagged edge...).
         if(polygonsIn.length === 0) {
-            polygonsIn = polygons;
-            ymin = yminAll;
-            ymax = ymaxAll;
+            return null;
         }
 
         // constrain ymin/max to the visible plot, so the label goes
@@ -228,6 +219,18 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
         if(inside) {
             var hoverLabelCoords = getHoverLabelPosition(trace._polygons);
+
+            // getHoverLabelPosition may return null if the cursor / hover point is not contained
+            // in any of the trace's polygons, which can happen close to curved edges. in that
+            // case we fall back to displaying the hover label at the cursor position.
+            if(hoverLabelCoords === null) {
+                hoverLabelCoords = {
+                    x0: pt[0],
+                    x1: pt[0],
+                    y0: pt[1],
+                    y1: pt[1]
+                };
+            }
 
             // get only fill or line color for the hover color
             var color = Color.defaultLine;
