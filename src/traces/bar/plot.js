@@ -396,7 +396,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 Drawing.singlePointStyle(di, sel, trace, styleFns, gd);
             }
 
-            appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc, opts, makeOnCompleteCallback);
+            appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc, r, opts, makeOnCompleteCallback);
 
             if(plotinfo.layerClipId) {
                 Drawing.hideOutsideRangePoint(di, bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
@@ -413,7 +413,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
     Registry.getComponentMethod('errorbars', 'plot')(gd, bartraces, plotinfo, opts);
 }
 
-function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc, opts, makeOnCompleteCallback) {
+function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc, r, opts, makeOnCompleteCallback) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
@@ -450,6 +450,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
 
     var calcBar = cd[i];
     var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
+    var hasB = calcBar.hasB;
 
     if(!text ||
         textPosition === 'none' ||
@@ -532,6 +533,8 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
                 (barWidth >= textWidth * (barHeight / textHeight)) :
                 (barHeight >= textHeight * (barWidth / textWidth));
 
+            // TODO: Rounding needs to be considered when deciding
+            // whether text fits inside bar
             if(textHasSize && (
                 fitsInside ||
                 fitsInsideIfRotated ||
@@ -592,6 +595,8 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
             anchor: insidetextanchor,
             lxFunc: lxFunc,
             lyFunc: lyFunc,
+            hasB: hasB,
+            r: r,
         });
     }
 
@@ -628,22 +633,14 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     var leftToRight = opts.leftToRight || 0; // left: -1, center: 0, right: 1
     var toRight = (leftToRight + 1) / 2;
     var toLeft = 1 - toRight;
-    var lxFunc = opts.lxFunc;
-    var lyFunc = opts.lyFunc;
+    var hasB = opts.hasB;
+    var r = opts.r;
 
     var textWidth = textBB.width;
     var textHeight = textBB.height;
 
-    var lx, ly, refPos;
-    if(isHorizontal) {
-        refPos = (anchor === 'middle') ? Math.abs(x1 - x0) / 2 : TEXTPAD;
-        lx = Math.abs(x1 - x0);
-        ly = lyFunc ? lyFunc(refPos) : Math.abs(y1 - y0);
-    } else {
-        refPos = (anchor === 'middle') ? Math.abs(y1 - y0) / 2 : TEXTPAD;
-        lx = lxFunc ? lxFunc(refPos) : Math.abs(x1 - x0);
-        ly = Math.abs(y1 - y0);
-    }
+    var lx = Math.abs(x1 - x0);
+    var ly = Math.abs(y1 - y0);
 
     // compute remaining space
     var textpad = (
@@ -658,21 +655,31 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     if((angle === 'auto') &&
         !(textWidth <= lx && textHeight <= ly) &&
         (textWidth > lx || textHeight > ly) && (
-        !(textWidth > ly || textHeight > lx) ||
-        ((textWidth < textHeight) !== (lx < ly))
-    )) {
+            !(textWidth > ly || textHeight > lx) ||
+            ((textWidth < textHeight) !== (lx < ly))
+        )) {
         rotate += 90;
     }
 
     var t = getRotatedTextSize(textBB, rotate);
 
-    var scale = 1;
-    if(constrained) {
-        scale = Math.min(
-            1,
-            lx / t.x,
-            ly / t.y
-        );
+    var scale, padForRounding;
+    // Scale text for rounded bars
+    if(r && r > TEXTPAD) {
+        var scaleAndPad = scaleTextForRoundedBar(x0, x1, y0, y1, t, r, isHorizontal, hasB);
+        scale = scaleAndPad.scale;
+        padForRounding = scaleAndPad.pad;
+    // Scale text for non-rounded bars
+    } else {
+        scale = 1;
+        if(constrained) {
+            scale = Math.min(
+                1,
+                lx / t.x,
+                ly / t.y
+            );
+        }
+        padForRounding = 0;
     }
 
     // compute text and target positions
@@ -690,6 +697,11 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     var anchorY = 0;
     if(isStart || isEnd) {
         var extrapad = (isHorizontal ? t.x : t.y) / 2;
+
+        if(r && (hasB || isEnd)) {
+            extrapad += padForRounding;
+        }
+
         var dir = isHorizontal ? dirSign(x0, x1) : dirSign(y0, y1);
 
         if(isHorizontal) {
@@ -721,6 +733,54 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
         scale: scale,
         rotate: rotate
     };
+}
+
+function scaleTextForRoundedBar(x0, x1, y0, y1, t, r, isHorizontal, hasB) {
+    var barWidth = Math.max(0, Math.abs(x1 - x0) - 2 * TEXTPAD);
+    var barHeight = Math.max(0, Math.abs(y1 - y0) - 2 * TEXTPAD);
+    var R = r - TEXTPAD;
+    var rX = hasB ? R * 2 : (isHorizontal ? R : 2 * R);
+    var rY = hasB ? R * 2 : (isHorizontal ? 2 * R : R);
+    var a, b, c;
+    var scale, pad;
+
+    // Calculate how much extra padding is needed for bar
+    // TODO: This is the equation I worked out, but it seems to give a value that's too small
+    if(isHorizontal) {
+        pad = Math.max(0, R - Math.sqrt(R * R + (t.y - barHeight) / 2 - R));
+    } else {
+        pad = Math.max(0, R - Math.sqrt(R * R + (t.x - barWidth) / 2 - R));
+    }
+
+    if(t.y / t.x >= barHeight / (barWidth - rX)) {
+        // Case 1 (Tall text)
+        scale = barHeight / t.y;
+        pad = 0;
+    } else if(t.y / t.x <= (barHeight - rY) / barWidth) {
+        // Case 2 (Wide text)
+        scale = barWidth / t.x;
+        pad = 0;
+    } else if(!hasB && isHorizontal) {
+        // Case 3a (Quadratic case, two side corners are rounded)
+        a = t.x * t.x + t.y * t.y / 4;
+        b = t.y * (2 * R - barHeight) + 2 * t.x * (R - barWidth);
+        c = (R - barHeight / 2) * (R - barHeight / 2) + (R - barWidth) * (R - barWidth) - R * R;
+        scale = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+    } else if(!hasB) {
+        // Case 3b (Quadratic case, two top/bottom corners are rounded)
+        a = t.x * t.x / 4 + t.y * t.y;
+        b = 2 * t.x * (R - barHeight) + t.y * (2 * R - barWidth);
+        c = (R - barHeight) * (R - barHeight) + (R - barWidth / 2) * (R - barWidth / 2) - R * R;
+        scale = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+    } else {
+        // Case 4 (Quadratic case, all four corners are rounded)
+        // TODO: This gives a scale factor that's way too large, text overflows boundaries
+        a = (t.x * t.x + t.y * t.y) / 4;
+        b = t.y * (2 * R - barHeight) + t.x * (2 * R - barWidth);
+        c = (R - barHeight / 2) * (R - barHeight / 2) + (R - barWidth / 2) * (R - barWidth / 2) - R * R;
+        scale = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+    }
+    return { scale: scale, pad: pad };
 }
 
 function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
