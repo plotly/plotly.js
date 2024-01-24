@@ -3480,9 +3480,8 @@ axes.drawLabels = function(gd, ax, opts) {
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
 
-    var autoTickAnglesRadians = ax.autotickangles ?
-        ax.autotickangles.map(function(degrees) { return degrees * Math.PI / 180; }) :
-        undefined;
+    var autoTickAnglesRadians =
+        ax.autotickangles.map(function(degrees) { return degrees * Math.PI / 180; });
     var prevAngle = (ax._prevTickAngles || {})[cls];
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
@@ -3785,26 +3784,23 @@ axes.drawLabels = function(gd, ax, opts) {
                 var pad = !isAligned ? 0 :
                     (ax.tickwidth || 0) + 2 * TEXTPAD;
 
-                // old behavior for backwards-compatibility
-                var newAngle = ((tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory' || ax._name === 'realaxis') ? 90 : 30;
                 // autotickangles
-                if(autoTickAnglesRadians !== undefined) {
-                    var adjacent = tickSpacing;
-                    var opposite = maxFontSize * 1.25 * maxLines;
-                    var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
-                    var maxCos = adjacent / hypotenuse;
-                    var angleRadians = autoTickAnglesRadians.find(function(angle) { return Math.abs(Math.cos(angle)) <= maxCos; });
-                    if(angleRadians === undefined) {
-                        // no angle with smaller cosine than maxCos, just pick the angle with smallest cosine
-                        angleRadians = autoTickAnglesRadians.reduce(
-                            function(currentMax, nextAngle) {
-                                return Math.abs(Math.cos(currentMax)) < Math.abs(Math.cos(nextAngle)) ? currentMax : nextAngle;
-                            }
-                            , autoTickAnglesRadians[0]
-                        );
-                    }
-                    newAngle = angleRadians * (180 / Math.PI /* to degrees */);
+                var adjacent = tickSpacing;
+                var opposite = maxFontSize * 1.25 * maxLines;
+                var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
+                var maxCos = adjacent / hypotenuse;
+                var angleRadians = autoTickAnglesRadians.find(function(angle) { return Math.abs(Math.cos(angle)) <= maxCos; });
+                if(angleRadians === undefined) {
+                    // no angle with smaller cosine than maxCos, just pick the angle with smallest cosine
+                    angleRadians = autoTickAnglesRadians.reduce(
+                        function(currentMax, nextAngle) {
+                            return Math.abs(Math.cos(currentMax)) < Math.abs(Math.cos(nextAngle)) ? currentMax : nextAngle;
+                        }
+                        , autoTickAnglesRadians[0]
+                    );
                 }
+                var newAngle = angleRadians * (180 / Math.PI /* to degrees */);
+
                 for(i = 0; i < lbbArray.length - 1; i++) {
                     if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
                         autoangle = newAngle;

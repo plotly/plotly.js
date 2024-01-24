@@ -10700,8 +10700,11 @@
      "role": "object"
     },
     "autotickangles": {
-     "description": "When `tickangle` is set to *auto*, it will be set to the first angle in this array that is large enough to prevent label overlap. If undefined, tickangle *auto* will instead choose between 30 and 90 degrees.",
-     "dflt": null,
+     "description": "When `tickangle` is set to *auto*, it will be set to the first angle in this array that is large enough to prevent label overlap.",
+     "dflt": [
+      30,
+      90
+     ],
      "editType": "ticks",
      "freeLength": true,
      "items": {
@@ -12050,8 +12053,11 @@
      "valType": "boolean"
     },
     "autotickangles": {
-     "description": "When `tickangle` is set to *auto*, it will be set to the first angle in this array that is large enough to prevent label overlap. If undefined, tickangle *auto* will instead choose between 30 and 90 degrees.",
-     "dflt": null,
+     "description": "When `tickangle` is set to *auto*, it will be set to the first angle in this array that is large enough to prevent label overlap.",
+     "dflt": [
+      30,
+      90
+     ],
      "editType": "ticks",
      "freeLength": true,
      "items": {

@@ -815,13 +815,12 @@ module.exports = {
         items: {
             valType: 'angle'
         },
-        dflt: null,
+        dflt: [30, 90],
         editType: 'ticks',
         description: [
             'When `tickangle` is set to *auto*, it will be set to the first',
             'angle in this array that is large enough to prevent label',
-            'overlap. If undefined, tickangle *auto* will instead choose',
-            'between 30 and 90 degrees.'
+            'overlap.'
         ].join(' ')
     },
     tickprefix: {
