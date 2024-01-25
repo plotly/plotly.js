@@ -3663,7 +3663,6 @@ function deleteFrames(gd, frameList) {
  */
 function purge(gd) {
     gd = Lib.getGraphDiv(gd);
-
     var fullLayout = gd._fullLayout || {};
     var fullData = gd._fullData || [];
 
@@ -3681,7 +3680,6 @@ function purge(gd) {
 
     // in contrast to _doPlots.purge which does NOT clear _context!
     delete gd._context;
-
     return gd;
 }
 

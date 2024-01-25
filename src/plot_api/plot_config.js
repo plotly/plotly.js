@@ -478,7 +478,7 @@ var configAttributes = {
         dflt: {
             library: 'chart2music',
             enabled: true,
-            options: {info: {}}
+            options: {info: {}, closedCaptions: {generate: true, elId:'c2m-plotly-cc', elClassname:'c2m-plotly-closed_captions'}},
         },
         description: ['Accessibility options: which library to use; whether to enable and the options to pass to the library.',
             'chart2music is supported and options here include Options and Info from https://www.chart2music.com/docs/API/Config. '

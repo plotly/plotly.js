@@ -17,7 +17,9 @@ function enable(gd) {
         var c2mData = {};
         var labels = [];
         var info = options.info;
+        var closedCaptionsOptions = options.closedCaptions;
         delete options.info;
+        delete options.closedCaptions;
         var fullData = gd._fullData;
 
         for(var i = 0; i < fullData.length; i++) {
@@ -46,11 +48,15 @@ function enable(gd) {
                 return;
             }
         }
-
-        var closedCaptions = document.createElement('div');
-        closedCaptions.id = 'cc';
-        closedCaptions.className = 'closed_captions';
-        gd.appendChild(closedCaptions); // this does get generated
+        var closedCaptions;
+        if(closedCaptionsOptions.generate) {
+            closedCaptions = document.createElement('div'); // should this be Lib.getGraphDiv()?
+            closedCaptions.id = closedCaptionsOptions.elId;
+            closedCaptions.className = closedCaptionsOptions.elClassname;
+            gd.parentNode.insertBefore(closedCaptions, gd.nextSibling); // this does get generated
+        } else {
+            closedCaptions = document.getElementById(closedCaptionsOptions.elId);
+        }
 
         var titleText = 'Chart';
         if((gd._fullLayout.title !== undefined) && (gd._fullLayout.title.text !== undefined)) {
