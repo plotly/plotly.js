@@ -815,7 +815,7 @@ module.exports = {
         items: {
             valType: 'angle'
         },
-        dflt: [30, 90],
+        dflt: [0, 30, 90],
         editType: 'ticks',
         description: [
             'When `tickangle` is set to *auto*, it will be set to the first',
