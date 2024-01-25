@@ -40,6 +40,7 @@ function enable(gd) {
                                 label: text[p] ? text[p] : p
                             });
                     }
+                    if(traceData.length === 0) continue;
                     c2mData[name] = traceData;
                     labels.push(name);
                 }
@@ -77,7 +78,6 @@ function enable(gd) {
             (gd._fullLayout.xaxis.title.text !== undefined)) {
             xAxisText = gd._fullLayout.xaxis.title.text;
         }
-
         var yAxisText = 'Y Axis';
         if((gd._fullLayout.yaxis !== undefined) &&
             (gd._fullLayout.yaxis.title !== undefined) &&
