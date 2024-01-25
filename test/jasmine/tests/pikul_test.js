@@ -91,7 +91,6 @@ var graphTypes = [
     { type: 'linear' },
     { type: 'log'},
     { type: 'date'},
-    { type: 'category'},
 ];
 
 /* getParameters() will loop through all possible parameters, initializing it the first time, and return false the last */
