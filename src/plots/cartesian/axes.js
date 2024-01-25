@@ -968,11 +968,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 }
             }
             if(mockAx.tickmode === 'domain array') {
-                if(major) {
-                    fractionalTickvals = ax.tickvals;
-                } else {
-                    fractionalTickvals = ax.minor.tickvals; // TODO needs to be calculate for minor based on major
-                }
+                fractionalTickvals = (major ? ax : ax.minor).tickvals;
             }
 
             if(mockAx.tickmode !== 'array') {
@@ -986,11 +982,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     }, offset, width, type);
                 // reminder: ranges w/ type log use the exponent whereas ticks use the absolute value
                 // TODO: do some inspection here: it freaks me out doin arithmetic on possible exponents
-                if(major) {
-                    ax._mappedTickvals = mappedVals;
-                } else {
-                    ax.minor._mappedTickvals = mappedVals;
-                }
+                (major ? ax : ax.minor)._mappedTickvals = mappedVals;
             }
             // now that we've figured out the auto values for formatting
             // in case we're missing some ticktext, we can break out for array ticks
@@ -1331,12 +1323,8 @@ function arrayTicks(ax, majorOnly) {
     for(var isMinor = 0; isMinor <= 1; isMinor++) {
         if((majorOnly !== undefined) && ((majorOnly && isMinor) || (majorOnly === false && !isMinor))) continue;
         if(isMinor && !ax.minor) continue;
-        var vals;
-        if(!isMinor){
-            vals = ax.tickmode === 'array' ? ax.tickvals : ax._mappedTickvals;
-        } else {
-            vals = ax.tickmode === 'array' ? ax.minor.tickvals : ax.minor._mappedTickvals;
-        }
+        var targetAxis = (!isMinor ? ax : ax.minor)
+        var vals = ax.tickmode === 'array' ? targetAxis.tickvals : targetAxis._mappedTickvals;
         var text = !isMinor ? ax.ticktext : [];
         if(!vals) continue;
 
