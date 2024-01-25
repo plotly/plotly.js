@@ -1323,9 +1323,10 @@ function arrayTicks(ax, majorOnly) {
     for(var isMinor = 0; isMinor <= 1; isMinor++) {
         if((majorOnly !== undefined) && ((majorOnly && isMinor) || (majorOnly === false && !isMinor))) continue;
         if(isMinor && !ax.minor) continue;
+
         var targetAxis = (!isMinor ? ax : ax.minor);
-        // if auto w/ array in tickval, is implicit 'array'
-        var vals = ax.tickmode === 'array' || ax.tickmode === 'auto' ? targetAxis.tickvals : targetAxis._mappedTickvals;
+        var vals = (targetAxis.tickmode === 'array') ? targetAxis.tickvals : targetAxis._mappedTickvals;
+
         var text = !isMinor ? ax.ticktext : [];
         if(!vals) continue;
 
