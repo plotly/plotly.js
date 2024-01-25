@@ -110,6 +110,11 @@
     "enabled": true,
     "library": "chart2music",
     "options": {
+     "closedCaptions": {
+      "elClassname": "c2m-plotly-closed_captions",
+      "elId": "c2m-plotly-cc",
+      "generate": true
+     },
      "info": {}
     }
    },
