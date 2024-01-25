@@ -918,17 +918,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var maxRange = Math.max(rng[0], rng[1]);
 
     var maxTicks = Math.max(1000, ax._length || 0);
-
     var ticksOut = [];
     var minorTicks = [];
 
     var tickVals = [];
-    var tickFractionalVals = [];
-    tickFractionalVals._isSet = false;
-
     var minorTickVals = [];
-    var minorTickFractionalVals = [];
-    minorTickFractionalVals._isSet = false;
 
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
 
@@ -952,67 +946,62 @@ axes.calcTicks = function calcTicks(ax, opts) {
             axes.prepTicks(mockAx, opts);
         }
 
-        if(mockAx.tickmode === 'full domain') {
-            var nt = mockAx.nticks;  // does mockAx have nitkcs?
-            if(nt === undefined) nt = 0;
-            if(nt === 0) {
-              // pass
-            } else if(nt === 1) {
-                tickVals = [0];
-            } else if(nt === 2) {
-                tickVals = [0, 1];
-            } else {
-                var increment = 1 / (nt - 1); // (nt-2) + 1
-                tickVals.push(0);
-                for(var tickIndex = 0; tickIndex < nt - 2; tickIndex++) {
-                    tickVals.push((tickIndex + 1) * increment);
-                }
-                tickVals.push(1);
-            }
-            if(major) {
-                Lib.nestedProperty(ax, 'tickvals').set(tickVals);
-            } else {
-                Lib.nestedProperty(ax.minor, 'tickvals').set(tickVals);
-            }
-        }
-        // tickmode 'domain array' is just 'array' but with a pre-calc step
-        // original comment:
-        // now that we've figured out the auto values for formatting
-        // in case we're missing some ticktext, we can break out for array ticks
+
         if(mockAx.tickmode === 'array' || mockAx.tickmode === 'domain array' || mockAx.tickmode === 'full domain') {
-            // Mapping proportions to array:
-            if(mockAx.tickmode === 'domain array' || mockAx.tickmode === 'full domain') {
-                var width = (maxRange - minRange);
-                if(axrev) width *= -1;
-                var offset = !axrev ? minRange : maxRange;
-
-                var currentFractionalVals = [];
-                var currentValsProp;
-                if(major) {
-                    currentValsProp = Lib.nestedProperty(ax, 'tickvals'); // Do we need this?
-                    currentFractionalVals = tickFractionalVals = currentValsProp.get();
-                    tickFractionalVals._isSet = true;
+            if(mockAx.tickmode === 'full domain') { // TODO: Change for minor, note: if minor we already have major
+                var nt = mockAx.nticks;
+                var fractionalTickvals = []
+                if(nt === undefined) nt = 0;
+                if(nt === 0) {
+                    // pass
+                } else if(nt === 1) {
+                    fractionalTickvals = [.5];
+                } else if(nt === 2) {
+                    fractionalTickvals = [0, 1];
                 } else {
-                    currentValsProp = Lib.nestedProperty(ax.minor, 'tickvals');
-                    currentFractionalVals = minorTickFractionalVals = currentValsProp.get();
-                    minorTickFractionalVals._isSet = true;
+                    var increment = 1 / (nt - 1); // (nt-2) + 1
+                    fractionalTickvals = [0];
+                    for(var tickIndex = 0; tickIndex < nt - 2; tickIndex++) {
+                        fractionalTickvals.push((tickIndex + 1) * increment);
+                    }
+                    fractionalTickvals.push(1);
                 }
+            }
+            if(mockAx.tickmode === 'domain array') {
+                if(major) {
+                    fractionalTickvals = ax.tickvals;
+                } else {
+                    fractionalTickvals = ax.minor.tickvals; // TODO needs to be calculate for minor based on major
+                }
+            }
 
-                var mappedVals = Lib.simpleMap(currentFractionalVals,
+            if(mockAx.tickmode !== 'array') {
+                var width = (maxRange - minRange); // TODO: inspect this value for log, it shouldn't work!
+                if(axrev) width *= -1;
+                var offset = !axrev ? minRange : maxRange; // TODO: inspect this value for log
+                var mappedVals = Lib.simpleMap(fractionalTickvals,
                     function(fraction, offset, width, type) {
                         var mapped = offset + (width * fraction);
                         return (type === 'log') ? Math.pow(10, mapped) : mapped;
                     }, offset, width, type);
-                currentValsProp.set(mappedVals);
+                // reminder: ranges w/ type log use the exponent whereas ticks use the absolute value
+                // TODO: do some inspection here: it freaks me out doin arithmetic on possible exponents
+                if(major) {
+                    ax._mappedTickvals = mappedVals;
+                } else {
+                    ax.minor._mappedTickvals = mappedVals;
+                }
             }
+            // now that we've figured out the auto values for formatting
+            // in case we're missing some ticktext, we can break out for array ticks
 
             // Original 'array' only code
             if(major) {
                 tickVals = [];
-                ticksOut = arrayTicks(ax, !isMinor);
+                ticksOut = arrayTicks(ax, !isMinor); // ie arrayTicks(ax, majorOnly = !False)
             } else {
                 minorTickVals = [];
-                minorTicks = arrayTicks(ax, !isMinor);
+                minorTicks = arrayTicks(ax, !isMinor); // ie arrayTicks(ax, majorOnly = !True)
             }
             continue;
         }
@@ -1274,18 +1263,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
         ticksOut[0].noTick = true;
     }
 
-    // Reset tickvals back to domain array
-    if(tickFractionalVals._isSet) {
-        delete tickFractionalVals._isSet;
-        if(ax.tickmode === 'full domain') tickFractionalVals = [];
-        Lib.nestedProperty(ax, 'tickvals').set(tickFractionalVals);
-    }
-    if(minorTickFractionalVals._isSet) {
-        delete tickFractionalVals._isSet;
-        if(ax.minor.tickmode === 'full domain') tickFractionalVals = [];
-        Lib.nestedProperty(ax.minor, 'tickvals').set(minorTickFractionalVals);
-    }
-
     return ticksOut;
 };
 
@@ -1354,7 +1331,12 @@ function arrayTicks(ax, majorOnly) {
     for(var isMinor = 0; isMinor <= 1; isMinor++) {
         if((majorOnly !== undefined) && ((majorOnly && isMinor) || (majorOnly === false && !isMinor))) continue;
         if(isMinor && !ax.minor) continue;
-        var vals = !isMinor ? ax.tickvals : ax.minor.tickvals;
+        var vals;
+        if(!isMinor){
+            vals = ax.tickmode === 'array' ? ax.tickvals : ax._mappedTickvals;
+        } else {
+            vals = ax.tickmode === 'array' ? ax.minor.tickvals : ax.minor._mappedTickvals;
+        }
         var text = !isMinor ? ax.ticktext : [];
         if(!vals) continue;
 
@@ -1690,19 +1672,24 @@ axes.tickFirst = function(ax, opts) {
 // more precision for hovertext
 axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     var out = tickTextObj(ax, x);
-    var arrayMode = (ax.tickmode === 'array' || ax.tickmode === 'domain array' || ax.tickmode === 'full domain');
+    var arrayMode = ax.tickmode === 'array'
+    var fractionalMode = (ax.tickmode === 'domain array' || ax.tickmode === 'full domain');
     var extraPrecision = hover || arrayMode;
     var axType = ax.type;
     // TODO multicategory, if we allow ticktext / tickvals
     var tickVal2l = axType === 'category' ? ax.d2l_noadd : ax.d2l;
     var i;
 
-    if(arrayMode && Lib.isArrayOrTypedArray(ax.ticktext)) {
+    if((arrayMode || fractionalMode) && Lib.isArrayOrTypedArray(ax.ticktext)) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         var minDiff = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / 10000;
 
         for(i = 0; i < ax.ticktext.length; i++) {
-            if(Math.abs(x - tickVal2l(ax.tickvals[i])) < minDiff) break;
+            if(arrayMode) {
+                if(Math.abs(x - tickVal2l(ax.tickvals[i])) < minDiff) break;
+            } else {
+                if(Math.abs(x - tickVal2l(ax._mappedTickvals[i])) < minDiff) break;
+            }
         }
         if(i < ax.ticktext.length) {
             out.text = String(ax.ticktext[i]);
