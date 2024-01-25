@@ -948,14 +948,14 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
 
         if(mockAx.tickmode === 'array' || mockAx.tickmode === 'domain array' || mockAx.tickmode === 'full domain') {
+            var fractionalTickvals = [];
             if(mockAx.tickmode === 'full domain') { // TODO: Change for minor, note: if minor we already have major
                 var nt = mockAx.nticks;
-                var fractionalTickvals = []
                 if(nt === undefined) nt = 0;
                 if(nt === 0) {
                     // pass
                 } else if(nt === 1) {
-                    fractionalTickvals = [.5];
+                    fractionalTickvals = [0.5];
                 } else if(nt === 2) {
                     fractionalTickvals = [0, 1];
                 } else {
@@ -1323,7 +1323,7 @@ function arrayTicks(ax, majorOnly) {
     for(var isMinor = 0; isMinor <= 1; isMinor++) {
         if((majorOnly !== undefined) && ((majorOnly && isMinor) || (majorOnly === false && !isMinor))) continue;
         if(isMinor && !ax.minor) continue;
-        var targetAxis = (!isMinor ? ax : ax.minor)
+        var targetAxis = (!isMinor ? ax : ax.minor);
         var vals = ax.tickmode === 'array' ? targetAxis.tickvals : targetAxis._mappedTickvals;
         var text = !isMinor ? ax.ticktext : [];
         if(!vals) continue;
@@ -1660,7 +1660,7 @@ axes.tickFirst = function(ax, opts) {
 // more precision for hovertext
 axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     var out = tickTextObj(ax, x);
-    var arrayMode = ax.tickmode === 'array'
+    var arrayMode = ax.tickmode === 'array';
     var fractionalMode = (ax.tickmode === 'domain array' || ax.tickmode === 'full domain');
     var extraPrecision = hover || arrayMode;
     var axType = ax.type;
