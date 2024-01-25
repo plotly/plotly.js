@@ -3480,8 +3480,8 @@ axes.drawLabels = function(gd, ax, opts) {
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
 
-    var autoTickAnglesRadians =
-        ax.autotickangles.map(function(degrees) { return degrees * Math.PI / 180; });
+    var autoTickAnglesRadians = (ax.autotickangles || [0, 30, 90])
+        .map(function(degrees) { return degrees * Math.PI / 180; });
     var prevAngle = (ax._prevTickAngles || {})[cls];
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
