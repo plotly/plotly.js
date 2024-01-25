@@ -53,9 +53,9 @@ function enable(gd) {
         // since during tests they don't seem to make it here
         if(closedCaptionsOptions === undefined) {
             closedCaptionsOptions = {};
-            closedCaptionsOptions.generate=true;
-            closedCaptionsOptions.elId="c2m-plotly-cc";
-            closedCaptionsOptions.elClassname="c2m-plotly-closed_captions";
+            closedCaptionsOptions.generate = true;
+            closedCaptionsOptions.elId = 'c2m-plotly-cc';
+            closedCaptionsOptions.elClassname = 'c2m-plotly-closed_captions';
         }
         if(closedCaptionsOptions.generate) {
             closedCaptions = document.createElement('div'); // should this be Lib.getGraphDiv()?
