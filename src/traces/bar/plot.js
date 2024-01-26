@@ -698,8 +698,8 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     if(isStart || isEnd) {
         var extrapad = (isHorizontal ? t.x : t.y) / 2;
 
-        if(r && (hasB || isEnd)) {
-            extrapad += padForRounding;
+        if(r && (isEnd || hasB)) {
+            textpad += padForRounding;
         }
 
         var dir = isHorizontal ? dirSign(x0, x1) : dirSign(y0, y1);
@@ -744,22 +744,13 @@ function scaleTextForRoundedBar(x0, x1, y0, y1, t, r, isHorizontal, hasB) {
     var a, b, c;
     var scale, pad;
 
-    // Calculate how much extra padding is needed for bar
-    // TODO: This is the equation I worked out, but it seems to give a value that's too small
-    if(isHorizontal) {
-        pad = Math.max(0, R - Math.sqrt(R * R + (t.y - barHeight) / 2 - R));
-    } else {
-        pad = Math.max(0, R - Math.sqrt(R * R + (t.x - barWidth) / 2 - R));
-    }
 
     if(t.y / t.x >= barHeight / (barWidth - rX)) {
         // Case 1 (Tall text)
         scale = barHeight / t.y;
-        pad = 0;
     } else if(t.y / t.x <= (barHeight - rY) / barWidth) {
         // Case 2 (Wide text)
         scale = barWidth / t.x;
-        pad = 0;
     } else if(!hasB && isHorizontal) {
         // Case 3a (Quadratic case, two side corners are rounded)
         a = t.x * t.x + t.y * t.y / 4;
@@ -780,6 +771,13 @@ function scaleTextForRoundedBar(x0, x1, y0, y1, t, r, isHorizontal, hasB) {
         c = (R - barHeight / 2) * (R - barHeight / 2) + (R - barWidth / 2) * (R - barWidth / 2) - R * R;
         scale = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
     }
+
+    if(isHorizontal) {
+        pad = Math.max(0, R - Math.sqrt((barHeight - t.y * scale) * (R + (barHeight - t.y * scale) / 4))) || 0;
+    } else {
+        pad = Math.max(0, R - Math.sqrt((barWidth - t.x * scale) * (R + (barWidth - t.x * scale) / 4))) || 0;
+    }
+
     return { scale: scale, pad: pad };
 }
 
