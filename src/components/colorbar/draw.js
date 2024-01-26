@@ -1001,7 +1001,7 @@ function mockColorBarAxis(gd, opts, zrange) {
     var axisOptions = {
         letter: letter,
         font: fullLayout.font,
-        noAutoTickangles: true,
+        noAutotickangles: true,
         noHover: true,
         noTickson: true,
         noTicklabelmode: true,
