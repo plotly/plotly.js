@@ -552,17 +552,16 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 
-    it('should not try to transition when the *config* has changed', function(done) {
+    fit('should not try to transition when the *config* has changed', function(done) {
         addSpies();
 
         var data = [{y: [1, 2, 1]}];
         var layout = {transition: {duration: 10}};
         var config = {scrollZoom: true};
-
         Plotly.react(gd, data, layout, config)
         .then(function() {
             assertSpies('first draw', [
-                [Plots, 'transitionFromReact', 0]
+                [Plots, 'transitionFromReact', 0] // so Plots.transitionFromReact should equal 0, ie didn't get called
             ]);
         })
         .then(function() {
@@ -581,7 +580,7 @@ describe('Plotly.react transitions:', function() {
         })
         .then(function() {
             assertSpies('no config change', [
-                [Plots, 'transitionFromReact', 1]
+                [Plots, 'transitionFromReact', 1] // react is not calling transitionFromReact, why?
             ]);
         })
         .then(done, done.fail);

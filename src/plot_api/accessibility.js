@@ -1,5 +1,6 @@
 'use strict';
 
+var Lib = require('../lib');
 var c2m = require('chart2music');
 var Fx = require('../components/fx');
 
@@ -9,6 +10,8 @@ function enable(gd) {
     var accessibilityVars = gd._context.accessibility;
     var library = accessibilityVars.library;
     var options = accessibilityVars.options;
+    var info = accessibilityVars.info;
+    var closedCaptionsOptions = accessibilityVars.closedCaptions;
     if(!supportedAccessibilityLibraries.includes(library)) {
         // 'Accessibility not implemented for library: ' + library
         return;
@@ -16,12 +19,7 @@ function enable(gd) {
     if(library === 'chart2music') {
         var c2mData = {};
         var labels = [];
-        var info = options.info;
-        var closedCaptionsOptions = options.closedCaptions;
-        delete options.info;
-        delete options.closedCaptions;
         var fullData = gd._fullData;
-
         for(var i = 0; i < fullData.length; i++) {
             var trace = fullData[i] ? fullData[i] : {};
             var type = trace.type;
@@ -52,6 +50,7 @@ function enable(gd) {
         var closedCaptions;
         // redefaulting the defaults here from plot_config.js
         // since during tests they don't seem to make it here
+        // TODO: this commit maybe obsolete it
         if(closedCaptionsOptions === undefined) {
             closedCaptionsOptions = {};
             closedCaptionsOptions.generate = true;
@@ -84,8 +83,11 @@ function enable(gd) {
             (gd._fullLayout.yaxis.title.text !== undefined)) {
             yAxisText = gd._fullLayout.yaxis.title.text;
         }
-
-        options.onFocusCallback = function(dataInfo) {
+        // Arguably should pass all config as copy to C2M
+        // If C2M eventually modifies them in any way (minus w/ _ prefix)
+        // It will always break transition/redraw logic in react
+        var options2 = Lib.extendDeepAll({}, options);
+        options2.onFocusCallback = function(dataInfo) {
             Fx.hover(gd, [{
                 curveNumber: labels.indexOf(dataInfo.slice),
                 pointNumber: dataInfo.index
@@ -105,7 +107,7 @@ function enable(gd) {
             element: gd,
             cc: closedCaptions,
             data: c2mData,
-            options: options,
+            options2: options,
             info: info
         });
     }
