@@ -48,16 +48,18 @@ function enable(gd) {
             }
         }
         var closedCaptions;
-        // redefaulting the defaults here from plot_config.js
-        // since during tests they don't seem to make it here
-        // TODO: this commit maybe obsolete it
         if(closedCaptionsOptions.generate) {
             closedCaptions = document.createElement('div'); // should this be Lib.getGraphDiv()?
             closedCaptions.id = closedCaptionsOptions.elId;
             closedCaptions.className = closedCaptionsOptions.elClassname;
             gd.parentNode.insertBefore(closedCaptions, gd.nextSibling); // this does get generated
+            // TODO we need a better generator
         } else {
             closedCaptions = document.getElementById(closedCaptionsOptions.elId);
+            if(closedCaptions === null) {
+                // TODO maybe handle this better for the developer?
+                return;
+            }
         }
 
         var titleText = 'Chart';
