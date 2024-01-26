@@ -809,7 +809,8 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
             var sankeyInfo = createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]);
             searchTraces.push(sankeyInfo);
         } else {
-            if(!trace.xaxis || !trace.yaxis) continue;
+            if(xAxisIds.indexOf(trace.xaxis) === -1 && !trace._xA) continue;
+            if(yAxisIds.indexOf(trace.yaxis) === -1 && !trace._yA) continue;
 
             searchTraces.push(createSearchInfo(trace._module, cd,
               getFromId(gd, trace.xaxis), getFromId(gd, trace.yaxis)));
