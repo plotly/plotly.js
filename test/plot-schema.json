@@ -110,7 +110,7 @@
     "closedCaptions": {
      "elClassname": "c2m-plotly-closed_captions",
      "elId": "c2m-plotly-cc",
-     "generate": true
+     "generate": false
     },
     "enabled": true,
     "info": {},
