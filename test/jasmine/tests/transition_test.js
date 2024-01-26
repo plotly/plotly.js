@@ -552,7 +552,7 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 
-    fit('should not try to transition when the *config* has changed', function(done) {
+    it('should not try to transition when the *config* has changed', function(done) {
         addSpies();
 
         var data = [{y: [1, 2, 1]}];
