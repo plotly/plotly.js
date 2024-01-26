@@ -441,6 +441,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
     var isHorizontal = (trace.orientation === 'h');
 
     var text = getText(fullLayout, cd, i, xa, ya);
+
     textPosition = getTextPosition(trace, i);
 
     // compute text position
@@ -754,28 +755,32 @@ function scaleTextForRoundedBar(x0, x1, y0, y1, t, r, isHorizontal, hasB) {
     } else if(!hasB && isHorizontal) {
         // Case 3a (Quadratic case, two side corners are rounded)
         a = t.x * t.x + t.y * t.y / 4;
-        b = t.y * (2 * R - barHeight) + 2 * t.x * (R - barWidth);
-        c = (R - barHeight / 2) * (R - barHeight / 2) + (R - barWidth) * (R - barWidth) - R * R;
+        b = -2 * t.x * (barWidth - R) - t.y * (barHeight / 2 - R);
+        c = (barWidth - R) * (barWidth - R) + (barHeight / 2 - R) * (barHeight / 2 - R) - R * R;
+
         scale = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
     } else if(!hasB) {
         // Case 3b (Quadratic case, two top/bottom corners are rounded)
         a = t.x * t.x / 4 + t.y * t.y;
-        b = 2 * t.x * (R - barHeight) + t.y * (2 * R - barWidth);
-        c = (R - barHeight) * (R - barHeight) + (R - barWidth / 2) * (R - barWidth / 2) - R * R;
+        b = -t.x * (barWidth / 2 - R) - 2 * t.y * (barHeight - R);
+        c = (barWidth / 2 - R) * (barWidth / 2 - R) + (barHeight - R) * (barHeight - R) - R * R;
+
         scale = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
     } else {
         // Case 4 (Quadratic case, all four corners are rounded)
-        // TODO: This gives a scale factor that's way too large, text overflows boundaries
         a = (t.x * t.x + t.y * t.y) / 4;
-        b = t.y * (2 * R - barHeight) + t.x * (2 * R - barWidth);
-        c = (R - barHeight / 2) * (R - barHeight / 2) + (R - barWidth / 2) * (R - barWidth / 2) - R * R;
+        b = -t.x * (barWidth / 2 - R) - t.y * (barHeight / 2 - R);
+        c = (barWidth / 2 - R) * (barWidth / 2 - R) + (barHeight / 2 - R) * (barHeight / 2 - R) - R * R;
         scale = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
     }
 
+    // Scale should not be larger than 1
+    scale = Math.min(1, scale);
+
     if(isHorizontal) {
-        pad = Math.max(0, R - Math.sqrt((barHeight - t.y * scale) * (R + (barHeight - t.y * scale) / 4))) || 0;
+        pad = R - Math.sqrt(R * R - (R - barHeight / 2 + t.y * scale / 2) * (R - barHeight / 2 + t.y * scale / 2));
     } else {
-        pad = Math.max(0, R - Math.sqrt((barWidth - t.x * scale) * (R + (barWidth - t.x * scale) / 4))) || 0;
+        pad = R - Math.sqrt(R * R - (R - barWidth / 2 + t.x * scale / 2) * (R - barWidth / 2 + t.x * scale / 2));
     }
 
     return { scale: scale, pad: pad };
