@@ -242,7 +242,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             visibleDflt: visibleDflt,
             reverseDflt: reverseDflt,
             autotypenumbersDflt: autotypenumbersDflt,
-            splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[axId]
+            splomStash: ((layoutOut._splomAxes || {})[axLetter] || {})[axId],
+            noAutotickangles: axLetter === 'y'
         };
 
         coerce('uirevision', layoutOut.uirevision);

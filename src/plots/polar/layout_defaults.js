@@ -167,7 +167,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     color: dfltFontColor,
                     size: dfltFontSize,
                     family: dfltFontFamily
-                }
+                },
+                noAutotickangles: axName === 'angularaxis'
             });
 
             handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
