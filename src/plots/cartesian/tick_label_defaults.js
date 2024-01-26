@@ -41,8 +41,8 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
         }
 
         if(!options.noAng) {
-            coerce('tickangle');
-            if(!options.noAutotickangles) {
+            var tickAngle = coerce('tickangle');
+            if(!options.noAutotickangles && tickAngle === 'auto') {
                 coerce('autotickangles');
             }
         }

@@ -3472,7 +3472,6 @@ axes.drawLabels = function(gd, ax, opts) {
 
     var fullLayout = gd._fullLayout;
     var axId = ax._id;
-    var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
 
     var vals = opts.vals.filter(function(d) { return d.text; });
@@ -3480,8 +3479,6 @@ axes.drawLabels = function(gd, ax, opts) {
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
 
-    var autoTickAnglesRadians = (ax.autotickangles || [0, 30, 90])
-        .map(function(degrees) { return degrees * Math.PI / 180; });
     var prevAngle = (ax._prevTickAngles || {})[cls];
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
@@ -3722,10 +3719,10 @@ axes.drawLabels = function(gd, ax, opts) {
         // check for auto-angling if x labels overlap
         // don't auto-angle at all for log axes with
         // base and digit format
-        if(vals.length && axLetter === 'x' && !isNumeric(tickAngle) &&
+        if(vals.length && ax.autotickangles &&
             (ax.type !== 'log' || String(ax.dtick).charAt(0) !== 'D')
         ) {
-            autoangle = 0;
+            autoangle = ax.autotickangles[0];
 
             var maxFontSize = 0;
             var lbbArray = [];
@@ -3789,7 +3786,12 @@ axes.drawLabels = function(gd, ax, opts) {
                 var opposite = maxFontSize * 1.25 * maxLines;
                 var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
                 var maxCos = adjacent / hypotenuse;
-                var angleRadians = autoTickAnglesRadians.find(function(angle) { return Math.abs(Math.cos(angle)) <= maxCos; });
+                var autoTickAnglesRadians = ax.autotickangles.map(
+                    function(degrees) { return degrees * Math.PI / 180; }
+                );
+                var angleRadians = autoTickAnglesRadians.find(
+                    function(angle) { return Math.abs(Math.cos(angle)) <= maxCos; }
+                );
                 if(angleRadians === undefined) {
                     // no angle with smaller cosine than maxCos, just pick the angle with smallest cosine
                     angleRadians = autoTickAnglesRadians.reduce(
