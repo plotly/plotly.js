@@ -1,5 +1,6 @@
 'use strict';
 
+var Lib = require('../lib');
 var c2m = require('chart2music');
 var Fx = require('../components/fx');
 
@@ -9,6 +10,8 @@ function enable(gd) {
     var accessibilityVars = gd._context.accessibility;
     var library = accessibilityVars.library;
     var options = accessibilityVars.options;
+    var info = accessibilityVars.info;
+    var closedCaptionsOptions = accessibilityVars.closedCaptions;
     if(!supportedAccessibilityLibraries.includes(library)) {
         // 'Accessibility not implemented for library: ' + library
         return;
@@ -16,17 +19,14 @@ function enable(gd) {
     if(library === 'chart2music') {
         var c2mData = {};
         var labels = [];
-        var info = options.info;
-        delete options.info;
         var fullData = gd._fullData;
-
         for(var i = 0; i < fullData.length; i++) {
             var trace = fullData[i] ? fullData[i] : {};
             var type = trace.type;
-            var x = trace.x ? trace.x : [];
-            var y = trace.y ? trace.y : [];
-            var name = trace.name ? trace.name : i;
-            var text = trace.text ? trace.text : [];
+            var x = trace.x !== undefined ? trace.x : [];
+            var y = trace.y !== undefined ? trace.y : [];
+            var name = trace.name !== undefined ? trace.name : i;
+            var text = trace.text !== undefined ? trace.text : [];
             if(type === 'scatter') {
                 var traceData = [];
                 if('y' in trace) {
@@ -38,6 +38,7 @@ function enable(gd) {
                                 label: text[p] ? text[p] : p
                             });
                     }
+                    if(traceData.length === 0) continue;
                     c2mData[name] = traceData;
                     labels.push(name);
                 }
@@ -46,16 +47,43 @@ function enable(gd) {
                 return;
             }
         }
+        var closedCaptions;
+        if(closedCaptionsOptions.generate) {
+            closedCaptions = document.createElement('div'); // should this be Lib.getGraphDiv()?
+            closedCaptions.id = closedCaptionsOptions.elId;
+            closedCaptions.className = closedCaptionsOptions.elClassname;
+            gd.parentNode.insertBefore(closedCaptions, gd.nextSibling); // this does get generated
+            // TODO we need a better generator
+        } else {
+            closedCaptions = document.getElementById(closedCaptionsOptions.elId);
+            if(closedCaptions === null) {
+                // TODO maybe handle this better for the developer?
+                return;
+            }
+        }
 
-        var closedCaptions = document.createElement('div');
-        closedCaptions.id = 'cc';
-        closedCaptions.className = 'closed_captions';
-        gd.appendChild(closedCaptions); // this does get generated
+        var titleText = 'Chart';
+        if((gd._fullLayout.title !== undefined) && (gd._fullLayout.title.text !== undefined)) {
+            titleText = gd._fullLayout.title.text;
+        }
 
-        var titleText = gd._fullLayout.title.text ? gd._fullLayout.title.text : 'Chart';
-        var xaxisText = gd._fullLayout.xaxis.title.text ? gd._fullLayout.xaxis.title.text : 'X Axis';
-        var yaxisText = gd._fullLayout.yaxis.title.text ? gd._fullLayout.yaxis.title.text : 'Y Axis';
-        options.onFocusCallback = function(dataInfo) {
+        var xAxisText = 'X Axis';
+        if((gd._fullLayout.xaxis !== undefined) &&
+            (gd._fullLayout.xaxis.title !== undefined) &&
+            (gd._fullLayout.xaxis.title.text !== undefined)) {
+            xAxisText = gd._fullLayout.xaxis.title.text;
+        }
+        var yAxisText = 'Y Axis';
+        if((gd._fullLayout.yaxis !== undefined) &&
+            (gd._fullLayout.yaxis.title !== undefined) &&
+            (gd._fullLayout.yaxis.title.text !== undefined)) {
+            yAxisText = gd._fullLayout.yaxis.title.text;
+        }
+        // Arguably should pass all config as copy to C2M
+        // If C2M eventually modifies them in any way (minus w/ _ prefix)
+        // It will always break transition/redraw logic in react
+        var options2 = Lib.extendDeepAll({}, options);
+        options2.onFocusCallback = function(dataInfo) {
             Fx.hover(gd, [{
                 curveNumber: labels.indexOf(dataInfo.slice),
                 pointNumber: dataInfo.index
@@ -66,16 +94,16 @@ function enable(gd) {
             type: 'line',
             axes: {
                 x: {
-                    label: xaxisText
+                    label: xAxisText
                 },
                 y: {
-                    label: yaxisText
+                    label: yAxisText
                 },
             },
             element: gd,
             cc: closedCaptions,
             data: c2mData,
-            options: options,
+            options2: options,
             info: info
         });
     }

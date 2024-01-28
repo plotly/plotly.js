@@ -1,0 +1,1 @@
+- Add 'decimal' and 'thousands' formats for Brazilian Portuguese locale file [[#6866](https://github.com/plotly/plotly.js/pull/6866)], with thanks to @pazuza  for the contribution!

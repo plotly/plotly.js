@@ -2676,7 +2676,6 @@ function react(gd, data, layout, config) {
             setPlotContext(gd, config);
             configChanged = diffConfig(oldConfig, gd._context);
         }
-
         gd.data = data || [];
         helpers.cleanData(gd.data);
         gd.layout = layout || {};
@@ -2747,7 +2746,6 @@ function react(gd, data, layout, config) {
 
             Plots.doCalcdata(gd);
             subroutines.doAutoRangeAndConstraints(gd);
-
             seq.push(function() {
                 return Plots.transitionFromReact(gd, restyleFlags, relayoutFlags, oldFullLayout);
             });
@@ -3663,7 +3661,6 @@ function deleteFrames(gd, frameList) {
  */
 function purge(gd) {
     gd = Lib.getGraphDiv(gd);
-
     var fullLayout = gd._fullLayout || {};
     var fullData = gd._fullData || [];
 
@@ -3681,7 +3678,6 @@ function purge(gd) {
 
     // in contrast to _doPlots.purge which does NOT clear _context!
     delete gd._context;
-
     return gd;
 }
 
