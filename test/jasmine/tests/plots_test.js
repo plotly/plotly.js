@@ -1360,7 +1360,10 @@ describe('Test Plots with automargin and minreducedwidth/height', function() {
             assert('height', '100');
         })
         .then(function() {
-            return Plotly.relayout(gd, 'minreducedwidth', 100);
+            // force tickangle to 90 so when we increase the width the x axis labels
+            // don't revert to 30 degrees, giving us a larger height
+            // this is a cool effect, but not what we're testing here!
+            return Plotly.relayout(gd, {minreducedwidth: 100, 'xaxis.tickangle': 90});
         })
         .then(function() {
             assert('width', '100');

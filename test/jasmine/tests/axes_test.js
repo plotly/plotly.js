@@ -4267,16 +4267,22 @@ describe('Test axes', function() {
                     var op = parts[0];
 
                     var method = {
-                        '=': 'toBe',
+                        '=': 'toBeCloseTo',
                         '~=': 'toBeWithin',
                         grew: 'toBeGreaterThan',
                         shrunk: 'toBeLessThan',
-                        initial: 'toBe'
+                        initial: 'toBeCloseTo'
                     }[op];
 
                     var val = op === 'initial' ? initialSize[k] : previousSize[k];
                     var msgk = msg + ' ' + k + (parts[1] ? ' |' + parts[1] : '');
-                    var args = op === '~=' ? [val, 1.1, msgk] : [val, msgk, ''];
+                    var args = [val];
+                    if(op === '~=') {
+                        args.push(1.1);
+                    } else if(method === 'toBeCloseTo') {
+                        args.push(3);
+                    }
+                    args.push(msgk);
 
                     expect(actual[k])[method](args[0], args[1], args[2]);
                 }
@@ -4312,7 +4318,7 @@ describe('Test axes', function() {
                 width: 600, height: 600
             })
             .then(function() {
-                expect(gd._fullLayout.xaxis._tickAngles.xtick).toBe(30);
+                expect(gd._fullLayout.xaxis._tickAngles.xtick).toBeCloseTo(30, 3);
 
                 var gs = gd._fullLayout._size;
                 initialSize = Lib.extendDeep({}, gs);
@@ -4484,13 +4490,22 @@ describe('Test axes', function() {
                     var op = parts[0];
 
                     var method = {
-                        '=': 'toBe',
+                        '=': 'toBeCloseTo',
+                        '~=': 'toBeWithin',
                         grew: 'toBeGreaterThan',
+                        shrunk: 'toBeLessThan',
+                        initial: 'toBeCloseTo'
                     }[op];
 
                     var val = initialSize[k];
                     var msgk = msg + ' ' + k + (parts[1] ? ' |' + parts[1] : '');
-                    var args = op === '~=' ? [val, 1.1, msgk] : [val, msgk, ''];
+                    var args = [val];
+                    if(op === '~=') {
+                        args.push(1.1);
+                    } else if(method === 'toBeCloseTo') {
+                        args.push(3);
+                    }
+                    args.push(msgk);
 
                     expect(actual[k])[method](args[0], args[1], args[2]);
                 }
@@ -4525,7 +4540,7 @@ describe('Test axes', function() {
                 width: 600, height: 600
             })
             .then(function() {
-                expect(gd._fullLayout.xaxis._tickAngles.xtick).toBe(30);
+                expect(gd._fullLayout.xaxis._tickAngles.xtick).toBeCloseTo(30, 3);
 
                 var gs = gd._fullLayout._size;
                 initialSize = Lib.extendDeep({}, gs);
