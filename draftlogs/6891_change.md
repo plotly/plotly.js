@@ -1,0 +1,1 @@
+- Improve rendering of heatmap bricks for log-scale axes [[#5991](https://github.com/plotly/plotly.js/issues/5991)], with thanks to @andrew-matteson for the contribution!

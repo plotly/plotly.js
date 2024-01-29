@@ -109,7 +109,11 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
     var font = layout.font;
-    var opts = {outerTicks: false, font: font};
+    var opts = {
+        noAutotickangles: true,
+        outerTicks: false,
+        font: font
+    };
     if(ticklabelposition.indexOf('inside') !== -1) {
         opts.bgColor = 'black'; // could we instead use the average of colors in the scale?
     }
