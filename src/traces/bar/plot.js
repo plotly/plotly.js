@@ -282,12 +282,13 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             var lyFunc = null;
             // Default rectangular path (used if no rounding)
             var rectanglePath = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
+            var overhead = 0;
             if(r && di.s) {
                 // Bar has cornerradius, and nonzero size
                 // Check amount of 'overhead' (bars stacked above this one)
                 // to see whether we need to round or not
                 var refPoint = sign(di.s0) === 0 || sign(di.s) === sign(di.s0) ? di.s1 : di.s0;
-                var overhead = fixpx(!di.hasB ? Math.abs(c2p(outerBound, true) - c2p(refPoint, true)) : 0);
+                overhead = fixpx(!di.hasB ? Math.abs(c2p(outerBound, true) - c2p(refPoint, true)) : 0);
                 if(overhead < r) {
                     // Calculate parameters for rounded corners
                     var xdir = dirSign(x0, x1);
