@@ -63,16 +63,31 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleHoverLabelDefaults(linkIn, linkOut, coerceLink, hoverlabelDefault);
     coerceLink('hovertemplate');
 
-    var defaultLinkColor = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
-                'rgba(255, 255, 255, 0.6)' :
-                'rgba(0, 0, 0, 0.2)';
+    var darkBG = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333;
+    var defaultLinkColor = darkBG ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
+    var linkColor = coerceLink('color', defaultLinkColor);
 
-    var defaultHoverColor = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
-                'rgba(128, 128, 128, 1.0)' :
-                'rgba(128, 128, 128, 1.0)';
+    function makeDefaultHoverColor(_linkColor) {
+        var tc = tinycolor(_linkColor);
+        if (!tc.isValid()) {
+            // hopefully the user-specified color is valid, but if not that can be caught elsewhere
+            return _linkColor;
+        }
+        var alpha = tc.getAlpha();
+        if (alpha <= 0.8) {
+            tc.setAlpha(alpha + 0.2);
+        }
+        else {
+            tc = darkBG ? tc.brighten() : tc.darken();
+        }
+        return tc.toRgbString();
+    }
 
-    coerceLink('color', Lib.repeat(defaultLinkColor, linkOut.value.length));
-    coerceLink('hovercolor', Lib.repeat(defaultHoverColor, linkOut.value.length));
+    coerceLink('hovercolor', Array.isArray(linkColor) ? 
+        linkColor.map(makeDefaultHoverColor) :
+        makeDefaultHoverColor(linkColor)
+    );
+
     coerceLink('customdata');
 
     handleArrayContainerDefaults(linkIn, linkOut, {

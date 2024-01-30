@@ -200,8 +200,8 @@ var attrs = module.exports = overrideAll({
             arrayOk: true,
             description: [
                 'Sets the `link` hover color. It can be a single value, or an array for specifying hover colors for',
-                'each `link`. If `link.hovercolor` is omitted, then by default, links will become solid grey when',
-                'hovered over.'
+                'each `link`. If `link.hovercolor` is omitted, then by default, links will become slightly more',
+                'opaque when hovered over.'
             ].join(' ')
         },
         customdata: {
