@@ -69,21 +69,20 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     function makeDefaultHoverColor(_linkColor) {
         var tc = tinycolor(_linkColor);
-        if (!tc.isValid()) {
+        if(!tc.isValid()) {
             // hopefully the user-specified color is valid, but if not that can be caught elsewhere
             return _linkColor;
         }
         var alpha = tc.getAlpha();
-        if (alpha <= 0.8) {
+        if(alpha <= 0.8) {
             tc.setAlpha(alpha + 0.2);
-        }
-        else {
+        } else {
             tc = darkBG ? tc.brighten() : tc.darken();
         }
         return tc.toRgbString();
     }
 
-    coerceLink('hovercolor', Array.isArray(linkColor) ? 
+    coerceLink('hovercolor', Array.isArray(linkColor) ?
         linkColor.map(makeDefaultHoverColor) :
         makeDefaultHoverColor(linkColor)
     );
