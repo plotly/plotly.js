@@ -396,7 +396,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 Drawing.singlePointStyle(di, sel, trace, styleFns, gd);
             }
 
-            appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc, r, opts, makeOnCompleteCallback);
+            appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc, r, overhead, opts, makeOnCompleteCallback);
 
             if(plotinfo.layerClipId) {
                 Drawing.hideOutsideRangePoint(di, bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
@@ -413,7 +413,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
     Registry.getComponentMethod('errorbars', 'plot')(gd, bartraces, plotinfo, opts);
 }
 
-function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc, r, opts, makeOnCompleteCallback) {
+function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc, r, overhead, opts, makeOnCompleteCallback) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
@@ -598,6 +598,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
             lyFunc: lyFunc,
             hasB: hasB,
             r: r,
+            overhead: overhead,
         });
     }
 
@@ -636,6 +637,7 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     var toLeft = 1 - toRight;
     var hasB = opts.hasB;
     var r = opts.r;
+    var overhead = opts.overhead;
 
     var textWidth = textBB.width;
     var textHeight = textBB.height;
@@ -666,8 +668,8 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
 
     var scale, padForRounding;
     // Scale text for rounded bars
-    if(r && r > TEXTPAD) {
-        var scaleAndPad = scaleTextForRoundedBar(x0, x1, y0, y1, t, r, isHorizontal, hasB);
+    if(r && (r - overhead) > TEXTPAD) {
+        var scaleAndPad = scaleTextForRoundedBar(x0, x1, y0, y1, t, r, overhead, isHorizontal, hasB);
         scale = scaleAndPad.scale;
         padForRounding = scaleAndPad.pad;
     // Scale text for non-rounded bars
@@ -736,12 +738,13 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     };
 }
 
-function scaleTextForRoundedBar(x0, x1, y0, y1, t, r, isHorizontal, hasB) {
+function scaleTextForRoundedBar(x0, x1, y0, y1, t, r, overhead, isHorizontal, hasB) {
     var barWidth = Math.max(0, Math.abs(x1 - x0) - 2 * TEXTPAD);
     var barHeight = Math.max(0, Math.abs(y1 - y0) - 2 * TEXTPAD);
     var R = r - TEXTPAD;
-    var rX = hasB ? R * 2 : (isHorizontal ? R : 2 * R);
-    var rY = hasB ? R * 2 : (isHorizontal ? 2 * R : R);
+    var clippedR = overhead ? R - Math.sqrt(R * R - (R - overhead) * (R - overhead)) : R;
+    var rX = hasB ? R * 2 : (isHorizontal ? R - overhead : 2 * clippedR);
+    var rY = hasB ? R * 2 : (isHorizontal ? 2 * clippedR : R - overhead);
     var a, b, c;
     var scale, pad;
 
@@ -778,9 +781,9 @@ function scaleTextForRoundedBar(x0, x1, y0, y1, t, r, isHorizontal, hasB) {
     scale = Math.min(1, scale);
 
     if(isHorizontal) {
-        pad = R - Math.sqrt(R * R - (R - barHeight / 2 + t.y * scale / 2) * (R - barHeight / 2 + t.y * scale / 2));
+        pad = Math.max(0, R - Math.sqrt(Math.max(0, R * R - (R - (barHeight - t.y * scale) / 2) * (R - (barHeight - t.y * scale) / 2))) - overhead);
     } else {
-        pad = R - Math.sqrt(R * R - (R - barWidth / 2 + t.x * scale / 2) * (R - barWidth / 2 + t.x * scale / 2));
+        pad = Math.max(0, R - Math.sqrt(Math.max(0, R * R - (R - (barWidth - t.x * scale) / 2) * (R - (barWidth - t.x * scale) / 2))) - overhead);
     }
 
     return { scale: scale, pad: pad };
