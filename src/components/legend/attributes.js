@@ -105,6 +105,13 @@ module.exports = {
         editType: 'legend',
         description: 'Determines what entrywidth means.',
     },
+    indentation: {
+        valType: 'number',
+        min: 0,
+        dflt: 0,
+        editType: 'legend',
+        description: 'Sets the indentation (in px) of the legend entries.',
+    },
     itemsizing: {
         valType: 'enumerated',
         values: ['trace', 'constant'],
