@@ -765,7 +765,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var bw = legendObj.borderwidth;
     var bw2 = 2 * bw;
     var itemGap = constants.itemGap;
-    var textGap = legendObj.itemwidth + itemGap * 2;
+    var textGap = legendObj.indentation + legendObj.itemwidth + itemGap * 2;
     var endPad = 2 * (bw + itemGap);
 
     var yanchor = getYanchor(legendObj);
