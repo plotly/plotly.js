@@ -276,10 +276,6 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             var r = (isBar || isHistogram) ? calcCornerRadius(t.cornerradiusvalue, t.cornerradiusform) : 0;
             // Construct path string for bar
             var path, h;
-            // Functions which return x-dimension and y-dimension of bar at a given x/y,
-            // to be used for positioning text
-            var lxFunc = null;
-            var lyFunc = null;
             // Default rectangular path (used if no rounding)
             var rectanglePath = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
             var overhead = 0;
@@ -308,11 +304,6 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                                 'V' + (y0 + r * ydir) +
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - r * xdir) + ',' + y0 +
                                 'Z';
-                            lyFunc = function(x) {
-                                if(x > r) return Math.abs(y1 - y0);
-                                var _dy2 = (x > 0) ? Math.sqrt(x * (2 * r - x)) : 0;
-                                return Math.abs(y1 - y0) - 2 * (r - _dy2);
-                            };
                         } else {
                             // Base on axis: Round 3rd and 4th corners
 
@@ -329,12 +320,6 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                                 'V' + (y0 + r * ydir + dy2) +
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + xminfunc(x1 - (r - overhead) * xdir, x0) + ',' + (y0 + dy1 * ydir) +
                                 'Z';
-                            lyFunc = function(x) {
-                                var _overhead = overhead + x;
-                                if(_overhead > r) return Math.abs(y1 - y0);
-                                var _dy2 = (_overhead > 0) ? Math.sqrt(_overhead * (2 * r - _overhead)) : 0;
-                                return Math.abs(y1 - y0) - 2 * (r - _dy2);
-                            };
                         }
                     } else {
                         // Vertical bars
@@ -349,11 +334,6 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                                 'V' + (y0 + r * ydir) +
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - r * xdir) + ',' + y0 +
                                 'Z';
-                            lxFunc = function(y) {
-                                if(y > r) return Math.abs(x1 - x0);
-                                var _dx2 = (y > 0) ? Math.sqrt(y * (2 * r - y)) : 0;
-                                return Math.abs(x1 - x0) - 2 * (r - _dx2);
-                            };
                         } else {
                             // Base on axis: Round 2nd and 3rd corners
 
@@ -369,12 +349,6 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                                 'H' + (x1 - r * xdir + dx2) +
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - dx1 * xdir) + ',' + yminfunc(y1 - (r - overhead) * ydir, y0) +
                                 'V' + y0 + 'Z';
-                            lxFunc = function(y) {
-                                var _overhead = overhead + y;
-                                if(_overhead > r) return Math.abs(x1 - x0);
-                                var _dx2 = (_overhead > 0) ? Math.sqrt(_overhead * (2 * r - _overhead)) : 0;
-                                return Math.abs(x1 - x0) - 2 * (r - _dx2);
-                            };
                         }
                     }
                 } else {
@@ -397,7 +371,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 Drawing.singlePointStyle(di, sel, trace, styleFns, gd);
             }
 
-            appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc, r, overhead, opts, makeOnCompleteCallback);
+            appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, opts, makeOnCompleteCallback);
 
             if(plotinfo.layerClipId) {
                 Drawing.hideOutsideRangePoint(di, bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
@@ -414,7 +388,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
     Registry.getComponentMethod('errorbars', 'plot')(gd, bartraces, plotinfo, opts);
 }
 
-function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc, r, overhead, opts, makeOnCompleteCallback) {
+function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, opts, makeOnCompleteCallback) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
@@ -453,6 +427,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
     var calcBar = cd[i];
     var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
     var hasB = calcBar.hasB;
+    var barIsRounded = r && (r - overhead) > TEXTPAD;
 
     if(!text ||
         textPosition === 'none' ||
@@ -490,17 +465,10 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
         }
     }
 
-    // Get width and height of bar at text position
-    var lx, ly, refPos;
-    if(isHorizontal) {
-        refPos = (insidetextanchor === 'middle') ? Math.abs(x1 - x0) / 2 : TEXTPAD;
-        lx = Math.abs(x1 - x0);
-        ly = lyFunc ? lyFunc(refPos) : Math.abs(y1 - y0);
-    } else {
-        refPos = (insidetextanchor === 'middle') ? Math.abs(y1 - y0) / 2 : TEXTPAD;
-        lx = lxFunc ? lxFunc(refPos) : Math.abs(x1 - x0);
-        ly = Math.abs(y1 - y0);
-    }
+    // Compute width and height of bar
+    var lx = Math.abs(x1 - x0);
+    var ly = Math.abs(y1 - y0);
+
     // padding excluded
     var barWidth = lx - 2 * TEXTPAD;
     var barHeight = ly - 2 * TEXTPAD;
@@ -535,12 +503,10 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
                 (barWidth >= textWidth * (barHeight / textHeight)) :
                 (barHeight >= textHeight * (barWidth / textWidth));
 
-            // TODO: Rounding needs to be considered when deciding
-            // whether text fits inside bar
-            if(textHasSize && (
+            if(textHasSize && (barIsRounded || (
                 fitsInside ||
                 fitsInsideIfRotated ||
-                fitsInsideIfShrunk)
+                fitsInsideIfShrunk))
             ) {
                 textPosition = 'inside';
             } else {
@@ -595,8 +561,6 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, lxFunc, lyFunc,
             constrained: constrained,
             angle: angle,
             anchor: insidetextanchor,
-            lxFunc: lxFunc,
-            lyFunc: lyFunc,
             hasB: hasB,
             r: r,
             overhead: overhead,
