@@ -33,7 +33,7 @@
     }
   ],
   "layout": {
-    "title": "Legend Indentation",
+    "title": { "text": "Legend Indentation" },
     "width": 800,
     "xaxis": {"domain": [0, 0.5]},
     "legend": {
