@@ -44190,6 +44190,17 @@
      },
      "description": "The links of the Sankey plot.",
      "editType": "calc",
+     "hovercolor": {
+      "arrayOk": true,
+      "description": "Sets the `link` hover color. It can be a single value, or an array for specifying hover colors for each `link`. If `link.hovercolor` is omitted, then by default, links will become slightly more opaque when hovered over.",
+      "editType": "calc",
+      "valType": "color"
+     },
+     "hovercolorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `hovercolor`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "hoverinfo": {
       "description": "Determines which trace information appear when hovering links. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.",
       "dflt": "all",
