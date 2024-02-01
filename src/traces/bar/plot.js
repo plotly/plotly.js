@@ -244,6 +244,9 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             }
 
             appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCompleteCallback);
+            if(fullLayout.barshowtotal) {
+                appendBarTotal(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCompleteCallback);
+            }
 
             if(plotinfo.layerClipId) {
                 Drawing.hideOutsideRangePoint(di, bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
@@ -268,7 +271,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     var textPosition;
 
     function appendTextNode(bar, text, font) {
-        var textSelection = Lib.ensureSingle(bar, 'text')
+        var textSelection = Lib.ensureSingle(bar, 'text', 'bartext-' + textPosition)
             .text(text)
             .attr({
                 class: 'bartext bartext-' + textPosition,
@@ -288,7 +291,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     var isHorizontal = (trace.orientation === 'h');
 
     var text = getText(fullLayout, cd, i, xa, ya);
-    textPosition = getTextPosition(trace, i);
+    textPosition = fullLayout.barshowtotal ? 'inside' : getTextPosition(trace, i);
 
     // compute text position
     var inStackOrRelativeMode =
@@ -434,6 +437,48 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
 
     var s = transition(textSelection, fullLayout, opts, makeOnCompleteCallback);
     Lib.setTransormAndDisplay(s, transform);
+}
+
+// total for stacked bars
+function appendBarTotal(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCompleteCallback) {
+    var fullLayout = gd._fullLayout;
+    // get trace attributes
+    var trace = cd[0].trace;
+    var isHorizontal = (trace.orientation === 'h');
+    var inStackOrRelativeMode =
+        opts.mode === 'stack' ||
+        opts.mode === 'relative';
+    var calcBar = cd[i];
+    var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
+
+    if(isOutmostBar) {
+        var layoutFont = fullLayout.font;
+        var font = style.getOutsideTextFont(trace, i, layoutFont);
+        var totalTemplate = fullLayout.totaltemplate;
+        var obj = {total: isHorizontal ? calcBar.x : calcBar.y};
+        var totalText = Lib.texttemplateString(totalTemplate, obj, fullLayout._d2locale, {}, obj, trace._meta || {});
+        var totalSelection = Lib.ensureSingle(bar, 'text', 'bartext-outside')
+            .text(totalText)
+            .attr({
+                'class': 'bartext bartext-outside',
+                'text-anchor': 'middle',
+                // prohibit tex interpretation until we can handle
+                // tex and regular text together
+                'data-notex': 1
+            })
+            .call(Drawing.font, font)
+            .call(svgTextUtils.convertToTspans, gd);
+
+        var textBB = Drawing.bBox(totalSelection.node());
+        var transform = toMoveOutsideBar(x0, x1, y0, y1, textBB, {
+            isHorizontal: isHorizontal,
+            constrained: false,
+            angle: trace.textangle
+        });
+
+        transition(totalSelection, fullLayout, opts, makeOnCompleteCallback)
+            .attr('transform', Lib.getTextTransform(transform));
+    }
 }
 
 function getRotateFromAngle(angle) {

@@ -51,5 +51,19 @@ module.exports = {
             'Sets the gap (in plot fraction) between bars of',
             'the same location coordinate.'
         ].join(' ')
-    }
+    },
+    barshowtotal: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        editType: 'plot',
+        description: 'Display the total value of each bar.'
+    },
+    totaltemplate: {
+        valType: 'string',
+        dflt: '%{total}',
+        role: 'style',
+        editType: 'plot',
+        description: 'Template to display the total value of each bar.'
+    },
 };
