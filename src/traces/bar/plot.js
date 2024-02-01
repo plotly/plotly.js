@@ -296,7 +296,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                         if(di.hasB) {
                             // Floating base: Round 1st & 2nd, and 3rd & 4th corners
                             path = 'M' + (x0 + r * xdir) + ',' + y0 +
-                                'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * -xdir + ',' + r * ydir +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + x0 + ',' + (y0 + r * ydir) +
                                 'V' + (y1 - r * ydir) +
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x0 + r * xdir) + ',' + y1 +
                                 'H' + (x1 - r * xdir) +
@@ -326,7 +326,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                         if(di.hasB) {
                             // Floating base: Round 1st & 4th, and 2nd & 3rd corners
                             path = 'M' + (x0 + r * xdir) + ',' + y0 +
-                                'a ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + r * -xdir + ',' + r * ydir +
+                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + x0 + ',' + (y0 + r * ydir) +
                                 'V' + (y1 - r * ydir) +
                                 'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x0 + r * xdir) + ',' + y1 +
                                 'H' + (x1 - r * xdir) +
