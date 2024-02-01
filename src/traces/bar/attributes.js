@@ -48,7 +48,8 @@ var marker = extendFlat({
         editType: 'calc',
         description: [
             'Sets the rounding of corners. May be an integer number of pixels,',
-            'or a percentage of bar width(as a string). Defaults to `layout.barcornerradius`.'
+            'or a percentage of bar width (as a string ending in %). Defaults to `layout.barcornerradius`.',
+            'In stack or relative barmode, the first trace to set cornerradius is used for the whole stack.'
         ].join(' ')
     },
 });
