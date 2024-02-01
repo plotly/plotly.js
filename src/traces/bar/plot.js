@@ -473,7 +473,21 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
     var barWidth = lx - 2 * TEXTPAD;
     var barHeight = ly - 2 * TEXTPAD;
 
+    // If corners are rounded, subtract extra from barWidth and barHeight
+    // to account for rounding
+    if(barIsRounded) {
+        if(hasB) {
+            barWidth -= 2 * r;
+            barHeight -= 2 * r;
+        } else if(isHorizontal) {
+            barWidth -= r - overhead;
+        } else {
+            barHeight -= r - overhead;
+        }
+    }
+
     var textSelection;
+
     var textBB;
     var textWidth;
     var textHeight;
@@ -503,10 +517,10 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
                 (barWidth >= textWidth * (barHeight / textHeight)) :
                 (barHeight >= textHeight * (barWidth / textWidth));
 
-            if(textHasSize && (barIsRounded || (
+            if(textHasSize && (
                 fitsInside ||
                 fitsInsideIfRotated ||
-                fitsInsideIfShrunk))
+                fitsInsideIfShrunk)
             ) {
                 textPosition = 'inside';
             } else {
