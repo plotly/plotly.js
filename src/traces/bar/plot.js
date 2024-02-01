@@ -473,19 +473,6 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
     var barWidth = lx - 2 * TEXTPAD;
     var barHeight = ly - 2 * TEXTPAD;
 
-    // If corners are rounded, subtract extra from barWidth and barHeight
-    // to account for rounding
-    if(barIsRounded) {
-        if(hasB) {
-            barWidth -= 2 * r;
-            barHeight -= 2 * r;
-        } else if(isHorizontal) {
-            barWidth -= r - overhead;
-        } else {
-            barHeight -= r - overhead;
-        }
-    }
-
     var textSelection;
 
     var textBB;
@@ -511,17 +498,31 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
             textHeight = textBB.height;
 
             var textHasSize = (textWidth > 0 && textHeight > 0);
-            var fitsInside = (textWidth <= barWidth && textHeight <= barHeight);
-            var fitsInsideIfRotated = (textWidth <= barHeight && textHeight <= barWidth);
-            var fitsInsideIfShrunk = (isHorizontal) ?
-                (barWidth >= textWidth * (barHeight / textHeight)) :
-                (barHeight >= textHeight * (barWidth / textWidth));
 
-            if(textHasSize && (
-                fitsInside ||
-                fitsInsideIfRotated ||
-                fitsInsideIfShrunk)
-            ) {
+            var fitsInside;
+            if(barIsRounded) {
+                // If bar is rounded, check if text fits between rounded corners
+                if(hasB) {
+                    fitsInside = (
+                        textfitsInsideBar(barWidth - 2 * r, barHeight, textWidth, textHeight, isHorizontal) ||
+                        textfitsInsideBar(barWidth, barHeight - 2 * r, textWidth, textHeight, isHorizontal)
+                    );
+                } else if(isHorizontal) {
+                    fitsInside = (
+                        textfitsInsideBar(barWidth - (r - overhead), barHeight, textWidth, textHeight, isHorizontal) ||
+                        textfitsInsideBar(barWidth, barHeight - 2 * (r - overhead), textWidth, textHeight, isHorizontal)
+                    );
+                } else {
+                    fitsInside = (
+                        textfitsInsideBar(barWidth, barHeight - (r - overhead), textWidth, textHeight, isHorizontal) ||
+                        textfitsInsideBar(barWidth - 2 * (r - overhead), barHeight, textWidth, textHeight, isHorizontal)
+                    );
+                }
+            } else {
+                fitsInside = textfitsInsideBar(barWidth, barHeight, textWidth, textHeight, isHorizontal);
+            }
+
+            if(textHasSize && fitsInside) {
                 textPosition = 'inside';
             } else {
                 textPosition = 'outside';
@@ -587,6 +588,16 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
 
     var s = transition(textSelection, fullLayout, opts, makeOnCompleteCallback);
     Lib.setTransormAndDisplay(s, transform);
+}
+
+function textfitsInsideBar(barWidth, barHeight, textWidth, textHeight, isHorizontal) {
+    if(barWidth < 0 || barHeight < 0) return false;
+    var fitsInside = (textWidth <= barWidth && textHeight <= barHeight);
+    var fitsInsideIfRotated = (textWidth <= barHeight && textHeight <= barWidth);
+    var fitsInsideIfShrunk = (isHorizontal) ?
+        (barWidth >= textWidth * (barHeight / textHeight)) :
+        (barHeight >= textHeight * (barWidth / textWidth));
+    return fitsInside || fitsInsideIfRotated || fitsInsideIfShrunk;
 }
 
 function getRotateFromAngle(angle) {
