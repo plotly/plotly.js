@@ -2807,7 +2807,7 @@ function getBoundaryVals(ax, vals) {
     // boundaryVals are never used for labels;
     // no need to worry about the other tickTextObj keys
     var _push = function(d, bndIndex) {
-        var xb = d.xbnd[bndIndex];
+        var xb = d.xbnd ? d.xbnd[bndIndex] : d.x;
         if(xb !== null) {
             out.push(Lib.extendFlat({}, d, {x: xb}));
         }
@@ -3755,7 +3755,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 // TODO should secondary labels also fall into this fix-overlap regime?
 
                 for(i = 0; i < lbbArray.length; i++) {
-                    var xbnd = vals[i].xbnd;
+                    var xbnd = (vals && vals[i].xbnd) ? vals[i].xbnd : [null, null];
                     var lbb = lbbArray[i];
                     if(
                         (xbnd[0] !== null && (lbb.left - ax.l2p(xbnd[0])) < gap) ||
