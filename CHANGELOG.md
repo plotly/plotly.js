@@ -9,6 +9,28 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.29.0] -- 2024-02-01
+
+### Added
+ - Add `layout.barcornerradius` and `trace.marker.cornerradius` properties to support rounding the corners of bar traces [[#6761](https://github.com/ plotly/plotly.js/pull/6761)],
+   with thanks to [Displayr](https://www.displayr.com) for sponsoring development!
+ - Add `autotickangles` to cartesian and radial axes [[#6790](https://github.com/plotly/plotly.js/pull/6790)],
+  with thanks to @my-tien for the contribution!
+
+### Changed
+ - Improve hover detection for for scatter plot fill tonext* [[#6865](https://github.com/plotly/plotly.js/pull/6865)],
+   with thanks to @lumip for the contribution!
+ - Improve rendering of heatmap bricks for log-scale axes [[#5991](https://github.com/plotly/plotly.js/issues/5991)],
+   with thanks to @andrew-matteson for the contribution!
+ - Adjust Sankey trace to allow user-defined link hover style override [[#6864](https://github.com/plotly/plotly.js/pull/6864)],
+   with thanks to @TortoiseHam for the contribution!
+ - Adjust 'decimal' and 'thousands' formats for Brazilian Portuguese locale file [[#6866](https://github.com/plotly/plotly.js/pull/6866)],
+   with thanks to @pazuza for the contribution!
+
+### Fixed
+ - Fix modifying selections on traces on overlaying axes [[#6870](https://github.com/plotly/plotly.js/pull/6870)]
+
+
 ## [2.28.0] -- 2024-01-05
 
 ### Added

@@ -55,7 +55,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 
 ```html
 <head>
-    <script src="https://cdn.plot.ly/plotly-2.28.0.min.js" charset="utf-8"></script>
+    <script src="https://cdn.plot.ly/plotly-2.29.0.min.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="gd"></div>
@@ -72,7 +72,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 Alternatively you may consider using [native ES6 import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in the script tag.
 ```html
 <script type="module">
-    import "https://cdn.plot.ly/plotly-2.28.0.min.js"
+    import "https://cdn.plot.ly/plotly-2.29.0.min.js"
     Plotly.newPlot("gd", [{ y: [1, 2, 3] }])
 </script>
 ```
@@ -82,7 +82,7 @@ Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastl
 ### Un-minified versions are also available on CDN
 While non-minified source files may contain characters outside UTF-8, it is recommended that you specify the `charset` when loading those bundles.
 ```html
-<script src="https://cdn.plot.ly/plotly-2.28.0.js" charset="utf-8"></script>
+<script src="https://cdn.plot.ly/plotly-2.29.0.js" charset="utf-8"></script>
 ```
 
 > Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.5. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
@@ -143,9 +143,11 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 |**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | | Active, Maintainer |
 |**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | [@solarchvision](https://twitter.com/solarchvision) | Active, Maintainer |
 |**Antoine Roy-Gobeil** | [@antoinerg](https://github.com/antoinerg) | | Active, Maintainer |
-|**Nicolas Kruchten** | [@nicolaskruchten](https://github.com/nicolaskruchten) | [@nicolaskruchten](https://twitter.com/nicolaskruchten) | Active, Maintainer |
-|**Jon Mease** | [@jonmmease](https://github.com/jonmmease) | [@jonmmease](https://twitter.com/jonmmease) | Active |
+|**Emily Kellison-Linn** | [@emilykl](https://github.com/emilykl) | | Active, Maintainer |
+|**Hannah Ker** | [@hannahker](https://github.com/hannahker) | | Active, Maintainer |
 |**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) | Hall of Fame |
+|**Nicolas Kruchten** | [@nicolaskruchten](https://github.com/nicolaskruchten) | [@nicolaskruchten](https://twitter.com/nicolaskruchten) | Hall of Fame |
+|**Jon Mease** | [@jonmmease](https://github.com/jonmmease) | [@jonmmease](https://twitter.com/jonmmease) | Hall of Fame |
 |**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) | Hall of Fame |
 |**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | [@rickyreusser](https://twitter.com/rickyreusser) | Hall of Fame |
 |**Dmitry Yv.** | [@dy](https://github.com/dy) | [@DimaYv](https://twitter.com/dimayv)| Hall of Fame |
@@ -155,6 +157,7 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 |**Miklós Tusz**| [@mdtusz](https://github.com/mdtusz) | [@mdtusz](https://twitter.com/mdtusz)| Hall of Fame |
 |**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | | Hall of Fame |
 |**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | | Hall of Fame |
+|**Jack Parmer**| [@chriddyp](https://github.com/jackparmer) | | Hall of Fame |
 |**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | | Hall of Fame |
 |**Alex Vados**| [@alexander-daniel](https://github.com/alexander-daniel) | | Hall of Fame |
 
