@@ -1,1 +1,0 @@
-- Fix bug where extending an existing box/lasso selection on traces with overlaying axes didn't update the selection [[#6870](https://github.com/plotly/plotly.js/pull/6870)].
