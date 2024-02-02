@@ -114,7 +114,7 @@ module.exports = function style(s, gd, legend) {
         var fillStyle = function(s) {
             if(s.size()) {
                 if(showFill) {
-                    Drawing.fillGroupStyle(s, gd);
+                    Drawing.fillGroupStyle(s, gd, true);
                 } else {
                     var gradientID = 'legendfill-' + trace.uid;
                     Drawing.gradient(s, gd, gradientID,
@@ -243,6 +243,12 @@ module.exports = function style(s, gd, legend) {
                 dEdit.ts = 10;
                 dEdit.tc = boundVal('textfont.color', pickFirst);
                 dEdit.tf = boundVal('textfont.family', pickFirst);
+                dEdit.tw = boundVal('textfont.weight', pickFirst);
+                dEdit.ty = boundVal('textfont.style', pickFirst);
+                dEdit.tv = boundVal('textfont.variant', pickFirst);
+                dEdit.tC = boundVal('textfont.textcase', pickFirst);
+                dEdit.tE = boundVal('textfont.lineposition', pickFirst);
+                dEdit.tS = boundVal('textfont.shadow', pickFirst);
             }
 
             dMod = [Lib.minExtend(d0, dEdit)];
@@ -673,7 +679,6 @@ function getStyleGuide(d) {
             showGradientFill = true;
         }
     }
-
     return {
         showMarker: showMarker,
         showLine: showLine,

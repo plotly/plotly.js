@@ -123,6 +123,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "weight": "bold",
+            "style": "italic",
+            "variant": "small-caps"
+        },
         "title": {
             "text": "Profit and loss statement 2018 vs 2019<br>waterfall chart"
         },

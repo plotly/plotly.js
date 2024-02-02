@@ -24,6 +24,11 @@
     "yaxis": "y2"
   }],
   "layout": {
+    "font": {
+      "textcase": "word caps",
+      "lineposition": "under",
+      "shadow": "auto"
+    },
     "dragmode": "pan",
     "width": 700,
     "height": 400,

@@ -154,16 +154,34 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             var dfltFontColor;
             var dfltFontSize;
             var dfltFontFamily;
+            var dfltFontWeight;
+            var dfltFontStyle;
+            var dfltFontVariant;
+            var dfltFontTextcase;
+            var dfltFontLineposition;
+            var dfltFontShadow;
             var font = opts.font || {};
 
             dfltColor = coerceAxis('color');
             dfltFontColor = (dfltColor === axIn.color) ? dfltColor : font.color;
             dfltFontSize = font.size;
             dfltFontFamily = font.family;
+            dfltFontWeight = font.weight;
+            dfltFontStyle = font.style;
+            dfltFontVariant = font.variant;
+            dfltFontTextcase = font.textcase;
+            dfltFontLineposition = font.lineposition;
+            dfltFontShadow = font.shadow;
 
             handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
             handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
                 font: {
+                    weight: dfltFontWeight,
+                    style: dfltFontStyle,
+                    variant: dfltFontVariant,
+                    textcase: dfltFontTextcase,
+                    lineposition: dfltFontLineposition,
+                    shadow: dfltFontShadow,
                     color: dfltFontColor,
                     size: dfltFontSize,
                     family: dfltFontFamily
@@ -193,6 +211,12 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
                 coerceAxis('title.text');
                 Lib.coerceFont(coerceAxis, 'title.font', {
+                    weight: dfltFontWeight,
+                    style: dfltFontStyle,
+                    variant: dfltFontVariant,
+                    textcase: dfltFontTextcase,
+                    lineposition: dfltFontLineposition,
+                    shadow: dfltFontShadow,
                     color: dfltFontColor,
                     size: Lib.bigFont(dfltFontSize),
                     family: dfltFontFamily

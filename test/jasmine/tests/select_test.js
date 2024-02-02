@@ -144,6 +144,21 @@ var BOXEVENTS = [1, 2, 1];
 // assumes 5 points in the lasso path
 var LASSOEVENTS = [4, 2, 1];
 
+var mockZorder = {
+    data: [
+        {x: [1, 2], y: [1, 1], type: 'scatter', zorder: 10, marker: {size: 50}},
+        {x: [1, 2], y: [1, 2], type: 'scatter', marker: {size: 50}},
+        {x: [1, 2], y: [1, 3], type: 'scatter', zorder: 5, marker: {size: 50}}
+    ],
+    layout: {
+        width: 400,
+        height: 400,
+        clickmode: 'event+select',
+        dragmode: 'select',
+        hovermode: 'closest'
+    }
+};
+
 describe('Click-to-select', function() {
     var mock14Pts = {
         1: { x: 134, y: 116 },
@@ -263,6 +278,84 @@ describe('Click-to-select', function() {
           .then(function() { assertSelectedPoints(7); })
           .then(done, done.fail);
     });
+
+    it('selects a single data point when being clicked on trace with zorder', function(done) {
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            return _immediateClickPt({ x: 270, y: 150 });
+        })
+        .then(function() {
+            assertSelectedPoints([], [], [1]);
+            return _clickPt({ x: 270, y: 200 });
+        })
+        .then(function() {
+            assertSelectedPoints([], [1], []);
+            return _clickPt({ x: 270, y: 250 });
+        })
+        .then(done, done.fail);
+    });
+
+    it('should only select top most zorder trace if overlapping position on single click', function(done) {
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            return _immediateClickPt({ x: 130, y: 250 });
+        })
+        .then(function() {
+            assertSelectedPoints([0], [], []);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should lasso select all overlapping points regardless of zorder', function(done) {
+        mockZorder.layout.dragmode = 'lasso';
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            drag([[200, 200], [200, 300], [100, 300], [100, 200], [200, 200]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([0]);
+            expect(gd.data[1].selectedpoints).toEqual([0]);
+            expect(gd.data[2].selectedpoints).toEqual([0]);
+        })
+        .then(function() {
+            return doubleClick(200, 200); // Clear selection
+        })
+        .then(function() {
+            drag([[200, 100], [200, 300], [300, 300], [300, 100], [200, 100]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([1]);
+            expect(gd.data[1].selectedpoints).toEqual([1]);
+            expect(gd.data[2].selectedpoints).toEqual([1]);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should box select all overlapping points regardless of zorder', function(done) {
+        mockZorder.layout.dragmode = 'select';
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            drag([[200, 200], [100, 300]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([0]);
+            expect(gd.data[1].selectedpoints).toEqual([0]);
+            expect(gd.data[2].selectedpoints).toEqual([0]);
+        })
+        .then(function() {
+            return doubleClick(200, 200); // Clear selection
+        })
+        .then(function() {
+            drag([[200, 100], [300, 300]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([1]);
+            expect(gd.data[1].selectedpoints).toEqual([1]);
+            expect(gd.data[2].selectedpoints).toEqual([1]);
+        })
+        .then(done, done.fail);
+    });
+
 
     it('cleanly clears and starts selections although add/subtract mode on', function(done) {
         plotMock14()
@@ -1598,6 +1691,102 @@ describe('Test select box and lasso in general:', function() {
             mouseEvent('scroll', 200, 200, {deltaX: 0, deltaY: -20});
         })
         .then(done, done.fail);
+    });
+
+    it('should re-select data in all overlaying visible traces', function(done) {
+        var gd = createGraphDiv();
+        _newPlot(gd, [{
+            x: [1, 2, 3],
+            y: [4, 5, 6],
+            name: 'yaxis1 data',
+            type: 'scatter'
+        },
+        {
+            x: [2, 3, 4],
+            y: [40, 50, 60],
+            name: 'yaxis2 data',
+            yaxis: 'y2',
+            xaxis: 'x2',
+            type: 'scatter'
+        },
+        {
+            x: [3, 4, 5],
+            y: [400, 500, 600],
+            name: 'yaxis3 data',
+            yaxis: 'y3',
+            type: 'scatter'
+        },
+        {
+            x: [4, 5, 6],
+            y: [1000, 2000, 3000],
+            name: 'yaxis4 data',
+            yaxis: 'y4',
+            xaxis: 'x2',
+            type: 'scatter'
+        }
+        ],
+            {
+                grid: {
+                    rows: 2,
+                    columns: 1,
+                    pattern: 'independent'
+                },
+                width: 800,
+                height: 600,
+                yaxis: {
+                    showline: true,
+                    title: {
+                        text: 'yaxis title'
+                    }
+                },
+                yaxis2: {
+                    title: {
+                        text: 'yaxis2 title'
+                    },
+                    showline: true
+                },
+                yaxis3: {
+                    title: {
+                        text: 'yaxis3 title'
+                    },
+                    anchor: 'free',
+                    overlaying: 'y',
+                    showline: true,
+                    autoshift: true
+                },
+                yaxis4: {
+                    title: {
+                        text: 'yaxis4 title'
+                    },
+                    anchor: 'free',
+                    overlaying: 'y2',
+                    showline: true,
+                    autoshift: true
+                }
+            }).then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'select');
+            }).then(function() {
+                return drag([[150, 450], [650, 350]]);
+            }).then(function() {
+                expect(gd.data[0].selectedpoints).toBe(undefined);
+                expect(gd.data[1].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[2].selectedpoints).toBe(undefined);
+                expect(gd.data[3].selectedpoints).toEqual([1, 2]);
+            }).then(function() {
+                return drag([[150, 100], [600, 200]]);
+            }).then(function() {
+                expect(gd.data[0].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[1].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[2].selectedpoints).toEqual([1]);
+                expect(gd.data[3].selectedpoints).toEqual([1, 2]);
+            }).then(function() {
+                return drag([[600, 150], [650, 150]]); // Extend existing selection
+            }).then(function() {
+                expect(gd.data[0].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[1].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[2].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[3].selectedpoints).toEqual([1, 2]);
+            }).then(done, done.fail);
     });
 });
 

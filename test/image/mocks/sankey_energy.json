@@ -495,7 +495,10 @@
         "width": 1118,
         "height": 772,
         "font": {
-            "size": 10
+            "size": 10,
+            "weight": "bold",
+            "style": "italic",
+            "variant": "small-caps"
         },
         "updatemenus": [
             {

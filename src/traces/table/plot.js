@@ -484,7 +484,13 @@ function supplyStylingValues(columnCell) {
             var font = {
                 size: gridPick(spec.size, col, i),
                 color: gridPick(spec.color, col, i),
-                family: gridPick(spec.family, col, i)
+                family: gridPick(spec.family, col, i),
+                weight: gridPick(spec.weight, col, i),
+                style: gridPick(spec.style, col, i),
+                variant: gridPick(spec.variant, col, i),
+                textcase: gridPick(spec.textcase, col, i),
+                lineposition: gridPick(spec.lineposition, col, i),
+                shadow: gridPick(spec.shadow, col, i),
             };
             d.rowNumber = d.key;
             d.align = gridPick(d.calcdata.cells.align, col, i);

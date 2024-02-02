@@ -33,6 +33,14 @@
     "title": {"text": "Employee %{meta.column} -- %{layout.meta.global}"}
   }],
   "layout": {
+    "font": {
+      "weight": "bold",
+      "style": "italic",
+      "variant": "small-caps",
+      "textcase": "word caps",
+      "lineposition": "under",
+      "shadow": "auto"
+    },
     "meta": {
       "global": "GrApH",
       "item": "mEtA"

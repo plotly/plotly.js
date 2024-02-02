@@ -248,5 +248,7 @@ module.exports = {
 
     _deprecated: {
         bardir: barAttrs._deprecated.bardir
-    }
+    },
+
+    zorder: barAttrs.zorder
 };

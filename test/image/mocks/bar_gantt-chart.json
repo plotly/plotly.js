@@ -68,6 +68,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "barcornerradius": "50%",
         "width": 1000,
         "height": 500,

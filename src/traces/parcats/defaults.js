@@ -95,19 +95,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('sortpaths');
     coerce('counts');
 
-    var labelfontDflt = {
-        family: layout.font.family,
-        size: Math.round(layout.font.size),
-        color: layout.font.color
-    };
+    var layoutFont = layout.font;
 
-    Lib.coerceFont(coerce, 'labelfont', labelfontDflt);
+    Lib.coerceFont(coerce, 'labelfont', layoutFont, {
+        overrideDflt: {
+            size: Math.round(layoutFont.size)
+        }
+    });
 
-    var categoryfontDefault = {
-        family: layout.font.family,
-        size: Math.round(layout.font.size / 1.2),
-        color: layout.font.color
-    };
-
-    Lib.coerceFont(coerce, 'tickfont', categoryfontDefault);
+    Lib.coerceFont(coerce, 'tickfont', layoutFont, {
+        autoShadowDflt: true,
+        overrideDflt: {
+            size: Math.round(layoutFont.size / 1.2)
+        }
+    });
 };

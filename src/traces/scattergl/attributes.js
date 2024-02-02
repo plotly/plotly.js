@@ -1,6 +1,8 @@
 'use strict';
 
 var baseAttrs = require('../../plots/attributes');
+var fontAttrs = require('../../plots/font_attributes');
+var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
@@ -35,7 +37,17 @@ var attrs = module.exports = overrideAll({
     hovertext: scatterAttrs.hovertext,
 
     textposition: scatterAttrs.textposition,
-    textfont: scatterAttrs.textfont,
+    textfont: fontAttrs({
+        noFontShadow: true,
+        noFontLineposition: true,
+        noFontTextcase: true,
+        editType: 'calc',
+        colorEditType: 'style',
+        arrayOk: true,
+        noNumericWeightValues: true,
+        variantValues: ['normal', 'small-caps'],
+        description: 'Sets the text font.'
+    }),
 
     mode: {
         valType: 'flaglist',
@@ -80,7 +92,7 @@ var attrs = module.exports = overrideAll({
     }),
     connectgaps: scatterAttrs.connectgaps,
     fill: extendFlat({}, scatterAttrs.fill, {dflt: 'none'}),
-    fillcolor: scatterAttrs.fillcolor,
+    fillcolor: makeFillcolorAttr(),
 
     // no hoveron
 
