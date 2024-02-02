@@ -145,9 +145,9 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 |**Antoine Roy-Gobeil** | [@antoinerg](https://github.com/antoinerg) | | Active, Maintainer |
 |**Emily Kellison-Linn** | [@emilykl](https://github.com/emilykl) | | Active, Maintainer |
 |**Hannah Ker** | [@hannahker](https://github.com/hannahker) | | Active, Maintainer |
+|**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) | Hall of Fame |
 |**Nicolas Kruchten** | [@nicolaskruchten](https://github.com/nicolaskruchten) | [@nicolaskruchten](https://twitter.com/nicolaskruchten) | Hall of Fame |
 |**Jon Mease** | [@jonmmease](https://github.com/jonmmease) | [@jonmmease](https://twitter.com/jonmmease) | Hall of Fame |
-|**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) | Hall of Fame |
 |**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) | Hall of Fame |
 |**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | [@rickyreusser](https://twitter.com/rickyreusser) | Hall of Fame |
 |**Dmitry Yv.** | [@dy](https://github.com/dy) | [@DimaYv](https://twitter.com/dimayv)| Hall of Fame |
@@ -157,6 +157,7 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 |**Miklós Tusz**| [@mdtusz](https://github.com/mdtusz) | [@mdtusz](https://twitter.com/mdtusz)| Hall of Fame |
 |**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | | Hall of Fame |
 |**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | | Hall of Fame |
+|**Jack Parmer**| [@chriddyp](https://github.com/jackparmer) | | Hall of Fame |
 |**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | | Hall of Fame |
 |**Alex Vados**| [@alexander-daniel](https://github.com/alexander-daniel) | | Hall of Fame |
 
