@@ -157,7 +157,7 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 |**Miklós Tusz**| [@mdtusz](https://github.com/mdtusz) | [@mdtusz](https://twitter.com/mdtusz)| Hall of Fame |
 |**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | | Hall of Fame |
 |**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | | Hall of Fame |
-|**Jack Parmer**| [@chriddyp](https://github.com/jackparmer) | | Hall of Fame |
+|**Jack Parmer**| [@jackparmer](https://github.com/jackparmer) | | Hall of Fame |
 |**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | | Hall of Fame |
 |**Alex Vados**| [@alexander-daniel](https://github.com/alexander-daniel) | | Hall of Fame |
 
