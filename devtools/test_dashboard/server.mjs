@@ -1,13 +1,16 @@
-var fs = require('fs');
-var path = require('path');
-var http = require('http');
-var ecstatic = require('ecstatic');
-var open = require('open');
-var webpack = require('webpack');
-var minimist = require('minimist');
+import fs from 'fs';
+import path  from 'path';
+import http from 'http';
+import ecstatic from 'ecstatic';
+import open from 'open';
+import webpack from 'webpack';
+import minimist from 'minimist';
 
-var constants = require('../../tasks/util/constants');
-var config = require('../../webpack.config.js');
+import constants from '../../tasks/util/constants.js';
+import config from '../../webpack.config.js';
+import { context } from 'esbuild';
+import esbConfig from '../../esbuild-config.mjs';
+
 config.optimization = { minimize: false };
 
 var args = minimist(process.argv.slice(2), {});
@@ -15,10 +18,13 @@ var PORT = args.port || 3000;
 var strict = args.strict;
 var mathjax3 = args.mathjax3;
 var mathjax3chtml = args.mathjax3chtml;
+var esbuild = args.esbuild;
 
-if(strict) config.entry = './lib/index-strict.js';
-
-if(!strict) {
+if(strict) {
+    config.entry = './lib/index-strict.js';
+    esbConfig.entryPoints = ['./lib/index-strict.js'];
+}
+else {
     config.mode = 'development';
     config.devtool = 'eval';
 }
@@ -51,57 +57,67 @@ devtoolsConfig.plugins = config.plugins;
 devtoolsConfig.optimization = config.optimization;
 devtoolsConfig.mode = config.mode;
 
-var compiler;
+if(esbuild) {
+    var ctx = await context(esbConfig);
+    devServer();
+    console.log('watching esbuild...');
+    await ctx.watch();
+}
+else {
+    var compiler;
 
-compiler = webpack(devtoolsConfig);
-compiler.run(function(devtoolsErr, devtoolsStats) {
-    if(devtoolsErr) {
-        console.log('err:', devtoolsErr);
-    } else if(devtoolsStats.errors && devtoolsStats.errors.length) {
-        console.log('stats.errors:', devtoolsStats.errors);
-    } else {
-        console.log('success:', devtoolsConfig.output.path + '/' + devtoolsConfig.output.filename);
-    }
-
-    compiler.close(function(closeErr) {
-        if(!closeErr) {
-            var firstBundle = true;
-
-            compiler = webpack(config);
-            compiler.watch({}, function(err, stats) {
-                if(err) {
-                    console.log('err:', err);
-                } else if(stats.errors && stats.errors.length) {
-                    console.log('stats.errors:', stats.errors);
-                } else {
-                    console.log('success:', config.output.path + '/' + config.output.filename);
-
-                    if(firstBundle) {
-                        // Create server
-                        var server = http.createServer(ecstatic({
-                            root: constants.pathToRoot,
-                            cache: 0,
-                            gzip: true,
-                            cors: true
-                        }));
-
-                        // Start the server up!
-                        server.listen(PORT);
-
-                        // open up browser window
-                        open('http://localhost:' + PORT + '/devtools/test_dashboard/index' + (
-                            strict ? '-strict' :
-                            mathjax3 ? '-mathjax3' :
-                            mathjax3chtml ? '-mathjax3chtml' : ''
-                        ) + '.html');
-
-                        firstBundle = false;
-                    }
-                }
-            });
+    compiler = webpack(devtoolsConfig);
+    compiler.run(function(devtoolsErr, devtoolsStats) {
+        if(devtoolsErr) {
+            console.log('err:', devtoolsErr);
+        } else if(devtoolsStats.errors && devtoolsStats.errors.length) {
+            console.log('stats.errors:', devtoolsStats.errors);
+        } else {
+            console.log('success:', devtoolsConfig.output.path + '/' + devtoolsConfig.output.filename);
         }
+
+        compiler.close(function(closeErr) {
+            if(!closeErr) {
+                var firstBundle = true;
+
+                compiler = webpack(config);
+                compiler.watch({}, function(err, stats) {
+                    if(err) {
+                        console.log('err:', err);
+                    } else if(stats.errors && stats.errors.length) {
+                        console.log('stats.errors:', stats.errors);
+                    } else {
+                        console.log('success:', config.output.path + '/' + config.output.filename);
+
+                        if(firstBundle) {
+                            devServer();
+                            firstBundle = false;
+                        }
+                    }
+                });
+            }
+        });
     });
-});
+}
+
+function devServer() {
+    var server = http.createServer(ecstatic({
+        root: constants.pathToRoot,
+        cache: 0,
+        gzip: true,
+        cors: true
+    }));
+
+    // Start the server up!
+    server.listen(PORT);
+
+    // open up browser window
+    open('http://localhost:' + PORT + '/devtools/test_dashboard/index' + (
+        strict ? '-strict' :
+        mathjax3 ? '-mathjax3' :
+        mathjax3chtml ? '-mathjax3chtml' : ''
+    ) + '.html');
+}
 
 function getMockFiles() {
     return new Promise(function(resolve, reject) {
