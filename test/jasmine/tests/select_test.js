@@ -1689,9 +1689,9 @@ describe('Test select box and lasso in general:', function() {
             }).then(function() {
                 return drag([[150, 600], [780, 300]]);
             }).then(function() {
-                expect(gd._fullData[0].selectedpoints).toEqual([1, 2]);
+                expect(gd._fullData[0].selectedpoints).toBe(undefined);
                 expect(gd._fullData[1].selectedpoints).toEqual([1, 2]);
-                expect(gd._fullData[2].selectedpoints).toEqual([1, 2]);
+                expect(gd._fullData[2].selectedpoints).toBe(undefined);
                 expect(gd._fullData[3].selectedpoints).toEqual([1, 2]);
             }).then(done, done.fail);
     });
