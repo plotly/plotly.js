@@ -107,7 +107,7 @@ module.exports = {
     },
     indentation: {
         valType: 'number',
-        min: 0,
+        min: -15,
         dflt: 0,
         editType: 'legend',
         description: 'Sets the indentation (in px) of the legend entries.',

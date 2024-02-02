@@ -2852,7 +2852,7 @@
      "description": "Sets the indentation (in px) of the legend entries.",
      "dflt": 0,
      "editType": "legend",
-     "min": 0,
+     "min": -15,
      "valType": "number"
     },
     "itemclick": {
