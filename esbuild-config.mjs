@@ -3,7 +3,7 @@ import { environmentPlugin } from 'esbuild-plugin-environment';
 
 export default {
     entryPoints: ['./lib/index.js'],
-    outfile: './build/plotly-esbuild.js',
+    outfile: './build/plotly.js',
     format: 'iife',
     globalName: 'Plotly',
     bundle: true,
