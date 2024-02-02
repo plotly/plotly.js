@@ -12,7 +12,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ## [2.29.0] -- 2024-02-01
 
 ### Added
- - Add `layout.barcornerradius` and `trace.marker.cornerradius` properties to support rounding the corners of bar traces [[#6761](https://github.com/ plotly/plotly.js/pull/6761)],
+ - Add `layout.barcornerradius` and `trace.marker.cornerradius` properties to support rounding the corners of bar traces [[#6761](https://github.com/plotly/plotly.js/pull/6761)],
    with thanks to [Displayr](https://www.displayr.com) for sponsoring development!
  - Add `autotickangles` to cartesian and radial axes [[#6790](https://github.com/plotly/plotly.js/pull/6790)],
   with thanks to @my-tien for the contribution!
