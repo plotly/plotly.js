@@ -144,7 +144,7 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 |**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | [@solarchvision](https://twitter.com/solarchvision) | Active, Maintainer |
 |**Antoine Roy-Gobeil** | [@antoinerg](https://github.com/antoinerg) | | Active, Maintainer |
 |**Emily Kellison-Linn** | [@emilykl](https://github.com/emilykl) | | Active, Maintainer |
-|**Hannah Ker** | [@hannahker](https://github.com/hannahker) | | Active, Maintainer |
+|**Hannah Ker** | [@hannahker](https://github.com/hannahker) | [@hannahker11](https://twitter.com/hannahker11)| Active, Maintainer |
 |**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) | Hall of Fame |
 |**Nicolas Kruchten** | [@nicolaskruchten](https://github.com/nicolaskruchten) | [@nicolaskruchten](https://twitter.com/nicolaskruchten) | Hall of Fame |
 |**Jon Mease** | [@jonmmease](https://github.com/jonmmease) | [@jonmmease](https://twitter.com/jonmmease) | Hall of Fame |
