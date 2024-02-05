@@ -1639,7 +1639,7 @@ describe('Test select box and lasso in general:', function() {
                     pattern: 'independent'
                 },
                 width: 800,
-                height: 800,
+                height: 600,
                 yaxis: {
                     showline: true,
                     title: {
@@ -1673,21 +1673,21 @@ describe('Test select box and lasso in general:', function() {
             }).then(function() {
                 return Plotly.relayout(gd, 'dragmode', 'select');
             }).then(function() {
-                return drag([[150, 600], [780, 400]]);
+                return drag([[150, 450], [650, 350]]);
             }).then(function() {
                 expect(gd.data[0].selectedpoints).toBe(undefined);
                 expect(gd.data[1].selectedpoints).toEqual([1, 2]);
                 expect(gd.data[2].selectedpoints).toBe(undefined);
                 expect(gd.data[3].selectedpoints).toEqual([1, 2]);
             }).then(function() {
-                return drag([[150, 100], [600, 250]]);
+                return drag([[150, 100], [600, 200]]);
             }).then(function() {
                 expect(gd.data[0].selectedpoints).toEqual([1, 2]);
                 expect(gd.data[1].selectedpoints).toEqual([1, 2]);
                 expect(gd.data[2].selectedpoints).toEqual([1]);
                 expect(gd.data[3].selectedpoints).toEqual([1, 2]);
             }).then(function() {
-                return drag([[600, 175], [780, 175]]); // Extend existing selection
+                return drag([[600, 150], [650, 150]]); // Extend existing selection
             }).then(function() {
                 expect(gd.data[0].selectedpoints).toEqual([1, 2]);
                 expect(gd.data[1].selectedpoints).toEqual([1, 2]);
