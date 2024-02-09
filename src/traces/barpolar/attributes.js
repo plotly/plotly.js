@@ -5,6 +5,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var scatterPolarAttrs = require('../scatterpolar/attributes');
 var barAttrs = require('../bar/attributes');
 
+
 module.exports = {
     r: scatterPolarAttrs.r,
     theta: scatterPolarAttrs.theta,
@@ -60,7 +61,7 @@ module.exports = {
     // constraintext: {},
     // cliponaxis: extendFlat({}, barAttrs.cliponaxis, {dflt: false}),
 
-    marker: barAttrs.marker,
+    marker: barPolarMarker(),
 
     hoverinfo: scatterPolarAttrs.hoverinfo,
     hovertemplate: hovertemplateAttrs(),
@@ -71,3 +72,9 @@ module.exports = {
     // error_x (error_r, error_theta)
     // error_y
 };
+
+function barPolarMarker() {
+    var marker = extendFlat({}, barAttrs.marker);
+    delete marker.cornerradius;
+    return marker;
+}

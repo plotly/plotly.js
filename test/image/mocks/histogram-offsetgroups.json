@@ -58,6 +58,7 @@
     }
   ],
   "layout": {
+    "barcornerradius": "50%",
     "uniformtext": {
       "mode": "hide",
       "minsize": 5
