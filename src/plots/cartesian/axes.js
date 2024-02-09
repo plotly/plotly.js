@@ -2452,7 +2452,7 @@ axes.drawOne = function(gd, ax, opts) {
     var llbboxes = {};
     function getLabelLevelBbox(suffix) {
         var cls = axId + (suffix || 'tick');
-        if(!llbboxes[cls]) llbboxes[cls] = calcLabelLevelBbox(ax, cls);
+        if(!llbboxes[cls]) llbboxes[cls] = calcLabelLevelBbox(ax, cls, mainLinePositionShift);
         return llbboxes[cls];
     }
 
@@ -2872,7 +2872,7 @@ function getDividerVals(ax, vals) {
     return out;
 }
 
-function calcLabelLevelBbox(ax, cls) {
+function calcLabelLevelBbox(ax, cls, mainLinePositionShift) {
     var top, bottom;
     var left, right;
 
@@ -2897,10 +2897,9 @@ function calcLabelLevelBbox(ax, cls) {
             right = Math.max(right, bb.right);
         });
     } else {
-        top = 0;
-        bottom = 0;
-        left = 0;
-        right = 0;
+        var dummyCalc = axes.makeLabelFns(ax, mainLinePositionShift);
+        top = bottom = dummyCalc.yFn({dx: 0, dy: 0, fontSize: 0}); // I don't know what dx, dy is
+        left = right = dummyCalc.xFn({dx: 0, dy: 0, fontSize: 0});
     }
 
     return {
