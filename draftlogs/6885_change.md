@@ -1,0 +1,1 @@
+- Fix bug where plots with axis `type='categorical'`, `tickson = "boundaries"` and `showgrid=true` wouldn't load, see [plotly.py # 3155](https://github.com/plotly/plotly.py/issues/3155). This feature was anonymously sponsored: thank you to our sponsor!

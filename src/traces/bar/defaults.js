@@ -1,5 +1,7 @@
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Registry = require('../../registry');
@@ -47,7 +49,6 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     });
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
-
     var lineColor = (traceOut.marker.line || {}).color;
 
     // override defaultColor for error bars with defaultLine
@@ -61,20 +62,48 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 function crossTraceDefaults(fullData, fullLayout) {
     var traceIn, traceOut;
 
-    function coerce(attr) {
-        return Lib.coerce(traceOut._input, traceOut, attributes, attr);
+    function coerce(attr, dflt) {
+        return Lib.coerce(traceOut._input, traceOut, attributes, attr, dflt);
     }
 
-    if(fullLayout.barmode === 'group') {
-        for(var i = 0; i < fullData.length; i++) {
-            traceOut = fullData[i];
+    for(var i = 0; i < fullData.length; i++) {
+        traceOut = fullData[i];
 
-            if(traceOut.type === 'bar') {
-                traceIn = traceOut._input;
+        if(traceOut.type === 'bar') {
+            traceIn = traceOut._input;
+            // `marker.cornerradius` needs to be coerced here rather than in handleStyleDefaults()
+            // because it needs to happen after `layout.barcornerradius` has been coerced
+            var r = coerce('marker.cornerradius', fullLayout.barcornerradius);
+            if(traceOut.marker) {
+                traceOut.marker.cornerradius = validateCornerradius(r);
+            }
+
+            if(fullLayout.barmode === 'group') {
                 handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
             }
         }
     }
+}
+
+// Returns a value equivalent to the given cornerradius value, if valid;
+// otherwise returns`undefined`.
+// Valid cornerradius values must be either:
+//   - a numeric value (string or number) >= 0, or
+//   - a string consisting of a number >= 0 followed by a % sign
+// If the given cornerradius value is a numeric string, it will be converted
+// to a number.
+function validateCornerradius(r) {
+    if(isNumeric(r)) {
+        r = +r;
+        if(r >= 0) return r;
+    } else if(typeof r === 'string') {
+        r = r.trim();
+        if(r.slice(-1) === '%' && isNumeric(r.slice(0, -1))) {
+            r = +r.slice(0, -1);
+            if(r >= 0) return r + '%';
+        }
+    }
+    return undefined;
 }
 
 function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
@@ -133,5 +162,6 @@ function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
 module.exports = {
     supplyDefaults: supplyDefaults,
     crossTraceDefaults: crossTraceDefaults,
-    handleText: handleText
+    handleText: handleText,
+    validateCornerradius: validateCornerradius,
 };

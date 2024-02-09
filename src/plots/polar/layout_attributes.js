@@ -105,6 +105,8 @@ var radialAxisAttrs = {
         ].join(' ')
     },
 
+    autotickangles: axesAttrs.autotickangles,
+
     side: {
         valType: 'enumerated',
         // TODO add 'center' for `showline: false` radial axes

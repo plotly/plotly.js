@@ -2857,7 +2857,7 @@ function getBoundaryVals(ax, vals) {
     // boundaryVals are never used for labels;
     // no need to worry about the other tickTextObj keys
     var _push = function(d, bndIndex) {
-        var xb = d.xbnd[bndIndex];
+        var xb = d.xbnd ? d.xbnd[bndIndex] : d.x;
         if(xb !== null) {
             out.push(Lib.extendFlat({}, d, {x: xb}));
         }
@@ -3522,13 +3522,13 @@ axes.drawLabels = function(gd, ax, opts) {
 
     var fullLayout = gd._fullLayout;
     var axId = ax._id;
-    var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
 
     var vals = opts.vals.filter(function(d) { return d.text; });
 
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
+
     var prevAngle = (ax._prevTickAngles || {})[cls];
 
     var tickLabels = opts.layer.selectAll('g.' + cls)
@@ -3769,21 +3769,22 @@ axes.drawLabels = function(gd, ax, opts) {
         // check for auto-angling if x labels overlap
         // don't auto-angle at all for log axes with
         // base and digit format
-        if(vals.length && axLetter === 'x' && !isNumeric(tickAngle) &&
+        if(vals.length && ax.autotickangles &&
             (ax.type !== 'log' || String(ax.dtick).charAt(0) !== 'D')
         ) {
-            autoangle = 0;
+            autoangle = ax.autotickangles[0];
 
             var maxFontSize = 0;
             var lbbArray = [];
             var i;
-
+            var maxLines = 1;
             tickLabels.each(function(d) {
                 maxFontSize = Math.max(maxFontSize, d.fontSize);
 
                 var x = ax.l2p(d.x);
                 var thisLabel = selectTickLabel(this);
                 var bb = Drawing.bBox(thisLabel.node());
+                maxLines = Math.max(maxLines, svgTextUtils.lineCount(thisLabel));
 
                 lbbArray.push({
                     // ignore about y, just deal with x overlaps
@@ -3804,7 +3805,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 // TODO should secondary labels also fall into this fix-overlap regime?
 
                 for(i = 0; i < lbbArray.length; i++) {
-                    var xbnd = vals[i].xbnd;
+                    var xbnd = (vals && vals[i].xbnd) ? vals[i].xbnd : [null, null];
                     var lbb = lbbArray[i];
                     if(
                         (xbnd[0] !== null && (lbb.left - ax.l2p(xbnd[0])) < gap) ||
@@ -3830,12 +3831,31 @@ axes.drawLabels = function(gd, ax, opts) {
                 var pad = !isAligned ? 0 :
                     (ax.tickwidth || 0) + 2 * TEXTPAD;
 
-                var rotate90 = (tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory' || ax._name === 'realaxis';
+                // autotickangles
+                var adjacent = tickSpacing;
+                var opposite = maxFontSize * 1.25 * maxLines;
+                var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
+                var maxCos = adjacent / hypotenuse;
+                var autoTickAnglesRadians = ax.autotickangles.map(
+                    function(degrees) { return degrees * Math.PI / 180; }
+                );
+                var angleRadians = autoTickAnglesRadians.find(
+                    function(angle) { return Math.abs(Math.cos(angle)) <= maxCos; }
+                );
+                if(angleRadians === undefined) {
+                    // no angle with smaller cosine than maxCos, just pick the angle with smallest cosine
+                    angleRadians = autoTickAnglesRadians.reduce(
+                        function(currentMax, nextAngle) {
+                            return Math.abs(Math.cos(currentMax)) < Math.abs(Math.cos(nextAngle)) ? currentMax : nextAngle;
+                        }
+                        , autoTickAnglesRadians[0]
+                    );
+                }
+                var newAngle = angleRadians * (180 / Math.PI /* to degrees */);
 
-                // any overlap at all - set 30 degrees or 90 degrees
                 for(i = 0; i < lbbArray.length - 1; i++) {
                     if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
-                        autoangle = rotate90 ? 90 : 30;
+                        autoangle = newAngle;
                         break;
                     }
                 }
@@ -3857,7 +3877,7 @@ axes.drawLabels = function(gd, ax, opts) {
     // by rotating 90 degrees, do not attempt to re-fix its label overlaps
     // as this can lead to infinite redraw loops!
     if(ax.automargin && fullLayout._redrawFromAutoMarginCount && prevAngle === 90) {
-        autoangle = 90;
+        autoangle = prevAngle;
         seq.push(function() {
             positionLabels(tickLabels, prevAngle);
         });
@@ -3935,8 +3955,29 @@ axes.drawLabels = function(gd, ax, opts) {
             var newRange = [];
             newRange[otherIndex] = anchorAx.range[otherIndex];
 
-            var p0 = anchorAx.d2p(anchorAx.range[index]);
-            var p1 = anchorAx.d2p(anchorAx.range[otherIndex]);
+            var anchorAxRange = anchorAx.range;
+
+            var p0 = anchorAx.d2p(anchorAxRange[index]);
+            var p1 = anchorAx.d2p(anchorAxRange[otherIndex]);
+
+            var _tempNewRange = fullLayout._insideTickLabelsUpdaterange[anchorAx._name + '.range'];
+            if(_tempNewRange) { // case of having multiple anchored axes having insideticklabel
+                var q0 = anchorAx.d2p(_tempNewRange[index]);
+                var q1 = anchorAx.d2p(_tempNewRange[otherIndex]);
+
+                var dir = sgn * (ax._id.charAt(0) === 'y' ? 1 : -1);
+
+                if(dir * p0 < dir * q0) {
+                    p0 = q0;
+                    newRange[index] = anchorAxRange[index] = _tempNewRange[index];
+                }
+
+                if(dir * p1 > dir * q1) {
+                    p1 = q1;
+                    newRange[otherIndex] = anchorAxRange[otherIndex] = _tempNewRange[otherIndex];
+                }
+            }
+
             var dist = Math.abs(p1 - p0);
             if(dist - move > 0) {
                 dist -= move;
@@ -3948,7 +3989,7 @@ axes.drawLabels = function(gd, ax, opts) {
             if(ax._id.charAt(0) !== 'y') move = -move;
 
             newRange[index] = anchorAx.p2d(
-                anchorAx.d2p(anchorAx.range[index]) +
+                anchorAx.d2p(anchorAxRange[index]) +
                 sgn * move
             );
 
