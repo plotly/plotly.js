@@ -9,6 +9,13 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.29.1] -- 2024-02-12
+
+### Fixed
+ - Fix bug where plots with axis `type='categorical'`, `tickson = "boundaries"` and `showgrid=true` wouldn't load [[#6885](https://github.com/plotly/plotly.js/pull/6885)]
+ - Respect `insiderange` when multiple overlaid axes having `insideticklabel` [[#6817](https://github.com/plotly/plotly.js/pull/6817)]
+
+
 ## [2.29.0] -- 2024-02-01
 
 ### Added
