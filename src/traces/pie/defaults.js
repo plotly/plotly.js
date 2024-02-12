@@ -111,7 +111,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         if(textposition === 'inside' || textposition === 'auto' || Array.isArray(textposition)) {
             coerce('insidetextorientation');
         }
-    } else if (textInfo === 'none') {
+    } else if(textInfo === 'none') {
         coerce('textposition', 'none');
     }
 
