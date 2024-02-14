@@ -125,6 +125,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.23.3",
     "@babel/preset-env": "^7.23.9",
     "amdefine": "^1.0.1",
+    "assert": "^2.1.0",
     "babel": "^6.23.0",
     "babel-loader": "^9.1.3",
     "browserify-transform-tools": "^1.7.0",
