@@ -3,30 +3,20 @@ import path  from 'path';
 import http from 'http';
 import ecstatic from 'ecstatic';
 import open from 'open';
-import webpack from 'webpack';
 import minimist from 'minimist';
 
 import constants from '../../tasks/util/constants.js';
-import config from '../../webpack.config.js';
 import { context } from 'esbuild';
-import esbConfig from '../../esbuild-config.mjs';
-
-config.optimization = { minimize: false };
+import config from '../../esbuild-config.mjs';
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
 var strict = args.strict;
 var mathjax3 = args.mathjax3;
 var mathjax3chtml = args.mathjax3chtml;
-var esbuild = args.esbuild;
 
 if(strict) {
-    config.entry = './lib/index-strict.js';
-    esbConfig.entryPoints = ['./lib/index-strict.js'];
-}
-else {
-    config.mode = 'development';
-    config.devtool = 'eval';
+    config.entryPoints = ['./lib/index-strict.js'];
 }
 
 var mockFolder = constants.pathToTestImageMocks;
@@ -37,68 +27,10 @@ getMockFiles()
     .then(createMocksList)
     .then(saveMockListToFile);
 
-// Devtools config
-var devtoolsConfig = {};
-
-var devtoolsPath = path.join(constants.pathToRoot, 'devtools/test_dashboard');
-devtoolsConfig.entry = path.join(devtoolsPath, 'devtools.js');
-
-devtoolsConfig.output = {
-    path: config.output.path,
-    filename: 'test_dashboard-bundle.js',
-    library: {
-        name: 'Tabs',
-        type: 'umd'
-    }
-};
-
-devtoolsConfig.target = config.target;
-devtoolsConfig.plugins = config.plugins;
-devtoolsConfig.optimization = config.optimization;
-devtoolsConfig.mode = config.mode;
-
-if(esbuild) {
-    var ctx = await context(esbConfig);
-    devServer();
-    console.log('watching esbuild...');
-    await ctx.watch();
-}
-else {
-    var compiler;
-
-    compiler = webpack(devtoolsConfig);
-    compiler.run(function(devtoolsErr, devtoolsStats) {
-        if(devtoolsErr) {
-            console.log('err:', devtoolsErr);
-        } else if(devtoolsStats.errors && devtoolsStats.errors.length) {
-            console.log('stats.errors:', devtoolsStats.errors);
-        } else {
-            console.log('success:', devtoolsConfig.output.path + '/' + devtoolsConfig.output.filename);
-        }
-
-        compiler.close(function(closeErr) {
-            if(!closeErr) {
-                var firstBundle = true;
-
-                compiler = webpack(config);
-                compiler.watch({}, function(err, stats) {
-                    if(err) {
-                        console.log('err:', err);
-                    } else if(stats.errors && stats.errors.length) {
-                        console.log('stats.errors:', stats.errors);
-                    } else {
-                        console.log('success:', config.output.path + '/' + config.output.filename);
-
-                        if(firstBundle) {
-                            devServer();
-                            firstBundle = false;
-                        }
-                    }
-                });
-            }
-        });
-    });
-}
+var ctx = await context(config);
+devServer();
+console.log('watching esbuild...');
+await ctx.watch();
 
 function devServer() {
     var server = http.createServer(ecstatic({
