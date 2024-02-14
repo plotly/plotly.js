@@ -33,7 +33,7 @@
     "empty-draftlogs": "node tasks/empty_draftlogs.js",
     "empty-dist": "node tasks/empty_dist.js",
     "build": "npm run empty-dist && npm run preprocess && npm run find-strings && npm run bundle && npm run extra-bundles && npm run locales && npm run schema dist && npm run stats",
-    "regl-codegen": "node devtools/regl_codegen/server.js",
+    "regl-codegen": "node devtools/regl_codegen/server.mjs",
     "cibuild": "npm run empty-dist && npm run preprocess && node tasks/cibundle.js",
     "lint": "eslint --version && eslint .",
     "lint-fix": "eslint . --fix || true",
