@@ -240,18 +240,3 @@ function handleCodegen(data) {
     var precompiled = header + imports + exports;
     fs.writeFileSync(pathToReglPrecompiledSrc, precompiled);
 }
-
-
-function purgeGeneratedCode(traces) {
-    var pathToReglCodegenSrc = constants.pathToReglCodegenSrc;
-
-    var files = fs.readdirSync(pathToReglCodegenSrc);
-    files.forEach(function(file) {
-        fs.unlinkSync(path.join(pathToReglCodegenSrc, file));
-    });
-
-    traces.forEach(function(trace) {
-        var pathToReglPrecompiledSrc = path.join(constants.pathToSrc, 'traces', trace, 'regl_precompiled.js');
-        fs.writeFileSync(pathToReglPrecompiledSrc, 'module.exports = {};\n');
-    });
-}
