@@ -158,7 +158,6 @@
     "karma-spec-reporter": "^0.0.36",
     "karma-verbose-reporter": "^0.0.8",
     "karma-viewport": "1.0.2",
-    "karma-webpack": "^5.0.0",
     "lodash": "^4.17.21",
     "madge": "^6.1.0",
     "mathjax-v2": "npm:mathjax@2.7.5",
