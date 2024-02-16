@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import constants from './util/constants.js';
-import plotlyNode from './util/plotly_node.js';
+import plotlyNode from './util/plotly_node.mjs';
 
 function caseInsensitive(a, b) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
