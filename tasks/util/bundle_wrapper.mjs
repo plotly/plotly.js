@@ -1,10 +1,7 @@
-var path = require('path');
+import path from 'path';
 
-var webpack = require('webpack');
-
-var config = require('../../webpack.config.js');
-
-var nRules = config.module.rules.length;
+import { build } from 'esbuild';
+import config from '../../esbuild-config.mjs';
 
 /** Convenience bundle wrapper
  *
@@ -28,14 +25,16 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     var pathToMinBundle = opts.pathToMinBundle;
 
-    config.module.rules[nRules] = opts.noCompress ? {} : {
+    /*
+    config.module.rules.push(opts.noCompress ? {} : {
         test: /\.js$/,
         use: [
             'transform-loader?' + path.resolve(__dirname, '../../tasks/compress_attributes.js')
         ]
-    };
+    });
+    */
 
-    config.entry = pathToIndex;
+    config.entryPoints = [pathToIndex];
 
     var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
@@ -50,7 +49,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
         minimize: !!(pathToMinBundle && pending === 1)
     };
 
-    var compiler = webpack(config);
+    var compiler = build(config);
 
     compiler.run(function(err, stats) {
         if(err) {
