@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "custom-bundle": "node tasks/custom_bundle.js",
-    "bundle": "node tasks/bundle.js",
+    "bundle": "node tasks/bundle.mjs",
     "extra-bundles": "node tasks/extra_bundles.js",
     "locales": "node tasks/locales.js",
     "schema": "node tasks/schema.js",
