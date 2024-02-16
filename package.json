@@ -23,7 +23,7 @@
   "scripts": {
     "custom-bundle": "node tasks/custom_bundle.mjs",
     "bundle": "node tasks/bundle.mjs",
-    "extra-bundles": "node tasks/extra_bundles.js",
+    "extra-bundles": "node tasks/extra_bundles.mjs",
     "locales": "node tasks/locales.js",
     "schema": "node tasks/schema.js",
     "stats": "node tasks/stats.js",
