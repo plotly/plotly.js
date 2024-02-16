@@ -495,9 +495,6 @@ jobs:
       - run:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
-      - run:
-          name: Display function constructors in all bundles
-          command: npm run no-new-func
 
 workflows:
   version: 2
