@@ -58,6 +58,7 @@ tasks.push(function(done) {
 // Bundle the geo assets
 tasks.push(function(done) {
     _bundle(pathToPlotlyGeoAssetsSrc, pathToPlotlyGeoAssetsDist, {
+        noCompress: true,
         standalone: 'PlotlyGeoAssets'
     }, function() {
         prependFile.sync(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
