@@ -2,7 +2,7 @@ var prependFile = require('prepend-file');
 
 import constants from './util/constants.js';
 import common from './util/common.js';
-import _bundle from './util/bundle_wrapper.mjs';
+import * as _bundle from './util/bundle_wrapper.mjs';
 
 var header = constants.licenseDist + '\n';
 var allTransforms = constants.allTransforms;

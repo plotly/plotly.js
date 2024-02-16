@@ -1,5 +1,5 @@
 import constants from './util/constants.js';
-import _bundle from './util/bundle_wrapper.mjs';
+import * as _bundle from './util/bundle_wrapper.mjs';
 
 /*
  * Trimmed down version of ./bundle.js for CI testing
