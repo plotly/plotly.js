@@ -1,9 +1,9 @@
-var runSeries = require('run-series');
-var prependFile = require('prepend-file');
+import runSeries from 'run-series';
+import prependFile from 'prepend-file';
 
-var constants = require('./util/constants');
-var common = require('./util/common');
-var _bundle = require('./util/bundle_wrapper');
+import constants from './util/constants.js';
+import common from './util/common.js';
+import _bundle from './util/bundle_wrapper.js';
 
 var header = constants.licenseDist + '\n';
 var pathToPlotlyDist = constants.pathToPlotlyDist;
