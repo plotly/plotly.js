@@ -1,5 +1,5 @@
-var constants = require('./util/constants');
-var _bundle = require('./util/bundle_wrapper');
+import constants from './util/constants.js';
+import _bundle from './util/bundle_wrapper.mjs';
 
 /*
  * Trimmed down version of ./bundle.js for CI testing
