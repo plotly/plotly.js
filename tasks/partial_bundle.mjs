@@ -1,4 +1,4 @@
-var prependFile = require('prepend-file');
+import prependFile from 'prepend-file';
 
 import constants from './util/constants.js';
 import common from './util/common.js';
@@ -11,7 +11,7 @@ var mainIndex = constants.mainIndex;
 var strictIndex = constants.strictIndex;
 
 // Bundle the plotly.js partial bundles
-module.exports = function partialBundle(tasks, opts) {
+export default function partialBundle(tasks, opts) {
     var name = opts.name;
     var index = opts.index;
     var deleteIndex = opts.deleteIndex;
@@ -69,4 +69,4 @@ module.exports = function partialBundle(tasks, opts) {
             done();
         });
     });
-};
+}
