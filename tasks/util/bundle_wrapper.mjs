@@ -1,7 +1,9 @@
-import path from 'path';
-
 import { build } from 'esbuild';
+
 import config from '../../esbuild-config.mjs';
+import browserifyAdapter from 'esbuild-plugin-browserify-adapter';
+
+import transform from '../../tasks/compress_attributes.js';
 
 /** Convenience bundle wrapper
  *
@@ -23,22 +25,12 @@ import config from '../../esbuild-config.mjs';
 export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
     opts = opts || {};
 
-    var pathToMinBundle = opts.pathToMinBundle;
-
-    /*
-    config.module.rules.push(opts.noCompress ? {} : {
-        test: /\.js$/,
-        use: [
-            'transform-loader?' + path.resolve(__dirname, '../../tasks/compress_attributes.js')
-        ]
-    });
-    */
-
     config.entryPoints = [pathToIndex];
-
-    var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
-
     config.outfile = pathToBundle || pathToMinBundle;
+    config.plugins = opts.noCompress ? [] : [browserifyAdapter(transform)];
+
+    var pathToMinBundle = opts.pathToMinBundle;
+    var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
     if(pending === 2) {
         config.minify = true;
