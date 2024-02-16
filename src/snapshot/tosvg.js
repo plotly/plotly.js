@@ -27,7 +27,7 @@ function xmlEntityEncode(str) {
     return str.replace(/&(?!\w+;|\#[0-9]+;| \#x[0-9A-F]+;)/g, '&amp;');
 }
 
-module.exports = function toSVG(gd, format, scale) {
+module.exports = async function toSVG(gd, format, scale) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._paper;
     var toppaper = fullLayout._toppaper;
@@ -141,6 +141,7 @@ module.exports = function toSVG(gd, format, scale) {
     }
 
     var s = new window.XMLSerializer().serializeToString(svg.node());
+
     s = htmlEntityDecode(s);
     s = xmlEntityEncode(s);
 
