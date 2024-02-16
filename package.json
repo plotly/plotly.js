@@ -21,7 +21,7 @@
     "plotly"
   ],
   "scripts": {
-    "custom-bundle": "node tasks/custom_bundle.js",
+    "custom-bundle": "node tasks/custom_bundle.mjs",
     "bundle": "node tasks/bundle.mjs",
     "extra-bundles": "node tasks/extra_bundles.js",
     "locales": "node tasks/locales.js",
@@ -34,7 +34,7 @@
     "empty-dist": "node tasks/empty_dist.js",
     "build": "npm run empty-dist && npm run preprocess && npm run find-strings && npm run bundle && npm run extra-bundles && npm run locales && npm run schema dist && npm run stats",
     "regl-codegen": "node devtools/regl_codegen/server.mjs",
-    "cibuild": "npm run empty-dist && npm run preprocess && node tasks/cibundle.js",
+    "cibuild": "npm run empty-dist && npm run preprocess && node tasks/cibundle.mjs",
     "lint": "eslint --version && eslint .",
     "lint-fix": "eslint . --fix || true",
     "no-new-func": "eslint --no-ignore --no-eslintrc --no-inline-config --rule '{no-new-func: warn}' $(find dist -type f -iname '*.js')",
