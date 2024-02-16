@@ -1,4 +1,4 @@
-var JSDOM = require('jsdom').JSDOM;
+import { JSDOM  } from 'jsdom';
 global.document = new JSDOM('<!DOCTYPE html><head></head><html><body></body></html>').window.document;
 global.window = document.defaultView;
 global.window.document = global.document;
@@ -8,7 +8,7 @@ global.DOMParser = global.window.DOMParser;
 global.getComputedStyle = global.window.getComputedStyle;
 global.window.URL.createObjectURL = function() {};
 
-var requirejs = require('requirejs');
+import requirejs from 'requirejs';
 
 requirejs.config({
     paths: {
