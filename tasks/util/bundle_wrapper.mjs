@@ -20,7 +20,7 @@ import config from '../../esbuild-config.mjs';
  *
  * Logs basename of bundle when completed.
  */
-module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
+export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
     opts = opts || {};
 
     var pathToMinBundle = opts.pathToMinBundle;
@@ -38,54 +38,16 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
-    var parsedPath;
-    parsedPath = path.parse(pathToBundle || pathToMinBundle);
-    config.output.path = parsedPath.dir;
-    config.output.filename = parsedPath.base;
+    config.outfile = pathToBundle || pathToMinBundle;
 
-    config.output.library.name = opts.standalone || 'Plotly';
+    config.minify = !!(pathToMinBundle && pending === 1);
 
-    config.optimization = {
-        minimize: !!(pathToMinBundle && pending === 1)
-    };
+    await build(config);
 
-    var compiler = build(config);
+    if(pending === 2) {
+        config.minify = true;
+        await build(config);
+    }
 
-    compiler.run(function(err, stats) {
-        if(err) {
-            console.log('err:', err);
-        } if(stats.errors && stats.errors.length) {
-            console.log('stats.errors:', stats.errors);
-        } else {
-            console.log('success:', config.output.path + '/' + config.output.filename);
-
-            if(pending === 2) {
-                parsedPath = path.parse(pathToMinBundle);
-                config.output.path = parsedPath.dir;
-                config.output.filename = parsedPath.base;
-
-                config.optimization = {
-                    minimize: true
-                };
-
-                compiler = webpack(config);
-
-                compiler.run(function(err, stats) {
-                    if(err) {
-                        console.log('err:', err);
-                    } else if(stats.errors && stats.errors.length) {
-                        console.log('stats.errors:', stats.errors);
-                    } else if(stats.compilation && stats.compilation.errors && stats.compilation.errors.length) {
-                        console.log('stats.compilation.errors:', stats.compilation.errors);
-                    } else {
-                        console.log('success:', config.output.path + '/' + config.output.filename);
-
-                        if(cb) cb();
-                    }
-                });
-            } else {
-                if(cb) cb();
-            }
-        }
-    });
-};
+    if(cb) cb();
+}
