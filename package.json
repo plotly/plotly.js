@@ -20,8 +20,8 @@
     "visualization",
     "plotly"
   ],
-  "engines" : {
-    "node" : ">=16.0.0"
+  "engines": {
+    "node": ">=16.0.0"
   },
   "scripts": {
     "custom-bundle": "node tasks/custom_bundle.mjs",
@@ -140,6 +140,7 @@
     "deep-equal": "^2.2.3",
     "ecstatic": "^4.1.4",
     "esbuild": "^0.20.0",
+    "esbuild-plugin-browserify-adapter": "^0.1.4",
     "esbuild-plugin-environment": "^0.3.0",
     "esbuild-plugin-glsl": "^1.2.2",
     "eslint": "^8.56.0",
