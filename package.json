@@ -46,7 +46,7 @@
     "no-es6-dist": "node tasks/no_es6_dist.js",
     "pretest": "node tasks/pretest.js",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
-    "test-mock": "node tasks/test_mock.js",
+    "test-mock": "node tasks/test_mock.mjs",
     "test-image": "node test/image/compare_pixels_test.js",
     "test-export": "node test/image/export_test.js",
     "test-syntax": "node tasks/test_syntax.js && npm run find-strings -- --no-output",
