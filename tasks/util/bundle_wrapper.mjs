@@ -40,15 +40,15 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     config.outfile = pathToBundle || pathToMinBundle;
 
-    config.minify = !!(pathToMinBundle && pending === 1);
-    config.sourcemap = false;
-
-    await build(config);
-
     if(pending === 2) {
         config.minify = true;
         await build(config);
     }
+
+    config.minify = !!(pathToMinBundle && pending === 1);
+    config.sourcemap = false;
+
+    await build(config);
 
     if(cb) cb();
 }
