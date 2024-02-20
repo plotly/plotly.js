@@ -1,5 +1,6 @@
 import { glsl } from 'esbuild-plugin-glsl';
 import { environmentPlugin } from 'esbuild-plugin-environment';
+import babel from 'esbuild-plugin-babel';
 
 export default {
     entryPoints: ['./lib/index.js'],
@@ -11,10 +12,15 @@ export default {
     sourcemap: true,
     plugins: [
         glsl({
-            minify: true
+            minify: true,
         }),
         environmentPlugin({
-            NODE_DEBUG: false
+            NODE_DEBUG: false,
+        }),
+        babel({
+            config: {
+                presets: ['@babel/preset-env'],
+            }
         }),
     ],
     alias: {
@@ -23,6 +29,6 @@ export default {
     define: {
         global: 'window',
     },
-    target: 'es2016',
+    target: 'es5',
     logLevel: 'info',
 };
