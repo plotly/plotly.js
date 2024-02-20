@@ -140,6 +140,7 @@
     "deep-equal": "^2.2.3",
     "ecstatic": "^4.1.4",
     "esbuild": "^0.20.0",
+    "esbuild-plugin-babel": "^0.2.3",
     "esbuild-plugin-browserify-adapter": "^0.1.4",
     "esbuild-plugin-environment": "^0.3.0",
     "esbuild-plugin-glsl": "^1.2.2",
