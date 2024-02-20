@@ -34,10 +34,12 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     if(pending === 2) {
         config.minify = true;
+        config.outfile = pathToMinBundle;
         await build(config);
     }
 
     config.minify = !!(pathToMinBundle && pending === 1);
+    config.outfile = pathToBundle || pathToMinBundle;
     config.sourcemap = false;
 
     await build(config);
