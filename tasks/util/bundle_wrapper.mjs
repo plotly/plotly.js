@@ -28,6 +28,7 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
     config.entryPoints = [pathToIndex];
     config.outfile = pathToBundle || pathToMinBundle;
     if(!opts.noCompress) config.plugins.push(browserifyAdapter(transform));
+    if(opts.noPlugins) consfig.noPlugins = [];
 
     var pathToMinBundle = opts.pathToMinBundle;
     var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
