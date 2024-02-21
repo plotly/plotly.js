@@ -18,6 +18,7 @@ export default {
             NODE_DEBUG: false,
         }),
         babel({
+            modules: 'umd',
             config: {
                 presets: ['@babel/preset-env'],
             }
