@@ -1,6 +1,6 @@
 import { build } from 'esbuild';
 
-import config from '../../esbuild-config.mjs';
+import esbuildConfig from '../../esbuild-config.mjs';
 import browserifyAdapter from 'esbuild-plugin-browserify-adapter';
 
 import transform from '../../tasks/compress_attributes.js';
@@ -25,11 +25,13 @@ import transform from '../../tasks/compress_attributes.js';
 export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
     opts = opts || {};
 
+    var config = {...esbuildConfig};
+
     config.entryPoints = [pathToIndex];
     config.outfile = pathToBundle || pathToMinBundle;
     if(!opts.noCompressAttributes) config.plugins.push(browserifyAdapter(transform));
-    if(opts.noPlugins) config.plugins = [];
 
+    if(opts.noPlugins) config.plugins = [];
     var pathToMinBundle = opts.pathToMinBundle;
     var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
