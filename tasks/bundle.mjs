@@ -70,7 +70,7 @@ tasks.push(function(done) {
 // Bundle plotly.js with meta
 tasks.push(function(done) {
     _bundle(pathToPlotlyIndex, pathToPlotlyDistWithMeta, {
-        noCompress: true
+        noCompressAttributes: true
     }, function() {
         prependFile.sync(pathToPlotlyDistWithMeta, header, common.throwOnError);
 

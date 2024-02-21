@@ -14,7 +14,7 @@ import transform from '../../tasks/compress_attributes.js';
  *  - standalone {string}
  *  Additional option:
  *  - pathToMinBundle {string} path to destination minified bundle
- *  - noCompress {boolean} skip attribute meta compression?
+ *  - noCompressAttributes {boolean} skip attribute meta compression?
  * @param {function} cb callback
  *
  * Outputs one bundle (un-minified) file if opts.pathToMinBundle is omitted.
@@ -27,7 +27,7 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     config.entryPoints = [pathToIndex];
     config.outfile = pathToBundle || pathToMinBundle;
-    if(!opts.noCompress) config.plugins.push(browserifyAdapter(transform));
+    if(!opts.noCompressAttributes) config.plugins.push(browserifyAdapter(transform));
     if(opts.noPlugins) consfig.noPlugins = [];
 
     var pathToMinBundle = opts.pathToMinBundle;

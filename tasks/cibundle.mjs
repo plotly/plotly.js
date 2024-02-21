@@ -13,12 +13,12 @@ import _bundle from './util/bundle_wrapper.mjs';
 
 // Bundle plotly.js and plotly.min.js
 _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuild, {
-    noCompress: true,
+    noCompressAttributes: true,
     pathToMinBundle: constants.pathToPlotlyBuildMin
 }, function() {
     // Bundle the geo assets
     _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
-        noCompress: true,
+        noCompressAttributes: true,
         standalone: 'PlotlyGeoAssets'
     });
 });
