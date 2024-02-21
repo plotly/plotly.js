@@ -8,8 +8,8 @@ export default {
     format: 'iife',
     globalName: 'Plotly',
     bundle: true,
-    minify: true,
-    sourcemap: true,
+    minify: false,
+    sourcemap: false,
     plugins: [
         glsl({
             minify: true,
@@ -19,9 +19,7 @@ export default {
         }),
         babel({
             modules: 'umd',
-            config: {
-                presets: ['@babel/preset-env'],
-            }
+            // config: { presets: ['@babel/preset-env'] }
         }),
     ],
     alias: {
@@ -30,6 +28,6 @@ export default {
     define: {
         global: 'window',
     },
-    target: 'es5',
+    target: 'es2016',
     logLevel: 'info',
 };
