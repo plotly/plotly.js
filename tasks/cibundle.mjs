@@ -18,7 +18,7 @@ _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuild, {
 }, function() {
     // Bundle the geo assets
     _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
-        noCompressAttributes: true,
+        noPlugins: true,
         standalone: 'PlotlyGeoAssets'
     });
 });
