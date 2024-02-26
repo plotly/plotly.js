@@ -1008,9 +1008,9 @@ function createHoverText(hoverData, opts) {
 
             lpath.attr('d', 'M' + (lx - tooltipMidX) + ',0' +
                 'L' + (lx - tooltipMidX + HOVERARROWSIZE) + ',' + topsign + HOVERARROWSIZE +
-                'H' + (halfWidth) +
+                'H' + halfWidth +
                 'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) +
-                'H-' + halfWidth +
+                'H' + (-halfWidth) +
                 'V' + topsign + HOVERARROWSIZE +
                 'H' + (lx - tooltipMidX - HOVERARROWSIZE) +
                 'Z');
