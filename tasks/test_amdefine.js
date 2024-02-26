@@ -16,7 +16,7 @@ if(typeof define !== 'function') {
 define(function(require) {
     var plotly = require('../dist/plotly.min.js');
 
-    if(plotly) {
+    if(plotly && plotly.PlotSchema) {
         console.log(plotly);
     } else {
         throw 'Error: loading with amdefine';
