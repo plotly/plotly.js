@@ -7,7 +7,7 @@ import minimist from 'minimist';
 
 import constants from '../../tasks/util/constants.js';
 import { build } from 'esbuild';
-import config from '../../esbuild-config.mjs';
+import config from '../../esbuild-config.js';
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;

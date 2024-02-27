@@ -2,10 +2,8 @@
 
 var path = require('path');
 var minimist = require('minimist');
-var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
-var LoaderOptionsPlugin = require('webpack').LoaderOptionsPlugin;
 var constants = require('../../tasks/util/constants');
-var webpackConfig = require('../../webpack.config.js');
+var esbuildConfig = require('../../esbuild-config.js');
 
 var isCI = Boolean(process.env.CI);
 
@@ -175,9 +173,17 @@ func.defaultConfig = {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: constants.pathToRoot,
 
-    // frameworks to use
-    // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'jasmine-spec-tags', 'webpack', 'viewport'],
+    frameworks: ['jasmine', 'jasmine-spec-tags', 'viewport'],
+
+    plugins: [
+        require('karma-jasmine'),
+        require('karma-jasmine-spec-tags'),
+        require('karma-viewport'),
+        require('karma-spec-reporter'),
+        require('karma-chrome-launcher'),
+        require('karma-firefox-launcher'),
+        require('karma-esbuild'),
+    ],
 
     // list of files / patterns to load in the browser
     //
@@ -262,26 +268,7 @@ func.defaultConfig = {
         }
     },
 
-    webpack: {
-        target: ['web', 'es5'],
-        module: {
-            rules: webpackConfig.module.rules
-        },
-        resolve: {
-            fallback: {
-                stream: require.resolve('stream-browserify')
-            }
-        },
-        plugins: [
-            new NodePolyfillPlugin({ includeAliases: ['process'] }),
-            new LoaderOptionsPlugin({
-                // test: /\.xxx$/, // may apply this only for some modules
-                options: {
-                    library: webpackConfig.output.library
-                }
-            })
-        ]
-    },
+    esbuild: esbuildConfig,
 
     client: {
         // Options for `karma-jasmine-spec-tags`
@@ -328,21 +315,13 @@ func.defaultConfig = {
     failOnEmptyTestSuite: !argv.doNotFailOnEmptyTestSuite
 };
 
-func.defaultConfig.preprocessors[pathToCustomMatchers] = ['webpack'];
-func.defaultConfig.preprocessors[testFileGlob] = ['webpack'];
+func.defaultConfig.preprocessors[pathToCustomMatchers] = ['esbuild'];
+func.defaultConfig.preprocessors[testFileGlob] = ['esbuild'];
 
 if(isBundleTest) {
     switch(basename(testFileGlob)) {
         case 'minified_bundle':
             func.defaultConfig.files.push(constants.pathToPlotlyBuildMin);
-            func.defaultConfig.module = {
-                rules: {
-                    test: /\.js$/,
-                    use: [
-                        'transform-loader?' + path.resolve(__dirname, 'tasks/compress_attributes.js')
-                    ]
-                }
-            };
             break;
         case 'plotschema':
             // no tasks/compress_attributes in this case

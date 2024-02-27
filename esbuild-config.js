@@ -1,10 +1,9 @@
-import { glsl } from 'esbuild-plugin-glsl';
-import { environmentPlugin } from 'esbuild-plugin-environment';
-// import babel from 'esbuild-plugin-babel';
+var glsl = require('esbuild-plugin-glsl').glsl;
+var environmentPlugin = require('esbuild-plugin-environment').environmentPlugin;
+// var babel = require('esbuild-plugin-babel');
 
-export default {
+module.exports = {
     entryPoints: ['./lib/index.js'],
-    outfile: './build/plotly.js',
     format: 'iife',
     globalName: 'Plotly',
     bundle: true,

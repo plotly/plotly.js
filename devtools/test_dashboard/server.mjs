@@ -7,7 +7,7 @@ import minimist from 'minimist';
 
 import constants from '../../tasks/util/constants.js';
 import { context } from 'esbuild';
-import config from '../../esbuild-config.mjs';
+import config from '../../esbuild-config.js';
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
@@ -18,6 +18,8 @@ var mathjax3chtml = args.mathjax3chtml;
 if(strict) {
     config.entryPoints = ['./lib/index-strict.js'];
 }
+
+config.outfile = './build/plotly.js';
 
 var mockFolder = constants.pathToTestImageMocks;
 

@@ -1,6 +1,6 @@
 import { build } from 'esbuild';
 
-import esbuildConfig from '../../esbuild-config.mjs';
+import esbuildConfig from '../../esbuild-config.js';
 import browserifyAdapter from 'esbuild-plugin-browserify-adapter';
 
 import transform from '../../tasks/compress_attributes.js';
