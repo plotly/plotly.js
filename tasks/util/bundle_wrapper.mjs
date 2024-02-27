@@ -29,7 +29,9 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     config.entryPoints = [pathToIndex];
     config.outfile = pathToBundle || pathToMinBundle;
-    if(!opts.noCompressAttributes) config.plugins.push(browserifyAdapter(transform));
+    if(!opts.noCompressAttributes) {
+        config.plugins = config.plugins.concat([browserifyAdapter(transform)]);
+    }
 
     if(opts.noPlugins) config.plugins = [];
     var pathToMinBundle = opts.pathToMinBundle;
