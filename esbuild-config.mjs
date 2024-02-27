@@ -1,6 +1,6 @@
 import { glsl } from 'esbuild-plugin-glsl';
 import { environmentPlugin } from 'esbuild-plugin-environment';
-import babel from 'esbuild-plugin-babel';
+// import babel from 'esbuild-plugin-babel';
 
 export default {
     entryPoints: ['./lib/index.js'],
@@ -17,10 +17,12 @@ export default {
         environmentPlugin({
             NODE_DEBUG: false,
         }),
+        /*
         babel({
             modules: 'umd',
             // config: { presets: ['@babel/preset-env'] }
         }),
+        */
     ],
     alias: {
         stream: 'stream-browserify',
