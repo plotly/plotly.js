@@ -5,6 +5,9 @@ import fs from 'fs';
 import plotlyNode from './util/plotly_node.mjs';
 var Plotly = plotlyNode('build/plotly.js');
 
+import { fileURLToPath } from 'url';
+var __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 var pathToRoot = path.join(__dirname, '..');
 var pathToMocks = path.join(pathToRoot, 'test', 'image', 'mocks');
 
