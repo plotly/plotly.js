@@ -47,16 +47,17 @@ module.exports = function style(s, gd, legend) {
         var layers = Lib.ensureSingle(traceGroup, 'g', 'layers');
         layers.style('opacity', d[0].trace.opacity);
 
+        var indentation = legend.indentation;
         var valign = legend.valign;
         var lineHeight = d[0].lineHeight;
         var height = d[0].height;
-
-        if(valign === 'middle' || !lineHeight || !height) {
+        if((valign === 'middle' && indentation === 0) || !lineHeight || !height) {
             layers.attr('transform', null);
         } else {
             var factor = {top: 1, bottom: -1}[valign];
-            var markerOffsetY = factor * (0.5 * (lineHeight - height + 3));
-            layers.attr('transform', strTranslate(0, markerOffsetY));
+            var markerOffsetY = (factor * (0.5 * (lineHeight - height + 3))) || 0;
+            var markerOffsetX = legend.indentation;
+            layers.attr('transform', strTranslate(markerOffsetX, markerOffsetY));
         }
 
         var fill = layers

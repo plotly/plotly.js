@@ -178,6 +178,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
     coerce('entrywidth');
     coerce('entrywidthmode');
+    coerce('indentation');
     coerce('itemsizing');
     coerce('itemwidth');
 

@@ -2848,6 +2848,13 @@
       "valType": "number"
      }
     },
+    "indentation": {
+     "description": "Sets the indentation (in px) of the legend entries.",
+     "dflt": 0,
+     "editType": "legend",
+     "min": -15,
+     "valType": "number"
+    },
     "itemclick": {
      "description": "Determines the behavior on legend item click. *toggle* toggles the visibility of the item clicked on the graph. *toggleothers* makes the clicked item the sole visible item on the graph. *false* disables legend item click interactions.",
      "dflt": "toggle",
