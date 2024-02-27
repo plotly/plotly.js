@@ -2,10 +2,8 @@
 
 var Color = require('../../components/color');
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
-var assert = require('assert');
 
 function averageColors(colorscale) {
-    assert(colorscale.length >= 2);
     var color = Color.interpolate(colorscale[0][1], colorscale[1][1], 0.5);
     for(var i = 2; i < colorscale.length; i++) {
         var averageColorI = Color.interpolate(colorscale[i - 1][1], colorscale[i][1], 0.5);

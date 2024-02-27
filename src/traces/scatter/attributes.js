@@ -443,7 +443,6 @@ module.exports = {
         colorscale: {
             valType: 'colorscale',
             editType: 'style',
-            anim: true,
             description: [
                 'Sets the fill gradient colors as a color scale.',
                 'The color scale is interpreted as a gradient',
@@ -453,7 +452,7 @@ module.exports = {
                 'distant point from it, if orientation is *radial*.'
             ].join(' ')
         },
-        editType: 'style',
+        editType: 'calc',
         description: [
             'Sets a fill gradient.',
             'If not specified, the fillcolor is used instead.'

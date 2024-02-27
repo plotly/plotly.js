@@ -179,6 +179,7 @@ drawing.dashStyle = function(dash, lineWidth) {
 
 function setFillStyle(sel, trace, gd, forLegend) {
     var markerPattern = trace.fillpattern;
+    var fillgradient = trace.fillgradient;
     var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, 0, '');
     if(patternShape) {
         var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
@@ -192,32 +193,32 @@ function setFillStyle(sel, trace, gd, forLegend) {
             undefined, markerPattern.fillmode,
             patternBGColor, patternFGColor, patternFGOpacity
         );
-    } else if(trace.fillgradient && trace.fillgradient.orientation !== 'none') {
-        var direction = trace.fillgradient.orientation;
+    } else if(fillgradient && fillgradient.orientation !== 'none') {
+        var direction = fillgradient.orientation;
         var gradientID = 'scatterfill-' + trace.uid;
         if(forLegend) {
             gradientID = 'legendfill-' + trace.uid;
         }
 
-        if(!forLegend && (trace.fillgradient.start !== undefined || trace.fillgradient.stop !== undefined)) {
+        if(!forLegend && (fillgradient.start !== undefined || fillgradient.stop !== undefined)) {
             var start, stop;
             if(direction === 'horizontal') {
                 start = {
-                    x: trace.fillgradient.start,
+                    x: fillgradient.start,
                     y: 0,
                 };
                 stop = {
-                    x: trace.fillgradient.stop,
+                    x: fillgradient.stop,
                     y: 0,
                 };
             } else if(direction === 'vertical') {
                 start = {
                     x: 0,
-                    y: trace.fillgradient.start,
+                    y: fillgradient.start,
                 };
                 stop = {
                     x: 0,
-                    y: trace.fillgradient.stop,
+                    y: fillgradient.stop,
                 };
             }
 
@@ -234,12 +235,12 @@ function setFillStyle(sel, trace, gd, forLegend) {
             stop.y = trace._yA.c2p(
                 (stop.y === undefined) ? trace._extremes.y.max[0].val : stop.y, true
             );
-            sel.call(gradientWithBounds, gd, gradientID, 'linear', trace.fillgradient.colorscale, 'fill', start, stop, true, false);
+            sel.call(gradientWithBounds, gd, gradientID, 'linear', fillgradient.colorscale, 'fill', start, stop, true, false);
         } else {
             if(direction === 'horizontal') {
                 direction = direction + 'reversed';
             }
-            sel.call(drawing.gradient, gd, gradientID, direction, trace.fillgradient.colorscale, 'fill');
+            sel.call(drawing.gradient, gd, gradientID, direction, fillgradient.colorscale, 'fill');
         }
     } else if(trace.fillcolor) {
         sel.call(Color.fill, trace.fillcolor);
