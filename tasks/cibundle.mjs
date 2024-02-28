@@ -1,5 +1,5 @@
-var constants = require('./util/constants');
-var _bundle = require('./util/bundle_wrapper');
+import constants from './util/constants.js';
+import _bundle from './util/bundle_wrapper.mjs';
 
 /*
  * Trimmed down version of ./bundle.js for CI testing
@@ -13,11 +13,12 @@ var _bundle = require('./util/bundle_wrapper');
 
 // Bundle plotly.js and plotly.min.js
 _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuild, {
-    noCompress: true,
+    noCompressAttributes: true,
     pathToMinBundle: constants.pathToPlotlyBuildMin
 }, function() {
     // Bundle the geo assets
     _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
+        noPlugins: true,
         standalone: 'PlotlyGeoAssets'
     });
 });

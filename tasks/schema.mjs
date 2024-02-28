@@ -1,8 +1,8 @@
-var fs = require('fs');
-var path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-var constants = require('./util/constants');
-var plotlyNode = require('./util/plotly_node');
+import constants from './util/constants.js';
+import plotlyNode from './util/plotly_node.mjs';
 
 function caseInsensitive(a, b) {
     return a.toLowerCase().localeCompare(b.toLowerCase());

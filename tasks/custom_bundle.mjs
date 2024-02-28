@@ -1,9 +1,9 @@
 var path = require('path');
-var minimist = require('minimist');
-var runSeries = require('run-series');
+import minimist from 'minimist';
+import runSeries from 'run-series';
 
-var partialBundle = require('./partial_bundle');
-var constants = require('./util/constants');
+import partialBundle from './partial_bundle.mjs';
+import constants from './util/constants.js';
 
 var allTransforms = constants.allTransforms;
 var allTraces = constants.allTraces;

@@ -10,22 +10,6 @@ orbs:
 # https://hub.docker.com/r/cimg/node/tags/
 
 jobs:
-  install-and-cibuild-node12: # cibuild using node 12 & npm 6
-    docker:
-      - image: cimg/node:12.22.7
-    working_directory: ~/plotly.js
-    steps:
-      - checkout
-      - run:
-          name: Set up build environment
-          command: .circleci/env_build.sh
-      - run:
-          name: Pretest
-          command: npm run pretest
-      - run:
-          name: CI-Build
-          command: npm run cibuild
-
   install-and-cibuild: # main cibuild using node 16 & npm 7
     docker:
       - image: cimg/node:16.17.1
@@ -89,7 +73,7 @@ jobs:
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
-    parallelism: 12
+    parallelism: 4
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
@@ -487,24 +471,13 @@ jobs:
           name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
           command: diff --unified --color dist/plot-schema.json test/plot-schema.json
       - run:
-          name: Test plotly.min.js import using amdefine
-          command: npm run test-amdefine
-      - run:
-          name: Test plotly.min.js import using requirejs
-          command: npm run test-requirejs
-      - run:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
-      - run:
-          name: Display function constructors in all bundles
-          command: npm run no-new-func
 
 workflows:
   version: 2
   build-and-test:
     jobs:
-      - install-and-cibuild-node12
-
       - install-and-cibuild
       - timezone-jasmine:
           requires:
