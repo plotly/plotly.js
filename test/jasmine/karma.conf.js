@@ -14,13 +14,12 @@ var argv = minimist(process.argv.slice(4), {
         'info',
         'nowatch', 'randomize',
         'failFast', 'doNotFailOnEmptyTestSuite',
-        'Chrome', 'Firefox', 'IE11',
+        'Chrome', 'Firefox',
         'verbose', 'showSkipped', 'report-progress', 'report-spec', 'report-dots'
     ],
     alias: {
         Chrome: 'chrome',
         Firefox: ['firefox', 'FF'],
-        IE11: ['ie11'],
         bundleTest: ['bundletest', 'bundle_test'],
         nowatch: 'no-watch',
         failFast: 'fail-fast',
@@ -65,7 +64,6 @@ if(argv.info) {
         '  - `--mathjax3`: to load mathjax v3 in relevant test',
         '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
-        '  - `--IE11` (alias -- `ie11`)`: run test in IE11 browser',
         '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
         '  - `--randomize` (dflt: `false`): randomize test ordering (useful to detect bad test teardown)',
         '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
@@ -342,7 +340,6 @@ func.defaultConfig.files.push(testFileGlob);
 var browsers = func.defaultConfig.browsers;
 if(argv.Chrome) browsers.push('_Chrome');
 if(argv.Firefox) browsers.push('_Firefox');
-if(argv.IE11) browsers.push('IE');
 if(browsers.length === 0) browsers.push('_Chrome');
 
 module.exports = func;
