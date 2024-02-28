@@ -173,6 +173,8 @@ func.defaultConfig = {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: constants.pathToRoot,
 
+    // frameworks to use
+    // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['jasmine', 'jasmine-spec-tags', 'viewport'],
 
     plugins: [
@@ -319,13 +321,8 @@ func.defaultConfig.preprocessors[pathToCustomMatchers] = ['esbuild'];
 func.defaultConfig.preprocessors[testFileGlob] = ['esbuild'];
 
 if(isBundleTest) {
-    switch(basename(testFileGlob)) {
-        case 'minified_bundle':
-            func.defaultConfig.files.push(constants.pathToPlotlyBuildMin);
-            break;
-        case 'plotschema':
-            // no tasks/compress_attributes in this case
-            break;
+    if(basename(testFileGlob) === 'minified_bundle') {
+        func.defaultConfig.files.push(constants.pathToPlotlyBuildMin);
     }
 } else {
     func.defaultConfig.files.push(pathToJQuery);
