@@ -318,11 +318,7 @@ func.defaultConfig = {
 func.defaultConfig.preprocessors[pathToCustomMatchers] = ['esbuild'];
 func.defaultConfig.preprocessors[testFileGlob] = ['esbuild'];
 
-if(isBundleTest) {
-    if(basename(testFileGlob) === 'minified_bundle') {
-        func.defaultConfig.files.push(constants.pathToPlotlyBuildMin);
-    }
-} else {
+if(!isBundleTest) {
     func.defaultConfig.files.push(pathToJQuery);
 }
 
