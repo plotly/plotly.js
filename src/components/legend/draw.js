@@ -541,7 +541,7 @@ function drawTexts(g, gd, legendObj) {
         .call(Drawing.font, font)
         .text(isEditable ? ensureLength(name, maxNameLength) : name);
 
-    var textGap = legendObj.itemwidth + constants.itemGap * 2;
+    var textGap = legendObj.indentation + legendObj.itemwidth + constants.itemGap * 2;
     svgTextUtils.positionText(textEl, textGap, 0);
 
     if(isEditable) {
@@ -700,10 +700,10 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
                 bw + lineHeight
             );
         } else { // legend item
-            var x = constants.itemGap * 2 + legendObj.itemwidth;
+            var x = constants.itemGap * 2 + legendObj.indentation + legendObj.itemwidth;
             if(legendItem.groupTitle) {
                 x = constants.itemGap;
-                width -= legendObj.itemwidth;
+                width -= legendObj.indentation + legendObj.itemwidth;
             }
 
             svgTextUtils.positionText(textEl,
@@ -765,7 +765,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var bw = legendObj.borderwidth;
     var bw2 = 2 * bw;
     var itemGap = constants.itemGap;
-    var textGap = legendObj.itemwidth + itemGap * 2;
+    var textGap = legendObj.indentation + legendObj.itemwidth + itemGap * 2;
     var endPad = 2 * (bw + itemGap);
 
     var yanchor = getYanchor(legendObj);

@@ -999,35 +999,23 @@ function createHoverText(hoverData, opts) {
 
             var halfWidth = tbb.width / 2 + HOVERTEXTPAD;
 
+            var tooltipMidX = lx;
             if(lx < halfWidth) {
-                lx = halfWidth;
-
-                lpath.attr('d', 'M-' + (halfWidth - HOVERARROWSIZE) + ',0' +
-                    'L-' + (halfWidth - HOVERARROWSIZE * 2) + ',' + topsign + HOVERARROWSIZE +
-                    'H' + (halfWidth) +
-                    'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) +
-                    'H-' + halfWidth +
-                    'V' + topsign + HOVERARROWSIZE +
-                    'Z');
+                tooltipMidX = halfWidth;
             } else if(lx > (fullLayout.width - halfWidth)) {
-                lx = fullLayout.width - halfWidth;
-
-                lpath.attr('d', 'M' + (halfWidth - HOVERARROWSIZE) + ',0' +
-                    'L' + halfWidth + ',' + topsign + HOVERARROWSIZE +
-                    'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) +
-                    'H-' + halfWidth +
-                    'V' + topsign + HOVERARROWSIZE +
-                    'H' + (halfWidth - HOVERARROWSIZE * 2) + 'Z');
-            } else {
-                lpath.attr('d', 'M0,0' +
-                    'L' + HOVERARROWSIZE + ',' + topsign + HOVERARROWSIZE +
-                    'H' + (halfWidth) +
-                    'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) +
-                    'H-' + (halfWidth) +
-                    'V' + topsign + HOVERARROWSIZE +
-                    'H-' + HOVERARROWSIZE + 'Z');
+                tooltipMidX = fullLayout.width - halfWidth;
             }
 
+            lpath.attr('d', 'M' + (lx - tooltipMidX) + ',0' +
+                'L' + (lx - tooltipMidX + HOVERARROWSIZE) + ',' + topsign + HOVERARROWSIZE +
+                'H' + halfWidth +
+                'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) +
+                'H' + (-halfWidth) +
+                'V' + topsign + HOVERARROWSIZE +
+                'H' + (lx - tooltipMidX - HOVERARROWSIZE) +
+                'Z');
+
+            lx = tooltipMidX;
             commonLabelRect.minX = lx - halfWidth;
             commonLabelRect.maxX = lx + halfWidth;
             if(xa.side === 'top') {
