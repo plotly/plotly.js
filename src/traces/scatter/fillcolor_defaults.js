@@ -33,7 +33,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
         // to specifiy fillcolor after all other more specific candidates
         // are considered, but before the global default color.
         // fillcolor affects the background color of the hoverlabel in this case.
-        var gradientOrientation = coerce('fillgradient.orientation');
+        var gradientOrientation = coerce('fillgradient.type');
         if(gradientOrientation !== 'none') {
             coerce('fillgradient.start');
             coerce('fillgradient.stop');

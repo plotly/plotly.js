@@ -404,13 +404,13 @@ module.exports = {
         ].join(' ')
     },
     fillgradient: extendFlat({
-        orientation: {
+        type: {
             valType: 'enumerated',
             values: ['radial', 'horizontal', 'vertical', 'none'],
             dflt: 'none',
-            editType: 'style',
+            editType: 'calc',
             description: [
-                'Sets the orientation of the color gradient.',
+                'Sets the type/orientation of the color gradient for the fill.',
                 'Defaults to *none*.'
             ].join(' ')
         },

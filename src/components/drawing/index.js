@@ -193,8 +193,8 @@ function setFillStyle(sel, trace, gd, forLegend) {
             undefined, markerPattern.fillmode,
             patternBGColor, patternFGColor, patternFGOpacity
         );
-    } else if(fillgradient && fillgradient.orientation !== 'none') {
-        var direction = fillgradient.orientation;
+    } else if(fillgradient && fillgradient.type !== 'none') {
+        var direction = fillgradient.type;
         var gradientID = 'scatterfill-' + trace.uid;
         if(forLegend) {
             gradientID = 'legendfill-' + trace.uid;

@@ -8,7 +8,7 @@
             "fill": "tonexty",
             "fillcolor": "rgba(0, 255, 0, .5)",
             "fillgradient": {
-                "orientation": "horizontal",
+                "type": "horizontal",
                 "colorscale": [
                     [0.0, "rgba(0, 255, 0, 1)"],
                     [0.5, "rgba(0, 255, 0, 0)"],
@@ -28,7 +28,7 @@
             "fill": "tonexty",
             "hoveron": "fills+points",
             "fillgradient": {
-                "orientation": "horizontal",
+                "type": "horizontal",
                 "colorscale": [
                     [0.0, "rgba(255, 255, 0, 1.0)"],
                     [0.6, "rgba(255, 255, 0, 1.0)"],
@@ -44,7 +44,7 @@
             "mode": "none",
             "fill": "toself",
             "fillgradient": {
-                "orientation": "vertical",
+                "type": "vertical",
                 "colorscale": [
                     [0.0, "rgba(255, 0, 0, 0.8)"],
                     [1.0, "rgba(0, 0, 255, 0.9)"]
@@ -60,7 +60,7 @@
             "mode": "none",
             "fill": "toself",
             "fillgradient": {
-                "orientation": "vertical",
+                "type": "vertical",
                 "colorscale": [
                     [0.0, "rgba(255, 0, 0, 0.8)"],
                     [1.0, "rgba(0, 0, 255, 0.9)"]
