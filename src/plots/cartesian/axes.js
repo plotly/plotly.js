@@ -1621,6 +1621,10 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     var tickVal2l = axType === 'category' ? ax.d2l_noadd : ax.d2l;
     var i;
 
+    var inbounds = function(v) {
+        var p = ax.l2p(v);
+        return p >= 0 && p <= ax._length ? v : null;
+    };
     if(arrayMode && Lib.isArrayOrTypedArray(ax.ticktext)) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         var minDiff = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / 10000;
@@ -1630,10 +1634,7 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
         }
         if(i < ax.ticktext.length) {
             out.text = String(ax.ticktext[i]);
-            var inbounds = function(v) {
-                var p = ax.l2p(v);
-                return p >= 0 && p <= ax._length ? v : null;
-            };
+
             out.xbnd = [
                 inbounds(out.x - 0.5),
                 inbounds(out.x + ax.dtick - 0.5)
@@ -1679,11 +1680,6 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     // Setup ticks and grid lines boundaries
     // at 1/2 a 'category' to the left/bottom
     if(ax.tickson === 'boundaries' || ax.showdividers) {
-        var inbounds = function(v) {
-            var p = ax.l2p(v);
-            return p >= 0 && p <= ax._length ? v : null;
-        };
-
         out.xbnd = [
             inbounds(out.x - 0.5),
             inbounds(out.x + ax.dtick - 0.5)
