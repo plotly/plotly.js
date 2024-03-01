@@ -13,6 +13,22 @@ var constants = require('./constants');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
+var makeFillcolorAttr = function(hasFillgradient) {
+    return {
+        valType: 'color',
+        editType: 'style',
+        anim: true,
+        description: [
+            'Sets the fill color.',
+            'Defaults to a half-transparent variant of the line color,',
+            'marker color, or marker line color, whichever is available.',
+            hasFillgradient ?
+                'If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.' :
+                ''
+        ].join(' ')
+    };
+}
+
 function axisPeriod(axis) {
     return {
         valType: 'any',
@@ -391,18 +407,7 @@ module.exports = {
             'consecutive, the later ones will be pushed down in the drawing order.'
         ].join(' ')
     },
-    fillcolor: {
-        valType: 'color',
-        editType: 'style',
-        anim: true,
-        description: [
-            'Sets the fill color.',
-            'Defaults to a half-transparent variant of the line color,',
-            'marker color, or marker line color, whichever is available.',
-            'If fillgradient is specified, fillcolor is ignored except for',
-            'setting the background color of the hover label, if any.'
-        ].join(' ')
-    },
+    fillcolor: makeFillcolorAttr(true),
     fillgradient: extendFlat({
         type: {
             valType: 'enumerated',
