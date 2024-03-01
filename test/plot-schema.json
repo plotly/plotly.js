@@ -16238,7 +16238,7 @@
      "valType": "number"
     },
     "fillcolor": {
-     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
      "editType": "style",
      "valType": "color"
     },
@@ -17578,7 +17578,7 @@
     "decreasing": {
      "editType": "style",
      "fillcolor": {
-      "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+      "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
       "editType": "style",
       "valType": "color"
      },
@@ -17761,7 +17761,7 @@
     "increasing": {
      "editType": "style",
      "fillcolor": {
-      "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+      "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
       "editType": "style",
       "valType": "color"
      },
@@ -49591,7 +49591,7 @@
      ]
     },
     "fillcolor": {
-     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
      "editType": "style",
      "valType": "color"
     },
@@ -51493,7 +51493,7 @@
      ]
     },
     "fillcolor": {
-     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
      "editType": "calc",
      "valType": "color"
     },
@@ -53596,7 +53596,7 @@
      ]
     },
     "fillcolor": {
-     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
      "editType": "calc",
      "valType": "color"
     },
@@ -55612,7 +55612,7 @@
      ]
     },
     "fillcolor": {
-     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
      "editType": "calc",
      "valType": "color"
     },
@@ -56812,7 +56812,7 @@
      ]
     },
     "fillcolor": {
-     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
      "editType": "style",
      "valType": "color"
     },
@@ -58758,7 +58758,7 @@
      ]
     },
     "fillcolor": {
-     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
      "editType": "calc",
      "valType": "color"
     },
@@ -60594,7 +60594,7 @@
      ]
     },
     "fillcolor": {
-     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
      "editType": "style",
      "valType": "color"
     },
@@ -62538,7 +62538,7 @@
      ]
     },
     "fillcolor": {
-     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
      "editType": "style",
      "valType": "color"
     },
@@ -72246,7 +72246,7 @@
      "valType": "string"
     },
     "fillcolor": {
-     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
+     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
      "editType": "style",
      "valType": "color"
     },
