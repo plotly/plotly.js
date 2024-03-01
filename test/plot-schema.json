@@ -1462,14 +1462,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -4210,14 +4212,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -4889,14 +4893,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -6074,14 +6080,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -6702,14 +6710,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -7330,14 +7340,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -9130,14 +9142,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -9534,14 +9548,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -9944,14 +9960,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -11073,14 +11091,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "ticks",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "ticks": {
@@ -11801,7 +11821,7 @@
      "valType": "number"
     },
     "tickmode": {
-     "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *sync*, the number of ticks will sync with the overlayed axis set by `overlaying` property.",
+     "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis. If *sync*, the number of ticks will sync with the overlayed axis set by `overlaying` property.",
      "editType": "ticks",
      "impliedEdits": {},
      "valType": "enumerated",
@@ -11809,6 +11829,8 @@
       "auto",
       "linear",
       "array",
+      "domain array",
+      "full domain",
       "sync"
      ]
     },
@@ -12427,14 +12449,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "ticks",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "ticks": {
@@ -12906,7 +12930,7 @@
      "valType": "number"
     },
     "tickmode": {
-     "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *sync*, the number of ticks will sync with the overlayed axis set by `overlaying` property.",
+     "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis. If *sync*, the number of ticks will sync with the overlayed axis set by `overlaying` property.",
      "editType": "ticks",
      "impliedEdits": {},
      "valType": "enumerated",
@@ -12914,6 +12938,8 @@
       "auto",
       "linear",
       "array",
+      "domain array",
+      "full domain",
       "sync"
      ]
     },
@@ -13983,14 +14009,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -15542,14 +15570,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -19840,14 +19870,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -20867,14 +20899,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -21923,14 +21957,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -22997,14 +23033,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -24412,14 +24450,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -25398,14 +25438,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -26739,14 +26781,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -28576,14 +28620,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -29774,14 +29820,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "calc",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -31349,14 +31397,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -32565,14 +32615,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -33735,14 +33787,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -35424,14 +35478,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -36947,14 +37003,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "plot",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -37870,14 +37928,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "calc",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -39120,14 +39180,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -41142,14 +41204,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -42133,14 +42197,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -45862,14 +45928,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -48143,14 +48211,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "calc",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -48754,14 +48824,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "calc",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -50265,14 +50337,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -52182,14 +52256,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "calc",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -54234,14 +54310,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "calc",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -56248,14 +56326,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "calc",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -57486,14 +57566,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -59382,14 +59464,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "calc",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -61278,14 +61362,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -63213,14 +63299,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -65079,14 +65167,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -66512,14 +66602,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "colorbars",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -68011,14 +68103,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -68999,14 +69093,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "calc",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
@@ -71399,14 +71495,16 @@
        "valType": "number"
       },
       "tickmode": {
-       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
        "editType": "colorbars",
        "impliedEdits": {},
        "valType": "enumerated",
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "domain array",
+        "full domain"
        ]
       },
       "tickprefix": {
@@ -73859,14 +73957,16 @@
       "valType": "number"
      },
      "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals`, which are actual values, and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided). If *full domain*, the number of ticks is set bia `nticks` but ticks are placed first at both axis ends and then at equal proportions between the axis. So `nticks=5` would put ticks at both ends and every quarter. If *domain array*, the placement is similiar to *array* except that `tickvals` are fractions between 0 and 1 representing distance on the corresponding axis.",
       "editType": "calc",
       "impliedEdits": {},
       "valType": "enumerated",
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "domain array",
+       "full domain"
       ]
      },
      "tickprefix": {
