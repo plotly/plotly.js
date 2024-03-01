@@ -1293,10 +1293,7 @@ function arrayTicks(ax, majorOnly) {
         for(var i = 0; i < vals.length; i++) {
             var vali = tickVal2l(vals[i]);
             if(vali > tickMin && vali < tickMax) {
-                var obj = text[i] === undefined ?
-                        axes.tickText(ax, vali) :
-                        tickTextObj(ax, vali, String(text[i]));
-
+                var obj = axes.tickText(ax, vali, false, String(text[i]));
                 if(isMinor) {
                     obj.minor = true;
                     obj.text = '';
@@ -1633,6 +1630,14 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
         }
         if(i < ax.ticktext.length) {
             out.text = String(ax.ticktext[i]);
+            var inbounds = function(v) {
+                var p = ax.l2p(v);
+                return p >= 0 && p <= ax._length ? v : null;
+            };
+            out.xbnd = [
+                inbounds(out.x - 0.5),
+                inbounds(out.x + ax.dtick - 0.5)
+            ];
             return out;
         }
     }
@@ -2807,7 +2812,7 @@ function getBoundaryVals(ax, vals) {
     // boundaryVals are never used for labels;
     // no need to worry about the other tickTextObj keys
     var _push = function(d, bndIndex) {
-        var xb = d.xbnd ? d.xbnd[bndIndex] : d.x;
+        var xb = d.xbnd[bndIndex];
         if(xb !== null) {
             out.push(Lib.extendFlat({}, d, {x: xb}));
         }
@@ -3755,7 +3760,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 // TODO should secondary labels also fall into this fix-overlap regime?
 
                 for(i = 0; i < lbbArray.length; i++) {
-                    var xbnd = (vals && vals[i].xbnd) ? vals[i].xbnd : [null, null];
+                    var xbnd = vals[i].xbnd;
                     var lbb = lbbArray[i];
                     if(
                         (xbnd[0] !== null && (lbb.left - ax.l2p(xbnd[0])) < gap) ||
