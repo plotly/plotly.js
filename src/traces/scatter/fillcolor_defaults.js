@@ -28,17 +28,18 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     }
 
     var averageGradientColor;
-    if(traceIn.fillgradient) {
+    var gradientOrientation = coerce('fillgradient.type');
+    if(gradientOrientation !== 'none') {
+        coerce('fillgradient.start');
+        coerce('fillgradient.stop');
+        var gradientColorscale = coerce('fillgradient.colorscale');
+
         // if a fillgradient is specified, we use the average gradient color
-        // to specifiy fillcolor after all other more specific candidates
+        // to specify fillcolor after all other more specific candidates
         // are considered, but before the global default color.
         // fillcolor affects the background color of the hoverlabel in this case.
-        var gradientOrientation = coerce('fillgradient.type');
-        if(gradientOrientation !== 'none') {
-            coerce('fillgradient.start');
-            coerce('fillgradient.stop');
-            coerce('fillgradient.colorscale');
-            averageGradientColor = averageColors(traceOut.fillgradient.colorscale);
+        if(gradientColorscale) {
+            averageGradientColor = averageColors(gradientColorscale);
         }
     }
 
