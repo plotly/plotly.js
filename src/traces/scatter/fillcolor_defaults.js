@@ -12,7 +12,9 @@ function averageColors(colorscale) {
     return color;
 }
 
-module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coerce) {
+module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coerce, opts) {
+    if(!opts) opts = {};
+
     var inheritColorFromMarker = false;
 
     if(traceOut.marker) {
@@ -28,18 +30,20 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     }
 
     var averageGradientColor;
-    var gradientOrientation = coerce('fillgradient.type');
-    if(gradientOrientation !== 'none') {
-        coerce('fillgradient.start');
-        coerce('fillgradient.stop');
-        var gradientColorscale = coerce('fillgradient.colorscale');
+    if(opts.moduleHasFillgradient) {
+        var gradientOrientation = coerce('fillgradient.type');
+        if(gradientOrientation !== 'none') {
+            coerce('fillgradient.start');
+            coerce('fillgradient.stop');
+            var gradientColorscale = coerce('fillgradient.colorscale');
 
-        // if a fillgradient is specified, we use the average gradient color
-        // to specify fillcolor after all other more specific candidates
-        // are considered, but before the global default color.
-        // fillcolor affects the background color of the hoverlabel in this case.
-        if(gradientColorscale) {
-            averageGradientColor = averageColors(gradientColorscale);
+            // if a fillgradient is specified, we use the average gradient color
+            // to specify fillcolor after all other more specific candidates
+            // are considered, but before the global default color.
+            // fillcolor affects the background color of the hoverlabel in this case.
+            if(gradientColorscale) {
+                averageGradientColor = averageColors(gradientColorscale);
+            }
         }
     }
 
