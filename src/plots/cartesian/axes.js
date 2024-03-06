@@ -2899,7 +2899,7 @@ function calcLabelLevelBbox(ax, cls, mainLinePositionShift) {
         });
     } else {
         var dummyCalc = axes.makeLabelFns(ax, mainLinePositionShift);
-        top = bottom = dummyCalc.yFn({dx: 0, dy: 0, fontSize: 0}); // I don't know what dx, dy is
+        top = bottom = dummyCalc.yFn({dx: 0, dy: 0, fontSize: 0});
         left = right = dummyCalc.xFn({dx: 0, dy: 0, fontSize: 0});
     }
 
