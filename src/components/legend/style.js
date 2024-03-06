@@ -115,7 +115,7 @@ module.exports = function style(s, gd, legend) {
         var fillStyle = function(s) {
             if(s.size()) {
                 if(showFill) {
-                    Drawing.fillGroupStyle(s, gd);
+                    Drawing.fillGroupStyle(s, gd, true);
                 } else {
                     var gradientID = 'legendfill-' + trace.uid;
                     Drawing.gradient(s, gd, gradientID,
@@ -674,7 +674,6 @@ function getStyleGuide(d) {
             showGradientFill = true;
         }
     }
-
     return {
         showMarker: showMarker,
         showLine: showLine,
