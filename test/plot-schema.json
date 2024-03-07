@@ -1066,7 +1066,7 @@
     ]
    },
    "clickmode": {
-    "description": "Determines the mode of single click interactions. *event* is the default value and emits the `plotly_click` event. In addition this mode emits the `plotly_selected` event in drag modes *lasso* and *select*, but with no event data attached (kept for compatibility reasons). The *select* flag enables selecting single data points via click. This mode also supports persistent selections, meaning that pressing Shift while clicking, adds to / subtracts from an existing selection. *select* with `hovermode`: *x* can be confusing, consider explicitly setting `hovermode`: *closest* when using this feature. Selection events are sent accordingly as long as *event* flag is set as well. When the *event* flag is missing, `plotly_click` and `plotly_selected` events are not fired.",
+    "description": "Determines the mode of single click interactions. *event* is the default value and emits the `plotly_click` event. In addition this mode emits the `plotly_selected` event in drag modes *lasso* and *select*, but with no event data attached (kept for compatibility reasons). The *select* flag enables selecting single data points via click. This mode also supports persistent selections, meaning that pressing Shift while clicking, adds to / subtracts from an existing selection. *select* with `hovermode`: *x* can be confusing, consider explicitly setting `hovermode`: *closest* when using this feature. Selection events are sent accordingly as long as *event* flag is set as well. When the *event* flag is missing, `plotly_click` and `plotly_selected` events are not fired. The *anywhere* flag extends the *select* flag by allowing to trigger a click event anywhere in the plot. The click event will always include *x* and *y* coordinates and if a data point is below the cursor it will also include information about the data point. When specifying *anywhere* the *select* flag becomes superfluous.",
     "dflt": "event",
     "editType": "plot",
     "extras": [
@@ -1074,7 +1074,8 @@
     ],
     "flags": [
      "event",
-     "select"
+     "select",
+     "anywhere"
     ],
     "valType": "flaglist"
    },
