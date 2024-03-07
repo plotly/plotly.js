@@ -1599,6 +1599,102 @@ describe('Test select box and lasso in general:', function() {
         })
         .then(done, done.fail);
     });
+
+    it('should re-select data in all overlaying visible traces', function(done) {
+        var gd = createGraphDiv();
+        _newPlot(gd, [{
+            x: [1, 2, 3],
+            y: [4, 5, 6],
+            name: 'yaxis1 data',
+            type: 'scatter'
+        },
+        {
+            x: [2, 3, 4],
+            y: [40, 50, 60],
+            name: 'yaxis2 data',
+            yaxis: 'y2',
+            xaxis: 'x2',
+            type: 'scatter'
+        },
+        {
+            x: [3, 4, 5],
+            y: [400, 500, 600],
+            name: 'yaxis3 data',
+            yaxis: 'y3',
+            type: 'scatter'
+        },
+        {
+            x: [4, 5, 6],
+            y: [1000, 2000, 3000],
+            name: 'yaxis4 data',
+            yaxis: 'y4',
+            xaxis: 'x2',
+            type: 'scatter'
+        }
+        ],
+            {
+                grid: {
+                    rows: 2,
+                    columns: 1,
+                    pattern: 'independent'
+                },
+                width: 800,
+                height: 600,
+                yaxis: {
+                    showline: true,
+                    title: {
+                        text: 'yaxis title'
+                    }
+                },
+                yaxis2: {
+                    title: {
+                        text: 'yaxis2 title'
+                    },
+                    showline: true
+                },
+                yaxis3: {
+                    title: {
+                        text: 'yaxis3 title'
+                    },
+                    anchor: 'free',
+                    overlaying: 'y',
+                    showline: true,
+                    autoshift: true
+                },
+                yaxis4: {
+                    title: {
+                        text: 'yaxis4 title'
+                    },
+                    anchor: 'free',
+                    overlaying: 'y2',
+                    showline: true,
+                    autoshift: true
+                }
+            }).then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'select');
+            }).then(function() {
+                return drag([[150, 450], [650, 350]]);
+            }).then(function() {
+                expect(gd.data[0].selectedpoints).toBe(undefined);
+                expect(gd.data[1].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[2].selectedpoints).toBe(undefined);
+                expect(gd.data[3].selectedpoints).toEqual([1, 2]);
+            }).then(function() {
+                return drag([[150, 100], [600, 200]]);
+            }).then(function() {
+                expect(gd.data[0].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[1].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[2].selectedpoints).toEqual([1]);
+                expect(gd.data[3].selectedpoints).toEqual([1, 2]);
+            }).then(function() {
+                return drag([[600, 150], [650, 150]]); // Extend existing selection
+            }).then(function() {
+                expect(gd.data[0].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[1].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[2].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[3].selectedpoints).toEqual([1, 2]);
+            }).then(done, done.fail);
+    });
 });
 
 describe('Test select box and lasso per trace:', function() {
