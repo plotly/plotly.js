@@ -139,6 +139,7 @@
     "esbuild-plugin-browserify-adapter": "^0.1.4",
     "esbuild-plugin-environment": "^0.3.0",
     "esbuild-plugin-glsl": "^1.2.2",
+    "esbuild-plugin-umd-wrapper": "^2.0.0",
     "eslint": "^8.56.0",
     "extra-iterable": "^2.5.22",
     "falafel": "^2.2.5",
