@@ -226,6 +226,7 @@ module.exports = {
         textfont: scatterAttrs.unselected.textfont,
         editType: 'style'
     },
+    zindex: scatterAttrs.zindex,
 
     _deprecated: {
         bardir: {
