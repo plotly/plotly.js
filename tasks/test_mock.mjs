@@ -220,6 +220,7 @@ function notBlackListed(name) {
         'pattern_bars',
         'pattern_fgcolor_overlay_fillmode',
         'pattern_with_colorscale',
+        'petrophysics',
         'plot_types',
         'polar_blank',
         'polar_dates',

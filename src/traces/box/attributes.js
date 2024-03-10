@@ -1,5 +1,6 @@
 'use strict';
 
+var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
 var barAttrs = require('../bar/attributes');
 var colorAttrs = require('../../components/color/attributes');
@@ -386,7 +387,7 @@ module.exports = {
         editType: 'plot'
     },
 
-    fillcolor: scatterAttrs.fillcolor,
+    fillcolor: makeFillcolorAttr(),
 
     whiskerwidth: {
         valType: 'number',

@@ -72,7 +72,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // We handle that case in some hacky code inside handleStackDefaults.
     coerce('fill', stackGroupOpts ? stackGroupOpts.fillDflt : 'none');
     if(traceOut.fill !== 'none') {
-        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce, {
+            moduleHasFillgradient: true
+        });
         if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
         coercePattern(coerce, 'fillpattern', traceOut.fillcolor, false);
     }

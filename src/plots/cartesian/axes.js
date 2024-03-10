@@ -1293,10 +1293,7 @@ function arrayTicks(ax, majorOnly) {
         for(var i = 0; i < vals.length; i++) {
             var vali = tickVal2l(vals[i]);
             if(vali > tickMin && vali < tickMax) {
-                var obj = text[i] === undefined ?
-                        axes.tickText(ax, vali) :
-                        tickTextObj(ax, vali, String(text[i]));
-
+                var obj = axes.tickText(ax, vali, false, String(text[i]));
                 if(isMinor) {
                     obj.minor = true;
                     obj.text = '';
@@ -1624,6 +1621,10 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     var tickVal2l = axType === 'category' ? ax.d2l_noadd : ax.d2l;
     var i;
 
+    var inbounds = function(v) {
+        var p = ax.l2p(v);
+        return p >= 0 && p <= ax._length ? v : null;
+    };
     if(arrayMode && Lib.isArrayOrTypedArray(ax.ticktext)) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         var minDiff = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / 10000;
@@ -1633,6 +1634,11 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
         }
         if(i < ax.ticktext.length) {
             out.text = String(ax.ticktext[i]);
+
+            out.xbnd = [
+                inbounds(out.x - 0.5),
+                inbounds(out.x + ax.dtick - 0.5)
+            ];
             return out;
         }
     }
@@ -1674,11 +1680,6 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     // Setup ticks and grid lines boundaries
     // at 1/2 a 'category' to the left/bottom
     if(ax.tickson === 'boundaries' || ax.showdividers) {
-        var inbounds = function(v) {
-            var p = ax.l2p(v);
-            return p >= 0 && p <= ax._length ? v : null;
-        };
-
         out.xbnd = [
             inbounds(out.x - 0.5),
             inbounds(out.x + ax.dtick - 0.5)
@@ -2452,7 +2453,7 @@ axes.drawOne = function(gd, ax, opts) {
     var llbboxes = {};
     function getLabelLevelBbox(suffix) {
         var cls = axId + (suffix || 'tick');
-        if(!llbboxes[cls]) llbboxes[cls] = calcLabelLevelBbox(ax, cls);
+        if(!llbboxes[cls]) llbboxes[cls] = calcLabelLevelBbox(ax, cls, mainLinePositionShift);
         return llbboxes[cls];
     }
 
@@ -2807,7 +2808,7 @@ function getBoundaryVals(ax, vals) {
     // boundaryVals are never used for labels;
     // no need to worry about the other tickTextObj keys
     var _push = function(d, bndIndex) {
-        var xb = d.xbnd ? d.xbnd[bndIndex] : d.x;
+        var xb = d.xbnd[bndIndex];
         if(xb !== null) {
             out.push(Lib.extendFlat({}, d, {x: xb}));
         }
@@ -2872,7 +2873,7 @@ function getDividerVals(ax, vals) {
     return out;
 }
 
-function calcLabelLevelBbox(ax, cls) {
+function calcLabelLevelBbox(ax, cls, mainLinePositionShift) {
     var top, bottom;
     var left, right;
 
@@ -2897,10 +2898,9 @@ function calcLabelLevelBbox(ax, cls) {
             right = Math.max(right, bb.right);
         });
     } else {
-        top = 0;
-        bottom = 0;
-        left = 0;
-        right = 0;
+        var dummyCalc = axes.makeLabelFns(ax, mainLinePositionShift);
+        top = bottom = dummyCalc.yFn({dx: 0, dy: 0, fontSize: 0});
+        left = right = dummyCalc.xFn({dx: 0, dy: 0, fontSize: 0});
     }
 
     return {
@@ -3755,7 +3755,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 // TODO should secondary labels also fall into this fix-overlap regime?
 
                 for(i = 0; i < lbbArray.length; i++) {
-                    var xbnd = (vals && vals[i].xbnd) ? vals[i].xbnd : [null, null];
+                    var xbnd = vals[i].xbnd;
                     var lbb = lbbArray[i];
                     if(
                         (xbnd[0] !== null && (lbb.left - ax.l2p(xbnd[0])) < gap) ||
@@ -3907,13 +3907,13 @@ axes.drawLabels = function(gd, ax, opts) {
 
             var anchorAxRange = anchorAx.range;
 
-            var p0 = anchorAx.d2p(anchorAxRange[index]);
-            var p1 = anchorAx.d2p(anchorAxRange[otherIndex]);
+            var p0 = anchorAx.r2p(anchorAxRange[index]);
+            var p1 = anchorAx.r2p(anchorAxRange[otherIndex]);
 
             var _tempNewRange = fullLayout._insideTickLabelsUpdaterange[anchorAx._name + '.range'];
             if(_tempNewRange) { // case of having multiple anchored axes having insideticklabel
-                var q0 = anchorAx.d2p(_tempNewRange[index]);
-                var q1 = anchorAx.d2p(_tempNewRange[otherIndex]);
+                var q0 = anchorAx.r2p(_tempNewRange[index]);
+                var q1 = anchorAx.r2p(_tempNewRange[otherIndex]);
 
                 var dir = sgn * (ax._id.charAt(0) === 'y' ? 1 : -1);
 
@@ -3938,8 +3938,8 @@ axes.drawLabels = function(gd, ax, opts) {
 
             if(ax._id.charAt(0) !== 'y') move = -move;
 
-            newRange[index] = anchorAx.p2d(
-                anchorAx.d2p(anchorAxRange[index]) +
+            newRange[index] = anchorAx.p2r(
+                anchorAx.r2p(anchorAxRange[index]) +
                 sgn * move
             );
 

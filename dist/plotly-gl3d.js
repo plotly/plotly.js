@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.29.1
+* plotly.js (gl3d) v2.30.0
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -2429,6 +2429,23 @@ color.combine = function (front, back) {
     b: bcflat.b * (1 - fc.a) + fc.b * fc.a
   };
   return tinycolor(fcflat).toRgbString();
+};
+
+/*
+ * Linearly interpolate between two colors at a normalized interpolation position (0 to 1).
+ *
+ * Ignores alpha channel values.
+ * The resulting color is computed as: factor * first + (1 - factor) * second.
+ */
+color.interpolate = function (first, second, factor) {
+  var fc = tinycolor(first).toRgb();
+  var sc = tinycolor(second).toRgb();
+  var ic = {
+    r: factor * fc.r + (1 - factor) * sc.r,
+    g: factor * fc.g + (1 - factor) * sc.g,
+    b: factor * fc.b + (1 - factor) * sc.b
+  };
+  return tinycolor(ic).toRgbString();
 };
 
 /*
@@ -5025,8 +5042,9 @@ drawing.dashStyle = function (dash, lineWidth) {
 
   return dash;
 };
-function setFillStyle(sel, trace, gd) {
+function setFillStyle(sel, trace, gd, forLegend) {
   var markerPattern = trace.fillpattern;
+  var fillgradient = trace.fillgradient;
   var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, 0, '');
   if (patternShape) {
     var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
@@ -5036,6 +5054,44 @@ function setFillStyle(sel, trace, gd) {
     var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, 0, 0.3);
     var patternID = trace.uid;
     drawing.pattern(sel, 'point', gd, patternID, patternShape, patternSize, patternSolidity, undefined, markerPattern.fillmode, patternBGColor, patternFGColor, patternFGOpacity);
+  } else if (fillgradient && fillgradient.type !== 'none') {
+    var direction = fillgradient.type;
+    var gradientID = 'scatterfill-' + trace.uid;
+    if (forLegend) {
+      gradientID = 'legendfill-' + trace.uid;
+    }
+    if (!forLegend && (fillgradient.start !== undefined || fillgradient.stop !== undefined)) {
+      var start, stop;
+      if (direction === 'horizontal') {
+        start = {
+          x: fillgradient.start,
+          y: 0
+        };
+        stop = {
+          x: fillgradient.stop,
+          y: 0
+        };
+      } else if (direction === 'vertical') {
+        start = {
+          x: 0,
+          y: fillgradient.start
+        };
+        stop = {
+          x: 0,
+          y: fillgradient.stop
+        };
+      }
+      start.x = trace._xA.c2p(start.x === undefined ? trace._extremes.x.min[0].val : start.x, true);
+      start.y = trace._yA.c2p(start.y === undefined ? trace._extremes.y.min[0].val : start.y, true);
+      stop.x = trace._xA.c2p(stop.x === undefined ? trace._extremes.x.max[0].val : stop.x, true);
+      stop.y = trace._yA.c2p(stop.y === undefined ? trace._extremes.y.max[0].val : stop.y, true);
+      sel.call(gradientWithBounds, gd, gradientID, 'linear', fillgradient.colorscale, 'fill', start, stop, true, false);
+    } else {
+      if (direction === 'horizontal') {
+        direction = direction + 'reversed';
+      }
+      sel.call(drawing.gradient, gd, gradientID, direction, fillgradient.colorscale, 'fill');
+    }
   } else if (trace.fillcolor) {
     sel.call(Color.fill, trace.fillcolor);
   }
@@ -5046,15 +5102,15 @@ drawing.singleFillStyle = function (sel, gd) {
   var node = d3.select(sel.node());
   var data = node.data();
   var trace = ((data[0] || [])[0] || {}).trace || {};
-  setFillStyle(sel, trace, gd);
+  setFillStyle(sel, trace, gd, false);
 };
-drawing.fillGroupStyle = function (s, gd) {
+drawing.fillGroupStyle = function (s, gd, forLegend) {
   s.style('stroke-width', 0).each(function (d) {
     var shape = d3.select(this);
     // N.B. 'd' won't be a calcdata item when
     // fill !== 'none' on a segment-less and marker-less trace
     if (d[0].trace) {
-      setFillStyle(shape, d[0].trace, gd);
+      setFillStyle(shape, d[0].trace, gd, forLegend);
     }
   });
 };
@@ -5112,43 +5168,59 @@ function makePointPath(symbolNumber, r, t, s) {
   var base = symbolNumber % 100;
   return drawing.symbolFuncs[base](r, t, s) + (symbolNumber >= 200 ? DOTPATH : '');
 }
-var HORZGRADIENT = {
-  x1: 1,
-  x2: 0,
-  y1: 0,
-  y2: 0
-};
-var VERTGRADIENT = {
-  x1: 0,
-  x2: 0,
-  y1: 1,
-  y2: 0
-};
 var stopFormatter = numberFormat('~f');
 var gradientInfo = {
   radial: {
-    node: 'radialGradient'
+    type: 'radial'
   },
   radialreversed: {
-    node: 'radialGradient',
+    type: 'radial',
     reversed: true
   },
   horizontal: {
-    node: 'linearGradient',
-    attrs: HORZGRADIENT
+    type: 'linear',
+    start: {
+      x: 1,
+      y: 0
+    },
+    stop: {
+      x: 0,
+      y: 0
+    }
   },
   horizontalreversed: {
-    node: 'linearGradient',
-    attrs: HORZGRADIENT,
+    type: 'linear',
+    start: {
+      x: 1,
+      y: 0
+    },
+    stop: {
+      x: 0,
+      y: 0
+    },
     reversed: true
   },
   vertical: {
-    node: 'linearGradient',
-    attrs: VERTGRADIENT
+    type: 'linear',
+    start: {
+      x: 0,
+      y: 1
+    },
+    stop: {
+      x: 0,
+      y: 0
+    }
   },
   verticalreversed: {
-    node: 'linearGradient',
-    attrs: VERTGRADIENT,
+    type: 'linear',
+    start: {
+      x: 0,
+      y: 1
+    },
+    stop: {
+      x: 0,
+      y: 0
+    },
     reversed: true
   }
 };
@@ -5168,8 +5240,53 @@ var gradientInfo = {
  * @param {string} prop: the property to apply to, 'fill' or 'stroke'
  */
 drawing.gradient = function (sel, gd, gradientID, type, colorscale, prop) {
-  var len = colorscale.length;
   var info = gradientInfo[type];
+  return gradientWithBounds(sel, gd, gradientID, info.type, colorscale, prop, info.start, info.stop, false, info.reversed);
+};
+
+/**
+ * gradient_with_bounds: create and apply a gradient fill for defined start and stop positions
+ *
+ * @param {object} sel: d3 selection to apply this gradient to
+ *     You can use `selection.call(Drawing.gradient, ...)`
+ * @param {DOM element} gd: the graph div `sel` is part of
+ * @param {string} gradientID: a unique (within this plot) identifier
+ *     for this gradient, so that we don't create unnecessary definitions
+ * @param {string} type: 'radial' or 'linear'. Radial goes center to edge,
+ *     horizontal goes as defined by start and stop
+ * @param {array} colorscale: as in attribute values, [[fraction, color], ...]
+ * @param {string} prop: the property to apply to, 'fill' or 'stroke'
+ * @param {object} start: start point for linear gradients, { x: number, y: number }.
+ *     Ignored if type is 'radial'.
+ * @param {object} stop: stop point for linear gradients, { x: number, y: number }.
+ *     Ignored if type is 'radial'.
+ * @param {boolean} inUserSpace: If true, start and stop give absolute values in the plot.
+ *     If false, start and stop are fractions of the traces extent along each axis.
+ * @param {boolean} reversed: If true, the gradient is reversed between normal start and stop,
+ *     i.e., the colorscale is applied in order from stop to start for linear, from edge
+ *     to center for radial gradients.
+ */
+function gradientWithBounds(sel, gd, gradientID, type, colorscale, prop, start, stop, inUserSpace, reversed) {
+  var len = colorscale.length;
+  var info;
+  if (type === 'linear') {
+    info = {
+      node: 'linearGradient',
+      attrs: {
+        x1: start.x,
+        y1: start.y,
+        x2: stop.x,
+        y2: stop.y,
+        gradientUnits: inUserSpace ? 'userSpaceOnUse' : 'objectBoundingBox'
+      },
+      reversed: reversed
+    };
+  } else if (type === 'radial') {
+    info = {
+      node: 'radialGradient',
+      reversed: reversed
+    };
+  }
   var colorStops = new Array(len);
   for (var i = 0; i < len; i++) {
     if (info.reversed) {
@@ -5200,7 +5317,7 @@ drawing.gradient = function (sel, gd, gradientID, type, colorscale, prop) {
   });
   sel.style(prop, getFullUrl(fullID, gd)).style(prop + '-opacity', null);
   sel.classed('gradient_filled', true);
-};
+}
 
 /**
  * pattern: create and apply a pattern fill
@@ -8701,15 +8818,14 @@ function createHoverText(hoverData, opts) {
       lx = xa._offset + (c0.x0 + c0.x1) / 2;
       ly = ya._offset + (xa.side === 'top' ? 0 : ya._length);
       var halfWidth = tbb.width / 2 + HOVERTEXTPAD;
+      var tooltipMidX = lx;
       if (lx < halfWidth) {
-        lx = halfWidth;
-        lpath.attr('d', 'M-' + (halfWidth - HOVERARROWSIZE) + ',0' + 'L-' + (halfWidth - HOVERARROWSIZE * 2) + ',' + topsign + HOVERARROWSIZE + 'H' + halfWidth + 'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) + 'H-' + halfWidth + 'V' + topsign + HOVERARROWSIZE + 'Z');
+        tooltipMidX = halfWidth;
       } else if (lx > fullLayout.width - halfWidth) {
-        lx = fullLayout.width - halfWidth;
-        lpath.attr('d', 'M' + (halfWidth - HOVERARROWSIZE) + ',0' + 'L' + halfWidth + ',' + topsign + HOVERARROWSIZE + 'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) + 'H-' + halfWidth + 'V' + topsign + HOVERARROWSIZE + 'H' + (halfWidth - HOVERARROWSIZE * 2) + 'Z');
-      } else {
-        lpath.attr('d', 'M0,0' + 'L' + HOVERARROWSIZE + ',' + topsign + HOVERARROWSIZE + 'H' + halfWidth + 'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) + 'H-' + halfWidth + 'V' + topsign + HOVERARROWSIZE + 'H-' + HOVERARROWSIZE + 'Z');
+        tooltipMidX = fullLayout.width - halfWidth;
       }
+      lpath.attr('d', 'M' + (lx - tooltipMidX) + ',0' + 'L' + (lx - tooltipMidX + HOVERARROWSIZE) + ',' + topsign + HOVERARROWSIZE + 'H' + halfWidth + 'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) + 'H' + -halfWidth + 'V' + topsign + HOVERARROWSIZE + 'H' + (lx - tooltipMidX - HOVERARROWSIZE) + 'Z');
+      lx = tooltipMidX;
       commonLabelRect.minX = lx - halfWidth;
       commonLabelRect.maxX = lx + halfWidth;
       if (xa.side === 'top') {
@@ -10891,6 +11007,12 @@ module.exports = {
     dflt: 'pixels',
     editType: 'legend'
   },
+  indentation: {
+    valType: 'number',
+    min: -15,
+    dflt: 0,
+    editType: 'legend'
+  },
   itemsizing: {
     valType: 'enumerated',
     values: ['trace', 'constant'],
@@ -11155,6 +11277,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
   if (helpers.isGrouped(layoutOut[legendId])) coerce('tracegroupgap');
   coerce('entrywidth');
   coerce('entrywidthmode');
+  coerce('indentation');
   coerce('itemsizing');
   coerce('itemwidth');
   coerce('itemclick');
@@ -11649,7 +11772,7 @@ function drawTexts(g, gd, legendObj) {
   }
   var textEl = Lib.ensureSingle(g, 'text', legendId + 'text');
   textEl.attr('text-anchor', 'start').call(Drawing.font, font).text(isEditable ? ensureLength(name, maxNameLength) : name);
-  var textGap = legendObj.itemwidth + constants.itemGap * 2;
+  var textGap = legendObj.indentation + legendObj.itemwidth + constants.itemGap * 2;
   svgTextUtils.positionText(textEl, textGap, 0);
   if (isEditable) {
     textEl.call(svgTextUtils.makeEditable, {
@@ -11781,10 +11904,10 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
       svgTextUtils.positionText(textEl, bw + constants.titlePad, bw + lineHeight);
     } else {
       // legend item
-      var x = constants.itemGap * 2 + legendObj.itemwidth;
+      var x = constants.itemGap * 2 + legendObj.indentation + legendObj.itemwidth;
       if (legendItem.groupTitle) {
         x = constants.itemGap;
-        width -= legendObj.itemwidth;
+        width -= legendObj.indentation + legendObj.itemwidth;
       }
       svgTextUtils.positionText(textEl, x, -lineHeight * ((textLines - 1) / 2 - 0.3));
     }
@@ -11837,7 +11960,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
   var bw = legendObj.borderwidth;
   var bw2 = 2 * bw;
   var itemGap = constants.itemGap;
-  var textGap = legendObj.itemwidth + itemGap * 2;
+  var textGap = legendObj.indentation + legendObj.itemwidth + itemGap * 2;
   var endPad = 2 * (bw + itemGap);
   var yanchor = getYanchor(legendObj);
   var isBelowPlotArea = legendObj.y < 0 || legendObj.y === 0 && yanchor === 'top';
@@ -12534,18 +12657,20 @@ module.exports = function style(s, gd, legend) {
     var traceGroup = d3.select(this);
     var layers = Lib.ensureSingle(traceGroup, 'g', 'layers');
     layers.style('opacity', d[0].trace.opacity);
+    var indentation = legend.indentation;
     var valign = legend.valign;
     var lineHeight = d[0].lineHeight;
     var height = d[0].height;
-    if (valign === 'middle' || !lineHeight || !height) {
+    if (valign === 'middle' && indentation === 0 || !lineHeight || !height) {
       layers.attr('transform', null);
     } else {
       var factor = {
         top: 1,
         bottom: -1
       }[valign];
-      var markerOffsetY = factor * (0.5 * (lineHeight - height + 3));
-      layers.attr('transform', strTranslate(0, markerOffsetY));
+      var markerOffsetY = factor * (0.5 * (lineHeight - height + 3)) || 0;
+      var markerOffsetX = legend.indentation;
+      layers.attr('transform', strTranslate(markerOffsetX, markerOffsetY));
     }
     var fill = layers.selectAll('g.legendfill').data([d]);
     fill.enter().append('g').classed('legendfill', true);
@@ -12572,7 +12697,7 @@ module.exports = function style(s, gd, legend) {
     var fillStyle = function (s) {
       if (s.size()) {
         if (showFill) {
-          Drawing.fillGroupStyle(s, gd);
+          Drawing.fillGroupStyle(s, gd, true);
         } else {
           var gradientID = 'legendfill-' + trace.uid;
           Drawing.gradient(s, gd, gradientID, getGradientDirection(reversescale), colorscale, 'fill');
@@ -39078,7 +39203,7 @@ function arrayTicks(ax, majorOnly) {
     for (var i = 0; i < vals.length; i++) {
       var vali = tickVal2l(vals[i]);
       if (vali > tickMin && vali < tickMax) {
-        var obj = text[i] === undefined ? axes.tickText(ax, vali) : tickTextObj(ax, vali, String(text[i]));
+        var obj = axes.tickText(ax, vali, false, String(text[i]));
         if (isMinor) {
           obj.minor = true;
           obj.text = '';
@@ -39380,6 +39505,10 @@ axes.tickText = function (ax, x, hover, noSuffixPrefix) {
   // TODO multicategory, if we allow ticktext / tickvals
   var tickVal2l = axType === 'category' ? ax.d2l_noadd : ax.d2l;
   var i;
+  var inbounds = function (v) {
+    var p = ax.l2p(v);
+    return p >= 0 && p <= ax._length ? v : null;
+  };
   if (arrayMode && Lib.isArrayOrTypedArray(ax.ticktext)) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
     var minDiff = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / 10000;
@@ -39388,6 +39517,7 @@ axes.tickText = function (ax, x, hover, noSuffixPrefix) {
     }
     if (i < ax.ticktext.length) {
       out.text = String(ax.ticktext[i]);
+      out.xbnd = [inbounds(out.x - 0.5), inbounds(out.x + ax.dtick - 0.5)];
       return out;
     }
   }
@@ -39416,10 +39546,6 @@ axes.tickText = function (ax, x, hover, noSuffixPrefix) {
   // Setup ticks and grid lines boundaries
   // at 1/2 a 'category' to the left/bottom
   if (ax.tickson === 'boundaries' || ax.showdividers) {
-    var inbounds = function (v) {
-      var p = ax.l2p(v);
-      return p >= 0 && p <= ax._length ? v : null;
-    };
     out.xbnd = [inbounds(out.x - 0.5), inbounds(out.x + ax.dtick - 0.5)];
   }
   return out;
@@ -40121,7 +40247,7 @@ axes.drawOne = function (gd, ax, opts) {
   var llbboxes = {};
   function getLabelLevelBbox(suffix) {
     var cls = axId + (suffix || 'tick');
-    if (!llbboxes[cls]) llbboxes[cls] = calcLabelLevelBbox(ax, cls);
+    if (!llbboxes[cls]) llbboxes[cls] = calcLabelLevelBbox(ax, cls, mainLinePositionShift);
     return llbboxes[cls];
   }
   if (!ax.visible) return;
@@ -40439,7 +40565,7 @@ function getBoundaryVals(ax, vals) {
   // boundaryVals are never used for labels;
   // no need to worry about the other tickTextObj keys
   var _push = function (d, bndIndex) {
-    var xb = d.xbnd ? d.xbnd[bndIndex] : d.x;
+    var xb = d.xbnd[bndIndex];
     if (xb !== null) {
       out.push(Lib.extendFlat({}, d, {
         x: xb
@@ -40497,7 +40623,7 @@ function getDividerVals(ax, vals) {
   }
   return out;
 }
-function calcLabelLevelBbox(ax, cls) {
+function calcLabelLevelBbox(ax, cls, mainLinePositionShift) {
   var top, bottom;
   var left, right;
   if (ax._selections[cls].size()) {
@@ -40521,10 +40647,17 @@ function calcLabelLevelBbox(ax, cls) {
       right = Math.max(right, bb.right);
     });
   } else {
-    top = 0;
-    bottom = 0;
-    left = 0;
-    right = 0;
+    var dummyCalc = axes.makeLabelFns(ax, mainLinePositionShift);
+    top = bottom = dummyCalc.yFn({
+      dx: 0,
+      dy: 0,
+      fontSize: 0
+    });
+    left = right = dummyCalc.xFn({
+      dx: 0,
+      dy: 0,
+      fontSize: 0
+    });
   }
   return {
     top: top,
@@ -41205,7 +41338,7 @@ axes.drawLabels = function (gd, ax, opts) {
         // TODO should secondary labels also fall into this fix-overlap regime?
 
         for (i = 0; i < lbbArray.length; i++) {
-          var xbnd = vals && vals[i].xbnd ? vals[i].xbnd : [null, null];
+          var xbnd = vals[i].xbnd;
           var lbb = lbbArray[i];
           if (xbnd[0] !== null && lbb.left - ax.l2p(xbnd[0]) < gap || xbnd[1] !== null && ax.l2p(xbnd[1]) - lbb.right < gap) {
             autoangle = 90;
@@ -41323,13 +41456,13 @@ axes.drawLabels = function (gd, ax, opts) {
       var newRange = [];
       newRange[otherIndex] = anchorAx.range[otherIndex];
       var anchorAxRange = anchorAx.range;
-      var p0 = anchorAx.d2p(anchorAxRange[index]);
-      var p1 = anchorAx.d2p(anchorAxRange[otherIndex]);
+      var p0 = anchorAx.r2p(anchorAxRange[index]);
+      var p1 = anchorAx.r2p(anchorAxRange[otherIndex]);
       var _tempNewRange = fullLayout._insideTickLabelsUpdaterange[anchorAx._name + '.range'];
       if (_tempNewRange) {
         // case of having multiple anchored axes having insideticklabel
-        var q0 = anchorAx.d2p(_tempNewRange[index]);
-        var q1 = anchorAx.d2p(_tempNewRange[otherIndex]);
+        var q0 = anchorAx.r2p(_tempNewRange[index]);
+        var q1 = anchorAx.r2p(_tempNewRange[otherIndex]);
         var dir = sgn * (ax._id.charAt(0) === 'y' ? 1 : -1);
         if (dir * p0 < dir * q0) {
           p0 = q0;
@@ -41348,7 +41481,7 @@ axes.drawLabels = function (gd, ax, opts) {
         move = 0;
       }
       if (ax._id.charAt(0) !== 'y') move = -move;
-      newRange[index] = anchorAx.p2d(anchorAx.d2p(anchorAxRange[index]) + sgn * move);
+      newRange[index] = anchorAx.p2r(anchorAx.r2p(anchorAxRange[index]) + sgn * move);
 
       // handle partial ranges in insiderange
       if (anchorAx.autorange === 'min' || anchorAx.autorange === 'max reversed') {
@@ -58034,6 +58167,7 @@ var pattern = (__webpack_require__(8192)/* .pattern */ .c);
 var Drawing = __webpack_require__(3616);
 var constants = __webpack_require__(8200);
 var extendFlat = (__webpack_require__(2880).extendFlat);
+var makeFillcolorAttr = __webpack_require__(3544);
 function axisPeriod(axis) {
   return {
     valType: 'any',
@@ -58216,11 +58350,28 @@ module.exports = {
     values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'],
     editType: 'calc'
   },
-  fillcolor: {
-    valType: 'color',
-    editType: 'style',
-    anim: true
-  },
+  fillcolor: makeFillcolorAttr(true),
+  fillgradient: extendFlat({
+    type: {
+      valType: 'enumerated',
+      values: ['radial', 'horizontal', 'vertical', 'none'],
+      dflt: 'none',
+      editType: 'calc'
+    },
+    start: {
+      valType: 'number',
+      editType: 'calc'
+    },
+    stop: {
+      valType: 'number',
+      editType: 'calc'
+    },
+    colorscale: {
+      valType: 'colorscale',
+      editType: 'style'
+    },
+    editType: 'calc'
+  }),
   fillpattern: pattern,
   marker: extendFlat({
     symbol: {
@@ -59048,7 +59199,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
   // We handle that case in some hacky code inside handleStackDefaults.
   coerce('fill', stackGroupOpts ? stackGroupOpts.fillDflt : 'none');
   if (traceOut.fill !== 'none') {
-    handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+    handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce, {
+      moduleHasFillgradient: true
+    });
     if (!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
     coercePattern(coerce, 'fillpattern', traceOut.fillcolor, false);
   }
@@ -59072,6 +59225,22 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
 /***/ }),
 
+/***/ 3544:
+/***/ (function(module) {
+
+"use strict";
+
+
+module.exports = function makeFillcolorAttr(hasFillgradient) {
+  return {
+    valType: 'color',
+    editType: 'style',
+    anim: true
+  };
+};
+
+/***/ }),
+
 /***/ 840:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
@@ -59080,7 +59249,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
 var Color = __webpack_require__(6308);
 var isArrayOrTypedArray = (__webpack_require__(3400).isArrayOrTypedArray);
-module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coerce) {
+function averageColors(colorscale) {
+  var color = Color.interpolate(colorscale[0][1], colorscale[1][1], 0.5);
+  for (var i = 2; i < colorscale.length; i++) {
+    var averageColorI = Color.interpolate(colorscale[i - 1][1], colorscale[i][1], 0.5);
+    color = Color.interpolate(color, averageColorI, colorscale[i - 1][0] / colorscale[i][0]);
+  }
+  return color;
+}
+module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coerce, opts) {
+  if (!opts) opts = {};
   var inheritColorFromMarker = false;
   if (traceOut.marker) {
     // don't try to inherit a color array
@@ -59092,7 +59270,24 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
       inheritColorFromMarker = markerLineColor;
     }
   }
-  coerce('fillcolor', Color.addOpacity((traceOut.line || {}).color || inheritColorFromMarker || defaultColor, 0.5));
+  var averageGradientColor;
+  if (opts.moduleHasFillgradient) {
+    var gradientOrientation = coerce('fillgradient.type');
+    if (gradientOrientation !== 'none') {
+      coerce('fillgradient.start');
+      coerce('fillgradient.stop');
+      var gradientColorscale = coerce('fillgradient.colorscale');
+
+      // if a fillgradient is specified, we use the average gradient color
+      // to specify fillcolor after all other more specific candidates
+      // are considered, but before the global default color.
+      // fillcolor affects the background color of the hoverlabel in this case.
+      if (gradientColorscale) {
+        averageGradientColor = averageColors(gradientColorscale);
+      }
+    }
+  }
+  coerce('fillcolor', Color.addOpacity((traceOut.line || {}).color || inheritColorFromMarker || averageGradientColor || defaultColor, 0.5));
 };
 
 /***/ }),
@@ -60976,7 +61171,7 @@ function style(gd) {
     styleText(sel, trace, gd);
   });
   s.selectAll('g.trace path.js-line').call(Drawing.lineGroupStyle);
-  s.selectAll('g.trace path.js-fill').call(Drawing.fillGroupStyle, gd);
+  s.selectAll('g.trace path.js-fill').call(Drawing.fillGroupStyle, gd, false);
   Registry.getComponentMethod('errorbars', 'style')(s);
 }
 function stylePoints(sel, trace, gd) {
@@ -64581,7 +64776,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.29.1';
+exports.version = '2.30.0';
 
 /***/ }),
 

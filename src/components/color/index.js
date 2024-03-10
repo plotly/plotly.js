@@ -54,6 +54,25 @@ color.combine = function(front, back) {
 };
 
 /*
+ * Linearly interpolate between two colors at a normalized interpolation position (0 to 1).
+ *
+ * Ignores alpha channel values.
+ * The resulting color is computed as: factor * first + (1 - factor) * second.
+ */
+color.interpolate = function(first, second, factor) {
+    var fc = tinycolor(first).toRgb();
+    var sc = tinycolor(second).toRgb();
+
+    var ic = {
+        r: factor * fc.r + (1 - factor) * sc.r,
+        g: factor * fc.g + (1 - factor) * sc.g,
+        b: factor * fc.b + (1 - factor) * sc.b,
+    };
+
+    return tinycolor(ic).toRgbString();
+};
+
+/*
  * Create a color that contrasts with cstr.
  *
  * If cstr is a dark color, we lighten it; if it's light, we darken.

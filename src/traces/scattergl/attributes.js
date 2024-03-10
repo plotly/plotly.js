@@ -1,6 +1,7 @@
 'use strict';
 
 var baseAttrs = require('../../plots/attributes');
+var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
@@ -80,7 +81,7 @@ var attrs = module.exports = overrideAll({
     }),
     connectgaps: scatterAttrs.connectgaps,
     fill: extendFlat({}, scatterAttrs.fill, {dflt: 'none'}),
-    fillcolor: scatterAttrs.fillcolor,
+    fillcolor: makeFillcolorAttr(),
 
     // no hoveron
 
