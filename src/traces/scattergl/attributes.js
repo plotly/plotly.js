@@ -82,7 +82,6 @@ var attrs = module.exports = overrideAll({
     connectgaps: scatterAttrs.connectgaps,
     fill: extendFlat({}, scatterAttrs.fill, {dflt: 'none'}),
     fillcolor: makeFillcolorAttr(),
-    zindex: scatterAttrs.zindex,
 
     // no hoveron
 
@@ -102,3 +101,4 @@ var attrs = module.exports = overrideAll({
 attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';
 attrs.hovertemplate = scatterAttrs.hovertemplate;
 attrs.texttemplate = scatterAttrs.texttemplate;
+attrs.zindex = scatterAttrs.zindex
