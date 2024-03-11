@@ -1,0 +1,35 @@
+{
+    "data": [
+
+        {
+            "type": "violin",
+            "name": "violin",
+            "y": 1,
+            "fillcolor": "yellow",
+            "x": [
+                0.1, 0.3, 0.1, 0.9, 0.6, 0.6,
+                0.9, 1, 0.3, 0.6, 0.8, 0.5
+            ]
+        },
+        {
+            "type": "box",
+            "name": "box no zindex",
+            "x": 1,
+            "y": [-1, 1]
+        }, 
+        {
+            "type": "box",
+            "name": "box below",
+            "x": 2,
+            "y": [-1, 1],
+            "zindex": -100
+        }
+    ],
+    "layout": {
+        "xaxis": {
+            "title": {
+                "text": "zindex stacking"
+            }
+        }
+    }
+}
