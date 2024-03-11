@@ -34,9 +34,18 @@ var tasks = [];
 // Bundle plotly.js
 tasks.push(function(done) {
     _bundle(pathToPlotlyIndex, pathToPlotlyDist, {
-        pathToMinBundle: pathToPlotlyDistMin
     }, function() {
         prependFile.sync(pathToPlotlyDist, header, common.throwOnError);
+
+        done();
+    });
+});
+
+// Bundle plotly.min.js
+tasks.push(function(done) {
+    _bundle(pathToPlotlyIndex, pathToPlotlyDistMin, {
+        minify: true,
+    }, function() {
         prependFile.sync(pathToPlotlyDistMin, header, common.throwOnError);
 
         done();
@@ -46,9 +55,18 @@ tasks.push(function(done) {
 // Bundle plotly.js-strict
 tasks.push(function(done) {
     _bundle(pathToPlotlyStrict, pathToPlotlyStrictDist, {
-        pathToMinBundle: pathToPlotlyStrictDistMin
     }, function() {
         prependFile.sync(pathToPlotlyStrictDist, header.replace('plotly.js', 'plotly.js (strict)'), common.throwOnError);
+
+        done();
+    });
+});
+
+// Bundle plotly.min.js-strict
+tasks.push(function(done) {
+    _bundle(pathToPlotlyStrict, pathToPlotlyStrictDistMin, {
+        minify: true,
+    }, function() {
         prependFile.sync(pathToPlotlyStrictDistMin, header.replace('plotly.js', 'plotly.js (strict - minified)'), common.throwOnError);
 
         done();

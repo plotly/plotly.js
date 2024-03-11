@@ -15,11 +15,9 @@ var basePlugins = esbuildConfig.plugins;
  *  Bundle options:
  *  - standalone {string}
  *  Additional option:
- *  - pathToMinBundle {string} path to destination minified bundle
  *  - noCompressAttributes {boolean} skip attribute meta compression?
  * @param {function} cb callback
  *
- * Outputs one bundle (un-minified) file if opts.pathToMinBundle is omitted.
  * Otherwise outputs two file: one un-minified bundle and one minified bundle.
  *
  * Logs basename of bundle when completed.
@@ -30,28 +28,15 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
     var config = {...esbuildConfig};
 
     config.entryPoints = [pathToIndex];
-    config.outfile = pathToBundle || pathToMinBundle;
+    config.outfile = pathToBundle;
+    config.minify = !!opts.minify;
+
     if(!opts.noCompressAttributes) {
         config.plugins = basePlugins.concat([browserifyAdapter(transform)]);
     }
 
     if(opts.noPlugins) config.plugins = [];
-    var pathToMinBundle = opts.pathToMinBundle;
-    var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
-    config.minify = !!(pathToMinBundle && pending === 1);
-    config.outfile = pathToBundle || pathToMinBundle;
-    config.sourcemap = false;
-    build(config).then(function() {
-        if(pending === 2) {
-            config.minify = true;
-            config.outfile = pathToMinBundle;
-            // config.sourcemap = true;
-            build(config).then(function() {
-                if(cb) cb();
-            });
-        } else {
-            if(cb) cb();
-        }
-    });
+    await build(config);
+    if(cb) cb();
 }
