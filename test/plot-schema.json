@@ -17520,6 +17520,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -18068,6 +18074,12 @@
      "dflt": "",
      "editType": "none",
      "valType": "string"
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -19469,6 +19481,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -23941,6 +23959,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
+    },
     "zmax": {
      "description": "Sets the upper bound of the color domain. Value should have the same units as in `z` and if set, `zmin` must be set as well.",
      "dflt": null,
@@ -24989,6 +25013,12 @@
      "editType": "calc",
      "impliedEdits": {},
      "valType": "boolean"
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     },
     "zmax": {
      "description": "Sets the upper bound of the color domain. Value should have the same units as in `z` and if set, `zmin` must be set as well.",
@@ -27400,6 +27430,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -28187,6 +28223,12 @@
       false,
       "legendonly"
      ]
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -29366,6 +29408,12 @@
      "dflt": "",
      "editType": "none",
      "valType": "string"
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     },
     "zmax": {
      "description": "Sets the upper bound of the color domain. Value should have the same units as in `z` and if set, `zmin` must be set as well.",
@@ -36478,6 +36526,12 @@
      "description": "A 2-dimensional array in which each element is an array of 3 or 4 numbers representing a color.",
      "editType": "calc",
      "valType": "data_array"
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     },
     "zmax": {
      "description": "Array defining the higher bound for each color component. Note that the default value will depend on the colormodel. For the `rgb` colormodel, it is [255, 255, 255]. For the `rgba` colormodel, it is [255, 255, 255, 1]. For the `rgba256` colormodel, it is [255, 255, 255, 255]. For the `hsl` colormodel, it is [360, 100, 100]. For the `hsla` colormodel, it is [360, 100, 100, 1].",
@@ -51460,6 +51514,12 @@
      "dflt": "y",
      "editType": "calc+clearAxisTypes",
      "valType": "subplotid"
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -55511,6 +55571,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -73408,6 +73474,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -75596,6 +75668,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zindex": {
+     "description": "Sets the layer on which this trace is displayed, relative to  other traces on the same axes. Traces with higher `zindex`  appear in front of those with lower `zindex`.",
+     "dflt": 0,
+     "editType": "calc",
+     "valType": "integer"
     }
    },
    "categories": [
