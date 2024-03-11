@@ -82,6 +82,7 @@ var attrs = module.exports = overrideAll({
     connectgaps: scatterAttrs.connectgaps,
     fill: extendFlat({}, scatterAttrs.fill, {dflt: 'none'}),
     fillcolor: makeFillcolorAttr(),
+    zindex: scatterAttrs.zindex,
 
     // no hoveron
 

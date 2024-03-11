@@ -61,6 +61,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
             coerce('connector.line.dash');
         }
     }
+    coerce('zindex');
 }
 
 function defaultFillColor(markerColor) {

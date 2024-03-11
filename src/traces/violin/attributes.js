@@ -254,5 +254,15 @@ module.exports = {
             'Do the hover effects highlight individual violins',
             'or sample points or the kernel density estimate or any combination of them?'
         ].join(' ')
+    },
+    zindex: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'calc',
+        description: [
+            'Sets the layer on which this trace is displayed, relative to ',
+            'other traces on the same axes. Traces with higher `zindex` ',
+            'appear in front of those with lower `zindex`.'
+        ].join(' ')
     }
 };
