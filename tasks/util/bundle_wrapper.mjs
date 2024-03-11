@@ -5,6 +5,8 @@ import browserifyAdapter from 'esbuild-plugin-browserify-adapter';
 
 import transform from '../../tasks/compress_attributes.js';
 
+var basePlugins = esbuildConfig.plugins;
+
 /** Convenience bundle wrapper
  *
  * @param {string} pathToIndex path to index file to bundle
@@ -30,7 +32,7 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
     config.entryPoints = [pathToIndex];
     config.outfile = pathToBundle || pathToMinBundle;
     if(!opts.noCompressAttributes) {
-        config.plugins = config.plugins.concat([browserifyAdapter(transform)]);
+        config.plugins = basePlugins.concat([browserifyAdapter(transform)]);
     }
 
     if(opts.noPlugins) config.plugins = [];
