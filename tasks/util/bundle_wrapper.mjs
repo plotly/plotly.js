@@ -39,17 +39,17 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
     var pathToMinBundle = opts.pathToMinBundle;
     var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
-    if(pending === 2) {
-        config.minify = true;
-        config.outfile = pathToMinBundle;
-        await build(config);
-    }
-
     config.minify = !!(pathToMinBundle && pending === 1);
     config.outfile = pathToBundle || pathToMinBundle;
     config.sourcemap = false;
-
     await build(config);
+
+    if(pending === 2) {
+        config.minify = true;
+        config.outfile = pathToMinBundle;
+        // config.sourcemap = true;
+        await build(config);
+    }
 
     if(cb) cb();
 }
