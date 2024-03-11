@@ -69,5 +69,4 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('aspectratio');
     coerce('baseratio');
-    coerce('zindex');
 };
