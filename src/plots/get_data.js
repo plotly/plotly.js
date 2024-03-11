@@ -58,11 +58,11 @@ exports.getModuleCalcData = function(calcdata, arg1, arg2) {
         return [moduleCalcData, calcdata];
     }
     var zindex = arg2;
-    var filterByZ = (zindex !== undefined);
 
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
+        var filterByZ = (trace.zindex !== undefined);
         // N.B.
         // - 'legendonly' traces do not make it past here
         // - skip over 'visible' traces that got trimmed completely during calc transforms

@@ -234,7 +234,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
                 if(cdModule.length) {
                     layerData.push({
                         i: traceLayerClasses.indexOf(className),
-                        z: z,
+                        zindex: z,
                         className: className,
                         plotMethod: plotMethod,
                         cdModule: cdModule
@@ -248,7 +248,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         }
     }
     // Sort the layers primarily by z, then by i
-    layerData.sort(function(a, b) { return a.z - b.z || a.i - b.i; });
+    layerData.sort(function(a, b) { return a.zindex - b.zindex || a.i - b.i; });
 
     var layers = plotinfo.plot.selectAll('g.mlayer')
         .data(layerData, function(d) { return d.className; });
