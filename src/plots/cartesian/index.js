@@ -211,7 +211,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     // Plot each zindex group in ascending order
     var zindices = Object.keys(traceZindexGroups)
         .map(Number)
-        .sort(function(a, b) { return a - b; });
+        .sort(Lib.sorterAsc);
     for(var z = 0; z < zindices.length; z++) {
         var zindex = zindices[z];
         // For each "module" (trace type)
