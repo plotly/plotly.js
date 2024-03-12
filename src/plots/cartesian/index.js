@@ -248,7 +248,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         }
     }
     // Sort the layers primarily by z, then by i
-    layerData.sort(function(a, b) { return a.zindex - b.zindex || a.i - b.i; });
+    layerData.sort(function(a, b) { return (a.zindex || 0) - (b.zindex || 0) || a.i - b.i; });
 
     var layers = plotinfo.plot.selectAll('g.mlayer')
         .data(layerData, function(d) { return d.className; });
