@@ -2,6 +2,7 @@
 
 var heatmapAttrs = require('../heatmap/attributes');
 var contourAttrs = require('../contour/attributes');
+var scatterAttrs = require('../scatter/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -71,16 +72,7 @@ module.exports = extendFlat({
     },
 
     transforms: undefined,
-    zindex: {
-        valType: 'integer',
-        dflt: 0,
-        editType: 'calc',
-        description: [
-            'Sets the layer on which this trace is displayed, relative to ',
-            'other traces on the same axes. Traces with higher `zindex` ',
-            'appear in front of those with lower `zindex`.'
-        ].join(' ')
-    }
+    zindex: scatterAttrs.zindex
 },
 
     colorScaleAttrs('', {

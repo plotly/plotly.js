@@ -266,16 +266,7 @@ module.exports = extendFlat({
         }),
         editType: 'plot'
     },
-    zindex: {
-        valType: 'integer',
-        dflt: 0,
-        editType: 'calc',
-        description: [
-            'Sets the layer on which this trace is displayed, relative to ',
-            'other traces on the same axes. Traces with higher `zindex` ',
-            'appear in front of those with lower `zindex`.'
-        ].join(' ')
-    }
+    zindex: scatterAttrs.zindex
 },
     colorScaleAttrs('', {
         cLetter: 'z',
