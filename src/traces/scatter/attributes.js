@@ -691,8 +691,8 @@ module.exports = {
         dflt: 0,
         editType: 'calc',
         description: [
-            'Sets the layer on which this trace is displayed, relative to ',
-            'other traces on the same subplot. Traces with higher `zindex` ',
+            'Sets the layer on which this trace is displayed, relative to',
+            'other traces on the same subplot. SVG traces with higher `zindex`',
             'appear in front of those with lower `zindex`.'
         ].join(' ')
     }
