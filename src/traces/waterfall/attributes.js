@@ -1,7 +1,6 @@
 'use strict';
 
 var barAttrs = require('../bar/attributes');
-var scatterAttrs = require('../scatter/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var baseAttrs = require('../../plots/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
@@ -153,5 +152,5 @@ module.exports = {
 
     offsetgroup: barAttrs.offsetgroup,
     alignmentgroup: barAttrs.alignmentgroup,
-    zindex: scatterAttrs.zindex
+    zindex: barAttrs.zindex
 };

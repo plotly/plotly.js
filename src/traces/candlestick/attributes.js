@@ -4,7 +4,6 @@ var extendFlat = require('../../lib').extendFlat;
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var OHLCattrs = require('../ohlc/attributes');
 var boxAttrs = require('../box/attributes');
-var scatterAttrs = require('../scatter/attributes');
 
 function directionAttrs(lineColorDefault) {
     return {
@@ -54,5 +53,5 @@ module.exports = {
     whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
 
     hoverlabel: OHLCattrs.hoverlabel,
-    zindex: scatterAttrs.zindex
+    zindex: boxAttrs.zindex
 };

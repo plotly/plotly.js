@@ -1,7 +1,7 @@
 'use strict';
 
 var baseAttrs = require('../../plots/attributes');
-var scatterAttrs = require('../scatter/attributes');
+var zindex = require('../scatter/attributes').zindex;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var extendFlat = require('../../lib/extend').extendFlat;
 var colormodel = require('./constants').colormodel;
@@ -134,6 +134,6 @@ module.exports = extendFlat({
         keys: ['z', 'color', 'colormodel']
     }),
 
-    transforms: undefined,
-    zindex: scatterAttrs.zindex
+    zindex: zindex,
+    transforms: undefined
 });

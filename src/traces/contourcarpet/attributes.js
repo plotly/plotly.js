@@ -2,7 +2,6 @@
 
 var heatmapAttrs = require('../heatmap/attributes');
 var contourAttrs = require('../contour/attributes');
-var scatterAttrs = require('../scatter/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -71,8 +70,8 @@ module.exports = extendFlat({
         editType: 'plot'
     },
 
-    transforms: undefined,
-    zindex: scatterAttrs.zindex
+    zindex: contourAttrs.zindex,
+    transforms: undefined
 },
 
     colorScaleAttrs('', {

@@ -9,7 +9,7 @@ var carpetFont = fontAttrs({
     description: 'The default font used for axis & tick labels on this carpet'
 });
 
-var scatterAttrs = require('../scatter/attributes');
+var zindex = require('../scatter/attributes').zindex;
 
 // TODO: inherit from global font
 carpetFont.family.dflt = '"Open Sans", verdana, arial, sans-serif';
@@ -116,5 +116,5 @@ module.exports = {
         ].join(' ')
     },
     transforms: undefined,
-    zindex: scatterAttrs.zindex
+    zindex: zindex
 };

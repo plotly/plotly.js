@@ -1,7 +1,6 @@
 'use strict';
 
 var boxAttrs = require('../box/attributes');
-var scatterAttrs = require('../scatter/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 
@@ -256,5 +255,5 @@ module.exports = {
             'or sample points or the kernel density estimate or any combination of them?'
         ].join(' ')
     },
-    zindex: scatterAttrs.zindex
+    zindex: boxAttrs.zindex
 };
