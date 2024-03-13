@@ -14845,7 +14845,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     }
    },
@@ -17524,7 +17524,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     }
    },
@@ -18078,7 +18078,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     }
    },
@@ -19485,7 +19485,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     }
    },
@@ -23962,7 +23962,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     },
     "zmax": {
@@ -25017,7 +25017,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     },
     "zmax": {
@@ -27434,7 +27434,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     }
    },
@@ -29406,7 +29406,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     },
     "zmax": {
@@ -32177,7 +32177,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     }
    },
@@ -36530,7 +36530,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     },
     "zmax": {
@@ -40541,7 +40541,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     }
    },
@@ -47291,7 +47291,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     }
    },
@@ -51524,7 +51524,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     }
    },
@@ -73478,7 +73478,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     }
    },
@@ -75672,7 +75672,7 @@
     "zindex": {
      "description": "Sets the layer on which this trace is displayed, relative to other traces on the same subplot. SVG traces with higher `zindex` appear in front of those with lower `zindex`.",
      "dflt": 0,
-     "editType": "calc",
+     "editType": "plot",
      "valType": "integer"
     }
    },

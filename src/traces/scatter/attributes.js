@@ -689,7 +689,7 @@ module.exports = {
     zindex: {
         valType: 'integer',
         dflt: 0,
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Sets the layer on which this trace is displayed, relative to',
             'other traces on the same subplot. SVG traces with higher `zindex`',
