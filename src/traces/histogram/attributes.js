@@ -1,6 +1,7 @@
 'use strict';
 
 var barAttrs = require('../bar/attributes');
+var scatterAttrs = require('../bar/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
@@ -248,5 +249,7 @@ module.exports = {
 
     _deprecated: {
         bardir: barAttrs._deprecated.bardir
-    }
+    },
+
+    zindex: scatterAttrs.zindex
 };
