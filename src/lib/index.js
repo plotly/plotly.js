@@ -1219,7 +1219,9 @@ function templateFormatString(string, labels, d3locale) {
             var fmt;
             if(format[0] === ':') {
                 fmt = d3locale ? d3locale.numberFormat : lib.numberFormat;
-                value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+                if(value !== '') { // e.g. skip missing data on heatmap
+                    value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+                }
             }
 
             if(format[0] === '|') {
