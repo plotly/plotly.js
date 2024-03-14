@@ -535,6 +535,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                     var fontColor = font.color;
                     if(!fontColor || fontColor === 'auto') {
                         fontColor = Color.contrast(
+                            d.z === undefined ? gd._fullLayout.plot_bgcolor :
                             'rgba(' +
                                 sclFunc(d.z).join() +
                             ')'
