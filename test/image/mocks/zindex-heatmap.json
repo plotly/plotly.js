@@ -18,5 +18,8 @@
         "ygap": 5,
         "zindex": 10
     }
-]
+],
+    "layout": {
+        "width": 400, "height": 400
+    }
 }
