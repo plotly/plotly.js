@@ -91,10 +91,12 @@ function drawOne(gd, index) {
     // TODO: use d3 idioms instead of deleting and redrawing every time
     if(!options._input || options.visible !== true) return;
 
-    if(options.layer !== 'below') {
+    if(options.layer === 'above') {
         drawShape(gd._fullLayout._shapeUpperLayer);
     } else if(options.xref === 'paper' || options.yref === 'paper') {
         drawShape(gd._fullLayout._shapeLowerLayer);
+    } else if(options.layer === 'belowtraces') {
+        drawShape(plotinfo.shapelayerBelowTraces);
     } else {
         if(plotinfo._hadPlotinfo) {
             var mainPlot = plotinfo.mainplotinfo || plotinfo;
