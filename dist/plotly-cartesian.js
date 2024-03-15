@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.30.0
+* plotly.js (cartesian) v2.30.1
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -26525,7 +26525,10 @@ function templateFormatString(string, labels, d3locale) {
       var fmt;
       if (format[0] === ':') {
         fmt = d3locale ? d3locale.numberFormat : lib.numberFormat;
-        value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+        if (value !== '') {
+          // e.g. skip missing data on heatmap
+          value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+        }
       }
       if (format[0] === '|') {
         fmt = d3locale ? d3locale.timeFormat : utcFormat;
@@ -62204,7 +62207,7 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
         var thisLabel = d3.select(this);
         var fontColor = font.color;
         if (!fontColor || fontColor === 'auto') {
-          fontColor = Color.contrast('rgba(' + sclFunc(d.z).join() + ')');
+          fontColor = Color.contrast(d.z === undefined ? gd._fullLayout.plot_bgcolor : 'rgba(' + sclFunc(d.z).join() + ')');
         }
         thisLabel.attr('data-notex', 1).call(svgTextUtils.positionText, xFn(d), yFn(d)).call(Drawing.font, fontFamily, fontSize, fontColor).text(d.t).call(svgTextUtils.convertToTspans, gd);
       });
@@ -72026,7 +72029,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.30.0';
+exports.version = '2.30.1';
 
 /***/ }),
 
