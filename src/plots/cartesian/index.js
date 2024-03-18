@@ -465,9 +465,9 @@ function makeSubplotLayer(gd, plotinfo) {
             plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
             plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
 
-            var belowTracesLayer = ensureSingle(plotgroup, 'g', 'layer-below-traces');
-            plotinfo.shapelayerBelowTraces = ensureSingle(belowTracesLayer, 'g', 'shapelayer');
-            plotinfo.imagelayerBelowTraces = ensureSingle(belowTracesLayer, 'g', 'imagelayer');
+            var betweenLayer = ensureSingle(plotgroup, 'g', 'layer-between');
+            plotinfo.shapelayerBetween = ensureSingle(betweenLayer, 'g', 'shapelayer');
+            plotinfo.imagelayerBetween = ensureSingle(betweenLayer, 'g', 'imagelayer');
 
             ensureSingle(plotgroup, 'path', 'xlines-below');
             ensureSingle(plotgroup, 'path', 'ylines-below');

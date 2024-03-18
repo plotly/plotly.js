@@ -7708,14 +7708,14 @@
        }
       },
       "layer": {
-       "description": "Specifies whether shapes are drawn below gridlines (*below*), between gridlines and traces (*belowtraces*) or above traces (*above*).",
+       "description": "Specifies whether shapes are drawn below gridlines (*below*), between gridlines and traces (*between*) or above traces (*above*).",
        "dflt": "above",
        "editType": "arraydraw",
        "valType": "enumerated",
        "values": [
         "below",
         "above",
-        "belowtraces"
+        "between"
        ]
       },
       "legend": {

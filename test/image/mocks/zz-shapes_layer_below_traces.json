@@ -73,7 +73,7 @@
       {
         "name": "blue rect",
         "fillcolor": "rgba(108,173,225,0.8)",
-        "layer": "belowtraces",
+        "layer": "between",
         "line": {
           "color": "rgba(108,173,225,0.8)"
         },
@@ -102,7 +102,7 @@
       {
         "name": "dashed rect",
         "fillcolor": "rgba(130,143,198,1)",
-        "layer": "belowtraces",
+        "layer": "between",
         "line": {
           "color": "rgba(0,0,0,1)",
           "dash": "dash",
