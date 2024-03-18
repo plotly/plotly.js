@@ -113,7 +113,10 @@ module.exports = templatedArray('shape', {
         values: ['below', 'above', 'between'],
         dflt: 'above',
         editType: 'arraydraw',
-        description: 'Specifies whether shapes are drawn below gridlines (*below*), between gridlines and traces (*between*) or above traces (*above*).'
+        description: [
+            'Specifies whether shapes are drawn below gridlines (*below*),',
+            'between gridlines and traces (*between*) or above traces (*above*).'
+        ]
     },
 
     xref: extendFlat({}, annAttrs.xref, {
