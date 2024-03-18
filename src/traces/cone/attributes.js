@@ -96,13 +96,14 @@ var attrs = {
 
     sizemode: {
         valType: 'enumerated',
-        values: ['scaled', 'absolute'],
+        values: ['scaled', 'absolute', 'vector'],
         editType: 'calc',
         dflt: 'scaled',
         description: [
             'Determines whether `sizeref` is set as a *scaled* (i.e unitless) scalar',
             '(normalized by the max u/v/w norm in the vector field) or as',
-            '*absolute* value (in the same units as the vector field).'
+            '*absolute* value (in the same units as the vector field).',
+            'To display sizes in actual vector scale use *vector*.'
         ].join(' ')
     },
     sizeref: {
@@ -115,6 +116,7 @@ var attrs = {
             'This factor (computed internally) corresponds to the minimum "time" to travel across',
             'two successive x/y/z positions at the average velocity of those two successive positions.',
             'All cones in a given trace use the same factor.',
+            'With `sizemode` set to *vector*, its default value is *1*',
             'With `sizemode` set to *scaled*, `sizeref` is unitless, its default value is *0.5*',
             'With `sizemode` set to *absolute*, `sizeref` has the same units as the u/v/w vector field,',
             'its the default value is half the sample\'s maximum vector norm.'
