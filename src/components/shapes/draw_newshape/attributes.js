@@ -122,7 +122,7 @@ module.exports = overrideAll({
             description: [
                 'Specifies whether new shapes are drawn below gridlines (*below*),',
                 'between gridlines and traces (*between*) or above traces (*above*).'
-            ]
+            ].join(' ')
         },
         drawdirection: {
             valType: 'enumerated',

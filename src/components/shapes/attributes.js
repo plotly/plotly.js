@@ -116,7 +116,7 @@ module.exports = templatedArray('shape', {
         description: [
             'Specifies whether shapes are drawn below gridlines (*below*),',
             'between gridlines and traces (*between*) or above traces (*above*).'
-        ]
+        ].join(' ')
     },
 
     xref: extendFlat({}, annAttrs.xref, {
