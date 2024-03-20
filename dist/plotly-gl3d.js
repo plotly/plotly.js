@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.30.0
+* plotly.js (gl3d) v2.30.1
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -26583,7 +26583,10 @@ function templateFormatString(string, labels, d3locale) {
       var fmt;
       if (format[0] === ':') {
         fmt = d3locale ? d3locale.numberFormat : lib.numberFormat;
-        value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+        if (value !== '') {
+          // e.g. skip missing data on heatmap
+          value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+        }
       }
       if (format[0] === '|') {
         fmt = d3locale ? d3locale.timeFormat : utcFormat;
@@ -64776,7 +64779,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.30.0';
+exports.version = '2.30.1';
 
 /***/ }),
 
@@ -74409,7 +74412,44 @@ function isInt(color) {
 
 /***/ }),
 
-/***/ 1704:
+/***/ 6824:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+/** @module  color-rgba */
+
+
+
+var parse = __webpack_require__(5532)
+var hsl = __webpack_require__(3576)
+var clamp = __webpack_require__(2420)
+
+module.exports = function rgba (color) {
+	var values, i, l
+
+	//attempt to parse non-array arguments
+	var parsed = parse(color)
+
+	if (!parsed.space) return []
+
+	values = Array(3)
+	values[0] = clamp(parsed.values[0], 0, 255)
+	values[1] = clamp(parsed.values[1], 0, 255)
+	values[2] = clamp(parsed.values[2], 0, 255)
+
+	if (parsed.space[0] === 'h') {
+		values = hsl.rgb(values)
+	}
+
+	values.push(clamp(parsed.alpha, 0, 1))
+
+	return values
+}
+
+
+/***/ }),
+
+/***/ 5532:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -74420,8 +74460,6 @@ function isInt(color) {
 
 
 var names = __webpack_require__(7592)
-var isObject = __webpack_require__(1288)
-var defined = __webpack_require__(1264)
 
 module.exports = parse
 
@@ -74444,10 +74482,12 @@ var baseHues = {
  *
  * @return {Object} A space indicator `space`, an array `values` and `alpha`
  */
-function parse (cstr) {
+function parse(cstr) {
 	var m, parts = [], alpha = 1, space
 
 	if (typeof cstr === 'string') {
+		cstr = cstr.toLowerCase();
+
 		//keyword
 		if (names[cstr]) {
 			parts = names[cstr].slice()
@@ -74458,7 +74498,7 @@ function parse (cstr) {
 		else if (cstr === 'transparent') {
 			alpha = 0
 			space = 'rgb'
-			parts = [0,0,0]
+			parts = [0, 0, 0]
 		}
 
 		//hex
@@ -74504,12 +74544,12 @@ function parse (cstr) {
 			space = base
 			var size = base === 'cmyk' ? 4 : base === 'gray' ? 1 : 3
 			parts = m[2].trim()
-				.split(/\s*,\s*/)
+				.split(/\s*[,\/]\s*|\s+/)
 				.map(function (x, i) {
 					//<percentage>
 					if (/%$/.test(x)) {
 						//alpha
-						if (i === size)	return parseFloat(x) / 100
+						if (i === size) return parseFloat(x) / 100
 						//rgb
 						if (base === 'rgb') return parseFloat(x) * 255 / 100
 						return parseFloat(x)
@@ -74549,37 +74589,35 @@ function parse (cstr) {
 		parts = [cstr >>> 16, (cstr & 0x00ff00) >>> 8, cstr & 0x0000ff]
 	}
 
-	//object case - detects css cases of rgb and hsl
-	else if (isObject(cstr)) {
-		var r = defined(cstr.r, cstr.red, cstr.R, null)
+	//array-like
+	else if (Array.isArray(cstr) || cstr.length) {
+		parts = [cstr[0], cstr[1], cstr[2]]
+		space = 'rgb'
+		alpha = cstr.length === 4 ? cstr[3] : 1
+	}
 
-		if (r !== null) {
+	//object case - detects css cases of rgb and hsl
+	else if (cstr instanceof Object) {
+		if (cstr.r != null || cstr.red != null || cstr.R != null) {
 			space = 'rgb'
 			parts = [
-				r,
-				defined(cstr.g, cstr.green, cstr.G),
-				defined(cstr.b, cstr.blue, cstr.B)
+				cstr.r || cstr.red || cstr.R || 0,
+				cstr.g || cstr.green || cstr.G || 0,
+				cstr.b || cstr.blue || cstr.B || 0
 			]
 		}
 		else {
 			space = 'hsl'
 			parts = [
-				defined(cstr.h, cstr.hue, cstr.H),
-				defined(cstr.s, cstr.saturation, cstr.S),
-				defined(cstr.l, cstr.lightness, cstr.L, cstr.b, cstr.brightness)
+				cstr.h || cstr.hue || cstr.H || 0,
+				cstr.s || cstr.saturation || cstr.S || 0,
+				cstr.l || cstr.lightness || cstr.L || cstr.b || cstr.brightness
 			]
 		}
 
-		alpha = defined(cstr.a, cstr.alpha, cstr.opacity, 1)
+		alpha = cstr.a || cstr.alpha || cstr.opacity || 1
 
 		if (cstr.opacity != null) alpha /= 100
-	}
-
-	//array
-	else if (Array.isArray(cstr) || __webpack_require__.g.ArrayBuffer && ArrayBuffer.isView && ArrayBuffer.isView(cstr)) {
-		parts = [cstr[0], cstr[1], cstr[2]]
-		space = 'rgb'
-		alpha = cstr.length === 4 ? cstr[3] : 1
 	}
 
 	return {
@@ -74587,43 +74625,6 @@ function parse (cstr) {
 		values: parts,
 		alpha: alpha
 	}
-}
-
-
-/***/ }),
-
-/***/ 6824:
-/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
-
-"use strict";
-/** @module  color-rgba */
-
-
-
-var parse = __webpack_require__(1704)
-var hsl = __webpack_require__(3576)
-var clamp = __webpack_require__(2420)
-
-module.exports = function rgba (color) {
-	var values, i, l
-
-	//attempt to parse non-array arguments
-	var parsed = parse(color)
-
-	if (!parsed.space) return []
-
-	values = Array(3)
-	values[0] = clamp(parsed.values[0], 0, 255)
-	values[1] = clamp(parsed.values[1], 0, 255)
-	values[2] = clamp(parsed.values[2], 0, 255)
-
-	if (parsed.space[0] === 'h') {
-		values = hsl.rgb(values)
-	}
-
-	values.push(clamp(parsed.alpha, 0, 1))
-
-	return values
 }
 
 
@@ -76465,18 +76466,6 @@ year.every = function(k) {
 
 /* harmony default export */ __webpack_exports__.c = (year);
 var years = year.range;
-
-
-/***/ }),
-
-/***/ 1264:
-/***/ (function(module) {
-
-module.exports = function () {
-    for (var i = 0; i < arguments.length; i++) {
-        if (arguments[i] !== undefined) return arguments[i];
-    }
-};
 
 
 /***/ }),
@@ -78525,21 +78514,6 @@ module.exports = isBrowser && detect()
 /***/ (function(module) {
 
 module.exports = true;
-
-/***/ }),
-
-/***/ 1288:
-/***/ (function(module) {
-
-"use strict";
-
-var toString = Object.prototype.toString;
-
-module.exports = function (x) {
-	var prototype;
-	return toString.call(x) === '[object Object]' && (prototype = Object.getPrototypeOf(x), prototype === null || prototype === Object.getPrototypeOf({}));
-};
-
 
 /***/ }),
 

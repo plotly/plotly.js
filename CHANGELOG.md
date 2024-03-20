@@ -9,6 +9,15 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.30.1] -- 2024-03-15
+
+### Fixed
+ - Fix centering multi-line headers for treemap traces [[#6923](https://github.com/plotly/plotly.js/pull/6923)]
+ - Fix heatmap text color and `texttemplate` on cells with missing data [[#6924](https://github.com/plotly/plotly.js/pull/6924)]
+ - Fix scattergl rendering when colors include capital letters [[#6928](https://github.com/plotly/plotly.js/pull/6928)],
+   with thanks to @28raining and @dy for the contribution!
+
+
 ## [2.30.0] -- 2024-03-06
 
 ### Added

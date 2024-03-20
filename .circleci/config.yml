@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  browser-tools: circleci/browser-tools@1.2.2
+  browser-tools: circleci/browser-tools@1.4.8
 
 # Inspired by:
 # https://github.com/CircleCI-Public/circleci-demo-workflows/blob/workspace-forwarding/.circleci/config.yml
@@ -40,7 +40,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -77,7 +76,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -97,7 +95,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -117,7 +114,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -136,7 +132,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -155,7 +150,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -477,6 +471,25 @@ jobs:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
 
+  test-stackgl-bundle:
+    docker:
+      - image: cimg/node:16.17.1
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - run:
+          name: Set up build environment
+          command: cd stackgl_modules && npm ci
+      - run:
+          name: Bundle bundle-stackgl/index.js
+          command: cd stackgl_modules && cp index.js INDEX.js && npm run bundle-stackgl
+      - run:
+          name: Test stackgl_modules/index.js diff - If failed please remember this file in auto generated and you should not modify it directly until a dependeny change. To suggest changes please submit pull request to the relevant dependency.
+          command: diff --unified --color stackgl_modules/INDEX.js stackgl_modules/index.js
+      - store_artifacts:
+          path: stackgl_modules/index.js
+          destination: stackgl_modules/index.js
+
 workflows:
   version: 2
   build-and-test:
@@ -547,3 +560,5 @@ workflows:
             - install-and-cibuild
 
       - publish-dist
+
+      - test-stackgl-bundle
