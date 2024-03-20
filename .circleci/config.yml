@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  browser-tools: circleci/browser-tools@1.2.2
+  browser-tools: circleci/browser-tools@1.4.8
 
 # Inspired by:
 # https://github.com/CircleCI-Public/circleci-demo-workflows/blob/workspace-forwarding/.circleci/config.yml
@@ -40,7 +40,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -77,7 +76,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -97,7 +95,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -117,7 +114,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -136,7 +132,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -155,7 +150,6 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          chrome-version: 110.0.5481.100
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
