@@ -11,33 +11,33 @@
 return /******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 7386:
+/***/ 1964:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = {
-  alpha_shape: __webpack_require__(2350),
-  convex_hull: __webpack_require__(5537),
-  delaunay_triangulate: __webpack_require__(4419),
-  gl_cone3d: __webpack_require__(1140),
-  gl_error3d: __webpack_require__(3110),
-  gl_heatmap2d: __webpack_require__(6386),
-  gl_line3d: __webpack_require__(6086),
-  gl_mesh3d: __webpack_require__(8116),
-  gl_plot2d: __webpack_require__(2117),
-  gl_plot3d: __webpack_require__(1059),
-  gl_pointcloud2d: __webpack_require__(8271),
-  gl_scatter3d: __webpack_require__(2182),
-  gl_select_box: __webpack_require__(6623),
-  gl_spikes2d: __webpack_require__(3050),
-  gl_streamtube3d: __webpack_require__(7307),
-  gl_surface3d: __webpack_require__(3754),
-  ndarray: __webpack_require__(5050),
-  ndarray_linear_interpolate: __webpack_require__(3581)
+  alpha_shape: __webpack_require__(3502),
+  convex_hull: __webpack_require__(7352),
+  delaunay_triangulate: __webpack_require__(7642),
+  gl_cone3d: __webpack_require__(6405),
+  gl_error3d: __webpack_require__(9165),
+  gl_heatmap2d: __webpack_require__(2510),
+  gl_line3d: __webpack_require__(5714),
+  gl_mesh3d: __webpack_require__(7201),
+  gl_plot2d: __webpack_require__(1850),
+  gl_plot3d: __webpack_require__(4100),
+  gl_pointcloud2d: __webpack_require__(4696),
+  gl_scatter3d: __webpack_require__(8418),
+  gl_select_box: __webpack_require__(3161),
+  gl_spikes2d: __webpack_require__(4098),
+  gl_streamtube3d: __webpack_require__(7815),
+  gl_surface3d: __webpack_require__(9499),
+  ndarray: __webpack_require__(9618),
+  ndarray_linear_interpolate: __webpack_require__(4317)
 };
 
 /***/ }),
 
-/***/ 2146:
+/***/ 4793:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -53,24 +53,26 @@ var __webpack_unused_export__;
 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-var base64 = __webpack_require__(3910);
-var ieee754 = __webpack_require__(3187);
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var base64 = __webpack_require__(7507);
+var ieee754 = __webpack_require__(3778);
 var customInspectSymbol = typeof Symbol === 'function' && typeof Symbol['for'] === 'function' // eslint-disable-line dot-notation
 ? Symbol['for']('nodejs.util.inspect.custom') // eslint-disable-line dot-notation
 : null;
-exports.lW = Buffer;
+exports.hp = Buffer;
 __webpack_unused_export__ = SlowBuffer;
-exports.h2 = 50;
+exports.IS = 50;
 var K_MAX_LENGTH = 0x7fffffff;
 __webpack_unused_export__ = K_MAX_LENGTH;
 
@@ -337,7 +339,6 @@ function SlowBuffer(length) {
 Buffer.isBuffer = function isBuffer(b) {
   return b != null && b._isBuffer === true && b !== Buffer.prototype; // so Buffer.isBuffer(Buffer.prototype) will be false
 };
-
 Buffer.compare = function compare(a, b) {
   if (isInstance(a, Uint8Array)) a = Buffer.from(a, a.offset, a.byteLength);
   if (isInstance(b, Uint8Array)) b = Buffer.from(b, b.offset, b.byteLength);
@@ -448,7 +449,6 @@ function byteLength(string, encoding) {
         if (loweredCase) {
           return mustMatch ? -1 : utf8ToBytes(string).length; // assume utf8
         }
-
         encoding = ('' + encoding).toLowerCase();
         loweredCase = true;
     }
@@ -574,7 +574,7 @@ Buffer.prototype.equals = function equals(b) {
 };
 Buffer.prototype.inspect = function inspect() {
   var str = '';
-  var max = exports.h2;
+  var max = exports.IS;
   str = this.toString('hex', 0, max).replace(/(.{2})/g, '$1 ').trim();
   if (this.length > max) str += ' ... ';
   return '<Buffer ' + str + '>';
@@ -1543,14 +1543,12 @@ Buffer.prototype.fill = function fill(val, start, end, encoding) {
 var errors = {};
 function E(sym, getMessage, Base) {
   errors[sym] = /*#__PURE__*/function (_Base) {
-    _inherits(NodeError, _Base);
-    var _super = _createSuper(NodeError);
     function NodeError() {
       var _this;
       _classCallCheck(this, NodeError);
-      _this = _super.call(this);
-      Object.defineProperty(_assertThisInitialized(_this), 'message', {
-        value: getMessage.apply(_assertThisInitialized(_this), arguments),
+      _this = _callSuper(this, NodeError);
+      Object.defineProperty(_this, 'message', {
+        value: getMessage.apply(_this, arguments),
         writable: true,
         configurable: true
       });
@@ -1564,7 +1562,8 @@ function E(sym, getMessage, Base) {
       delete _this.name;
       return _this;
     }
-    _createClass(NodeError, [{
+    _inherits(NodeError, _Base);
+    return _createClass(NodeError, [{
       key: "code",
       get: function get() {
         return sym;
@@ -1583,7 +1582,6 @@ function E(sym, getMessage, Base) {
         return "".concat(this.name, " [").concat(sym, "]: ").concat(this.message);
       }
     }]);
-    return NodeError;
   }(Base);
 }
 E('ERR_BUFFER_OUT_OF_BOUNDS', function (name) {
@@ -1810,7 +1808,7 @@ function BufferBigIntNotDefined() {
 
 /***/ }),
 
-/***/ 2321:
+/***/ 9216:
 /***/ (function(module) {
 
 "use strict";
@@ -1839,259 +1837,7 @@ function isMobile(opts) {
 
 /***/ }),
 
-/***/ 3910:
-/***/ (function(__unused_webpack_module, exports) {
-
-"use strict";
-
-
-exports.byteLength = byteLength
-exports.toByteArray = toByteArray
-exports.fromByteArray = fromByteArray
-
-var lookup = []
-var revLookup = []
-var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
-
-var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-for (var i = 0, len = code.length; i < len; ++i) {
-  lookup[i] = code[i]
-  revLookup[code.charCodeAt(i)] = i
-}
-
-// Support decoding URL-safe base64 strings, as Node.js does.
-// See: https://en.wikipedia.org/wiki/Base64#URL_applications
-revLookup['-'.charCodeAt(0)] = 62
-revLookup['_'.charCodeAt(0)] = 63
-
-function getLens (b64) {
-  var len = b64.length
-
-  if (len % 4 > 0) {
-    throw new Error('Invalid string. Length must be a multiple of 4')
-  }
-
-  // Trim off extra bytes after placeholder bytes are found
-  // See: https://github.com/beatgammit/base64-js/issues/42
-  var validLen = b64.indexOf('=')
-  if (validLen === -1) validLen = len
-
-  var placeHoldersLen = validLen === len
-    ? 0
-    : 4 - (validLen % 4)
-
-  return [validLen, placeHoldersLen]
-}
-
-// base64 is 4/3 + up to two characters of the original data
-function byteLength (b64) {
-  var lens = getLens(b64)
-  var validLen = lens[0]
-  var placeHoldersLen = lens[1]
-  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
-}
-
-function _byteLength (b64, validLen, placeHoldersLen) {
-  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
-}
-
-function toByteArray (b64) {
-  var tmp
-  var lens = getLens(b64)
-  var validLen = lens[0]
-  var placeHoldersLen = lens[1]
-
-  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
-
-  var curByte = 0
-
-  // if there are placeholders, only get up to the last complete 4 chars
-  var len = placeHoldersLen > 0
-    ? validLen - 4
-    : validLen
-
-  var i
-  for (i = 0; i < len; i += 4) {
-    tmp =
-      (revLookup[b64.charCodeAt(i)] << 18) |
-      (revLookup[b64.charCodeAt(i + 1)] << 12) |
-      (revLookup[b64.charCodeAt(i + 2)] << 6) |
-      revLookup[b64.charCodeAt(i + 3)]
-    arr[curByte++] = (tmp >> 16) & 0xFF
-    arr[curByte++] = (tmp >> 8) & 0xFF
-    arr[curByte++] = tmp & 0xFF
-  }
-
-  if (placeHoldersLen === 2) {
-    tmp =
-      (revLookup[b64.charCodeAt(i)] << 2) |
-      (revLookup[b64.charCodeAt(i + 1)] >> 4)
-    arr[curByte++] = tmp & 0xFF
-  }
-
-  if (placeHoldersLen === 1) {
-    tmp =
-      (revLookup[b64.charCodeAt(i)] << 10) |
-      (revLookup[b64.charCodeAt(i + 1)] << 4) |
-      (revLookup[b64.charCodeAt(i + 2)] >> 2)
-    arr[curByte++] = (tmp >> 8) & 0xFF
-    arr[curByte++] = tmp & 0xFF
-  }
-
-  return arr
-}
-
-function tripletToBase64 (num) {
-  return lookup[num >> 18 & 0x3F] +
-    lookup[num >> 12 & 0x3F] +
-    lookup[num >> 6 & 0x3F] +
-    lookup[num & 0x3F]
-}
-
-function encodeChunk (uint8, start, end) {
-  var tmp
-  var output = []
-  for (var i = start; i < end; i += 3) {
-    tmp =
-      ((uint8[i] << 16) & 0xFF0000) +
-      ((uint8[i + 1] << 8) & 0xFF00) +
-      (uint8[i + 2] & 0xFF)
-    output.push(tripletToBase64(tmp))
-  }
-  return output.join('')
-}
-
-function fromByteArray (uint8) {
-  var tmp
-  var len = uint8.length
-  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
-  var parts = []
-  var maxChunkLength = 16383 // must be multiple of 3
-
-  // go through the array every three bytes, we'll deal with trailing stuff later
-  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-    parts.push(encodeChunk(
-      uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)
-    ))
-  }
-
-  // pad the end with zeros, but make sure to not forget the extra bytes
-  if (extraBytes === 1) {
-    tmp = uint8[len - 1]
-    parts.push(
-      lookup[tmp >> 2] +
-      lookup[(tmp << 4) & 0x3F] +
-      '=='
-    )
-  } else if (extraBytes === 2) {
-    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
-    parts.push(
-      lookup[tmp >> 10] +
-      lookup[(tmp >> 4) & 0x3F] +
-      lookup[(tmp << 2) & 0x3F] +
-      '='
-    )
-  }
-
-  return parts.join('')
-}
-
-
-/***/ }),
-
-/***/ 3187:
-/***/ (function(__unused_webpack_module, exports) {
-
-/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
-exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m
-  var eLen = (nBytes * 8) - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var nBits = -7
-  var i = isLE ? (nBytes - 1) : 0
-  var d = isLE ? -1 : 1
-  var s = buffer[offset + i]
-
-  i += d
-
-  e = s & ((1 << (-nBits)) - 1)
-  s >>= (-nBits)
-  nBits += eLen
-  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
-
-  m = e & ((1 << (-nBits)) - 1)
-  e >>= (-nBits)
-  nBits += mLen
-  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
-
-  if (e === 0) {
-    e = 1 - eBias
-  } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity)
-  } else {
-    m = m + Math.pow(2, mLen)
-    e = e - eBias
-  }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-}
-
-exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c
-  var eLen = (nBytes * 8) - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-  var i = isLE ? 0 : (nBytes - 1)
-  var d = isLE ? 1 : -1
-  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
-  value = Math.abs(value)
-
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0
-    e = eMax
-  } else {
-    e = Math.floor(Math.log(value) / Math.LN2)
-    if (value * (c = Math.pow(2, -e)) < 1) {
-      e--
-      c *= 2
-    }
-    if (e + eBias >= 1) {
-      value += rt / c
-    } else {
-      value += rt * Math.pow(2, 1 - eBias)
-    }
-    if (value * c >= 2) {
-      e++
-      c /= 2
-    }
-
-    if (e + eBias >= eMax) {
-      m = 0
-      e = eMax
-    } else if (e + eBias >= 1) {
-      m = ((value * c) - 1) * Math.pow(2, mLen)
-      e = e + eBias
-    } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-      e = 0
-    }
-  }
-
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
-  e = (e << mLen) | m
-  eLen += mLen
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
-  buffer[offset + i - d] |= s * 128
-}
-
-
-/***/ }),
-
-/***/ 1152:
+/***/ 6296:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -2099,9 +1845,9 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 module.exports = createViewController
 
-var createTurntable = __webpack_require__(3440)
-var createOrbit     = __webpack_require__(7774)
-var createMatrix    = __webpack_require__(9298)
+var createTurntable = __webpack_require__(7261)
+var createOrbit     = __webpack_require__(9977)
+var createMatrix    = __webpack_require__(4192)
 
 function ViewController(controllers, mode) {
   this._controllerNames = Object.keys(controllers)
@@ -2253,15 +1999,15 @@ function createViewController(options) {
 
 /***/ }),
 
-/***/ 8126:
+/***/ 7169:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var weakMap      = typeof WeakMap === 'undefined' ? __webpack_require__(5346) : WeakMap
-var createBuffer = __webpack_require__(5827)
-var createVAO    = __webpack_require__(2944)
+var weakMap      = typeof WeakMap === 'undefined' ? __webpack_require__(1538) : WeakMap
+var createBuffer = __webpack_require__(2762)
+var createVAO    = __webpack_require__(8116)
 
 var TriangleCache = new weakMap()
 
@@ -2290,10 +2036,10 @@ module.exports = createABigTriangle
 
 /***/ }),
 
-/***/ 8008:
+/***/ 1085:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var padLeft = __webpack_require__(4930)
+var padLeft = __webpack_require__(1371)
 
 module.exports = addLineNumbers
 function addLineNumbers (string, start, delim) {
@@ -2313,7 +2059,7 @@ function addLineNumbers (string, start, delim) {
 
 /***/ }),
 
-/***/ 2153:
+/***/ 3952:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -2321,7 +2067,7 @@ function addLineNumbers (string, start, delim) {
 
 module.exports = affineHull
 
-var orient = __webpack_require__(417)
+var orient = __webpack_require__(3250)
 
 function linearlyIndependent(points, d) {
   var nhull = new Array(d+1)
@@ -2371,7 +2117,7 @@ function affineHull(points) {
 
 /***/ }),
 
-/***/ 4653:
+/***/ 5995:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -2379,8 +2125,8 @@ function affineHull(points) {
 
 module.exports = alphaComplex
 
-var delaunay = __webpack_require__(4419)
-var circumradius = __webpack_require__(1778)
+var delaunay = __webpack_require__(7642)
+var circumradius = __webpack_require__(6037)
 
 function alphaComplex(alpha, points) {
   return delaunay(points).filter(function(cell) {
@@ -2394,13 +2140,13 @@ function alphaComplex(alpha, points) {
 
 /***/ }),
 
-/***/ 2350:
+/***/ 3502:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = alphaShape
 
-var ac = __webpack_require__(4653)
-var bnd = __webpack_require__(8691)
+var ac = __webpack_require__(5995)
+var bnd = __webpack_require__(9127)
 
 function alphaShape(alpha, points) {
   return bnd(ac(alpha, points))
@@ -2408,7 +2154,7 @@ function alphaShape(alpha, points) {
 
 /***/ }),
 
-/***/ 7896:
+/***/ 6468:
 /***/ (function(module) {
 
 module.exports = function _atob(str) {
@@ -2418,7 +2164,7 @@ module.exports = function _atob(str) {
 
 /***/ }),
 
-/***/ 957:
+/***/ 2642:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -2426,7 +2172,7 @@ module.exports = function _atob(str) {
 
 module.exports = barycentric
 
-var solve = __webpack_require__(6606)
+var solve = __webpack_require__(727)
 
 function reduce(x) {
   var r = 0
@@ -2472,13 +2218,171 @@ function barycentric(simplex, point) {
 
 /***/ }),
 
-/***/ 1539:
+/***/ 7507:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
+
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
+}
+
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
+
+function getLens (b64) {
+  var len = b64.length
+
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
+
+  // Trim off extra bytes after placeholder bytes are found
+  // See: https://github.com/beatgammit/base64-js/issues/42
+  var validLen = b64.indexOf('=')
+  if (validLen === -1) validLen = len
+
+  var placeHoldersLen = validLen === len
+    ? 0
+    : 4 - (validLen % 4)
+
+  return [validLen, placeHoldersLen]
+}
+
+// base64 is 4/3 + up to two characters of the original data
+function byteLength (b64) {
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function _byteLength (b64, validLen, placeHoldersLen) {
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function toByteArray (b64) {
+  var tmp
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+
+  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
+
+  var curByte = 0
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  var len = placeHoldersLen > 0
+    ? validLen - 4
+    : validLen
+
+  var i
+  for (i = 0; i < len; i += 4) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 18) |
+      (revLookup[b64.charCodeAt(i + 1)] << 12) |
+      (revLookup[b64.charCodeAt(i + 2)] << 6) |
+      revLookup[b64.charCodeAt(i + 3)]
+    arr[curByte++] = (tmp >> 16) & 0xFF
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 2) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 2) |
+      (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 1) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 10) |
+      (revLookup[b64.charCodeAt(i + 1)] << 4) |
+      (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] +
+    lookup[num >> 12 & 0x3F] +
+    lookup[num >> 6 & 0x3F] +
+    lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp =
+      ((uint8[i] << 16) & 0xFF0000) +
+      ((uint8[i + 1] << 8) & 0xFF00) +
+      (uint8[i + 2] & 0xFF)
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 2] +
+      lookup[(tmp << 4) & 0x3F] +
+      '=='
+    )
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 10] +
+      lookup[(tmp >> 4) & 0x3F] +
+      lookup[(tmp << 2) & 0x3F] +
+      '='
+    )
+  }
+
+  return parts.join('')
+}
+
+
+/***/ }),
+
+/***/ 3865:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var rationalize = __webpack_require__(8524)
+var rationalize = __webpack_require__(869)
 
 module.exports = add
 
@@ -2491,7 +2395,7 @@ function add(a, b) {
 
 /***/ }),
 
-/***/ 8846:
+/***/ 1318:
 /***/ (function(module) {
 
 "use strict";
@@ -2506,13 +2410,13 @@ function cmp(a, b) {
 
 /***/ }),
 
-/***/ 9189:
+/***/ 8697:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var rationalize = __webpack_require__(8524)
+var rationalize = __webpack_require__(869)
 
 module.exports = div
 
@@ -2523,18 +2427,18 @@ function div(a, b) {
 
 /***/ }),
 
-/***/ 5125:
+/***/ 7842:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var isRat = __webpack_require__(234)
-var isBN = __webpack_require__(3218)
-var num2bn = __webpack_require__(5514)
-var str2bn = __webpack_require__(2813)
-var rationalize = __webpack_require__(8524)
-var div = __webpack_require__(9189)
+var isRat = __webpack_require__(6330)
+var isBN = __webpack_require__(1533)
+var num2bn = __webpack_require__(2651)
+var str2bn = __webpack_require__(4387)
+var rationalize = __webpack_require__(869)
+var div = __webpack_require__(8697)
 
 module.exports = makeRational
 
@@ -2591,13 +2495,13 @@ function makeRational(numer, denom) {
 
 /***/ }),
 
-/***/ 234:
+/***/ 6330:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var isBN = __webpack_require__(3218)
+var isBN = __webpack_require__(1533)
 
 module.exports = isRat
 
@@ -2608,13 +2512,13 @@ function isRat(x) {
 
 /***/ }),
 
-/***/ 4275:
+/***/ 5716:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var BN = __webpack_require__(1928)
+var BN = __webpack_require__(6859)
 
 module.exports = sign
 
@@ -2625,13 +2529,13 @@ function sign (x) {
 
 /***/ }),
 
-/***/ 9958:
+/***/ 1369:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var sign = __webpack_require__(4275)
+var sign = __webpack_require__(5716)
 
 module.exports = bn2num
 
@@ -2656,14 +2560,14 @@ function bn2num(b) {
 
 /***/ }),
 
-/***/ 1112:
+/***/ 4025:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var db = __webpack_require__(8362)
-var ctz = (__webpack_require__(2288).countTrailingZeros)
+var db = __webpack_require__(2361)
+var ctz = (__webpack_require__(8828).countTrailingZeros)
 
 module.exports = ctzNumber
 
@@ -2683,13 +2587,13 @@ function ctzNumber(x) {
 
 /***/ }),
 
-/***/ 3218:
+/***/ 1533:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var BN = __webpack_require__(1928)
+var BN = __webpack_require__(6859)
 
 module.exports = isBN
 
@@ -2702,14 +2606,14 @@ function isBN(x) {
 
 /***/ }),
 
-/***/ 5514:
+/***/ 2651:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var BN = __webpack_require__(1928)
-var db = __webpack_require__(8362)
+var BN = __webpack_require__(6859)
+var db = __webpack_require__(2361)
 
 module.exports = num2bn
 
@@ -2725,14 +2629,14 @@ function num2bn(x) {
 
 /***/ }),
 
-/***/ 8524:
+/***/ 869:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var num2bn = __webpack_require__(5514)
-var sign = __webpack_require__(4275)
+var num2bn = __webpack_require__(2651)
+var sign = __webpack_require__(5716)
 
 module.exports = rationalize
 
@@ -2759,13 +2663,13 @@ function rationalize(numer, denom) {
 
 /***/ }),
 
-/***/ 2813:
+/***/ 4387:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var BN = __webpack_require__(1928)
+var BN = __webpack_require__(6859)
 
 module.exports = str2BN
 
@@ -2776,13 +2680,13 @@ function str2BN(x) {
 
 /***/ }),
 
-/***/ 3962:
+/***/ 6504:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var rationalize = __webpack_require__(8524)
+var rationalize = __webpack_require__(869)
 
 module.exports = mul
 
@@ -2793,13 +2697,13 @@ function mul(a, b) {
 
 /***/ }),
 
-/***/ 4951:
+/***/ 7721:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var bnsign = __webpack_require__(4275)
+var bnsign = __webpack_require__(5716)
 
 module.exports = sign
 
@@ -2810,13 +2714,13 @@ function sign(x) {
 
 /***/ }),
 
-/***/ 4354:
+/***/ 5572:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var rationalize = __webpack_require__(8524)
+var rationalize = __webpack_require__(869)
 
 module.exports = sub
 
@@ -2827,14 +2731,14 @@ function sub(a, b) {
 
 /***/ }),
 
-/***/ 7999:
+/***/ 946:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var bn2num = __webpack_require__(9958)
-var ctz = __webpack_require__(1112)
+var bn2num = __webpack_require__(1369)
+var ctz = __webpack_require__(4025)
 
 module.exports = roundRat
 
@@ -2871,7 +2775,7 @@ function roundRat (f) {
 
 /***/ }),
 
-/***/ 5070:
+/***/ 2478:
 /***/ (function(module) {
 
 "use strict";
@@ -2947,7 +2851,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 2288:
+/***/ 8828:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -3159,7 +3063,7 @@ exports.nextCombination = function(v) {
 
 /***/ }),
 
-/***/ 1928:
+/***/ 6859:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 /* module decorator */ module = __webpack_require__.nmd(module);
@@ -3218,7 +3122,7 @@ exports.nextCombination = function(v) {
     if (typeof window !== 'undefined' && typeof window.Buffer !== 'undefined') {
       Buffer = window.Buffer;
     } else {
-      Buffer = (__webpack_require__(6601).Buffer);
+      Buffer = (__webpack_require__(7790).Buffer);
     }
   } catch (e) {
   }
@@ -6613,7 +6517,7 @@ exports.nextCombination = function(v) {
 
 /***/ }),
 
-/***/ 2692:
+/***/ 6204:
 /***/ (function(module) {
 
 "use strict";
@@ -6655,7 +6559,7 @@ function boundary (cells) {
 
 /***/ }),
 
-/***/ 2569:
+/***/ 6867:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -6663,9 +6567,9 @@ function boundary (cells) {
 
 module.exports = boxIntersectWrapper
 
-var pool = __webpack_require__(5306)
-var sweep = __webpack_require__(1390)
-var boxIntersectIter = __webpack_require__(2337)
+var pool = __webpack_require__(1888)
+var sweep = __webpack_require__(855)
+var boxIntersectIter = __webpack_require__(7150)
 
 function boxEmpty(d, box) {
   for(var j=0; j<d; ++j) {
@@ -6799,7 +6703,7 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
 
 /***/ }),
 
-/***/ 7333:
+/***/ 2455:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -6945,7 +6849,7 @@ exports.full    = bruteForcePlanner(true)
 
 /***/ }),
 
-/***/ 2337:
+/***/ 7150:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -6953,14 +6857,14 @@ exports.full    = bruteForcePlanner(true)
 
 module.exports = boxIntersectIter
 
-var pool = __webpack_require__(5306)
-var bits = __webpack_require__(2288)
-var bruteForce = __webpack_require__(7333)
+var pool = __webpack_require__(1888)
+var bits = __webpack_require__(8828)
+var bruteForce = __webpack_require__(2455)
 var bruteForcePartial = bruteForce.partial
 var bruteForceFull = bruteForce.full
-var sweep = __webpack_require__(1390)
-var findMedian = __webpack_require__(2464)
-var genPartition = __webpack_require__(122)
+var sweep = __webpack_require__(855)
+var findMedian = __webpack_require__(3545)
+var genPartition = __webpack_require__(8105)
 
 //Twiddle parameters
 var BRUTE_FORCE_CUTOFF    = 128       //Cut off for brute force search
@@ -7440,7 +7344,7 @@ function boxIntersectIter(
 
 /***/ }),
 
-/***/ 2464:
+/***/ 3545:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -7448,7 +7352,7 @@ function boxIntersectIter(
 
 module.exports = findMedian
 
-var genPartition = __webpack_require__(122)
+var genPartition = __webpack_require__(8105)
 
 var partitionStartLessThan = genPartition('lo<p0')
 
@@ -7589,7 +7493,7 @@ function findMedian(d, axis, start, end, boxes, ids) {
 
 /***/ }),
 
-/***/ 122:
+/***/ 8105:
 /***/ (function(module) {
 
 "use strict";
@@ -7709,7 +7613,7 @@ function lo_lessThan_p0_and_p1_lessThan_hi(a, b, c, d, e, f, p0, p1) {
 
 /***/ }),
 
-/***/ 309:
+/***/ 1811:
 /***/ (function(module) {
 
 "use strict";
@@ -7952,7 +7856,7 @@ function quickSort(left, right, data) {
 
 /***/ }),
 
-/***/ 1390:
+/***/ 855:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -7966,9 +7870,9 @@ module.exports = {
   scanComplete:   scanComplete
 }
 
-var pool  = __webpack_require__(5306)
-var bits  = __webpack_require__(2288)
-var isort = __webpack_require__(309)
+var pool  = __webpack_require__(1888)
+var bits  = __webpack_require__(8828)
+var isort = __webpack_require__(1811)
 
 //Flag for blue
 var BLUE_FLAG = (1<<28)
@@ -8393,16 +8297,16 @@ red_loop:
 
 /***/ }),
 
-/***/ 7761:
+/***/ 2538:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var monotoneTriangulate = __webpack_require__(9971)
-var makeIndex = __webpack_require__(743)
-var delaunayFlip = __webpack_require__(2161)
-var filterTriangulation = __webpack_require__(7098)
+var monotoneTriangulate = __webpack_require__(8902)
+var makeIndex = __webpack_require__(5542)
+var delaunayFlip = __webpack_require__(2272)
+var filterTriangulation = __webpack_require__(5023)
 
 module.exports = cdt2d
 
@@ -8483,14 +8387,14 @@ function cdt2d(points, edges, options) {
 
 /***/ }),
 
-/***/ 2161:
+/***/ 2272:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var inCircle = (__webpack_require__(2227)[4])
-var bsearch = __webpack_require__(5070)
+var inCircle = (__webpack_require__(2646)[4])
+var bsearch = __webpack_require__(2478)
 
 module.exports = delaunayRefine
 
@@ -8606,13 +8510,13 @@ function delaunayRefine(points, triangulation) {
 
 /***/ }),
 
-/***/ 7098:
+/***/ 5023:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var bsearch = __webpack_require__(5070)
+var bsearch = __webpack_require__(2478)
 
 module.exports = classifyFaces
 
@@ -8794,14 +8698,14 @@ function classifyFaces(triangulation, target, infinity) {
 
 /***/ }),
 
-/***/ 9971:
+/***/ 8902:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var bsearch = __webpack_require__(5070)
-var orient = (__webpack_require__(417)[3])
+var bsearch = __webpack_require__(2478)
+var orient = (__webpack_require__(3250)[3])
 
 var EVENT_POINT = 0
 var EVENT_END   = 1
@@ -8989,13 +8893,13 @@ function monotoneTriangulate(points, edges) {
 
 /***/ }),
 
-/***/ 743:
+/***/ 5542:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var bsearch = __webpack_require__(5070)
+var bsearch = __webpack_require__(2478)
 
 module.exports = createTriangulation
 
@@ -9101,7 +9005,7 @@ function createTriangulation(numVerts, edges) {
 
 /***/ }),
 
-/***/ 9887:
+/***/ 2419:
 /***/ (function(module) {
 
 "use strict";
@@ -9126,14 +9030,14 @@ function orientation(s) {
 
 /***/ }),
 
-/***/ 9243:
+/***/ 3628:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var dup = __webpack_require__(3094)
-var solve = __webpack_require__(6606)
+var dup = __webpack_require__(1338)
+var solve = __webpack_require__(727)
 
 function dot(a, b) {
   var s = 0.0
@@ -9201,12 +9105,12 @@ module.exports = circumcenter
 
 /***/ }),
 
-/***/ 1778:
+/***/ 6037:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = circumradius
 
-var circumcenter = __webpack_require__(9243)
+var circumcenter = __webpack_require__(3628)
 
 function circumradius(points) {
   var center = circumcenter(points)
@@ -9222,7 +9126,7 @@ function circumradius(points) {
 
 /***/ }),
 
-/***/ 197:
+/***/ 332:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -9230,16 +9134,16 @@ function circumradius(points) {
 
 module.exports = cleanPSLG
 
-var UnionFind = __webpack_require__(1731)
-var boxIntersect = __webpack_require__(2569)
-var segseg = __webpack_require__(4434)
-var rat = __webpack_require__(5125)
-var ratCmp = __webpack_require__(8846)
-var ratToFloat = __webpack_require__(7999)
-var ratVec = __webpack_require__(2826)
-var nextafter = __webpack_require__(8551)
+var UnionFind = __webpack_require__(1755)
+var boxIntersect = __webpack_require__(6867)
+var segseg = __webpack_require__(1125)
+var rat = __webpack_require__(7842)
+var ratCmp = __webpack_require__(1318)
+var ratToFloat = __webpack_require__(946)
+var ratVec = __webpack_require__(5838)
+var nextafter = __webpack_require__(1278)
 
-var solveIntersection = __webpack_require__(5528)
+var solveIntersection = __webpack_require__(3637)
 
 // Bounds on a rational number when rounded to a float
 function boundRat (r) {
@@ -9611,7 +9515,7 @@ function cleanPSLG (points, edges, colors) {
 
 /***/ }),
 
-/***/ 5528:
+/***/ 3637:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -9619,13 +9523,13 @@ function cleanPSLG (points, edges, colors) {
 
 module.exports = solveIntersection
 
-var ratMul = __webpack_require__(3962)
-var ratDiv = __webpack_require__(9189)
-var ratSub = __webpack_require__(4354)
-var ratSign = __webpack_require__(4951)
-var rvSub = __webpack_require__(6695)
-var rvAdd = __webpack_require__(7584)
-var rvMuls = __webpack_require__(4469)
+var ratMul = __webpack_require__(6504)
+var ratDiv = __webpack_require__(8697)
+var ratSub = __webpack_require__(5572)
+var ratSign = __webpack_require__(7721)
+var rvSub = __webpack_require__(544)
+var rvAdd = __webpack_require__(2653)
+var rvMuls = __webpack_require__(8987)
 
 function ratPerp (a, b) {
   return ratSub(ratMul(a[0], b[1]), ratMul(a[1], b[0]))
@@ -9661,7 +9565,7 @@ function solveIntersection (a, b, c, d) {
 
 /***/ }),
 
-/***/ 5692:
+/***/ 3642:
 /***/ (function(module) {
 
 module.exports={
@@ -9757,7 +9661,7 @@ module.exports={
 
 /***/ }),
 
-/***/ 9156:
+/***/ 6729:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -9768,8 +9672,8 @@ module.exports={
  */
 
 
-var colorScale = __webpack_require__(5692);
-var lerp = __webpack_require__(3578)
+var colorScale = __webpack_require__(3642);
+var lerp = __webpack_require__(395)
 
 module.exports = createColormap;
 
@@ -9908,7 +9812,7 @@ function rgbaStr (rgba) {
 
 /***/ }),
 
-/***/ 9398:
+/***/ 3140:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -9916,11 +9820,11 @@ function rgbaStr (rgba) {
 
 module.exports = compareAngle
 
-var orient = __webpack_require__(417)
-var sgn = __webpack_require__(7538)
-var twoSum = __webpack_require__(87)
-var robustProduct = __webpack_require__(2019)
-var robustSum = __webpack_require__(9662)
+var orient = __webpack_require__(3250)
+var sgn = __webpack_require__(8572)
+var twoSum = __webpack_require__(9362)
+var robustProduct = __webpack_require__(5382)
+var robustSum = __webpack_require__(8210)
 
 function testInterior(a, b, c) {
   var x0 = twoSum(a[0], -b[0])
@@ -10000,7 +9904,7 @@ function compareAngle(a, b, c, d) {
 
 /***/ }),
 
-/***/ 7538:
+/***/ 8572:
 /***/ (function(module) {
 
 "use strict";
@@ -10014,7 +9918,7 @@ module.exports = function signum(x) {
 
 /***/ }),
 
-/***/ 9209:
+/***/ 8507:
 /***/ (function(module) {
 
 module.exports = compareCells
@@ -10075,14 +9979,14 @@ function compareCells(a, b) {
 
 /***/ }),
 
-/***/ 1284:
+/***/ 3788:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var compareCells = __webpack_require__(9209)
-var parity = __webpack_require__(9887)
+var compareCells = __webpack_require__(8507)
+var parity = __webpack_require__(2419)
 
 module.exports = compareOrientedCells
 
@@ -10093,15 +9997,15 @@ function compareOrientedCells(a, b) {
 
 /***/ }),
 
-/***/ 5537:
+/***/ 7352:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var convexHull1d = __webpack_require__(8950)
-var convexHull2d = __webpack_require__(8722)
-var convexHullnd = __webpack_require__(3332)
+var convexHull1d = __webpack_require__(5721)
+var convexHull2d = __webpack_require__(4750)
+var convexHullnd = __webpack_require__(2690)
 
 module.exports = convexHull
 
@@ -10125,7 +10029,7 @@ function convexHull(points) {
 
 /***/ }),
 
-/***/ 8950:
+/***/ 5721:
 /***/ (function(module) {
 
 "use strict";
@@ -10155,7 +10059,7 @@ function convexHull1d(points) {
 
 /***/ }),
 
-/***/ 8722:
+/***/ 4750:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -10163,7 +10067,7 @@ function convexHull1d(points) {
 
 module.exports = convexHull2D
 
-var monotoneHull = __webpack_require__(3266)
+var monotoneHull = __webpack_require__(3090)
 
 function convexHull2D(points) {
   var hull = monotoneHull(points)
@@ -10184,7 +10088,7 @@ function convexHull2D(points) {
 
 /***/ }),
 
-/***/ 3332:
+/***/ 2690:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -10192,8 +10096,8 @@ function convexHull2D(points) {
 
 module.exports = convexHullnD
 
-var ich = __webpack_require__(2183)
-var aff = __webpack_require__(2153)
+var ich = __webpack_require__(8954)
+var aff = __webpack_require__(3952)
 
 function permute(points, front) {
   var n = points.length
@@ -10251,7 +10155,7 @@ function convexHullnD(points, d) {
 
 /***/ }),
 
-/***/ 9680:
+/***/ 4769:
 /***/ (function(module) {
 
 "use strict";
@@ -10297,14 +10201,14 @@ module.exports.derivative = dcubicHermite
 
 /***/ }),
 
-/***/ 4419:
+/***/ 7642:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var ch = __webpack_require__(2183)
-var uniq = __webpack_require__(1215)
+var ch = __webpack_require__(8954)
+var uniq = __webpack_require__(1682)
 
 module.exports = triangulate
 
@@ -10463,7 +10367,7 @@ function triangulate(points, includePointAtInfinity) {
 
 /***/ }),
 
-/***/ 8362:
+/***/ 2361:
 /***/ (function(module) {
 
 var hasTypedArrays = false
@@ -10570,7 +10474,7 @@ module.exports.denormalized = function(n) {
 
 /***/ }),
 
-/***/ 3094:
+/***/ 1338:
 /***/ (function(module) {
 
 "use strict";
@@ -10626,7 +10530,7 @@ module.exports = dupe
 
 /***/ }),
 
-/***/ 8348:
+/***/ 3134:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -10634,7 +10538,7 @@ module.exports = dupe
 
 module.exports = edgeToAdjacency
 
-var uniq = __webpack_require__(1215)
+var uniq = __webpack_require__(1682)
 
 function edgeToAdjacency(edges, numVertices) {
   var numEdges = edges.length
@@ -10666,7 +10570,7 @@ function edgeToAdjacency(edges, numVertices) {
 
 /***/ }),
 
-/***/ 5795:
+/***/ 5033:
 /***/ (function(module) {
 
 "use strict";
@@ -10689,7 +10593,7 @@ function extractPlanes(M, zNear, zFar) {
 
 /***/ }),
 
-/***/ 8444:
+/***/ 9215:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -10697,8 +10601,8 @@ function extractPlanes(M, zNear, zFar) {
 
 module.exports = createFilteredVector
 
-var cubicHermite = __webpack_require__(9680)
-var bsearch = __webpack_require__(5070)
+var cubicHermite = __webpack_require__(4769)
+var bsearch = __webpack_require__(2478)
 
 function clamp(lo, hi, x) {
   return Math.min(hi, Math.max(lo, x))
@@ -10988,7 +10892,7 @@ function createFilteredVector(initState, initVelocity, initTime) {
 
 /***/ }),
 
-/***/ 7080:
+/***/ 3840:
 /***/ (function(module) {
 
 "use strict";
@@ -11991,7 +11895,7 @@ function createRBTree(compare) {
 
 /***/ }),
 
-/***/ 7453:
+/***/ 3837:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -11999,11 +11903,11 @@ function createRBTree(compare) {
 
 module.exports = createAxes
 
-var createText        = __webpack_require__(9557)
-var createLines       = __webpack_require__(1681)
-var createBackground  = __webpack_require__(1011)
-var getCubeProperties = __webpack_require__(2864)
-var Ticks             = __webpack_require__(8468)
+var createText        = __webpack_require__(4935)
+var createLines       = __webpack_require__(501)
+var createBackground  = __webpack_require__(5304)
+var getCubeProperties = __webpack_require__(6429)
+var Ticks             = __webpack_require__(6444)
 
 var identity = new Float32Array([
   1, 0, 0, 0,
@@ -12605,7 +12509,7 @@ function createAxes(gl, options) {
 
 /***/ }),
 
-/***/ 1011:
+/***/ 5304:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -12613,9 +12517,9 @@ function createAxes(gl, options) {
 
 module.exports = createBackgroundCube
 
-var createBuffer = __webpack_require__(5827)
-var createVAO    = __webpack_require__(2944)
-var createShader = (__webpack_require__(1943).bg)
+var createBuffer = __webpack_require__(2762)
+var createVAO    = __webpack_require__(8116)
+var createShader = (__webpack_require__(1879).bg)
 
 function BackgroundCube(gl, buffer, vao, shader) {
   this.gl = gl
@@ -12724,7 +12628,7 @@ function createBackgroundCube(gl) {
 
 /***/ }),
 
-/***/ 2864:
+/***/ 6429:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -12732,10 +12636,10 @@ function createBackgroundCube(gl) {
 
 module.exports = getCubeEdges
 
-var bits      = __webpack_require__(2288)
-var multiply  = __webpack_require__(104)
-var splitPoly = __webpack_require__(4670)
-var orient    = __webpack_require__(417)
+var bits      = __webpack_require__(8828)
+var multiply  = __webpack_require__(6760)
+var splitPoly = __webpack_require__(5202)
+var orient    = __webpack_require__(3250)
 
 var mvp        = new Array(16)
 var pCubeVerts = new Array(8)
@@ -12972,7 +12876,7 @@ function getCubeEdges(model, view, projection, bounds, ortho) {
 
 /***/ }),
 
-/***/ 1681:
+/***/ 501:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -12980,9 +12884,9 @@ function getCubeEdges(model, view, projection, bounds, ortho) {
 
 module.exports    = createLines
 
-var createBuffer  = __webpack_require__(5827)
-var createVAO     = __webpack_require__(2944)
-var createShader  = (__webpack_require__(1943)/* .line */ .j)
+var createBuffer  = __webpack_require__(2762)
+var createVAO     = __webpack_require__(8116)
+var createShader  = (__webpack_require__(1879)/* .line */ .n)
 
 var MAJOR_AXIS = [0,0,0]
 var MINOR_AXIS = [0,0,0]
@@ -13188,18 +13092,18 @@ function createLines(gl, bounds, ticks) {
 
 /***/ }),
 
-/***/ 1943:
+/***/ 1879:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var glslify = __webpack_require__(6832)
-var createShader = __webpack_require__(5158)
+var glslify = __webpack_require__(3236)
+var createShader = __webpack_require__(9405)
 
 var lineVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, majorAxis, minorAxis, screenAxis;\nuniform float lineWidth;\nuniform vec2 screenShape;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nvoid main() {\n  vec3 major = position.x * majorAxis;\n  vec3 minor = position.y * minorAxis;\n\n  vec3 vPosition = major + minor + offset;\n  vec3 pPosition = project(vPosition);\n  vec3 offset = project(vPosition + screenAxis * position.z);\n\n  vec2 screen = normalize((offset - pPosition).xy * screenShape) / screenShape;\n\n  gl_Position = vec4(pPosition + vec3(0.5 * screen * lineWidth, 0), 1.0);\n}\n"])
 var lineFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
-exports.j = function(gl) {
+exports.n = function(gl) {
   return createShader(gl, lineVert, lineFrag, null, [
     {name: 'position', type: 'vec3'}
   ])
@@ -13207,7 +13111,7 @@ exports.j = function(gl) {
 
 var textVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, axis, alignDir, alignOpt;\nuniform float scale, angle, pixelScale;\nuniform vec2 resolution;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nfloat computeViewAngle(vec3 a, vec3 b) {\n  vec3 A = project(a);\n  vec3 B = project(b);\n\n  return atan(\n    (B.y - A.y) * resolution.y,\n    (B.x - A.x) * resolution.x\n  );\n}\n\nconst float PI = 3.141592;\nconst float TWO_PI = 2.0 * PI;\nconst float HALF_PI = 0.5 * PI;\nconst float ONE_AND_HALF_PI = 1.5 * PI;\n\nint option = int(floor(alignOpt.x + 0.001));\nfloat hv_ratio =       alignOpt.y;\nbool enableAlign =    (alignOpt.z != 0.0);\n\nfloat mod_angle(float a) {\n  return mod(a, PI);\n}\n\nfloat positive_angle(float a) {\n  return mod_angle((a < 0.0) ?\n    a + TWO_PI :\n    a\n  );\n}\n\nfloat look_upwards(float a) {\n  float b = positive_angle(a);\n  return ((b > HALF_PI) && (b <= ONE_AND_HALF_PI)) ?\n    b - PI :\n    b;\n}\n\nfloat look_horizontal_or_vertical(float a, float ratio) {\n  // ratio controls the ratio between being horizontal to (vertical + horizontal)\n  // if ratio is set to 0.5 then it is 50%, 50%.\n  // when using a higher ratio e.g. 0.75 the result would\n  // likely be more horizontal than vertical.\n\n  float b = positive_angle(a);\n\n  return\n    (b < (      ratio) * HALF_PI) ? 0.0 :\n    (b < (2.0 - ratio) * HALF_PI) ? -HALF_PI :\n    (b < (2.0 + ratio) * HALF_PI) ? 0.0 :\n    (b < (4.0 - ratio) * HALF_PI) ? HALF_PI :\n                                    0.0;\n}\n\nfloat roundTo(float a, float b) {\n  return float(b * floor((a + 0.5 * b) / b));\n}\n\nfloat look_round_n_directions(float a, int n) {\n  float b = positive_angle(a);\n  float div = TWO_PI / float(n);\n  float c = roundTo(b, div);\n  return look_upwards(c);\n}\n\nfloat applyAlignOption(float rawAngle, float delta) {\n  return\n    (option >  2) ? look_round_n_directions(rawAngle + delta, option) :       // option 3-n: round to n directions\n    (option == 2) ? look_horizontal_or_vertical(rawAngle + delta, hv_ratio) : // horizontal or vertical\n    (option == 1) ? rawAngle + delta :       // use free angle, and flip to align with one direction of the axis\n    (option == 0) ? look_upwards(rawAngle) : // use free angle, and stay upwards\n    (option ==-1) ? 0.0 :                    // useful for backward compatibility, all texts remains horizontal\n                    rawAngle;                // otherwise return back raw input angle\n}\n\nbool isAxisTitle = (axis.x == 0.0) &&\n                   (axis.y == 0.0) &&\n                   (axis.z == 0.0);\n\nvoid main() {\n  //Compute world offset\n  float axisDistance = position.z;\n  vec3 dataPosition = axisDistance * axis + offset;\n\n  float beta = angle; // i.e. user defined attributes for each tick\n\n  float axisAngle;\n  float clipAngle;\n  float flip;\n\n  if (enableAlign) {\n    axisAngle = (isAxisTitle) ? HALF_PI :\n                      computeViewAngle(dataPosition, dataPosition + axis);\n    clipAngle = computeViewAngle(dataPosition, dataPosition + alignDir);\n\n    axisAngle += (sin(axisAngle) < 0.0) ? PI : 0.0;\n    clipAngle += (sin(clipAngle) < 0.0) ? PI : 0.0;\n\n    flip = (dot(vec2(cos(axisAngle), sin(axisAngle)),\n                vec2(sin(clipAngle),-cos(clipAngle))) > 0.0) ? 1.0 : 0.0;\n\n    beta += applyAlignOption(clipAngle, flip * PI);\n  }\n\n  //Compute plane offset\n  vec2 planeCoord = position.xy * pixelScale;\n\n  mat2 planeXform = scale * mat2(\n     cos(beta), sin(beta),\n    -sin(beta), cos(beta)\n  );\n\n  vec2 viewOffset = 2.0 * planeXform * planeCoord / resolution;\n\n  //Compute clip position\n  vec3 clipPosition = project(dataPosition);\n\n  //Apply text offset in clip coordinates\n  clipPosition += vec3(viewOffset, 0.0);\n\n  //Done\n  gl_Position = vec4(clipPosition, 1.0);\n}"])
 var textFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
-exports.f = function(gl) {
+exports.Q = function(gl) {
   return createShader(gl, textVert, textFrag, null, [
     {name: 'position', type: 'vec3'}
   ])
@@ -13225,7 +13129,7 @@ exports.bg = function(gl) {
 
 /***/ }),
 
-/***/ 9557:
+/***/ 4935:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -13233,10 +13137,10 @@ exports.bg = function(gl) {
 
 module.exports = createTextSprites
 
-var createBuffer  = __webpack_require__(5827)
-var createVAO     = __webpack_require__(2944)
-var vectorizeText = __webpack_require__(875)
-var createShader  = (__webpack_require__(1943)/* .text */ .f)
+var createBuffer  = __webpack_require__(2762)
+var createVAO     = __webpack_require__(8116)
+var vectorizeText = __webpack_require__(4359)
+var createShader  = (__webpack_require__(1879)/* .text */ .Q)
 
 var globals = window || process.global || {}
 var __TEXT_CACHE  = globals.__TEXT_CACHE || {}
@@ -13451,7 +13355,7 @@ function createTextSprites(
 
 /***/ }),
 
-/***/ 8468:
+/***/ 6444:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -13538,7 +13442,7 @@ function ticksEqual(ticksA, ticksB) {
 
 /***/ }),
 
-/***/ 2771:
+/***/ 5445:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -13546,12 +13450,12 @@ function ticksEqual(ticksA, ticksB) {
 
 module.exports = axesProperties
 
-var getPlanes   = __webpack_require__(5795)
-var splitPoly   = __webpack_require__(4670)
-var cubeParams  = __webpack_require__(2864)
-var m4mul       = __webpack_require__(104)
-var m4transpose = __webpack_require__(2142)
-var v4transformMat4 = __webpack_require__(6342)
+var getPlanes   = __webpack_require__(5033)
+var splitPoly   = __webpack_require__(5202)
+var cubeParams  = __webpack_require__(6429)
+var m4mul       = __webpack_require__(6760)
+var m4transpose = __webpack_require__(5665)
+var v4transformMat4 = __webpack_require__(5352)
 
 var identity    = new Float32Array([
     1, 0, 0, 0,
@@ -13688,15 +13592,15 @@ i_loop:
 
 /***/ }),
 
-/***/ 5827:
+/***/ 2762:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var pool = __webpack_require__(5306)
-var ops = __webpack_require__(7498)
-var ndarray = __webpack_require__(5050)
+var pool = __webpack_require__(1888)
+var ops = __webpack_require__(5298)
+var ndarray = __webpack_require__(9618)
 
 var SUPPORTED_TYPES = [
   "uint8",
@@ -13848,13 +13752,13 @@ module.exports = createBuffer
 
 /***/ }),
 
-/***/ 1140:
+/***/ 6405:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var vec3 = __webpack_require__(2858);
+var vec3 = __webpack_require__(2931);
 
 module.exports = function(vectorfield, bounds) {
 	var positions = vectorfield.positions;
@@ -13980,8 +13884,8 @@ module.exports = function(vectorfield, bounds) {
 	return geo;
 };
 
-var shaders = __webpack_require__(7234);
-module.exports.createMesh = __webpack_require__(5028);
+var shaders = __webpack_require__(614);
+module.exports.createMesh = __webpack_require__(9060);
 module.exports.createConeMesh = function(gl, params) {
 	return module.exports.createMesh(gl, params, {
 		shaders: shaders,
@@ -13992,20 +13896,20 @@ module.exports.createConeMesh = function(gl, params) {
 
 /***/ }),
 
-/***/ 5028:
+/***/ 9060:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var createShader  = __webpack_require__(5158)
-var createBuffer  = __webpack_require__(5827)
-var createVAO     = __webpack_require__(2944)
-var createTexture = __webpack_require__(8931)
-var multiply      = __webpack_require__(104)
-var invert        = __webpack_require__(7437)
-var ndarray       = __webpack_require__(5050)
-var colormap      = __webpack_require__(9156)
+var createShader  = __webpack_require__(9405)
+var createBuffer  = __webpack_require__(2762)
+var createVAO     = __webpack_require__(8116)
+var createTexture = __webpack_require__(7766)
+var multiply      = __webpack_require__(6760)
+var invert        = __webpack_require__(7608)
+var ndarray       = __webpack_require__(9618)
+var colormap      = __webpack_require__(6729)
 
 var IDENTITY = [
   1,0,0,0,
@@ -14573,10 +14477,10 @@ module.exports = createVectorMesh
 
 /***/ }),
 
-/***/ 7234:
+/***/ 614:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-var glslify       = __webpack_require__(6832)
+var glslify       = __webpack_require__(3236)
 
 var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, coneScale, coneOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * conePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(conePosition, 1.0);\n  vec4 t_position  = view * conePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = conePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
 var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
@@ -14606,7 +14510,7 @@ exports.pickShader = {
 
 /***/ }),
 
-/***/ 1950:
+/***/ 737:
 /***/ (function(module) {
 
 module.exports = {
@@ -14911,10 +14815,10 @@ module.exports = {
 
 /***/ }),
 
-/***/ 6603:
+/***/ 5171:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var gl10 = __webpack_require__(1950)
+var gl10 = __webpack_require__(737)
 
 module.exports = function lookupConstant (number) {
   return gl10[number]
@@ -14923,7 +14827,7 @@ module.exports = function lookupConstant (number) {
 
 /***/ }),
 
-/***/ 3110:
+/***/ 9165:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -14931,9 +14835,9 @@ module.exports = function lookupConstant (number) {
 
 module.exports = createErrorBars
 
-var createBuffer  = __webpack_require__(5827)
-var createVAO     = __webpack_require__(2944)
-var createShader  = __webpack_require__(7667)
+var createBuffer  = __webpack_require__(2762)
+var createVAO     = __webpack_require__(8116)
+var createShader  = __webpack_require__(3436)
 
 var IDENTITY = [1,0,0,0,
                 0,1,0,0,
@@ -15180,14 +15084,14 @@ function createErrorBars(options) {
 
 /***/ }),
 
-/***/ 7667:
+/***/ 3436:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var glslify = __webpack_require__(6832)
-var createShader = __webpack_require__(5158)
+var glslify = __webpack_require__(3236)
+var createShader = __webpack_require__(9405)
 
 var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, offset;\nattribute vec4 color;\nuniform mat4 model, view, projection;\nuniform float capSize;\nvarying vec4 fragColor;\nvarying vec3 fragPosition;\n\nvoid main() {\n  vec4 worldPosition  = model * vec4(position, 1.0);\n  worldPosition       = (worldPosition / worldPosition.w) + vec4(capSize * offset, 0.0);\n  gl_Position         = projection * view * worldPosition;\n  fragColor           = color;\n  fragPosition        = position;\n}"])
 var fragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float opacity;\nvarying vec3 fragPosition;\nvarying vec4 fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], fragPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  gl_FragColor = opacity * fragColor;\n}"])
@@ -15203,13 +15107,13 @@ module.exports = function(gl) {
 
 /***/ }),
 
-/***/ 4234:
+/***/ 2260:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var createTexture = __webpack_require__(8931)
+var createTexture = __webpack_require__(7766)
 
 module.exports = createFBO
 
@@ -15676,14 +15580,14 @@ function createFBO(gl, width, height, options) {
 
 /***/ }),
 
-/***/ 3530:
+/***/ 2992:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 
-var sprintf = (__webpack_require__(8974).sprintf);
-var glConstants = __webpack_require__(6603);
-var shaderName = __webpack_require__(9365);
-var addLineNumbers = __webpack_require__(8008);
+var sprintf = (__webpack_require__(3387).sprintf);
+var glConstants = __webpack_require__(5171);
+var shaderName = __webpack_require__(1848);
+var addLineNumbers = __webpack_require__(1085);
 
 module.exports = formatCompilerError;
 
@@ -15736,7 +15640,7 @@ function formatCompilerError(errLog, src, type) {
 
 /***/ }),
 
-/***/ 6386:
+/***/ 2510:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -15744,13 +15648,13 @@ function formatCompilerError(errLog, src, type) {
 
 module.exports = createHeatmap2D
 
-var bsearch = __webpack_require__(5070)
-var iota = __webpack_require__(9560)
-var pool = __webpack_require__(5306)
-var createShader = __webpack_require__(5158)
-var createBuffer = __webpack_require__(5827)
+var bsearch = __webpack_require__(2478)
+var iota = __webpack_require__(7762)
+var pool = __webpack_require__(1888)
+var createShader = __webpack_require__(9405)
+var createBuffer = __webpack_require__(2762)
 
-var shaders = __webpack_require__(1292)
+var shaders = __webpack_require__(6768)
 
 function GLHeatmap2D (
   plot,
@@ -16094,13 +15998,13 @@ function createHeatmap2D (plot, options) {
 
 /***/ }),
 
-/***/ 1292:
+/***/ 6768:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var glslify = __webpack_require__(6832)
+var glslify = __webpack_require__(3236)
 
 module.exports = {
   fragment:     glslify(["precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = vec4(fragColor.rgb * fragColor.a, fragColor.a);\n}\n"]),
@@ -16112,11 +16016,11 @@ module.exports = {
 
 /***/ }),
 
-/***/ 248:
+/***/ 7319:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-var glslify       = __webpack_require__(6832)
-var createShader  = __webpack_require__(5158)
+var glslify       = __webpack_require__(3236)
+var createShader  = __webpack_require__(9405)
 
 var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  vec4 startPoint = project(position);\n  vec4 endPoint   = project(nextPosition);\n\n  vec2 A = startPoint.xy / startPoint.w;\n  vec2 B =   endPoint.xy /   endPoint.w;\n\n  float clipAngle = atan(\n    (B.y - A.y) * screenShape.y,\n    (B.x - A.x) * screenShape.x\n  );\n\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(\n    sin(clipAngle),\n    -cos(clipAngle)\n  ) / screenShape;\n\n  gl_Position = vec4(startPoint.xy + startPoint.w * offset, startPoint.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"])
 var forwardFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3      clipBounds[2];\nuniform sampler2D dashTexture;\nuniform float     dashScale;\nuniform float     opacity;\n\nvarying vec3    worldPosition;\nvarying float   pixelArcLength;\nvarying vec4    fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], worldPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  float dashWeight = texture2D(dashTexture, vec2(dashScale * pixelArcLength, 0)).r;\n  if(dashWeight < 0.5) {\n    discard;\n  }\n  gl_FragColor = fragColor * opacity;\n}\n"])
@@ -16141,7 +16045,7 @@ exports.createPickShader = function(gl) {
 
 /***/ }),
 
-/***/ 6086:
+/***/ 5714:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -16149,9 +16053,9 @@ exports.createPickShader = function(gl) {
 
 module.exports = createLinePlot
 
-var createBuffer = __webpack_require__(5827)
-var createVAO = __webpack_require__(2944)
-var createTexture = __webpack_require__(8931)
+var createBuffer = __webpack_require__(2762)
+var createVAO = __webpack_require__(8116)
+var createTexture = __webpack_require__(7766)
 
 var UINT8_VIEW = new Uint8Array(4)
 var FLOAT_VIEW = new Float32Array(UINT8_VIEW.buffer)
@@ -16164,9 +16068,9 @@ function unpackFloat(x, y, z, w) {
   return FLOAT_VIEW[0]
 }
 
-var bsearch = __webpack_require__(5070)
-var ndarray = __webpack_require__(5050)
-var shaders = __webpack_require__(248)
+var bsearch = __webpack_require__(2478)
+var ndarray = __webpack_require__(9618)
+var shaders = __webpack_require__(7319)
 
 var createShader = shaders.createShader
 var createPickShader = shaders.createPickShader
@@ -16548,7 +16452,7 @@ function createLinePlot (options) {
 
 /***/ }),
 
-/***/ 7332:
+/***/ 1903:
 /***/ (function(module) {
 
 module.exports = clone;
@@ -16582,7 +16486,7 @@ function clone(a) {
 
 /***/ }),
 
-/***/ 9823:
+/***/ 6864:
 /***/ (function(module) {
 
 module.exports = create;
@@ -16615,7 +16519,7 @@ function create() {
 
 /***/ }),
 
-/***/ 7787:
+/***/ 9921:
 /***/ (function(module) {
 
 module.exports = determinant;
@@ -16651,7 +16555,7 @@ function determinant(a) {
 
 /***/ }),
 
-/***/ 5950:
+/***/ 7399:
 /***/ (function(module) {
 
 module.exports = fromQuat;
@@ -16704,7 +16608,7 @@ function fromQuat(out, q) {
 
 /***/ }),
 
-/***/ 7280:
+/***/ 6743:
 /***/ (function(module) {
 
 module.exports = fromRotationTranslation;
@@ -16763,7 +16667,7 @@ function fromRotationTranslation(out, q, v) {
 
 /***/ }),
 
-/***/ 9947:
+/***/ 7894:
 /***/ (function(module) {
 
 module.exports = identity;
@@ -16796,7 +16700,7 @@ function identity(out) {
 
 /***/ }),
 
-/***/ 7437:
+/***/ 7608:
 /***/ (function(module) {
 
 module.exports = invert;
@@ -16857,10 +16761,10 @@ function invert(out, a) {
 
 /***/ }),
 
-/***/ 3012:
+/***/ 6582:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var identity = __webpack_require__(9947);
+var identity = __webpack_require__(7894);
 
 module.exports = lookAt;
 
@@ -16953,7 +16857,7 @@ function lookAt(out, eye, center, up) {
 
 /***/ }),
 
-/***/ 104:
+/***/ 6760:
 /***/ (function(module) {
 
 module.exports = multiply;
@@ -17001,7 +16905,7 @@ function multiply(out, a, b) {
 
 /***/ }),
 
-/***/ 5268:
+/***/ 4040:
 /***/ (function(module) {
 
 module.exports = ortho;
@@ -17043,7 +16947,7 @@ function ortho(out, left, right, bottom, top, near, far) {
 
 /***/ }),
 
-/***/ 1120:
+/***/ 4772:
 /***/ (function(module) {
 
 module.exports = perspective;
@@ -17082,7 +16986,7 @@ function perspective(out, fovy, aspect, near, far) {
 
 /***/ }),
 
-/***/ 4422:
+/***/ 6079:
 /***/ (function(module) {
 
 module.exports = rotate;
@@ -17152,7 +17056,7 @@ function rotate(out, a, rad, axis) {
 
 /***/ }),
 
-/***/ 6109:
+/***/ 5567:
 /***/ (function(module) {
 
 module.exports = rotateX;
@@ -17202,7 +17106,7 @@ function rotateX(out, a, rad) {
 
 /***/ }),
 
-/***/ 7115:
+/***/ 2408:
 /***/ (function(module) {
 
 module.exports = rotateY;
@@ -17252,7 +17156,7 @@ function rotateY(out, a, rad) {
 
 /***/ }),
 
-/***/ 5240:
+/***/ 7089:
 /***/ (function(module) {
 
 module.exports = rotateZ;
@@ -17302,7 +17206,7 @@ function rotateZ(out, a, rad) {
 
 /***/ }),
 
-/***/ 3668:
+/***/ 2504:
 /***/ (function(module) {
 
 module.exports = scale;
@@ -17339,7 +17243,7 @@ function scale(out, a, v) {
 
 /***/ }),
 
-/***/ 998:
+/***/ 7656:
 /***/ (function(module) {
 
 module.exports = translate;
@@ -17383,7 +17287,7 @@ function translate(out, a, v) {
 
 /***/ }),
 
-/***/ 2142:
+/***/ 5665:
 /***/ (function(module) {
 
 module.exports = transpose;
@@ -17438,14 +17342,14 @@ function transpose(out, a) {
 
 /***/ }),
 
-/***/ 4340:
+/***/ 7626:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var barycentric            = __webpack_require__(957)
-var closestPointToTriangle = __webpack_require__(7309)
+var barycentric            = __webpack_require__(2642)
+var closestPointToTriangle = __webpack_require__(9346)
 
 module.exports = closestPointToPickLocation
 
@@ -17542,10 +17446,10 @@ function closestPointToPickLocation(simplex, pixelCoord, model, view, projection
 
 /***/ }),
 
-/***/ 2056:
+/***/ 840:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-var glslify       = __webpack_require__(6832)
+var glslify       = __webpack_require__(3236)
 
 var triVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  gl_Position      = project(position);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * vec4(position , 1.0);\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal  = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  f_color          = color;\n  f_data           = position;\n  f_uv             = uv;\n}\n"])
 var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\n//#pragma glslify: beckmann = require(glsl-specular-beckmann) // used in gl-surface3d\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (f_color.a == 0.0 ||\n    outOfRange(clipBounds[0], clipBounds[1], f_data)\n  ) discard;\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  //float specular = max(0.0, beckmann(L, V, N, roughness)); // used in gl-surface3d\n\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = vec4(f_color.rgb, 1.0) * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * f_color.a;\n}\n"])
@@ -17616,7 +17520,7 @@ exports.contourShader = {
 
 /***/ }),
 
-/***/ 8116:
+/***/ 7201:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -17625,19 +17529,19 @@ exports.contourShader = {
 var DEFAULT_VERTEX_NORMALS_EPSILON = 1e-6; // may be too large if triangles are very small
 var DEFAULT_FACE_NORMALS_EPSILON = 1e-6;
 
-var createShader  = __webpack_require__(5158)
-var createBuffer  = __webpack_require__(5827)
-var createVAO     = __webpack_require__(2944)
-var createTexture = __webpack_require__(8931)
-var normals       = __webpack_require__(115)
-var multiply      = __webpack_require__(104)
-var invert        = __webpack_require__(7437)
-var ndarray       = __webpack_require__(5050)
-var colormap      = __webpack_require__(9156)
-var getContour    = __webpack_require__(7212)
-var pool          = __webpack_require__(5306)
-var shaders       = __webpack_require__(2056)
-var closestPoint  = __webpack_require__(4340)
+var createShader  = __webpack_require__(9405)
+var createBuffer  = __webpack_require__(2762)
+var createVAO     = __webpack_require__(8116)
+var createTexture = __webpack_require__(7766)
+var normals       = __webpack_require__(8406)
+var multiply      = __webpack_require__(6760)
+var invert        = __webpack_require__(7608)
+var ndarray       = __webpack_require__(9618)
+var colormap      = __webpack_require__(6729)
+var getContour    = __webpack_require__(7765)
+var pool          = __webpack_require__(1888)
+var shaders       = __webpack_require__(840)
+var closestPoint  = __webpack_require__(7626)
 
 var meshShader    = shaders.meshShader
 var wireShader    = shaders.wireShader
@@ -18733,7 +18637,7 @@ module.exports = createSimplicialMesh
 
 /***/ }),
 
-/***/ 4554:
+/***/ 8120:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -18741,10 +18645,10 @@ module.exports = createSimplicialMesh
 
 module.exports = createBoxes
 
-var createBuffer = __webpack_require__(5827)
-var createShader = __webpack_require__(5158)
+var createBuffer = __webpack_require__(2762)
+var createShader = __webpack_require__(9405)
 
-var shaders = __webpack_require__(2709)
+var shaders = __webpack_require__(3603)
 
 function Boxes(plot, vbo, shader) {
   this.plot   = plot
@@ -18802,7 +18706,7 @@ function createBoxes(plot) {
 
 /***/ }),
 
-/***/ 3016:
+/***/ 1913:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -18810,10 +18714,10 @@ function createBoxes(plot) {
 
 module.exports = createGrid
 
-var createBuffer  = __webpack_require__(5827)
-var createShader  = __webpack_require__(5158)
-var bsearch       = __webpack_require__(5070)
-var shaders       = __webpack_require__(2709)
+var createBuffer  = __webpack_require__(2762)
+var createShader  = __webpack_require__(9405)
+var bsearch       = __webpack_require__(2478)
+var shaders       = __webpack_require__(3603)
 
 function Grid(plot, vbo, shader, tickShader) {
   this.plot   = plot
@@ -19055,7 +18959,7 @@ function createGrid(plot) {
 
 /***/ }),
 
-/***/ 1154:
+/***/ 4747:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -19063,10 +18967,10 @@ function createGrid(plot) {
 
 module.exports = createLines
 
-var createBuffer = __webpack_require__(5827)
-var createShader = __webpack_require__(5158)
+var createBuffer = __webpack_require__(2762)
+var createShader = __webpack_require__(9405)
 
-var shaders = __webpack_require__(2709)
+var shaders = __webpack_require__(3603)
 
 function Lines(plot, vbo, shader) {
   this.plot   = plot
@@ -19126,13 +19030,13 @@ function createLines(plot) {
 
 /***/ }),
 
-/***/ 2709:
+/***/ 3603:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var glslify = __webpack_require__(6832)
+var glslify = __webpack_require__(3236)
 
 var FRAGMENT = glslify(["precision lowp float;\n#define GLSLIFY 1\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = vec4(color.xyz * color.w, color.w);\n}\n"])
 
@@ -19150,7 +19054,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 5613:
+/***/ 2142:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -19158,11 +19062,11 @@ module.exports = {
 
 module.exports = createTextElements
 
-var createBuffer = __webpack_require__(5827)
-var createShader = __webpack_require__(5158)
-var getText      = __webpack_require__(6946)
-var bsearch      = __webpack_require__(5070)
-var shaders      = __webpack_require__(2709)
+var createBuffer = __webpack_require__(2762)
+var createShader = __webpack_require__(9405)
+var getText      = __webpack_require__(529)
+var bsearch      = __webpack_require__(2478)
+var shaders      = __webpack_require__(3603)
 
 function TextElements(plot, vbo, shader) {
   this.plot         = plot
@@ -19434,7 +19338,7 @@ function createTextElements(plot) {
 
 /***/ }),
 
-/***/ 2117:
+/***/ 1850:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -19442,12 +19346,12 @@ function createTextElements(plot) {
 
 module.exports = createGLPlot2D
 
-var createPick = __webpack_require__(2611)
+var createPick = __webpack_require__(3589)
 
-var createGrid = __webpack_require__(3016)
-var createText = __webpack_require__(5613)
-var createLine = __webpack_require__(1154)
-var createBox  = __webpack_require__(4554)
+var createGrid = __webpack_require__(1913)
+var createText = __webpack_require__(2142)
+var createLine = __webpack_require__(4747)
+var createBox  = __webpack_require__(8120)
 
 function GLPlot2D(gl, pickBuffer) {
   this.gl               = gl
@@ -20023,7 +19927,7 @@ function createGLPlot2D(options) {
 
 /***/ }),
 
-/***/ 4296:
+/***/ 4437:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -20031,12 +19935,12 @@ function createGLPlot2D(options) {
 
 module.exports = createCamera
 
-var now         = __webpack_require__(8161)
-var createView  = __webpack_require__(1152)
-var mouseChange = __webpack_require__(6145)
-var mouseWheel  = __webpack_require__(6475)
-var mouseOffset = __webpack_require__(2565)
-var hasPassive  = __webpack_require__(5233)
+var now         = __webpack_require__(3025)
+var createView  = __webpack_require__(6296)
+var mouseChange = __webpack_require__(351)
+var mouseWheel  = __webpack_require__(8512)
+var mouseOffset = __webpack_require__(24)
+var hasPassive  = __webpack_require__(7520)
 
 function createCamera(element, options) {
   element = element || document.body
@@ -20310,11 +20214,11 @@ function createCamera(element, options) {
 
 /***/ }),
 
-/***/ 8245:
+/***/ 799:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var glslify      = __webpack_require__(6832)
-var createShader = __webpack_require__(5158)
+var glslify      = __webpack_require__(3236)
+var createShader = __webpack_require__(9405)
 
 var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\nattribute vec2 position;\nvarying vec2 uv;\nvoid main() {\n  uv = position;\n  gl_Position = vec4(position, 0, 1);\n}"])
 var fragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform sampler2D accumBuffer;\nvarying vec2 uv;\n\nvoid main() {\n  vec4 accum = texture2D(accumBuffer, 0.5 * (uv + 1.0));\n  gl_FragColor = min(vec4(1,1,1,1), accum);\n}"])
@@ -20326,24 +20230,24 @@ module.exports = function(gl) {
 
 /***/ }),
 
-/***/ 1059:
+/***/ 4100:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var createCamera = __webpack_require__(4296)
-var createAxes   = __webpack_require__(7453)
-var axesRanges   = __webpack_require__(2771)
-var createSpikes = __webpack_require__(6496)
-var createSelect = __webpack_require__(2611)
-var createFBO    = __webpack_require__(4234)
-var drawTriangle = __webpack_require__(8126)
-var mouseChange  = __webpack_require__(6145)
-var perspective  = __webpack_require__(1120)
-var ortho        = __webpack_require__(5268)
-var createShader = __webpack_require__(8245)
-var isMobile = __webpack_require__(2321)({ tablet: true, featureDetect: true })
+var createCamera = __webpack_require__(4437)
+var createAxes   = __webpack_require__(3837)
+var axesRanges   = __webpack_require__(5445)
+var createSpikes = __webpack_require__(4449)
+var createSelect = __webpack_require__(3589)
+var createFBO    = __webpack_require__(2260)
+var drawTriangle = __webpack_require__(7169)
+var mouseChange  = __webpack_require__(351)
+var perspective  = __webpack_require__(4772)
+var ortho        = __webpack_require__(4040)
+var createShader = __webpack_require__(799)
+var isMobile = __webpack_require__(9216)({ tablet: true, featureDetect: true })
 
 module.exports = {
   createScene: createScene,
@@ -21187,10 +21091,10 @@ function calcCameraParams(scene, isOrtho) {
 
 /***/ }),
 
-/***/ 8023:
+/***/ 6640:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-var glslify = __webpack_require__(6832)
+var glslify = __webpack_require__(3236)
 
 exports.pointVertex       = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform float pointCloud;\n\nhighp float rand(vec2 co) {\n  highp float a = 12.9898;\n  highp float b = 78.233;\n  highp float c = 43758.5453;\n  highp float d = dot(co.xy, vec2(a, b));\n  highp float e = mod(d, 3.14);\n  return fract(sin(e) * c);\n}\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n    // if we don't jitter the point size a bit, overall point cloud\n    // saturation 'jumps' on zooming, which is disturbing and confusing\n  gl_PointSize = pointSize * ((19.5 + rand(position)) / 20.0);\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    // get the same square surface as circle would be\n    gl_PointSize *= 0.886;\n  }\n}"])
 exports.pointFragment     = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color, borderColor;\nuniform float centerFraction;\nuniform float pointCloud;\n\nvoid main() {\n  float radius;\n  vec4 baseColor;\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    if(centerFraction == 1.0) {\n      gl_FragColor = color;\n    } else {\n      gl_FragColor = mix(borderColor, color, centerFraction);\n    }\n  } else {\n    radius = length(2.0 * gl_PointCoord.xy - 1.0);\n    if(radius > 1.0) {\n      discard;\n    }\n    baseColor = mix(borderColor, color, step(radius, centerFraction));\n    gl_FragColor = vec4(baseColor.rgb * baseColor.a, baseColor.a);\n  }\n}\n"])
@@ -21200,18 +21104,18 @@ exports.pickFragment      = glslify(["precision mediump float;\n#define GLSLIFY 
 
 /***/ }),
 
-/***/ 8271:
+/***/ 4696:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var createShader = __webpack_require__(5158)
-var createBuffer = __webpack_require__(5827)
+var createShader = __webpack_require__(9405)
+var createBuffer = __webpack_require__(2762)
 
-var pool = __webpack_require__(5306)
+var pool = __webpack_require__(1888)
 
-var SHADERS = __webpack_require__(8023)
+var SHADERS = __webpack_require__(6640)
 
 module.exports = createPointcloud2D
 
@@ -21426,7 +21330,7 @@ function createPointcloud2D(plot, options) {
 
 /***/ }),
 
-/***/ 6093:
+/***/ 783:
 /***/ (function(module) {
 
 module.exports = slerp
@@ -21484,7 +21388,7 @@ function slerp (out, a, b, t) {
 
 /***/ }),
 
-/***/ 8240:
+/***/ 5964:
 /***/ (function(module) {
 
 "use strict";
@@ -21497,13 +21401,13 @@ module.exports = function(a){
 
 /***/ }),
 
-/***/ 4123:
+/***/ 9366:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var vectorizeText = __webpack_require__(875)
+var vectorizeText = __webpack_require__(4359)
 
 module.exports = getGlyph
 
@@ -21572,11 +21476,11 @@ function getGlyph(symbol, font, pixelRatio) {
 
 /***/ }),
 
-/***/ 9282:
+/***/ 1283:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-var createShaderWrapper = __webpack_require__(5158)
-var glslify = __webpack_require__(6832)
+var createShaderWrapper = __webpack_require__(9405)
+var glslify = __webpack_require__(3236)
 
 var perspectiveVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform vec4 highlightId;\nuniform float highlightScale;\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = 1.0;\n    if(distance(highlightId, id) < 0.0001) {\n      scale = highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1);\n    vec4 viewPosition = view * worldPosition;\n    viewPosition = viewPosition / viewPosition.w;\n    vec4 clipPosition = projection * (viewPosition + scale * vec4(glyph.x, -glyph.y, 0, 0));\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
 var orthographicVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float highlightScale, pixelRatio;\nuniform vec4 highlightId;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = pixelRatio;\n    if(distance(highlightId.bgr, id.bgr) < 0.001) {\n      scale *= highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1.0);\n    vec4 viewPosition = view * worldPosition;\n    vec4 clipPosition = projection * viewPosition;\n    clipPosition /= clipPosition.w;\n\n    gl_Position = clipPosition + vec4(screenSize * scale * vec2(glyph.x, -glyph.y), 0.0, 0.0);\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
@@ -21654,20 +21558,20 @@ exports.createPickProject = function(gl) {
 
 /***/ }),
 
-/***/ 2182:
+/***/ 8418:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var isAllBlank      = __webpack_require__(3596)
-var createBuffer    = __webpack_require__(5827)
-var createVAO       = __webpack_require__(2944)
-var pool            = __webpack_require__(5306)
-var mat4mult        = __webpack_require__(104)
-var shaders         = __webpack_require__(9282)
-var getGlyph        = __webpack_require__(4123)
-var getSimpleString = __webpack_require__(8240)
+var isAllBlank      = __webpack_require__(5219)
+var createBuffer    = __webpack_require__(2762)
+var createVAO       = __webpack_require__(8116)
+var pool            = __webpack_require__(1888)
+var mat4mult        = __webpack_require__(6760)
+var shaders         = __webpack_require__(1283)
+var getGlyph        = __webpack_require__(9366)
+var getSimpleString = __webpack_require__(5964)
 
 var IDENTITY = [1,0,0,0,
                 0,1,0,0,
@@ -22532,13 +22436,13 @@ function createPointCloud(options) {
 
 /***/ }),
 
-/***/ 1884:
+/***/ 4298:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var glslify = __webpack_require__(6832)
+var glslify = __webpack_require__(3236)
 
 exports.boxVertex = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 vertex;\n\nuniform vec2 cornerA, cornerB;\n\nvoid main() {\n  gl_Position = vec4(mix(cornerA, cornerB, vertex), 0, 1);\n}\n"])
 exports.boxFragment = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = color;\n}\n"])
@@ -22546,16 +22450,16 @@ exports.boxFragment = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nu
 
 /***/ }),
 
-/***/ 6623:
+/***/ 3161:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var createShader = __webpack_require__(5158)
-var createBuffer = __webpack_require__(5827)
+var createShader = __webpack_require__(9405)
+var createBuffer = __webpack_require__(2762)
 
-var SHADERS = __webpack_require__(1884)
+var SHADERS = __webpack_require__(4298)
 
 module.exports = createSelectBox
 
@@ -22678,7 +22582,7 @@ function createSelectBox(plot, options) {
 
 /***/ }),
 
-/***/ 2611:
+/***/ 3589:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -22686,10 +22590,10 @@ function createSelectBox(plot, options) {
 
 module.exports = createSelectBuffer
 
-var createFBO = __webpack_require__(4234)
-var pool      = __webpack_require__(5306)
-var ndarray   = __webpack_require__(5050)
-var nextPow2  = (__webpack_require__(2288).nextPow2)
+var createFBO = __webpack_require__(2260)
+var pool      = __webpack_require__(1888)
+var ndarray   = __webpack_require__(9618)
+var nextPow2  = (__webpack_require__(8828).nextPow2)
 
 var selectRange = function(arr, x, y) {
   var closestD2 = 1e8
@@ -22869,18 +22773,18 @@ function createSelectBuffer(gl, shape) {
 
 /***/ }),
 
-/***/ 5158:
+/***/ 9405:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var createUniformWrapper   = __webpack_require__(9016)
-var createAttributeWrapper = __webpack_require__(4280)
-var makeReflect            = __webpack_require__(3984)
-var shaderCache            = __webpack_require__(1628)
-var runtime                = __webpack_require__(2631)
-var GLError                = __webpack_require__(9068)
+var createUniformWrapper   = __webpack_require__(3327)
+var createAttributeWrapper = __webpack_require__(8731)
+var makeReflect            = __webpack_require__(216)
+var shaderCache            = __webpack_require__(5091)
+var runtime                = __webpack_require__(2145)
+var GLError                = __webpack_require__(8866)
 
 //Shader object
 function Shader(gl) {
@@ -23141,7 +23045,7 @@ module.exports = createShader
 
 /***/ }),
 
-/***/ 9068:
+/***/ 8866:
 /***/ (function(module) {
 
 function GLError (rawError, shortMessage, longMessage) {
@@ -23161,7 +23065,7 @@ module.exports = GLError
 
 /***/ }),
 
-/***/ 4280:
+/***/ 8731:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -23169,7 +23073,7 @@ module.exports = GLError
 
 module.exports = createAttributeWrapper
 
-var GLError = __webpack_require__(9068)
+var GLError = __webpack_require__(8866)
 
 function ShaderAttribute(
     gl
@@ -23452,14 +23356,14 @@ function createAttributeWrapper(
 
 /***/ }),
 
-/***/ 9016:
+/***/ 3327:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var coallesceUniforms = __webpack_require__(3984)
-var GLError = __webpack_require__(9068)
+var coallesceUniforms = __webpack_require__(216)
+var GLError = __webpack_require__(8866)
 
 module.exports = createUniformWrapper
 
@@ -23669,7 +23573,7 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
 
 /***/ }),
 
-/***/ 3984:
+/***/ 216:
 /***/ (function(module) {
 
 "use strict";
@@ -23733,7 +23637,7 @@ function makeReflectTypes(uniforms, useIndex) {
 
 /***/ }),
 
-/***/ 2631:
+/***/ 2145:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -23819,7 +23723,7 @@ function runtimeAttributes(gl, program) {
 
 /***/ }),
 
-/***/ 1628:
+/***/ 5091:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -23828,10 +23732,10 @@ function runtimeAttributes(gl, program) {
 exports.shader   = getShaderReference
 exports.program  = createProgram
 
-var GLError = __webpack_require__(9068)
-var formatCompilerError = __webpack_require__(3530);
+var GLError = __webpack_require__(8866)
+var formatCompilerError = __webpack_require__(2992);
 
-var weakMap = typeof WeakMap === 'undefined' ? __webpack_require__(4037) : WeakMap
+var weakMap = typeof WeakMap === 'undefined' ? __webpack_require__(606) : WeakMap
 var CACHE = new weakMap()
 
 var SHADER_COUNTER = 0
@@ -23963,7 +23867,7 @@ function createProgram(gl, vref, fref, attribs, locations) {
 
 /***/ }),
 
-/***/ 3050:
+/***/ 4098:
 /***/ (function(module) {
 
 "use strict";
@@ -24057,14 +23961,14 @@ function createSpikes2D(plot, options) {
 
 /***/ }),
 
-/***/ 3540:
+/***/ 1493:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var glslify      = __webpack_require__(6832)
-var createShader = __webpack_require__(5158)
+var glslify      = __webpack_require__(3236)
+var createShader = __webpack_require__(9405)
 
 var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, color;\nattribute float weight;\n\nuniform mat4 model, view, projection;\nuniform vec3 coordinates[3];\nuniform vec4 colors[3];\nuniform vec2 screenShape;\nuniform float lineWidth;\n\nvarying vec4 fragColor;\n\nvoid main() {\n  vec3 vertexPosition = mix(coordinates[0],\n    mix(coordinates[2], coordinates[1], 0.5 * (position + 1.0)), abs(position));\n\n  vec4 clipPos = projection * view * model * vec4(vertexPosition, 1.0);\n  vec2 clipOffset = (projection * view * model * vec4(color, 0.0)).xy;\n  vec2 delta = weight * clipOffset * screenShape;\n  vec2 lineOffset = normalize(vec2(delta.y, -delta.x)) / screenShape;\n\n  gl_Position   = vec4(clipPos.xy + clipPos.w * 0.5 * lineWidth * lineOffset, clipPos.z, clipPos.w);\n  fragColor     = color.x * colors[0] + color.y * colors[1] + color.z * colors[2];\n}\n"])
 var fragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor;\n\nvoid main() {\n  gl_FragColor = fragColor;\n}"])
@@ -24080,15 +23984,15 @@ module.exports = function(gl) {
 
 /***/ }),
 
-/***/ 6496:
+/***/ 4449:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var createBuffer = __webpack_require__(5827)
-var createVAO = __webpack_require__(2944)
-var createShader = __webpack_require__(3540)
+var createBuffer = __webpack_require__(2762)
+var createVAO = __webpack_require__(8116)
+var createShader = __webpack_require__(1493)
 
 module.exports = createSpikes
 
@@ -24282,10 +24186,10 @@ function createSpikes(gl, options) {
 
 /***/ }),
 
-/***/ 9578:
+/***/ 6740:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-var glslify       = __webpack_require__(6832)
+var glslify       = __webpack_require__(3236)
 
 var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, tubeScale;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * tubePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(tubePosition, 1.0);\n  vec4 t_position  = view * tubePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = tubePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
 var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
@@ -24315,14 +24219,14 @@ exports.pickShader = {
 
 /***/ }),
 
-/***/ 7307:
+/***/ 7815:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var vec3 = __webpack_require__(2858);
-var vec4 = __webpack_require__(4020);
+var vec3 = __webpack_require__(2931);
+var vec4 = __webpack_require__(9970);
 var GRID_TYPES = ['xyz', 'xzy', 'yxz', 'yzx', 'zxy', 'zyx'];
 
 var streamToTube = function(stream, maxDivergence, minDistance, maxNorm) {
@@ -24869,8 +24773,8 @@ module.exports = function(vectorField, bounds) {
 	return tubes;
 };
 
-var shaders = __webpack_require__(9578);
-var createMesh = (__webpack_require__(1140).createMesh);
+var shaders = __webpack_require__(6740);
+var createMesh = (__webpack_require__(6405).createMesh);
 module.exports.createTubeMesh = function(gl, params) {
 	return createMesh(gl, params, {
 		shaders: shaders,
@@ -24881,11 +24785,11 @@ module.exports.createTubeMesh = function(gl, params) {
 
 /***/ }),
 
-/***/ 9054:
+/***/ 990:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-var createShader = __webpack_require__(5158)
-var glslify = __webpack_require__(6832)
+var createShader = __webpack_require__(9405)
+var glslify = __webpack_require__(3236)
 
 var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform vec3 objectOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 localCoordinate = vec3(uv.zw, f.x);\n  worldCoordinate = objectOffset + localCoordinate;\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"])
 var fragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat beckmannSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform float vertexColor;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  if (\n    kill > 0.0 ||\n    vColor.a == 0.0 ||\n    outOfRange(clipBounds[0], clipBounds[1], worldCoordinate)\n  ) discard;\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = max(beckmannSpecular(L, V, N, roughness), 0.);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  //decide how to interpolate color — in vertex or in fragment\n  vec4 surfaceColor =\n    step(vertexColor, .5) * texture2D(colormap, vec2(value, value)) +\n    step(.5, vertexColor) * vColor;\n\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"])
@@ -24936,7 +24840,7 @@ exports.createPickContourShader = function (gl) {
 
 /***/ }),
 
-/***/ 3754:
+/***/ 9499:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -24944,21 +24848,21 @@ exports.createPickContourShader = function (gl) {
 
 module.exports = createSurfacePlot
 
-var bits = __webpack_require__(2288)
-var createBuffer = __webpack_require__(5827)
-var createVAO = __webpack_require__(2944)
-var createTexture = __webpack_require__(8931)
-var pool = __webpack_require__(5306)
-var colormap = __webpack_require__(9156)
-var ops = __webpack_require__(7498)
-var pack = __webpack_require__(7382)
-var ndarray = __webpack_require__(5050)
-var surfaceNets = __webpack_require__(4162)
-var multiply = __webpack_require__(104)
-var invert = __webpack_require__(7437)
-var bsearch = __webpack_require__(5070)
-var gradient = __webpack_require__(9144)
-var shaders = __webpack_require__(9054)
+var bits = __webpack_require__(8828)
+var createBuffer = __webpack_require__(2762)
+var createVAO = __webpack_require__(8116)
+var createTexture = __webpack_require__(7766)
+var pool = __webpack_require__(1888)
+var colormap = __webpack_require__(6729)
+var ops = __webpack_require__(5298)
+var pack = __webpack_require__(9994)
+var ndarray = __webpack_require__(9618)
+var surfaceNets = __webpack_require__(3711)
+var multiply = __webpack_require__(6760)
+var invert = __webpack_require__(7608)
+var bsearch = __webpack_require__(2478)
+var gradient = __webpack_require__(6199)
+var shaders = __webpack_require__(990)
 
 var createShader = shaders.createShader
 var createContourShader = shaders.createContourShader
@@ -26324,15 +26228,15 @@ function createSurfacePlot (params) {
 
 /***/ }),
 
-/***/ 8931:
+/***/ 7766:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var ndarray = __webpack_require__(5050)
-var ops     = __webpack_require__(7498)
-var pool    = __webpack_require__(5306)
+var ndarray = __webpack_require__(9618)
+var ops     = __webpack_require__(5298)
+var pool    = __webpack_require__(1888)
 
 module.exports = createTexture2D
 
@@ -26893,7 +26797,7 @@ function createTexture2D(gl) {
 
 /***/ }),
 
-/***/ 3056:
+/***/ 1433:
 /***/ (function(module) {
 
 "use strict";
@@ -26954,13 +26858,13 @@ module.exports = doBind
 
 /***/ }),
 
-/***/ 7220:
+/***/ 870:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var bindAttribs = __webpack_require__(3056)
+var bindAttribs = __webpack_require__(1433)
 
 function VAOEmulated(gl) {
   this.gl = gl
@@ -27000,13 +26904,13 @@ module.exports = createVAOEmulated
 
 /***/ }),
 
-/***/ 3778:
+/***/ 7518:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var bindAttribs = __webpack_require__(3056)
+var bindAttribs = __webpack_require__(1433)
 
 function VertexAttribute(location, dimension, a, b, c, d) {
   this.location = location
@@ -27094,14 +26998,14 @@ module.exports = createVAONative
 
 /***/ }),
 
-/***/ 2944:
+/***/ 8116:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var createVAONative = __webpack_require__(3778)
-var createVAOEmulated = __webpack_require__(7220)
+var createVAONative = __webpack_require__(7518)
+var createVAOEmulated = __webpack_require__(870)
 
 function ExtensionShim (gl) {
   this.bindVertexArrayOES = gl.bindVertexArray.bind(gl)
@@ -27129,7 +27033,7 @@ module.exports = createVAO
 
 /***/ }),
 
-/***/ 2598:
+/***/ 5632:
 /***/ (function(module) {
 
 module.exports = add;
@@ -27151,14 +27055,14 @@ function add(out, a, b) {
 
 /***/ }),
 
-/***/ 5879:
+/***/ 8192:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = angle
 
-var fromValues = __webpack_require__(5415)
-var normalize = __webpack_require__(899)
-var dot = __webpack_require__(9305)
+var fromValues = __webpack_require__(2825)
+var normalize = __webpack_require__(3536)
+var dot = __webpack_require__(244)
 
 /**
  * Get the angle between two 3D vectors
@@ -27185,7 +27089,7 @@ function angle(a, b) {
 
 /***/ }),
 
-/***/ 8827:
+/***/ 9226:
 /***/ (function(module) {
 
 module.exports = ceil
@@ -27207,7 +27111,7 @@ function ceil(out, a) {
 
 /***/ }),
 
-/***/ 7622:
+/***/ 3126:
 /***/ (function(module) {
 
 module.exports = clone;
@@ -27228,7 +27132,7 @@ function clone(a) {
 
 /***/ }),
 
-/***/ 8782:
+/***/ 3990:
 /***/ (function(module) {
 
 module.exports = copy;
@@ -27249,7 +27153,7 @@ function copy(out, a) {
 
 /***/ }),
 
-/***/ 8501:
+/***/ 1091:
 /***/ (function(module) {
 
 module.exports = create;
@@ -27269,7 +27173,7 @@ function create() {
 
 /***/ }),
 
-/***/ 903:
+/***/ 5911:
 /***/ (function(module) {
 
 module.exports = cross;
@@ -27294,15 +27198,15 @@ function cross(out, a, b) {
 
 /***/ }),
 
-/***/ 5981:
+/***/ 5455:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-module.exports = __webpack_require__(8288)
+module.exports = __webpack_require__(7056)
 
 
 /***/ }),
 
-/***/ 8288:
+/***/ 7056:
 /***/ (function(module) {
 
 module.exports = distance;
@@ -27323,15 +27227,15 @@ function distance(a, b) {
 
 /***/ }),
 
-/***/ 8629:
+/***/ 4008:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-module.exports = __webpack_require__(7979)
+module.exports = __webpack_require__(6690)
 
 
 /***/ }),
 
-/***/ 7979:
+/***/ 6690:
 /***/ (function(module) {
 
 module.exports = divide;
@@ -27353,7 +27257,7 @@ function divide(out, a, b) {
 
 /***/ }),
 
-/***/ 9305:
+/***/ 244:
 /***/ (function(module) {
 
 module.exports = dot;
@@ -27371,7 +27275,7 @@ function dot(a, b) {
 
 /***/ }),
 
-/***/ 154:
+/***/ 2613:
 /***/ (function(module) {
 
 module.exports = 0.000001
@@ -27379,12 +27283,12 @@ module.exports = 0.000001
 
 /***/ }),
 
-/***/ 4932:
+/***/ 9922:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = equals
 
-var EPSILON = __webpack_require__(154)
+var EPSILON = __webpack_require__(2613)
 
 /**
  * Returns whether or not the vectors have approximately the same elements in the same position.
@@ -27408,7 +27312,7 @@ function equals(a, b) {
 
 /***/ }),
 
-/***/ 5777:
+/***/ 9265:
 /***/ (function(module) {
 
 module.exports = exactEquals
@@ -27427,7 +27331,7 @@ function exactEquals(a, b) {
 
 /***/ }),
 
-/***/ 3306:
+/***/ 2681:
 /***/ (function(module) {
 
 module.exports = floor
@@ -27449,12 +27353,12 @@ function floor(out, a) {
 
 /***/ }),
 
-/***/ 7447:
+/***/ 5137:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = forEach;
 
-var vec = __webpack_require__(8501)()
+var vec = __webpack_require__(1091)()
 
 /**
  * Perform some operation over an array of vec3s.
@@ -27499,7 +27403,7 @@ function forEach(a, stride, offset, count, fn, arg) {
 
 /***/ }),
 
-/***/ 5415:
+/***/ 2825:
 /***/ (function(module) {
 
 module.exports = fromValues;
@@ -27522,61 +27426,61 @@ function fromValues(x, y, z) {
 
 /***/ }),
 
-/***/ 2858:
+/***/ 2931:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = {
-  EPSILON: __webpack_require__(154)
-  , create: __webpack_require__(8501)
-  , clone: __webpack_require__(7622)
-  , angle: __webpack_require__(5879)
-  , fromValues: __webpack_require__(5415)
-  , copy: __webpack_require__(8782)
-  , set: __webpack_require__(831)
-  , equals: __webpack_require__(4932)
-  , exactEquals: __webpack_require__(5777)
-  , add: __webpack_require__(2598)
-  , subtract: __webpack_require__(911)
-  , sub: __webpack_require__(8921)
-  , multiply: __webpack_require__(105)
-  , mul: __webpack_require__(5733)
-  , divide: __webpack_require__(7979)
-  , div: __webpack_require__(8629)
-  , min: __webpack_require__(3605)
-  , max: __webpack_require__(1716)
-  , floor: __webpack_require__(3306)
-  , ceil: __webpack_require__(8827)
-  , round: __webpack_require__(1624)
-  , scale: __webpack_require__(5685)
-  , scaleAndAdd: __webpack_require__(6722)
-  , distance: __webpack_require__(8288)
-  , dist: __webpack_require__(5981)
-  , squaredDistance: __webpack_require__(6403)
-  , sqrDist: __webpack_require__(5294)
-  , length: __webpack_require__(4693)
-  , len: __webpack_require__(1468)
-  , squaredLength: __webpack_require__(4337)
-  , sqrLen: __webpack_require__(3303)
-  , negate: __webpack_require__(435)
-  , inverse: __webpack_require__(2073)
-  , normalize: __webpack_require__(899)
-  , dot: __webpack_require__(9305)
-  , cross: __webpack_require__(903)
-  , lerp: __webpack_require__(1868)
-  , random: __webpack_require__(6660)
-  , transformMat4: __webpack_require__(3255)
-  , transformMat3: __webpack_require__(9908)
-  , transformQuat: __webpack_require__(6568)
-  , rotateX: __webpack_require__(392)
-  , rotateY: __webpack_require__(3222)
-  , rotateZ: __webpack_require__(3388)
-  , forEach: __webpack_require__(7447)
+  EPSILON: __webpack_require__(2613)
+  , create: __webpack_require__(1091)
+  , clone: __webpack_require__(3126)
+  , angle: __webpack_require__(8192)
+  , fromValues: __webpack_require__(2825)
+  , copy: __webpack_require__(3990)
+  , set: __webpack_require__(1463)
+  , equals: __webpack_require__(9922)
+  , exactEquals: __webpack_require__(9265)
+  , add: __webpack_require__(5632)
+  , subtract: __webpack_require__(6843)
+  , sub: __webpack_require__(2229)
+  , multiply: __webpack_require__(5847)
+  , mul: __webpack_require__(4505)
+  , divide: __webpack_require__(6690)
+  , div: __webpack_require__(4008)
+  , min: __webpack_require__(8107)
+  , max: __webpack_require__(7417)
+  , floor: __webpack_require__(2681)
+  , ceil: __webpack_require__(9226)
+  , round: __webpack_require__(2447)
+  , scale: __webpack_require__(6621)
+  , scaleAndAdd: __webpack_require__(8489)
+  , distance: __webpack_require__(7056)
+  , dist: __webpack_require__(5455)
+  , squaredDistance: __webpack_require__(2953)
+  , sqrDist: __webpack_require__(6141)
+  , length: __webpack_require__(1387)
+  , len: __webpack_require__(868)
+  , squaredLength: __webpack_require__(3066)
+  , sqrLen: __webpack_require__(5486)
+  , negate: __webpack_require__(5093)
+  , inverse: __webpack_require__(811)
+  , normalize: __webpack_require__(3536)
+  , dot: __webpack_require__(244)
+  , cross: __webpack_require__(5911)
+  , lerp: __webpack_require__(6658)
+  , random: __webpack_require__(7636)
+  , transformMat4: __webpack_require__(5673)
+  , transformMat3: __webpack_require__(492)
+  , transformQuat: __webpack_require__(264)
+  , rotateX: __webpack_require__(6894)
+  , rotateY: __webpack_require__(109)
+  , rotateZ: __webpack_require__(8692)
+  , forEach: __webpack_require__(5137)
 }
 
 
 /***/ }),
 
-/***/ 2073:
+/***/ 811:
 /***/ (function(module) {
 
 module.exports = inverse;
@@ -27597,15 +27501,15 @@ function inverse(out, a) {
 
 /***/ }),
 
-/***/ 1468:
+/***/ 868:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-module.exports = __webpack_require__(4693)
+module.exports = __webpack_require__(1387)
 
 
 /***/ }),
 
-/***/ 4693:
+/***/ 1387:
 /***/ (function(module) {
 
 module.exports = length;
@@ -27625,7 +27529,7 @@ function length(a) {
 
 /***/ }),
 
-/***/ 1868:
+/***/ 6658:
 /***/ (function(module) {
 
 module.exports = lerp;
@@ -27651,7 +27555,7 @@ function lerp(out, a, b, t) {
 
 /***/ }),
 
-/***/ 1716:
+/***/ 7417:
 /***/ (function(module) {
 
 module.exports = max;
@@ -27673,7 +27577,7 @@ function max(out, a, b) {
 
 /***/ }),
 
-/***/ 3605:
+/***/ 8107:
 /***/ (function(module) {
 
 module.exports = min;
@@ -27695,15 +27599,15 @@ function min(out, a, b) {
 
 /***/ }),
 
-/***/ 5733:
+/***/ 4505:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-module.exports = __webpack_require__(105)
+module.exports = __webpack_require__(5847)
 
 
 /***/ }),
 
-/***/ 105:
+/***/ 5847:
 /***/ (function(module) {
 
 module.exports = multiply;
@@ -27725,7 +27629,7 @@ function multiply(out, a, b) {
 
 /***/ }),
 
-/***/ 435:
+/***/ 5093:
 /***/ (function(module) {
 
 module.exports = negate;
@@ -27746,7 +27650,7 @@ function negate(out, a) {
 
 /***/ }),
 
-/***/ 899:
+/***/ 3536:
 /***/ (function(module) {
 
 module.exports = normalize;
@@ -27775,7 +27679,7 @@ function normalize(out, a) {
 
 /***/ }),
 
-/***/ 6660:
+/***/ 7636:
 /***/ (function(module) {
 
 module.exports = random;
@@ -27802,7 +27706,7 @@ function random(out, scale) {
 
 /***/ }),
 
-/***/ 392:
+/***/ 6894:
 /***/ (function(module) {
 
 module.exports = rotateX;
@@ -27837,7 +27741,7 @@ function rotateX(out, a, b, c){
 
 /***/ }),
 
-/***/ 3222:
+/***/ 109:
 /***/ (function(module) {
 
 module.exports = rotateY;
@@ -27872,7 +27776,7 @@ function rotateY(out, a, b, c){
 
 /***/ }),
 
-/***/ 3388:
+/***/ 8692:
 /***/ (function(module) {
 
 module.exports = rotateZ;
@@ -27907,7 +27811,7 @@ function rotateZ(out, a, b, c){
 
 /***/ }),
 
-/***/ 1624:
+/***/ 2447:
 /***/ (function(module) {
 
 module.exports = round
@@ -27929,7 +27833,7 @@ function round(out, a) {
 
 /***/ }),
 
-/***/ 5685:
+/***/ 6621:
 /***/ (function(module) {
 
 module.exports = scale;
@@ -27951,7 +27855,7 @@ function scale(out, a, b) {
 
 /***/ }),
 
-/***/ 6722:
+/***/ 8489:
 /***/ (function(module) {
 
 module.exports = scaleAndAdd;
@@ -27974,7 +27878,7 @@ function scaleAndAdd(out, a, b, scale) {
 
 /***/ }),
 
-/***/ 831:
+/***/ 1463:
 /***/ (function(module) {
 
 module.exports = set;
@@ -27997,23 +27901,23 @@ function set(out, x, y, z) {
 
 /***/ }),
 
-/***/ 5294:
+/***/ 6141:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-module.exports = __webpack_require__(6403)
+module.exports = __webpack_require__(2953)
 
 
 /***/ }),
 
-/***/ 3303:
+/***/ 5486:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-module.exports = __webpack_require__(4337)
+module.exports = __webpack_require__(3066)
 
 
 /***/ }),
 
-/***/ 6403:
+/***/ 2953:
 /***/ (function(module) {
 
 module.exports = squaredDistance;
@@ -28034,7 +27938,7 @@ function squaredDistance(a, b) {
 
 /***/ }),
 
-/***/ 4337:
+/***/ 3066:
 /***/ (function(module) {
 
 module.exports = squaredLength;
@@ -28054,15 +27958,15 @@ function squaredLength(a) {
 
 /***/ }),
 
-/***/ 8921:
+/***/ 2229:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-module.exports = __webpack_require__(911)
+module.exports = __webpack_require__(6843)
 
 
 /***/ }),
 
-/***/ 911:
+/***/ 6843:
 /***/ (function(module) {
 
 module.exports = subtract;
@@ -28084,7 +27988,7 @@ function subtract(out, a, b) {
 
 /***/ }),
 
-/***/ 9908:
+/***/ 492:
 /***/ (function(module) {
 
 module.exports = transformMat3;
@@ -28107,7 +28011,7 @@ function transformMat3(out, a, m) {
 
 /***/ }),
 
-/***/ 3255:
+/***/ 5673:
 /***/ (function(module) {
 
 module.exports = transformMat4;
@@ -28133,7 +28037,7 @@ function transformMat4(out, a, m) {
 
 /***/ }),
 
-/***/ 6568:
+/***/ 264:
 /***/ (function(module) {
 
 module.exports = transformQuat;
@@ -28167,7 +28071,7 @@ function transformQuat(out, a, q) {
 
 /***/ }),
 
-/***/ 3433:
+/***/ 4361:
 /***/ (function(module) {
 
 module.exports = add
@@ -28191,7 +28095,7 @@ function add (out, a, b) {
 
 /***/ }),
 
-/***/ 1413:
+/***/ 2335:
 /***/ (function(module) {
 
 module.exports = clone
@@ -28214,7 +28118,7 @@ function clone (a) {
 
 /***/ }),
 
-/***/ 3470:
+/***/ 2933:
 /***/ (function(module) {
 
 module.exports = copy
@@ -28237,7 +28141,7 @@ function copy (out, a) {
 
 /***/ }),
 
-/***/ 5313:
+/***/ 7536:
 /***/ (function(module) {
 
 module.exports = create
@@ -28259,7 +28163,7 @@ function create () {
 
 /***/ }),
 
-/***/ 5446:
+/***/ 4691:
 /***/ (function(module) {
 
 module.exports = distance
@@ -28282,7 +28186,7 @@ function distance (a, b) {
 
 /***/ }),
 
-/***/ 205:
+/***/ 1373:
 /***/ (function(module) {
 
 module.exports = divide
@@ -28306,7 +28210,7 @@ function divide (out, a, b) {
 
 /***/ }),
 
-/***/ 4242:
+/***/ 3750:
 /***/ (function(module) {
 
 module.exports = dot
@@ -28325,7 +28229,7 @@ function dot (a, b) {
 
 /***/ }),
 
-/***/ 5680:
+/***/ 3390:
 /***/ (function(module) {
 
 module.exports = fromValues
@@ -28351,41 +28255,41 @@ function fromValues (x, y, z, w) {
 
 /***/ }),
 
-/***/ 4020:
+/***/ 9970:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = {
-  create: __webpack_require__(5313),
-  clone: __webpack_require__(1413),
-  fromValues: __webpack_require__(5680),
-  copy: __webpack_require__(3470),
-  set: __webpack_require__(6453),
-  add: __webpack_require__(3433),
-  subtract: __webpack_require__(2705),
-  multiply: __webpack_require__(746),
-  divide: __webpack_require__(205),
-  min: __webpack_require__(2170),
-  max: __webpack_require__(3030),
-  scale: __webpack_require__(5510),
-  scaleAndAdd: __webpack_require__(4224),
-  distance: __webpack_require__(5446),
-  squaredDistance: __webpack_require__(1542),
-  length: __webpack_require__(8177),
-  squaredLength: __webpack_require__(9037),
-  negate: __webpack_require__(6459),
-  inverse: __webpack_require__(8057),
-  normalize: __webpack_require__(381),
-  dot: __webpack_require__(4242),
-  lerp: __webpack_require__(8746),
-  random: __webpack_require__(3770),
-  transformMat4: __webpack_require__(6342),
-  transformQuat: __webpack_require__(5022)
+  create: __webpack_require__(7536),
+  clone: __webpack_require__(2335),
+  fromValues: __webpack_require__(3390),
+  copy: __webpack_require__(2933),
+  set: __webpack_require__(4578),
+  add: __webpack_require__(4361),
+  subtract: __webpack_require__(6860),
+  multiply: __webpack_require__(3576),
+  divide: __webpack_require__(1373),
+  min: __webpack_require__(2334),
+  max: __webpack_require__(160),
+  scale: __webpack_require__(9288),
+  scaleAndAdd: __webpack_require__(4844),
+  distance: __webpack_require__(4691),
+  squaredDistance: __webpack_require__(7960),
+  length: __webpack_require__(6808),
+  squaredLength: __webpack_require__(483),
+  negate: __webpack_require__(1498),
+  inverse: __webpack_require__(4494),
+  normalize: __webpack_require__(5177),
+  dot: __webpack_require__(3750),
+  lerp: __webpack_require__(2573),
+  random: __webpack_require__(9131),
+  transformMat4: __webpack_require__(5352),
+  transformQuat: __webpack_require__(4041)
 }
 
 
 /***/ }),
 
-/***/ 8057:
+/***/ 4494:
 /***/ (function(module) {
 
 module.exports = inverse
@@ -28408,7 +28312,7 @@ function inverse (out, a) {
 
 /***/ }),
 
-/***/ 8177:
+/***/ 6808:
 /***/ (function(module) {
 
 module.exports = length
@@ -28430,7 +28334,7 @@ function length (a) {
 
 /***/ }),
 
-/***/ 8746:
+/***/ 2573:
 /***/ (function(module) {
 
 module.exports = lerp
@@ -28459,7 +28363,7 @@ function lerp (out, a, b, t) {
 
 /***/ }),
 
-/***/ 3030:
+/***/ 160:
 /***/ (function(module) {
 
 module.exports = max
@@ -28483,7 +28387,7 @@ function max (out, a, b) {
 
 /***/ }),
 
-/***/ 2170:
+/***/ 2334:
 /***/ (function(module) {
 
 module.exports = min
@@ -28507,7 +28411,7 @@ function min (out, a, b) {
 
 /***/ }),
 
-/***/ 746:
+/***/ 3576:
 /***/ (function(module) {
 
 module.exports = multiply
@@ -28531,7 +28435,7 @@ function multiply (out, a, b) {
 
 /***/ }),
 
-/***/ 6459:
+/***/ 1498:
 /***/ (function(module) {
 
 module.exports = negate
@@ -28554,7 +28458,7 @@ function negate (out, a) {
 
 /***/ }),
 
-/***/ 381:
+/***/ 5177:
 /***/ (function(module) {
 
 module.exports = normalize
@@ -28585,11 +28489,11 @@ function normalize (out, a) {
 
 /***/ }),
 
-/***/ 3770:
+/***/ 9131:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var vecNormalize = __webpack_require__(381)
-var vecScale = __webpack_require__(5510)
+var vecNormalize = __webpack_require__(5177)
+var vecScale = __webpack_require__(9288)
 
 module.exports = random
 
@@ -28616,7 +28520,7 @@ function random (out, scale) {
 
 /***/ }),
 
-/***/ 5510:
+/***/ 9288:
 /***/ (function(module) {
 
 module.exports = scale
@@ -28640,7 +28544,7 @@ function scale (out, a, b) {
 
 /***/ }),
 
-/***/ 4224:
+/***/ 4844:
 /***/ (function(module) {
 
 module.exports = scaleAndAdd
@@ -28665,7 +28569,7 @@ function scaleAndAdd (out, a, b, scale) {
 
 /***/ }),
 
-/***/ 6453:
+/***/ 4578:
 /***/ (function(module) {
 
 module.exports = set
@@ -28691,7 +28595,7 @@ function set (out, x, y, z, w) {
 
 /***/ }),
 
-/***/ 1542:
+/***/ 7960:
 /***/ (function(module) {
 
 module.exports = squaredDistance
@@ -28714,7 +28618,7 @@ function squaredDistance (a, b) {
 
 /***/ }),
 
-/***/ 9037:
+/***/ 483:
 /***/ (function(module) {
 
 module.exports = squaredLength
@@ -28736,7 +28640,7 @@ function squaredLength (a) {
 
 /***/ }),
 
-/***/ 2705:
+/***/ 6860:
 /***/ (function(module) {
 
 module.exports = subtract
@@ -28760,7 +28664,7 @@ function subtract (out, a, b) {
 
 /***/ }),
 
-/***/ 6342:
+/***/ 5352:
 /***/ (function(module) {
 
 module.exports = transformMat4
@@ -28785,7 +28689,7 @@ function transformMat4 (out, a, m) {
 
 /***/ }),
 
-/***/ 5022:
+/***/ 4041:
 /***/ (function(module) {
 
 module.exports = transformQuat
@@ -28819,11 +28723,11 @@ function transformQuat (out, a, q) {
 
 /***/ }),
 
-/***/ 9365:
+/***/ 1848:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var tokenize = __webpack_require__(8096)
-var atob     = __webpack_require__(7896)
+var tokenize = __webpack_require__(4905)
+var atob     = __webpack_require__(6468)
 
 module.exports = getName
 
@@ -28849,16 +28753,16 @@ function getName(src) {
 
 /***/ }),
 
-/***/ 3193:
+/***/ 5874:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = tokenize
 
-var literals100 = __webpack_require__(399)
-  , operators = __webpack_require__(9746)
-  , builtins100 = __webpack_require__(9525)
-  , literals300es = __webpack_require__(9458)
-  , builtins300es = __webpack_require__(3585)
+var literals100 = __webpack_require__(620)
+  , operators = __webpack_require__(7827)
+  , builtins100 = __webpack_require__(6852)
+  , literals300es = __webpack_require__(7932)
+  , builtins300es = __webpack_require__(3508)
 
 var NORMAL = 999          // <-- never emitted
   , TOKEN = 9999          // <-- never emitted
@@ -29231,11 +29135,11 @@ function tokenize(opt) {
 
 /***/ }),
 
-/***/ 3585:
+/***/ 3508:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // 300es builtins/reserved words that were previously valid in v100
-var v100 = __webpack_require__(9525)
+var v100 = __webpack_require__(6852)
 
 // The texture2D|Cube functions have been removed
 // And the gl_ features are updated
@@ -29307,7 +29211,7 @@ module.exports = v100.concat([
 
 /***/ }),
 
-/***/ 9525:
+/***/ 6852:
 /***/ (function(module) {
 
 module.exports = [
@@ -29464,10 +29368,10 @@ module.exports = [
 
 /***/ }),
 
-/***/ 9458:
+/***/ 7932:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var v100 = __webpack_require__(399)
+var v100 = __webpack_require__(620)
 
 module.exports = v100.slice().concat([
    'layout'
@@ -29558,7 +29462,7 @@ module.exports = v100.slice().concat([
 
 /***/ }),
 
-/***/ 399:
+/***/ 620:
 /***/ (function(module) {
 
 module.exports = [
@@ -29659,7 +29563,7 @@ module.exports = [
 
 /***/ }),
 
-/***/ 9746:
+/***/ 7827:
 /***/ (function(module) {
 
 module.exports = [
@@ -29713,10 +29617,10 @@ module.exports = [
 
 /***/ }),
 
-/***/ 8096:
+/***/ 4905:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var tokenize = __webpack_require__(3193)
+var tokenize = __webpack_require__(5874)
 
 module.exports = tokenizeString
 
@@ -29733,7 +29637,7 @@ function tokenizeString(str, opt) {
 
 /***/ }),
 
-/***/ 6832:
+/***/ 3236:
 /***/ (function(module) {
 
 module.exports = function(strings) {
@@ -29750,13 +29654,13 @@ module.exports = function(strings) {
 
 /***/ }),
 
-/***/ 5233:
+/***/ 7520:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var isBrowser = __webpack_require__(4846)
+var isBrowser = __webpack_require__(9507)
 
 function detect() {
 	var supported = false
@@ -29782,7 +29686,99 @@ module.exports = isBrowser && detect()
 
 /***/ }),
 
-/***/ 2183:
+/***/ 3778:
+/***/ (function(__unused_webpack_module, exports) {
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = ((value * c) - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+
+/***/ }),
+
+/***/ 8954:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -29794,8 +29790,8 @@ module.exports = isBrowser && detect()
 
 module.exports = incrementalConvexHull
 
-var orient = __webpack_require__(417)
-var compareCell = (__webpack_require__(8211)/* .compareCells */ .H)
+var orient = __webpack_require__(3250)
+var compareCell = (__webpack_require__(6803)/* .compareCells */ .Fw)
 
 function Simplex(vertices, adjacent, boundary) {
   this.vertices = vertices
@@ -30228,13 +30224,13 @@ function incrementalConvexHull(points, randomSearch) {
 
 /***/ }),
 
-/***/ 9014:
+/***/ 3352:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var bounds = __webpack_require__(5070)
+var bounds = __webpack_require__(2478)
 
 var NOT_FOUND = 0
 var SUCCESS = 1
@@ -30601,7 +30597,7 @@ function createWrapper(intervals) {
 
 /***/ }),
 
-/***/ 9560:
+/***/ 7762:
 /***/ (function(module) {
 
 "use strict";
@@ -30619,14 +30615,14 @@ module.exports = iota
 
 /***/ }),
 
-/***/ 4846:
+/***/ 9507:
 /***/ (function(module) {
 
 module.exports = true;
 
 /***/ }),
 
-/***/ 4780:
+/***/ 7163:
 /***/ (function(module) {
 
 /*!
@@ -30654,7 +30650,7 @@ function isSlowBuffer (obj) {
 
 /***/ }),
 
-/***/ 3596:
+/***/ 5219:
 /***/ (function(module) {
 
 "use strict";
@@ -30697,7 +30693,7 @@ module.exports = function(str){
 
 /***/ }),
 
-/***/ 3578:
+/***/ 395:
 /***/ (function(module) {
 
 function lerp(v0, v1, t) {
@@ -30707,7 +30703,7 @@ module.exports = lerp
 
 /***/ }),
 
-/***/ 7191:
+/***/ 2652:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 /*jshint unused:true*/
@@ -30727,18 +30723,18 @@ https://github.com/ChromiumWebApps/chromium/blob/master/ui/gfx/transform_util.cc
 http://www.w3.org/TR/css3-transforms/#decomposing-a-3d-matrix
 */
 
-var normalize = __webpack_require__(4690)
+var normalize = __webpack_require__(4335)
 
-var create = __webpack_require__(9823)
-var clone = __webpack_require__(7332)
-var determinant = __webpack_require__(7787)
-var invert = __webpack_require__(7437)
-var transpose = __webpack_require__(2142)
+var create = __webpack_require__(6864)
+var clone = __webpack_require__(1903)
+var determinant = __webpack_require__(9921)
+var invert = __webpack_require__(7608)
+var transpose = __webpack_require__(5665)
 var vec3 = {
-    length: __webpack_require__(4693),
-    normalize: __webpack_require__(899),
-    dot: __webpack_require__(9305),
-    cross: __webpack_require__(903)
+    length: __webpack_require__(1387),
+    normalize: __webpack_require__(3536),
+    dot: __webpack_require__(244),
+    cross: __webpack_require__(5911)
 }
 
 var tmp = create()
@@ -30892,7 +30888,7 @@ function combine(out, a, b, scale1, scale2) {
 
 /***/ }),
 
-/***/ 4690:
+/***/ 4335:
 /***/ (function(module) {
 
 module.exports = function normalize(out, mat) {
@@ -30908,15 +30904,15 @@ module.exports = function normalize(out, mat) {
 
 /***/ }),
 
-/***/ 7649:
+/***/ 7442:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var lerp = __webpack_require__(1868)
+var lerp = __webpack_require__(6658)
 
-var recompose = __webpack_require__(1102)
-var decompose = __webpack_require__(7191)
-var determinant = __webpack_require__(7787)
-var slerp = __webpack_require__(1116)
+var recompose = __webpack_require__(7182)
+var decompose = __webpack_require__(2652)
+var determinant = __webpack_require__(9921)
+var slerp = __webpack_require__(8648)
 
 var state0 = state()
 var state1 = state()
@@ -30966,7 +30962,7 @@ function vec4() {
 
 /***/ }),
 
-/***/ 1102:
+/***/ 7182:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 /*
@@ -30981,12 +30977,12 @@ From: http://www.w3.org/TR/css3-transforms/#recomposing-to-a-3d-matrix
 */
 
 var mat4 = {
-    identity: __webpack_require__(9947),
-    translate: __webpack_require__(998),
-    multiply: __webpack_require__(104),
-    create: __webpack_require__(9823),
-    scale: __webpack_require__(3668),
-    fromRotationTranslation: __webpack_require__(7280)
+    identity: __webpack_require__(7894),
+    translate: __webpack_require__(7656),
+    multiply: __webpack_require__(6760),
+    create: __webpack_require__(6864),
+    scale: __webpack_require__(2504),
+    fromRotationTranslation: __webpack_require__(6743)
 }
 
 var rotationMatrix = mat4.create()
@@ -31032,22 +31028,22 @@ module.exports = function recomposeMat4(matrix, translation, scale, skew, perspe
 
 /***/ }),
 
-/***/ 9298:
+/***/ 4192:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var bsearch   = __webpack_require__(5070)
-var m4interp  = __webpack_require__(7649)
-var invert44  = __webpack_require__(7437)
-var rotateX   = __webpack_require__(6109)
-var rotateY   = __webpack_require__(7115)
-var rotateZ   = __webpack_require__(5240)
-var lookAt    = __webpack_require__(3012)
-var translate = __webpack_require__(998)
-var scale     = __webpack_require__(3668)
-var normalize = __webpack_require__(899)
+var bsearch   = __webpack_require__(2478)
+var m4interp  = __webpack_require__(7442)
+var invert44  = __webpack_require__(7608)
+var rotateX   = __webpack_require__(5567)
+var rotateY   = __webpack_require__(2408)
+var rotateZ   = __webpack_require__(7089)
+var lookAt    = __webpack_require__(6582)
+var translate = __webpack_require__(7656)
+var scale     = __webpack_require__(2504)
+var normalize = __webpack_require__(3536)
 
 var DEFAULT_CENTER = [0,0,0]
 
@@ -31238,7 +31234,7 @@ function createMatrixCameraController(options) {
 
 /***/ }),
 
-/***/ 3266:
+/***/ 3090:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -31246,7 +31242,7 @@ function createMatrixCameraController(options) {
 
 module.exports = monotoneConvexHull2D
 
-var orient = (__webpack_require__(417)[3])
+var orient = (__webpack_require__(3250)[3])
 
 function monotoneConvexHull2D(points) {
   var n = points.length
@@ -31326,7 +31322,7 @@ function monotoneConvexHull2D(points) {
 
 /***/ }),
 
-/***/ 6145:
+/***/ 351:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -31334,7 +31330,7 @@ function monotoneConvexHull2D(points) {
 
 module.exports = mouseListen
 
-var mouse = __webpack_require__(4110)
+var mouse = __webpack_require__(4687)
 
 function mouseListen (element, callback) {
   if (!callback) {
@@ -31539,7 +31535,7 @@ function mouseListen (element, callback) {
 
 /***/ }),
 
-/***/ 2565:
+/***/ 24:
 /***/ (function(module) {
 
 var rootPosition = { left: 0, top: 0 }
@@ -31571,7 +31567,7 @@ function getBoundingClientOffset (element) {
 
 /***/ }),
 
-/***/ 4110:
+/***/ 4687:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -31639,13 +31635,13 @@ exports.y = mouseRelativeY
 
 /***/ }),
 
-/***/ 6475:
+/***/ 8512:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var toPX = __webpack_require__(14)
+var toPX = __webpack_require__(665)
 
 module.exports = mouseWheelListen
 
@@ -31687,13 +31683,13 @@ function mouseWheelListen(element, callback, noScroll) {
 
 /***/ }),
 
-/***/ 9284:
+/***/ 2640:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var pool = __webpack_require__(5306)
+var pool = __webpack_require__(1888)
 
 module.exports = createSurfaceExtractor
 
@@ -32075,13 +32071,13 @@ function createSurfaceExtractor(args) {
 
 /***/ }),
 
-/***/ 9144:
+/***/ 6199:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var dup = __webpack_require__(3094)
+var dup = __webpack_require__(1338)
 
 var CACHED_CWiseOp = {
   zero: function(SS, a0, t0, p0) {
@@ -32350,7 +32346,7 @@ module.exports = function gradient(out, inp, bc) {
 
 /***/ }),
 
-/***/ 3581:
+/***/ 4317:
 /***/ (function(module) {
 
 "use strict";
@@ -32467,7 +32463,7 @@ module.exports.d3 = interp3d
 
 /***/ }),
 
-/***/ 7498:
+/***/ 5298:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -32865,14 +32861,14 @@ exports.assign = makeOp({
 
 /***/ }),
 
-/***/ 7382:
+/***/ 9994:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var ndarray = __webpack_require__(5050)
-var do_convert = __webpack_require__(9262)
+var ndarray = __webpack_require__(9618)
+var do_convert = __webpack_require__(8277)
 
 module.exports = function convert(arr, result) {
   var shape = [], c = arr, sz = 1
@@ -32894,7 +32890,7 @@ module.exports = function convert(arr, result) {
 
 /***/ }),
 
-/***/ 9262:
+/***/ 8277:
 /***/ (function(module) {
 
 "use strict";
@@ -32989,13 +32985,13 @@ module.exports = compileCwise({
 
 /***/ }),
 
-/***/ 8139:
+/***/ 7640:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var pool = __webpack_require__(5306)
+var pool = __webpack_require__(1888)
 
 function getMallocFree(dtype) {
   switch(dtype) {
@@ -33748,13 +33744,13 @@ module.exports = compileSort
 
 /***/ }),
 
-/***/ 8729:
+/***/ 446:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var compile = __webpack_require__(8139)
+var compile = __webpack_require__(7640)
 var CACHE = {}
 
 function sort(array) {
@@ -33774,10 +33770,10 @@ module.exports = sort
 
 /***/ }),
 
-/***/ 5050:
+/***/ 9618:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var isBuffer = __webpack_require__(4780)
+var isBuffer = __webpack_require__(7163)
 
 var hasTypedArrays  = ((typeof Float64Array) !== "undefined")
 
@@ -34780,13 +34776,13 @@ module.exports = wrappedNDArrayCtor
 
 /***/ }),
 
-/***/ 8551:
+/***/ 1278:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var doubleBits = __webpack_require__(8362)
+var doubleBits = __webpack_require__(2361)
 
 var SMALLEST_DENORM = Math.pow(2, -1074)
 var UINT_MAX = (-1)>>>0
@@ -34829,7 +34825,7 @@ function nextafter(x, y) {
 
 /***/ }),
 
-/***/ 115:
+/***/ 8406:
 /***/ (function(__unused_webpack_module, exports) {
 
 var DEFAULT_NORMALS_EPSILON = 1e-6;
@@ -34959,7 +34955,7 @@ exports.faceNormals = function(faces, positions, specifiedEpsilon) {
 
 /***/ }),
 
-/***/ 567:
+/***/ 4081:
 /***/ (function(module) {
 
 "use strict";
@@ -35007,7 +35003,7 @@ function quatFromFrame(
 
 /***/ }),
 
-/***/ 7774:
+/***/ 9977:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -35015,11 +35011,11 @@ function quatFromFrame(
 
 module.exports = createOrbitController
 
-var filterVector  = __webpack_require__(8444)
-var lookAt        = __webpack_require__(3012)
-var mat4FromQuat  = __webpack_require__(5950)
-var invert44      = __webpack_require__(7437)
-var quatFromFrame = __webpack_require__(567)
+var filterVector  = __webpack_require__(9215)
+var lookAt        = __webpack_require__(6582)
+var mat4FromQuat  = __webpack_require__(7399)
+var invert44      = __webpack_require__(7608)
+var quatFromFrame = __webpack_require__(4081)
 
 function len3(x,y,z) {
   return Math.sqrt(Math.pow(x,2) + Math.pow(y,2) + Math.pow(z,2))
@@ -35407,7 +35403,7 @@ function createOrbitController(options) {
 
 /***/ }),
 
-/***/ 4930:
+/***/ 1371:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -35420,7 +35416,7 @@ function createOrbitController(options) {
 
 
 
-var repeat = __webpack_require__(6184);
+var repeat = __webpack_require__(3233);
 
 module.exports = function padLeft(str, num, ch) {
   ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
@@ -35429,7 +35425,7 @@ module.exports = function padLeft(str, num, ch) {
 
 /***/ }),
 
-/***/ 4405:
+/***/ 3202:
 /***/ (function(module) {
 
 module.exports = function parseUnit(str, out) {
@@ -35445,7 +35441,7 @@ module.exports = function parseUnit(str, out) {
 
 /***/ }),
 
-/***/ 4166:
+/***/ 3088:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -35453,7 +35449,7 @@ module.exports = function parseUnit(str, out) {
 
 module.exports = planarDual
 
-var compareAngle = __webpack_require__(9398)
+var compareAngle = __webpack_require__(3140)
 
 function planarDual(cells, positions) {
 
@@ -35582,7 +35578,7 @@ function planarDual(cells, positions) {
 
 /***/ }),
 
-/***/ 3959:
+/***/ 5609:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -35590,7 +35586,7 @@ function planarDual(cells, positions) {
 
 module.exports = trimLeaves
 
-var e2a = __webpack_require__(8348)
+var e2a = __webpack_require__(3134)
 
 function trimLeaves(edges, positions) {
   var adj = e2a(edges, positions.length)
@@ -35644,7 +35640,7 @@ function trimLeaves(edges, positions) {
 
 /***/ }),
 
-/***/ 8040:
+/***/ 2095:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -35652,13 +35648,13 @@ function trimLeaves(edges, positions) {
 
 module.exports = planarGraphToPolyline
 
-var e2a = __webpack_require__(8348)
-var planarDual = __webpack_require__(4166)
-var preprocessPolygon = __webpack_require__(211)
-var twoProduct = __webpack_require__(9660)
-var robustSum = __webpack_require__(9662)
-var uniq = __webpack_require__(1215)
-var trimLeaves = __webpack_require__(3959)
+var e2a = __webpack_require__(3134)
+var planarDual = __webpack_require__(3088)
+var preprocessPolygon = __webpack_require__(5085)
+var twoProduct = __webpack_require__(5250)
+var robustSum = __webpack_require__(8210)
+var uniq = __webpack_require__(1682)
+var trimLeaves = __webpack_require__(5609)
 
 function makeArray(length, fill) {
   var result = new Array(length)
@@ -35855,15 +35851,15 @@ function planarGraphToPolyline(edges, positions) {
 
 /***/ }),
 
-/***/ 211:
+/***/ 5085:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = preprocessPolygon
 
-var orient = (__webpack_require__(417)[3])
-var makeSlabs = __webpack_require__(4385)
-var makeIntervalTree = __webpack_require__(9014)
-var bsearch = __webpack_require__(5070)
+var orient = (__webpack_require__(3250)[3])
+var makeSlabs = __webpack_require__(4209)
+var makeIntervalTree = __webpack_require__(3352)
+var bsearch = __webpack_require__(2478)
 
 function visitInterval() {
   return true
@@ -36012,7 +36008,7 @@ function preprocessPolygon(loops) {
 
 /***/ }),
 
-/***/ 7309:
+/***/ 9346:
 /***/ (function(module) {
 
 "use strict";
@@ -36216,20 +36212,20 @@ module.exports = closestPoint2d;
 
 /***/ }),
 
-/***/ 1116:
+/***/ 8648:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-module.exports = __webpack_require__(6093)
+module.exports = __webpack_require__(783)
 
 /***/ }),
 
-/***/ 7584:
+/***/ 2653:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var bnadd = __webpack_require__(1539)
+var bnadd = __webpack_require__(3865)
 
 module.exports = add
 
@@ -36245,7 +36241,7 @@ function add (a, b) {
 
 /***/ }),
 
-/***/ 2826:
+/***/ 5838:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -36253,7 +36249,7 @@ function add (a, b) {
 
 module.exports = float2rat
 
-var rat = __webpack_require__(5125)
+var rat = __webpack_require__(7842)
 
 function float2rat(v) {
   var result = new Array(v.length)
@@ -36266,14 +36262,14 @@ function float2rat(v) {
 
 /***/ }),
 
-/***/ 4469:
+/***/ 8987:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var rat = __webpack_require__(5125)
-var mul = __webpack_require__(3962)
+var rat = __webpack_require__(7842)
+var mul = __webpack_require__(6504)
 
 module.exports = muls
 
@@ -36290,13 +36286,13 @@ function muls(a, x) {
 
 /***/ }),
 
-/***/ 6695:
+/***/ 544:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var bnsub = __webpack_require__(4354)
+var bnsub = __webpack_require__(5572)
 
 module.exports = sub
 
@@ -36312,15 +36308,15 @@ function sub(a, b) {
 
 /***/ }),
 
-/***/ 7037:
+/***/ 5771:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var compareCell = __webpack_require__(9209)
-var compareOrientedCell = __webpack_require__(1284)
-var orientation = __webpack_require__(9887)
+var compareCell = __webpack_require__(8507)
+var compareOrientedCell = __webpack_require__(3788)
+var orientation = __webpack_require__(2419)
 
 module.exports = reduceCellComplex
 
@@ -36351,7 +36347,7 @@ function reduceCellComplex(cells) {
 
 /***/ }),
 
-/***/ 6184:
+/***/ 3233:
 /***/ (function(module) {
 
 "use strict";
@@ -36429,7 +36425,7 @@ function repeat(str, num) {
 
 /***/ }),
 
-/***/ 8161:
+/***/ 3025:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports =
@@ -36443,7 +36439,7 @@ module.exports =
 
 /***/ }),
 
-/***/ 402:
+/***/ 7004:
 /***/ (function(module) {
 
 "use strict";
@@ -36484,16 +36480,16 @@ function compressExpansion(e) {
 
 /***/ }),
 
-/***/ 8167:
+/***/ 2962:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var twoProduct = __webpack_require__(9660)
-var robustSum = __webpack_require__(9662)
-var robustScale = __webpack_require__(8289)
-var compress = __webpack_require__(402)
+var twoProduct = __webpack_require__(5250)
+var robustSum = __webpack_require__(8210)
+var robustScale = __webpack_require__(3012)
+var compress = __webpack_require__(7004)
 
 var NUM_EXPANDED = 6
 
@@ -36572,14 +36568,14 @@ generateDispatch()
 
 /***/ }),
 
-/***/ 9130:
+/***/ 1944:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var twoProduct = __webpack_require__(9660)
-var robustSum = __webpack_require__(9662)
+var twoProduct = __webpack_require__(5250)
+var robustSum = __webpack_require__(8210)
 
 module.exports = robustDotProduct
 
@@ -36593,16 +36589,16 @@ function robustDotProduct(a, b) {
 
 /***/ }),
 
-/***/ 2227:
+/***/ 2646:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var twoProduct = __webpack_require__(9660)
-var robustSum = __webpack_require__(9662)
-var robustDiff = __webpack_require__(4078)
-var robustScale = __webpack_require__(8289)
+var twoProduct = __webpack_require__(5250)
+var robustSum = __webpack_require__(8210)
+var robustDiff = __webpack_require__(8545)
+var robustScale = __webpack_require__(3012)
 
 var NUM_EXPAND = 6
 
@@ -36803,13 +36799,13 @@ generateInSphereTest()
 
 /***/ }),
 
-/***/ 6606:
+/***/ 727:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var determinant = __webpack_require__(8167)
+var determinant = __webpack_require__(2962)
 
 var NUM_EXPAND = 6
 
@@ -36899,16 +36895,16 @@ generateDispatch()
 
 /***/ }),
 
-/***/ 417:
+/***/ 3250:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var twoProduct = __webpack_require__(9660)
-var robustSum = __webpack_require__(9662)
-var robustScale = __webpack_require__(8289)
-var robustSubtract = __webpack_require__(4078)
+var twoProduct = __webpack_require__(5250)
+var robustSum = __webpack_require__(8210)
+var robustScale = __webpack_require__(3012)
+var robustSubtract = __webpack_require__(8545)
 
 var NUM_EXPAND = 5
 
@@ -37062,14 +37058,14 @@ generateOrientationProc()
 
 /***/ }),
 
-/***/ 2019:
+/***/ 5382:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var robustSum = __webpack_require__(9662)
-var robustScale = __webpack_require__(8289)
+var robustSum = __webpack_require__(8210)
+var robustScale = __webpack_require__(3012)
 
 module.exports = robustProduct
 
@@ -37098,14 +37094,14 @@ function robustProduct(a, b) {
 
 /***/ }),
 
-/***/ 8289:
+/***/ 3012:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var twoProduct = __webpack_require__(9660)
-var twoSum = __webpack_require__(87)
+var twoProduct = __webpack_require__(5250)
+var twoSum = __webpack_require__(9362)
 
 module.exports = scaleLinearExpansion
 
@@ -37155,7 +37151,7 @@ function scaleLinearExpansion(e, scale) {
 
 /***/ }),
 
-/***/ 4434:
+/***/ 1125:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -37163,7 +37159,7 @@ function scaleLinearExpansion(e, scale) {
 
 module.exports = segmentsIntersect
 
-var orient = (__webpack_require__(417)[3])
+var orient = (__webpack_require__(3250)[3])
 
 function checkCollinear(a0, a1, b0, b1) {
 
@@ -37209,7 +37205,7 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
 /***/ }),
 
-/***/ 4078:
+/***/ 8545:
 /***/ (function(module) {
 
 "use strict";
@@ -37372,7 +37368,7 @@ function robustSubtract(e, f) {
 
 /***/ }),
 
-/***/ 9662:
+/***/ 8210:
 /***/ (function(module) {
 
 "use strict";
@@ -37535,7 +37531,7 @@ function linearExpansionSum(e, f) {
 
 /***/ }),
 
-/***/ 8691:
+/***/ 9127:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -37543,8 +37539,8 @@ function linearExpansionSum(e, f) {
 
 module.exports = boundary
 
-var bnd = __webpack_require__(2692)
-var reduce = __webpack_require__(7037)
+var bnd = __webpack_require__(6204)
+var reduce = __webpack_require__(5771)
 
 function boundary(cells) {
   return reduce(bnd(cells))
@@ -37553,7 +37549,7 @@ function boundary(cells) {
 
 /***/ }),
 
-/***/ 7212:
+/***/ 7765:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -37561,11 +37557,11 @@ function boundary(cells) {
 
 module.exports = extractContour
 
-var ndarray = __webpack_require__(5050)
-var pool    = __webpack_require__(5306)
-var ndsort  = __webpack_require__(8729)
+var ndarray = __webpack_require__(9618)
+var pool    = __webpack_require__(1888)
+var ndsort  = __webpack_require__(446)
 
-var contourAlgorithm = __webpack_require__(1168)
+var contourAlgorithm = __webpack_require__(1570)
 
 function getDimension(cells) {
   var numCells = cells.length
@@ -37722,7 +37718,7 @@ function extractContour(cells, values, level, d) {
 
 /***/ }),
 
-/***/ 1168:
+/***/ 1570:
 /***/ (function(module) {
 
 "use strict";
@@ -38029,15 +38025,15 @@ function getPolygonizer(d) {
 
 /***/ }),
 
-/***/ 8211:
+/***/ 6803:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 var __webpack_unused_export__;
  "use restrict";
 
-var bits      = __webpack_require__(2288)
-  , UnionFind = __webpack_require__(1731)
+var bits      = __webpack_require__(8828)
+  , UnionFind = __webpack_require__(1755)
 
 //Returns the dimension of a cell complex
 function dimension(cells) {
@@ -38124,7 +38120,7 @@ function compareCells(a, b) {
       return 0
   }
 }
-exports.H = compareCells
+exports.Fw = compareCells
 
 function compareZipped(a, b) {
   return compareCells(a[0], b[0])
@@ -38380,7 +38376,7 @@ __webpack_unused_export__ = connectedComponents
 
 /***/ }),
 
-/***/ 9392:
+/***/ 3105:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -38592,14 +38588,14 @@ exports.nextCombination = function(v) {
 
 /***/ }),
 
-/***/ 6656:
+/***/ 2014:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
  "use restrict";
 
-var bits      = __webpack_require__(9392)
-  , UnionFind = __webpack_require__(9521)
+var bits      = __webpack_require__(3105)
+  , UnionFind = __webpack_require__(4623)
 
 //Returns the dimension of a cell complex
 function dimension(cells) {
@@ -38942,7 +38938,7 @@ exports.connectedComponents = connectedComponents
 
 /***/ }),
 
-/***/ 9521:
+/***/ 4623:
 /***/ (function(module) {
 
 "use strict";
@@ -39005,7 +39001,7 @@ UnionFind.prototype.link = function(x, y) {
 
 /***/ }),
 
-/***/ 8243:
+/***/ 5878:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -39013,8 +39009,8 @@ UnionFind.prototype.link = function(x, y) {
 
 module.exports = simplifyPolygon
 
-var orient = __webpack_require__(417)
-var sc = __webpack_require__(6656)
+var orient = __webpack_require__(3250)
+var sc = __webpack_require__(2014)
 
 function errorWeight(base, a, b) {
   var area = Math.abs(orient(base, a, b))
@@ -39283,7 +39279,7 @@ function simplifyPolygon(cells, positions, minArea) {
 
 /***/ }),
 
-/***/ 6638:
+/***/ 1303:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -39291,7 +39287,7 @@ function simplifyPolygon(cells, positions, minArea) {
 
 module.exports = orderSegments
 
-var orient = __webpack_require__(417)
+var orient = __webpack_require__(3250)
 
 function horizontalOrder(a, b) {
   var bl, br
@@ -39385,7 +39381,7 @@ function orderSegments(b, a) {
 
 /***/ }),
 
-/***/ 4385:
+/***/ 4209:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -39393,10 +39389,10 @@ function orderSegments(b, a) {
 
 module.exports = createSlabDecomposition
 
-var bounds = __webpack_require__(5070)
-var createRBTree = __webpack_require__(7080)
-var orient = __webpack_require__(417)
-var orderSegments = __webpack_require__(6638)
+var bounds = __webpack_require__(2478)
+var createRBTree = __webpack_require__(3840)
+var orient = __webpack_require__(3250)
+var orderSegments = __webpack_require__(1303)
 
 function SlabDecomposition(slabs, coordinates, horizontal) {
   this.slabs = slabs
@@ -39622,14 +39618,14 @@ function createSlabDecomposition(segments) {
 
 /***/ }),
 
-/***/ 4670:
+/***/ 5202:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var robustDot = __webpack_require__(9130)
-var robustSum = __webpack_require__(9662)
+var robustDot = __webpack_require__(1944)
+var robustSum = __webpack_require__(8210)
 
 module.exports = splitPolygon
 module.exports.positive = positive
@@ -39720,7 +39716,7 @@ function negative(points, plane) {
 
 /***/ }),
 
-/***/ 8974:
+/***/ 3387:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
@@ -39959,7 +39955,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
 
 /***/ }),
 
-/***/ 4162:
+/***/ 3711:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -39967,8 +39963,8 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
 
 module.exports = surfaceNets
 
-var generateContourExtractor = __webpack_require__(9284)
-var zeroCrossings = __webpack_require__(9584)
+var generateContourExtractor = __webpack_require__(2640)
+var zeroCrossings = __webpack_require__(781)
 
 var allFns = {
   "2d": function (genContour, order, dtype) {
@@ -40093,7 +40089,7 @@ function surfaceNets(array,level) {
 
 /***/ }),
 
-/***/ 6946:
+/***/ 529:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -40101,7 +40097,7 @@ function surfaceNets(array,level) {
 
 module.exports = textGet
 
-var vectorizeText = __webpack_require__(875)
+var vectorizeText = __webpack_require__(4359)
 
 var globals = window || process.global || {}
 var __TEXT_CACHE  = globals.__TEXT_CACHE || {}
@@ -40194,13 +40190,13 @@ function textGet(font, text, opts) {
 
 /***/ }),
 
-/***/ 14:
+/***/ 665:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var parseUnit = __webpack_require__(4405)
+var parseUnit = __webpack_require__(3202)
 
 module.exports = toPX
 
@@ -40261,7 +40257,7 @@ function toPX(str, element) {
 
 /***/ }),
 
-/***/ 3440:
+/***/ 7261:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -40269,12 +40265,12 @@ function toPX(str, element) {
 
 module.exports = createTurntableController
 
-var filterVector = __webpack_require__(8444)
-var invert44     = __webpack_require__(7437)
-var rotateM      = __webpack_require__(4422)
-var cross        = __webpack_require__(903)
-var normalize3   = __webpack_require__(899)
-var dot3         = __webpack_require__(9305)
+var filterVector = __webpack_require__(9215)
+var invert44     = __webpack_require__(7608)
+var rotateM      = __webpack_require__(6079)
+var cross        = __webpack_require__(5911)
+var normalize3   = __webpack_require__(3536)
+var dot3         = __webpack_require__(244)
 
 function len3(x, y, z) {
   return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2))
@@ -40840,7 +40836,7 @@ function createTurntableController(options) {
 
 /***/ }),
 
-/***/ 9660:
+/***/ 5250:
 /***/ (function(module) {
 
 "use strict";
@@ -40880,7 +40876,7 @@ function twoProduct(a, b, result) {
 
 /***/ }),
 
-/***/ 87:
+/***/ 9362:
 /***/ (function(module) {
 
 "use strict";
@@ -40904,15 +40900,15 @@ function fastTwoSum(a, b, result) {
 
 /***/ }),
 
-/***/ 5306:
+/***/ 1888:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var bits = __webpack_require__(2288)
-var dup = __webpack_require__(3094)
-var Buffer = (__webpack_require__(2146)/* .Buffer */ .lW)
+var bits = __webpack_require__(8828)
+var dup = __webpack_require__(1338)
+var Buffer = (__webpack_require__(4793)/* .Buffer */ .hp)
 
 //Legacy pool support
 if(!__webpack_require__.g.__TYPEDARRAY_POOL) {
@@ -41163,7 +41159,7 @@ exports.clearCache = function clearCache() {
 
 /***/ }),
 
-/***/ 1731:
+/***/ 1755:
 /***/ (function(module) {
 
 "use strict";
@@ -41232,7 +41228,7 @@ proto.link = function(x, y) {
 
 /***/ }),
 
-/***/ 1215:
+/***/ 1682:
 /***/ (function(module) {
 
 "use strict";
@@ -41297,7 +41293,7 @@ module.exports = unique
 
 /***/ }),
 
-/***/ 875:
+/***/ 4359:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -41305,7 +41301,7 @@ module.exports = unique
 
 module.exports = createText
 
-var vectorizeText = __webpack_require__(712)
+var vectorizeText = __webpack_require__(7718)
 var defaultCanvas = null
 var defaultContext = null
 
@@ -41330,18 +41326,18 @@ function createText(str, options) {
 
 /***/ }),
 
-/***/ 712:
+/***/ 7718:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = vectorizeText
 module.exports.processPixels = processPixels
 
-var surfaceNets = __webpack_require__(4162)
-var ndarray = __webpack_require__(5050)
-var simplify = __webpack_require__(8243)
-var cleanPSLG = __webpack_require__(197)
-var cdt2d = __webpack_require__(7761)
-var toPolygonCrappy = __webpack_require__(8040)
+var surfaceNets = __webpack_require__(3711)
+var ndarray = __webpack_require__(9618)
+var simplify = __webpack_require__(5878)
+var cleanPSLG = __webpack_require__(332)
+var cdt2d = __webpack_require__(2538)
+var toPolygonCrappy = __webpack_require__(2095)
 
 var TAG_bold = "b"
 var CHR_bold = 'b|'
@@ -41790,7 +41786,7 @@ function vectorizeText(str, canvas, context, options) {
 
 /***/ }),
 
-/***/ 5346:
+/***/ 1538:
 /***/ (function(module) {
 
 // Copyright (C) 2011 Google Inc.
@@ -42482,10 +42478,10 @@ function vectorizeText(str, canvas, context, options) {
 
 /***/ }),
 
-/***/ 9222:
+/***/ 236:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var hiddenStore = __webpack_require__(7178);
+var hiddenStore = __webpack_require__(8284);
 
 module.exports = createStore;
 
@@ -42508,7 +42504,7 @@ function createStore() {
 
 /***/ }),
 
-/***/ 7178:
+/***/ 8284:
 /***/ (function(module) {
 
 module.exports = hiddenStore;
@@ -42531,14 +42527,14 @@ function hiddenStore(obj, key) {
 
 /***/ }),
 
-/***/ 4037:
+/***/ 606:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // Original - @Gozola.
 // https://gist.github.com/Gozala/1269991
 // This is a reimplemented version (with a few bug fixes).
 
-var createStore = __webpack_require__(9222);
+var createStore = __webpack_require__(236);
 
 module.exports = weakMap;
 
@@ -42567,7 +42563,7 @@ function weakMap() {
 
 /***/ }),
 
-/***/ 6183:
+/***/ 3349:
 /***/ (function(module) {
 
 "use strict";
@@ -42636,7 +42632,7 @@ module.exports = compileCwise({
 
 /***/ }),
 
-/***/ 9584:
+/***/ 781:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
@@ -42644,7 +42640,7 @@ module.exports = compileCwise({
 
 module.exports = findZeroCrossings
 
-var core = __webpack_require__(6183)
+var core = __webpack_require__(3349)
 
 function findZeroCrossings(array, level) {
   var cross = []
@@ -42655,7 +42651,7 @@ function findZeroCrossings(array, level) {
 
 /***/ }),
 
-/***/ 6601:
+/***/ 7790:
 /***/ (function() {
 
 /* (ignored) */
@@ -42718,7 +42714,7 @@ function findZeroCrossings(array, level) {
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__(7386);
+/******/ 	var __webpack_exports__ = __webpack_require__(1964);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
