@@ -7,8 +7,7 @@ module.exports = {
         path: path.resolve('.'),
         filename: 'index.js',
         library: {
-            name: 'Stackgl',
-            type: 'umd'
+            type: 'commonjs-module'
         }
     },
     optimization: {
