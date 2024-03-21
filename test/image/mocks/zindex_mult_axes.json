@@ -1,0 +1,55 @@
+{
+    "data": [
+        {
+            "x": [2, 3, 4, 5],
+            "y": [4, 3, 9, 5],
+            "name": "blue",
+            "type": "scatter",
+            "marker": {"size": 20},
+            "line": {"width": 6},
+            "yaxis": "y",
+            "zindex": 5
+        },
+        {
+            "x": [2, 3, 4, 5, 6],
+            "y": [2, 5, 4, 6, 4],
+            "name": "orange",
+            "type": "scatter",
+            "marker": {"size": 20},
+            "line": {"width": 6},
+            "yaxis": "y",
+            "zindex": 1
+        },
+        {
+            "x": [3, 4, 5, 6, 7],
+            "y": [1, 8, 6, 8, 5],
+            "name": "green",
+            "type": "scatter",
+            "marker": {"size": 20},
+            "line": {"width": 6},
+            "yaxis": "y2"
+        },
+
+        {
+            "x": [2, 3, 4, 5, 6, 7],
+            "y": [4, 2, 6, 1, 6, 9],
+            "name": "bar",
+            "type": "bar",
+            "yaxis": "y2",
+            "zindex": 20
+        }
+    ],
+    "layout": {
+        "xaxis": {
+            "title": {
+                "text": "zindex stacking"
+            }
+        },
+        "yaxis": {
+            "side": "right"
+        },
+        "y2axis": {
+            "title":{"text":"y2"}, "overlaying": "y"
+        }
+    }
+}
