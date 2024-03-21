@@ -2547,3 +2547,123 @@ describe('Cartesian plots with css transforms', function() {
         });
     });
 });
+
+describe('Cartesian taces with zindex', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    var data0 = [
+        {x: [1, 2], y: [1, 1], type: 'scatter', zindex: 10},
+        {x: [1, 2], y: [1, 2], type: 'scatter'},
+        {x: [1, 2], y: [1, 3], type: 'scatter', zindex: 5}
+    ];
+
+    var data1 = [
+        {x: [1, 2], y: [1, 1], type: 'scatter'},
+        {x: [1, 2], y: [1, 2], type: 'scatter', zindex: -5},
+        {x: [1, 2], y: [1, 3], type: 'scatter', zindex: 10},
+    ];
+
+    function fig(data) {
+        return {
+            data: data,
+            layout: {
+                width: 400, height: 400
+            }
+        };
+    }
+
+    function assertZIndices(data, expectedData) {
+        for(var i = 0; i < data.length; i++) {
+            var zindex = expectedData[i].zindex ? expectedData[i].zindex : 0;
+            expect(data[i].zindex).toEqual(zindex);
+        }
+    }
+
+    function assertZIndicesSorted(data) {
+        var prevZIndex;
+        expect(data.length).toBeGreaterThan(0);
+        for(var i = 0; i < data.length; i++) {
+            var currentZIndex = data[i].__data__.zindex;
+            if(prevZIndex !== undefined) {
+                expect(currentZIndex).toBeGreaterThanOrEqual(prevZIndex);
+            }
+            prevZIndex = currentZIndex;
+        }
+    }
+
+    it('should be able to update zindex', function(done) {
+        Plotly.newPlot(gd, fig(data0))
+        .then(function() {
+            var data = gd._fullData;
+            assertZIndices(data, data0);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig(data1));
+        })
+        .then(function() {
+            var data = gd._fullData;
+            assertZIndices(data, data1);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should display traces in ascending order', function(done) {
+        Plotly.newPlot(gd, fig(data0))
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig(data1));
+        })
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should display traces in ascending zindex order after restyle', function(done) {
+        Plotly.newPlot(gd, fig(data0))
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
+            var data = gd._fullData;
+            assertZIndices(data, data0);
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'type', 'bar');
+        })
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="barlayer"]');
+            var data = gd._fullData;
+            assertZIndices(data, data0);
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig(data1));
+        })
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
+            var data = gd._fullData;
+            assertZIndices(data, data1);
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(function() {
+            return Plotly.restyle(gd, {type: 'bar'});
+        })
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="barlayer"]');
+            var data = gd._fullData;
+            assertZIndices(data, data1);
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(done, done.fail);
+    });
+});
