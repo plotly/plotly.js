@@ -8,7 +8,8 @@
             "marker": {"size": 20},
             "line": {"width": 6},
             "yaxis": "y",
-            "zindex": 5
+            "xaxis": "x",
+            "zorder": 10
         },
         {
             "x": [2, 3, 4, 5, 6],
@@ -17,8 +18,9 @@
             "type": "scatter",
             "marker": {"size": 20},
             "line": {"width": 6},
-            "yaxis": "y",
-            "zindex": 1
+            "yaxis": "y2",
+            "xaxis": "x2",
+            "zorder": 5
         },
         {
             "x": [3, 4, 5, 6, 7],
@@ -27,7 +29,9 @@
             "type": "scatter",
             "marker": {"size": 20},
             "line": {"width": 6},
-            "yaxis": "y2"
+            "yaxis": "y2",
+            "xaxis": "x",
+            "zorder": 7
         },
 
         {
@@ -36,20 +40,27 @@
             "name": "bar",
             "type": "bar",
             "yaxis": "y2",
-            "zindex": 20
+            "xaxis": "x2",
+            "zorder": 8
         }
     ],
     "layout": {
         "xaxis": {
+            "side": "top",
             "title": {
-                "text": "zindex stacking"
+                "text": "zorder stacking"
             }
+            , "overlaying": "x2"
+        },
+        "x2axis": {
+            "title":{"text":"x2"}
         },
         "yaxis": {
-            "side": "right"
+            "side": "right",
+            "title":{"text":"y"}, "overlaying": "y2"
         },
         "y2axis": {
-            "title":{"text":"y2"}, "overlaying": "y"
+            "title":{"text":"y2"}
         }
     }
 }

@@ -126,7 +126,6 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
  */
 exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
-    var subplots = fullLayout._subplots.cartesian;
     var calcdata = gd.calcdata;
     var i;
 
@@ -141,55 +140,75 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
         for(i = 0; i < calcdata.length; i++) traces.push(i);
     }
 
-    // For each subplot
-    for(i = 0; i < subplots.length; i++) {
-        var subplot = subplots[i];
-        var subplotInfo = fullLayout._plots[subplot];
+    var trace;
+    var subplot;
+    var subplotZindexGroups = {};
+    for(var t = 0; t < calcdata.length; t++) {
+        trace = calcdata[t][0].trace;
+        var zi = trace.zindex || 0;
+        subplot = trace.xaxis + trace.yaxis;
+        if(!subplotZindexGroups[zi]) subplotZindexGroups[zi] = {};
+        if(!subplotZindexGroups[zi][subplot]) subplotZindexGroups[zi][subplot] = [];
+        subplotZindexGroups[zi][subplot].push(calcdata[t]);
+    }
+    var zindices = Object.keys(subplotZindexGroups)
+        .map(Number)
+        .sort(Lib.sorterAsc);
 
-        // Get all calcdata (traces) for this subplot:
-        var cdSubplot = [];
-        var pcd;
+    var subplots;
+    var zindex;
+    var subplotLayerData = {};
+    for(i = 0; i < zindices.length; i++) {
+        zindex = zindices[i];
+        subplots = Object.keys(subplotZindexGroups[zindex]);
 
-        // For each trace
-        for(var j = 0; j < calcdata.length; j++) {
-            var cd = calcdata[j];
-            var trace = cd[0].trace;
+        // For each subplot
+        for(var j = 0; j < subplots.length; j++) {
+            subplot = subplots[j];
+            var subplotInfo = fullLayout._plots[subplot];
 
-            // Skip trace if whitelist provided and it's not whitelisted:
-            // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
-            if(trace.xaxis + trace.yaxis === subplot) {
-                // XXX: Should trace carpet dependencies. Only replot all carpet plots if the carpet
-                // axis has actually changed:
-                //
-                // If this trace is specifically requested, add it to the list:
-                if(traces.indexOf(trace.index) !== -1 || trace.carpet) {
-                    // Okay, so example: traces 0, 1, and 2 have fill = tonext. You animate
-                    // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
-                    // is outdated. So this retroactively adds the previous trace if the
-                    // traces are interdependent.
-                    if(
-                        pcd &&
-                        pcd[0].trace.xaxis + pcd[0].trace.yaxis === subplot &&
-                        ['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1 &&
-                        cdSubplot.indexOf(pcd) === -1
-                    ) {
-                        cdSubplot.push(pcd);
+            // Get all calcdata (traces) for this subplot:
+            var cdSubplot = [];
+            var pcd;
+            // For each trace
+            for(var k = 0; k < subplotZindexGroups[zindex][subplot].length; k++) {
+                var cd = subplotZindexGroups[zindex][subplot][k];
+                trace = cd[0].trace;
+                // Skip trace if whitelist provided and it's not whitelisted:
+                // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
+                if(trace.xaxis + trace.yaxis === subplot) {
+                    // XXX: Should trace carpet dependencies. Only replot all carpet plots if the carpet
+                    // axis has actually changed:
+                    //
+                    // If this trace is specifically requested, add it to the list:
+                    if(traces.indexOf(trace.index) !== -1 || trace.carpet) {
+                        // Okay, so example: traces 0, 1, and 2 have fill = tonext. You animate
+                        // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
+                        // is outdated. So this retroactively adds the previous trace if the
+                        // traces are interdependent.
+                        if(
+                            pcd &&
+                            pcd[0].trace.xaxis + pcd[0].trace.yaxis === subplot &&
+                            ['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1 &&
+                            cdSubplot.indexOf(pcd) === -1
+                        ) {
+                            cdSubplot.push(pcd);
+                        }
+                        cdSubplot.push(cd);
                     }
 
-                    cdSubplot.push(cd);
+                    // Track the previous trace on this subplot for the retroactive-add step
+                    // above:
+                    pcd = cd;
                 }
-
-                // Track the previous trace on this subplot for the retroactive-add step
-                // above:
-                pcd = cd;
             }
+            if(!subplotLayerData[subplot]) subplotLayerData[subplot] = [];
+            subplotLayerData[subplot] = plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback, subplotLayerData[subplot]);
         }
-        // Plot the traces for this subplot
-        plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback);
     }
 };
 
-function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback) {
+function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback, layerData) {
     var traceLayerClasses = constants.traceLayerClasses;
     var fullLayout = gd._fullLayout;
     var modules = fullLayout._modules;
@@ -205,7 +224,6 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         traceZorderGroups[zi].push(cdSubplot[t]);
     }
 
-    var layerData = [];
     var zoomScaleQueryParts = [];
 
     // Plot each zorder group in ascending order
@@ -222,7 +240,8 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
 
             if(categories.svg) {
                 var classBaseName = (_module.layerName || name + 'layer');
-                var className = classBaseName + (z ? Number(z) + 1 : '');
+                //var className = classBaseName + (z ? Number(z) + 1 : '');
+                var className = classBaseName + '_' + zorder;
                 var plotMethod = _module.plot;
 
                 // plot all visible traces of this type on this subplot at once
@@ -235,7 +254,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
                 if(cdModule.length) {
                     layerData.push({
                         i: traceLayerClasses.indexOf(classBaseName),
-                        zorder: z,
+                        zorder: zorder,
                         className: className,
                         plotMethod: plotMethod,
                         cdModule: cdModule
@@ -307,6 +326,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             plotinfo.zoomScaleTxt = traces.selectAll('.textpoint');
         }
     }
+    return layerData;
 }
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
@@ -378,15 +398,16 @@ exports.drawFramework = function(gd) {
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
         .data(subplotData, String);
-
+    
     subplotLayers.enter().append('g')
         .attr('class', function(d) { return 'subplot ' + d[0]; });
 
-    subplotLayers.order();
+    //subplotLayers.order();
 
-    subplotLayers.exit()
-        .call(purgeSubplotLayers, fullLayout);
-
+    //subplotLayers.exit()
+    //    .call(purgeSubplotLayers, fullLayout);
+    console.log("Subplotlayers")
+    console.log(subplotLayers)
     subplotLayers.each(function(d) {
         var id = d[0];
         var plotinfo = fullLayout._plots[id];
@@ -417,29 +438,67 @@ function makeSubplotData(gd) {
     var regulars = [];
     var overlays = [];
 
-    for(i = 0; i < len; i++) {
-        id = ids[i];
-        plotinfo = fullLayout._plots[id];
-        xa = plotinfo.xaxis;
-        ya = plotinfo.yaxis;
+    var calcdata = gd.calcdata;
 
-        var xa2 = xa._mainAxis;
-        var ya2 = ya._mainAxis;
-        var mainplot = xa2._id + ya2._id;
-        var mainplotinfo = fullLayout._plots[mainplot];
-        plotinfo.overlays = [];
+    var trace;
+    var subplot;
+    var subplotZindexGroups = {};
+    for(var t = 0; t < calcdata.length; t++) {
+        trace = calcdata[t][0].trace;
+        var zi = trace.zindex || 0;
+        subplot = trace.xaxis + trace.yaxis;
+        if(!subplotZindexGroups[zi]) subplotZindexGroups[zi] = {};
+        if(!subplotZindexGroups[zi][subplot]) subplotZindexGroups[zi][subplot] = [];
+        subplotZindexGroups[zi][subplot].push(calcdata[t]);
+    }
+    var zindices = Object.keys(subplotZindexGroups)
+        .map(Number)
+        .sort(Lib.sorterAsc);
+    
+    console.log(subplotZindexGroups)
 
-        if(mainplot !== id && mainplotinfo) {
-            plotinfo.mainplot = mainplot;
-            plotinfo.mainplotinfo = mainplotinfo;
-            overlays.push(id);
-        } else {
-            plotinfo.mainplot = undefined;
-            plotinfo.mainplotinfo = undefined;
-            regulars.push(id);
+    for(i = 0; i < zindices.length; i++) {
+        console.log(i)
+        var zindex = subplotZindexGroups[zindices[i]];
+        console.log(zindex)
+        console.log()
+        var ids = Object.keys(zindex);
+        for(var j=0; j<ids.length; j++) {
+            var id = ids[j];
+            plotinfo = fullLayout._plots[id];
+            //xa = plotinfo.xaxis;
+            //ya = plotinfo.yaxis;
+
+            //var xa2 = xa._mainAxis;
+            //var ya2 = ya._mainAxis;
+            var mainplot = mainplot ? mainplot : id;//xa2._id + ya2._id;
+            var mainplotinfo = fullLayout._plots[mainplot];
+            plotinfo.overlays = [];
+
+            if(i!==0) {//if(mainplot !== id && mainplotinfo) {
+                console.log("hererere")
+                plotinfo.mainplot = mainplot;
+                plotinfo.mainplotinfo = mainplotinfo;
+                overlays.push(id);
+            } else {
+                plotinfo.mainplot = undefined;
+                plotinfo.mainplotinfo = undefined;
+                regulars.push(id);
+            }
+            console.log(".....")
         }
+        
+    }
+    console.log(plotinfo.mainplotinfo)
+    console.log("----")
+    console.log(regulars, overlays)
+    function onlyUnique(value, index, array) {
+        return array.indexOf(value) === index;
     }
 
+    regulars = regulars.filter(onlyUnique);
+    overlays = overlays.filter(onlyUnique);
+    console.log(regulars, overlays)
     // fill in list of overlaying subplots in 'main plot'
     for(i = 0; i < overlays.length; i++) {
         id = overlays[i];
@@ -454,6 +513,7 @@ function makeSubplotData(gd) {
     for(i = 0; i < len; i++) {
         id = subplotIds[i];
         plotinfo = fullLayout._plots[id];
+        console.log(id, plotinfo)
         xa = plotinfo.xaxis;
         ya = plotinfo.yaxis;
 
@@ -538,8 +598,12 @@ function makeSubplotLayer(gd, plotinfo) {
         plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
         plotinfo.gridlayer = mainplotinfo.gridlayer;
         plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
-
+        console.log(xId)
+        console.log(mainplotinfo)
+        console.log(mainplotinfo.overlinesBelow)
         ensureSingle(mainplotinfo.overlinesBelow, 'path', xId);
+        console.log(yId)
+
         ensureSingle(mainplotinfo.overlinesBelow, 'path', yId);
         ensureSingle(mainplotinfo.overaxesBelow, 'g', xId);
         ensureSingle(mainplotinfo.overaxesBelow, 'g', yId);
