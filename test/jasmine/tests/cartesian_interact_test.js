@@ -2666,4 +2666,36 @@ describe('Cartesian taces with zindex', function() {
         })
         .then(done, done.fail);
     });
+
+    it('should be able to clear traces', function(done) {
+        Plotly.newPlot(gd, fig(data0))
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
+            expect(tracesData.length).toBe(3)
+        })
+        .then(function() {
+            return Plotly.react(gd, fig([data0[0]]));
+        })
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
+            expect(tracesData.length).toBe(1)
+        })
+        .then(done, done.fail);
+    });
+
+    it('should be able to add traces', function(done) {
+        Plotly.newPlot(gd, fig([data0[0]]))
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
+            expect(tracesData.length).toBe(1)
+        })
+        .then(function() {
+            return Plotly.react(gd, fig(data0));
+        })
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
+            expect(tracesData.length).toBe(3)
+        })
+        .then(done, done.fail);
+    });
 });
