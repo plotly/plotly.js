@@ -8,6 +8,8 @@ var BADNUM = require('../../constants/numerical').BADNUM;
 var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
 function hoverPoints(pointData, xval, yval) {
+    xval = xval || 0;
+    yval = yval || 0;
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var xa = pointData.xa;
