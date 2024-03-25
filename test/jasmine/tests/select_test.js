@@ -159,7 +159,7 @@ var mockZindex = {
     }
 };
 
-fdescribe('Click-to-select', function() {
+describe('Click-to-select', function() {
     var mock14Pts = {
         1: { x: 134, y: 116 },
         7: { x: 270, y: 160 },
@@ -331,7 +331,7 @@ fdescribe('Click-to-select', function() {
         .then(done, done.fail);
     });
 
-    fit('should box select all overlapping points regardless of zindex', function(done) {
+    it('should box select all overlapping points regardless of zindex', function(done) {
         mockZindex.layout.dragmode = 'select';
         _newPlot(gd, mockZindex.data, mockZindex.layout)
         .then(function() {
