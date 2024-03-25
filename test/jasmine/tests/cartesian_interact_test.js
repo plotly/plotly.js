@@ -2569,6 +2569,11 @@ describe('Cartesian taces with zindex', function() {
         {x: [1, 2], y: [1, 3], type: 'scatter', marker: {size: 20}, zindex: 10},
     ];
 
+    var barData = [
+        {x: [1, 2], y: [2, 4], type: 'bar'},
+        {x: [1, 2], y: [4, 2], type: 'bar', zindex: -10}
+    ];
+
     function fig(data) {
         return {
             data: data,
@@ -2597,7 +2602,7 @@ describe('Cartesian taces with zindex', function() {
         }
     }
 
-    it('should be able to update zindex', function(done) {
+    it('should be able to update and remove layers for scatter traces in respect to zindex', function(done) {
         Plotly.newPlot(gd, fig(data0))
         .then(function() {
             var data = gd._fullData;
@@ -2609,6 +2614,28 @@ describe('Cartesian taces with zindex', function() {
         .then(function() {
             var data = gd._fullData;
             assertZIndices(data, data1);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig(barData));
+        })
+        .then(function() {
+            var data = gd._fullData;
+            assertZIndices(data, barData);
+            var scatterTraces = d3SelectAll('g[class^="scatterlayer"]')[0];
+            expect(scatterTraces.length).toBe(0);
+            var barTraces = d3SelectAll('g[class^="barlayer"]')[0];
+            expect(barTraces.length).toBe(2);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig(barData.concat(data0)));
+        })
+        .then(function() {
+            var data = gd._fullData;
+            assertZIndices(data, barData.concat(data0));
+            var scatterTraces = d3SelectAll('g[class^="scatterlayer"]')[0];
+            expect(scatterTraces.length).toBe(3);
+            var barTraces = d3SelectAll('g[class^="barlayer"]')[0];
+            expect(barTraces.length).toBe(2);
         })
         .then(done, done.fail);
     });
@@ -2638,10 +2665,10 @@ describe('Cartesian taces with zindex', function() {
             assertZIndicesSorted(tracesData[0]);
         })
         .then(function() {
-            return Plotly.restyle(gd, 'type', 'bar');
+            return Plotly.restyle(gd, 'marker.size', 20);
         })
         .then(function() {
-            var tracesData = d3SelectAll('g[class^="barlayer"]');
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
             var data = gd._fullData;
             assertZIndices(data, data0);
             assertZIndicesSorted(tracesData[0]);
@@ -2656,10 +2683,10 @@ describe('Cartesian taces with zindex', function() {
             assertZIndicesSorted(tracesData[0]);
         })
         .then(function() {
-            return Plotly.restyle(gd, {type: 'bar'});
+            return Plotly.restyle(gd, 'marker.size', 20);
         })
         .then(function() {
-            var tracesData = d3SelectAll('g[class^="barlayer"]');
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
             var data = gd._fullData;
             assertZIndices(data, data1);
             assertZIndicesSorted(tracesData[0]);
@@ -2667,34 +2694,27 @@ describe('Cartesian taces with zindex', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to clear traces', function(done) {
-        Plotly.newPlot(gd, fig(data0))
+    it('should display bar traces in ascending order', function(done) {
+        Plotly.newPlot(gd, fig(barData))
         .then(function() {
-            var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
-            expect(tracesData.length).toBe(3);
+            var data = gd._fullData;
+            assertZIndices(data, barData);
+            var tracesData = d3SelectAll('g[class^="barlayer"]');
+            assertZIndicesSorted(tracesData[0]);
         })
         .then(function() {
-            return Plotly.react(gd, fig([data0[0]]));
+            return Plotly.restyle(gd, 'barmode', 'overlay');
         })
         .then(function() {
-            var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
-            expect(tracesData.length).toBe(1);
-        })
-        .then(done, done.fail);
-    });
-
-    it('should be able to add traces', function(done) {
-        Plotly.newPlot(gd, fig([data0[0]]))
-        .then(function() {
-            var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
-            expect(tracesData.length).toBe(1);
+            var tracesData = d3SelectAll('g[class^="barlayer"]');
+            assertZIndicesSorted(tracesData[0]);
         })
         .then(function() {
-            return Plotly.react(gd, fig(data0));
+            return Plotly.restyle(gd, 'barmode', 'stack');
         })
         .then(function() {
-            var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
-            expect(tracesData.length).toBe(3);
+            var tracesData = d3SelectAll('g[class^="barlayer"]');
+            assertZIndicesSorted(tracesData[0]);
         })
         .then(done, done.fail);
     });
