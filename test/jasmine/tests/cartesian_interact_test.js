@@ -2694,28 +2694,35 @@ describe('Cartesian taces with zindex', function() {
         .then(done, done.fail);
     });
 
-    it('should display bar traces in ascending order', function(done) {
-        Plotly.newPlot(gd, fig(barData))
-        .then(function() {
-            var data = gd._fullData;
-            assertZIndices(data, barData);
-            var tracesData = d3SelectAll('g[class^="barlayer"]');
-            assertZIndicesSorted(tracesData[0]);
-        })
-        .then(function() {
-            return Plotly.restyle(gd, 'barmode', 'overlay');
-        })
-        .then(function() {
-            var tracesData = d3SelectAll('g[class^="barlayer"]');
-            assertZIndicesSorted(tracesData[0]);
-        })
-        .then(function() {
-            return Plotly.restyle(gd, 'barmode', 'stack');
-        })
-        .then(function() {
-            var tracesData = d3SelectAll('g[class^="barlayer"]');
-            assertZIndicesSorted(tracesData[0]);
-        })
-        .then(done, done.fail);
+    ['bar', 'waterfall', 'funnel'].forEach(function(traceType) {
+        it('should display ' + traceType + ' traces in ascending order', function(done) {
+            var _Data = [
+                {x: [1, 2], y: [2, 4], type: traceType},
+                {x: [1, 2], y: [4, 2], type: traceType, zindex: -10}
+            ];
+            var _Class = 'g[class^="' + traceType + 'layer"]';
+            Plotly.newPlot(gd, fig(_Data))
+            .then(function() {
+                var data = gd._fullData;
+                assertZIndices(data, _Data);
+                var tracesData = d3SelectAll(_Class);
+                assertZIndicesSorted(tracesData[0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'barmode', 'overlay');
+            })
+            .then(function() {
+                var tracesData = d3SelectAll(_Class);
+                assertZIndicesSorted(tracesData[0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'barmode', 'stack');
+            })
+            .then(function() {
+                var tracesData = d3SelectAll(_Class);
+                assertZIndicesSorted(tracesData[0]);
+            })
+            .then(done, done.fail);
+        });
     });
 });
