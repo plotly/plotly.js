@@ -34,22 +34,23 @@
         35,
         55
       ],
-      "type": "bar"
+      "type": "bar",
+      "yaxis":"y2"
     }
   ],
   "layout": {
     "shapes": [
       {
         "name": "dashdot line",
-        "fillcolor": "rgba(179,179,179,0.6)",
+        "fillcolor": "rgba(179,179,179,1)",
         "layer": "above",
         "line": {
-          "color": "rgba(66,127,109,0.6)",
+          "color": "rgba(66,127,109,1)",
           "dash": "dashdot"
         },
         "type": "line",
-        "x0": 0.75,
-        "x1": 0.75,
+        "x0": 0.4,
+        "x1": 0.4,
         "xref": "x",
         "y0": 0.0,
         "y1": 1.0,
@@ -72,17 +73,20 @@
       },
       {
         "name": "blue rect",
-        "fillcolor": "rgba(108,173,225,0.8)",
+        "fillcolor": "rgba(108,173,225,1)",
         "layer": "between",
+        "label": {
+          "text": "hello, I am between gridlines and traces!"
+        },
         "line": {
-          "color": "rgba(108,173,225,0.8)"
+          "color": "rgba(108,173,225,1)"
         },
         "type": "rect",
         "x0": "B",
         "x1": "D",
         "xref": "x",
-        "y0": 40,
-        "y1": 70.0
+        "y0": 35,
+        "y1": 65.0
       },
       {
         "name": "big rect",
@@ -121,6 +125,11 @@
         "215"
       ],
       "type": "linear"
+    },
+    "yaxis2": {
+      "side": "right",
+      "overlaying": "y"
     }
+
   }
 }
