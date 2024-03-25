@@ -2558,15 +2558,15 @@ describe('Cartesian taces with zindex', function() {
     afterEach(destroyGraphDiv);
 
     var data0 = [
-        {x: [1, 2], y: [1, 1], type: 'scatter', zindex: 10},
-        {x: [1, 2], y: [1, 2], type: 'scatter'},
-        {x: [1, 2], y: [1, 3], type: 'scatter', zindex: 5}
+        {x: [1, 2], y: [1, 1], type: 'scatter', marker: {size: 10}, zindex: 10},
+        {x: [1, 2], y: [1, 2], type: 'scatter', marker: {size: 30}},
+        {x: [1, 2], y: [1, 3], type: 'scatter', marker: {size: 20}, zindex: 5}
     ];
 
     var data1 = [
-        {x: [1, 2], y: [1, 1], type: 'scatter'},
-        {x: [1, 2], y: [1, 2], type: 'scatter', zindex: -5},
-        {x: [1, 2], y: [1, 3], type: 'scatter', zindex: 10},
+        {x: [1, 2], y: [1, 1], type: 'scatter', marker: {size: 10}},
+        {x: [1, 2], y: [1, 2], type: 'scatter', marker: {size: 30}, zindex: -5},
+        {x: [1, 2], y: [1, 3], type: 'scatter', marker: {size: 20}, zindex: 10},
     ];
 
     function fig(data) {
@@ -2671,14 +2671,14 @@ describe('Cartesian taces with zindex', function() {
         Plotly.newPlot(gd, fig(data0))
         .then(function() {
             var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
-            expect(tracesData.length).toBe(3)
+            expect(tracesData.length).toBe(3);
         })
         .then(function() {
             return Plotly.react(gd, fig([data0[0]]));
         })
         .then(function() {
             var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
-            expect(tracesData.length).toBe(1)
+            expect(tracesData.length).toBe(1);
         })
         .then(done, done.fail);
     });
@@ -2687,14 +2687,14 @@ describe('Cartesian taces with zindex', function() {
         Plotly.newPlot(gd, fig([data0[0]]))
         .then(function() {
             var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
-            expect(tracesData.length).toBe(1)
+            expect(tracesData.length).toBe(1);
         })
         .then(function() {
             return Plotly.react(gd, fig(data0));
         })
         .then(function() {
             var tracesData = d3SelectAll('g[class^="scatterlayer"]')[0];
-            expect(tracesData.length).toBe(3)
+            expect(tracesData.length).toBe(3);
         })
         .then(done, done.fail);
     });
