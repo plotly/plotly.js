@@ -41,6 +41,20 @@
             "name": "purple",
             "type": "bar",
             "zindex": 6
+        },
+        {
+            "x": [2, 3, 4, 5, 6, 7],
+            "y": [5, 4, 10, 10, 6, 9],
+            "name": "brown",
+            "type": "bar",
+            "zindex": -10
+        },
+        {
+            "x": [2, 3, 4, 5, 6, 7],
+            "y": [5, 3, 8, 8, 6, 9],
+            "name": "pink",
+            "type": "bar",
+            "zindex": -5
         }
     ],
     "layout": {
@@ -48,6 +62,7 @@
             "title": {
                 "text": "zindex stacking"
             }
-        }
+        },
+        "barmode": "overlay"
     }
 }
