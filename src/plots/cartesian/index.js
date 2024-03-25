@@ -221,7 +221,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             var categories = Registry.modules[name].categories;
 
             if(categories.svg) {
-                var className = (_module.layerName || name + 'layer') + (zindex ? '-' + z : '');
+                var className = (_module.layerName || name + 'layer') + (zindex ? Number(z) + 1 : '');
                 var plotMethod = _module.plot;
 
                 // plot all visible traces of this type on this subplot at once
