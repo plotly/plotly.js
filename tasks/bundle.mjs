@@ -1,9 +1,9 @@
-var runSeries = require('run-series');
-var prependFile = require('prepend-file');
+import runSeries from 'run-series';
+import prependFile from 'prepend-file';
 
-var constants = require('./util/constants');
-var common = require('./util/common');
-var _bundle = require('./util/bundle_wrapper');
+import constants from './util/constants.js';
+import common from './util/common.js';
+import _bundle from './util/bundle_wrapper.mjs';
 
 var header = constants.licenseDist + '\n';
 var pathToPlotlyDist = constants.pathToPlotlyDist;
@@ -34,9 +34,18 @@ var tasks = [];
 // Bundle plotly.js
 tasks.push(function(done) {
     _bundle(pathToPlotlyIndex, pathToPlotlyDist, {
-        pathToMinBundle: pathToPlotlyDistMin
     }, function() {
         prependFile.sync(pathToPlotlyDist, header, common.throwOnError);
+
+        done();
+    });
+});
+
+// Bundle plotly.min.js
+tasks.push(function(done) {
+    _bundle(pathToPlotlyIndex, pathToPlotlyDistMin, {
+        minify: true,
+    }, function() {
         prependFile.sync(pathToPlotlyDistMin, header, common.throwOnError);
 
         done();
@@ -46,9 +55,18 @@ tasks.push(function(done) {
 // Bundle plotly.js-strict
 tasks.push(function(done) {
     _bundle(pathToPlotlyStrict, pathToPlotlyStrictDist, {
-        pathToMinBundle: pathToPlotlyStrictDistMin
     }, function() {
         prependFile.sync(pathToPlotlyStrictDist, header.replace('plotly.js', 'plotly.js (strict)'), common.throwOnError);
+
+        done();
+    });
+});
+
+// Bundle plotly.min.js-strict
+tasks.push(function(done) {
+    _bundle(pathToPlotlyStrict, pathToPlotlyStrictDistMin, {
+        minify: true,
+    }, function() {
         prependFile.sync(pathToPlotlyStrictDistMin, header.replace('plotly.js', 'plotly.js (strict - minified)'), common.throwOnError);
 
         done();
@@ -58,6 +76,7 @@ tasks.push(function(done) {
 // Bundle the geo assets
 tasks.push(function(done) {
     _bundle(pathToPlotlyGeoAssetsSrc, pathToPlotlyGeoAssetsDist, {
+        noPlugins: true,
         standalone: 'PlotlyGeoAssets'
     }, function() {
         prependFile.sync(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
@@ -69,7 +88,7 @@ tasks.push(function(done) {
 // Bundle plotly.js with meta
 tasks.push(function(done) {
     _bundle(pathToPlotlyIndex, pathToPlotlyDistWithMeta, {
-        noCompress: true
+        noCompressAttributes: true
     }, function() {
         prependFile.sync(pathToPlotlyDistWithMeta, header, common.throwOnError);
 
