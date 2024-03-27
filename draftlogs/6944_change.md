@@ -1,0 +1,1 @@
+- Fix hover count info label in `createHoverLabelForColorHovermode`[[#6944](https://github.com/plotly/plotly.js/pull/6944)]
