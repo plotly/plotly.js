@@ -120,6 +120,7 @@
       }
     ],
     "yaxis": {
+      "gridcolor": "red",
       "insiderange": [
         "0",
         "215"
@@ -127,6 +128,7 @@
       "type": "linear"
     },
     "yaxis2": {
+      "gridwidth": 2,
       "side": "right",
       "overlaying": "y"
     }
