@@ -8,7 +8,7 @@
             "marker": {"size": 20},
             "line": {"width": 6},
             "yaxis": "y",
-            "zindex": 5
+            "zindex": 10
         },
         {
             "x": [2, 3, 4, 5, 6],
@@ -18,7 +18,7 @@
             "marker": {"size": 20},
             "line": {"width": 6},
             "yaxis": "y",
-            "zindex": 1
+            "zindex": 5
         },
         {
             "x": [3, 4, 5, 6, 7],
@@ -27,7 +27,8 @@
             "type": "scatter",
             "marker": {"size": 20},
             "line": {"width": 6},
-            "yaxis": "y2"
+            "yaxis": "y2",
+            "zindex": 7
         },
 
         {
@@ -36,7 +37,7 @@
             "name": "bar",
             "type": "bar",
             "yaxis": "y2",
-            "zindex": 20
+            "zindex": 8
         }
     ],
     "layout": {
@@ -46,7 +47,8 @@
             }
         },
         "yaxis": {
-            "side": "right"
+            "side": "right",
+            "title":{"text":"y"}
         },
         "y2axis": {
             "title":{"text":"y2"}, "overlaying": "y"
