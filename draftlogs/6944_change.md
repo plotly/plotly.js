@@ -1,0 +1,1 @@
+- Update hover count info label from `totalCount` to `bandColorCount` in `createHoverLabelForColorHovermode`[[#6944](https://github.com/plotly/plotly.js/pull/6944)]
