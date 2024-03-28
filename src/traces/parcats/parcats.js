@@ -921,7 +921,7 @@ function createHoverLabelForColorHovermode(gd, rootBBox, bandElement) {
     var pColorGivenCat = bandColorCount / catCount;
 
     var labels = {
-        countLabel: totalCount,
+        countLabel: bandColorCount,
         categoryLabel: catLabel,
         probabilityLabel: pColorAndCat.toFixed(3)
     };
