@@ -451,5 +451,6 @@ module.exports = {
             'Do the hover effects highlight individual boxes ',
             'or sample points or both?'
         ].join(' ')
-    }
+    },
+    zindex: scatterAttrs.zindex
 };

@@ -133,4 +133,6 @@ module.exports = {
             ].join(' ')
         }
     }),
+
+    zindex: scatterAttrs.zindex
 };
