@@ -1,4 +1,4 @@
-var plotlyNode = require('./util/plotly_node');
+import plotlyNode from './util/plotly_node.mjs';
 var Plotly = plotlyNode('build/plotly.js');
 
 var assertValidate = function(fig, exp) {

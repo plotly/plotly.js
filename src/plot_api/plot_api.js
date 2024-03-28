@@ -29,6 +29,7 @@ var manageArrays = require('./manage_arrays');
 var helpers = require('./helpers');
 var subroutines = require('./subroutines');
 var editTypes = require('./edit_types');
+var accessibility = require('./accessibility');
 
 var AX_NAME_PATTERN = require('../plots/cartesian/constants').AX_NAME_PATTERN;
 
@@ -381,9 +382,20 @@ function _doPlot(gd, data, layout, config) {
         // happens outside of marginPushers where all the other automargins are
         // calculated. Would be much better to separate margin calculations from
         // component drawing - see https://github.com/plotly/plotly.js/issues/2704
-        Plots.doAutoMargin,
-        Plots.previousPromises
+        Plots.doAutoMargin
     );
+
+    function saveRangeInitialForInsideTickLabels(gd) {
+        if(gd._fullLayout._insideTickLabelsAutorange) {
+            if(graphWasEmpty) Axes.saveRangeInitial(gd, true);
+        }
+    }
+    seq.push(saveRangeInitialForInsideTickLabels);
+
+    if(gd._context.accessibility.enabled) seq.push(accessibility.enable);
+
+    seq.push(Plots.previousPromises);
+
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
@@ -2664,7 +2676,6 @@ function react(gd, data, layout, config) {
             setPlotContext(gd, config);
             configChanged = diffConfig(oldConfig, gd._context);
         }
-
         gd.data = data || [];
         helpers.cleanData(gd.data);
         gd.layout = layout || {};
@@ -2735,7 +2746,6 @@ function react(gd, data, layout, config) {
 
             Plots.doCalcdata(gd);
             subroutines.doAutoRangeAndConstraints(gd);
-
             seq.push(function() {
                 return Plots.transitionFromReact(gd, restyleFlags, relayoutFlags, oldFullLayout);
             });
@@ -3651,7 +3661,6 @@ function deleteFrames(gd, frameList) {
  */
 function purge(gd) {
     gd = Lib.getGraphDiv(gd);
-
     var fullLayout = gd._fullLayout || {};
     var fullData = gd._fullData || [];
 
@@ -3669,7 +3678,6 @@ function purge(gd) {
 
     // in contrast to _doPlots.purge which does NOT clear _context!
     delete gd._context;
-
     return gd;
 }
 
