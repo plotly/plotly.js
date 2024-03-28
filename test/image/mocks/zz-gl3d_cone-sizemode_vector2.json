@@ -8,11 +8,11 @@
       "u": [1, 0, 0],
       "v": [0, 3, 0],
       "w": [0, 0, 2],
-      "sizemode": "vector",
+      "sizemode": "raw",
       "anchor": "tip",
       "sizeref": 0.5,
       "colorbar": {
-        "title": { "text": "vector<br>sizeref: 2" },
+        "title": { "text": "raw<br>sizeref: 2" },
         "x": 0,
         "xanchor": "right"
       }
@@ -25,11 +25,11 @@
       "u": [0.5, 0, 0],
       "v": [0, 1.5, 0],
       "w": [0, 0, 1],
-      "sizemode": "vector",
+      "sizemode": "raw",
       "anchor": "tip",
       "sizeref": 2,
       "colorbar": {
-        "title": { "text": "vector<br>sizeref: 2" }
+        "title": { "text": "raw<br>sizeref: 2" }
       },
       "scene": "scene2"
     }

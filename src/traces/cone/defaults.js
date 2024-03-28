@@ -27,7 +27,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var sizemode = coerce('sizemode');
-    coerce('sizeref', sizemode === 'vector' ? 1 : 0.5);
+    coerce('sizeref', sizemode === 'raw' ? 1 : 0.5);
 
     coerce('anchor');
 

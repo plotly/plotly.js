@@ -13782,7 +13782,7 @@ module.exports = function(vectorfield, bounds) {
 	var positionVectors = [];
 	var vectorScale = Infinity;
 	var skipIt = false;
-	var vectorSizemode = vectorfield.coneSizemode === 'vector';
+	var vectorSizemode = vectorfield.coneSizemode === 'raw';
 	for (var i = 0; i < positions.length; i++) {
 		var p = positions[i];
 		minX = Math.min(p[0], minX);

@@ -89,7 +89,7 @@ function convert(scene, trace) {
         coneOpts.coneSize = trace.sizeref && trace._normMax ?
             trace.sizeref / trace._normMax :
             0.5;
-    } else if(sizemode === 'vector') {
+    } else if(sizemode === 'raw') {
         coneOpts.coneSize = trace.sizeref;
     }
     coneOpts.coneSizemode = sizemode;

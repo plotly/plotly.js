@@ -2,7 +2,7 @@
   "data": [
     {
       "type": "cone",
-      "sizemode": "vector",
+      "sizemode": "raw",
       "anchor": "tip",
       "u": [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
