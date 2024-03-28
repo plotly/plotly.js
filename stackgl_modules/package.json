@@ -13,7 +13,7 @@
     "box-intersect": "plotly/box-intersect#v1.1.0",
     "convex-hull": "^1.0.3",
     "delaunay-triangulate": "^1.1.6",
-    "gl-cone3d": "^1.5.2",
+    "gl-cone3d": "^1.6.0",
     "gl-error3d": "^1.0.16",
     "gl-heatmap2d": "^1.1.1",
     "gl-line3d": "1.2.1",
