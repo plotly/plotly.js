@@ -13782,7 +13782,7 @@ module.exports = function(vectorfield, bounds) {
 	var positionVectors = [];
 	var vectorScale = Infinity;
 	var skipIt = false;
-	var vectorSizemode = vectorfield.coneSizemode === 'raw';
+	var rawSizemodemode = vectorfield.coneSizemode === 'raw';
 	for (var i = 0; i < positions.length; i++) {
 		var p = positions[i];
 		minX = Math.min(p[0], minX);
@@ -13796,7 +13796,7 @@ module.exports = function(vectorfield, bounds) {
 		if (vec3.length(u) > maxNorm) {
 			maxNorm = vec3.length(u);
 		}
-		if (i && !vectorSizemode) {
+		if (i && !rawSizemodemode) {
 			// Find vector scale [w/ units of time] using "successive" positions
 			// (not "adjacent" with would be O(n^2)),
 			//
@@ -13836,7 +13836,7 @@ module.exports = function(vectorfield, bounds) {
 	geo.vectorScale = vectorScale;
 
 	var coneScale = vectorfield.coneSize || (
-		vectorSizemode ? 1 :0.5
+		rawSizemodemode ? 1 :0.5
 	);
 
 	if (vectorfield.absoluteConeSize) {
