@@ -12,5 +12,6 @@ module.exports = function handleHoverModeDefaults(layoutIn, layoutOut) {
     }
 
     coerce('clickmode');
+    coerce('hoversameaxis');
     return coerce('hovermode');
 };

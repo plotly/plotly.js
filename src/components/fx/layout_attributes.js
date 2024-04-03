@@ -78,6 +78,15 @@ module.exports = {
             'If false, hover interactions are disabled.'
         ].join(' ')
     },
+    hoversameaxis: {
+        valType: 'boolean',
+        dflt: false,
+        editType: 'none',
+        description: [
+            'Determines expansion of hover effects to other subplots in case of sharing an axis.',
+            'Has an effect only when `hovermode` is set to *x*, *x unified*, *y* or *y unified*.',
+        ].join(' ')
+    },
     hoverdistance: {
         valType: 'integer',
         min: -1,

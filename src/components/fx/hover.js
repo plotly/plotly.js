@@ -5,6 +5,7 @@ var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
 var Lib = require('../../lib');
+var pushUnique = Lib.pushUnique;
 var strTranslate = Lib.strTranslate;
 var strRotate = Lib.strRotate;
 var Events = require('../../lib/events');
@@ -257,10 +258,36 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     // use those instead of finding overlayed plots
     var subplots = Array.isArray(subplot) ? subplot : [subplot];
 
+    var spId;
+
     var fullLayout = gd._fullLayout;
+    var hoversameaxis = fullLayout.hoversameaxis;
     var plots = fullLayout._plots || [];
     var plotinfo = plots[subplot];
     var hasCartesian = fullLayout._has('cartesian');
+
+    var hovermode = evt.hovermode || fullLayout.hovermode;
+    var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
+    var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
+
+    if(hoversameaxis && hasCartesian && (hovermodeHasX || hovermodeHasY)) {
+        for(var p = 0; p < subplots.length; p++) {
+            spId = subplots[p];
+            if(plots[spId]) {
+                // 'cartesian' case
+
+                var subplotsWith = (
+                    Axes.getFromId(gd, spId, hovermodeHasX ? 'x' : 'y')
+                )._subplotsWith;
+
+                if(subplotsWith && subplotsWith.length) {
+                    for(var q = 0; q < subplotsWith.length; q++) {
+                        pushUnique(subplots, subplotsWith[q]);
+                    }
+                }
+            }
+        }
+    }
 
     // list of all overlaid subplots to look at
     if(plotinfo) {
@@ -277,7 +304,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var supportsCompare = false;
 
     for(var i = 0; i < len; i++) {
-        var spId = subplots[i];
+        spId = subplots[i];
 
         if(plots[spId]) {
             // 'cartesian' case
@@ -294,8 +321,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             return;
         }
     }
-
-    var hovermode = evt.hovermode || fullLayout.hovermode;
 
     if(hovermode && !supportsCompare) hovermode = 'closest';
 
