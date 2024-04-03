@@ -2378,6 +2378,168 @@ describe('hover info on stacked subplots', function() {
     });
 });
 
+describe('hover on subplots when hoversameaxis is set to true and x hovermode', function() {
+    'use strict';
+
+    var mock = {
+        layout: {
+            hoversameaxis: true,
+            hovermode: 'x',
+            grid: {
+                rows: 3,
+                columns: 2,
+                pattern: 'coupled'
+            }
+        },
+
+        data: [
+            {
+                y: [1, 2, 3]
+            },
+            {
+                y: [10, 20, 30],
+                yaxis: 'y2'
+            },
+            {
+                y: [100, 200, 300],
+                yaxis: 'y3'
+            },
+            {
+                y: [10, 20, 30],
+                xaxis: 'x2',
+                yaxis: 'y2'
+            }
+        ],
+    };
+
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, mock).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('hovermode: x with hoversameaxis: true', function() {
+        var pos = 0;
+        var subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(3);
+        assertHoverLabelContent({
+            nums: ['1', '10', '100'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String([pos])
+        });
+
+        pos = 1;
+        subplot = 'xy2';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+
+        expect(gd._hoverdata.length).toBe(3);
+        assertHoverLabelContent({
+            nums: ['2', '20', '200'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String(pos)
+        });
+
+        pos = 2;
+        subplot = 'xy3';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+
+        expect(gd._hoverdata.length).toBe(3);
+        assertHoverLabelContent({
+            nums: ['3', '30', '300'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String(pos)
+        });
+    });
+});
+
+describe('hover on subplots when hoversameaxis is set to true and y hovermode', function() {
+    'use strict';
+
+    var mock = {
+        layout: {
+            hoversameaxis: true,
+            hovermode: 'y',
+            grid: {
+                rows: 2,
+                columns: 3,
+                pattern: 'coupled'
+            }
+        },
+
+        data: [
+            {
+                x: [1, 2, 3]
+            },
+            {
+                x: [10, 20, 30],
+                xaxis: 'x2'
+            },
+            {
+                x: [100, 200, 300],
+                xaxis: 'x3'
+            },
+            {
+                x: [10, 20, 30],
+                xaxis: 'x2',
+                yaxis: 'y2'
+            }
+        ],
+    };
+
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, mock).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('hovermode: y with hoversameaxis: true', function() {
+        var pos = 0;
+        var subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {yval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(3);
+        assertHoverLabelContent({
+            nums: ['1', '10', '100'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String([pos])
+        });
+
+        pos = 1;
+        subplot = 'x2y';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {yval: pos}, subplot);
+
+        expect(gd._hoverdata.length).toBe(3);
+        assertHoverLabelContent({
+            nums: ['2', '20', '200'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String(pos)
+        });
+
+        pos = 2;
+        subplot = 'x3y';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {yval: pos}, subplot);
+
+        expect(gd._hoverdata.length).toBe(3);
+        assertHoverLabelContent({
+            nums: ['3', '30', '300'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String(pos)
+        });
+    });
+});
+
 describe('hover on many lines+bars', function() {
     'use strict';
 
