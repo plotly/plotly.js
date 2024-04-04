@@ -466,6 +466,12 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             // the rest of this function from running and failing
             if(['carpet', 'contourcarpet'].indexOf(trace._module.name) !== -1) continue;
 
+            // within one trace mode can sometimes be overridden
+            _mode = hovermode;
+            if(helpers.isUnifiedHover(_mode)) {
+                _mode = _mode.charAt(0);
+            }
+
             if(trace.type === 'splom') {
                 // splom traces do not generate overlay subplots,
                 // it is safe to assume here splom traces correspond to the 0th subplot
@@ -474,12 +480,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             } else {
                 subplotId = helpers.getSubplot(trace);
                 subploti = subplots.indexOf(subplotId);
-            }
-
-            // within one trace mode can sometimes be overridden
-            _mode = hovermode;
-            if(helpers.isUnifiedHover(_mode)) {
-                _mode = _mode.charAt(0);
             }
 
             // container for new point, also used to pass info into module.hoverPoints
