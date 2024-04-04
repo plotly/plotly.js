@@ -566,7 +566,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 if(trace._module && trace._module.hoverPoints) {
                     var newPoints = trace._module.hoverPoints(pointData, xval, yval, _mode, {
                         finiteRange: true,
-                        hoverLayer: fullLayout._hoverlayer
+                        hoverLayer: fullLayout._hoverlayer,
+
+                        // options for splom when hovering on same axis
+                        hoversameaxis: hoversameaxis,
+                        gd: gd
                     });
 
                     if(newPoints) {
