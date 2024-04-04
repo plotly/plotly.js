@@ -2378,7 +2378,7 @@ describe('hover info on stacked subplots', function() {
     });
 });
 
-describe('hover on subplots when hoversameaxis is set to true and x hovermode', function() {
+describe('hover on subplots when hoversameaxis is set to true and x hovermodes', function() {
     'use strict';
 
     var mock = {
@@ -2421,7 +2421,7 @@ describe('hover on subplots when hoversameaxis is set to true and x hovermode', 
 
     afterEach(destroyGraphDiv);
 
-    it('hovermode: x with hoversameaxis: true', function() {
+    it('hovermode: *x* | *x unified* with hoversameaxis: true', function() {
         var pos = 0;
         var subplot = 'xy';
         Lib.clearThrottle();
@@ -2456,10 +2456,17 @@ describe('hover on subplots when hoversameaxis is set to true and x hovermode', 
             name: ['trace 0', 'trace 1', 'trace 2'],
             axis: String(pos)
         });
+
+        Plotly.relayout(gd, 'hovermode', 'x unified');
+        pos = 0;
+        subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(3);
     });
 });
 
-describe('hover on subplots when hoversameaxis is set to true and y hovermode', function() {
+describe('hover on subplots when hoversameaxis is set to true and y hovermodes', function() {
     'use strict';
 
     var mock = {
@@ -2502,7 +2509,7 @@ describe('hover on subplots when hoversameaxis is set to true and y hovermode', 
 
     afterEach(destroyGraphDiv);
 
-    it('hovermode: y with hoversameaxis: true', function() {
+    it('hovermode: *y* | *y unified* with hoversameaxis: true', function() {
         var pos = 0;
         var subplot = 'xy';
         Lib.clearThrottle();
@@ -2537,6 +2544,13 @@ describe('hover on subplots when hoversameaxis is set to true and y hovermode', 
             name: ['trace 0', 'trace 1', 'trace 2'],
             axis: String(pos)
         });
+
+        Plotly.relayout(gd, 'hovermode', 'y unified');
+        pos = 0;
+        subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {yval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(3);
     });
 });
 
