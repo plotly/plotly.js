@@ -533,8 +533,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 pointData.scene = fullLayout._splomScenes[trace.uid];
             }
 
-            closedataPreviousLength = hoverData.length;
-
             // for a highlighting array, figure out what
             // we're searching for with this element
             if(_mode === 'array') {
@@ -560,6 +558,8 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 xval = xvalArray[subploti];
                 yval = yvalArray[subploti];
             }
+
+            closedataPreviousLength = hoverData.length;
 
             // Now if there is range to look in, find the points to hover.
             if(hoverdistance !== 0) {
