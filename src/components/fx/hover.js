@@ -271,7 +271,8 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
 
     if(hoversameaxis && hasCartesian && (hovermodeHasX || hovermodeHasY)) {
-        for(var p = 0; p < subplots.length; p++) {
+        var subplotsLength = subplots.length;
+        for(var p = 0; p < subplotsLength; p++) {
             spId = subplots[p];
             if(plots[spId]) {
                 // 'cartesian' case
