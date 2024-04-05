@@ -692,7 +692,9 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     gd._spikepoints = newspikepoints;
 
     var sortHoverData = function() {
-        hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
+        if(!hoverthrough) {
+            hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
+        }
 
         // move period positioned points and box/bar-like traces to the end of the list
         hoverData = orderRangePoints(hoverData, hovermode);
