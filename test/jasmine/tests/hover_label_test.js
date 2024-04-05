@@ -28,6 +28,8 @@ var assertElemInside = customAssertions.assertElemInside;
 
 var groupTitlesMock = require('../../image/mocks/legendgroup-titles');
 
+var splomLogMock = require('../../image/mocks/splom_log');
+
 function touch(path, options) {
     var len = path.length;
     Lib.clearThrottle();
@@ -2550,6 +2552,45 @@ describe('hover on subplots when hoversameaxis is set to true and y hovermodes',
         subplot = 'xy';
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {yval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(3);
+    });
+});
+
+describe('splom hover on subplots when hoversameaxis is set to true and (x|y) hovermodes', function() {
+    'use strict';
+
+    var mock = Lib.extendDeep({}, splomLogMock);
+    mock.layout.hovermode = 'x';
+    mock.layout.hoversameaxis = true;
+
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, mock).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('splom hoversameaxis: true', function() {
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {x: 200, y: 200}, 'xy');
+        expect(gd._hoverdata.length).toBe(3);
+        assertHoverLabelContent({
+            nums: ['100', '100k'],
+            name: ['', ''],
+            axis: '100'
+        });
+
+        Plotly.relayout(gd, 'hovermode', 'x unified');
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {x: 200, y: 200}, 'xy');
+        expect(gd._hoverdata.length).toBe(3);
+
+        Plotly.relayout(gd, 'hovermode', 'y unified');
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {x: 200, y: 200}, 'xy');
         expect(gd._hoverdata.length).toBe(3);
     });
 });
