@@ -270,7 +270,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
     var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
 
-    if(hoverthrough && hasCartesian && (hovermodeHasX || hovermodeHasY)) {
+    if(hasCartesian && (hovermodeHasX || hovermodeHasY) && hoverthrough === 'axis') {
         var subplotsLength = subplots.length;
         for(var p = 0; p < subplotsLength; p++) {
             spId = subplots[p];

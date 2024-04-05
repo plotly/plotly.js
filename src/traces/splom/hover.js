@@ -16,7 +16,7 @@ function hoverPoints(pointData, xval, yval, hovermode, opts) {
 
     var points = _hoverPoints(pointData, xpx, ypx);
 
-    if(opts.hoverthrough && (hovermodeHasX || hovermodeHasY)) {
+    if((hovermodeHasX || hovermodeHasY) && opts.hoverthrough === 'axis') {
         var _xpx = points[0]._xpx;
         var _ypx = points[0]._ypx;
 

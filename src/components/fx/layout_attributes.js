@@ -79,11 +79,13 @@ module.exports = {
         ].join(' ')
     },
     hoverthrough: {
-        valType: 'boolean',
+        valType: 'enumerated',
+        values: ['axis', false],
         dflt: false,
         editType: 'none',
         description: [
-            'Determines expansion of hover effects to other subplots in case of sharing an axis.',
+            'Determines expansion of hover effects to other subplots',
+            'If *axis*, points from subplots linked to the axis of hovered subplot are included.',
             'Has an effect only when `hovermode` is set to *x*, *x unified*, *y* or *y unified*.',
         ].join(' ')
     },
