@@ -261,7 +261,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var spId;
 
     var fullLayout = gd._fullLayout;
-    var hoversameaxis = fullLayout.hoversameaxis;
+    var hoverthrough = fullLayout.hoverthrough;
     var plots = fullLayout._plots || [];
     var plotinfo = plots[subplot];
     var hasCartesian = fullLayout._has('cartesian');
@@ -270,7 +270,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
     var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
 
-    if(hoversameaxis && hasCartesian && (hovermodeHasX || hovermodeHasY)) {
+    if(hoverthrough && hasCartesian && (hovermodeHasX || hovermodeHasY)) {
         var subplotsLength = subplots.length;
         for(var p = 0; p < subplotsLength; p++) {
             spId = subplots[p];
@@ -570,7 +570,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                         hoverLayer: fullLayout._hoverlayer,
 
                         // options for splom when hovering on same axis
-                        hoversameaxis: hoversameaxis,
+                        hoverthrough: hoverthrough,
                         gd: gd
                     });
 

@@ -2634,7 +2634,7 @@
      "y unified"
     ]
    },
-   "hoversameaxis": {
+   "hoverthrough": {
     "description": "Determines expansion of hover effects to other subplots in case of sharing an axis. Has an effect only when `hovermode` is set to *x*, *x unified*, *y* or *y unified*.",
     "dflt": false,
     "editType": "none",

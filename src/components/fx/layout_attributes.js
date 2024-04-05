@@ -78,7 +78,7 @@ module.exports = {
             'If false, hover interactions are disabled.'
         ].join(' ')
     },
-    hoversameaxis: {
+    hoverthrough: {
         valType: 'boolean',
         dflt: false,
         editType: 'none',
