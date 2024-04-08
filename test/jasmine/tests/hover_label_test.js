@@ -2380,6 +2380,71 @@ describe('hover info on stacked subplots', function() {
     });
 });
 
+describe('hover on subplots when hoversubplots is set to *single* and x hovermodes', function() {
+    'use strict';
+
+    var mock = {
+        layout: {
+            hoversubplots: 'single',
+            hovermode: 'x',
+            yaxis2: {
+                anchor: 'x',
+                overlaying: 'y'
+            }
+        },
+
+        data: [
+            {
+                y: [1, 2, 3]
+            },
+            {
+                y: [1, 3, 2],
+                yaxis: 'y2'
+            }
+        ],
+    };
+
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, mock).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('hovermode: *x* | *x unified* with hoversubplots: *axis*', function() {
+        var pos = 0;
+        var subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(1);
+        assertHoverLabelContent({
+            nums: '1',
+            name: 'trace 0',
+            axis: String(pos)
+        });
+
+        pos = 0;
+        subplot = 'xy2';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(1);
+        assertHoverLabelContent({
+            nums: '1',
+            name: 'trace 1',
+            axis: String(pos)
+        });
+
+        Plotly.relayout(gd, 'hovermode', 'x unified');
+        pos = 0;
+        subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(1);
+    });
+});
+
 describe('hover on subplots when hoversubplots is set to *axis* and x hovermodes', function() {
     'use strict';
 
