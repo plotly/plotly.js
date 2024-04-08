@@ -692,7 +692,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     gd._spikepoints = newspikepoints;
 
     var sortHoverData = function() {
-        if(!hoversubplots) {
+        if(hoversubplots !== 'axis') {
             hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
         }
 

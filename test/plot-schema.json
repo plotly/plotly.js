@@ -2635,13 +2635,13 @@
     ]
    },
    "hoversubplots": {
-    "description": "Determines expansion of hover effects to other subplots If *axis*, points from subplots linked to the axis of hovered subplot are included. Has an effect only when `hovermode` is set to *x*, *x unified*, *y* or *y unified*.",
-    "dflt": false,
+    "description": "Determines expansion of hover effects to other subplots If *overlaying* all subplots using the main axis and occupying the same space are included. If *axis*, also include stacked subplots using the same axis when `hovermode` is set to *x*, *x unified*, *y* or *y unified*.",
+    "dflt": "overlaying",
     "editType": "none",
     "valType": "enumerated",
     "values": [
-     "axis",
-     false
+     "overlaying",
+     "axis"
     ]
    },
    "images": {
