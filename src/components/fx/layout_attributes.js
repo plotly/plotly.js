@@ -80,11 +80,12 @@ module.exports = {
     },
     hoversubplots: {
         valType: 'enumerated',
-        values: ['overlaying', 'axis'],
+        values: ['single', 'overlaying', 'axis'],
         dflt: 'overlaying',
         editType: 'none',
         description: [
             'Determines expansion of hover effects to other subplots',
+            'If *single* just the axis pair of the primary point is included without overlaying subplots.',
             'If *overlaying* all subplots using the main axis and occupying the same space are included.',
             'If *axis*, also include stacked subplots using the same axis',
             'when `hovermode` is set to *x*, *x unified*, *y* or *y unified*.',

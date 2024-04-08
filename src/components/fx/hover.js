@@ -291,7 +291,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     }
 
     // list of all overlaid subplots to look at
-    if(plotinfo) {
+    if(plotinfo && hoversubplots !== 'single') {
         var overlayedSubplots = plotinfo.overlays.map(function(pi) {
             return pi.id;
         });
