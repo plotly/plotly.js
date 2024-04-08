@@ -2380,12 +2380,12 @@ describe('hover info on stacked subplots', function() {
     });
 });
 
-describe('hover on subplots when hoverthrough is set to *axis* and x hovermodes', function() {
+describe('hover on subplots when hoversubplots is set to *axis* and x hovermodes', function() {
     'use strict';
 
     var mock = {
         layout: {
-            hoverthrough: 'axis',
+            hoversubplots: 'axis',
             hovermode: 'x',
             grid: {
                 rows: 3,
@@ -2423,7 +2423,7 @@ describe('hover on subplots when hoverthrough is set to *axis* and x hovermodes'
 
     afterEach(destroyGraphDiv);
 
-    it('hovermode: *x* | *x unified* with hoverthrough: *axis*', function() {
+    it('hovermode: *x* | *x unified* with hoversubplots: *axis*', function() {
         var pos = 0;
         var subplot = 'xy';
         Lib.clearThrottle();
@@ -2468,12 +2468,12 @@ describe('hover on subplots when hoverthrough is set to *axis* and x hovermodes'
     });
 });
 
-describe('hover on subplots when hoverthrough is set to *axis* and y hovermodes', function() {
+describe('hover on subplots when hoversubplots is set to *axis* and y hovermodes', function() {
     'use strict';
 
     var mock = {
         layout: {
-            hoverthrough: 'axis',
+            hoversubplots: 'axis',
             hovermode: 'y',
             grid: {
                 rows: 2,
@@ -2511,7 +2511,7 @@ describe('hover on subplots when hoverthrough is set to *axis* and y hovermodes'
 
     afterEach(destroyGraphDiv);
 
-    it('hovermode: *y* | *y unified* with hoverthrough: *axis*', function() {
+    it('hovermode: *y* | *y unified* with hoversubplots: *axis*', function() {
         var pos = 0;
         var subplot = 'xy';
         Lib.clearThrottle();
@@ -2556,12 +2556,12 @@ describe('hover on subplots when hoverthrough is set to *axis* and y hovermodes'
     });
 });
 
-describe('splom hover on subplots when hoverthrough is set to *axis* and (x|y) hovermodes', function() {
+describe('splom hover on subplots when hoversubplots is set to *axis* and (x|y) hovermodes', function() {
     'use strict';
 
     var mock = Lib.extendDeep({}, splomLogMock);
     mock.layout.hovermode = 'x';
-    mock.layout.hoverthrough = 'axis';
+    mock.layout.hoversubplots = 'axis';
 
     var gd;
 
@@ -2572,7 +2572,7 @@ describe('splom hover on subplots when hoverthrough is set to *axis* and (x|y) h
 
     afterEach(destroyGraphDiv);
 
-    it('splom hoverthrough: *axis*', function() {
+    it('splom hoversubplots: *axis*', function() {
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {x: 200, y: 200}, 'xy');
         expect(gd._hoverdata.length).toBe(3);

@@ -16,7 +16,7 @@ function hoverPoints(pointData, xval, yval, hovermode, opts) {
 
     var points = _hoverPoints(pointData, xpx, ypx);
 
-    if((hovermodeHasX || hovermodeHasY) && opts.hoverthrough === 'axis') {
+    if((hovermodeHasX || hovermodeHasY) && opts.hoversubplots === 'axis') {
         var _xpx = points[0]._xpx;
         var _ypx = points[0]._ypx;
 
@@ -53,7 +53,7 @@ function hoverPoints(pointData, xval, yval, hovermode, opts) {
     return points;
 }
 
-function _hoverPoints(pointData, xpx, ypx, hoverthroughX, hoverthroughY) {
+function _hoverPoints(pointData, xpx, ypx, hoversubplotsX, hoversubplotsY) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var scene = pointData.scene;
@@ -83,9 +83,9 @@ function _hoverPoints(pointData, xpx, ypx, hoverthroughX, hoverthroughY) {
         var dist = 0;
 
         var pick = false;
-        if(hoverthroughX) {
+        if(hoversubplotsX) {
             if(dx === 0) pick = true;
-        } else if(hoverthroughY) {
+        } else if(hoversubplotsY) {
             if(dy === 0) pick = true;
         } else {
             dist = Math.sqrt(dx * dx + dy * dy);

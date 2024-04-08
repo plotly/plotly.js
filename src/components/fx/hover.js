@@ -261,7 +261,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var spId;
 
     var fullLayout = gd._fullLayout;
-    var hoverthrough = fullLayout.hoverthrough;
+    var hoversubplots = fullLayout.hoversubplots;
     var plots = fullLayout._plots || [];
     var plotinfo = plots[subplot];
     var hasCartesian = fullLayout._has('cartesian');
@@ -270,7 +270,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
     var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
 
-    if(hasCartesian && (hovermodeHasX || hovermodeHasY) && hoverthrough === 'axis') {
+    if(hasCartesian && (hovermodeHasX || hovermodeHasY) && hoversubplots === 'axis') {
         var subplotsLength = subplots.length;
         for(var p = 0; p < subplotsLength; p++) {
             spId = subplots[p];
@@ -570,7 +570,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                         hoverLayer: fullLayout._hoverlayer,
 
                         // options for splom when hovering on same axis
-                        hoverthrough: hoverthrough,
+                        hoversubplots: hoversubplots,
                         gd: gd
                     });
 
@@ -692,7 +692,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     gd._spikepoints = newspikepoints;
 
     var sortHoverData = function() {
-        if(!hoverthrough) {
+        if(!hoversubplots) {
             hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
         }
 

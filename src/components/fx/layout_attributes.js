@@ -78,7 +78,7 @@ module.exports = {
             'If false, hover interactions are disabled.'
         ].join(' ')
     },
-    hoverthrough: {
+    hoversubplots: {
         valType: 'enumerated',
         values: ['axis', false],
         dflt: false,
