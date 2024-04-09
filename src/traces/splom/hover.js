@@ -11,55 +11,47 @@ function hoverPoints(pointData, xval, yval, hovermode, opts) {
     var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
     var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
 
-    var xpx = pointData.xa.c2p(xval);
-    var ypx = pointData.ya.c2p(yval);
+    var points = _hoverPoints(pointData, xval, yval);
 
-    var points = _hoverPoints(pointData, xpx, ypx);
+    if((hovermodeHasX || hovermodeHasY) && opts.hoversubplots === 'axis' && points[0]) {
+        var subplotsWith = (
+            hovermodeHasX ?
+            pointData.xa :
+            pointData.ya
+        )._subplotsWith;
 
-    if((hovermodeHasX || hovermodeHasY) && opts.hoversubplots === 'axis') {
-        var _xpx = points[0]._xpx;
-        var _ypx = points[0]._ypx;
+        var gd = opts.gd;
 
-        if(
-            (hovermodeHasX && _xpx !== undefined) ||
-            (hovermodeHasY && _ypx !== undefined)
-        ) {
-            var subplotsWith = (
-                hovermodeHasX ?
-                pointData.xa :
-                pointData.ya
-            )._subplotsWith;
+        var _pointData = extendFlat({}, pointData);
 
-            var gd = opts.gd;
+        for(var i = 0; i < subplotsWith.length; i++) {
+            var spId = subplotsWith[i];
 
-            var _pointData = extendFlat({}, pointData);
-
-            for(var i = 0; i < subplotsWith.length; i++) {
-                var spId = subplotsWith[i];
-
-                if(hovermodeHasY) {
-                    _pointData.xa = getFromId(gd, spId, 'x');
-                } else { // hovermodeHasX
-                    _pointData.ya = getFromId(gd, spId, 'y');
-                }
-
-                var newPoints = _hoverPoints(_pointData, _xpx, _ypx, hovermodeHasX, hovermodeHasY);
-
-                points = points.concat(newPoints);
+            if(hovermodeHasY) {
+                _pointData.xa = getFromId(gd, spId, 'x');
+            } else { // hovermodeHasX
+                _pointData.ya = getFromId(gd, spId, 'y');
             }
+
+            var axisHoversubplots = hovermodeHasX || hovermodeHasY;
+            var newPoints = _hoverPoints(_pointData, xval, yval, axisHoversubplots);
+
+            points = points.concat(newPoints);
         }
     }
 
     return points;
 }
 
-function _hoverPoints(pointData, xpx, ypx, hoversubplotsX, hoversubplotsY) {
+function _hoverPoints(pointData, xval, yval, axisHoversubplots) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var scene = pointData.scene;
     var cdata = scene.matrixOptions.cdata;
     var xa = pointData.xa;
     var ya = pointData.ya;
+    var xpx = xa.c2p(xval);
+    var ypx = ya.c2p(yval);
     var maxDistance = pointData.distance;
 
     var xi = helpers.getDimIndex(trace, xa);
@@ -69,36 +61,21 @@ function _hoverPoints(pointData, xpx, ypx, hoversubplotsX, hoversubplotsY) {
     var x = cdata[xi];
     var y = cdata[yi];
 
-    var id, dxy, _xpx, _ypx;
+    var id, dxy;
     var minDist = maxDistance;
 
     for(var i = 0; i < x.length; i++) {
-        if((hoversubplotsX || hoversubplotsY) && i !== pointData.index) continue;
+        if(axisHoversubplots && i !== pointData.index) continue;
 
         var ptx = x[i];
         var pty = y[i];
-        var thisXpx = xa.c2p(ptx);
-        var thisYpx = ya.c2p(pty);
+        var dx = xa.c2p(ptx) - xpx;
+        var dy = ya.c2p(pty) - ypx;
+        var dist = Math.sqrt(dx * dx + dy * dy);
 
-        var dx = thisXpx - xpx;
-        var dy = thisYpx - ypx;
-        var dist = 0;
-
-        var pick = false;
-        if(hoversubplotsX) {
-            if(dx === 0) pick = true;
-        } else if(hoversubplotsY) {
-            if(dy === 0) pick = true;
-        } else {
-            dist = Math.sqrt(dx * dx + dy * dy);
-            if(dist < minDist) pick = true;
-        }
-
-        if(pick) {
+        if(axisHoversubplots || dist < minDist) {
             minDist = dxy = dist;
             id = i;
-            _xpx = thisXpx;
-            _ypx = thisYpx;
         }
     }
 
@@ -108,10 +85,7 @@ function _hoverPoints(pointData, xpx, ypx, hoversubplotsX, hoversubplotsY) {
 
     if(id === undefined) return [pointData];
 
-    var out = calcHover(pointData, x, y, trace);
-    out._xpx = _xpx;
-    out._ypx = _ypx;
-    return [out];
+    return [calcHover(pointData, x, y, trace)];
 }
 
 module.exports = {
