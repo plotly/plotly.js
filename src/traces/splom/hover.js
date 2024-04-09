@@ -73,6 +73,8 @@ function _hoverPoints(pointData, xpx, ypx, hoversubplotsX, hoversubplotsY) {
     var minDist = maxDistance;
 
     for(var i = 0; i < x.length; i++) {
+        if((hoversubplotsX || hoversubplotsY) && i !== pointData.index) continue;
+
         var ptx = x[i];
         var pty = y[i];
         var thisXpx = xa.c2p(ptx);

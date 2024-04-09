@@ -2660,6 +2660,106 @@ describe('splom hover on subplots when hoversubplots is set to *axis* and (x|y) 
     });
 });
 
+describe('splom hover *axis* hoversubplots splom points on same position should pick points with same index', function() {
+    'use strict';
+
+    var mock = {
+        data: [{
+            type: 'splom',
+            dimensions: [{
+                values: [1, 1, 1, 1]
+            }, {
+                values: [1, 2, 3, 4]
+            }, {
+                values: [1, 2, 3, 4]
+            }, {
+                values: [1, null, 3, 4]
+            }
+            ]}],
+        layout: {
+            hoversubplots: 'axis',
+            hovermode: 'x',
+            width: 600,
+            height: 600
+        }
+    };
+
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, mock).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('splom *axis* hoversubplots', function() {
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'xy');
+        expect(gd._hoverdata.length).toBe(5);
+        assertHoverLabelContent({
+            nums: ['1', '1', '1', '1'],
+            name: ['', '', '', ''],
+            axis: '1'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'xy2');
+        expect(gd._hoverdata.length).toBe(4);
+        assertHoverLabelContent({
+            nums: ['1', '2', '2'],
+            name: ['', '', ''],
+            axis: '1'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'xy3');
+        expect(gd._hoverdata.length).toBe(4);
+        assertHoverLabelContent({
+            nums: ['1', '2', '2'],
+            name: ['', '', ''],
+            axis: '1'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'xy4');
+        expect(gd._hoverdata.length).toBe(5);
+        assertHoverLabelContent({
+            nums: ['1', '3', '3', '3'],
+            name: ['', '', '', ''],
+            axis: '1'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'x2y');
+        expect(gd._hoverdata.length).toBe(5);
+        assertHoverLabelContent({
+            nums: ['1', '3', '3', '3'],
+            name: ['', '', '', ''],
+            axis: '3'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'x3y');
+        expect(gd._hoverdata.length).toBe(5);
+        assertHoverLabelContent({
+            nums: ['1', '3', '3', '3'],
+            name: ['', '', '', ''],
+            axis: '3'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'x4y');
+        expect(gd._hoverdata.length).toBe(5);
+        assertHoverLabelContent({
+            nums: ['1', '3', '3', '3'],
+            name: ['', '', '', ''],
+            axis: '3'
+        });
+    });
+});
+
+
 describe('hover on many lines+bars', function() {
     'use strict';
 
