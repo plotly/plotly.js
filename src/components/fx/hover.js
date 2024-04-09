@@ -5,6 +5,7 @@ var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
 var Lib = require('../../lib');
+var pushUnique = Lib.pushUnique;
 var strTranslate = Lib.strTranslate;
 var strRotate = Lib.strRotate;
 var Events = require('../../lib/events');
@@ -257,13 +258,40 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     // use those instead of finding overlayed plots
     var subplots = Array.isArray(subplot) ? subplot : [subplot];
 
+    var spId;
+
     var fullLayout = gd._fullLayout;
+    var hoversubplots = fullLayout.hoversubplots;
     var plots = fullLayout._plots || [];
     var plotinfo = plots[subplot];
     var hasCartesian = fullLayout._has('cartesian');
 
+    var hovermode = evt.hovermode || fullLayout.hovermode;
+    var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
+    var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
+
+    if(hasCartesian && (hovermodeHasX || hovermodeHasY) && hoversubplots === 'axis') {
+        var subplotsLength = subplots.length;
+        for(var p = 0; p < subplotsLength; p++) {
+            spId = subplots[p];
+            if(plots[spId]) {
+                // 'cartesian' case
+
+                var subplotsWith = (
+                    Axes.getFromId(gd, spId, hovermodeHasX ? 'x' : 'y')
+                )._subplotsWith;
+
+                if(subplotsWith && subplotsWith.length) {
+                    for(var q = 0; q < subplotsWith.length; q++) {
+                        pushUnique(subplots, subplotsWith[q]);
+                    }
+                }
+            }
+        }
+    }
+
     // list of all overlaid subplots to look at
-    if(plotinfo) {
+    if(plotinfo && hoversubplots !== 'single') {
         var overlayedSubplots = plotinfo.overlays.map(function(pi) {
             return pi.id;
         });
@@ -277,7 +305,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var supportsCompare = false;
 
     for(var i = 0; i < len; i++) {
-        var spId = subplots[i];
+        spId = subplots[i];
 
         if(plots[spId]) {
             // 'cartesian' case
@@ -294,8 +322,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             return;
         }
     }
-
-    var hovermode = evt.hovermode || fullLayout.hovermode;
 
     if(hovermode && !supportsCompare) hovermode = 'closest';
 
@@ -441,6 +467,12 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             // the rest of this function from running and failing
             if(['carpet', 'contourcarpet'].indexOf(trace._module.name) !== -1) continue;
 
+            // within one trace mode can sometimes be overridden
+            _mode = hovermode;
+            if(helpers.isUnifiedHover(_mode)) {
+                _mode = _mode.charAt(0);
+            }
+
             if(trace.type === 'splom') {
                 // splom traces do not generate overlay subplots,
                 // it is safe to assume here splom traces correspond to the 0th subplot
@@ -449,12 +481,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             } else {
                 subplotId = helpers.getSubplot(trace);
                 subploti = subplots.indexOf(subplotId);
-            }
-
-            // within one trace mode can sometimes be overridden
-            _mode = hovermode;
-            if(helpers.isUnifiedHover(_mode)) {
-                _mode = _mode.charAt(0);
             }
 
             // container for new point, also used to pass info into module.hoverPoints
@@ -508,8 +534,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 pointData.scene = fullLayout._splomScenes[trace.uid];
             }
 
-            closedataPreviousLength = hoverData.length;
-
             // for a highlighting array, figure out what
             // we're searching for with this element
             if(_mode === 'array') {
@@ -536,12 +560,18 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 yval = yvalArray[subploti];
             }
 
+            closedataPreviousLength = hoverData.length;
+
             // Now if there is range to look in, find the points to hover.
             if(hoverdistance !== 0) {
                 if(trace._module && trace._module.hoverPoints) {
                     var newPoints = trace._module.hoverPoints(pointData, xval, yval, _mode, {
                         finiteRange: true,
-                        hoverLayer: fullLayout._hoverlayer
+                        hoverLayer: fullLayout._hoverlayer,
+
+                        // options for splom when hovering on same axis
+                        hoversubplots: hoversubplots,
+                        gd: gd
                     });
 
                     if(newPoints) {
@@ -662,7 +692,9 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     gd._spikepoints = newspikepoints;
 
     var sortHoverData = function() {
-        hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
+        if(hoversubplots !== 'axis') {
+            hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
+        }
 
         // move period positioned points and box/bar-like traces to the end of the list
         hoverData = orderRangePoints(hoverData, hovermode);
