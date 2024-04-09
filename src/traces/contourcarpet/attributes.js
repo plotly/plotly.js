@@ -70,7 +70,7 @@ module.exports = extendFlat({
         editType: 'plot'
     },
 
-    zindex: contourAttrs.zindex,
+    zorder: contourAttrs.zorder,
     transforms: undefined
 },
 

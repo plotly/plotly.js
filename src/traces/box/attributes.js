@@ -452,5 +452,5 @@ module.exports = {
             'or sample points or both?'
         ].join(' ')
     },
-    zindex: scatterAttrs.zindex
+    zorder: scatterAttrs.zorder
 };

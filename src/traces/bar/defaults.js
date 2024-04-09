@@ -29,7 +29,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('xhoverformat');
     coerce('yhoverformat');
 
-    coerce('zindex');
+    coerce('zorder');
 
     coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
     coerce('base');

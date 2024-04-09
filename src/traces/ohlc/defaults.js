@@ -32,7 +32,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     layout._requestRangeslider[traceOut.xaxis] = true;
 
-    coerce('zindex');
+    coerce('zorder');
 };
 
 function handleDirection(traceIn, traceOut, coerce, direction) {

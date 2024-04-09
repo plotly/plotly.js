@@ -67,7 +67,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     if(notched) coerce('notchwidth');
 
     handlePointsDefaults(traceIn, traceOut, coerce, {prefix: 'box'});
-    coerce('zindex');
+    coerce('zorder');
 }
 
 function handleSampleDefaults(traceIn, traceOut, coerce, layout) {

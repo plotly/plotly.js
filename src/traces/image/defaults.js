@@ -46,5 +46,5 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
 
     traceOut._length = null;
 
-    coerce('zindex');
+    coerce('zorder');
 };

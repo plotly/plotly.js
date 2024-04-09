@@ -11,20 +11,20 @@
         },
         {
             "type": "box",
-            "name": "box no zindex",
+            "name": "box no zorder",
             "y": [-1, 1]
         }, 
         {
             "type": "box",
             "name": "box below",
             "y": [-1, 1],
-            "zindex": -100
+            "zorder": -100
         }
     ],
     "layout": {
         "xaxis": {
             "title": {
-                "text": "zindex stacking"
+                "text": "zorder stacking"
             }
         }
     }

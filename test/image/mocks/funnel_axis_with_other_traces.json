@@ -22,7 +22,7 @@
             "x": [
                 1, 1, 1, 2, 2, 3
             ],
-            "zindex": -10
+            "zorder": -10
         },
         {
             "type": "funnel",
@@ -42,7 +42,7 @@
             ],
             "xaxis": "x2",
             "yaxis": "y2",
-            "zindex": 10
+            "zorder": 10
         },
         {
             "type": "bar",

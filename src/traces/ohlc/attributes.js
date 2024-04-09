@@ -134,5 +134,5 @@ module.exports = {
         }
     }),
 
-    zindex: scatterAttrs.zindex
+    zorder: scatterAttrs.zorder
 };

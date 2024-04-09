@@ -3,18 +3,18 @@
         {
             "x": [-3, -2, 4],
             "y": [2, 8, 2],
-            "name": "scatter zindex=2",
+            "name": "scatter zorder=2",
             "type": "scatter",
             "marker": {"size": 20},
             "line": {"width": 6},
-            "zindex": 2
+            "zorder": 2
         },
         {
             "x": [-3, -2, 2, 3],
             "y": [2, 5, -3, -1],
-            "name": "waterfall zindex=3",
+            "name": "waterfall zorder=3",
             "type": "waterfall",
-            "zindex": 3
+            "zorder": 3
         },
         {
             "width": 0.7,
@@ -22,8 +22,8 @@
             "x": [7, 5, 7],
             "opacity": 1,
             "type": "funnel",
-            "name": "funnel zindex=4",
-            "zindex": 4
+            "name": "funnel zorder=4",
+            "zorder": 4
         },
         {
             "type": "scattercarpet",
@@ -41,8 +41,8 @@
                 "angleref": "previous"
             },
             "carpet": "c0",
-            "name": "scattercarpet zindex=3",
-            "zindex": 3
+            "name": "scattercarpet zorder=3",
+            "zorder": 3
         },
         {
             "type": "carpet",
@@ -58,15 +58,15 @@
                 "minorgridcount": 9
             },
             "color": "red",
-            "zindex": 10,
+            "zorder": 10,
             "carpet": "c0",
-            "name": "carpet zindex=10"
+            "name": "carpet zorder=10"
         }
     ],
     "layout": {
         "xaxis": {
             "title": {
-                "text": "zindex stacking"
+                "text": "zorder stacking"
             }
         }
     }

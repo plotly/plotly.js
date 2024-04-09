@@ -144,11 +144,11 @@ var BOXEVENTS = [1, 2, 1];
 // assumes 5 points in the lasso path
 var LASSOEVENTS = [4, 2, 1];
 
-var mockZindex = {
+var mockZorder = {
     data: [
-        {x: [1, 2], y: [1, 1], type: 'scatter', zindex: 10, marker: {size: 50}},
+        {x: [1, 2], y: [1, 1], type: 'scatter', zorder: 10, marker: {size: 50}},
         {x: [1, 2], y: [1, 2], type: 'scatter', marker: {size: 50}},
-        {x: [1, 2], y: [1, 3], type: 'scatter', zindex: 5, marker: {size: 50}}
+        {x: [1, 2], y: [1, 3], type: 'scatter', zorder: 5, marker: {size: 50}}
     ],
     layout: {
         width: 400,
@@ -279,8 +279,8 @@ describe('Click-to-select', function() {
           .then(done, done.fail);
     });
 
-    it('selects a single data point when being clicked on trace with zindex', function(done) {
-        _newPlot(gd, mockZindex.data, mockZindex.layout)
+    it('selects a single data point when being clicked on trace with zorder', function(done) {
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
         .then(function() {
             return _immediateClickPt({ x: 270, y: 150 });
         })
@@ -295,8 +295,8 @@ describe('Click-to-select', function() {
         .then(done, done.fail);
     });
 
-    it('should only select top most zindex trace if overlapping position on single click', function(done) {
-        _newPlot(gd, mockZindex.data, mockZindex.layout)
+    it('should only select top most zorder trace if overlapping position on single click', function(done) {
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
         .then(function() {
             return _immediateClickPt({ x: 130, y: 250 });
         })
@@ -306,9 +306,9 @@ describe('Click-to-select', function() {
         .then(done, done.fail);
     });
 
-    it('should lasso select all overlapping points regardless of zindex', function(done) {
-        mockZindex.layout.dragmode = 'lasso';
-        _newPlot(gd, mockZindex.data, mockZindex.layout)
+    it('should lasso select all overlapping points regardless of zorder', function(done) {
+        mockZorder.layout.dragmode = 'lasso';
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
         .then(function() {
             drag([[200, 200], [200, 300], [100, 300], [100, 200], [200, 200]]);
         })
@@ -331,9 +331,9 @@ describe('Click-to-select', function() {
         .then(done, done.fail);
     });
 
-    it('should box select all overlapping points regardless of zindex', function(done) {
-        mockZindex.layout.dragmode = 'select';
-        _newPlot(gd, mockZindex.data, mockZindex.layout)
+    it('should box select all overlapping points regardless of zorder', function(done) {
+        mockZorder.layout.dragmode = 'select';
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
         .then(function() {
             drag([[200, 200], [100, 300]]);
         })

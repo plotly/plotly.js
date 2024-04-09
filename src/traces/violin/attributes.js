@@ -255,5 +255,5 @@ module.exports = {
             'or sample points or the kernel density estimate or any combination of them?'
         ].join(' ')
     },
-    zindex: boxAttrs.zindex
+    zorder: boxAttrs.zorder
 };

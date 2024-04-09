@@ -250,5 +250,5 @@ module.exports = {
         bardir: barAttrs._deprecated.bardir
     },
 
-    zindex: barAttrs.zindex
+    zorder: barAttrs.zorder
 };

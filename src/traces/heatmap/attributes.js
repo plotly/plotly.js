@@ -133,7 +133,7 @@ module.exports = extendFlat({
     }),
 
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false}),
-    zindex: scatterAttrs.zindex
+    zorder: scatterAttrs.zorder
 }, {
     transforms: undefined
 },

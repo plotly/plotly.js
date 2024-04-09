@@ -31,7 +31,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('whiskerwidth');
 
     layout._requestRangeslider[traceOut.xaxis] = true;
-    coerce('zindex');
+    coerce('zorder');
 };
 
 function handleDirection(traceIn, traceOut, coerce, direction) {

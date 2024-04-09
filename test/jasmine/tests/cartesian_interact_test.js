@@ -2548,7 +2548,7 @@ describe('Cartesian plots with css transforms', function() {
     });
 });
 
-describe('Cartesian taces with zindex', function() {
+describe('Cartesian taces with zorder', function() {
     var gd;
 
     beforeEach(function() {
@@ -2558,20 +2558,20 @@ describe('Cartesian taces with zindex', function() {
     afterEach(destroyGraphDiv);
 
     var data0 = [
-        {x: [1, 2], y: [1, 1], type: 'scatter', marker: {size: 10}, zindex: 10},
+        {x: [1, 2], y: [1, 1], type: 'scatter', marker: {size: 10}, zorder: 10},
         {x: [1, 2], y: [1, 2], type: 'scatter', marker: {size: 30}},
-        {x: [1, 2], y: [1, 3], type: 'scatter', marker: {size: 20}, zindex: 5}
+        {x: [1, 2], y: [1, 3], type: 'scatter', marker: {size: 20}, zorder: 5}
     ];
 
     var data1 = [
         {x: [1, 2], y: [1, 1], type: 'scatter', marker: {size: 10}},
-        {x: [1, 2], y: [1, 2], type: 'scatter', marker: {size: 30}, zindex: -5},
-        {x: [1, 2], y: [1, 3], type: 'scatter', marker: {size: 20}, zindex: 10},
+        {x: [1, 2], y: [1, 2], type: 'scatter', marker: {size: 30}, zorder: -5},
+        {x: [1, 2], y: [1, 3], type: 'scatter', marker: {size: 20}, zorder: 10},
     ];
 
     var barData = [
         {x: [1, 2], y: [2, 4], type: 'bar'},
-        {x: [1, 2], y: [4, 2], type: 'bar', zindex: -10}
+        {x: [1, 2], y: [4, 2], type: 'bar', zorder: -10}
     ];
 
     function fig(data) {
@@ -2585,8 +2585,8 @@ describe('Cartesian taces with zindex', function() {
 
     function assertZIndices(data, expectedData) {
         for(var i = 0; i < data.length; i++) {
-            var zindex = expectedData[i].zindex ? expectedData[i].zindex : 0;
-            expect(data[i].zindex).toEqual(zindex);
+            var zorder = expectedData[i].zorder ? expectedData[i].zorder : 0;
+            expect(data[i].zorder).toEqual(zorder);
         }
     }
 
@@ -2594,7 +2594,7 @@ describe('Cartesian taces with zindex', function() {
         var prevZIndex;
         expect(data.length).toBeGreaterThan(0);
         for(var i = 0; i < data.length; i++) {
-            var currentZIndex = data[i].__data__.zindex;
+            var currentZIndex = data[i].__data__.zorder;
             if(prevZIndex !== undefined) {
                 expect(currentZIndex).toBeGreaterThanOrEqual(prevZIndex);
             }
@@ -2602,7 +2602,7 @@ describe('Cartesian taces with zindex', function() {
         }
     }
 
-    it('should be able to update and remove layers for scatter traces in respect to zindex', function(done) {
+    it('should be able to update and remove layers for scatter traces in respect to zorder', function(done) {
         Plotly.newPlot(gd, fig(data0))
         .then(function() {
             var data = gd._fullData;
@@ -2656,7 +2656,7 @@ describe('Cartesian taces with zindex', function() {
         .then(done, done.fail);
     });
 
-    it('should display traces in ascending zindex order after restyle', function(done) {
+    it('should display traces in ascending zorder order after restyle', function(done) {
         Plotly.newPlot(gd, fig(data0))
         .then(function() {
             var tracesData = d3SelectAll('g[class^="scatterlayer"]');
@@ -2698,7 +2698,7 @@ describe('Cartesian taces with zindex', function() {
         it('should display ' + traceType + ' traces in ascending order', function(done) {
             var _Data = [
                 {x: [1, 2], y: [2, 4], type: traceType},
-                {x: [1, 2], y: [4, 2], type: traceType, zindex: -10}
+                {x: [1, 2], y: [4, 2], type: traceType, zorder: -10}
             ];
             var _Class = 'g[class^="' + traceType + 'layer"]';
             Plotly.newPlot(gd, fig(_Data))

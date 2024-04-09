@@ -16,7 +16,7 @@
         "showscale": false,
         "xgap": 5,
         "ygap": 5,
-        "zindex": 10
+        "zorder": 10
     }
 ],
     "layout": {

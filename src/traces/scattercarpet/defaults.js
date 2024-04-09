@@ -75,6 +75,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var hoverOn = coerce('hoveron', dfltHoverOn.join('+') || 'points');
     if(hoverOn !== 'fills') coerce('hovertemplate');
 
-    coerce('zindex');
+    coerce('zorder');
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

@@ -119,5 +119,5 @@ module.exports = {
     }),
     hoveron: scatterAttrs.hoveron,
     hovertemplate: hovertemplateAttrs(),
-    zindex: scatterAttrs.zindex
+    zorder: scatterAttrs.zorder
 };

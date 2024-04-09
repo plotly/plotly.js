@@ -30,7 +30,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('xhoverformat');
     coerce('yhoverformat');
 
-    coerce('zindex');
+    coerce('zorder');
 
     var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
     if(

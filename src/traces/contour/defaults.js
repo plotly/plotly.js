@@ -51,5 +51,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     ) {
         handleHeatmapLabelDefaults(coerce, layout);
     }
-    coerce('zindex');
+    coerce('zorder');
 };

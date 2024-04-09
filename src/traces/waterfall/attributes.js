@@ -152,5 +152,5 @@ module.exports = {
 
     offsetgroup: barAttrs.offsetgroup,
     alignmentgroup: barAttrs.alignmentgroup,
-    zindex: barAttrs.zindex
+    zorder: barAttrs.zorder
 };

@@ -195,25 +195,25 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     var modules = fullLayout._modules;
     var _module, cdModuleAndOthers, cdModule;
 
-    // Separate traces by zindex and plot each zindex group separately
+    // Separate traces by zorder and plot each zorder group separately
     // TODO: Performance
-    var traceZindexGroups = {};
+    var traceZorderGroups = {};
     for(var t = 0; t < cdSubplot.length; t++) {
         var trace = cdSubplot[t][0].trace;
-        var zi = trace.zindex || 0;
-        if(!traceZindexGroups[zi]) traceZindexGroups[zi] = [];
-        traceZindexGroups[zi].push(cdSubplot[t]);
+        var zi = trace.zorder || 0;
+        if(!traceZorderGroups[zi]) traceZorderGroups[zi] = [];
+        traceZorderGroups[zi].push(cdSubplot[t]);
     }
 
     var layerData = [];
     var zoomScaleQueryParts = [];
 
-    // Plot each zindex group in ascending order
-    var zindices = Object.keys(traceZindexGroups)
+    // Plot each zorder group in ascending order
+    var zindices = Object.keys(traceZorderGroups)
         .map(Number)
         .sort(Lib.sorterAsc);
     for(var z = 0; z < zindices.length; z++) {
-        var zindex = zindices[z];
+        var zorder = zindices[z];
         // For each "module" (trace type)
         for(var i = 0; i < modules.length; i++) {
             _module = modules[i];
@@ -225,7 +225,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
                 var plotMethod = _module.plot;
 
                 // plot all visible traces of this type on this subplot at once
-                cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod, zindex);
+                cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod, zorder);
                 cdModule = cdModuleAndOthers[0];
                 // don't need to search the found traces again - in fact we need to NOT
                 // so that if two modules share the same plotter we don't double-plot
@@ -234,7 +234,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
                 if(cdModule.length) {
                     layerData.push({
                         i: traceLayerClasses.indexOf(className),
-                        zindex: z,
+                        zorder: z,
                         className: className,
                         plotMethod: plotMethod,
                         cdModule: cdModule
@@ -248,7 +248,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         }
     }
     // Sort the layers primarily by z, then by i
-    layerData.sort(function(a, b) { return (a.zindex || 0) - (b.zindex || 0) || a.i - b.i; });
+    layerData.sort(function(a, b) { return (a.zorder || 0) - (b.zorder || 0) || a.i - b.i; });
 
     var layers = plotinfo.plot.selectAll('g.mlayer')
         .data(layerData, function(d) { return d.className; });
