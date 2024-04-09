@@ -14,7 +14,7 @@ var attributeOutsideTextFont = attributes.outsidetextfont;
 var helpers = require('./helpers');
 
 function style(gd) {
-    var s = d3.select(gd).selectAll('g.barlayer').selectAll('g.trace');
+    var s = d3.select(gd).selectAll('g[class^="barlayer"]').selectAll('g.trace');
     resizeText(gd, s, 'bar');
 
     var barcount = s.size();

@@ -8,6 +8,9 @@ var carpetFont = fontAttrs({
     editType: 'calc',
     description: 'The default font used for axis & tick labels on this carpet'
 });
+
+var zorder = require('../scatter/attributes').zorder;
+
 // TODO: inherit from global font
 carpetFont.family.dflt = '"Open Sans", verdana, arial, sans-serif';
 carpetFont.size.dflt = 12;
@@ -112,5 +115,6 @@ module.exports = {
             'Individual pieces can override this.'
         ].join(' ')
     },
-    transforms: undefined
+    transforms: undefined,
+    zorder: zorder
 };

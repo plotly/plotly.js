@@ -14854,6 +14854,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -17527,6 +17533,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -18075,6 +18087,12 @@
      "dflt": "",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -19476,6 +19494,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -23974,6 +23998,12 @@
      },
      "valType": "number"
     },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
+    },
     "zsrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `z`.",
      "editType": "none",
@@ -25022,6 +25052,12 @@
       "zauto": false
      },
      "valType": "number"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     },
     "zsrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `z`.",
@@ -27408,6 +27444,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -29399,6 +29441,12 @@
       "zauto": false
      },
      "valType": "number"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     },
     "zsmooth": {
      "description": "Picks a smoothing algorithm use to smooth `z` data.",
@@ -32139,6 +32187,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -36533,6 +36587,12 @@
      ],
      "valType": "info_array"
     },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
+    },
     "zsmooth": {
      "description": "Picks a smoothing algorithm used to smooth `z` data. This only applies for image traces that use the `source` attribute.",
      "dflt": false,
@@ -40491,6 +40551,12 @@
      "dflt": "",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -47235,6 +47301,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -51462,6 +51534,12 @@
      "dflt": "y",
      "editType": "calc+clearAxisTypes",
      "valType": "subplotid"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -73410,6 +73488,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -75598,6 +75682,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [

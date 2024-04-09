@@ -45,4 +45,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
     if(traceOut._cheater) {
         coerce('cheaterslope');
     }
+    coerce('zorder');
 };
