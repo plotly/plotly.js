@@ -4780,6 +4780,52 @@ describe('hover distance', function() {
     });
 });
 
+describe('hover working with zorder', function() {
+    'use strict';
+
+    var mock = {
+        data: [{
+            zorder: 100,
+            marker: {size: 50},
+            text: ['A', 'B'],
+            y: [0, 1]
+        }, {
+            marker: {size: 50},
+            text: ['C', 'D'],
+            y: [2, 1]
+        }],
+        layout: {
+            width: 400,
+            height: 400,
+            showlegend: false,
+            hovermode: 'closest'
+        }
+    };
+
+    afterEach(destroyGraphDiv);
+
+    beforeEach(function(done) {
+        Plotly.newPlot(createGraphDiv(), mock).then(done);
+    });
+
+    it('pick the trace on top', function() {
+        var gd = document.getElementById('graph');
+        Fx.hover('graph', {xval: 1}, 'xy');
+
+        expect(gd._hoverdata.length).toEqual(1);
+
+        assertHoverLabelContent({
+            nums: '(1, 1)\nB',
+            name: 'trace 0'
+        });
+
+        var hoverTrace = gd._hoverdata[0];
+        expect(hoverTrace.text).toEqual('B');
+        expect(hoverTrace.curveNumber).toEqual(0);
+        expect(hoverTrace.pointNumber).toEqual(1);
+    });
+});
+
 describe('hover label rotation:', function() {
     var gd;
 
