@@ -1805,7 +1805,7 @@ describe('hover info', function() {
             var scatterName = "scatter_";
             var barName = "bar_";
             var data = [];
-            for(let i = 0; i<3; i++) {
+            for(var i = 0; i<3; i++) {
                 data.push(trace(barName + i, "bar", 0.0));
                 data.push(trace(scatterName + i, "scatter", 0.1));
             }
@@ -1825,13 +1825,13 @@ describe('hover info', function() {
               .then(function () {
 
                 var nodes = [];
-                for(let i = 0; i<3; i++) {
+                for(var i = 0; i<3; i++) {
                     nodes.push(hoverInfoNodes(barName + i).secondaryBox.getBoundingClientRect());
                     nodes.push(hoverInfoNodes(scatterName + i).secondaryBox.getBoundingClientRect());
                 }
                 nodes.sort(function(a,b) { return a.top - b.top; } );
                 
-                for(let i = 0; i<5; i++) {
+                for(var i = 0; i<5; i++) {
                         expect(
                             calcLineOverlap(
                                 nodes[i].top,
