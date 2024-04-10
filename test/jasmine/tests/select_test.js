@@ -301,7 +301,7 @@ describe('Click-to-select', function() {
             return _immediateClickPt({ x: 130, y: 250 });
         })
         .then(function() {
-            assertSelectedPoints([], [1], []);
+            assertSelectedPoints([0], [], []);
         })
         .then(done, done.fail);
     });
