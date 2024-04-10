@@ -9,6 +9,24 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.31.0] -- 2024-04-10
+
+### Added
+ - Add `zorder` attribute to various cartesian traces for controlling stacking order of SVG traces drawn into a subplot [[#6918](https://github.com/plotly/plotly.js/pull/6918), [#6953](https://github.com/plotly/plotly.js/pull/6953)],
+   This feature was anonymously sponsored: thank you to our sponsor!
+ - Add "between" option to shape layer for placing them above grid lines and below traces [[#6927](https://github.com/plotly/plotly.js/pull/6927)],
+   with thanks to @my-tien for the contribution!
+ - Add "raw" `sizemode` to cone trace [[#6938](https://github.com/plotly/plotly.js/pull/6938)]
+ - Add `layout.hoversubplots` to enable hover effects across multiple cartesian suplots sharing one axis [[#6947](https://github.com/plotly/plotly.js/pull/6947), [#6950](https://github.com/plotly/plotly.js/pull/6950)]
+
+### Changed
+ - Regenerate `stackgl_modules/index.js` using updated dependencies [[#6937](https://github.com/plotly/plotly.js/pull/6937)]
+
+### Fixed
+ - Fix hover count in parcats trace [[#6944](https://github.com/plotly/plotly.js/pull/6944)],
+   with thanks to @weiweikee for the contribution!
+
+
 ## [2.30.1] -- 2024-03-15
 
 ### Fixed
