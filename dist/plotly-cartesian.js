@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.30.1
+* plotly.js (cartesian) v2.31.0
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -7983,6 +7983,7 @@ var d3 = __webpack_require__(33428);
 var isNumeric = __webpack_require__(38248);
 var tinycolor = __webpack_require__(49760);
 var Lib = __webpack_require__(3400);
+var pushUnique = Lib.pushUnique;
 var strTranslate = Lib.strTranslate;
 var strRotate = Lib.strRotate;
 var Events = __webpack_require__(95924);
@@ -8214,13 +8215,34 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
   // if the user passed in an array of subplots,
   // use those instead of finding overlayed plots
   var subplots = Array.isArray(subplot) ? subplot : [subplot];
+  var spId;
   var fullLayout = gd._fullLayout;
+  var hoversubplots = fullLayout.hoversubplots;
   var plots = fullLayout._plots || [];
   var plotinfo = plots[subplot];
   var hasCartesian = fullLayout._has('cartesian');
+  var hovermode = evt.hovermode || fullLayout.hovermode;
+  var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
+  var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
+  if (hasCartesian && (hovermodeHasX || hovermodeHasY) && hoversubplots === 'axis') {
+    var subplotsLength = subplots.length;
+    for (var p = 0; p < subplotsLength; p++) {
+      spId = subplots[p];
+      if (plots[spId]) {
+        // 'cartesian' case
+
+        var subplotsWith = Axes.getFromId(gd, spId, hovermodeHasX ? 'x' : 'y')._subplotsWith;
+        if (subplotsWith && subplotsWith.length) {
+          for (var q = 0; q < subplotsWith.length; q++) {
+            pushUnique(subplots, subplotsWith[q]);
+          }
+        }
+      }
+    }
+  }
 
   // list of all overlaid subplots to look at
-  if (plotinfo) {
+  if (plotinfo && hoversubplots !== 'single') {
     var overlayedSubplots = plotinfo.overlays.map(function (pi) {
       return pi.id;
     });
@@ -8231,7 +8253,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
   var yaArray = new Array(len);
   var supportsCompare = false;
   for (var i = 0; i < len; i++) {
-    var spId = subplots[i];
+    spId = subplots[i];
     if (plots[spId]) {
       // 'cartesian' case
       supportsCompare = true;
@@ -8247,7 +8269,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
       return;
     }
   }
-  var hovermode = evt.hovermode || fullLayout.hovermode;
   if (hovermode && !supportsCompare) hovermode = 'closest';
   if (['x', 'y', 'closest', 'x unified', 'y unified'].indexOf(hovermode) === -1 || !gd.calcdata || gd.querySelector('.zoombox') || gd._dragging) {
     return dragElement.unhoverRaw(gd, evt);
@@ -8300,8 +8321,15 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
       }
     }
   } else {
-    for (curvenum = 0; curvenum < gd.calcdata.length; curvenum++) {
-      cd = gd.calcdata[curvenum];
+    // take into account zorder
+    var zorderedCalcdata = gd.calcdata.slice();
+    zorderedCalcdata.sort(function (a, b) {
+      var aZorder = a[0].trace.zorder || 0;
+      var bZorder = b[0].trace.zorder || 0;
+      return aZorder - bZorder;
+    });
+    for (curvenum = 0; curvenum < zorderedCalcdata.length; curvenum++) {
+      cd = zorderedCalcdata[curvenum];
       trace = cd[0].trace;
       if (trace.hoverinfo !== 'skip' && helpers.isTraceInSubplots(trace, subplots)) {
         searchData.push(cd);
@@ -8369,6 +8397,12 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
       // Explicitly bail out for these two. I don't know how to otherwise prevent
       // the rest of this function from running and failing
       if (['carpet', 'contourcarpet'].indexOf(trace._module.name) !== -1) continue;
+
+      // within one trace mode can sometimes be overridden
+      _mode = hovermode;
+      if (helpers.isUnifiedHover(_mode)) {
+        _mode = _mode.charAt(0);
+      }
       if (trace.type === 'splom') {
         // splom traces do not generate overlay subplots,
         // it is safe to assume here splom traces correspond to the 0th subplot
@@ -8377,12 +8411,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
       } else {
         subplotId = helpers.getSubplot(trace);
         subploti = subplots.indexOf(subplotId);
-      }
-
-      // within one trace mode can sometimes be overridden
-      _mode = hovermode;
-      if (helpers.isUnifiedHover(_mode)) {
-        _mode = _mode.charAt(0);
       }
 
       // container for new point, also used to pass info into module.hoverPoints
@@ -8434,7 +8462,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
       if (fullLayout._splomScenes && fullLayout._splomScenes[trace.uid]) {
         pointData.scene = fullLayout._splomScenes[trace.uid];
       }
-      closedataPreviousLength = hoverData.length;
 
       // for a highlighting array, figure out what
       // we're searching for with this element
@@ -8461,13 +8488,17 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         xval = xvalArray[subploti];
         yval = yvalArray[subploti];
       }
+      closedataPreviousLength = hoverData.length;
 
       // Now if there is range to look in, find the points to hover.
       if (hoverdistance !== 0) {
         if (trace._module && trace._module.hoverPoints) {
           var newPoints = trace._module.hoverPoints(pointData, xval, yval, _mode, {
             finiteRange: true,
-            hoverLayer: fullLayout._hoverlayer
+            hoverLayer: fullLayout._hoverlayer,
+            // options for splom when hovering on same axis
+            hoversubplots: hoversubplots,
+            gd: gd
           });
           if (newPoints) {
             var newPoint;
@@ -8579,9 +8610,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
   };
   gd._spikepoints = newspikepoints;
   var sortHoverData = function () {
-    hoverData.sort(function (d1, d2) {
-      return d1.distance - d2.distance;
-    });
+    if (hoversubplots !== 'axis') {
+      hoverData.sort(function (d1, d2) {
+        return d1.distance - d2.distance;
+      });
+    }
 
     // move period positioned points and box/bar-like traces to the end of the list
     hoverData = orderRangePoints(hoverData, hovermode);
@@ -9995,6 +10028,7 @@ module.exports = function handleHoverModeDefaults(layoutIn, layoutOut) {
     return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
   }
   coerce('clickmode');
+  coerce('hoversubplots');
   return coerce('hovermode');
 };
 
@@ -10096,6 +10130,12 @@ module.exports = {
     values: ['x', 'y', 'closest', false, 'x unified', 'y unified'],
     dflt: 'closest',
     editType: 'modebar'
+  },
+  hoversubplots: {
+    valType: 'enumerated',
+    values: ['single', 'overlaying', 'axis'],
+    dflt: 'overlaying',
+    editType: 'none'
   },
   hoverdistance: {
     valType: 'integer',
@@ -17788,7 +17828,7 @@ module.exports = templatedArray('shape', {
   },
   layer: {
     valType: 'enumerated',
-    values: ['below', 'above'],
+    values: ['below', 'above', 'between'],
     dflt: 'above',
     editType: 'arraydraw'
   },
@@ -18934,10 +18974,12 @@ function drawOne(gd, index) {
   // this shape is gone - quit now after deleting it
   // TODO: use d3 idioms instead of deleting and redrawing every time
   if (!options._input || options.visible !== true) return;
-  if (options.layer !== 'below') {
+  if (options.layer === 'above') {
     drawShape(gd._fullLayout._shapeUpperLayer);
   } else if (options.xref === 'paper' || options.yref === 'paper') {
     drawShape(gd._fullLayout._shapeLowerLayer);
+  } else if (options.layer === 'between') {
+    drawShape(plotinfo.shapelayerBetween);
   } else {
     if (plotinfo._hadPlotinfo) {
       var mainPlot = plotinfo.mainplotinfo || plotinfo;
@@ -19467,7 +19509,7 @@ module.exports = overrideAll({
     },
     layer: {
       valType: 'enumerated',
-      values: ['below', 'above'],
+      values: ['below', 'above', 'between'],
       dflt: 'above'
     },
     drawdirection: {
@@ -44701,19 +44743,28 @@ exports.plot = function (gd, traces, transitionOpts, makeOnCompleteCallback) {
   var subplots = fullLayout._subplots.cartesian;
   var calcdata = gd.calcdata;
   var i;
+
+  // Traces is a list of trace indices to (re)plot. If it's not provided,
+  // then it's a complete replot so we create a new list and add all trace indices
+  // which are in calcdata.
+
   if (!Array.isArray(traces)) {
     // If traces is not provided, then it's a complete replot and missing
     // traces are removed
     traces = [];
     for (i = 0; i < calcdata.length; i++) traces.push(i);
   }
+
+  // For each subplot
   for (i = 0; i < subplots.length; i++) {
     var subplot = subplots[i];
     var subplotInfo = fullLayout._plots[subplot];
 
-    // Get all calcdata for this subplot:
+    // Get all calcdata (traces) for this subplot:
     var cdSubplot = [];
     var pcd;
+
+    // For each trace
     for (var j = 0; j < calcdata.length; j++) {
       var cd = calcdata[j];
       var trace = cd[0].trace;
@@ -44741,6 +44792,7 @@ exports.plot = function (gd, traces, transitionOpts, makeOnCompleteCallback) {
         pcd = cd;
       }
     }
+    // Plot the traces for this subplot
     plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback);
   }
 };
@@ -44749,37 +44801,56 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
   var fullLayout = gd._fullLayout;
   var modules = fullLayout._modules;
   var _module, cdModuleAndOthers, cdModule;
+
+  // Separate traces by zorder and plot each zorder group separately
+  // TODO: Performance
+  var traceZorderGroups = {};
+  for (var t = 0; t < cdSubplot.length; t++) {
+    var trace = cdSubplot[t][0].trace;
+    var zi = trace.zorder || 0;
+    if (!traceZorderGroups[zi]) traceZorderGroups[zi] = [];
+    traceZorderGroups[zi].push(cdSubplot[t]);
+  }
   var layerData = [];
   var zoomScaleQueryParts = [];
-  for (var i = 0; i < modules.length; i++) {
-    _module = modules[i];
-    var name = _module.name;
-    var categories = Registry.modules[name].categories;
-    if (categories.svg) {
-      var className = _module.layerName || name + 'layer';
-      var plotMethod = _module.plot;
 
-      // plot all visible traces of this type on this subplot at once
-      cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
-      cdModule = cdModuleAndOthers[0];
-      // don't need to search the found traces again - in fact we need to NOT
-      // so that if two modules share the same plotter we don't double-plot
-      cdSubplot = cdModuleAndOthers[1];
-      if (cdModule.length) {
-        layerData.push({
-          i: traceLayerClasses.indexOf(className),
-          className: className,
-          plotMethod: plotMethod,
-          cdModule: cdModule
-        });
-      }
-      if (categories.zoomScale) {
-        zoomScaleQueryParts.push('.' + className);
+  // Plot each zorder group in ascending order
+  var zindices = Object.keys(traceZorderGroups).map(Number).sort(Lib.sorterAsc);
+  for (var z = 0; z < zindices.length; z++) {
+    var zorder = zindices[z];
+    // For each "module" (trace type)
+    for (var i = 0; i < modules.length; i++) {
+      _module = modules[i];
+      var name = _module.name;
+      var categories = Registry.modules[name].categories;
+      if (categories.svg) {
+        var className = (_module.layerName || name + 'layer') + (z ? Number(z) + 1 : '');
+        var plotMethod = _module.plot;
+
+        // plot all visible traces of this type on this subplot at once
+        cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod, zorder);
+        cdModule = cdModuleAndOthers[0];
+        // don't need to search the found traces again - in fact we need to NOT
+        // so that if two modules share the same plotter we don't double-plot
+        cdSubplot = cdModuleAndOthers[1];
+        if (cdModule.length) {
+          layerData.push({
+            i: traceLayerClasses.indexOf(className),
+            zorder: z,
+            className: className,
+            plotMethod: plotMethod,
+            cdModule: cdModule
+          });
+        }
+        if (categories.zoomScale) {
+          zoomScaleQueryParts.push('.' + className);
+        }
       }
     }
   }
+  // Sort the layers primarily by z, then by i
   layerData.sort(function (a, b) {
-    return a.i - b.i;
+    return (a.zorder || 0) - (b.zorder || 0) || a.i - b.i;
   });
   var layers = plotinfo.plot.selectAll('g.mlayer').data(layerData, function (d) {
     return d.className;
@@ -44985,6 +45056,9 @@ function makeSubplotLayer(gd, plotinfo) {
       plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
       plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
       plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+      var betweenLayer = ensureSingle(plotgroup, 'g', 'layer-between');
+      plotinfo.shapelayerBetween = ensureSingle(betweenLayer, 'g', 'shapelayer');
+      plotinfo.imagelayerBetween = ensureSingle(betweenLayer, 'g', 'imagelayer');
       ensureSingle(plotgroup, 'path', 'xlines-below');
       ensureSingle(plotgroup, 'path', 'ylines-below');
       plotinfo.overlinesBelow = ensureSingle(plotgroup, 'g', 'overlines-below');
@@ -48374,10 +48448,10 @@ exports.KY = function (calcData, type, subplotId) {
  * @param {array} calcdata: as in gd.calcdata
  * @param {object|string|fn} arg1:
  *  the plotting module, or its name, or its plot method
- *
+ * @param {int} arg2: (optional) zorder to filter on
  * @return {array[array]} [foundCalcdata, remainingCalcdata]
  */
-exports._M = function (calcdata, arg1) {
+exports._M = function (calcdata, arg1, arg2) {
   var moduleCalcData = [];
   var remainingCalcData = [];
   var plotMethod;
@@ -48391,9 +48465,11 @@ exports._M = function (calcdata, arg1) {
   if (!plotMethod) {
     return [moduleCalcData, calcdata];
   }
+  var zorder = arg2;
   for (var i = 0; i < calcdata.length; i++) {
     var cd = calcdata[i];
     var trace = cd[0].trace;
+    var filterByZ = trace.zorder !== undefined;
     // N.B.
     // - 'legendonly' traces do not make it past here
     // - skip over 'visible' traces that got trimmed completely during calc transforms
@@ -48403,7 +48479,7 @@ exports._M = function (calcdata, arg1) {
     // would suggest), but by 'module plot method' so that if some traces
     // share the same module plot method (e.g. bar and histogram), we
     // only call it one!
-    if (trace._module && trace._module.plot === plotMethod) {
+    if (trace._module && trace._module.plot === plotMethod && (!filterByZ || trace.zorder === zorder)) {
       moduleCalcData.push(cd);
     } else {
       remainingCalcData.push(cd);
@@ -54225,6 +54301,7 @@ module.exports = {
     textfont: scatterAttrs.unselected.textfont,
     editType: 'style'
   },
+  zorder: scatterAttrs.zorder,
   _deprecated: {
     bardir: {
       valType: 'enumerated',
@@ -55123,6 +55200,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
   handlePeriodDefaults(traceIn, traceOut, layout, coerce);
   coerce('xhoverformat');
   coerce('yhoverformat');
+  coerce('zorder');
   coerce('orientation', traceOut.x && !traceOut.y ? 'h' : 'v');
   coerce('base');
   coerce('offset');
@@ -56635,7 +56713,7 @@ var attributeInsideTextFont = attributes.insidetextfont;
 var attributeOutsideTextFont = attributes.outsidetextfont;
 var helpers = __webpack_require__(60444);
 function style(gd) {
-  var s = d3.select(gd).selectAll('g.barlayer').selectAll('g.trace');
+  var s = d3.select(gd).selectAll('g[class^="barlayer"]').selectAll('g.trace');
   resizeText(gd, s, 'bar');
   var barcount = s.size();
   var fullLayout = gd._fullLayout;
@@ -57112,7 +57190,8 @@ module.exports = {
     flags: ['boxes', 'points'],
     dflt: 'boxes+points',
     editType: 'style'
-  }
+  },
+  zorder: scatterAttrs.zorder
 };
 
 /***/ }),
@@ -57768,6 +57847,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
   handlePointsDefaults(traceIn, traceOut, coerce, {
     prefix: 'box'
   });
+  coerce('zorder');
 }
 function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
   function getDims(arr) {
@@ -58895,7 +58975,8 @@ module.exports = extendFlat({
     dash: dash,
     smoothing: extendFlat({}, scatterLineAttrs.smoothing, {}),
     editType: 'plot'
-  }
+  },
+  zorder: scatterAttrs.zorder
 }, colorScaleAttrs('', {
   cLetter: 'z',
   autoColorDflt: false,
@@ -59440,6 +59521,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
   if (traceOut.contours && traceOut.contours.coloring === 'heatmap') {
     handleHeatmapLabelDefaults(coerce, layout);
   }
+  coerce('zorder');
 };
 
 /***/ }),
@@ -60880,7 +60962,8 @@ module.exports = extendFlat({
   }),
   showlegend: extendFlat({}, baseAttrs.showlegend, {
     dflt: false
-  })
+  }),
+  zorder: scatterAttrs.zorder
 }, {
   transforms: undefined
 }, colorScaleAttrs('', {
@@ -61272,6 +61355,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     prefix: '',
     cLetter: 'z'
   });
+  coerce('zorder');
 };
 
 /***/ }),
@@ -62513,7 +62597,8 @@ module.exports = {
   unselected: barAttrs.unselected,
   _deprecated: {
     bardir: barAttrs._deprecated.bardir
-  }
+  },
+  zorder: barAttrs.zorder
 };
 
 /***/ }),
@@ -63646,6 +63731,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     axis: 'x',
     inherit: 'y'
   });
+  coerce('zorder');
 };
 
 /***/ }),
@@ -64286,6 +64372,7 @@ module.exports = {
 
 
 var baseAttrs = __webpack_require__(45464);
+var zorder = (__webpack_require__(52904).zorder);
 var hovertemplateAttrs = (__webpack_require__(21776)/* .hovertemplateAttrs */ .Ks);
 var extendFlat = (__webpack_require__(92880).extendFlat);
 var colormodel = (__webpack_require__(47797).colormodel);
@@ -64386,6 +64473,7 @@ module.exports = extendFlat({
   hovertemplate: hovertemplateAttrs({}, {
     keys: ['z', 'color', 'colormodel']
   }),
+  zorder: zorder,
   transforms: undefined
 });
 
@@ -64585,6 +64673,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
   coerce('hovertext');
   coerce('hovertemplate');
   traceOut._length = null;
+  coerce('zorder');
 };
 
 /***/ }),
@@ -67059,7 +67148,12 @@ module.exports = {
     editType: 'calc',
     colorEditType: 'style',
     arrayOk: true
-  })
+  }),
+  zorder: {
+    valType: 'integer',
+    dflt: 0,
+    editType: 'plot'
+  }
 };
 
 /***/ }),
@@ -67681,6 +67775,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
   handlePeriodDefaults(traceIn, traceOut, layout, coerce);
   coerce('xhoverformat');
   coerce('yhoverformat');
+  coerce('zorder');
   var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
   if (layout.scattermode === 'group' && traceOut.orientation === undefined) {
     coerce('orientation', 'v');
@@ -70382,7 +70477,8 @@ module.exports = {
     dflt: 'violins+points+kde',
     extras: ['all'],
     editType: 'style'
-  }
+  },
+  zorder: boxAttrs.zorder
 };
 
 /***/ }),
@@ -70620,6 +70716,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     visible: false
   };
   coerce('quartilemethod');
+  coerce('zorder');
 };
 
 /***/ }),
@@ -72029,7 +72126,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.30.1';
+exports.version = '2.31.0';
 
 /***/ }),
 
