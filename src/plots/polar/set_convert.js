@@ -109,14 +109,6 @@ function setConvertAngular(ax, polarLayout) {
         var _d2c = function(v) { return ax.d2c(v, trace.thetaunit); };
 
         if(arrayIn) {
-            if(Lib.isTypedArray(arrayIn) && axType === 'linear') {
-                if(len === arrayIn.length) {
-                    return arrayIn;
-                } else if(arrayIn.subarray) {
-                    return arrayIn.subarray(0, len);
-                }
-            }
-
             arrayOut = new Array(len);
             for(i = 0; i < len; i++) {
                 arrayOut[i] = _d2c(arrayIn[i]);

@@ -55,6 +55,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             moduleHasTextangle: false,
             moduleHasInsideanchor: false
         });
+    } else if(textInfo === 'none') {
+        coerce('textposition', 'none');
     }
 
     handleDomainDefaults(traceOut, layout, coerce);

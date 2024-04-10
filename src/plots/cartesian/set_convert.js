@@ -447,6 +447,23 @@ module.exports = function setConvert(ax, fullLayout) {
 
         if(minallowed !== undefined && rng[0] < bounds[0]) range[axrev ? 1 : 0] = minallowed;
         if(maxallowed !== undefined && rng[1] > bounds[1]) range[axrev ? 0 : 1] = maxallowed;
+
+        if(range[0] === range[1]) {
+            var minL = ax.l2r(minallowed);
+            var maxL = ax.l2r(maxallowed);
+
+            if(minallowed !== undefined) {
+                var _max = minL + 1;
+                if(maxallowed !== undefined) _max = Math.min(_max, maxL);
+                range[axrev ? 1 : 0] = _max;
+            }
+
+            if(maxallowed !== undefined) {
+                var _min = maxL + 1;
+                if(minallowed !== undefined) _min = Math.max(_min, minL);
+                range[axrev ? 0 : 1] = _min;
+            }
+        }
     };
 
     /*

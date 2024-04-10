@@ -18,7 +18,7 @@ requirejs.config({
 
 requirejs(['plotly'],
 function(plotly) {
-    if(plotly) {
+    if(plotly && plotly.PlotSchema) {
         console.log(plotly);
     } else {
         throw 'Error: loading with requirejs';

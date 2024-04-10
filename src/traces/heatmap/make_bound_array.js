@@ -22,13 +22,27 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
         // and extend it linearly based on the last two points
         if(len <= numbricks) {
             // contour plots only want the centers
-            if(isContour || isGL2D) arrayOut = arrayIn.slice(0, numbricks);
+            if(isContour || isGL2D) arrayOut = Array.from(arrayIn).slice(0, numbricks);
             else if(numbricks === 1) {
-                arrayOut = [arrayIn[0] - 0.5, arrayIn[0] + 0.5];
+                if(ax.type === 'log') {
+                    arrayOut = [0.5 * arrayIn[0], 2 * arrayIn[0]];
+                } else {
+                    arrayOut = [arrayIn[0] - 0.5, arrayIn[0] + 0.5];
+                }
+            } else if(ax.type === 'log') {
+                arrayOut = [Math.pow(arrayIn[0], 1.5) / Math.pow(arrayIn[1], 0.5)];
+
+                for(i = 1; i < len; i++) {
+                    // Geomean
+                    arrayOut.push(Math.sqrt(arrayIn[i - 1] * arrayIn[i]));
+                }
+
+                arrayOut.push(Math.pow(arrayIn[len - 1], 1.5) / Math.pow(arrayIn[len - 2], 0.5));
             } else {
                 arrayOut = [1.5 * arrayIn[0] - 0.5 * arrayIn[1]];
 
                 for(i = 1; i < len; i++) {
+                    // Arithmetic mean
                     arrayOut.push((arrayIn[i - 1] + arrayIn[i]) * 0.5);
                 }
 
@@ -37,11 +51,21 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
 
             if(len < numbricks) {
                 var lastPt = arrayOut[arrayOut.length - 1];
-                var delta = lastPt - arrayOut[arrayOut.length - 2];
+                var delta; // either multiplicative delta (log axis type) or arithmetic delta (all other axis types)
+                if(ax.type === 'log') {
+                    delta = lastPt / arrayOut[arrayOut.length - 2];
 
-                for(i = len; i < numbricks; i++) {
-                    lastPt += delta;
-                    arrayOut.push(lastPt);
+                    for(i = len; i < numbricks; i++) {
+                        lastPt *= delta;
+                        arrayOut.push(lastPt);
+                    }
+                } else {
+                    delta = lastPt - arrayOut[arrayOut.length - 2];
+
+                    for(i = len; i < numbricks; i++) {
+                        lastPt += delta;
+                        arrayOut.push(lastPt);
+                    }
                 }
             }
         } else {

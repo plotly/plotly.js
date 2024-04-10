@@ -8,6 +8,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     if(!opts) opts = {};
 
     var markerColor = (traceIn.marker || {}).color;
+    if(markerColor && markerColor._inputArray) markerColor = markerColor._inputArray;
 
     coerce('line.color', defaultColor);
 

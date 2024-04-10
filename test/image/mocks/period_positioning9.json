@@ -22,7 +22,7 @@
             "l": 25,
             "r": 25
         },
-
+        "barcornerradius": "50%",
         "xaxis": {
             "dtick": "M6",
             "tickformat": "%Y H%h",

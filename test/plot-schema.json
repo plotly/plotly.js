@@ -479,7 +479,7 @@
     "requiredOpts": []
    },
    "data_array": {
-    "description": "An {array} of data. The value MUST be an {array}, or we ignore it. Note that typed arrays (e.g. Float32Array) are supported.",
+    "description": "An {array} of data. The value must represent an {array} or it will be ignored, but this array can be provided in several forms: (1) a regular {array} object (2) a typed array (e.g. Float32Array) (3) an object with keys dtype, bdata, and optionally shape. In this 3rd form, dtype is one of *f8*, *f4*. *i4*, *u4*, *i2*, *u2*, *i1*, *u1* or *u1c* for Uint8ClampedArray. In addition to shorthand `dtype` above one could also use the following forms: *float64*, *float32*, *int32*, *uint32*, *int16*, *uint16*, *int8*, *uint8* or *uint8c* for Uint8ClampedArray. `bdata` is either a base64-encoded string or the ArrayBuffer of an integer or float typed array. For either multi-dimensional arrays you must also provide its dimensions separated by comma via `shape`. For example using `dtype`: *f4* and `shape`: *5,100* you can declare a 2-D array that has 5 rows and 100 columns containing float32 values i.e. 4 bits per value. `shape` is optional for one dimensional arrays.",
     "otherOpts": [
      "dflt"
     ],
@@ -2634,6 +2634,17 @@
      "y unified"
     ]
    },
+   "hoversubplots": {
+    "description": "Determines expansion of hover effects to other subplots If *single* just the axis pair of the primary point is included without overlaying subplots. If *overlaying* all subplots using the main axis and occupying the same space are included. If *axis*, also include stacked subplots using the same axis when `hovermode` is set to *x*, *x unified*, *y* or *y unified*.",
+    "dflt": "overlaying",
+    "editType": "none",
+    "valType": "enumerated",
+    "values": [
+     "single",
+     "overlaying",
+     "axis"
+    ]
+   },
    "images": {
     "items": {
      "image": {
@@ -2847,6 +2858,13 @@
       "min": 1,
       "valType": "number"
      }
+    },
+    "indentation": {
+     "description": "Sets the indentation (in px) of the legend entries.",
+     "dflt": 0,
+     "editType": "legend",
+     "min": -15,
+     "valType": "number"
     },
     "itemclick": {
      "description": "Determines the behavior on legend item click. *toggle* toggles the visibility of the item clicked on the graph. *toggleothers* makes the clicked item the sole visible item on the graph. *false* disables legend item click interactions.",
@@ -3713,13 +3731,14 @@
      }
     },
     "layer": {
-     "description": "Specifies whether new shapes are drawn below or above traces.",
+     "description": "Specifies whether new shapes are drawn below gridlines (*below*), between gridlines and traces (*between*) or above traces (*above*).",
      "dflt": "above",
      "editType": "none",
      "valType": "enumerated",
      "values": [
       "below",
-      "above"
+      "above",
+      "between"
      ]
     },
     "legend": {
@@ -4463,6 +4482,20 @@
        "valType": "any"
       },
       "role": "object"
+     },
+     "autotickangles": {
+      "description": "When `tickangle` is set to *auto*, it will be set to the first angle in this array that is large enough to prevent label overlap.",
+      "dflt": [
+       0,
+       30,
+       90
+      ],
+      "editType": "ticks",
+      "freeLength": true,
+      "items": {
+       "valType": "angle"
+      },
+      "valType": "info_array"
      },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -7687,13 +7720,14 @@
        }
       },
       "layer": {
-       "description": "Specifies whether shapes are drawn below or above traces.",
+       "description": "Specifies whether shapes are drawn below gridlines (*below*), between gridlines and traces (*between*) or above traces (*above*).",
        "dflt": "above",
        "editType": "arraydraw",
        "valType": "enumerated",
        "values": [
         "below",
-        "above"
+        "above",
+        "between"
        ]
       },
       "legend": {
@@ -10699,6 +10733,20 @@
      },
      "role": "object"
     },
+    "autotickangles": {
+     "description": "When `tickangle` is set to *auto*, it will be set to the first angle in this array that is large enough to prevent label overlap.",
+     "dflt": [
+      0,
+      30,
+      90
+     ],
+     "editType": "ticks",
+     "freeLength": true,
+     "items": {
+      "valType": "angle"
+     },
+     "valType": "info_array"
+    },
     "autotypenumbers": {
      "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
      "dflt": "convert types",
@@ -12038,6 +12086,20 @@
      "dflt": false,
      "editType": "plot",
      "valType": "boolean"
+    },
+    "autotickangles": {
+     "description": "When `tickangle` is set to *auto*, it will be set to the first angle in this array that is large enough to prevent label overlap.",
+     "dflt": [
+      0,
+      30,
+      90
+     ],
+     "editType": "ticks",
+     "freeLength": true,
+     "items": {
+      "valType": "angle"
+     },
+     "valType": "info_array"
     },
     "autotypenumbers": {
      "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -14113,6 +14175,11 @@
       "editType": "none",
       "valType": "string"
      },
+     "cornerradius": {
+      "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width (as a string ending in %). Defaults to `layout.barcornerradius`. In stack or relative barmode, the first trace to set cornerradius is used for the whole stack.",
+      "editType": "calc",
+      "valType": "any"
+     },
      "editType": "calc",
      "line": {
       "autocolorscale": {
@@ -14787,6 +14854,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -14800,6 +14873,11 @@
     "zoomScale"
    ],
    "layoutAttributes": {
+    "barcornerradius": {
+     "description": "Sets the rounding of bar corners. May be an integer number of pixels, or a percentage of bar width (as a string ending in %).",
+     "editType": "calc",
+     "valType": "any"
+    },
     "bargap": {
      "description": "Sets the gap (in plot fraction) between bars of adjacent location coordinates.",
      "editType": "calc",
@@ -17275,7 +17353,7 @@
      "role": "object"
     },
     "upperfence": {
-     "description": "Sets the upper fence values. There should be as many items as the number of boxes desired. This attribute has effect only under the q1/median/q3 signature. If `upperfence` is not provided but a sample (in `y` or `x`) is set, we compute the lower as the last sample point above 1.5 times the IQR.",
+     "description": "Sets the upper fence values. There should be as many items as the number of boxes desired. This attribute has effect only under the q1/median/q3 signature. If `upperfence` is not provided but a sample (in `y` or `x`) is set, we compute the upper as the last sample point above 1.5 times the IQR.",
      "editType": "calc",
      "valType": "data_array"
     },
@@ -17455,6 +17533,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -18003,6 +18087,12 @@
      "dflt": "",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -19404,6 +19494,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -22397,17 +22493,18 @@
      "valType": "boolean"
     },
     "sizemode": {
-     "description": "Determines whether `sizeref` is set as a *scaled* (i.e unitless) scalar (normalized by the max u/v/w norm in the vector field) or as *absolute* value (in the same units as the vector field).",
+     "description": "Determines whether `sizeref` is set as a *scaled* (i.e unitless) scalar (normalized by the max u/v/w norm in the vector field) or as *absolute* value (in the same units as the vector field). To display sizes in actual vector length use *raw*.",
      "dflt": "scaled",
      "editType": "calc",
      "valType": "enumerated",
      "values": [
       "scaled",
-      "absolute"
+      "absolute",
+      "raw"
      ]
     },
     "sizeref": {
-     "description": "Adjusts the cone size scaling. The size of the cones is determined by their u/v/w norm multiplied a factor and `sizeref`. This factor (computed internally) corresponds to the minimum \"time\" to travel across two successive x/y/z positions at the average velocity of those two successive positions. All cones in a given trace use the same factor. With `sizemode` set to *scaled*, `sizeref` is unitless, its default value is *0.5* With `sizemode` set to *absolute*, `sizeref` has the same units as the u/v/w vector field, its the default value is half the sample's maximum vector norm.",
+     "description": "Adjusts the cone size scaling. The size of the cones is determined by their u/v/w norm multiplied a factor and `sizeref`. This factor (computed internally) corresponds to the minimum \"time\" to travel across two successive x/y/z positions at the average velocity of those two successive positions. All cones in a given trace use the same factor. With `sizemode` set to *raw*, its default value is *1*. With `sizemode` set to *scaled*, `sizeref` is unitless, its default value is *0.5*. With `sizemode` set to *absolute*, `sizeref` has the same units as the u/v/w vector field, its the default value is half the sample's maximum vector norm.",
      "editType": "calc",
      "min": 0,
      "valType": "number"
@@ -23901,6 +23998,12 @@
      },
      "valType": "number"
     },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
+    },
     "zsrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `z`.",
      "editType": "none",
@@ -24949,6 +25052,12 @@
       "zauto": false
      },
      "valType": "number"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     },
     "zsrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `z`.",
@@ -27335,6 +27444,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -29326,6 +29441,12 @@
       "zauto": false
      },
      "valType": "number"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     },
     "zsmooth": {
      "description": "Picks a smoothing algorithm use to smooth `z` data.",
@@ -31469,6 +31590,11 @@
       "editType": "none",
       "valType": "string"
      },
+     "cornerradius": {
+      "description": "Sets the rounding of corners. May be an integer number of pixels, or a percentage of bar width (as a string ending in %). Defaults to `layout.barcornerradius`. In stack or relative barmode, the first trace to set cornerradius is used for the whole stack.",
+      "editType": "calc",
+      "valType": "any"
+     },
      "editType": "calc",
      "line": {
       "autocolorscale": {
@@ -32061,6 +32187,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -32074,6 +32206,11 @@
     "showLegend"
    ],
    "layoutAttributes": {
+    "barcornerradius": {
+     "description": "Sets the rounding of bar corners. May be an integer number of pixels, or a percentage of bar width (as a string ending in %).",
+     "editType": "calc",
+     "valType": "any"
+    },
     "bargap": {
      "description": "Sets the gap (in plot fraction) between bars of adjacent location coordinates.",
      "editType": "calc",
@@ -36450,6 +36587,12 @@
      ],
      "valType": "info_array"
     },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
+    },
     "zsmooth": {
      "description": "Picks a smoothing algorithm used to smooth `z` data. This only applies for image traces that use the `source` attribute.",
      "dflt": false,
@@ -40408,6 +40551,12 @@
      "dflt": "",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -44148,6 +44297,17 @@
      },
      "description": "The links of the Sankey plot.",
      "editType": "calc",
+     "hovercolor": {
+      "arrayOk": true,
+      "description": "Sets the `link` hover color. It can be a single value, or an array for specifying hover colors for each `link`. If `link.hovercolor` is omitted, then by default, links will become slightly more opaque when hovered over.",
+      "editType": "calc",
+      "valType": "color"
+     },
+     "hovercolorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `hovercolor`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "hoverinfo": {
       "description": "Determines which trace information appear when hovering links. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.",
       "dflt": "all",
@@ -44358,6 +44518,18 @@
      "valType": "string"
     },
     "node": {
+     "align": {
+      "description": "Sets the alignment method used to position the nodes along the horizontal axis.",
+      "dflt": "justify",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "justify",
+       "left",
+       "right",
+       "center"
+      ]
+     },
      "color": {
       "arrayOk": true,
       "description": "Sets the `node` color. It can be a single value, or an array for specifying color for each `node`. If `node.color` is omitted, then the default `Plotly` color palette will be cycled through to have a variety of colors. These defaults are not fully opaque, to allow some visibility of what is beneath the node.",
@@ -44950,9 +45122,41 @@
     },
     "fillcolor": {
      "anim": true,
-     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.",
+     "description": "Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. If fillgradient is specified, fillcolor is ignored except for setting the background color of the hover label, if any.",
      "editType": "style",
      "valType": "color"
+    },
+    "fillgradient": {
+     "colorscale": {
+      "description": "Sets the fill gradient colors as a color scale. The color scale is interpreted as a gradient applied in the direction specified by *orientation*, from the lowest to the highest value of the scatter plot along that axis, or from the center to the most distant point from it, if orientation is *radial*.",
+      "editType": "style",
+      "valType": "colorscale"
+     },
+     "description": "Sets a fill gradient. If not specified, the fillcolor is used instead.",
+     "editType": "calc",
+     "role": "object",
+     "start": {
+      "description": "Sets the gradient start value. It is given as the absolute position on the axis determined by the orientiation. E.g., if orientation is *horizontal*, the gradient will be horizontal and start from the x-position given by start. If omitted, the gradient starts at the lowest value of the trace along the respective axis. Ignored if orientation is *radial*.",
+      "editType": "calc",
+      "valType": "number"
+     },
+     "stop": {
+      "description": "Sets the gradient end value. It is given as the absolute position on the axis determined by the orientiation. E.g., if orientation is *horizontal*, the gradient will be horizontal and end at the x-position given by end. If omitted, the gradient ends at the highest value of the trace along the respective axis. Ignored if orientation is *radial*.",
+      "editType": "calc",
+      "valType": "number"
+     },
+     "type": {
+      "description": "Sets the type/orientation of the color gradient for the fill. Defaults to *none*.",
+      "dflt": "none",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "radial",
+       "horizontal",
+       "vertical",
+       "none"
+      ]
+     }
     },
     "fillpattern": {
      "bgcolor": {
@@ -47097,6 +47301,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -51324,6 +51534,12 @@
      "dflt": "y",
      "editType": "calc+clearAxisTypes",
      "valType": "subplotid"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -73272,6 +73488,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [
@@ -75460,6 +75682,12 @@
      "description": "Sets the source reference on Chart Studio Cloud for `y`.",
      "editType": "none",
      "valType": "string"
+    },
+    "zorder": {
+     "description": "Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.",
+     "dflt": 0,
+     "editType": "plot",
+     "valType": "integer"
     }
    },
    "categories": [

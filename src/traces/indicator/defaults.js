@@ -129,7 +129,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerceGaugeAxis('visible');
         traceOut._range = coerceGaugeAxis('range', traceOut._range);
 
-        var opts = {outerTicks: true};
+        var opts = {
+            noAutotickangles: true,
+            outerTicks: true
+        };
         handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');
         handlePrefixSuffixDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
         handleTickLabelDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);

@@ -3,6 +3,8 @@
 var c = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 var isNumeric = require('fast-isnumeric');
+var isTypedArray = require('../../lib/array').isTypedArray;
+var isArrayOrTypedArray = require('../../lib/array').isArrayOrTypedArray;
 
 // pure functions, don't alter but passes on `gd` and parts of `trace` without deep copying
 module.exports = function calc(gd, trace) {
@@ -35,9 +37,13 @@ module.exports = function calc(gd, trace) {
     var headerRowBlocks = makeRowBlock(anchorToHeaderRowBlock, []);
     var rowBlocks = makeRowBlock(anchorToRowBlock, headerRowBlocks);
     var uniqueKeys = {};
-    var columnOrder = trace._fullInput.columnorder.concat(slicer(cellsValues.map(function(d, i) {return i;})));
+
+    var columnOrder = trace._fullInput.columnorder;
+    if(isArrayOrTypedArray(columnOrder)) columnOrder = Array.from(columnOrder);
+    columnOrder = columnOrder.concat(slicer(cellsValues.map(function(d, i) {return i;})));
+
     var columnWidths = headerValues.map(function(d, i) {
-        var value = Array.isArray(trace.columnwidth) ?
+        var value = isArrayOrTypedArray(trace.columnwidth) ?
             trace.columnwidth[Math.min(i, trace.columnwidth.length - 1)] :
             trace.columnwidth;
         return isNumeric(value) ? Number(value) : 1;
@@ -95,7 +101,7 @@ module.exports = function calc(gd, trace) {
 };
 
 function arrayMax(maybeArray) {
-    if(Array.isArray(maybeArray)) {
+    if(isArrayOrTypedArray(maybeArray)) {
         var max = 0;
         for(var i = 0; i < maybeArray.length; i++) {
             max = Math.max(max, arrayMax(maybeArray[i]));
@@ -115,7 +121,8 @@ function squareStringMatrix(matrixIn) {
     var maxLen = 0;
     var i;
     for(i = 0; i < matrix.length; i++) {
-        if(!Array.isArray(matrix[i])) matrix[i] = [matrix[i]];
+        if(isTypedArray(matrix[i])) matrix[i] = Array.from(matrix[i]);
+        else if(!isArrayOrTypedArray(matrix[i])) matrix[i] = [matrix[i]];
         minLen = Math.min(minLen, matrix[i].length);
         maxLen = Math.max(maxLen, matrix[i].length);
     }

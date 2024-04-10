@@ -222,7 +222,7 @@ exports.calcTransform = function(gd, trace, opts) {
 function getFilterFunc(opts, d2c, targetCalendar) {
     var operation = opts.operation;
     var value = opts.value;
-    var hasArrayValue = Array.isArray(value);
+    var hasArrayValue = Lib.isArrayOrTypedArray(value);
 
     function isOperationIn(array) {
         return array.indexOf(operation) !== -1;

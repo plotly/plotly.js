@@ -1,5 +1,6 @@
 'use strict';
 
+var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
 var barAttrs = require('../bar/attributes');
 var colorAttrs = require('../../components/color/attributes');
@@ -129,7 +130,7 @@ module.exports = {
             'There should be as many items as the number of boxes desired.',
             'This attribute has effect only under the q1/median/q3 signature.',
             'If `upperfence` is not provided but a sample (in `y` or `x`) is set,',
-            'we compute the lower as the last sample point above 1.5 times the IQR.'
+            'we compute the upper as the last sample point above 1.5 times the IQR.'
         ].join(' ')
     },
 
@@ -386,7 +387,7 @@ module.exports = {
         editType: 'plot'
     },
 
-    fillcolor: scatterAttrs.fillcolor,
+    fillcolor: makeFillcolorAttr(),
 
     whiskerwidth: {
         valType: 'number',
@@ -450,5 +451,6 @@ module.exports = {
             'Do the hover effects highlight individual boxes ',
             'or sample points or both?'
         ].join(' ')
-    }
+    },
+    zorder: scatterAttrs.zorder
 };
