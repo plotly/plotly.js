@@ -1792,58 +1792,58 @@ describe('hover info', function() {
             .then(done, done.fail);
         });
 
-        it("does not overlap lebels for different trace types", function (done) {
+        it('does not overlap lebels for different trace types', function(done) {
             function trace(name, type, delta) {
-              return {
-                name: name,
-                type: type,
-                y: [0 + delta, 1 + delta, 2 + delta],
-                x: ["CAT 1", "CAT 2", "CAT 3"],
-              };
+                return {
+                    name: name,
+                    type: type,
+                    y: [0 + delta, 1 + delta, 2 + delta],
+                    x: ['CAT 1', 'CAT 2', 'CAT 3'],
+                };
             }
-      
-            var scatterName = "scatter_";
-            var barName = "bar_";
+
+            var scatterName = 'scatter_';
+            var barName = 'bar_';
             var data = [];
-            for(var i = 0; i<3; i++) {
-                data.push(trace(barName + i, "bar", 0.0));
-                data.push(trace(scatterName + i, "scatter", 0.1));
+            var i;
+            for(i = 0; i < 3; i++) {
+                data.push(trace(barName + i, 'bar', 0.0));
+                data.push(trace(scatterName + i, 'scatter', 0.1));
             }
             var layout = {
-              width: 600,
-              height: 400,
-              hovermode: "x",
+                width: 600,
+                height: 400,
+                hovermode: 'x',
             };
-      
-            Plotly.newPlot(gd, data, layout)
-              .then(function () {
-                _hoverNatural(gd, 200, 200);
-              })
-              .then(function () {
-                expect(labelCount()).toBe(6);
-              })
-              .then(function () {
 
-                var nodes = [];
-                for(var i = 0; i<3; i++) {
-                    nodes.push(hoverInfoNodes(barName + i).secondaryBox.getBoundingClientRect());
-                    nodes.push(hoverInfoNodes(scatterName + i).secondaryBox.getBoundingClientRect());
-                }
-                nodes.sort(function(a,b) { return a.top - b.top; } );
-                
-                for(var i = 0; i<5; i++) {
-                        expect(
-                            calcLineOverlap(
-                                nodes[i].top,
-                                nodes[i].bottom,
-                                nodes[i+1].top,
-                                nodes[i+1].bottom,
-                            )
-                        ).toBeWithin(2, 1);
+            Plotly.newPlot(gd, data, layout)
+                .then(function() {
+                    _hoverNatural(gd, 200, 200);
+                })
+                .then(function() {
+                    expect(labelCount()).toBe(6);
+                })
+                .then(function() {
+                    var nodes = [];
+                    for(i = 0; i < 3; i++) {
+                        nodes.push(hoverInfoNodes(barName + i).secondaryBox.getBoundingClientRect());
+                        nodes.push(hoverInfoNodes(scatterName + i).secondaryBox.getBoundingClientRect());
                     }
-              })
+                    nodes.sort(function(a, b) { return a.top - b.top; });
+
+                    for(i = 0; i < 5; i++) {
+                        expect(
+                calcLineOverlap(
+                    nodes[i].top,
+                    nodes[i].bottom,
+                    nodes[i + 1].top,
+                    nodes[i + 1].bottom
+                )
+                ).toBeWithin(2, 1);
+                    }
+                })
               .then(done, done.fail);
-          });
+        });
     });
 
     describe('constraints info graph viewport', function() {
