@@ -381,8 +381,16 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             }
         }
     } else {
-        for(curvenum = 0; curvenum < gd.calcdata.length; curvenum++) {
-            cd = gd.calcdata[curvenum];
+        // take into account zorder
+        var zorderedCalcdata = gd.calcdata.slice();
+        zorderedCalcdata.sort(function(a, b) {
+            var aZorder = a[0].trace.zorder || 0;
+            var bZorder = b[0].trace.zorder || 0;
+            return aZorder - bZorder;
+        });
+
+        for(curvenum = 0; curvenum < zorderedCalcdata.length; curvenum++) {
+            cd = zorderedCalcdata[curvenum];
             trace = cd[0].trace;
             if(trace.hoverinfo !== 'skip' && helpers.isTraceInSubplots(trace, subplots)) {
                 searchData.push(cd);
