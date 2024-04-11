@@ -27,9 +27,13 @@ var drawing = module.exports = {};
 // styling functions for plot elements
 // -----------------------------------------------------
 
-drawing.font = function(s, family, size, color) {
-    // also allow the form font(s, {family, size, color})
+drawing.font = function(s, family, size, color, weight, style, stretch, variant) {
+    // also allow the form font(s, {family, size, color, weight, style, stretch, variant})
     if(Lib.isPlainObject(family)) {
+        variant = family.variant;
+        stretch = family.stretch;
+        style = family.style;
+        weight = family.weight;
         color = family.color;
         size = family.size;
         family = family.family;
@@ -37,6 +41,11 @@ drawing.font = function(s, family, size, color) {
     if(family) s.style('font-family', family);
     if(size + 1) s.style('font-size', size + 'px');
     if(color) s.call(Color.fill, color);
+
+    if(weight) s.style('font-weight', weight);
+    if(style) s.style('font-style', style);
+    if(stretch) s.style('font-stretch', stretch);
+    if(variant) s.style('font-variant', variant);
 };
 
 /*
@@ -1126,10 +1135,15 @@ drawing.textPointStyle = function(s, trace, gd) {
             selectedTextColorFn(d) :
             (d.tc || trace.textfont.color);
 
-        p.call(drawing.font,
-                d.tf || trace.textfont.family,
-                fontSize,
-                fontColor)
+        p.call(drawing.font, {
+            family: d.tf || trace.textfont.family,
+            weight: d.tw || trace.textfont.weight,
+            style: d.ty || trace.textfont.style,
+            stretch: d.th || trace.textfont.stretch,
+            variant: d.tv || trace.textfont.variant,
+            size: fontSize,
+            color: fontColor
+        })
             .text(text)
             .call(svgTextUtils.convertToTspans, gd)
             .call(textPointPosition, pos, fontSize, d.mrc);

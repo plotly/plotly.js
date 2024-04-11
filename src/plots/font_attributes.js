@@ -47,6 +47,84 @@ module.exports = function(opts) {
             valType: 'color',
             editType: colorEditType
         },
+
+        weight: {
+            editType: editType,
+            valType: 'enumerated',
+            values: [
+                'normal',
+                'bold',
+                '100',
+                '200',
+                '300',
+                '400', // normal
+                '500',
+                '600',
+                '700', // bold
+                '800',
+                '900'
+            ],
+            dflt: 'normal',
+            description: [
+                'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight',
+            ].join(' ')
+        },
+
+        style: {
+            editType: editType,
+            valType: 'enumerated',
+            values: [
+                'normal',
+                'italic',
+                'oblique -75',
+                'oblique -60',
+                'oblique -45',
+                'oblique -30',
+                'oblique -15',
+                'oblique 15',
+                'oblique 30',
+                'oblique 45',
+                'oblique 60',
+                'oblique 75'
+            ],
+            dflt: 'normal',
+            description: [
+                'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style',
+            ].join(' ')
+        },
+
+        stretch: {
+            editType: editType,
+            valType: 'enumerated',
+            values: [
+                'normal',
+                'ultra-condensed',
+                'extra-condensed',
+                'condensed',
+                'semi-condensed',
+                'semi-expanded',
+                'expanded',
+                'extra-expanded',
+                'ultra-expanded',
+                '50%',
+                '100%',
+                '200%',
+            ],
+            dflt: 'normal',
+            description: [
+                'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-stretch',
+            ].join(' ')
+        },
+
+        variant: {
+            editType: editType,
+            valType: 'string',
+            dflt: 'normal',
+            description: [
+                'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant',
+            ].join(' ')
+        },
+
         editType: editType,
         // blank strings so compress_attributes can remove
         // TODO - that's uber hacky... better solution?

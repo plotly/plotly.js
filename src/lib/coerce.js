@@ -463,6 +463,10 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
     out.family = coerce(attr + '.family', dfltObj.family);
     out.size = coerce(attr + '.size', dfltObj.size);
     out.color = coerce(attr + '.color', dfltObj.color);
+    out.weight = coerce(attr + '.weight', dfltObj.weight);
+    out.style = coerce(attr + '.style', dfltObj.style);
+    out.stretch = coerce(attr + '.stretch', dfltObj.stretch);
+    out.variant = coerce(attr + '.variant', dfltObj.variant);
 
     return out;
 };
