@@ -297,6 +297,10 @@ function convertPlotlyOptions(scene, data) {
         params.textColor = formatColor(data.textfont, 1, len);
         params.textSize = formatParam(data.textfont.size, len, Lib.identity, 12);
         params.textFont = data.textfont.family;  // arrayOk === false
+        params.textWeight = data.textfont.weight;  // arrayOk === false
+        params.textStyle = data.textfont.style;  // arrayOk === false
+        params.textStretch = data.textfont.stretch;  // arrayOk === false
+        params.textVariant = data.textfont.variant;  // arrayOk === false
         params.textAngle = 0;
     }
 

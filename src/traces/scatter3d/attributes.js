@@ -158,6 +158,10 @@ var attrs = module.exports = overrideAll({
     textfont: {
         color: scatterAttrs.textfont.color,
         size: scatterAttrs.textfont.size,
+        weight: scatterAttrs.textfont.weight,
+        style: scatterAttrs.textfont.style,
+        stretch: scatterAttrs.textfont.stretch,
+        variant: scatterAttrs.textfont.variant,
         family: extendFlat({}, scatterAttrs.textfont.family, {arrayOk: false})
     },
 
