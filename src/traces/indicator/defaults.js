@@ -35,6 +35,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce('number.valueformat');
         coerce('number.font.color', layout.font.color);
         coerce('number.font.family', layout.font.family);
+        coerce('number.font.weight', layout.font.weight);
+        coerce('number.font.style', layout.font.style);
+        coerce('number.font.stretch', layout.font.stretch);
+        coerce('number.font.variant', layout.font.variant);
         coerce('number.font.size');
         if(traceOut.number.font.size === undefined) {
             traceOut.number.font.size = cn.defaultNumberFontSize;
@@ -50,6 +54,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     if(traceOut._hasDelta) {
         coerce('delta.font.color', layout.font.color);
         coerce('delta.font.family', layout.font.family);
+        coerce('delta.font.weight', layout.font.weight);
+        coerce('delta.font.style', layout.font.style);
+        coerce('delta.font.stretch', layout.font.stretch);
+        coerce('delta.font.variant', layout.font.variant);
         coerce('delta.font.size');
         if(traceOut.delta.font.size === undefined) {
             traceOut.delta.font.size = (traceOut._hasNumber ? 0.5 : 1) * (bignumberFontSize || cn.defaultNumberFontSize);
@@ -72,6 +80,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     // Title attributes
     coerce('title.font.color', layout.font.color);
     coerce('title.font.family', layout.font.family);
+    coerce('title.font.weight', layout.font.weight);
+    coerce('title.font.style', layout.font.style);
+    coerce('title.font.stretch', layout.font.stretch);
+    coerce('title.font.variant', layout.font.variant);
     coerce('title.font.size', 0.25 * (bignumberFontSize || deltaFontSize || cn.defaultNumberFontSize));
     coerce('title.text');
 
