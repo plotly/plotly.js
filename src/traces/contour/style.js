@@ -41,6 +41,10 @@ module.exports = function style(gd) {
         var labelFont = contours.labelfont;
         c.selectAll('g.contourlabels text').each(function(d) {
             Drawing.font(d3.select(this), {
+                weight: labelFont.weight,
+                style: labelFont.style,
+                stretch: labelFont.stretch,
+                variant: labelFont.variant,
                 family: labelFont.family,
                 size: labelFont.size,
                 color: labelFont.color || (colorLines ? colorMap(d.level) : line.color)
