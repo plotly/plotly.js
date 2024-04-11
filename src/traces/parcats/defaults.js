@@ -96,6 +96,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('counts');
 
     var labelfontDflt = {
+        weight: layout.font.weight,
+        style: layout.font.style,
+        stretch: layout.font.stretch,
+        variant: layout.font.variant,
         family: layout.font.family,
         size: Math.round(layout.font.size),
         color: layout.font.color
@@ -104,6 +108,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceFont(coerce, 'labelfont', labelfontDflt);
 
     var categoryfontDefault = {
+        weight: layout.font.weight,
+        style: layout.font.style,
+        stretch: layout.font.stretch,
+        variant: layout.font.variant,
         family: layout.font.family,
         size: Math.round(layout.font.size / 1.2),
         color: layout.font.color
