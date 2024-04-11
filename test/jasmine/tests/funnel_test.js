@@ -153,9 +153,24 @@ describe('Funnel.supplyDefaults', function() {
             y: [1, 2, 3]
         };
         var layout = {
-            font: {family: 'arial', color: '#AAA', size: 13}
+            font: {
+                family: 'arial',
+                color: '#AAA',
+                size: 13,
+                weight: 'bold',
+                style: 'italic',
+                stretch: 'expanded',
+                variant: 'small-caps'
+            }
         };
-        var layoutFontMinusColor = {family: 'arial', size: 13};
+        var layoutFontMinusColor = {
+            family: 'arial',
+            size: 13,
+            weight: 'bold',
+            style: 'italic',
+            stretch: 'expanded',
+            variant: 'small-caps'
+        };
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 

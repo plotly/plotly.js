@@ -162,9 +162,24 @@ describe('Waterfall.supplyDefaults', function() {
             y: [1, 2, 3]
         };
         var layout = {
-            font: {family: 'arial', color: '#AAA', size: 13}
+            font: {
+                family: 'arial',
+                color: '#AAA',
+                size: 13,
+                weight: 'normal',
+                style: 'normal',
+                stretch: 'normal',
+                variant: 'normal'
+            }
         };
-        var layoutFontMinusColor = {family: 'arial', size: 13};
+        var layoutFontMinusColor = {
+            family: 'arial',
+            size: 13,
+            weight: 'normal',
+            style: 'normal',
+            stretch: 'normal',
+            variant: 'normal'
+        };
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 

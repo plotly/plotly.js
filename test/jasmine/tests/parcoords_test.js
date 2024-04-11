@@ -92,7 +92,11 @@ describe('parcoords initialization tests', function() {
             gd.layout.font = {
                 family: 'Gravitas',
                 size: 20,
-                color: 'blue'
+                color: 'blue',
+                weight: 'bold',
+                style: 'italic',
+                stretch: 'expanded',
+                variant: 'small-caps'
             };
 
             supplyAllDefaults(gd);
@@ -100,7 +104,11 @@ describe('parcoords initialization tests', function() {
             var expected = {
                 family: 'Gravitas',
                 size: 17,
-                color: 'blue'
+                color: 'blue',
+                weight: 'bold',
+                style: 'italic',
+                stretch: 'expanded',
+                variant: 'small-caps'
             };
 
             expect(gd._fullData[0].labelfont).toEqual(expected);

@@ -1441,7 +1441,15 @@ describe('annotation effects', function() {
             expect(gd._fullLayout.annotations[0].hoverlabel).toEqual({
                 bgcolor: '#444',
                 bordercolor: '#fff',
-                font: {family: 'Arial, sans-serif', size: 13, color: '#fff'}
+                font: {
+                    family: 'Arial, sans-serif',
+                    size: 13,
+                    color: '#fff',
+                    weight: 'normal',
+                    style: 'normal',
+                    stretch: 'normal',
+                    variant: 'normal'
+                }
             });
 
             return assertHoverLabels([[pos0, 'bananas'], [pos1, ''], [pos2, '']],
@@ -1463,7 +1471,15 @@ describe('annotation effects', function() {
                 'annotations[0].hoverlabel': {
                     bgcolor: '#800',
                     bordercolor: '#008',
-                    font: {family: 'courier', size: 50, color: '#080'}
+                    font: {
+                        family: 'courier',
+                        size: 50,
+                        color: '#080',
+                        weight: 'normal',
+                        style: 'normal',
+                        stretch: 'normal',
+                        variant: 'normal'
+                    }
                 },
                 'annotations[1].hovertext': 'chicken'
             });
@@ -1472,7 +1488,15 @@ describe('annotation effects', function() {
             expect(gd._fullLayout.annotations[0].hoverlabel).toEqual({
                 bgcolor: '#800',
                 bordercolor: '#008',
-                font: {family: 'courier', size: 50, color: '#080'}
+                font: {
+                    family: 'courier',
+                    size: 50,
+                    color: '#080',
+                    weight: 'normal',
+                    style: 'normal',
+                    stretch: 'normal',
+                    variant: 'normal'
+                }
             });
 
             return assertHoverLabels([[pos0, 'bananas'], [pos1, 'chicken'], [pos2, '']],

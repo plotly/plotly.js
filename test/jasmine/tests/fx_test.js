@@ -153,7 +153,11 @@ describe('Fx defaults', function() {
                 font: {
                     family: 'Roboto',
                     size: 20,
-                    color: 'pink'
+                    color: 'pink',
+                    weight: 'bold',
+                    style: 'italic',
+                    stretch: 'expanded',
+                    variant: 'small-caps'
                 }
             }
         });
@@ -164,7 +168,11 @@ describe('Fx defaults', function() {
             font: {
                 family: 'Roboto',
                 size: 40,
-                color: 'pink'
+                color: 'pink',
+                weight: 'bold',
+                style: 'italic',
+                stretch: 'expanded',
+                variant: 'small-caps'
             },
             align: 'auto',
             namelength: 15
@@ -176,7 +184,11 @@ describe('Fx defaults', function() {
             font: {
                 family: 'Roboto',
                 size: 20,
-                color: 'red'
+                color: 'red',
+                weight: 'bold',
+                style: 'italic',
+                stretch: 'expanded',
+                variant: 'small-caps'
             },
             align: 'auto',
             namelength: 15
@@ -188,7 +200,11 @@ describe('Fx defaults', function() {
             font: {
                 family: 'Roboto',
                 size: 20,
-                color: 'pink'
+                color: 'pink',
+                weight: 'bold',
+                style: 'italic',
+                stretch: 'expanded',
+                variant: 'small-caps'
             }
         });
 
@@ -198,7 +214,11 @@ describe('Fx defaults', function() {
             font: {
                 family: 'Gravitas',
                 size: 20,
-                color: 'pink'
+                color: 'pink',
+                weight: 'bold',
+                style: 'italic',
+                stretch: 'expanded',
+                variant: 'small-caps'
             }
         });
     });
