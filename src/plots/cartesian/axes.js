@@ -1737,6 +1737,10 @@ function tickTextObj(ax, x, text) {
         text: text || '',
         fontSize: tf.size,
         font: tf.family,
+        fontWeight: tf.weight,
+        fontStyle: tf.style,
+        fontStretch: tf.stretch,
+        fontVariant: tf.variant,
         fontColor: tf.color
     };
 }
@@ -3498,7 +3502,15 @@ axes.drawLabels = function(gd, ax, opts) {
 
                 thisLabel
                     .call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d))
-                    .call(Drawing.font, d.font, d.fontSize, d.fontColor)
+                    .call(Drawing.font, {
+                        family: d.font,
+                        size: d.fontSize,
+                        color: d.fontColor,
+                        weight: d.fontWeight,
+                        style: d.fontStyle,
+                        stretch: d.fontStretch,
+                        variant: d.fontVariant
+                    })
                     .text(d.text)
                     .call(svgTextUtils.convertToTspans, gd);
 
