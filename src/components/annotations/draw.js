@@ -195,7 +195,11 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 borderColor: hoverOptions.bordercolor,
                 fontFamily: hoverFont.family,
                 fontSize: hoverFont.size,
-                fontColor: hoverFont.color
+                fontColor: hoverFont.color,
+                fontWeight: hoverFont.weight,
+                fontStyle: hoverFont.style,
+                fontStretch: hoverFont.stretch,
+                fontVariant: hoverFont.variant
             }, {
                 container: fullLayout._hoverlayer.node(),
                 outerContainer: fullLayout._paper.node(),

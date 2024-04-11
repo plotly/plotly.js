@@ -60,6 +60,10 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
 
         Lib.coerceFont(coerce, 'hoverlabel.font', {
             family: globalHoverLabel.font.family,
+            weight: globalHoverLabel.font.weight,
+            style: globalHoverLabel.font.style,
+            stretch: globalHoverLabel.font.stretch,
+            variant: globalHoverLabel.font.variant,
             size: globalHoverLabel.font.size,
             color: globalHoverLabel.font.color || hoverBorder
         });
