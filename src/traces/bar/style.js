@@ -123,7 +123,11 @@ function getInsideTextFont(trace, index, layoutFont, barColor) {
         defaultFont = {
             color: Color.contrast(barColor),
             family: defaultFont.family,
-            size: defaultFont.size
+            size: defaultFont.size,
+            weight: defaultFont.weight,
+            style: defaultFont.style,
+            stretch: defaultFont.stretch,
+            variant: defaultFont.variant
         };
     }
 
@@ -143,6 +147,10 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
     var familyValue = helpers.getValue(attributeValue.family, index);
     var sizeValue = helpers.getValue(attributeValue.size, index);
     var colorValue = helpers.getValue(attributeValue.color, index);
+    var weightValue = helpers.getValue(attributeValue.weight, index);
+    var styleValue = helpers.getValue(attributeValue.style, index);
+    var stretchValue = helpers.getValue(attributeValue.stretch, index);
+    var variantValue = helpers.getValue(attributeValue.variant, index);
 
     return {
         family: helpers.coerceString(
@@ -150,7 +158,15 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
         size: helpers.coerceNumber(
           attributeDefinition.size, sizeValue, defaultValue.size),
         color: helpers.coerceColor(
-          attributeDefinition.color, colorValue, defaultValue.color)
+          attributeDefinition.color, colorValue, defaultValue.color),
+        weight: helpers.coerceColor(
+            attributeDefinition.weight, weightValue, defaultValue.weight),
+        style: helpers.coerceColor(
+            attributeDefinition.style, styleValue, defaultValue.style),
+        stretch: helpers.coerceColor(
+            attributeDefinition.stretch, stretchValue, defaultValue.stretch),
+        variant: helpers.coerceColor(
+            attributeDefinition.variant, variantValue, defaultValue.variant)
     };
 }
 
