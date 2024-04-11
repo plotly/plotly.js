@@ -7,6 +7,12 @@
     }
   ],
   "layout": {
+    "font": {
+      "weight": "bold",
+      "style": "italic",
+      "stretch": "condensed",
+      "variant": "small-caps"
+    },
     "xaxis": {
       "type": "category",
       "autorange": true
