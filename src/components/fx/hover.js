@@ -53,6 +53,10 @@ var cartesianScatterPoints = {
     splom: true
 };
 
+function distanceSort(a, b) {
+    return a.distance - b.distance;
+}
+
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
 //   to hover on
@@ -270,6 +274,9 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
     var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
 
+    var firstXaxis;
+    var firstYaxis;
+
     if(hasCartesian && (hovermodeHasX || hovermodeHasY) && hoversubplots === 'axis') {
         var subplotsLength = subplots.length;
         for(var p = 0; p < subplotsLength; p++) {
@@ -277,8 +284,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             if(plots[spId]) {
                 // 'cartesian' case
 
+                firstXaxis = Axes.getFromId(gd, spId, 'x');
+                firstYaxis = Axes.getFromId(gd, spId, 'y');
+
                 var subplotsWith = (
-                    Axes.getFromId(gd, spId, hovermodeHasX ? 'x' : 'y')
+                    hovermodeHasX ? firstXaxis : firstYaxis
                 )._subplotsWith;
 
                 if(subplotsWith && subplotsWith.length) {
@@ -661,6 +671,9 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         var thisSpikeDistance;
 
         for(var i = 0; i < pointsData.length; i++) {
+            if(firstXaxis && firstXaxis._id !== pointsData[i].xa._id) continue;
+            if(firstYaxis && firstYaxis._id !== pointsData[i].ya._id) continue;
+
             thisSpikeDistance = pointsData[i].spikeDistance;
             if(spikeOnWinning && i === 0) thisSpikeDistance = -Infinity;
 
@@ -700,9 +713,23 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     gd._spikepoints = newspikepoints;
 
     var sortHoverData = function() {
-        if(hoversubplots !== 'axis') {
-            hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
-        }
+        var hoverDataInSubplot = hoverData.filter(function(a) {
+            return (
+                (firstXaxis && firstXaxis._id === a.xa._id) &&
+                (firstYaxis && firstYaxis._id === a.ya._id)
+            );
+        });
+
+        var hoverDataOutSubplot = hoverData.filter(function(a) {
+            return !(
+                (firstXaxis && firstXaxis._id === a.xa._id) &&
+                (firstYaxis && firstYaxis._id === a.ya._id)
+            );
+        });
+
+        hoverDataInSubplot.sort(distanceSort);
+        hoverDataOutSubplot.sort(distanceSort);
+        hoverData = hoverDataInSubplot.concat(hoverDataOutSubplot);
 
         // move period positioned points and box/bar-like traces to the end of the list
         hoverData = orderRangePoints(hoverData, hovermode);
