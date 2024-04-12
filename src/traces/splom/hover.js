@@ -27,6 +27,9 @@ function hoverPoints(pointData, xval, yval, hovermode, opts) {
         for(var i = 0; i < subplotsWith.length; i++) {
             var spId = subplotsWith[i];
 
+            // do not reselect on the initial subplot
+            if(spId === (pointData.xa._id + pointData.ya._id)) continue;
+
             if(hovermodeHasY) {
                 _pointData.xa = getFromId(gd, spId, 'x');
             } else { // hovermodeHasX
