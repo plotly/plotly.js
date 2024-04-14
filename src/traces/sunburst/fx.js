@@ -143,7 +143,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 fontFamily: _cast('hoverlabel.font.family'),
                 fontSize: _cast('hoverlabel.font.size'),
                 fontColor: _cast('hoverlabel.font.color'),
-                fontWeight: _cast('hoverlabel.font.weigth'),
+                fontWeight: _cast('hoverlabel.font.weight'),
                 fontStyle: _cast('hoverlabel.font.style'),
                 fontStretch: _cast('hoverlabel.font.stretch'),
                 fontVariant: _cast('hoverlabel.font.variant'),
