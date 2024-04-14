@@ -1017,7 +1017,7 @@ function createHoverText(hoverData, opts) {
             weight: commonLabelOpts.font.weight || fontWeight,
             style: commonLabelOpts.font.style || fontStyle,
             stretch: commonLabelOpts.font.stretch || fontStretch,
-            varinat: commonLabelOpts.font.variant || fontVariant,
+            variant: commonLabelOpts.font.variant || fontVariant,
             family: commonLabelOpts.font.family || fontFamily,
             size: commonLabelOpts.font.size || fontSize,
             color: commonLabelOpts.font.color || contrastColor,
