@@ -105,7 +105,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(subTypes.hasText(traceOut)) {
         handleTextDefaults(traceIn, traceOut, layout, coerce,
-            {noSelect: true,
+            {
+                noSelect: true,
+                noFontWeight: true,
+                noFontStyle: true,
+                noFontStretch: true,
+                noFontVariant: true,
                 font: {
                     family: supportedFonts.indexOf(layout.font.family) !== -1 ? layout.font.family : 'Open Sans Regular',
                     size: layout.font.size,

@@ -4044,64 +4044,6 @@
           "editType": "plot",
           "min": 1,
           "valType": "number"
-         },
-         "stretch": {
-          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-stretch",
-          "dflt": "normal",
-          "editType": "plot",
-          "valType": "enumerated",
-          "values": [
-           "normal",
-           "ultra-condensed",
-           "extra-condensed",
-           "condensed",
-           "semi-condensed",
-           "semi-expanded",
-           "expanded",
-           "extra-expanded",
-           "ultra-expanded",
-           "50%",
-           "100%",
-           "200%"
-          ]
-         },
-         "style": {
-          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
-          "dflt": "normal",
-          "editType": "plot",
-          "valType": "enumerated",
-          "values": [
-           "normal",
-           "italic",
-           "oblique -75",
-           "oblique -60",
-           "oblique -45",
-           "oblique -30",
-           "oblique -15",
-           "oblique 15",
-           "oblique 30",
-           "oblique 45",
-           "oblique 60",
-           "oblique 75"
-          ]
-         },
-         "variant": {
-          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
-          "dflt": "normal",
-          "editType": "plot",
-          "valType": "string"
-         },
-         "weight": {
-          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
-          "dflt": "normal",
-          "editType": "plot",
-          "extras": [
-           "normal",
-           "bold"
-          ],
-          "max": 1000,
-          "min": 1,
-          "valType": "integer"
          }
         },
         "textposition": {
@@ -71197,64 +71139,6 @@
       "editType": "calc",
       "min": 1,
       "valType": "number"
-     },
-     "stretch": {
-      "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-stretch",
-      "dflt": "normal",
-      "editType": "calc",
-      "valType": "enumerated",
-      "values": [
-       "normal",
-       "ultra-condensed",
-       "extra-condensed",
-       "condensed",
-       "semi-condensed",
-       "semi-expanded",
-       "expanded",
-       "extra-expanded",
-       "ultra-expanded",
-       "50%",
-       "100%",
-       "200%"
-      ]
-     },
-     "style": {
-      "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
-      "dflt": "normal",
-      "editType": "calc",
-      "valType": "enumerated",
-      "values": [
-       "normal",
-       "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
-      ]
-     },
-     "variant": {
-      "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
-      "dflt": "normal",
-      "editType": "calc",
-      "valType": "string"
-     },
-     "weight": {
-      "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
-      "dflt": "normal",
-      "editType": "calc",
-      "extras": [
-       "normal",
-       "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
      }
     },
     "textposition": {

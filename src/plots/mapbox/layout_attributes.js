@@ -17,6 +17,10 @@ var fontAttr = fontAttrs({
     ].join(' ')
 });
 fontAttr.family.dflt = 'Open Sans Regular, Arial Unicode MS Regular';
+delete fontAttr.weight;
+delete fontAttr.style;
+delete fontAttr.stretch;
+delete fontAttr.variant;
 
 var attrs = module.exports = overrideAll({
     _arrayAttrRegexps: [Lib.counterRegex('mapbox', '.layers', true)],
