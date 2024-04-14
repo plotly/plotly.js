@@ -50,20 +50,10 @@ module.exports = function(opts) {
 
         weight: {
             editType: editType,
-            valType: 'enumerated',
-            values: [
-                'normal',
-                'bold',
-                '100',
-                '200',
-                '300',
-                '400', // normal
-                '500',
-                '600',
-                '700', // bold
-                '800',
-                '900'
-            ],
+            valType: 'integer',
+            min: 1,
+            max: 1000,
+            extras: ['normal', 'bold'],
             dflt: 'normal',
             description: [
                 'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight',
