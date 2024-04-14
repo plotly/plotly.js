@@ -524,7 +524,8 @@
      "dflt",
      "min",
      "max",
-     "arrayOk"
+     "arrayOk",
+     "extras"
     ],
     "requiredOpts": []
    },
@@ -669,20 +670,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "layoutstyle",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     }
    },
@@ -925,20 +919,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc+arraydraw",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "height": {
@@ -1030,20 +1017,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "arraydraw",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object"
@@ -1390,20 +1370,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -1676,20 +1649,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -1919,20 +1885,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -2257,20 +2216,13 @@
      "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
      "dflt": "normal",
      "editType": "calc",
-     "valType": "enumerated",
-     "values": [
+     "extras": [
       "normal",
-      "bold",
-      "100",
-      "200",
-      "300",
-      "400",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900"
-     ]
+      "bold"
+     ],
+     "max": 1000,
+     "min": 1,
+     "valType": "integer"
     }
    },
    "geo": {
@@ -3094,20 +3046,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "none",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "grouptitlefont": {
@@ -3180,20 +3125,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "none",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "namelength": {
@@ -3462,20 +3400,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "legend",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "groupclick": {
@@ -3558,20 +3489,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "legend",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "indentation": {
@@ -3703,20 +3627,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "legend",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -4178,20 +4095,13 @@
           "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
           "dflt": "normal",
           "editType": "plot",
-          "valType": "enumerated",
-          "values": [
+          "extras": [
            "normal",
-           "bold",
-           "100",
-           "200",
-           "300",
-           "400",
-           "500",
-           "600",
-           "700",
-           "800",
-           "900"
-          ]
+           "bold"
+          ],
+          "max": 1000,
+          "min": 1,
+          "valType": "integer"
          }
         },
         "textposition": {
@@ -4556,20 +4466,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "padding": {
@@ -4735,20 +4638,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -5179,20 +5075,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -5510,20 +5399,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "ticks",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       }
      },
@@ -5988,20 +5870,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -6202,20 +6077,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "ticks",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -6455,20 +6323,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "height": {
@@ -6560,20 +6421,13 @@
           "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
           "dflt": "normal",
           "editType": "calc",
-          "valType": "enumerated",
-          "values": [
+          "extras": [
            "normal",
-           "bold",
-           "100",
-           "200",
-           "300",
-           "400",
-           "500",
-           "600",
-           "700",
-           "800",
-           "900"
-          ]
+           "bold"
+          ],
+          "max": 1000,
+          "min": 1,
+          "valType": "integer"
          }
         },
         "role": "object"
@@ -7025,20 +6879,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       }
      },
@@ -7505,20 +7352,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -7712,20 +7552,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -7848,20 +7681,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       }
      },
@@ -8328,20 +8154,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -8535,20 +8354,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -8671,20 +8483,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       }
      },
@@ -9151,20 +8956,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -9358,20 +9156,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -9650,20 +9441,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc+arraydraw",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "padding": {
@@ -9829,20 +9613,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc+arraydraw",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -10133,20 +9910,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "arraydraw",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "offset": {
@@ -10255,20 +10025,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "arraydraw",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "len": {
@@ -10796,20 +10559,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -11076,20 +10832,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -11250,20 +10999,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       }
      },
@@ -11530,20 +11272,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -11744,20 +11479,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -11849,20 +11577,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       }
      },
@@ -12129,20 +11850,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -12343,20 +12057,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -12454,20 +12161,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       }
      },
@@ -12734,20 +12434,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -12948,20 +12641,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -13134,20 +12820,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "layoutstyle",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "pad": {
@@ -13542,20 +13221,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "arraydraw",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "name": {
@@ -13751,20 +13423,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "ticks",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      }
     },
@@ -14545,20 +14210,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -14943,20 +14601,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "ticks",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "tickformat": {
@@ -15206,20 +14857,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "ticks",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -15359,20 +15003,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "ticks",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      }
     },
@@ -16243,20 +15880,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "ticks",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "tickformat": {
@@ -16506,20 +16136,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "ticks",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -17004,20 +16627,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -17169,20 +16785,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "legend": {
@@ -17269,20 +16878,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -17434,20 +17036,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -17720,20 +17315,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -17963,20 +17551,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -18431,20 +18012,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "selected": {
@@ -18607,20 +18181,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -19140,20 +18707,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -19289,20 +18849,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -19454,20 +19007,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -19740,20 +19286,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -19983,20 +19522,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -20776,20 +20308,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -20942,20 +20467,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -22281,20 +21799,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -22450,20 +21961,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -22840,20 +22344,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleoffset": {
@@ -23287,20 +22784,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -23468,20 +22958,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "offset": {
@@ -23603,20 +23086,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleoffset": {
@@ -24050,20 +23526,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -24231,20 +23700,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "offset": {
@@ -24391,20 +23853,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "ids": {
@@ -24496,20 +23951,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -24745,20 +24193,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -25031,20 +24472,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -25274,20 +24708,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -25560,20 +24987,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -25709,20 +25129,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -26097,20 +25510,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -26383,20 +25789,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -26626,20 +26025,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -26906,20 +26298,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -27055,20 +26440,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -27478,20 +26856,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -27764,20 +27135,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -28007,20 +27371,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -28281,20 +27638,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -28430,20 +27780,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -28878,20 +28221,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -29164,20 +28500,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -29407,20 +28736,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -29616,20 +28938,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "labelformat": {
@@ -29894,20 +29209,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -30047,20 +29355,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -30265,20 +29566,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textsrc": {
@@ -30754,20 +30048,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -31040,20 +30327,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -31283,20 +30563,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -31486,20 +30759,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "labelformat": {
@@ -31715,20 +30981,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -32071,20 +31330,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -32357,20 +31609,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -32600,20 +31845,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -32870,20 +32108,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -33029,20 +32260,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -33503,20 +32727,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -33667,20 +32884,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "legend": {
@@ -33767,20 +32977,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -33932,20 +33135,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -34218,20 +33414,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -34461,20 +33650,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -34825,20 +34007,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "selectedpoints": {
@@ -34972,20 +34147,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textinfo": {
@@ -35479,20 +34647,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -35632,20 +34793,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "label0": {
@@ -35748,20 +34902,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -36068,20 +35215,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textinfo": {
@@ -36221,20 +35361,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "position": {
@@ -36425,20 +35558,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -36711,20 +35837,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -36954,20 +36073,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -37247,20 +36359,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -37400,20 +36505,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -37574,20 +36672,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textsrc": {
@@ -38019,20 +37110,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -38305,20 +37389,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -38548,20 +37625,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -38836,20 +37906,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -38955,20 +38018,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -39703,20 +38759,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -39849,20 +38898,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "legend": {
@@ -39949,20 +38991,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -40114,20 +39149,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -40400,20 +39428,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -40643,20 +39664,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -41094,20 +40108,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "selected": {
@@ -41252,20 +40259,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -41661,20 +40661,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -41947,20 +40940,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -42190,20 +41176,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -42486,20 +41465,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -42623,20 +41595,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -42820,20 +41785,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "texttemplate": {
@@ -43221,20 +42179,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -43507,20 +42458,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -43750,20 +42694,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -43954,20 +42891,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "labelformat": {
@@ -44235,20 +43165,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -44372,20 +43295,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -44614,20 +43530,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "texttemplate": {
@@ -45126,20 +44035,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -45280,20 +44182,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "labels": {
@@ -45395,20 +44290,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -45560,20 +44448,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -45846,20 +44727,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -46089,20 +44963,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -46461,20 +45328,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "parents": {
@@ -46601,20 +45461,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "thickness": {
@@ -46758,20 +45611,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textinfo": {
@@ -47110,20 +45956,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -47251,20 +46090,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -47586,20 +46418,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "increasing": {
@@ -47923,20 +46748,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "plot",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -48329,20 +47147,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -48464,20 +47275,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "prefix": {
@@ -48601,20 +47405,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -48857,20 +47654,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -49143,20 +47933,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -49386,20 +48169,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -49686,20 +48462,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -49845,20 +48614,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -50432,20 +49194,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -50718,20 +49473,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -50961,20 +49709,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -51282,20 +50023,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -51481,20 +50215,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -52067,20 +50794,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -52245,20 +50965,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -52798,20 +51511,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "legendgrouptitle": {
@@ -52886,20 +51592,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -53045,20 +51744,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -53331,20 +52023,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -53574,20 +52259,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -53832,20 +52510,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "transforms": {
@@ -54157,20 +52828,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "labelside": {
@@ -54261,20 +52925,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -54426,20 +53083,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -54712,20 +53362,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -54955,20 +53598,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -55237,20 +53873,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "stream": {
@@ -55342,20 +53971,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "transforms": {
@@ -55506,20 +54128,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "titleposition": {
@@ -55794,20 +54409,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -55947,20 +54555,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "insidetextorientation": {
@@ -56075,20 +54676,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -56359,20 +54953,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "pull": {
@@ -56525,20 +55112,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textinfo": {
@@ -56680,20 +55260,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "position": {
@@ -56960,20 +55533,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -57095,20 +55661,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -57576,20 +56135,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -57695,20 +56247,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -57968,20 +56513,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "namelength": {
@@ -58294,20 +56832,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "namelength": {
@@ -58521,20 +57052,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "type": "sankey",
@@ -59130,20 +57654,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -59289,20 +57806,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -59552,20 +58062,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -59838,20 +58341,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -60081,20 +58577,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -61131,20 +59620,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -61915,20 +60397,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -62064,20 +60539,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -62229,20 +60697,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -62515,20 +60976,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -62758,20 +61212,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -63035,20 +61482,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -63321,20 +61761,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -63564,20 +61997,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -64097,20 +62523,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -64530,20 +62949,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -64688,20 +63100,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -64936,20 +63341,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -65222,20 +63620,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -65465,20 +63856,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -66480,20 +64864,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -66840,20 +65217,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -66999,20 +65369,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -67249,20 +65612,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -67535,20 +65891,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -67778,20 +66127,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -68786,20 +67128,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -69322,20 +67657,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -69471,20 +67799,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -69691,20 +68012,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -69977,20 +68291,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -70220,20 +68527,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -71181,20 +69481,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -71727,20 +70020,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -71886,20 +70172,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -72095,20 +70374,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -72381,20 +70653,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -72624,20 +70889,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -72990,20 +71248,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -73317,20 +71568,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -73475,20 +71719,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -73723,20 +71960,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -74009,20 +72239,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -74252,20 +72475,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -75288,20 +73504,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -75653,20 +73862,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -75802,20 +74004,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -76009,20 +74204,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -76295,20 +74483,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -76538,20 +74719,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "calc",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -77521,20 +75695,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -77879,20 +76046,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -78047,20 +76207,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -78295,20 +76448,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -78581,20 +76727,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -78824,20 +76963,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -79854,20 +77986,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -80214,20 +78339,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -80372,20 +78490,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -80620,20 +78731,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -80906,20 +79010,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -81149,20 +79246,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -82177,20 +80267,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {
@@ -82550,20 +80633,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -82699,20 +80775,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -82876,20 +80945,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -83162,20 +81224,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -83405,20 +81460,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -84504,20 +82552,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -84790,20 +82831,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "colorbars",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -85033,20 +83067,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -85308,20 +83335,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -85451,20 +83471,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -86077,20 +84090,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -86231,20 +84237,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "insidetextorientation": {
@@ -86358,20 +84357,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -86523,20 +84515,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -86809,20 +84794,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -87052,20 +85030,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -87424,20 +85395,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "parents": {
@@ -87584,20 +85548,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textinfo": {
@@ -87836,20 +85793,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -88122,20 +86072,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -88365,20 +86308,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -88924,20 +86860,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -89073,20 +87002,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -89554,20 +87476,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "format": {
@@ -89870,20 +87785,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "format": {
@@ -90119,20 +88027,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -90238,20 +88139,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -90593,20 +88487,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -90747,20 +88634,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "labels": {
@@ -90851,20 +88731,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -91016,20 +88889,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "titleside": {
@@ -91302,20 +89168,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "colorbars",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "tickformat": {
@@ -91545,20 +89404,13 @@
          "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
          "dflt": "normal",
          "editType": "colorbars",
-         "valType": "enumerated",
-         "values": [
+         "extras": [
           "normal",
-          "bold",
-          "100",
-          "200",
-          "300",
-          "400",
-          "500",
-          "600",
-          "700",
-          "800",
-          "900"
-         ]
+          "bold"
+         ],
+         "max": 1000,
+         "min": 1,
+         "valType": "integer"
         }
        },
        "role": "object",
@@ -91962,20 +89814,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "parents": {
@@ -92102,20 +89947,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "thickness": {
@@ -92259,20 +90097,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textinfo": {
@@ -92652,20 +90483,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -92822,20 +90646,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -94002,20 +91819,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "titleside": {
@@ -94288,20 +92098,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "tickformat": {
@@ -94531,20 +92334,13 @@
         "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
-        "valType": "enumerated",
-        "values": [
+        "extras": [
          "normal",
-         "bold",
-         "100",
-         "200",
-         "300",
-         "400",
-         "500",
-         "600",
-         "700",
-         "800",
-         "900"
-        ]
+         "bold"
+        ],
+        "max": 1000,
+        "min": 1,
+        "valType": "integer"
        }
       },
       "role": "object",
@@ -94831,20 +92627,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -94990,20 +92779,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -95740,20 +93522,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "namelength": {
@@ -95936,20 +93711,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "legend": {
@@ -96036,20 +93804,13 @@
        "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "style",
-       "valType": "enumerated",
-       "values": [
+       "extras": [
         "normal",
-        "bold",
-        "100",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "800",
-        "900"
-       ]
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
       }
      },
      "role": "object",
@@ -96222,20 +93983,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "selectedpoints": {
@@ -96369,20 +94123,13 @@
       "description": "See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
-      "valType": "enumerated",
-      "values": [
+      "extras": [
        "normal",
-       "bold",
-       "100",
-       "200",
-       "300",
-       "400",
-       "500",
-       "600",
-       "700",
-       "800",
-       "900"
-      ]
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textinfo": {
