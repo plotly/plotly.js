@@ -159,13 +159,13 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
           attributeDefinition.size, sizeValue, defaultValue.size),
         color: helpers.coerceColor(
           attributeDefinition.color, colorValue, defaultValue.color),
-        weight: helpers.coerceColor(
+        weight: helpers.coerceInteger(
             attributeDefinition.weight, weightValue, defaultValue.weight),
-        style: helpers.coerceColor(
+        style: helpers.coerceString(
             attributeDefinition.style, styleValue, defaultValue.style),
-        stretch: helpers.coerceColor(
+        stretch: helpers.coerceString(
             attributeDefinition.stretch, stretchValue, defaultValue.stretch),
-        variant: helpers.coerceColor(
+        variant: helpers.coerceString(
             attributeDefinition.variant, variantValue, defaultValue.variant)
     };
 }
