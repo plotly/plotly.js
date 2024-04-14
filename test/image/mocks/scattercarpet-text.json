@@ -47,6 +47,12 @@
     }
   ],
   "layout": {
+    "font": {
+      "weight": "bold",
+      "style": "italic",
+      "stretch": "condensed",
+      "variant": "small-caps"
+    },
     "title": {"text": "scattercarpet with text"},
     "hovermode": "closest"
   }
