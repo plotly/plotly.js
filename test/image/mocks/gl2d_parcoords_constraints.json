@@ -1,5 +1,11 @@
 {
   "layout": {
+    "font": {
+      "weight": "bold",
+      "style": "italic",
+      "stretch": "condensed",
+      "variant": "small-caps"
+    },
     "paper_bgcolor": "lightgray",
     "width": 1000,
     "height": 400
