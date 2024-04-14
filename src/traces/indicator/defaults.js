@@ -130,6 +130,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         traceOut._range = coerceGaugeAxis('range', traceOut._range);
 
         var opts = {
+            font: layout.font,
             noAutotickangles: true,
             outerTicks: true
         };
