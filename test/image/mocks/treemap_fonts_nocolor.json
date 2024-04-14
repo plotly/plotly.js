@@ -319,6 +319,12 @@
         }
     ],
     "layout": {
+        "font": {
+            "weight": "bold",
+            "style": "italic",
+            "stretch": "condensed",
+            "variant": "small-caps"
+        },
         "width": 800,
         "height": 800,
         "margin": {
