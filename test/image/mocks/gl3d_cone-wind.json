@@ -129168,7 +129168,7 @@
       ],
       "colorscale": "Portland",
       "cmin": 0,
-      "cmax": 100,
+      "cmax": 80,
       "hoverinfo": "u+v+w+text",
       "text": "-> wind <-"
     }
