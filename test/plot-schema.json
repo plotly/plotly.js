@@ -645,16 +645,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -891,16 +882,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -986,16 +968,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -1336,16 +1309,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -1612,16 +1576,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -1845,16 +1800,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -2173,16 +2119,7 @@
      "values": [
       "normal",
       "italic",
-      "oblique -75",
-      "oblique -60",
-      "oblique -45",
-      "oblique -30",
-      "oblique -15",
-      "oblique 15",
-      "oblique 30",
-      "oblique 45",
-      "oblique 60",
-      "oblique 75"
+      "oblique"
      ]
     },
     "variant": {
@@ -3000,16 +2937,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -3076,16 +3004,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -3348,16 +3267,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -3434,16 +3344,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -3569,16 +3470,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -4347,16 +4239,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -4516,16 +4399,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -4950,16 +4824,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -5271,16 +5136,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -5739,16 +5595,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -5943,16 +5790,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -6186,16 +6024,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -6281,16 +6110,7 @@
           "values": [
            "normal",
            "italic",
-           "oblique -75",
-           "oblique -60",
-           "oblique -45",
-           "oblique -30",
-           "oblique -15",
-           "oblique 15",
-           "oblique 30",
-           "oblique 45",
-           "oblique 60",
-           "oblique 75"
+           "oblique"
           ]
          },
          "variant": {
@@ -6736,16 +6556,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -7206,16 +7017,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -7403,16 +7205,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -7529,16 +7322,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -7999,16 +7783,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -8196,16 +7971,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -8322,16 +8088,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -8792,16 +8549,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -8989,16 +8737,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -9271,16 +9010,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -9440,16 +9170,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -9734,16 +9455,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -9846,16 +9558,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -10377,16 +10080,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -10647,16 +10341,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -10811,16 +10496,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -11081,16 +10757,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -11285,16 +10952,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -11380,16 +11038,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -11650,16 +11299,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -11854,16 +11494,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -11955,16 +11586,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -12225,16 +11847,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -12429,16 +12042,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -12605,16 +12209,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -13003,16 +12598,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -13202,16 +12788,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -13986,16 +13563,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -14374,16 +13942,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -14627,16 +14186,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -14770,16 +14320,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -15644,16 +15185,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -15897,16 +15429,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -16385,16 +15908,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -16540,16 +16054,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -16630,16 +16135,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -16785,16 +16281,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -17061,16 +16548,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -17294,16 +16772,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -17752,16 +17221,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -17918,16 +17378,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -18441,16 +17892,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -18580,16 +18022,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -18735,16 +18168,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -19011,16 +18435,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -19244,16 +18659,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -20027,16 +19433,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -20183,16 +19580,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -21512,16 +20900,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -21671,16 +21050,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -22051,16 +21421,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -22488,16 +21849,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -22659,16 +22011,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -22784,16 +22127,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -23221,16 +22555,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -23392,16 +22717,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -23542,16 +22858,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -23637,16 +22944,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -23876,16 +23174,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -24152,16 +23441,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -24385,16 +23665,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -24661,16 +23932,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -24800,16 +24062,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -25178,16 +24431,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -25454,16 +24698,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -25687,16 +24922,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -25957,16 +25183,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -26096,16 +25313,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -26509,16 +25717,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -26785,16 +25984,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -27018,16 +26208,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -27282,16 +26463,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -27421,16 +26593,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -27859,16 +27022,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -28135,16 +27289,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -28368,16 +27513,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -28567,16 +27703,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -28835,16 +27962,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -28978,16 +28096,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -29186,16 +28295,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -29665,16 +28765,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -29941,16 +29032,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -30174,16 +29256,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -30367,16 +29440,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -30586,16 +29650,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -30932,16 +29987,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -31208,16 +30254,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -31441,16 +30478,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -31701,16 +30729,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -31850,16 +30869,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -32314,16 +31324,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -32468,16 +31469,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -32558,16 +31550,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -32713,16 +31696,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -32989,16 +31963,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -33222,16 +32187,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -33576,16 +32532,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -33713,16 +32660,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -34210,16 +33148,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -34353,16 +33282,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -34459,16 +33379,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -34769,16 +33680,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -34912,16 +33814,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -35106,16 +33999,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -35382,16 +34266,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -35615,16 +34490,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -35898,16 +34764,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -36041,16 +34898,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -36205,16 +35053,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -36640,16 +35479,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -36916,16 +35746,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -37149,16 +35970,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -37427,16 +36239,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -37536,16 +36339,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -38274,16 +37068,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -38410,16 +37195,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -38500,16 +37276,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -38655,16 +37422,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -38931,16 +37689,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -39164,16 +37913,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -39605,16 +38345,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -39753,16 +38484,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -40152,16 +38874,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -40428,16 +39141,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -40661,16 +39365,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -40947,16 +39642,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -41074,16 +39760,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -41261,16 +39938,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -41652,16 +40320,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -41928,16 +40587,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -42161,16 +40811,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -42355,16 +40996,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -42626,16 +41258,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -42753,16 +41376,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -42985,16 +41599,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -43487,16 +42092,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -43631,16 +42227,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -43736,16 +42323,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -43891,16 +42469,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -44167,16 +42736,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -44400,16 +42960,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -44762,16 +43313,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -44892,16 +43434,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -45039,16 +43572,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -45381,16 +43905,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -45512,16 +44027,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -45837,16 +44343,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -46164,16 +44661,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -46560,16 +45048,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -46685,16 +45164,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -46812,16 +45282,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -47058,16 +45519,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -47334,16 +45786,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -47567,16 +46010,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -47857,16 +46291,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -48006,16 +46431,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -48583,16 +46999,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -48859,16 +47266,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -49092,16 +47490,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -49403,16 +47792,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -49592,16 +47972,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -50168,16 +48539,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -50336,16 +48698,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -50879,16 +49232,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -50957,16 +49301,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -51106,16 +49441,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -51382,16 +49708,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -51615,16 +49932,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -51863,16 +50171,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -52178,16 +50477,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -52272,16 +50562,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -52427,16 +50708,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -52703,16 +50975,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -52936,16 +51199,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -53208,16 +51462,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -53303,16 +51548,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -53457,16 +51693,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -53735,16 +51962,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -53878,16 +52096,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -53996,16 +52205,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -54270,16 +52470,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -54426,16 +52617,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -54571,16 +52753,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -54841,16 +53014,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -54966,16 +53130,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -55437,16 +53592,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -55546,16 +53692,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -55809,16 +53946,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -56125,16 +54253,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -56342,16 +54461,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -56941,16 +55051,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -57090,16 +55191,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -57343,16 +55435,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -57619,16 +55702,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -57852,16 +55926,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -58892,16 +56957,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -59666,16 +57722,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -59805,16 +57852,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -59960,16 +57998,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -60236,16 +58265,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -60469,16 +58489,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -60736,16 +58747,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -61012,16 +59014,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -61245,16 +59238,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -61768,16 +59752,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -62191,16 +60166,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -62339,16 +60305,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -62577,16 +60534,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -62853,16 +60801,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -63086,16 +61025,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -64091,16 +62021,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -64441,16 +62362,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -64590,16 +62502,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -64830,16 +62733,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -65106,16 +63000,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -65339,16 +63224,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -66337,16 +64213,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -66863,16 +64730,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -67002,16 +64860,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -67212,16 +65061,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -67488,16 +65328,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -67721,16 +65552,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -68672,16 +66494,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -69208,16 +67021,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -69357,16 +67161,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -69556,16 +67351,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -69832,16 +67618,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -70065,16 +67842,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -70683,16 +68451,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -70831,16 +68590,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -71069,16 +68819,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -71345,16 +69086,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -71578,16 +69310,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -72604,16 +70327,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -72959,16 +70673,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -73098,16 +70803,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -73295,16 +70991,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -73571,16 +71258,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -73804,16 +71482,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -74777,16 +72446,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -75125,16 +72785,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -75283,16 +72934,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -75521,16 +73163,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -75797,16 +73430,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -76030,16 +73654,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -77050,16 +74665,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -77400,16 +75006,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -77548,16 +75145,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -77786,16 +75374,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -78062,16 +75641,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -78295,16 +75865,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -79313,16 +76874,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -79676,16 +77228,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -79815,16 +77358,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -79982,16 +77516,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -80258,16 +77783,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -80491,16 +78007,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -81580,16 +79087,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -81856,16 +79354,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -82089,16 +79578,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -82354,16 +79834,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -82487,16 +79958,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -83103,16 +80565,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -83247,16 +80700,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -83364,16 +80808,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -83519,16 +80954,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -83795,16 +81221,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -84028,16 +81445,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -84390,16 +81798,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -84540,16 +81939,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -84782,16 +82172,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -85058,16 +82439,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -85291,16 +82663,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -85840,16 +83203,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -85979,16 +83333,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -86450,16 +83795,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -86756,16 +84092,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -86995,16 +84322,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -87104,16 +84422,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -87449,16 +84758,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -87593,16 +84893,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -87687,16 +84978,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -87842,16 +85124,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -88118,16 +85391,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -88351,16 +85615,7 @@
          "values": [
           "normal",
           "italic",
-          "oblique -75",
-          "oblique -60",
-          "oblique -45",
-          "oblique -30",
-          "oblique -15",
-          "oblique 15",
-          "oblique 30",
-          "oblique 45",
-          "oblique 60",
-          "oblique 75"
+          "oblique"
          ]
         },
         "variant": {
@@ -88758,16 +86013,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -88888,16 +86134,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -89035,16 +86272,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -89418,16 +86646,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -89578,16 +86797,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -90748,16 +87958,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -91024,16 +88225,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -91257,16 +88449,7 @@
         "values": [
          "normal",
          "italic",
-         "oblique -75",
-         "oblique -60",
-         "oblique -45",
-         "oblique -30",
-         "oblique -15",
-         "oblique 15",
-         "oblique 30",
-         "oblique 45",
-         "oblique 60",
-         "oblique 75"
+         "oblique"
         ]
        },
        "variant": {
@@ -91547,16 +88730,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -91696,16 +88870,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -92436,16 +89601,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -92622,16 +89778,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -92712,16 +89859,7 @@
        "values": [
         "normal",
         "italic",
-        "oblique -75",
-        "oblique -60",
-        "oblique -45",
-        "oblique -30",
-        "oblique -15",
-        "oblique 15",
-        "oblique 30",
-        "oblique 45",
-        "oblique 60",
-        "oblique 75"
+        "oblique"
        ]
       },
       "variant": {
@@ -92888,16 +90026,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
@@ -93025,16 +90154,7 @@
       "values": [
        "normal",
        "italic",
-       "oblique -75",
-       "oblique -60",
-       "oblique -45",
-       "oblique -30",
-       "oblique -15",
-       "oblique 15",
-       "oblique 30",
-       "oblique 45",
-       "oblique 60",
-       "oblique 75"
+       "oblique"
       ]
      },
      "variant": {
