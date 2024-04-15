@@ -4934,7 +4934,7 @@ describe('Test axes', function() {
             })
             .then(function() {
                 _assert('narrow range / wide ticks - rotated', {
-                    angle: [90, 90]
+                    angle: [30, 30]
                 });
             })
             .then(done, done.fail);
