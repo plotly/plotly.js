@@ -11925,6 +11925,10 @@ function Axes(gl) {
 
   this.tickEnable     = [ true, true, true ]
   this.tickFont       = [ 'sans-serif', 'sans-serif', 'sans-serif' ]
+  this.tickFontStyle   = [ 'normal', 'normal', 'normal' ]
+  this.tickFontWeight  = [ 'normal', 'normal', 'normal' ]
+  this.tickFontStretch = [ 'normal', 'normal', 'normal' ]
+  this.tickFontVariant = [ 'normal', 'normal', 'normal' ]
   this.tickSize       = [ 12, 12, 12 ]
   this.tickAngle      = [ 0, 0, 0 ]
   this.tickAlign      = [ 'auto', 'auto', 'auto' ]
@@ -11938,7 +11942,11 @@ function Axes(gl) {
 
   this.labels         = [ 'x', 'y', 'z' ]
   this.labelEnable    = [ true, true, true ]
-  this.labelFont      = 'sans-serif'
+  this.labelFont      = [ 'sans-serif', 'sans-serif', 'sans-serif' ]
+  this.labelFontStyle   = [ 'normal', 'normal', 'normal' ]
+  this.labelFontWeight  = [ 'normal', 'normal', 'normal' ]
+  this.labelFontStretch = [ 'normal', 'normal', 'normal' ]
+  this.labelFontVariant = [ 'normal', 'normal', 'normal' ]
   this.labelSize      = [ 20, 20, 20 ]
   this.labelAngle     = [ 0, 0, 0 ]
   this.labelAlign     = [ 'auto', 'auto', 'auto' ]
@@ -12075,9 +12083,14 @@ i_loop:
 
   //Parse tick properties
   BOOLEAN('tickEnable')
-  if(STRING('tickFont')) {
-    ticksUpdate = true  //If font changes, must rebuild vbo
-  }
+
+  //If font changes, must rebuild vbo
+  if(STRING('tickFont')) ticksUpdate = true
+  if(STRING('tickFontStyle')) ticksUpdate = true
+  if(STRING('tickFontWeight')) ticksUpdate = true
+  if(STRING('tickFontStretch')) ticksUpdate = true
+  if(STRING('tickFontVariant')) ticksUpdate = true
+
   NUMBER('tickSize')
   NUMBER('tickAngle')
   NUMBER('tickPad')
@@ -12085,9 +12098,13 @@ i_loop:
 
   //Axis labels
   var labelUpdate = STRING('labels')
-  if(STRING('labelFont')) {
-    labelUpdate = true
-  }
+
+  if(STRING('labelFont')) labelUpdate = true
+  if(STRING('labelFontStyle')) labelUpdate = true
+  if(STRING('labelFontWeight')) labelUpdate = true
+  if(STRING('labelFontStretch')) labelUpdate = true
+  if(STRING('labelFontVariant')) labelUpdate = true
+
   BOOLEAN('labelEnable')
   NUMBER('labelSize')
   NUMBER('labelPad')
@@ -12120,22 +12137,70 @@ i_loop:
   BOOLEAN('backgroundEnable')
   COLOR('backgroundColor')
 
+  var labelFontOpts = [
+    {
+      family: this.labelFont[0],
+      style: this.labelFontStyle[0],
+      weight: this.labelFontWeight[0],
+      stretch: this.labelFontStretch[0],
+      variant: this.labelFontVariant[0],
+    },
+    {
+      family: this.labelFont[1],
+      style: this.labelFontStyle[1],
+      weight: this.labelFontWeight[1],
+      stretch: this.labelFontStretch[1],
+      variant: this.labelFontVariant[1],
+    },
+    {
+      family: this.labelFont[2],
+      style: this.labelFontStyle[2],
+      weight: this.labelFontWeight[2],
+      stretch: this.labelFontStretch[2],
+      variant: this.labelFontVariant[2],
+    }
+  ]
+
+  var tickFontOpts = [
+    {
+      family: this.tickFont[0],
+      style: this.tickFontStyle[0],
+      weight: this.tickFontWeight[0],
+      stretch: this.tickFontStretch[0],
+      variant: this.tickFontVariant[0],
+    },
+    {
+      family: this.tickFont[1],
+      style: this.tickFontStyle[1],
+      weight: this.tickFontWeight[1],
+      stretch: this.tickFontStretch[1],
+      variant: this.tickFontVariant[1],
+    },
+    {
+      family: this.tickFont[2],
+      style: this.tickFontStyle[2],
+      weight: this.tickFontWeight[2],
+      stretch: this.tickFontStretch[2],
+      variant: this.tickFontVariant[2],
+    }
+  ]
+
   //Update text if necessary
   if(!this._text) {
     this._text = createText(
       this.gl,
       this.bounds,
       this.labels,
-      this.labelFont,
+      labelFontOpts,
       this.ticks,
-      this.tickFont)
+      tickFontOpts)
   } else if(this._text && (labelUpdate || ticksUpdate)) {
     this._text.update(
       this.bounds,
       this.labels,
-      this.labelFont,
+      labelFontOpts,
       this.ticks,
-      this.tickFont)
+      tickFontOpts)
   }
 
   //Update lines if necessary
@@ -13183,15 +13248,27 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
   var data = []
 
   function addItem(t, text, font, size, lineSpacing, styletags) {
-    var fontcache = __TEXT_CACHE[font]
+    var fontKey = [
+      font.style,
+      font.weight,
+      font.stretch,
+      font.variant,
+      font.family
+    ].join('_')
+
+    var fontcache = __TEXT_CACHE[fontKey]
     if(!fontcache) {
-      fontcache = __TEXT_CACHE[font] = {}
+      fontcache = __TEXT_CACHE[fontKey] = {}
     }
     var mesh = fontcache[text]
     if(!mesh) {
       mesh = fontcache[text] = tryVectorizeText(text, {
         triangles: true,
-        font: font,
+        font: font.family,
+        fontStyle: font.style,
+        fontWeight: font.weight,
+        fontStretch: font.stretch,
+        fontVariant: font.variant,
         textAlign: 'center',
         textBaseline: 'middle',
         lineSpacing: lineSpacing,
@@ -13243,10 +13320,19 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
       if(!ticks[d][i].text) {
         continue
       }
+
+      var font = {
+        family: ticks[d][i].font || tickFont[d].family,
+        style: tickFont[d].fontStyle || tickFont[d].style,
+        weight: tickFont[d].fontWeight || tickFont[d].weight,
+        stretch: tickFont[d].fontStretch || tickFont[d].stretch,
+        variant: tickFont[d].fontVariant || tickFont[d].variant,
+      }
+
       addItem(
         ticks[d][i].x,
         ticks[d][i].text,
-        ticks[d][i].font || tickFont,
+        font,
         ticks[d][i].fontSize || 12,
         lineSpacing,
         styletags
