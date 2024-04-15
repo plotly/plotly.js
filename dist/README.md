@@ -46,9 +46,9 @@ The main plotly.js bundles weight in at:
 | 8.2 MB | 3.5 MB | 1 MB | 8.5 MB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-2.31.0.js
+> https://cdn.plot.ly/plotly-2.31.1.js
 
-> https://cdn.plot.ly/plotly-2.31.0.min.js
+> https://cdn.plot.ly/plotly-2.31.1.min.js
 
 
 #### npm packages
@@ -91,12 +91,12 @@ The `basic` partial bundle contains trace modules `bar`, `pie` and `scatter`.
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.6 MB | 987.8 kB | 330.7 kB |
+| 2.6 MB | 988.1 kB | 330.8 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-basic-2.31.0.js
+> https://cdn.plot.ly/plotly-basic-2.31.1.js
 
-> https://cdn.plot.ly/plotly-basic-2.31.0.min.js
+> https://cdn.plot.ly/plotly-basic-2.31.1.min.js
 
 
 #### npm packages
@@ -114,12 +114,12 @@ The `cartesian` partial bundle contains trace modules `bar`, `box`, `contour`, `
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.3 MB | 1.2 MB | 418.2 kB |
+| 3.3 MB | 1.2 MB | 418.3 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-cartesian-2.31.0.js
+> https://cdn.plot.ly/plotly-cartesian-2.31.1.js
 
-> https://cdn.plot.ly/plotly-cartesian-2.31.0.min.js
+> https://cdn.plot.ly/plotly-cartesian-2.31.1.min.js
 
 
 #### npm packages
@@ -140,9 +140,9 @@ The `geo` partial bundle contains trace modules `choropleth`, `scatter` and `sca
 | 3.1 MB | 1.1 MB | 373.4 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-geo-2.31.0.js
+> https://cdn.plot.ly/plotly-geo-2.31.1.js
 
-> https://cdn.plot.ly/plotly-geo-2.31.0.min.js
+> https://cdn.plot.ly/plotly-geo-2.31.1.min.js
 
 
 #### npm packages
@@ -160,12 +160,12 @@ The `gl3d` partial bundle contains trace modules `cone`, `isosurface`, `mesh3d`,
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.6 MB | 1.5 MB | 494.1 kB |
+| 3.6 MB | 1.5 MB | 494.2 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-gl3d-2.31.0.js
+> https://cdn.plot.ly/plotly-gl3d-2.31.1.js
 
-> https://cdn.plot.ly/plotly-gl3d-2.31.0.min.js
+> https://cdn.plot.ly/plotly-gl3d-2.31.1.min.js
 
 
 #### npm packages
@@ -183,12 +183,12 @@ The `gl2d` partial bundle contains trace modules `heatmapgl`, `parcoords`, `poin
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 4.4 MB | 1.9 MB | 601 kB |
+| 4.4 MB | 1.9 MB | 601.1 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-gl2d-2.31.0.js
+> https://cdn.plot.ly/plotly-gl2d-2.31.1.js
 
-> https://cdn.plot.ly/plotly-gl2d-2.31.0.min.js
+> https://cdn.plot.ly/plotly-gl2d-2.31.1.min.js
 
 
 #### npm packages
@@ -206,12 +206,12 @@ The `mapbox` partial bundle contains trace modules `choroplethmapbox`, `densitym
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 4.4 MB | 1.8 MB | 532.3 kB |
+| 4.4 MB | 1.8 MB | 532.4 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-mapbox-2.31.0.js
+> https://cdn.plot.ly/plotly-mapbox-2.31.1.js
 
-> https://cdn.plot.ly/plotly-mapbox-2.31.0.min.js
+> https://cdn.plot.ly/plotly-mapbox-2.31.1.min.js
 
 
 #### npm packages
@@ -229,12 +229,12 @@ The `finance` partial bundle contains trace modules `bar`, `candlestick`, `funne
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.8 MB | 1.1 MB | 359.9 kB |
+| 2.8 MB | 1.1 MB | 360 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-finance-2.31.0.js
+> https://cdn.plot.ly/plotly-finance-2.31.1.js
 
-> https://cdn.plot.ly/plotly-finance-2.31.0.min.js
+> https://cdn.plot.ly/plotly-finance-2.31.1.min.js
 
 
 #### npm packages
@@ -255,9 +255,9 @@ The `strict` partial bundle contains trace modules `bar`, `barpolar`, `box`, `ca
 | 8.7 MB | 3.8 MB | 1.1 MB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-strict-2.31.0.js
+> https://cdn.plot.ly/plotly-strict-2.31.1.js
 
-> https://cdn.plot.ly/plotly-strict-2.31.0.min.js
+> https://cdn.plot.ly/plotly-strict-2.31.1.min.js
 
 
 #### npm packages

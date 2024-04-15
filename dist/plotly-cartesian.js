@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.31.0
+* plotly.js (cartesian) v2.31.1
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -8026,6 +8026,9 @@ var cartesianScatterPoints = {
   scattergl: true,
   splom: true
 };
+function distanceSort(a, b) {
+  return a.distance - b.distance;
+}
 
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
@@ -8224,6 +8227,8 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
   var hovermode = evt.hovermode || fullLayout.hovermode;
   var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
   var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
+  var firstXaxis;
+  var firstYaxis;
   if (hasCartesian && (hovermodeHasX || hovermodeHasY) && hoversubplots === 'axis') {
     var subplotsLength = subplots.length;
     for (var p = 0; p < subplotsLength; p++) {
@@ -8231,7 +8236,9 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
       if (plots[spId]) {
         // 'cartesian' case
 
-        var subplotsWith = Axes.getFromId(gd, spId, hovermodeHasX ? 'x' : 'y')._subplotsWith;
+        firstXaxis = Axes.getFromId(gd, spId, 'x');
+        firstYaxis = Axes.getFromId(gd, spId, 'y');
+        var subplotsWith = (hovermodeHasX ? firstXaxis : firstYaxis)._subplotsWith;
         if (subplotsWith && subplotsWith.length) {
           for (var q = 0; q < subplotsWith.length; q++) {
             pushUnique(subplots, subplotsWith[q]);
@@ -8575,6 +8582,8 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var minDistance = Infinity;
     var thisSpikeDistance;
     for (var i = 0; i < pointsData.length; i++) {
+      if (firstXaxis && firstXaxis._id !== pointsData[i].xa._id) continue;
+      if (firstYaxis && firstYaxis._id !== pointsData[i].ya._id) continue;
       thisSpikeDistance = pointsData[i].spikeDistance;
       if (spikeOnWinning && i === 0) thisSpikeDistance = -Infinity;
       if (thisSpikeDistance <= minDistance && thisSpikeDistance <= spikedistance) {
@@ -8610,11 +8619,18 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
   };
   gd._spikepoints = newspikepoints;
   var sortHoverData = function () {
-    if (hoversubplots !== 'axis') {
-      hoverData.sort(function (d1, d2) {
-        return d1.distance - d2.distance;
-      });
-    }
+    // When sorting keep the points in the main subplot at the top
+    // then add points in other subplots
+
+    var hoverDataInSubplot = hoverData.filter(function (a) {
+      return firstXaxis && firstXaxis._id === a.xa._id && firstYaxis && firstYaxis._id === a.ya._id;
+    });
+    var hoverDataOutSubplot = hoverData.filter(function (a) {
+      return !(firstXaxis && firstXaxis._id === a.xa._id && firstYaxis && firstYaxis._id === a.ya._id);
+    });
+    hoverDataInSubplot.sort(distanceSort);
+    hoverDataOutSubplot.sort(distanceSort);
+    hoverData = hoverDataInSubplot.concat(hoverDataOutSubplot);
 
     // move period positioned points and box/bar-like traces to the end of the list
     hoverData = orderRangePoints(hoverData, hovermode);
@@ -44824,7 +44840,8 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
       var name = _module.name;
       var categories = Registry.modules[name].categories;
       if (categories.svg) {
-        var className = (_module.layerName || name + 'layer') + (z ? Number(z) + 1 : '');
+        var classBaseName = _module.layerName || name + 'layer';
+        var className = classBaseName + (z ? Number(z) + 1 : '');
         var plotMethod = _module.plot;
 
         // plot all visible traces of this type on this subplot at once
@@ -44835,7 +44852,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         cdSubplot = cdModuleAndOthers[1];
         if (cdModule.length) {
           layerData.push({
-            i: traceLayerClasses.indexOf(className),
+            i: traceLayerClasses.indexOf(classBaseName),
             zorder: z,
             className: className,
             plotMethod: plotMethod,
@@ -72126,7 +72143,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.31.0';
+exports.version = '2.31.1';
 
 /***/ }),
 
