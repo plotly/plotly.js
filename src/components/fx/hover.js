@@ -713,6 +713,9 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     gd._spikepoints = newspikepoints;
 
     var sortHoverData = function() {
+        // When sorting keep the points in the main subplot at the top
+        // then add points in other subplots
+
         var hoverDataInSubplot = hoverData.filter(function(a) {
             return (
                 (firstXaxis && firstXaxis._id === a.xa._id) &&
