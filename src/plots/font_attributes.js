@@ -66,16 +66,17 @@ module.exports = function(opts) {
             values: [
                 'normal',
                 'italic',
-                'oblique -75',
-                'oblique -60',
-                'oblique -45',
-                'oblique -30',
-                'oblique -15',
-                'oblique 15',
-                'oblique 30',
-                'oblique 45',
-                'oblique 60',
-                'oblique 75'
+                'oblique',
+                'oblique -5deg',
+                'oblique -60deg',
+                'oblique -45deg',
+                'oblique -30deg',
+                'oblique -15deg',
+                'oblique 15deg',
+                'oblique 30deg',
+                'oblique 45deg',
+                'oblique 60deg',
+                'oblique 75deg'
             ],
             dflt: 'normal',
             description: [
