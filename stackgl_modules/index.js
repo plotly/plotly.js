@@ -21493,9 +21493,17 @@ module.exports = getGlyph
 var GLYPH_CACHE = {}
 
 function getGlyph(symbol, font, pixelRatio) {
-  var fontCache = GLYPH_CACHE[font]
+  var fontKey = [
+    font.style,
+    font.weight,
+    font.stretch,
+    font.variant,
+    font.family
+  ].join('_')
+
+  var fontCache = GLYPH_CACHE[fontKey]
   if(!fontCache) {
-    fontCache = GLYPH_CACHE[font] = {}
+    fontCache = GLYPH_CACHE[fontKey] = {}
   }
   if(symbol in fontCache) {
     return fontCache[symbol]
@@ -21505,7 +21513,11 @@ function getGlyph(symbol, font, pixelRatio) {
     textAlign: "center",
     textBaseline: "middle",
     lineHeight: 1.0,
-    font: font,
+    font: font.family,
+    fontStyle: font.style,
+    fontWeight: font.weight,
+    fontStretch: font.stretch,
+    fontVariant: font.variant,
     lineSpacing: 1.25,
     styletags: {
       breaklines:true,
@@ -22133,7 +22145,14 @@ proto.update = function(options) {
   var points = options.position
 
   //Text font
-  var font      = options.font      || 'normal'
+  var font = {
+    family: options.font || 'normal',
+    style: options.fontStyle || 'normal',
+    weight: options.fontWeight || 'normal',
+    stretch: options.fontStretch || 'normal',
+    variant: options.fontVariant || 'normal'
+  }
+
   var alignment = options.alignment || [0,0]
 
   var alignmentX;
