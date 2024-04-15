@@ -19350,6 +19350,10 @@ proto.update = function(options) {
       var x     = tick.x
       var text  = tick.text
       var font  = tick.font || 'sans-serif'
+      var fontStyle = tick.fontStyle || 'normal'
+      var fontWeight = tick.fontWeight || 'normal'
+      var fontStretch = tick.fontStretch || 'normal'
+      var fontVariant = tick.fontVariant || 'normal'
       scale = (tick.fontSize || 12)
 
       var coordScale = 1.0 / (bounds[dimension+2] - bounds[dimension])
@@ -19357,7 +19361,12 @@ proto.update = function(options) {
 
       var rows = text.split('\n')
       for(var r = 0; r < rows.length; r++) {
-        data = getText(font, rows[r]).data
+        data = getText(font, rows[r], {
+          fontStyle: fontStyle,
+          fontWeight: fontWeight,
+          fontStretch: fontStretch,
+          fontVariant: fontVariant
+        }).data
         for (j = 0; j < data.length; j += 2) {
           vertices.push(
               data[j] * scale,
@@ -19378,7 +19387,14 @@ proto.update = function(options) {
   for(dimension=0; dimension<2; ++dimension) {
     this.labelOffset[dimension] = Math.floor(vertices.length/3)
 
-    data  = getText(options.labelFont[dimension], options.labels[dimension], { textAlign: 'center' }).data
+    data  = getText(options.labelFont[dimension], options.labels[dimension], {
+      fontStyle: options.labelFontStyle[dimension],
+      fontWeight: options.labelFontWeight[dimension],
+      fontStretch: options.labelFontStretch[dimension],
+      fontVariant: options.labelFontVariant[dimension],
+      textAlign: 'center'
+    }).data
+
     scale = options.labelSize[dimension]
     for(i=0; i<data.length; i+=2) {
       vertices.push(data[i]*scale, -data[i+1]*scale, 0)
@@ -19390,7 +19406,12 @@ proto.update = function(options) {
 
   //Add title
   this.titleOffset = Math.floor(vertices.length/3)
-  data = getText(options.titleFont, options.title).data
+  data = getText(options.titleFont, options.title, {
+    fontStyle: options.titleFontStyle,
+    fontWeight: options.titleFontWeight,
+    fontStretch: options.titleFontStretch,
+    fontVariant: options.titleFontVariant,
+  }).data
   scale = options.titleSize
   for(i=0; i<data.length; i+=2) {
     vertices.push(data[i]*scale, -data[i+1]*scale, 0)
@@ -19927,9 +19948,18 @@ proto.update = function(options) {
     labels:     options.labels    || ['x', 'y'],
     labelSize:  options.labelSize || [12,12],
     labelFont:  options.labelFont || ['sans-serif', 'sans-serif'],
+    labelFontStyle: options.labelFontStyle || ['normal', 'normal'],
+    labelFontWeight: options.labelFontWeight || ['normal', 'normal'],
+    labelFontStretch: options.labelFontStretch || ['normal', 'normal'],
+    labelFontVariant: options.labelFontVariant || ['normal', 'normal'],
+
     title:      options.title     || '',
     titleSize:  options.titleSize || 18,
-    titleFont:  options.titleFont || 'sans-serif'
+    titleFont:  options.titleFont || 'sans-serif',
+    titleFontStyle: options.titleFontStyle || 'normal',
+    titleFontWeight: options.titleFontWeight || 'normal',
+    titleFontStretch: options.titleFontStretch || 'normal',
+    titleFontVariant: options.titleFontVariant || 'normal'
   })
 
   this.static = !!options.static;
@@ -40224,9 +40254,23 @@ function unwrap(mesh) {
 
 function textGet(font, text, opts) {
   var opts = opts || {}
-  var fontcache = __TEXT_CACHE[font]
+
+  var fontStyle = opts.fontStyle || 'normal'
+  var fontWeight = opts.fontWeight || 'normal'
+  var fontStretch = opts.fontStretch || 'normal'
+  var fontVariant = opts.fontVariant || 'normal'
+
+  var fontKey = [
+    fontStyle,
+    fontWeight,
+    fontStretch,
+    fontVariant,
+    font
+  ].join('_')
+
+  var fontcache = __TEXT_CACHE[fontKey]
   if(!fontcache) {
-    fontcache = __TEXT_CACHE[font] = {
+    fontcache = __TEXT_CACHE[fontKey] = {
       ' ': {
         data:   new Float32Array(0),
         shape: 0.2
@@ -40239,6 +40283,10 @@ function textGet(font, text, opts) {
       mesh = fontcache[text] = unwrap(vectorizeText(text, {
         triangles:     true,
         font:          font,
+        fontStyle:     fontStyle,
+        fontWeight:    fontWeight,
+        fontStretch:   fontStretch,
+        fontVariant:   fontVariant,
         textAlign:     opts.textAlign || 'left',
         textBaseline:  'alphabetic',
         styletags: {

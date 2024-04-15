@@ -19,7 +19,7 @@
     "gl-heatmap2d": "^1.1.1",
     "gl-line3d": "1.2.1",
     "gl-mesh3d": "^2.3.1",
-    "gl-plot2d": "^1.4.5",
+    "gl-plot2d": "github:gl-vis/gl-plot2d#bb6788ee546f4da8550faf2cc4be3632fbb4a11d",
     "gl-plot3d": "^2.4.7",
     "gl-pointcloud2d": "^1.0.3",
     "gl-scatter3d": "github:gl-vis/gl-scatter3d#eeb947a712fc6a17fa0dc1775397976de926887a",
