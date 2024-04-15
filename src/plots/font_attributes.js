@@ -96,9 +96,10 @@ module.exports = function(opts) {
                 'expanded',
                 'extra-expanded',
                 'ultra-expanded',
-                '50%',
-                '100%',
-                '200%',
+                // TODO: Do we want to add numeric options e.g. '50%' and '200%'?
+                // If so please note that those values are not supported in gl3d
+                // since vectorize-text uses CanvasRenderingContext2D fontStretch
+                // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fontStretch)
             ],
             dflt: 'normal',
             description: [
