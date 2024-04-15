@@ -9,6 +9,14 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.31.1] -- 2024-04-15
+
+### Fixed
+ - Maintain original drawing order of traces when traces with similar type are sent to back [[#6962](https://github.com/plotly/plotly.js/pull/6962)]
+ - Ensure winning points of hover are listed first when hoversubplots is set to "axis" and sorting by distance [[#6963](https://github.com/plotly/plotly.js/pull/6963)]
+ - Fix duplicated points in splom hover when `hoversubplots` is set to "axis" [[#6965](https://github.com/plotly/plotly.js/pull/6965)]
+
+
 ## [2.31.0] -- 2024-04-10
 
 ### Added
