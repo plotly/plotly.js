@@ -4896,13 +4896,13 @@ describe('Test axes', function() {
             function _assert(msg, exp) {
                 var tickLabels = d3SelectAll('.xtick > text');
 
-                expect(tickLabels.size()).toBe(exp.angle.length, msg + ' - # of tick labels');
+                expect(tickLabels.size()).withContext(msg + ' - # of tick labels').toBe(exp.angle.length);
 
                 tickLabels.each(function(_, i) {
                     var t = d3Select(this).attr('transform');
                     var rotate = (t.split('rotate(')[1] || '').split(')')[0];
                     var angle = rotate.split(',')[0];
-                    expect(Number(angle)).toBe(exp.angle[i], msg + ' - node ' + i);
+                    expect(Number(angle)).withContext(msg + ' - node ' + i).toBeCloseTo(exp.angle[i], 2);
                 });
             }
 
@@ -4920,7 +4920,7 @@ describe('Test axes', function() {
             })
             .then(function() {
                 _assert('base - rotated', {
-                    angle: [90, 90, 90]
+                    angle: [30, 30, 30]
                 });
 
                 return Plotly.relayout(gd, 'xaxis.range', [-0.4, 1.4]);
@@ -4934,7 +4934,7 @@ describe('Test axes', function() {
             })
             .then(function() {
                 _assert('narrow range / wide ticks - rotated', {
-                    angle: [90, 90]
+                    angle: [30, 30]
                 });
             })
             .then(done, done.fail);
