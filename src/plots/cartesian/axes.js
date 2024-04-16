@@ -4097,12 +4097,13 @@ function drawTitle(gd, ax) {
         // With ax._depth the initial drawing baseline is at the outer axis border (where the
         // ticklabels are drawn). Since the title text will be drawn above the baseline,
         // bottom/right axes must be shifted by 1 text line to draw below ticklabels instead of on
-        // top of them, whereas for top/left axes, the first line would already be correctly drawn
-        // before the ticklabels, but we need an offset for all subsequent lines.
+        // top of them, whereas for top/left axes, the first line would be drawn
+        // before the ticklabels, but we need an offset for the descender portion of the first line
+        // and all subsequent lines.
         if(ax.side === 'bottom' || ax.side === 'right') {
             titleStandoff = ax._depth + ax.title.standoff + fontSize * CAP_SHIFT;
         } else if(ax.side === 'top' || ax.side === 'left') {
-            titleStandoff = ax._depth + ax.title.standoff + fontSize * (extraLines * LINE_SPACING);
+            titleStandoff = ax._depth + ax.title.standoff + fontSize * (MID_SHIFT + (extraLines * LINE_SPACING));
         }
     } else {
         var isInside = insideTicklabelposition(ax);
