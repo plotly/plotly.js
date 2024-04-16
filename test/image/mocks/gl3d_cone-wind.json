@@ -2,7 +2,8 @@
   "data": [
     {
       "type": "cone",
-      "sizeref": 1.5,
+      "sizemode": "raw",
+      "sizeref": 0.1,
       "x": [
         70.188,
         71.791,
@@ -129165,19 +129166,23 @@
         -0.25592,
         -0.61511
       ],
-      "colorscale": "Viridis",
+      "colorscale": "Portland",
       "cmin": 0,
-      "cmax": 100,
+      "cmax": 80,
       "hoverinfo": "u+v+w+text",
       "text": "-> wind <-"
     }
   ],
   "layout": {
+    "width": 900,
+    "height": 600,
     "scene": {
-      "aspectratio": {
-        "x": 1,
-        "y": 1,
-        "z": 0.3
+      "camera": {
+        "eye": {
+          "x": 1.2,
+          "y": 0,
+          "z": 0.6
+        }
       }
     }
   }
