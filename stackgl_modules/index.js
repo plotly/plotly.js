@@ -11927,7 +11927,6 @@ function Axes(gl) {
   this.tickFont       = [ 'sans-serif', 'sans-serif', 'sans-serif' ]
   this.tickFontStyle   = [ 'normal', 'normal', 'normal' ]
   this.tickFontWeight  = [ 'normal', 'normal', 'normal' ]
-  this.tickFontStretch = [ 'normal', 'normal', 'normal' ]
   this.tickFontVariant = [ 'normal', 'normal', 'normal' ]
   this.tickSize       = [ 12, 12, 12 ]
   this.tickAngle      = [ 0, 0, 0 ]
@@ -11945,7 +11944,6 @@ function Axes(gl) {
   this.labelFont      = [ 'sans-serif', 'sans-serif', 'sans-serif' ]
   this.labelFontStyle   = [ 'normal', 'normal', 'normal' ]
   this.labelFontWeight  = [ 'normal', 'normal', 'normal' ]
-  this.labelFontStretch = [ 'normal', 'normal', 'normal' ]
   this.labelFontVariant = [ 'normal', 'normal', 'normal' ]
   this.labelSize      = [ 20, 20, 20 ]
   this.labelAngle     = [ 0, 0, 0 ]
@@ -12088,7 +12086,6 @@ i_loop:
   if(STRING('tickFont')) ticksUpdate = true
   if(STRING('tickFontStyle')) ticksUpdate = true
   if(STRING('tickFontWeight')) ticksUpdate = true
-  if(STRING('tickFontStretch')) ticksUpdate = true
   if(STRING('tickFontVariant')) ticksUpdate = true
 
   NUMBER('tickSize')
@@ -12102,7 +12099,6 @@ i_loop:
   if(STRING('labelFont')) labelUpdate = true
   if(STRING('labelFontStyle')) labelUpdate = true
   if(STRING('labelFontWeight')) labelUpdate = true
-  if(STRING('labelFontStretch')) labelUpdate = true
   if(STRING('labelFontVariant')) labelUpdate = true
 
   BOOLEAN('labelEnable')
@@ -12142,21 +12138,18 @@ i_loop:
       family: this.labelFont[0],
       style: this.labelFontStyle[0],
       weight: this.labelFontWeight[0],
-      stretch: this.labelFontStretch[0],
       variant: this.labelFontVariant[0],
     },
     {
       family: this.labelFont[1],
       style: this.labelFontStyle[1],
       weight: this.labelFontWeight[1],
-      stretch: this.labelFontStretch[1],
       variant: this.labelFontVariant[1],
     },
     {
       family: this.labelFont[2],
       style: this.labelFontStyle[2],
       weight: this.labelFontWeight[2],
-      stretch: this.labelFontStretch[2],
       variant: this.labelFontVariant[2],
     }
   ]
@@ -12166,21 +12159,18 @@ i_loop:
       family: this.tickFont[0],
       style: this.tickFontStyle[0],
       weight: this.tickFontWeight[0],
-      stretch: this.tickFontStretch[0],
       variant: this.tickFontVariant[0],
     },
     {
       family: this.tickFont[1],
       style: this.tickFontStyle[1],
       weight: this.tickFontWeight[1],
-      stretch: this.tickFontStretch[1],
       variant: this.tickFontVariant[1],
     },
     {
       family: this.tickFont[2],
       style: this.tickFontStyle[2],
       weight: this.tickFontWeight[2],
-      stretch: this.tickFontStretch[2],
       variant: this.tickFontVariant[2],
     }
   ]
@@ -13251,7 +13241,6 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
     var fontKey = [
       font.style,
       font.weight,
-      font.stretch,
       font.variant,
       font.family
     ].join('_')
@@ -13267,7 +13256,6 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
         font: font.family,
         fontStyle: font.style,
         fontWeight: font.weight,
-        fontStretch: font.stretch,
         fontVariant: font.variant,
         textAlign: 'center',
         textBaseline: 'middle',
@@ -13325,7 +13313,6 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
         family: ticks[d][i].font || tickFont[d].family,
         style: tickFont[d].fontStyle || tickFont[d].style,
         weight: tickFont[d].fontWeight || tickFont[d].weight,
-        stretch: tickFont[d].fontStretch || tickFont[d].stretch,
         variant: tickFont[d].fontVariant || tickFont[d].variant,
       }
 
@@ -19352,7 +19339,6 @@ proto.update = function(options) {
       var font  = tick.font || 'sans-serif'
       var fontStyle = tick.fontStyle || 'normal'
       var fontWeight = tick.fontWeight || 'normal'
-      var fontStretch = tick.fontStretch || 'normal'
       var fontVariant = tick.fontVariant || 'normal'
       scale = (tick.fontSize || 12)
 
@@ -19364,7 +19350,6 @@ proto.update = function(options) {
         data = getText(font, rows[r], {
           fontStyle: fontStyle,
           fontWeight: fontWeight,
-          fontStretch: fontStretch,
           fontVariant: fontVariant
         }).data
         for (j = 0; j < data.length; j += 2) {
@@ -19390,7 +19375,6 @@ proto.update = function(options) {
     data  = getText(options.labelFont[dimension], options.labels[dimension], {
       fontStyle: options.labelFontStyle[dimension],
       fontWeight: options.labelFontWeight[dimension],
-      fontStretch: options.labelFontStretch[dimension],
       fontVariant: options.labelFontVariant[dimension],
       textAlign: 'center'
     }).data
@@ -19409,7 +19393,6 @@ proto.update = function(options) {
   data = getText(options.titleFont, options.title, {
     fontStyle: options.titleFontStyle,
     fontWeight: options.titleFontWeight,
-    fontStretch: options.titleFontStretch,
     fontVariant: options.titleFontVariant,
   }).data
   scale = options.titleSize
@@ -19950,7 +19933,6 @@ proto.update = function(options) {
     labelFont:  options.labelFont || ['sans-serif', 'sans-serif'],
     labelFontStyle: options.labelFontStyle || ['normal', 'normal'],
     labelFontWeight: options.labelFontWeight || ['normal', 'normal'],
-    labelFontStretch: options.labelFontStretch || ['normal', 'normal'],
     labelFontVariant: options.labelFontVariant || ['normal', 'normal'],
 
     title:      options.title     || '',
@@ -19958,7 +19940,6 @@ proto.update = function(options) {
     titleFont:  options.titleFont || 'sans-serif',
     titleFontStyle: options.titleFontStyle || 'normal',
     titleFontWeight: options.titleFontWeight || 'normal',
-    titleFontStretch: options.titleFontStretch || 'normal',
     titleFontVariant: options.titleFontVariant || 'normal'
   })
 
@@ -40257,13 +40238,11 @@ function textGet(font, text, opts) {
 
   var fontStyle = opts.fontStyle || 'normal'
   var fontWeight = opts.fontWeight || 'normal'
-  var fontStretch = opts.fontStretch || 'normal'
   var fontVariant = opts.fontVariant || 'normal'
 
   var fontKey = [
     fontStyle,
     fontWeight,
-    fontStretch,
     fontVariant,
     font
   ].join('_')
@@ -40285,7 +40264,6 @@ function textGet(font, text, opts) {
         font:          font,
         fontStyle:     fontStyle,
         fontWeight:    fontWeight,
-        fontStretch:   fontStretch,
         fontVariant:   fontVariant,
         textAlign:     opts.textAlign || 'left',
         textBaseline:  'alphabetic',
