@@ -4065,9 +4065,7 @@ function approxTitleDepth(ax) {
     var fontSize = ax.title.font.size;
     var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
     if(ax.title.hasOwnProperty('standoff')) {
-        return extraLines ?
-            fontSize * (CAP_SHIFT + (extraLines * LINE_SPACING)) :
-            fontSize * CAP_SHIFT;
+        return fontSize * (CAP_SHIFT + (extraLines * LINE_SPACING));
     } else {
         return extraLines ?
             fontSize * (extraLines + 1) * LINE_SPACING :
@@ -4098,9 +4096,20 @@ function drawTitle(gd, ax) {
     var axLetter = axId.charAt(0);
     var fontSize = ax.title.font.size;
     var titleStandoff;
+    var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
 
     if(ax.title.hasOwnProperty('standoff')) {
-        titleStandoff = ax._depth + ax.title.standoff + approxTitleDepth(ax);
+        // With ax._depth the initial drawing baseline is at the outer axis border (where the
+        // ticklabels are drawn). Since the title text will be drawn above the baseline,
+        // bottom/right axes must be shifted by 1 text line to draw below ticklabels instead of on
+        // top of them, whereas for top/left axes, the first line would be drawn
+        // before the ticklabels, but we need an offset for the descender portion of the first line
+        // and all subsequent lines.
+        if(ax.side === 'bottom' || ax.side === 'right') {
+            titleStandoff = ax._depth + ax.title.standoff + fontSize * CAP_SHIFT;
+        } else if(ax.side === 'top' || ax.side === 'left') {
+            titleStandoff = ax._depth + ax.title.standoff + fontSize * (MID_SHIFT + (extraLines * LINE_SPACING));
+        }
     } else {
         var isInside = insideTicklabelposition(ax);
 
