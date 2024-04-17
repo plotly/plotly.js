@@ -56,6 +56,7 @@ module.exports = function(opts) {
             extras: ['normal', 'bold'],
             dflt: 'normal',
             description: [
+                'Sets the weight (or boldness) of the font.',
                 'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight',
             ].join(' ')
         },
@@ -70,6 +71,7 @@ module.exports = function(opts) {
             ],
             dflt: 'normal',
             description: [
+                'Sets whether a font should be styled with a normal, italic, or oblique face from its family.',
                 'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style',
             ].join(' ')
         },
@@ -79,6 +81,15 @@ module.exports = function(opts) {
             valType: 'string',
             dflt: 'normal',
             description: [
+                'Set all the font variants for a font including but not limited to',
+                '*small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*,',
+                '*sub*, *super*, *text*, *emoji*, *unicode*,',
+                '*ordinal*, *slashed-zero*, *ruby*',
+                '*contextual*, *no-contextual*,',
+                '*common-ligatures*, *no-common-ligatures*,',
+                '*discretionary-ligatures*, *no-discretionary-ligatures*,',
+                '*historical-ligatures*, *no-historical-ligatures*,',
+                '*historical-forms*.',
                 'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant',
             ].join(' ')
         },
