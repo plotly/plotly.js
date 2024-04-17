@@ -1396,11 +1396,14 @@ function createHoverText(hoverData, opts) {
 
         // secondary label for non-empty 'name'
         if(name && name !== text) {
-            tx2.call(Drawing.font,
-                    d.fontFamily || fontFamily,
-                    d.fontSize || fontSize,
-                    nameColor)
-                .text(name)
+            tx2.call(Drawing.font, {
+                family: d.fontFamily || fontFamily,
+                size: d.fontSize || fontSize,
+                color: nameColor,
+                weight: d.fontWeight || fontWeight,
+                style: d.fontStyle || fontStyle,
+                variant: d.fontVariant || fontVariant
+            }).text(name)
                 .attr('data-notex', 1)
                 .call(svgTextUtils.positionText, 0, 0)
                 .call(svgTextUtils.convertToTspans, gd);
