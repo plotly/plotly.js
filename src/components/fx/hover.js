@@ -928,9 +928,9 @@ function createHoverText(hoverData, opts) {
     // can override this.
     var fontFamily = opts.fontFamily || constants.HOVERFONT;
     var fontSize = opts.fontSize || constants.HOVERFONTSIZE;
-    var fontWeight = opts.fontWeight || 'normal';
-    var fontStyle = opts.fontStyle || 'normal';
-    var fontVariant = opts.fontVariant || 'normal';
+    var fontWeight = opts.fontWeight || fullLayout.font.weight;
+    var fontStyle = opts.fontStyle || fullLayout.font.style;
+    var fontVariant = opts.fontVariant || fullLayout.font.variant;
 
     var c0 = hoverData[0];
     var xa = c0.xa;
