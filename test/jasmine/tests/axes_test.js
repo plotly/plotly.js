@@ -2372,7 +2372,6 @@ describe('Test axes', function() {
                     color: '#444',
                     weight: 'normal',
                     style: 'normal',
-                    stretch: 'normal',
                     variant: 'normal'
                 });
                 expect(yaxis.tickangle).toBe('auto');
@@ -2393,7 +2392,6 @@ describe('Test axes', function() {
                         color: '#0FF',
                         weight: 'normal',
                         style: 'normal',
-                        stretch: 'normal',
                         variant: 'normal'
                     },
                     tickangle: -20
@@ -2414,7 +2412,6 @@ describe('Test axes', function() {
                     color: '#0FF',
                     weight: 'normal',
                     style: 'normal',
-                    stretch: 'normal',
                     variant: 'normal'
                 });
                 expect(yaxis.tickangle).toBe(-20);

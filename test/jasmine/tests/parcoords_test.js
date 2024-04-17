@@ -95,7 +95,6 @@ describe('parcoords initialization tests', function() {
                 color: 'blue',
                 weight: 'bold',
                 style: 'italic',
-                stretch: 'expanded',
                 variant: 'small-caps'
             };
 
@@ -107,7 +106,6 @@ describe('parcoords initialization tests', function() {
                 color: 'blue',
                 weight: 'bold',
                 style: 'italic',
-                stretch: 'expanded',
                 variant: 'small-caps'
             };
 

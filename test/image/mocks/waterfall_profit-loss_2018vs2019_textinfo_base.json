@@ -126,7 +126,6 @@
         "font": {
             "weight": "bold",
             "style": "italic",
-            "stretch": "condensed",
             "variant": "small-caps"
         },
         "title": {

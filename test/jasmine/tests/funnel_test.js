@@ -159,7 +159,6 @@ describe('Funnel.supplyDefaults', function() {
                 size: 13,
                 weight: 'bold',
                 style: 'italic',
-                stretch: 'expanded',
                 variant: 'small-caps'
             }
         };
@@ -168,7 +167,6 @@ describe('Funnel.supplyDefaults', function() {
             size: 13,
             weight: 'bold',
             style: 'italic',
-            stretch: 'expanded',
             variant: 'small-caps'
         };
 

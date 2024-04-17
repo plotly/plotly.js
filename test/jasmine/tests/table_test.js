@@ -56,7 +56,6 @@ describe('table initialization tests', function() {
                 color: 'blue',
                 weight: 'bold',
                 style: 'italic',
-                stretch: 'expanded',
                 variant: 'small-caps'
             };
 
@@ -68,7 +67,6 @@ describe('table initialization tests', function() {
                 color: 'blue',
                 weight: 'bold',
                 style: 'italic',
-                stretch: 'expanded',
                 variant: 'small-caps'
             };
 
@@ -88,7 +86,6 @@ describe('table initialization tests', function() {
                     color: '#444',
                     weight: 'bold',
                     style: 'italic',
-                    stretch: 'expanded',
                     variant: 'small-caps'
                 }
             };
@@ -153,7 +150,6 @@ describe('table initialization tests', function() {
                     color: '#444',
                     weight: 'bold',
                     style: 'italic',
-                    stretch: 'expanded',
                     variant: 'small-caps'
                 }
             });
@@ -171,7 +167,6 @@ describe('table initialization tests', function() {
                     color: '#444',
                     weight: 'bold',
                     style: 'italic',
-                    stretch: 'expanded',
                     variant: 'small-caps'
                 }
             });

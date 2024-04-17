@@ -48,7 +48,6 @@
     "font": {
       "weight": "bold",
       "style": "italic",
-      "stretch": "condensed",
       "variant": "small-caps"
     },
     "title":{"text":"scatter3d lines with good/bad/no input texts (including undefined, null & blank variations) should be displayed well on WEBGL"},

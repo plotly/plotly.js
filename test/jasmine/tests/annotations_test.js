@@ -1447,7 +1447,6 @@ describe('annotation effects', function() {
                     color: '#fff',
                     weight: 'normal',
                     style: 'normal',
-                    stretch: 'normal',
                     variant: 'normal'
                 }
             });
@@ -1477,7 +1476,6 @@ describe('annotation effects', function() {
                         color: '#080',
                         weight: 'normal',
                         style: 'normal',
-                        stretch: 'normal',
                         variant: 'normal'
                     }
                 },
@@ -1494,7 +1492,6 @@ describe('annotation effects', function() {
                     color: '#080',
                     weight: 'normal',
                     style: 'normal',
-                    stretch: 'normal',
                     variant: 'normal'
                 }
             });

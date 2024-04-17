@@ -498,7 +498,6 @@
             "size": 10,
             "weight": "bold",
             "style": "italic",
-            "stretch": "condensed",
             "variant": "small-caps"
         },
         "updatemenus": [

@@ -8,7 +8,6 @@
         "font": {
             "weight": "bold",
             "style": "italic",
-            "stretch": "condensed",
             "variant": "small-caps"
         },
         "xaxis":{"title":{"text":"linear"},"range":[0,10],"type":"linear","showgrid":false,"zeroline":false,"showticklabels":false},

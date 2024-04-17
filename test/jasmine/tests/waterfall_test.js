@@ -168,7 +168,6 @@ describe('Waterfall.supplyDefaults', function() {
                 size: 13,
                 weight: 'normal',
                 style: 'normal',
-                stretch: 'normal',
                 variant: 'normal'
             }
         };
@@ -177,7 +176,6 @@ describe('Waterfall.supplyDefaults', function() {
             size: 13,
             weight: 'normal',
             style: 'normal',
-            stretch: 'normal',
             variant: 'normal'
         };
 

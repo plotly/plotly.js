@@ -1038,7 +1038,6 @@ describe('Test lib.js:', function() {
             color: 'neon pink with sparkles',
             weight: 'bold',
             style: 'italic',
-            stretch: 'expanded',
             variant: 'small-caps'
         };
 
@@ -1049,7 +1048,6 @@ describe('Test lib.js:', function() {
                 color: extendFlat({}, fontAttrs.color, {dflt: defaultFont.color}),
                 weight: extendFlat({}, fontAttrs.weight, {dflt: defaultFont.weight}),
                 style: extendFlat({}, fontAttrs.style, {dflt: defaultFont.style}),
-                stretch: extendFlat({}, fontAttrs.stretch, {dflt: defaultFont.stretch}),
                 variant: extendFlat({}, fontAttrs.variant, {dflt: defaultFont.variant})
             },
             fontNoDefault: fontAttrs
@@ -1083,7 +1081,6 @@ describe('Test lib.js:', function() {
                     color: 42,
                     weight: 'BIG',
                     style: 'Nice',
-                    stretch: 'short',
                     variant: false
                 }
             };
@@ -1102,8 +1099,6 @@ describe('Test lib.js:', function() {
             var badWeight = 'heavy';
             var goodStyle = 'italic';
             var badStyle = '';
-            var goodStretch = 'expanded';
-            var badStretch = true;
             var goodVariant = 'small-caps';
             var badVariant = false;
 
@@ -1114,7 +1109,6 @@ describe('Test lib.js:', function() {
                     color: badColor,
                     weight: badWeight,
                     style: badStyle,
-                    stretch: badStretch,
                     variant: badVariant
                 }
             };
@@ -1125,7 +1119,6 @@ describe('Test lib.js:', function() {
                     color: defaultFont.color,
                     weight: defaultFont.weight,
                     style: defaultFont.style,
-                    stretch: defaultFont.stretch,
                     variant: defaultFont.variant
                 });
 
@@ -1136,7 +1129,6 @@ describe('Test lib.js:', function() {
                     color: badColor,
                     weight: badWeight,
                     style: badStyle,
-                    stretch: badStretch,
                     variant: badVariant
                 }
             };
@@ -1147,7 +1139,6 @@ describe('Test lib.js:', function() {
                     color: defaultFont.color,
                     weight: defaultFont.weight,
                     style: defaultFont.style,
-                    stretch: defaultFont.stretch,
                     variant: defaultFont.variant
                 });
 
@@ -1158,7 +1149,6 @@ describe('Test lib.js:', function() {
                     color: goodColor,
                     weight: badWeight,
                     style: badStyle,
-                    stretch: badStretch,
                     variant: badVariant
                 }
             };
@@ -1169,7 +1159,6 @@ describe('Test lib.js:', function() {
                     color: goodColor,
                     weight: defaultFont.weight,
                     style: defaultFont.style,
-                    stretch: defaultFont.stretch,
                     variant: defaultFont.variant
                 });
 
@@ -1180,7 +1169,6 @@ describe('Test lib.js:', function() {
                     color: badColor,
                     weight: goodWeight,
                     style: badStyle,
-                    stretch: badStretch,
                     variant: badVariant
                 }
             };
@@ -1191,7 +1179,6 @@ describe('Test lib.js:', function() {
                     color: defaultFont.color,
                     weight: goodWeight,
                     style: defaultFont.style,
-                    stretch: defaultFont.stretch,
                     variant: defaultFont.variant
                 });
 
@@ -1202,7 +1189,6 @@ describe('Test lib.js:', function() {
                     color: badColor,
                     weight: badWeight,
                     style: goodStyle,
-                    stretch: badStretch,
                     variant: badVariant
                 }
             };
@@ -1213,7 +1199,6 @@ describe('Test lib.js:', function() {
                     color: defaultFont.color,
                     weight: defaultFont.weight,
                     style: goodStyle,
-                    stretch: defaultFont.stretch,
                     variant: defaultFont.variant
                 });
 
@@ -1224,29 +1209,6 @@ describe('Test lib.js:', function() {
                     color: badColor,
                     weight: badWeight,
                     style: badStyle,
-                    stretch: goodStretch,
-                    variant: badVariant
-                }
-            };
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({
-                    family: defaultFont.family,
-                    size: defaultFont.size,
-                    color: defaultFont.color,
-                    weight: defaultFont.weight,
-                    style: defaultFont.style,
-                    stretch: goodStretch,
-                    variant: defaultFont.variant
-                });
-
-            containerIn = {
-                fontWithDefault: {
-                    family: badFamily,
-                    size: badSize,
-                    color: badColor,
-                    weight: badWeight,
-                    style: badStyle,
-                    stretch: badStretch,
                     variant: goodVariant
                 }
             };
@@ -1257,7 +1219,6 @@ describe('Test lib.js:', function() {
                     color: defaultFont.color,
                     weight: defaultFont.weight,
                     style: defaultFont.style,
-                    stretch: defaultFont.stretch,
                     variant: goodVariant
                 });
         });

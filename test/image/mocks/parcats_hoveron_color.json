@@ -19,7 +19,6 @@
     "font": {
       "weight": "bold",
       "style": "italic",
-      "stretch": "condensed",
       "variant": "small-caps"
     },
     "height": 602,

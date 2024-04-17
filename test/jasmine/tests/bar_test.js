@@ -158,7 +158,6 @@ describe('Bar.supplyDefaults', function() {
                 size: 13,
                 weight: 'bold',
                 style: 'italic',
-                stretch: 'expanded',
                 variant: 'small-caps'
             }
         };
@@ -167,7 +166,6 @@ describe('Bar.supplyDefaults', function() {
             size: 13,
             weight: 'bold',
             style: 'italic',
-            stretch: 'expanded',
             variant: 'small-caps'
         };
 

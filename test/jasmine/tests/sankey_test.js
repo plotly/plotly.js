@@ -158,7 +158,6 @@ describe('sankey tests', function() {
                     family: 'Arial',
                     weight: 'bold',
                     style: 'italic',
-                    stretch: 'expanded',
                     variant: 'small-caps'
                 }});
                 expect(fullTrace.textfont)
@@ -166,7 +165,6 @@ describe('sankey tests', function() {
                         family: 'Arial',
                         weight: 'bold',
                         style: 'italic',
-                        stretch: 'expanded',
                         variant: 'small-caps'
                     }, 'textfont is defined');
             });
