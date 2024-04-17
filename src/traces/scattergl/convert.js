@@ -109,7 +109,6 @@ function convertTextStyle(gd, trace) {
     var tff = textfontIn.family;
     var tfw = textfontIn.weight;
     var tfy = textfontIn.style;
-    var tfh = textfontIn.stretch;
     var tfv = textfontIn.variant;
     var optsOut = {};
     var i;
@@ -193,7 +192,6 @@ function convertTextStyle(gd, trace) {
         Array.isArray(tff) ||
         Array.isArray(tfw) ||
         Array.isArray(tfy) ||
-        Array.isArray(tfh) ||
         Array.isArray(tfv)
     ) {
         // if any textfont param is array - make render a batch
@@ -211,7 +209,6 @@ function convertTextStyle(gd, trace) {
             fonti.family = Array.isArray(tff) ? tff[i] : tff;
             fonti.weight = Array.isArray(tfw) ? tfw[i] : tfw;
             fonti.style = Array.isArray(tfy) ? tfy[i] : tfy;
-            fonti.stretch = Array.isArray(tfh) ? tfh[i] : tfh;
             fonti.variant = Array.isArray(tfv) ? tfv[i] : tfv;
         }
     } else {
@@ -221,7 +218,6 @@ function convertTextStyle(gd, trace) {
             family: tff,
             weight: tfw,
             style: tfy,
-            stretch: tfh,
             variant: tfv
         };
     }

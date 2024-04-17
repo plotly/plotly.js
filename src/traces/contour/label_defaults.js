@@ -10,7 +10,6 @@ module.exports = function handleLabelDefaults(coerce, layout, lineColor, opts) {
         Lib.coerceFont(coerce, 'contours.labelfont', {
             weight: globalFont.weight,
             style: globalFont.style,
-            stretch: globalFont.stretch,
             variant: globalFont.variant,
             family: globalFont.family,
             size: globalFont.size,

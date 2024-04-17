@@ -115,7 +115,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         family: font.family,
         weight: font.weight,
         style: font.style,
-        stretch: font.stretch,
         variant: font.variant,
         size: Lib.bigFont(font.size),
         color: dfltFontColor

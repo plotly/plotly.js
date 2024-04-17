@@ -487,7 +487,6 @@ function supplyStylingValues(columnCell) {
                 family: gridPick(spec.family, col, i),
                 weight: gridPick(spec.weight, col, i),
                 style: gridPick(spec.style, col, i),
-                stretch: gridPick(spec.stretch, col, i),
                 variant: gridPick(spec.variant, col, i),
             };
             d.rowNumber = d.key;

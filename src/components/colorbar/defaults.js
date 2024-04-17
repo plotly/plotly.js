@@ -127,7 +127,6 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     var dfltTitleFont = Lib.extendFlat({}, tickFont, {
         weight: font.weight,
         style: font.style,
-        stretch: font.stretch,
         variant: font.variant,
         color: font.color,
         size: Lib.bigFont(tickFont.size)

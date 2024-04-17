@@ -17,7 +17,6 @@ function AxesOptions() {
     this.tickSize = [ 12, 12, 12 ];
     this.tickFontWeight = [ 'normal', 'normal', 'normal', 'normal' ];
     this.tickFontStyle = [ 'normal', 'normal', 'normal', 'normal' ];
-    this.tickFontStretch = [ 'normal', 'normal', 'normal', 'normal' ];
     this.tickFontVariant = [ 'normal', 'normal', 'normal', 'normal' ];
     this.tickAngle = [ 0, 0, 0 ];
     this.tickColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
@@ -29,7 +28,6 @@ function AxesOptions() {
     this.labelSize = [ 20, 20, 20 ];
     this.labelFontWeight = [ 'normal', 'normal', 'normal', 'normal' ];
     this.labelFontStyle = [ 'normal', 'normal', 'normal', 'normal' ];
-    this.labelFontStretch = [ 'normal', 'normal', 'normal', 'normal' ];
     this.labelFontVariant = [ 'normal', 'normal', 'normal', 'normal' ];
     this.labelColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
     this.labelPad = [ 30, 30, 30 ];
@@ -93,7 +91,6 @@ proto.merge = function(fullLayout, sceneLayout) {
             if(axes.title.font.size) opts.labelSize[i] = axes.title.font.size;
             if(axes.title.font.weight) opts.labelFontWeight[i] = axes.title.font.weight;
             if(axes.title.font.style) opts.labelFontStyle[i] = axes.title.font.style;
-            if(axes.title.font.stretch) opts.labelFontStretch[i] = axes.title.font.stretch;
             if(axes.title.font.variant) opts.labelFontVariant[i] = axes.title.font.variant;
         }
 
@@ -136,7 +133,6 @@ proto.merge = function(fullLayout, sceneLayout) {
             if(axes.tickfont.size) opts.tickSize[i] = axes.tickfont.size;
             if(axes.tickfont.weight) opts.tickFontWeight[i] = axes.tickfont.weight;
             if(axes.tickfont.style) opts.tickFontStyle[i] = axes.tickfont.style;
-            if(axes.tickfont.stretch) opts.tickFontStretch[i] = axes.tickfont.stretch;
             if(axes.tickfont.variant) opts.tickFontVariant[i] = axes.tickfont.variant;
         }
 

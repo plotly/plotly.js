@@ -84,7 +84,6 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     Lib.coerceFont(coerce, 'title.font', {
         weight: options.font.weight,
         style: options.font.style,
-        stretch: options.font.stretch,
         variant: options.font.variant,
         family: options.font.family,
         size: Lib.bigFont(options.font.size),
@@ -105,7 +104,6 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
         Lib.coerceFont(coerce, 'tickfont', {
             weight: options.font.weight,
             style: options.font.style,
-            stretch: options.font.stretch,
             variant: options.font.variant,
             family: options.font.family,
             size: options.font.size,

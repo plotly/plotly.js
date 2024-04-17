@@ -23,7 +23,6 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
         inheritFontAttr('color');
         inheritFontAttr('weight');
         inheritFontAttr('style');
-        inheritFontAttr('stretch');
         inheritFontAttr('variant');
 
         if(hasLegend) {

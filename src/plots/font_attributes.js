@@ -74,30 +74,6 @@ module.exports = function(opts) {
             ].join(' ')
         },
 
-        stretch: {
-            editType: editType,
-            valType: 'enumerated',
-            values: [
-                'normal',
-                'ultra-condensed',
-                'extra-condensed',
-                'condensed',
-                'semi-condensed',
-                'semi-expanded',
-                'expanded',
-                'extra-expanded',
-                'ultra-expanded',
-                // TODO: Do we want to add numeric options e.g. '50%' and '200%'?
-                // If so please note that those values are not supported in gl3d
-                // since vectorize-text uses CanvasRenderingContext2D fontStretch
-                // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fontStretch)
-            ],
-            dflt: 'normal',
-            description: [
-                'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-stretch',
-            ].join(' ')
-        },
-
         variant: {
             editType: editType,
             valType: 'string',

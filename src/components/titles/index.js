@@ -70,7 +70,6 @@ function draw(gd, titleClass, options) {
     var fontColor = font.color;
     var fontWeight = font.weight;
     var fontStyle = font.style;
-    var fontStretch = font.stretch;
     var fontVariant = font.variant;
 
     // only make this title editable if we positively identify its property
@@ -152,7 +151,6 @@ function draw(gd, titleClass, options) {
             opacity: opacity * Color.opacity(fontColor),
             'font-weight': fontWeight,
             'font-style': fontStyle,
-            'font-stretch': fontStretch,
             'font-variant': fontVariant
         })
         .attr(attributes)

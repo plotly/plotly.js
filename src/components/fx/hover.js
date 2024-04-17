@@ -191,7 +191,6 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             fontColor: hoverItem.fontColor,
             fontWeight: hoverItem.fontWeight,
             fontStyle: hoverItem.fontStyle,
-            fontStretch: hoverItem.fontStretch,
             fontVariant: hoverItem.fontVariant,
             nameLength: hoverItem.nameLength,
             textAlign: hoverItem.textAlign,
@@ -931,7 +930,6 @@ function createHoverText(hoverData, opts) {
     var fontSize = opts.fontSize || constants.HOVERFONTSIZE;
     var fontWeight = opts.fontWeight || 'normal';
     var fontStyle = opts.fontStyle || 'normal';
-    var fontStretch = opts.fontStretch || 'normal';
     var fontVariant = opts.fontVariant || 'normal';
 
     var c0 = hoverData[0];
@@ -1016,7 +1014,6 @@ function createHoverText(hoverData, opts) {
         var commonLabelFont = {
             weight: commonLabelOpts.font.weight || fontWeight,
             style: commonLabelOpts.font.style || fontStyle,
-            stretch: commonLabelOpts.font.stretch || fontStretch,
             variant: commonLabelOpts.font.variant || fontVariant,
             family: commonLabelOpts.font.family || fontFamily,
             size: commonLabelOpts.font.size || fontSize,
@@ -1342,7 +1339,6 @@ function createHoverText(hoverData, opts) {
                 .call(Drawing.font, {
                     weight: fontWeight,
                     style: fontStyle,
-                    stretch: fontStretch,
                     variant: fontVariant,
                     family: fontFamily,
                     size: fontSize
@@ -1387,7 +1383,6 @@ function createHoverText(hoverData, opts) {
                 color: d.fontColor || contrastColor,
                 weight: d.fontWeight || fontWeight,
                 style: d.fontStyle || fontStyle,
-                stretch: d.fontStretch || fontStretch,
                 variant: d.fontVariant || fontVariant
             })
             .text(text)
@@ -1950,7 +1945,6 @@ function cleanPoint(d, hovermode) {
     fill('fontColor', 'htc', 'hoverlabel.font.color');
     fill('fontWeight', 'htw', 'hoverlabel.font.weight');
     fill('fontStyle', 'hty', 'hoverlabel.font.style');
-    fill('fontStretch', 'hth', 'hoverlabel.font.stretch');
     fill('fontVariant', 'htv', 'hoverlabel.font.variant');
     fill('nameLength', 'hnl', 'hoverlabel.namelength');
     fill('textAlign', 'hta', 'hoverlabel.align');

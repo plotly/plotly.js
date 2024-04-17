@@ -13,7 +13,6 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
     Lib.coerceFont(coerce, 'textfont', opts.font || layout.font, {
         noWeight: opts.noFontWeight,
         noStyle: opts.noFontStyle,
-        noStretch: opts.noFontStretch,
         noVariant: opts.noFontVariant
     });
 

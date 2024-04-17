@@ -134,7 +134,6 @@ function calcHover(pointData, x, y, trace) {
         di.tf = Array.isArray(font.family) ? font.family[id] : font.family;
         di.tw = Array.isArray(font.weight) ? font.weight[id] : font.weight;
         di.ty = Array.isArray(font.style) ? font.style[id] : font.style;
-        di.th = Array.isArray(font.stretch) ? font.stretch[id] : font.stretch;
         di.tv = Array.isArray(font.variant) ? font.variant[id] : font.variant;
     }
 

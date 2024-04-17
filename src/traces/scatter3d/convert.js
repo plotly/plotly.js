@@ -299,7 +299,6 @@ function convertPlotlyOptions(scene, data) {
         params.textFontFamily = data.textfont.family;  // arrayOk === false
         params.textFontWeight = data.textfont.weight;  // arrayOk === false
         params.textFontStyle = data.textfont.style;  // arrayOk === false
-        params.textFontStretch = data.textfont.stretch;  // arrayOk === false
         params.textFontVariant = data.textfont.variant;  // arrayOk === false
         params.textAngle = 0;
     }
@@ -452,7 +451,6 @@ proto.update = function(data) {
         font: options.textFontFamily,
         fontWeight: options.textFontWeight,
         fontStyle: options.textFontStyle,
-        fontStretch: options.textFontStretch,
         fontVariant: options.textFontVariant,
         orthographic: true,
         lineWidth: 0,

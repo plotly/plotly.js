@@ -550,7 +550,6 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                             color: fontColor,
                             weight: font.weight,
                             style: font.style,
-                            stretch: font.stretch,
                             variant: font.variant,
                         })
                         .text(d.t)

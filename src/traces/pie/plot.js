@@ -510,11 +510,6 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
         helpers.castOption(trace.textfont.style, pt.pts) ||
         layoutFont.style;
 
-    var stretch =
-        helpers.castOption(trace.outsidetextfont.stretch, pt.pts) ||
-        helpers.castOption(trace.textfont.stretch, pt.pts) ||
-        layoutFont.stretch;
-
     var variant =
         helpers.castOption(trace.outsidetextfont.variant, pt.pts) ||
         helpers.castOption(trace.textfont.variant, pt.pts) ||
@@ -526,7 +521,6 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
         size: size,
         weight: weight,
         style: style,
-        stretch: stretch,
         variant: variant
     };
 }
@@ -561,11 +555,6 @@ function determineInsideTextFont(trace, pt, layoutFont) {
         helpers.castOption(trace.textfont.style, pt.pts) ||
         layoutFont.style;
 
-    var stretch =
-        helpers.castOption(trace.insidetextfont.stretch, pt.pts) ||
-        helpers.castOption(trace.textfont.stretch, pt.pts) ||
-        layoutFont.stretch;
-
     var variant =
         helpers.castOption(trace.insidetextfont.variant, pt.pts) ||
         helpers.castOption(trace.textfont.variant, pt.pts) ||
@@ -577,7 +566,6 @@ function determineInsideTextFont(trace, pt, layoutFont) {
         size: size,
         weight: weight,
         style: style,
-        stretch: stretch,
         variant: variant
     };
 }

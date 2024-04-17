@@ -27,11 +27,10 @@ var drawing = module.exports = {};
 // styling functions for plot elements
 // -----------------------------------------------------
 
-drawing.font = function(s, family, size, color, weight, style, stretch, variant) {
-    // also allow the form font(s, {family, size, color, weight, style, stretch, variant})
+drawing.font = function(s, family, size, color, weight, style, variant) {
+    // also allow the form font(s, {family, size, color, weight, style, variant})
     if(Lib.isPlainObject(family)) {
         variant = family.variant;
-        stretch = family.stretch;
         style = family.style;
         weight = family.weight;
         color = family.color;
@@ -44,7 +43,6 @@ drawing.font = function(s, family, size, color, weight, style, stretch, variant)
 
     if(weight) s.style('font-weight', weight);
     if(style) s.style('font-style', style);
-    if(stretch) s.style('font-stretch', stretch);
     if(variant) s.style('font-variant', variant);
 };
 
@@ -1139,7 +1137,6 @@ drawing.textPointStyle = function(s, trace, gd) {
             family: d.tf || trace.textfont.family,
             weight: d.tw || trace.textfont.weight,
             style: d.ty || trace.textfont.style,
-            stretch: d.th || trace.textfont.stretch,
             variant: d.tv || trace.textfont.variant,
             size: fontSize,
             color: fontColor

@@ -37,7 +37,6 @@ module.exports = function calc(gd) {
         fillFn(trace.hoverlabel.font.family, cd, 'htf');
         fillFn(trace.hoverlabel.font.weight, cd, 'htw');
         fillFn(trace.hoverlabel.font.style, cd, 'hty');
-        fillFn(trace.hoverlabel.font.stretch, cd, 'hth');
         fillFn(trace.hoverlabel.font.variant, cd, 'htv');
         fillFn(trace.hoverlabel.namelength, cd, 'hnl');
         fillFn(trace.hoverlabel.align, cd, 'hta');

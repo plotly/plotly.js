@@ -112,7 +112,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         Lib.coerceFont(coerce, 'title.font', {
             weight: font.weight,
             style: font.style,
-            stretch: font.stretch,
             variant: font.variant,
             family: font.family,
             size: Lib.bigFont(font.size),

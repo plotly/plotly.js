@@ -98,7 +98,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var fontDflt = {
         weight: layout.font.weight,
         style: layout.font.style,
-        stretch: layout.font.stretch,
         variant: layout.font.variant,
         family: layout.font.family,
         size: Math.round(layout.font.size / 1.2),

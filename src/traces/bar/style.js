@@ -126,7 +126,6 @@ function getInsideTextFont(trace, index, layoutFont, barColor) {
             size: defaultFont.size,
             weight: defaultFont.weight,
             style: defaultFont.style,
-            stretch: defaultFont.stretch,
             variant: defaultFont.variant
         };
     }
@@ -149,7 +148,6 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
     var colorValue = helpers.getValue(attributeValue.color, index);
     var weightValue = helpers.getValue(attributeValue.weight, index);
     var styleValue = helpers.getValue(attributeValue.style, index);
-    var stretchValue = helpers.getValue(attributeValue.stretch, index);
     var variantValue = helpers.getValue(attributeValue.variant, index);
 
     return {
@@ -163,8 +161,6 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
             attributeDefinition.weight, weightValue, defaultValue.weight),
         style: helpers.coerceString(
             attributeDefinition.style, styleValue, defaultValue.style),
-        stretch: helpers.coerceString(
-            attributeDefinition.stretch, stretchValue, defaultValue.stretch),
         variant: helpers.coerceString(
             attributeDefinition.variant, variantValue, defaultValue.variant)
     };

@@ -43,7 +43,6 @@ module.exports = function style(gd) {
             Drawing.font(d3.select(this), {
                 weight: labelFont.weight,
                 style: labelFont.style,
-                stretch: labelFont.stretch,
                 variant: labelFont.variant,
                 family: labelFont.family,
                 size: labelFont.size,

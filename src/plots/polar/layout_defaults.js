@@ -156,7 +156,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             var dfltFontFamily;
             var dfltFontWeight;
             var dfltFontStyle;
-            var dfltFontStretch;
             var dfltFontVariant;
             var font = opts.font || {};
 
@@ -166,7 +165,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             dfltFontFamily = font.family;
             dfltFontWeight = font.weight;
             dfltFontStyle = font.style;
-            dfltFontStretch = font.stretch;
             dfltFontVariant = font.variant;
 
             handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
@@ -174,7 +172,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 font: {
                     weight: dfltFontWeight,
                     style: dfltFontStyle,
-                    stretch: dfltFontStretch,
                     variant: dfltFontVariant,
                     color: dfltFontColor,
                     size: dfltFontSize,
@@ -207,7 +204,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 Lib.coerceFont(coerceAxis, 'title.font', {
                     weight: dfltFontWeight,
                     style: dfltFontStyle,
-                    stretch: dfltFontStretch,
                     variant: dfltFontVariant,
                     color: dfltFontColor,
                     size: Lib.bigFont(dfltFontSize),
