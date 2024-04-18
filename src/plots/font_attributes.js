@@ -82,8 +82,11 @@ module.exports = function(opts) {
             dflt: 'normal',
             description: [
                 'Set all the font variants for a font including but not limited to',
-                '*small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*,',
-                '*sub*, *super*, *text*, *emoji*, *unicode*,',
+                '*normal*',
+                '*sub*, *super*, *text*, *emoji*, *unicode*',
+                '*unicase*, *titling-caps*,',
+                '*small-caps*, *all-small-caps*,',
+                '*petite-caps*, *all-petite-caps*,',
                 '*ordinal*, *slashed-zero*, *ruby*',
                 '*contextual*, *no-contextual*,',
                 '*common-ligatures*, *no-common-ligatures*,',
