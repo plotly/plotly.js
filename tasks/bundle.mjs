@@ -1,9 +1,9 @@
-var runSeries = require('run-series');
-var prependFile = require('prepend-file');
+import runSeries from 'run-series';
+import prependFile from 'prepend-file';
 
-var constants = require('./util/constants');
-var common = require('./util/common');
-var _bundle = require('./util/bundle_wrapper');
+import constants from './util/constants.js';
+import common from './util/common.js';
+import _bundle from './util/bundle_wrapper.mjs';
 
 var header = constants.licenseDist + '\n';
 var pathToPlotlyDist = constants.pathToPlotlyDist;
@@ -58,6 +58,7 @@ tasks.push(function(done) {
 // Bundle the geo assets
 tasks.push(function(done) {
     _bundle(pathToPlotlyGeoAssetsSrc, pathToPlotlyGeoAssetsDist, {
+        noPlugins: true,
         standalone: 'PlotlyGeoAssets'
     }, function() {
         prependFile.sync(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
@@ -69,7 +70,7 @@ tasks.push(function(done) {
 // Bundle plotly.js with meta
 tasks.push(function(done) {
     _bundle(pathToPlotlyIndex, pathToPlotlyDistWithMeta, {
-        noCompress: true
+        noCompressAttributes: true
     }, function() {
         prependFile.sync(pathToPlotlyDistWithMeta, header, common.throwOnError);
 
