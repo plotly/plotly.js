@@ -14983,6 +14983,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -14993,13 +14994,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -15010,6 +15023,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -15112,6 +15130,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -15122,13 +15141,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -15139,6 +15170,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "legend": {
@@ -16194,6 +16230,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -16204,13 +16241,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -16221,6 +16270,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "selected": {
@@ -16334,6 +16388,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -16344,13 +16399,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -16361,6 +16428,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textposition": {
@@ -16831,6 +16903,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -16841,13 +16914,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -16858,6 +16943,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -18287,6 +18377,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -18297,13 +18388,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -18314,6 +18417,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -19720,6 +19828,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -19730,13 +19839,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -19747,6 +19868,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -22531,6 +22657,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -22541,13 +22668,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -22558,6 +22697,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -23697,6 +23841,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -23707,13 +23852,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -23724,6 +23881,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -24892,6 +25054,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -24902,13 +25065,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -24919,6 +25094,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -26289,6 +26469,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -26299,13 +26480,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -26316,6 +26509,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -28869,6 +29067,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -28879,13 +29078,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -28896,6 +29107,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -29430,6 +29646,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -29440,13 +29657,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -29457,6 +29686,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -29558,6 +29792,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -29568,13 +29803,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -29585,6 +29832,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "legend": {
@@ -30536,6 +30788,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -30546,13 +30799,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -30563,6 +30828,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "selectedpoints": {
@@ -30647,6 +30917,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -30657,13 +30928,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -30674,6 +30957,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textinfo": {
@@ -31118,6 +31406,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -31128,13 +31417,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -31145,6 +31446,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -31235,6 +31541,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -31245,13 +31552,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -31262,6 +31581,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "label0": {
@@ -31599,6 +31923,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -31609,13 +31934,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -31626,6 +31963,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textinfo": {
@@ -31716,6 +32058,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "plot",
@@ -31726,13 +32069,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "plot",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
@@ -31743,6 +32098,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "position": {
@@ -32598,6 +32958,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -32608,13 +32969,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -32625,6 +32998,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -33971,6 +34349,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -33981,13 +34360,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -33998,6 +34389,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -34766,6 +35162,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -34776,13 +35173,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -34793,6 +35202,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -37153,6 +37567,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -37163,13 +37578,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -37180,6 +37607,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -38650,6 +39082,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -38660,13 +39093,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -38677,6 +39122,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -39433,6 +39883,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -39443,13 +39894,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -39460,6 +39923,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -39551,6 +40019,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -39561,13 +40030,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -39578,6 +40059,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "labels": {
@@ -40552,6 +41038,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -40562,13 +41049,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -40579,6 +41078,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "parents": {
@@ -40656,6 +41160,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "plot",
@@ -40666,13 +41171,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "plot",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
@@ -40683,6 +41200,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "thickness": {
@@ -40777,6 +41299,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -40787,13 +41310,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -40804,6 +41339,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textinfo": {
@@ -41093,6 +41633,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -41103,13 +41644,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -41120,6 +41673,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -43309,6 +43867,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -43319,13 +43878,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -43336,6 +43907,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -44725,6 +45301,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -44735,13 +45312,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -44752,6 +45341,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -45438,6 +46032,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -45448,13 +46043,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -45465,6 +46072,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -48337,6 +48949,7 @@
        "valType": "number"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "plot",
@@ -48348,12 +48961,14 @@
        ]
       },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "plot",
        "valType": "string"
       },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
@@ -48589,6 +49204,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -48599,13 +49215,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -48616,6 +49244,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -48706,6 +49339,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -48716,13 +49350,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -48733,6 +49379,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "insidetextorientation": {
@@ -49046,6 +49697,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -49056,13 +49708,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -49073,6 +49737,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "pull": {
@@ -49176,6 +49845,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -49186,13 +49856,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -49203,6 +49885,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textinfo": {
@@ -49295,6 +49982,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "plot",
@@ -49305,13 +49993,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "plot",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
@@ -49322,6 +50022,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "position": {
@@ -49539,6 +50244,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -49549,13 +50255,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -49566,6 +50284,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -50083,6 +50806,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "calc",
@@ -50093,13 +50817,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "calc",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
@@ -50110,6 +50846,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -50403,6 +51144,7 @@
         "valType": "string"
        },
        "style": {
+        "arrayOk": true,
         "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
         "dflt": "normal",
         "editType": "calc",
@@ -50413,13 +51155,25 @@
          "oblique"
         ]
        },
+       "stylesrc": {
+        "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+        "editType": "none",
+        "valType": "string"
+       },
        "variant": {
+        "arrayOk": true,
         "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
         "dflt": "normal",
         "editType": "calc",
         "valType": "string"
        },
+       "variantsrc": {
+        "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+        "editType": "none",
+        "valType": "string"
+       },
        "weight": {
+        "arrayOk": true,
         "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
@@ -50430,6 +51184,11 @@
         "max": 1000,
         "min": 1,
         "valType": "integer"
+       },
+       "weightsrc": {
+        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+        "editType": "none",
+        "valType": "string"
        }
       },
       "namelength": {
@@ -50693,6 +51452,7 @@
         "valType": "string"
        },
        "style": {
+        "arrayOk": true,
         "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
         "dflt": "normal",
         "editType": "calc",
@@ -50703,13 +51463,25 @@
          "oblique"
         ]
        },
+       "stylesrc": {
+        "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+        "editType": "none",
+        "valType": "string"
+       },
        "variant": {
+        "arrayOk": true,
         "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
         "dflt": "normal",
         "editType": "calc",
         "valType": "string"
        },
+       "variantsrc": {
+        "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+        "editType": "none",
+        "valType": "string"
+       },
        "weight": {
+        "arrayOk": true,
         "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
         "dflt": "normal",
         "editType": "calc",
@@ -50720,6 +51492,11 @@
         "max": 1000,
         "min": 1,
         "valType": "integer"
+       },
+       "weightsrc": {
+        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+        "editType": "none",
+        "valType": "string"
        }
       },
       "namelength": {
@@ -51457,6 +52234,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -51467,13 +52245,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -51484,6 +52274,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -53278,6 +54073,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -53288,13 +54084,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -53305,6 +54113,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textposition": {
@@ -54026,6 +54839,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -54036,13 +54850,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -54053,6 +54879,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -55920,6 +56751,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -55930,13 +56762,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -55947,6 +56791,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textposition": {
@@ -56317,6 +57166,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -56327,13 +57177,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -56344,6 +57206,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -58087,6 +58954,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -58097,13 +58965,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -58114,6 +58994,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textposition": {
@@ -58411,6 +59296,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -58421,13 +59307,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -58438,6 +59336,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -60177,6 +61080,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -60187,13 +61091,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -60204,6 +61120,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textposition": {
@@ -60677,6 +61598,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -60687,13 +61609,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -60704,6 +61638,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -62356,6 +63295,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -62366,13 +63306,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -62383,6 +63335,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textposition": {
@@ -62866,6 +63823,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -62876,13 +63834,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -62893,6 +63863,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -64211,6 +65186,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -64221,13 +65197,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -64238,6 +65226,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -66002,6 +66995,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -66012,13 +67006,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -66029,6 +67035,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textposition": {
@@ -66331,6 +67342,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -66341,13 +67353,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -66358,6 +67382,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -68019,6 +69048,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -68029,13 +69059,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -68046,6 +69088,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textposition": {
@@ -68341,6 +69388,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -68351,13 +69399,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -68368,6 +69428,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -70136,6 +71201,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -70146,13 +71212,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -70163,6 +71241,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textposition": {
@@ -70460,6 +71543,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -70470,13 +71554,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -70487,6 +71583,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -72243,6 +73344,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -72253,13 +73355,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -72270,6 +73384,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textposition": {
@@ -72580,6 +73699,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -72590,13 +73710,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -72607,6 +73739,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -75050,6 +76187,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -75060,13 +76198,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -75077,6 +76227,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -75747,6 +76902,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -75757,13 +76913,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -75774,6 +76942,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -75865,6 +77038,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -75875,13 +77049,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -75892,6 +77078,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "insidetextorientation": {
@@ -76878,6 +78069,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -76888,13 +78080,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -76905,6 +78109,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "parents": {
@@ -77002,6 +78211,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -77012,13 +78222,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -77029,6 +78251,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textinfo": {
@@ -78198,6 +79425,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -78208,13 +79436,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -78225,6 +79465,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -78756,6 +80001,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "calc",
@@ -78766,13 +80012,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "calc",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
@@ -78783,6 +80041,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "format": {
@@ -79036,6 +80299,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "calc",
@@ -79046,13 +80310,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "calc",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "calc",
@@ -79063,6 +80339,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "format": {
@@ -79249,6 +80530,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -79259,13 +80541,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -79276,6 +80570,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -79651,6 +80950,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -79661,13 +80961,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -79678,6 +80990,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -79769,6 +81086,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -79779,13 +81097,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -79796,6 +81126,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "labels": {
@@ -80804,6 +82139,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -80814,13 +82150,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -80831,6 +82179,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "parents": {
@@ -80908,6 +82261,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "plot",
@@ -80918,13 +82272,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "plot",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "plot",
@@ -80935,6 +82301,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "thickness": {
@@ -81029,6 +82400,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "plot",
@@ -81039,13 +82411,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "plot",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "plot",
@@ -81056,6 +82440,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textinfo": {
@@ -81386,6 +82775,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -81396,13 +82786,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -81413,6 +82815,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -83385,6 +84792,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -83395,13 +84803,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -83412,6 +84832,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -84222,6 +85647,7 @@
        "valType": "string"
       },
       "style": {
+       "arrayOk": true,
        "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
        "dflt": "normal",
        "editType": "none",
@@ -84232,13 +85658,25 @@
         "oblique"
        ]
       },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "variant": {
+       "arrayOk": true,
        "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
        "dflt": "normal",
        "editType": "none",
        "valType": "string"
       },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "weight": {
+       "arrayOk": true,
        "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
        "dflt": "normal",
        "editType": "none",
@@ -84249,6 +85687,11 @@
        "max": 1000,
        "min": 1,
        "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
       }
      },
      "namelength": {
@@ -84382,6 +85825,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -84392,13 +85836,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -84409,6 +85865,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "legend": {
@@ -84596,6 +86057,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -84606,13 +86068,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -84623,6 +86097,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "selectedpoints": {
@@ -84707,6 +86186,7 @@
       "valType": "string"
      },
      "style": {
+      "arrayOk": true,
       "description": "Sets whether a font should be styled with a normal, italic, or oblique face from its family. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style",
       "dflt": "normal",
       "editType": "calc",
@@ -84717,13 +86197,25 @@
        "oblique"
       ]
      },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "variant": {
+      "arrayOk": true,
       "description": "Set all the font variants for a font including but not limited to *small-caps*, *all-small-caps*, *petite-caps*, *all-petite-caps*, *unicase*, *titling-caps*, *sub*, *super*, *text*, *emoji*, *unicode*, *ordinal*, *slashed-zero*, *ruby* *contextual*, *no-contextual*, *common-ligatures*, *no-common-ligatures*, *discretionary-ligatures*, *no-discretionary-ligatures*, *historical-ligatures*, *no-historical-ligatures*, *historical-forms*. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant",
       "dflt": "normal",
       "editType": "calc",
       "valType": "string"
      },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "weight": {
+      "arrayOk": true,
       "description": "Sets the weight (or boldness) of the font. See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight",
       "dflt": "normal",
       "editType": "calc",
@@ -84734,6 +86226,11 @@
       "max": 1000,
       "min": 1,
       "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
      }
     },
     "textinfo": {

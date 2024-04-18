@@ -105,6 +105,9 @@ module.exports = function(opts) {
 
     if(opts.arrayOk) {
         attrs.family.arrayOk = true;
+        attrs.weight.arrayOk = true;
+        attrs.style.arrayOk = true;
+        attrs.variant.arrayOk = true;
         attrs.size.arrayOk = true;
         attrs.color.arrayOk = true;
     }
