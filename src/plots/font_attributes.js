@@ -57,7 +57,7 @@ module.exports = function(opts) {
             dflt: 'normal',
             description: [
                 'Sets the weight (or boldness) of the font.',
-                'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight',
+                'See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-weight',
             ].join(' ')
         },
 
@@ -72,28 +72,25 @@ module.exports = function(opts) {
             dflt: 'normal',
             description: [
                 'Sets whether a font should be styled with a normal, italic, or oblique face from its family.',
-                'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-style',
+                'See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-style',
             ].join(' ')
         },
 
         variant: {
             editType: editType,
-            valType: 'string',
+            valType: 'enumerated',
+            values: [
+                'normal',
+                'unicase',
+                'small-caps',
+                'all-small-caps',
+                'petite-caps',
+                'all-petite-caps',
+            ],
             dflt: 'normal',
             description: [
-                'Set all the font variants for a font including but not limited to',
-                '*normal*',
-                '*sub*, *super*, *text*, *emoji*, *unicode*',
-                '*unicase*, *titling-caps*,',
-                '*small-caps*, *all-small-caps*,',
-                '*petite-caps*, *all-petite-caps*,',
-                '*ordinal*, *slashed-zero*, *ruby*',
-                '*contextual*, *no-contextual*,',
-                '*common-ligatures*, *no-common-ligatures*,',
-                '*discretionary-ligatures*, *no-discretionary-ligatures*,',
-                '*historical-ligatures*, *no-historical-ligatures*,',
-                '*historical-forms*.',
-                'See https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant',
+                'Sets the variant of the font.',
+                'See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-variant',
             ].join(' ')
         },
 
