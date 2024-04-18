@@ -6,63 +6,26 @@
         "mode": "text+markers",
         "text": [
           "normal",
-          "sub",
-          "super",
-          "text",
-          "emoji",
-          "unicode",
           "unicase",
-          "titling-caps",
           "small-caps",
           "all-small-caps",
           "petite-caps",
-          "all-petite-caps",
-          "ordinal",
-          "slashed-zero",
-          "ruby",
-          "contextual",
-          "no-contextual",
-          "common-ligatures",
-          "no-common-ligatures",
-          "discretionary-ligatures",
-          "no-discretionary-ligatures",
-          "historical-ligatures",
-          "no-historical-ligatures",
-          "historical-forms"
+          "all-petite-caps"
         ],
         "textfont": {
           "family": "Inter",
           "size": 16,
           "variant": [
             "normal",
-            "sub",
-            "super",
-            "text",
-            "emoji",
-            "unicode",
             "unicase",
-            "titling-caps",
             "small-caps",
             "all-small-caps",
             "petite-caps",
-            "all-petite-caps",
-            "ordinal",
-            "slashed-zero",
-            "ruby",
-            "contextual",
-            "no-contextual",
-            "common-ligatures",
-            "no-common-ligatures",
-            "discretionary-ligatures",
-            "no-discretionary-ligatures",
-            "historical-ligatures",
-            "no-historical-ligatures",
-            "historical-forms"
-          ]
+            "all-petite-caps"          ]
         },
         "textposition": "right",
-        "x": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "y": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+        "x": [0, 0, 0, 0, 0, 0],
+        "y": [0, 1, 2, 3, 4, 5]
       }
     ],
     "layout": {
@@ -80,13 +43,13 @@
         "zeroline": false
       },
       "yaxis": {
-        "range": [23.5, -0.5],
+        "range": [5.5, -0.5],
         "showticklabels": false,
         "showgrid": false,
         "zeroline": false
       },
       "width": 400,
-      "height": 800,
+      "height": 300,
       "hovermode": "closest"
     }
   }
