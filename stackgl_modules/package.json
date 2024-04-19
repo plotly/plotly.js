@@ -22,7 +22,7 @@
     "gl-plot2d": "github:gl-vis/gl-plot2d#ac02a12ec9fa5283a79c042b900dfd0707c43891",
     "gl-plot3d": "^2.4.7",
     "gl-pointcloud2d": "^1.0.3",
-    "gl-scatter3d": "github:gl-vis/gl-scatter3d#0019ba0197eb2196cedc288a25d1180facd54af6",
+    "gl-scatter3d": "github:gl-vis/gl-scatter3d#9504c1bff7d9cfed8a85866cbc5e47cb32bdfb9a",
     "gl-select-box": "^1.0.4",
     "gl-shader": "4.3.1",
     "gl-spikes2d": "^1.0.2",

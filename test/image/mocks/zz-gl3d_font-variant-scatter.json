@@ -16,8 +16,7 @@
       "textfont": {
         "family": "Inter",
         "size": 16,
-        "variant": "unicase",
-        "_variant": [
+        "variant": [
           "normal",
           "unicase",
           "small-caps",

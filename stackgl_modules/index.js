@@ -22083,6 +22083,32 @@ function get_glyphData(glyphs, index, font, pixelRatio) {
     visible = false
   }
 
+  if(!font) font = {}
+
+  var family = font.family
+  if(Array.isArray(family)) family = family[index]
+  if(!family) family = "normal"
+
+  var weight = font.weight
+  if(Array.isArray(weight)) weight = weight[index]
+  if(!weight) weight = "normal"
+
+  var style = font.style
+  if(Array.isArray(style)) style = style[index]
+  if(!style) style = "normal"
+
+  var variant = font.variant
+  if(Array.isArray(variant)) variant = variant[index]
+  if(!variant) variant = "normal"
+
+  var glyph = getGlyph(str, {
+    family: family,
+    weight: weight,
+    style: style,
+    variant: variant,
+  }, pixelRatio)
+
+
   var glyph = getGlyph(str, font, pixelRatio)
 
   return { mesh:glyph[0],
