@@ -21507,7 +21507,6 @@ function getGlyph(symbol, font, pixelRatio) {
   var fontKey = [
     font.style,
     font.weight,
-    font.stretch,
     font.variant,
     font.family
   ].join('_')
@@ -21527,7 +21526,6 @@ function getGlyph(symbol, font, pixelRatio) {
     font: font.family,
     fontStyle: font.style,
     fontWeight: font.weight,
-    fontStretch: font.stretch,
     fontVariant: font.variant,
     lineSpacing: 1.25,
     styletags: {
@@ -22160,7 +22158,6 @@ proto.update = function(options) {
     family: options.font || 'normal',
     style: options.fontStyle || 'normal',
     weight: options.fontWeight || 'normal',
-    stretch: options.fontStretch || 'normal',
     variant: options.fontVariant || 'normal'
   }
 
