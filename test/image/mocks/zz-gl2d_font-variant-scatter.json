@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "scatter3d",
+      "type": "scattergl",
       "hovertemplate": "Difficult -0.123456789 | %{text}",
       "texttemplate": "Difficult -0.123456789 | %{text}",
       "mode": "text",
@@ -49,9 +49,8 @@
           "small-caps"
         ]
       },
-      "z": [0, 0, 0, 0, 0, 0, 0, 0],
       "x": [0, 0, 0, 0, 0, 0, 0, 0],
-      "y": [-3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 3.5]
+      "y": [0, 1, 2, 3, 4, 5, 6, 7]
     }
   ],
   "layout": {
@@ -62,47 +61,17 @@
       "t": 0,
       "b": 0
     },
-    "scene": {
-      "xaxis": {
-        "showticklabels": false,
-        "showgrid": false,
-        "zeroline": false
-      },
-      "yaxis": {
-        "showticklabels": false,
-        "showgrid": false,
-        "zeroline": false
-      },
-      "zaxis": {
-        "showticklabels": false,
-        "showgrid": false,
-        "zeroline": false
-      },
-      "aspectratio": {
-        "x": 1.5,
-        "y": 1.5,
-        "z": 1.5
-      },
-      "camera": {
-        "projection": {
-          "type": "orthographic"
-        },
-        "eye": {
-          "x": 0,
-          "y": 0,
-          "z": 10
-        },
-        "center": {
-            "x": 0,
-            "y": 0,
-            "z": 0
-        },
-        "up": {
-          "x": 0,
-          "y": 1,
-          "z": 0
-        }
-      }
+    "xaxis": {
+      "range": [-1, 1],
+      "showticklabels": false,
+      "showgrid": false,
+      "zeroline": false
+    },
+    "yaxis": {
+      "range": [7.5, -0.5],
+      "showticklabels": false,
+      "showgrid": false,
+      "zeroline": false
     },
     "width": 400,
     "height": 400,
