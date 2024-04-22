@@ -524,8 +524,7 @@
      "dflt",
      "min",
      "max",
-     "arrayOk",
-     "extras"
+     "arrayOk"
     ],
     "requiredOpts": []
    },
@@ -648,13 +647,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "layoutstyle",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     }
    },
@@ -875,13 +872,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc+arraydraw",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "height": {
@@ -951,13 +946,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "arraydraw",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object"
@@ -1282,13 +1275,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -1539,13 +1530,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -1753,13 +1742,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -2062,13 +2049,11 @@
      "description": "Sets the weight (or boldness) of the font.",
      "dflt": "normal",
      "editType": "calc",
-     "extras": [
+     "valType": "enumerated",
+     "values": [
       "normal",
       "bold"
-     ],
-     "max": 1000,
-     "min": 1,
-     "valType": "integer"
+     ]
     }
    },
    "geo": {
@@ -2870,13 +2855,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "none",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "grouptitlefont": {
@@ -2927,13 +2910,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "none",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "namelength": {
@@ -3180,13 +3161,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "legend",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "groupclick": {
@@ -3247,13 +3226,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "legend",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "indentation": {
@@ -3363,13 +3340,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "legend",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -3795,13 +3770,11 @@
           "description": "Sets the weight (or boldness) of the font.",
           "dflt": "normal",
           "editType": "plot",
-          "extras": [
+          "valType": "enumerated",
+          "values": [
            "normal",
            "bold"
-          ],
-          "max": 1000,
-          "min": 1,
-          "valType": "integer"
+          ]
          }
         },
         "textposition": {
@@ -4144,13 +4117,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "padding": {
@@ -4294,13 +4265,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -4709,13 +4678,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -5011,13 +4978,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "ticks",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       }
      },
@@ -5460,13 +5425,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -5645,13 +5608,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "ticks",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -5869,13 +5830,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "height": {
@@ -5945,13 +5904,11 @@
           "description": "Sets the weight (or boldness) of the font.",
           "dflt": "normal",
           "editType": "calc",
-          "extras": [
+          "valType": "enumerated",
+          "values": [
            "normal",
            "bold"
-          ],
-          "max": 1000,
-          "min": 1,
-          "valType": "integer"
+          ]
          }
         },
         "role": "object"
@@ -6381,13 +6338,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       }
      },
@@ -6832,13 +6787,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -7010,13 +6963,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -7117,13 +7068,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       }
      },
@@ -7568,13 +7517,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -7746,13 +7693,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -7853,13 +7798,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       }
      },
@@ -8304,13 +8247,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -8482,13 +8423,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -8745,13 +8684,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc+arraydraw",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "padding": {
@@ -8895,13 +8832,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc+arraydraw",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -9170,13 +9105,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "arraydraw",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "offset": {
@@ -9263,13 +9196,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "arraydraw",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "len": {
@@ -9775,13 +9706,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -10026,13 +9955,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -10171,13 +10098,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       }
      },
@@ -10422,13 +10347,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -10607,13 +10530,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -10683,13 +10604,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       }
      },
@@ -10934,13 +10853,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -11119,13 +11036,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -11201,13 +11116,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       }
      },
@@ -11452,13 +11365,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -11637,13 +11548,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -11794,13 +11703,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "layoutstyle",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "pad": {
@@ -12173,13 +12080,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "arraydraw",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "name": {
@@ -12353,13 +12258,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "ticks",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      }
     },
@@ -13118,13 +13021,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -13487,13 +13388,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "ticks",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "tickformat": {
@@ -13721,13 +13620,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "ticks",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -13845,13 +13742,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "ticks",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      }
     },
@@ -14700,13 +14595,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "ticks",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "tickformat": {
@@ -14934,13 +14827,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "ticks",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -15416,13 +15307,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -15570,13 +15459,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -15646,13 +15533,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -15782,13 +15667,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -16039,13 +15922,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -16253,13 +16134,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -16705,13 +16584,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -16870,13 +16747,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -17392,13 +17267,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -17517,13 +17390,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -17653,13 +17524,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -17910,13 +17779,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -18124,13 +17991,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -18901,13 +18766,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -19043,13 +18906,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -20366,13 +20227,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -20511,13 +20370,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -20872,13 +20729,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleoffset": {
@@ -21290,13 +21145,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "calc",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -21442,13 +21295,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "offset": {
@@ -21548,13 +21399,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleoffset": {
@@ -21966,13 +21815,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "calc",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -22118,13 +21965,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "offset": {
@@ -22249,13 +22094,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "ids": {
@@ -22325,13 +22168,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -22545,13 +22386,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -22802,13 +22641,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -23016,13 +22853,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -23286,13 +23121,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -23411,13 +23244,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -23770,13 +23601,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -24027,13 +23856,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -24241,13 +24068,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -24505,13 +24330,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -24630,13 +24453,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -25024,13 +24845,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -25281,13 +25100,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -25495,13 +25312,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -25753,13 +25568,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -25878,13 +25691,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -26297,13 +26108,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -26554,13 +26363,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -26768,13 +26575,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -26948,13 +26753,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "labelformat": {
@@ -27210,13 +27013,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -27339,13 +27140,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -27528,13 +27327,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "textsrc": {
@@ -27988,13 +27785,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -28245,13 +28040,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -28459,13 +28252,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -28633,13 +28424,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "labelformat": {
@@ -28833,13 +28622,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -29160,13 +28947,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -29417,13 +29202,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -29631,13 +29414,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -29885,13 +29666,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -30020,13 +29799,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -30478,13 +30255,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -30631,13 +30406,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -30707,13 +30480,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -30843,13 +30614,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -31100,13 +30869,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -31314,13 +31081,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -31662,13 +31427,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -31798,13 +31561,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -32294,13 +32055,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -32436,13 +32195,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -32528,13 +32285,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -32832,13 +32587,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -32974,13 +32727,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -33154,13 +32905,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -33411,13 +33160,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -33625,13 +33372,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -33902,13 +33647,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -34031,13 +33774,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -34176,13 +33917,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "textsrc": {
@@ -34592,13 +34331,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -34849,13 +34586,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "calc",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -35063,13 +34798,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -35335,13 +35068,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -35430,13 +35161,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -36162,13 +35891,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -36284,13 +36011,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "legend": {
@@ -36355,13 +36080,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -36491,13 +36214,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -36748,13 +36469,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -36962,13 +36681,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -37384,13 +37101,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "selected": {
@@ -37513,13 +37228,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "textposition": {
@@ -37893,13 +37606,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -38150,13 +37861,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -38364,13 +38073,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -38644,13 +38351,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -38757,13 +38462,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -38925,13 +38628,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "texttemplate": {
@@ -39297,13 +38998,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -39554,13 +39253,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -39768,13 +39465,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -39943,13 +39638,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "labelformat": {
@@ -40208,13 +39901,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -40321,13 +40012,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -40534,13 +40223,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "texttemplate": {
@@ -41030,13 +40717,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -41173,13 +40858,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -41264,13 +40947,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -41400,13 +41081,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -41657,13 +41336,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -41871,13 +41548,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -42227,13 +41902,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -42356,13 +42029,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -42502,13 +42173,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -42843,13 +42512,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -42960,13 +42627,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -43266,13 +42931,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "increasing": {
@@ -43574,13 +43237,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "plot",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -43951,13 +43612,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -44057,13 +43716,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "prefix": {
@@ -44165,13 +43822,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -44392,13 +44047,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -44649,13 +44302,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "calc",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -44863,13 +44514,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -45147,13 +44796,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -45282,13 +44929,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -45840,13 +45485,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -46097,13 +45740,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -46311,13 +45952,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -46616,13 +46255,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -46791,13 +46428,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -47361,13 +46996,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -47515,13 +47148,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -48039,13 +47670,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "legendgrouptitle": {
@@ -48098,13 +47727,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -48228,13 +47855,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -48485,13 +48110,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -48699,13 +48322,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -48928,13 +48549,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "transforms": {
@@ -49224,13 +48843,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "labelside": {
@@ -49299,13 +48916,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -49435,13 +49050,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -49692,13 +49305,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -49906,13 +49517,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -50159,13 +49768,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "stream": {
@@ -50235,13 +49842,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "transforms": {
@@ -50373,13 +49978,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "titleposition": {
@@ -50645,13 +50248,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -50787,13 +50388,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -50891,13 +50490,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -51159,13 +50756,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -51314,13 +50909,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -51458,13 +51051,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -51727,13 +51318,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -51838,13 +51427,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -52303,13 +51890,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "calc",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -52398,13 +51983,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -52655,13 +52238,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        },
        "weightsrc": {
         "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -52970,13 +52551,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        },
        "weightsrc": {
         "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -53173,13 +52752,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "type": "sankey",
@@ -53766,13 +53343,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -53901,13 +53476,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -54135,13 +53708,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -54392,13 +53963,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -54606,13 +54175,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -55640,13 +55207,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -56413,13 +55978,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -56538,13 +56101,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -56674,13 +56235,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -56931,13 +56490,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -57145,13 +56702,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -57393,13 +56948,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -57650,13 +57203,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -57864,13 +57415,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -58383,13 +57932,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -58805,13 +58352,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -58939,13 +58484,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -59158,13 +58701,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -59415,13 +58956,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -59629,13 +59168,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -60628,13 +60165,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -60977,13 +60512,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -61112,13 +60645,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -61333,13 +60864,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -61590,13 +61119,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -61804,13 +61331,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -62796,13 +62321,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -63321,13 +62844,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -63446,13 +62967,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -63637,13 +63156,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -63894,13 +63411,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -64108,13 +63623,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -65049,13 +64562,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -65584,13 +65095,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -65719,13 +65228,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -65899,13 +65406,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -66156,13 +65661,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -66370,13 +65873,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -66693,13 +66194,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      }
     },
     "textposition": {
@@ -67004,13 +66503,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -67138,13 +66635,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -67357,13 +66852,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -67614,13 +67107,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -67828,13 +67319,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -68848,13 +68337,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -69202,13 +68689,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -69327,13 +68812,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -69505,13 +68988,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -69762,13 +69243,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -69976,13 +69455,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "calc",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -70939,13 +70416,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -71286,13 +70761,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -71430,13 +70903,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -71649,13 +71120,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -71906,13 +71375,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -72120,13 +71587,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -73134,13 +72599,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -73483,13 +72946,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -73617,13 +73078,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -73836,13 +73295,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -74093,13 +73550,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -74307,13 +73762,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -75319,13 +74772,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -75681,13 +75132,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -75806,13 +75255,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -75954,13 +75401,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -76211,13 +75656,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -76425,13 +75868,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -77495,13 +76936,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -77752,13 +77191,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "colorbars",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -77966,13 +77403,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -78225,13 +77660,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -78344,13 +77777,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -78954,13 +78385,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -79097,13 +78526,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -79200,13 +78627,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -79336,13 +78761,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -79593,13 +79016,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -79807,13 +79228,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -80163,13 +79582,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -80312,13 +79729,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -80540,13 +79955,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -80797,13 +80210,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "calc",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -81011,13 +80422,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -81554,13 +80963,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -81679,13 +81086,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -82144,13 +81549,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "calc",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -82449,13 +81852,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "calc",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -82687,13 +82088,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -82782,13 +82181,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -83121,13 +82518,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -83264,13 +82659,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -83344,13 +82737,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -83480,13 +82871,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "titleside": {
@@ -83737,13 +83126,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "colorbars",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "tickformat": {
@@ -83951,13 +83338,11 @@
          "description": "Sets the weight (or boldness) of the font.",
          "dflt": "normal",
          "editType": "colorbars",
-         "extras": [
+         "valType": "enumerated",
+         "values": [
           "normal",
           "bold"
-         ],
-         "max": 1000,
-         "min": 1,
-         "valType": "integer"
+         ]
         }
        },
        "role": "object",
@@ -84352,13 +83737,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -84481,13 +83864,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "plot",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -84627,13 +84008,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "plot",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -85009,13 +84388,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -85155,13 +84532,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -86306,13 +85681,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "titleside": {
@@ -86563,13 +85936,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "calc",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "tickformat": {
@@ -86777,13 +86148,11 @@
         "description": "Sets the weight (or boldness) of the font.",
         "dflt": "normal",
         "editType": "calc",
-        "extras": [
+        "valType": "enumerated",
+        "values": [
          "normal",
          "bold"
-        ],
-        "max": 1000,
-        "min": 1,
-        "valType": "integer"
+        ]
        }
       },
       "role": "object",
@@ -87061,13 +86430,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -87196,13 +86563,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -87930,13 +87295,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "none",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       },
       "weightsrc": {
        "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -88115,13 +87478,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -88191,13 +87552,11 @@
        "description": "Sets the weight (or boldness) of the font.",
        "dflt": "normal",
        "editType": "style",
-       "extras": [
+       "valType": "enumerated",
+       "values": [
         "normal",
         "bold"
-       ],
-       "max": 1000,
-       "min": 1,
-       "valType": "integer"
+       ]
       }
      },
      "role": "object",
@@ -88361,13 +87720,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -88497,13 +87854,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",

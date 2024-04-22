@@ -51,10 +51,8 @@ module.exports = function(opts) {
 
         weight: {
             editType: editType,
-            valType: 'integer',
-            min: 1,
-            max: 1000,
-            extras: ['normal', 'bold'],
+            valType: 'enumerated',
+            values: ['normal', 'bold'],
             dflt: 'normal',
             description: [
                 'Sets the weight (or boldness) of the font.'
