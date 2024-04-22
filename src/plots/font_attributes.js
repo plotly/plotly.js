@@ -56,23 +56,17 @@ module.exports = function(opts) {
             extras: ['normal', 'bold'],
             dflt: 'normal',
             description: [
-                'Sets the weight (or boldness) of the font.',
-                'See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-weight',
+                'Sets the weight (or boldness) of the font.'
             ].join(' ')
         },
 
         style: {
             editType: editType,
             valType: 'enumerated',
-            values: [
-                'normal',
-                'italic',
-                'oblique',
-            ],
+            values: ['normal', 'italic'],
             dflt: 'normal',
             description: [
-                'Sets whether a font should be styled with a normal, italic, or oblique face from its family.',
-                'See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-style',
+                'Sets whether a font should be styled with a normal or italic face from its family.'
             ].join(' ')
         },
 
@@ -81,16 +75,18 @@ module.exports = function(opts) {
             valType: 'enumerated',
             values: [
                 'normal',
-                'unicase',
                 'small-caps',
+                // In WebGL-based traces e.g scattergl and scatter3d,
+                // the only options are *normal* and *small-caps*.
+
                 'all-small-caps',
-                'petite-caps',
                 'all-petite-caps',
+                'petite-caps',
+                'unicase'
             ],
             dflt: 'normal',
             description: [
-                'Sets the variant of the font.',
-                'See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-variant',
+                'Sets the variant of the font.'
             ].join(' ')
         },
 
