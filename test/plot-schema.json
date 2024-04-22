@@ -3780,6 +3780,28 @@
           "editType": "plot",
           "min": 1,
           "valType": "number"
+         },
+         "style": {
+          "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+          "dflt": "normal",
+          "editType": "plot",
+          "valType": "enumerated",
+          "values": [
+           "normal",
+           "italic"
+          ]
+         },
+         "weight": {
+          "description": "Sets the weight (or boldness) of the font.",
+          "dflt": "normal",
+          "editType": "plot",
+          "extras": [
+           "normal",
+           "bold"
+          ],
+          "max": 1000,
+          "min": 1,
+          "valType": "integer"
          }
         },
         "textposition": {
@@ -66656,6 +66678,28 @@
       "editType": "calc",
       "min": 1,
       "valType": "number"
+     },
+     "style": {
+      "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+      "dflt": "normal",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "italic"
+      ]
+     },
+     "weight": {
+      "description": "Sets the weight (or boldness) of the font.",
+      "dflt": "normal",
+      "editType": "calc",
+      "extras": [
+       "normal",
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
      }
     },
     "textposition": {

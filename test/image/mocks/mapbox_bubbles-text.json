@@ -32,6 +32,8 @@
       ],
       "textposition": "top left",
       "textfont": {
+        "weight": "bold",
+        "style": "italic",
         "size": 20,
         "color": "red"
       }

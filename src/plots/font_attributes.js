@@ -71,7 +71,7 @@ module.exports = function(opts) {
             ].join(' ')
         },
 
-        variant: {
+        variant: opts.noVariant ? undefined : {
             editType: editType,
             valType: 'enumerated',
             values: variantValues || [

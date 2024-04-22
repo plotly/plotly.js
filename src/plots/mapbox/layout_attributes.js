@@ -11,15 +11,13 @@ var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var constants = require('./constants');
 
 var fontAttr = fontAttrs({
+    noVariant: true,
     description: [
         'Sets the icon text font (color=mapbox.layer.paint.text-color, size=mapbox.layer.layout.text-size).',
         'Has an effect only when `type` is set to *symbol*.'
     ].join(' ')
 });
 fontAttr.family.dflt = 'Open Sans Regular, Arial Unicode MS Regular';
-delete fontAttr.weight;
-delete fontAttr.style;
-delete fontAttr.variant;
 
 var attrs = module.exports = overrideAll({
     _arrayAttrRegexps: [Lib.counterRegex('mapbox', '.layers', true)],
