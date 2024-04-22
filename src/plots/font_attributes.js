@@ -16,6 +16,7 @@
  * @return {object} attributes object containing {family, size, color} as specified
  */
 module.exports = function(opts) {
+    var variantValues = opts.variantValues;
     var editType = opts.editType;
     var colorEditType = opts.colorEditType;
     if(colorEditType === undefined) colorEditType = editType;
@@ -73,12 +74,9 @@ module.exports = function(opts) {
         variant: {
             editType: editType,
             valType: 'enumerated',
-            values: [
+            values: variantValues || [
                 'normal',
                 'small-caps',
-                // In WebGL-based traces e.g scattergl and scatter3d,
-                // the only options are *normal* and *small-caps*.
-
                 'all-small-caps',
                 'all-petite-caps',
                 'petite-caps',
