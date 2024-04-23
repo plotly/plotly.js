@@ -1,4 +1,4 @@
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.31.1';
+exports.version = '2.32.0';
