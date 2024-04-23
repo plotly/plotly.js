@@ -9,6 +9,19 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.32.0] -- 2024-04-23
+
+### Added
+ - Add "bold" weight, "italic" style and "small-caps" variant options to fonts [[#6956](https://github.com/plotly/plotly.js/pull/6956)]
+
+### Fixed
+ - Fix applying `autotickangles` on axes with `showdividers` as well as cases
+   where `tickson` is set to "boundaries" [[#6967](https://github.com/plotly/plotly.js/pull/6967)],
+   with thanks to @my-tien for the contribution!
+ - Fix positioning of multi-line axis titles with `standoff` [[#6970](https://github.com/plotly/plotly.js/pull/6970)],
+   with thanks to @my-tien for the contribution!
+
+
 ## [2.31.1] -- 2024-04-15
 
 ### Fixed
