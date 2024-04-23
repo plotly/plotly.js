@@ -27,16 +27,14 @@ var drawing = module.exports = {};
 // styling functions for plot elements
 // -----------------------------------------------------
 
-drawing.font = function(s, family, size, color, weight, style, variant) {
-    // also allow the form font(s, {family, size, color, weight, style, variant})
-    if(Lib.isPlainObject(family)) {
-        variant = family.variant;
-        style = family.style;
-        weight = family.weight;
-        color = family.color;
-        size = family.size;
-        family = family.family;
-    }
+drawing.font = function(s, font) {
+    var variant = font.variant;
+    var style = font.style;
+    var weight = font.weight;
+    var color = font.color;
+    var size = font.size;
+    var family = font.family;
+
     if(family) s.style('font-family', family);
     if(size + 1) s.style('font-size', size + 'px');
     if(color) s.call(Color.fill, color);
