@@ -69,7 +69,7 @@ module.exports = function(opts) {
             ].join(' ')
         },
 
-        variant: opts.noVariant ? undefined : {
+        variant: opts.noFontVariant ? undefined : {
             editType: editType,
             valType: 'enumerated',
             values: variantValues || [

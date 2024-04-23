@@ -468,7 +468,7 @@ exports.coerceFont = function(coerce, attr, dfltObj, opts) {
 
     out.weight = coerce(attr + '.weight', dfltObj.weight);
     out.style = coerce(attr + '.style', dfltObj.style);
-    if(!opts.noVariant) out.variant = coerce(attr + '.variant', dfltObj.variant);
+    if(!opts.noFontVariant) out.variant = coerce(attr + '.variant', dfltObj.variant);
 
     return out;
 };
