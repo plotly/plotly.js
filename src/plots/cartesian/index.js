@@ -127,7 +127,7 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
 exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var calcdata = gd.calcdata;
-    var i;
+    var i, j;
 
     // Traces is a list of trace indices to (re)plot. If it's not provided,
     // then it's a complete replot so we create a new list and add all trace indices
@@ -142,28 +142,51 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
 
     var trace;
     var subplot;
-    var subplotZindexGroups = {};
+    var subplotZorderGroups = {};
     for(var t = 0; t < calcdata.length; t++) {
         trace = calcdata[t][0].trace;
-        var zi = trace.zindex || 0;
+        var zi = trace.zorder || 0;
         subplot = trace.xaxis + trace.yaxis;
-        if(!subplotZindexGroups[zi]) subplotZindexGroups[zi] = {};
-        if(!subplotZindexGroups[zi][subplot]) subplotZindexGroups[zi][subplot] = [];
-        subplotZindexGroups[zi][subplot].push(calcdata[t]);
+        if(!subplotZorderGroups[zi]) subplotZorderGroups[zi] = {};
+        if(!subplotZorderGroups[zi][subplot]) subplotZorderGroups[zi][subplot] = [];
+        subplotZorderGroups[zi][subplot].push(calcdata[t]);
     }
-    var zindices = Object.keys(subplotZindexGroups)
+    var zindices = Object.keys(subplotZorderGroups)
         .map(Number)
         .sort(Lib.sorterAsc);
 
+    var prevSubplots = [];
     var subplots;
+    var zin;
+    var subplotId;
+    var newsubplotZorderGroups = {};
+    for(i = 0; i < zindices.length; i++) {
+        zin = zindices[i];
+        subplots = Object.keys(subplotZorderGroups[zin]);
+
+        // For each subplot
+        for(j = 0; j < subplots.length; j++) {
+            subplot = subplots[j];
+            if(prevSubplots.indexOf(subplot) === -1) {
+                prevSubplots.push(subplot);
+                subplotId = subplot;
+            } else {
+                subplotId = subplot + '-over-' + i;
+            }
+            if(!newsubplotZorderGroups[zin]) newsubplotZorderGroups[zin] = {};
+            if(!newsubplotZorderGroups[zin][subplotId]) newsubplotZorderGroups[zin][subplotId] = [];
+            newsubplotZorderGroups[zin][subplotId].push(subplotZorderGroups[zin][subplot]);
+        }
+    }
+
     var zindex;
     var subplotLayerData = {};
     for(i = 0; i < zindices.length; i++) {
         zindex = zindices[i];
-        subplots = Object.keys(subplotZindexGroups[zindex]);
+        subplots = Object.keys(newsubplotZorderGroups[zindex]);
 
         // For each subplot
-        for(var j = 0; j < subplots.length; j++) {
+        for(j = 0; j < subplots.length; j++) {
             subplot = subplots[j];
             var subplotInfo = fullLayout._plots[subplot];
 
@@ -171,12 +194,13 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
             var cdSubplot = [];
             var pcd;
             // For each trace
-            for(var k = 0; k < subplotZindexGroups[zindex][subplot].length; k++) {
-                var cd = subplotZindexGroups[zindex][subplot][k];
+            for(var k = 0; k < newsubplotZorderGroups[zindex][subplot].length; k++) {
+                var cd = newsubplotZorderGroups[zindex][subplot][k][0];
                 trace = cd[0].trace;
+
                 // Skip trace if whitelist provided and it's not whitelisted:
                 // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
-                if(trace.xaxis + trace.yaxis === subplot) {
+                if(trace.xaxis + trace.yaxis === subplot || (subplot.indexOf('-over-') !== -1 && subplot.indexOf(trace.xaxis + trace.yaxis) === 0)) {
                     // XXX: Should trace carpet dependencies. Only replot all carpet plots if the carpet
                     // axis has actually changed:
                     //
@@ -240,8 +264,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
 
             if(categories.svg) {
                 var classBaseName = (_module.layerName || name + 'layer');
-                //var className = classBaseName + (z ? Number(z) + 1 : '');
-                var className = classBaseName + '_' + zorder;
+                var className = classBaseName + (z ? Number(z) + 1 : '');
                 var plotMethod = _module.plot;
 
                 // plot all visible traces of this type on this subplot at once
@@ -254,7 +277,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
                 if(cdModule.length) {
                     layerData.push({
                         i: traceLayerClasses.indexOf(classBaseName),
-                        zorder: zorder,
+                        zorder: z,
                         className: className,
                         plotMethod: plotMethod,
                         cdModule: cdModule
@@ -397,7 +420,7 @@ exports.drawFramework = function(gd) {
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
         .data(subplotData, String);
-    
+
     subplotLayers.enter().append('g')
         .attr('class', function(d) { return 'subplot ' + d[0]; });
 
@@ -411,7 +434,7 @@ exports.drawFramework = function(gd) {
         var plotinfo = fullLayout._plots[id];
 
         plotinfo.plotgroup = d3.select(this);
-        makeSubplotLayer(gd, plotinfo);
+        makeSubplotLayer(gd, plotinfo, id);
 
         // make separate drag layers for each subplot,
         // but append them to paper rather than the plot groups,
@@ -421,7 +444,7 @@ exports.drawFramework = function(gd) {
 };
 
 exports.rangePlot = function(gd, plotinfo, cdSubplot) {
-    makeSubplotLayer(gd, plotinfo);
+    makeSubplotLayer(gd, plotinfo, plotinfo.id);
     plotOne(gd, plotinfo, cdSubplot);
     Plots.style(gd);
 };
@@ -429,7 +452,7 @@ exports.rangePlot = function(gd, plotinfo, cdSubplot) {
 function makeSubplotData(gd) {
     var fullLayout = gd._fullLayout;
     var ids = fullLayout._subplots.cartesian;
-    
+
     var i, j, id, plotinfo, xa, ya;
 
     // split 'regular' and 'overlaying' subplots
@@ -440,35 +463,37 @@ function makeSubplotData(gd) {
 
     var trace;
     var subplot;
-    var subplotZindexGroups = {};
+    var subplotZorderGroups = {};
     for(var t = 0; t < calcdata.length; t++) {
         trace = calcdata[t][0].trace;
-        var zi = trace.zindex || 0;
+        var zi = trace.zorder || 0;
         subplot = trace.xaxis + trace.yaxis;
-        if(!subplotZindexGroups[zi]) subplotZindexGroups[zi] = {};
-        if(!subplotZindexGroups[zi][subplot]) subplotZindexGroups[zi][subplot] = [];
-        subplotZindexGroups[zi][subplot].push(calcdata[t]);
+        if(!subplotZorderGroups[zi]) subplotZorderGroups[zi] = {};
+        if(!subplotZorderGroups[zi][subplot]) subplotZorderGroups[zi][subplot] = [];
+        subplotZorderGroups[zi][subplot].push(calcdata[t]);
     }
-    var zindices = Object.keys(subplotZindexGroups)
+    var zindices = Object.keys(subplotZorderGroups)
         .map(Number)
         .sort(Lib.sorterAsc);
     var len = zindices.length;
 
+    var mainplot;
+    var mainplotinfo;
     for(i = 0; i < len; i++) {
-        var zindex = subplotZindexGroups[zindices[i]];
-        var ids = Object.keys(zindex);
-        for(var j=0; j<ids.length; j++) {
-            var id = ids[j];
+        var zindex = subplotZorderGroups[zindices[i]];
+        ids = Object.keys(zindex);
+        for(j = 0; j < ids.length; j++) {
+            id = ids[j];
             plotinfo = fullLayout._plots[id];
 
-            var mainplot = mainplot ? mainplot : id;
-            var mainplotinfo = Object.assign({}, fullLayout._plots[mainplot])
+            mainplot = mainplot ? mainplot : id;
+            mainplotinfo = fullLayout._plots[mainplot];
             plotinfo.overlays = [];
 
-            if (regulars.indexOf(id) !== -1 || overlays.indexOf(id) !== -1 ){
+            if(regulars.indexOf(id) !== -1 || overlays.indexOf(id) !== -1) {
                 plotinfo.mainplot = mainplot;
                 plotinfo.mainplotinfo = mainplotinfo;
-                overlays.push(id+'-over-'+i);
+                overlays.push(id + '-over-' + i);
             } else if(mainplot !== id && mainplotinfo) {
                 plotinfo.mainplot = mainplot;
                 plotinfo.mainplotinfo = mainplotinfo;
@@ -484,8 +509,8 @@ function makeSubplotData(gd) {
     // fill in list of overlaying subplots in 'main plot'
     for(i = 0; i < overlays.length; i++) {
         id = overlays[i];
-        if (id.indexOf('-over-')!==-1) {
-            id = id.split("-over-")[0];
+        if(id.indexOf('-over-') !== -1) {
+            id = id.split('-over-')[0];
         }
         var plotinfoCopy = Object.assign({}, fullLayout._plots[id]);
         plotinfoCopy.id = overlays[i];
@@ -497,8 +522,8 @@ function makeSubplotData(gd) {
     var subplotData = new Array(subplotIds.length);
     for(i = 0; i < subplotIds.length; i++) {
         id = subplotIds[i];
-        if (id.indexOf('-over-')!==-1) {
-            fullLayout._plots[id] = Object.assign({}, fullLayout._plots[id.split("-over-")[0]]);
+        if(id.indexOf('-over-') !== -1) {
+            fullLayout._plots[id] = Object.assign({}, fullLayout._plots[id.split('-over-')[0]]);
         }
         plotinfo = fullLayout._plots[id];
         xa = plotinfo.xaxis;
@@ -506,25 +531,24 @@ function makeSubplotData(gd) {
 
         // use info about axis layer and overlaying pattern
         // to clean what need to be cleaned up in exit selection
-        var d = [id, xa.layer, ya.layer, xa.overlaying || '' , ya.overlaying || ''];
-        if (id.indexOf('-over-')!==-1){
+        var d = [id, xa.layer, ya.layer, xa.overlaying || '', ya.overlaying || ''];
+        if(id.indexOf('-over-') !== -1) {
             for(j = 0; j < plotinfo.overlays.length; j++) {
                 d.push(plotinfo.overlays[j].id);
             }
-        } 
+        }
         subplotData[i] = d;
     }
     return subplotData;
 }
 
-function makeSubplotLayer(gd, plotinfo) {
+function makeSubplotLayer(gd, plotinfo, id) {
     var plotgroup = plotinfo.plotgroup;
-    var id = plotinfo.id;
     var xLayer = constants.layerValue2layerClass[plotinfo.xaxis.layer];
     var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
     var hasOnlyLargeSploms = gd._fullLayout._hasOnlyLargeSploms;
 
-    if(!plotinfo.mainplot || id.indexOf('-over-') === -1) {
+    if(!plotinfo.mainplot || (plotinfo.mainplot === id && id.indexOf('-over-') === -1)) {
         if(hasOnlyLargeSploms) {
             // TODO could do even better
             // - we don't need plot (but we would have to mock it in lsInner
@@ -590,7 +614,7 @@ function makeSubplotLayer(gd, plotinfo) {
 
         ensureSingle(mainplotinfo.overlinesBelow, 'path', xId);
         ensureSingle(mainplotinfo.overlinesBelow, 'path', yId);
-    
+
         ensureSingle(mainplotinfo.overaxesBelow, 'g', xId);
         ensureSingle(mainplotinfo.overaxesBelow, 'g', yId);
 
@@ -601,7 +625,6 @@ function makeSubplotLayer(gd, plotinfo) {
 
         ensureSingle(mainplotinfo.overaxesAbove, 'g', xId);
         ensureSingle(mainplotinfo.overaxesAbove, 'g', yId);
-        
 
         // set refs to correct layers as determined by 'abovetraces'
         plotinfo.xlines = mainplotgroup.select('.overlines-' + xLayer).select('.' + xId);
@@ -613,15 +636,14 @@ function makeSubplotLayer(gd, plotinfo) {
     // common attributes for all subplots, overlays or not
 
     if(!hasOnlyLargeSploms) {
-        if (plotinfo.minorGridlayer){
+        if(plotinfo.minorGridlayer) {
             ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
-        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
-        plotinfo.minorGridlayer.selectAll('g')
+            ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
+            plotinfo.minorGridlayer.selectAll('g')
             .map(function(d) { return d[0]; })
             .sort(axisIds.idSort);
-
         }
-        if (plotinfo.gridlayer){
+        if(plotinfo.gridlayer) {
             ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
             ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
             plotinfo.gridlayer.selectAll('g')

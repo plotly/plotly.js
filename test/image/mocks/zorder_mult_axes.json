@@ -3,45 +3,40 @@
         {
             "x": [2, 3, 4, 5],
             "y": [4, 3, 9, 5],
-            "name": "blue",
+            "name": "xy - zorder 10",
             "type": "scatter",
             "marker": {"size": 20},
             "line": {"width": 6},
             "yaxis": "y",
-            "xaxis": "x",
             "zorder": 10
         },
         {
             "x": [2, 3, 4, 5, 6],
             "y": [2, 5, 4, 6, 4],
-            "name": "orange",
+            "name": "xy - zorder 0",
             "type": "scatter",
             "marker": {"size": 20},
             "line": {"width": 6},
-            "yaxis": "y2",
-            "xaxis": "x2",
-            "zorder": 5
+            "zorder": 0
         },
         {
             "x": [3, 4, 5, 6, 7],
             "y": [1, 8, 6, 8, 5],
-            "name": "green",
+            "name": "xy2 - zorder 5",
             "type": "scatter",
             "marker": {"size": 20},
             "line": {"width": 6},
             "yaxis": "y2",
-            "xaxis": "x",
-            "zorder": 7
+            "zorder": 5
         },
 
         {
             "x": [2, 3, 4, 5, 6, 7],
             "y": [4, 2, 6, 1, 6, 9],
-            "name": "bar",
+            "name": "xy2 - zorder 6",
             "type": "bar",
             "yaxis": "y2",
-            "xaxis": "x2",
-            "zorder": 8
+            "zorder": 6
         }
     ],
     "layout": {
@@ -50,10 +45,6 @@
             "title": {
                 "text": "zorder stacking"
             }
-            , "overlaying": "x2"
-        },
-        "x2axis": {
-            "title":{"text":"x2"}
         },
         "yaxis": {
             "side": "right",
