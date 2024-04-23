@@ -1035,14 +1035,20 @@ describe('Test lib.js:', function() {
         var defaultFont = {
             family: '"Open sans", verdana, arial, sans-serif, DEFAULT',
             size: 314159,
-            color: 'neon pink with sparkles'
+            color: 'neon pink with sparkles',
+            weight: 'bold',
+            style: 'italic',
+            variant: 'small-caps'
         };
 
         var attributes = {
             fontWithDefault: {
                 family: extendFlat({}, fontAttrs.family, {dflt: defaultFont.family}),
                 size: extendFlat({}, fontAttrs.size, {dflt: defaultFont.size}),
-                color: extendFlat({}, fontAttrs.color, {dflt: defaultFont.color})
+                color: extendFlat({}, fontAttrs.color, {dflt: defaultFont.color}),
+                weight: extendFlat({}, fontAttrs.weight, {dflt: defaultFont.weight}),
+                style: extendFlat({}, fontAttrs.style, {dflt: defaultFont.style}),
+                variant: extendFlat({}, fontAttrs.variant, {dflt: defaultFont.variant})
             },
             fontNoDefault: fontAttrs
         };
@@ -1069,7 +1075,14 @@ describe('Test lib.js:', function() {
 
         it('should fill in defaults for bad inputs', function() {
             containerIn = {
-                fontWithDefault: {family: '', size: 'a million', color: 42}
+                fontWithDefault: {
+                    family: '',
+                    size: 'a million',
+                    color: 42,
+                    weight: 'BIG',
+                    style: 'Nice',
+                    variant: false
+                }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
                 .toEqual(defaultFont);
@@ -1082,24 +1095,132 @@ describe('Test lib.js:', function() {
             var badSize = 'ginormous';
             var goodColor = 'red';
             var badColor = 'a dark and stormy night';
+            var goodWeight = 'bold';
+            var badWeight = 'heavy';
+            var goodStyle = 'italic';
+            var badStyle = '';
+            var goodVariant = 'small-caps';
+            var badVariant = false;
 
             containerIn = {
-                fontWithDefault: {family: goodFamily, size: badSize, color: badColor}
+                fontWithDefault: {
+                    family: goodFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant
+                }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({family: goodFamily, size: defaultFont.size, color: defaultFont.color});
+                .toEqual({
+                    family: goodFamily,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant
+                });
 
             containerIn = {
-                fontWithDefault: {family: badFamily, size: goodSize, color: badColor}
+                fontWithDefault: {
+                    family: badFamily,
+                    size: goodSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant
+                }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({family: defaultFont.family, size: goodSize, color: defaultFont.color});
+                .toEqual({
+                    family: defaultFont.family,
+                    size: goodSize,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant
+                });
 
             containerIn = {
-                fontWithDefault: {family: badFamily, size: badSize, color: goodColor}
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: goodColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant
+                }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({family: defaultFont.family, size: defaultFont.size, color: goodColor});
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: goodColor,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: goodWeight,
+                    style: badStyle,
+                    variant: badVariant
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: goodWeight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: goodStyle,
+                    variant: badVariant
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: goodStyle,
+                    variant: defaultFont.variant
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: goodVariant
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: goodVariant
+                });
         });
     });
 

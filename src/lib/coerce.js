@@ -455,7 +455,9 @@ exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dfl
  *
  * 'coerce' is a lib.coerce wrapper with implied first three arguments
  */
-exports.coerceFont = function(coerce, attr, dfltObj) {
+exports.coerceFont = function(coerce, attr, dfltObj, opts) {
+    if(!opts) opts = {};
+
     var out = {};
 
     dfltObj = dfltObj || {};
@@ -463,6 +465,10 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
     out.family = coerce(attr + '.family', dfltObj.family);
     out.size = coerce(attr + '.size', dfltObj.size);
     out.color = coerce(attr + '.color', dfltObj.color);
+
+    out.weight = coerce(attr + '.weight', dfltObj.weight);
+    out.style = coerce(attr + '.style', dfltObj.style);
+    if(!opts.noFontVariant) out.variant = coerce(attr + '.variant', dfltObj.variant);
 
     return out;
 };

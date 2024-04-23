@@ -2366,7 +2366,14 @@ describe('Test axes', function() {
                 expect(yaxis.tickcolor).toBe('#444');
                 expect(yaxis.ticks).toBe('outside');
                 expect(yaxis.showticklabels).toBe(true);
-                expect(yaxis.tickfont).toEqual({ family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444' });
+                expect(yaxis.tickfont).toEqual({
+                    family: '"Open Sans", verdana, arial, sans-serif',
+                    size: 12,
+                    color: '#444',
+                    weight: 'normal',
+                    style: 'normal',
+                    variant: 'normal'
+                });
                 expect(yaxis.tickangle).toBe('auto');
             })
             .then(done, done.fail);
@@ -2379,7 +2386,14 @@ describe('Test axes', function() {
                     tickwidth: 5,
                     tickcolor: '#F00',
                     showticklabels: true,
-                    tickfont: { family: 'Garamond', size: 72, color: '#0FF' },
+                    tickfont: {
+                        family: 'Garamond',
+                        size: 72,
+                        color: '#0FF',
+                        weight: 'normal',
+                        style: 'normal',
+                        variant: 'normal'
+                    },
                     tickangle: -20
                 }
             };
@@ -2392,7 +2406,14 @@ describe('Test axes', function() {
                 expect(yaxis.tickcolor).toBe('#F00');
                 expect(yaxis.ticks).toBe('outside');
                 expect(yaxis.showticklabels).toBe(true);
-                expect(yaxis.tickfont).toEqual({ family: 'Garamond', size: 72, color: '#0FF' });
+                expect(yaxis.tickfont).toEqual({
+                    family: 'Garamond',
+                    size: 72,
+                    color: '#0FF',
+                    weight: 'normal',
+                    style: 'normal',
+                    variant: 'normal'
+                });
                 expect(yaxis.tickangle).toBe(-20);
             })
             .then(done, done.fail);

@@ -113,6 +113,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('title.text', dfltTitle);
     Lib.coerceFont(coerce, 'title.font', {
         family: font.family,
+        weight: font.weight,
+        style: font.style,
+        variant: font.variant,
         size: Lib.bigFont(font.size),
         color: dfltFontColor
     });

@@ -35,9 +35,6 @@ plots.attributes.type.values = plots.allTypes;
 plots.fontAttrs = require('./font_attributes');
 plots.layoutAttributes = require('./layout_attributes');
 
-// TODO make this a plot attribute?
-plots.fontWeight = 'normal';
-
 var transformsRegistry = plots.transformsRegistry;
 
 var commandModule = require('./command');

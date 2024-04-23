@@ -101,13 +101,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         clusterSize !== false ||
         clusterOpacity !== false;
 
-    coerce('cluster.enabled', clusterEnabledDflt);
+    var clusterEnabled = coerce('cluster.enabled', clusterEnabledDflt);
 
-    if(subTypes.hasText(traceOut)) {
+    if(clusterEnabled || subTypes.hasText(traceOut)) {
         handleTextDefaults(traceIn, traceOut, layout, coerce,
-            {noSelect: true,
+            {
+                noSelect: true,
+                noFontVariant: true,
                 font: {
                     family: supportedFonts.indexOf(layout.font.family) !== -1 ? layout.font.family : 'Open Sans Regular',
+                    weight: layout.font.weight,
+                    style: layout.font.style,
                     size: layout.font.size,
                     color: layout.font.color
                 }
