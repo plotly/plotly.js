@@ -197,6 +197,10 @@
     }
   ],
   "layout": {
+    "font": {
+      "weight": "bold",
+      "style": "italic"
+    },
     "title": {
       "text": "Clustering points over Canadian cities"
     },

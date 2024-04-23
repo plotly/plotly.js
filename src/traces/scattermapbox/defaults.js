@@ -101,9 +101,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         clusterSize !== false ||
         clusterOpacity !== false;
 
-    coerce('cluster.enabled', clusterEnabledDflt);
+    var clusterEnabled = coerce('cluster.enabled', clusterEnabledDflt);
 
-    if(subTypes.hasText(traceOut)) {
+    if(clusterEnabled || subTypes.hasText(traceOut)) {
         handleTextDefaults(traceIn, traceOut, layout, coerce,
             {
                 noSelect: true,

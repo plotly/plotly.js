@@ -93,7 +93,7 @@ module.exports = function convert(gd, calcTrace) {
                 paint: {},
                 layout: {
                     'text-field': '{point_count_abbreviated}',
-                    'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+                    'text-font': getTextFont(trace),
                     'text-size': 12
                 }
             };
@@ -146,23 +146,16 @@ module.exports = function convert(gd, calcTrace) {
         }
 
         if(hasText) {
-            var font = trace.textfont;
-            var str = '';
-            if(font.weight === 'bold') str += ' Bold';
-            if(font.style === 'italic') str += ' Italic';
-            var textFont = font.family;
-            if(str) textFont = textFont.replace(' Regular', str);
-            textFont = textFont.split(', ');
-
             var iconSize = (trace.marker || {}).size;
             var textOpts = convertTextOpts(trace.textposition, iconSize);
 
             // all data-driven below !!
+
             Lib.extendFlat(symbol.layout, {
                 'text-size': trace.textfont.size,
                 'text-anchor': textOpts.anchor,
                 'text-offset': textOpts.offset,
-                'text-font': textFont
+                'text-font': getTextFont(trace)
             });
 
             Lib.extendFlat(symbol.paint, {
@@ -372,4 +365,15 @@ function arrayifyAttribute(values, step) {
         newAttribute = values;
     }
     return newAttribute;
+}
+
+function getTextFont(trace) {
+    var font = trace.textfont;
+    var str = '';
+    if(font.weight === 'bold') str += ' Bold';
+    if(font.style === 'italic') str += ' Italic';
+    var textFont = font.family;
+    if(str) textFont = textFont.replace(' Regular', str);
+    textFont = textFont.split(', ');
+    return textFont;
 }
