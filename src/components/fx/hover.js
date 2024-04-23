@@ -1017,7 +1017,7 @@ function createHoverText(hoverData, opts) {
             variant: commonLabelOpts.font.variant || fontVariant,
             family: commonLabelOpts.font.family || fontFamily,
             size: commonLabelOpts.font.size || fontSize,
-            color: commonLabelOpts.font.color || contrastColor,
+            color: commonLabelOpts.font.color || contrastColor
         };
 
         lpath.style({
