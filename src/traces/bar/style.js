@@ -157,7 +157,7 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
           attributeDefinition.size, sizeValue, defaultValue.size),
         color: helpers.coerceColor(
           attributeDefinition.color, colorValue, defaultValue.color),
-        weight: helpers.coerceInteger(
+        weight: helpers.coerceString(
             attributeDefinition.weight, weightValue, defaultValue.weight),
         style: helpers.coerceString(
             attributeDefinition.style, styleValue, defaultValue.style),
