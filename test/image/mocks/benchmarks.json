@@ -308,6 +308,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "capitalize": "word",
+            "striding": "under",
+            "shadow": "auto"
+        },
         "title": {
             "text": "Plotly Benchmarks"
         },
