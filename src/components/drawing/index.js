@@ -34,6 +34,9 @@ drawing.font = function(s, font) {
     var color = font.color;
     var size = font.size;
     var family = font.family;
+    var shadow = font.shadow;
+    var striding = font.striding;
+    var capitalize = font.capitalize;
 
     if(family) s.style('font-family', family);
     if(size + 1) s.style('font-size', size + 'px');
@@ -42,6 +45,10 @@ drawing.font = function(s, font) {
     if(weight) s.style('font-weight', weight);
     if(style) s.style('font-style', style);
     if(variant) s.style('font-variant', variant);
+
+    if(shadow) s.style('text-shadow', shadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(color)) : shadow);
+    if(striding) s.style('text-decoration-line', striding);
+    if(capitalize) s.style('text-transform', capitalize === 'word' ? 'capitalize' : capitalize);
 };
 
 /*
