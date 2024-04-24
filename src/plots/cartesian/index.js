@@ -155,14 +155,14 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
         .map(Number)
         .sort(Lib.sorterAsc);
 
-    var prevSubplots = [];
     var subplots;
-    var zin;
+    var zindex;
     var subplotId;
     var newsubplotZorderGroups = {};
+    var prevSubplots = [];
     for(i = 0; i < zindices.length; i++) {
-        zin = zindices[i];
-        subplots = Object.keys(subplotZorderGroups[zin]);
+        zindex = zindices[i];
+        subplots = Object.keys(subplotZorderGroups[zindex]);
 
         // For each subplot
         for(j = 0; j < subplots.length; j++) {
@@ -173,13 +173,12 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
             } else {
                 subplotId = subplot + '-over-' + i;
             }
-            if(!newsubplotZorderGroups[zin]) newsubplotZorderGroups[zin] = {};
-            if(!newsubplotZorderGroups[zin][subplotId]) newsubplotZorderGroups[zin][subplotId] = [];
-            newsubplotZorderGroups[zin][subplotId].push(subplotZorderGroups[zin][subplot]);
+            if(!newsubplotZorderGroups[zindex]) newsubplotZorderGroups[zindex] = {};
+            if(!newsubplotZorderGroups[zindex][subplotId]) newsubplotZorderGroups[zindex][subplotId] = [];
+            newsubplotZorderGroups[zindex][subplotId].push(subplotZorderGroups[zindex][subplot]);
         }
     }
 
-    var zindex;
     var subplotLayerData = {};
     for(i = 0; i < zindices.length; i++) {
         zindex = zindices[i];
@@ -227,7 +226,7 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
                 }
             }
             if(!subplotLayerData[subplot]) subplotLayerData[subplot] = [];
-            subplotLayerData[subplot] = plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback, subplotLayerData[subplot]);
+            if(subplotInfo) subplotLayerData[subplot] = plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback, subplotLayerData[subplot]);
         }
     }
 };
@@ -439,7 +438,7 @@ exports.drawFramework = function(gd) {
         // make separate drag layers for each subplot,
         // but append them to paper rather than the plot groups,
         // so they end up on top of the rest
-        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
+        if(id.indexOf('over') === -1) plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
     });
 };
 
@@ -494,7 +493,7 @@ function makeSubplotData(gd) {
                 plotinfo.mainplot = mainplot;
                 plotinfo.mainplotinfo = mainplotinfo;
                 overlays.push(id + '-over-' + i);
-            } else if(mainplot !== id && mainplotinfo) {
+            } else if(mainplot !== id) {
                 plotinfo.mainplot = mainplot;
                 plotinfo.mainplotinfo = mainplotinfo;
                 overlays.push(id);
@@ -548,7 +547,7 @@ function makeSubplotLayer(gd, plotinfo, id) {
     var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
     var hasOnlyLargeSploms = gd._fullLayout._hasOnlyLargeSploms;
 
-    if(!plotinfo.mainplot || (plotinfo.mainplot === id && id.indexOf('-over-') === -1)) {
+    if(!plotinfo.mainplot || plotinfo.mainplot === id) {
         if(hasOnlyLargeSploms) {
             // TODO could do even better
             // - we don't need plot (but we would have to mock it in lsInner
@@ -559,7 +558,7 @@ function makeSubplotLayer(gd, plotinfo, id) {
             plotinfo.ylines = ensureSingle(plotgroup, 'path', 'ylines-above');
             plotinfo.xaxislayer = ensureSingle(plotgroup, 'g', 'xaxislayer-above');
             plotinfo.yaxislayer = ensureSingle(plotgroup, 'g', 'yaxislayer-above');
-        } else {
+        } else if(id.indexOf('-over-') === -1) {
             var backLayer = ensureSingle(plotgroup, 'g', 'layer-subplot');
             plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
             plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');

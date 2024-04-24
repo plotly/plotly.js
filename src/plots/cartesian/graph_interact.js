@@ -33,6 +33,7 @@ exports.initInteractions = function initInteractions(gd) {
         return fullLayout._plots[a].mainplot ? 1 : -1;
     });
 
+    subplots = subplots.filter(function(subplot) { return !subplot.includes('-over-'); });
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
         var xa = plotinfo.xaxis;
@@ -40,7 +41,7 @@ exports.initInteractions = function initInteractions(gd) {
 
         // main and corner draggers need not be repeated for
         // overlaid subplots - these draggers drag them all
-        if(!plotinfo.mainplot) {
+        if(!plotinfo.mainplot || plotinfo.mainplot === plotinfo.id) {
             // main dragger goes over the grids and data, so we use its
             // mousemove events for all data hover effects
             var maindrag = makeDragBox(gd, plotinfo, xa._offset, ya._offset,

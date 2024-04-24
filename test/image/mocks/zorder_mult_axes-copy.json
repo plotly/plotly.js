@@ -1,0 +1,41 @@
+{
+    "data": [
+        {
+            "x": [2, 3, 4, 5],
+            "y": [4, 3, 9, 5],
+            "name": "xy - zorder 0",
+            "type": "scatter",
+            "marker": {"size": 20},
+            "line": {"width": 6},
+            "yaxis": "y",
+            "zorder": 0
+        },
+
+        {
+            "x": [3, 4, 5, 6, 7],
+            "y": [1, 8, 6, 8, 5],
+            "name": "xy2 - zorder 5",
+            "type": "scatter",
+            "marker": {"size": 20},
+            "line": {"width": 6},
+            "yaxis": "y2",
+            "zorder": 5
+        }
+
+    ],
+    "layout": {
+        "xaxis": {
+            "side": "top",
+            "title": {
+                "text": "zorder stacking"
+            }
+        },
+        "yaxis": {
+            "side": "right",
+            "title":{"text":"y"}, "overlaying": "y2"
+        },
+        "y2axis": {
+            "title":{"text":"y2"}
+        }
+    }
+}
