@@ -54,6 +54,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "capitalize": "word",
+            "striding": "under",
+            "shadow": "auto"
+        },
         "title": {
             "text": "bars + colorbar = <3"
         },
