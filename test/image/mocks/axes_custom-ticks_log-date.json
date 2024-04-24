@@ -13,6 +13,11 @@
         ]
     }],
     "layout": {
+        "font": {
+            "capitalize": "word",
+            "striding": "under",
+            "shadow": "auto"
+        },
         "width": 500,
         "height": 300,
         "title": {
