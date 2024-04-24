@@ -52,6 +52,11 @@
     }
   ],
   "layout": {
+    "font": {
+      "capitalize": "word",
+      "striding": "under",
+      "shadow": "auto"
+    },
     "xaxis": {
       "autorangeoptions": {
         "clipmin": 0.5,
