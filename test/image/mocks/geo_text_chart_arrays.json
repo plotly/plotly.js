@@ -121,7 +121,9 @@
                 "size": 28
             }
         },
-        "font": {},
+        "font": {
+            "shadow": "auto"
+        },
         "geo": {
             "scope": "north america",
             "lonaxis": {
