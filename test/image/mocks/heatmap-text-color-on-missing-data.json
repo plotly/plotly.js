@@ -51,6 +51,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "capitalize": "word",
+            "striding": "under",
+            "shadow": "auto"
+        },
         "title": {
             "text": "Heatmap text color should contrast with<br>background on cells with missing data"
         },
