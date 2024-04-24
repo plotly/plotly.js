@@ -42,6 +42,7 @@ module.exports = {
         description: 'Sets the font for the `dimension` labels.'
     }),
     tickfont: fontAttrs({
+        autoShadowDflt: true,
         editType: 'plot',
         description: 'Sets the font for the `dimension` tick values.'
     }),

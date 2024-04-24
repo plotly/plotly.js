@@ -114,7 +114,7 @@ module.exports = function(opts) {
         shadow: opts.noFontShadow ? undefined : {
             editType: editType,
             valType: 'string',
-            dflt: 'none',
+            dflt: opts.autoShadowDflt ? 'auto' : 'none',
             extras: ['auto'],
             description: [
                 'Sets the shape and color of the shadow behind text.',

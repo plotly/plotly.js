@@ -121,5 +121,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         color: layout.font.color
     };
 
-    Lib.coerceFont(coerce, 'tickfont', categoryfontDefault);
+    Lib.coerceFont(coerce, 'tickfont', categoryfontDefault, { autoShadowDflt: true });
 };

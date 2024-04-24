@@ -108,7 +108,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     };
 
     Lib.coerceFont(coerce, 'labelfont', fontDflt);
-    Lib.coerceFont(coerce, 'tickfont', fontDflt);
+    Lib.coerceFont(coerce, 'tickfont', fontDflt, { autoShadowDflt: true });
     Lib.coerceFont(coerce, 'rangefont', fontDflt);
 
     coerce('labelangle');
