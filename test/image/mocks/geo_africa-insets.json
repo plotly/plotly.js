@@ -220,6 +220,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "capitalize": "word",
+            "striding": "under",
+            "shadow": "auto"
+        },
         "geo2": {
             "showland": true,
             "domain": {
