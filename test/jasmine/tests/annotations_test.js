@@ -1447,7 +1447,10 @@ describe('annotation effects', function() {
                     color: '#fff',
                     weight: 'normal',
                     style: 'normal',
-                    variant: 'normal'
+                    variant: 'normal',
+                    capitalize: 'none',
+                    striding: 'none',
+                    shadow: 'none',
                 }
             });
 
@@ -1476,7 +1479,10 @@ describe('annotation effects', function() {
                         color: '#080',
                         weight: 'normal',
                         style: 'normal',
-                        variant: 'normal'
+                        variant: 'normal',
+                        capitalize: 'none',
+                        striding: 'none',
+                        shadow: 'none',
                     }
                 },
                 'annotations[1].hovertext': 'chicken'
@@ -1492,7 +1498,10 @@ describe('annotation effects', function() {
                     color: '#080',
                     weight: 'normal',
                     style: 'normal',
-                    variant: 'normal'
+                    variant: 'normal',
+                    capitalize: 'none',
+                    striding: 'none',
+                    shadow: 'none',
                 }
             });
 
