@@ -118,6 +118,20 @@ module.exports = function toSVG(gd, format, scale) {
             if(fv && fv === 'normal') {
                 txt.style('font-variant', undefined);
             }
+
+            // Drop none text-shadow, text-transform and text-decoration-line to reduce the size
+            var ts = this.style.textShadow;
+            if(ts && ts === 'none') {
+                txt.style('text-shadow', undefined);
+            }
+            var tt = this.style.textTransform;
+            if(tt && tt === 'none') {
+                txt.style('text-transform', undefined);
+            }
+            var td = this.style.textDecorationLine;
+            if(td && td === 'none') {
+                txt.style('text-decoration-line', undefined);
+            }
         });
 
     svg.selectAll('.gradient_filled,.pattern_filled').each(function() {
