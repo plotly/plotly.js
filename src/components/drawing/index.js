@@ -46,10 +46,31 @@ drawing.font = function(s, font) {
     if(style) s.style('font-style', style);
     if(variant) s.style('font-variant', variant);
 
+    if(capitalize) s.style('text-transform', capitalize2transform(capitalize));
     if(shadow) s.style('text-shadow', shadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(color)) : shadow);
-    if(striding) s.style('text-decoration-line', striding);
-    if(capitalize) s.style('text-transform', capitalize === 'word' ? 'capitalize' : capitalize);
+    if(striding) s.style('text-decoration-line', striding2decorationLine(striding));
 };
+
+function capitalize2transform(capitalize) {
+    return (
+        capitalize === 'word' ?
+            'capitalize' :
+            capitalize
+    );
+}
+drawing.capitalize2transform = capitalize2transform;
+
+function striding2decorationLine(striding) {
+    return (
+        striding
+            .replace('under', 'underline')
+            .replace('over', 'overline')
+            .replace('through', 'line-through')
+            .split('+')
+            .join(' ')
+    );
+}
+drawing.striding2decorationLine = striding2decorationLine;
 
 /*
  * Positioning helpers

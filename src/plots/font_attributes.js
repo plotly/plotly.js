@@ -86,6 +86,43 @@ module.exports = function(opts) {
             ].join(' ')
         },
 
+        capitalize: opts.noFontCapitalize ? undefined : {
+            editType: editType,
+            valType: 'enumerated',
+            values: ['none', 'word', 'uppercase', 'lowercase'],
+            dflt: 'none',
+            description: [
+                'Sets capitalization of text.',
+                'It can be used to make text appear in all-uppercase or all-lowercase,',
+                'or with each word capitalized.'
+            ].join(' ')
+        },
+
+        striding: opts.noFontStriding ? undefined : {
+            editType: editType,
+            valType: 'flaglist',
+            flags: ['under', 'over', 'through'],
+            extras: ['none'],
+            dflt: 'none',
+            description: [
+                'Sets the kind of decoration line(s) with text,',
+                'such as an *under*, *over* or *through*',
+                'as well as combinations e.g. *under+over*, etc.'
+            ].join(' ')
+        },
+
+        shadow: opts.noFontCapitalize ? undefined : {
+            editType: editType,
+            valType: 'string',
+            dflt: 'none',
+            extras: ['auto'],
+            description: [
+                'Sets the shape and color of the shadow behind text.',
+                'See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow.',
+                '*auto* places minimal shadow and applies contrast text font color.'
+            ].join(' ')
+        },
+
         editType: editType,
         // blank strings so compress_attributes can remove
         // TODO - that's uber hacky... better solution?
