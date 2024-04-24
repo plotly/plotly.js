@@ -3868,6 +3868,11 @@
     }
   ],
   "layout": {
+    "font": {
+      "capitalize": "word",
+      "striding": "under",
+      "shadow": "auto"
+    },
     "grid": {
       "rows": 8,
       "columns": 11
