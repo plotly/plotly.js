@@ -6,6 +6,9 @@
     }],
     "layout": {
         "font": {
+            "capitalize": "word",
+            "striding": "under",
+            "shadow": "auto",
             "weight": "bold",
             "style": "italic",
             "variant": "small-caps"
