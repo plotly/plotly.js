@@ -178,6 +178,9 @@
             "gridcolor": "white"
         },
         "font": {
+            "capitalize": "word",
+            "striding": "under",
+            "shadow": "auto",
             "size": 16
         },
         "plot_bgcolor": "lightblue",
