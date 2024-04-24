@@ -613,7 +613,6 @@ function makeSubplotLayer(gd, plotinfo, id) {
 
         ensureSingle(mainplotinfo.overlinesBelow, 'path', xId);
         ensureSingle(mainplotinfo.overlinesBelow, 'path', yId);
-
         ensureSingle(mainplotinfo.overaxesBelow, 'g', xId);
         ensureSingle(mainplotinfo.overaxesBelow, 'g', yId);
 
@@ -621,7 +620,6 @@ function makeSubplotLayer(gd, plotinfo, id) {
 
         ensureSingle(mainplotinfo.overlinesAbove, 'path', xId);
         ensureSingle(mainplotinfo.overlinesAbove, 'path', yId);
-
         ensureSingle(mainplotinfo.overaxesAbove, 'g', xId);
         ensureSingle(mainplotinfo.overaxesAbove, 'g', yId);
 
@@ -635,20 +633,17 @@ function makeSubplotLayer(gd, plotinfo, id) {
     // common attributes for all subplots, overlays or not
 
     if(!hasOnlyLargeSploms) {
-        if(plotinfo.minorGridlayer) {
-            ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
-            ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
-            plotinfo.minorGridlayer.selectAll('g')
+        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
+        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
+        plotinfo.minorGridlayer.selectAll('g')
             .map(function(d) { return d[0]; })
             .sort(axisIds.idSort);
-        }
-        if(plotinfo.gridlayer) {
-            ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
-            ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
-            plotinfo.gridlayer.selectAll('g')
-                .map(function(d) { return d[0]; })
-                .sort(axisIds.idSort);
-        }
+
+        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
+        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
+        plotinfo.gridlayer.selectAll('g')
+            .map(function(d) { return d[0]; })
+            .sort(axisIds.idSort);
     }
 
     plotinfo.xlines
