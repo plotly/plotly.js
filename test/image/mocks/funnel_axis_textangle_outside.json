@@ -80,6 +80,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "capitalize": "word",
+            "striding": "under",
+            "shadow": "auto"
+        },
         "width": 800,
         "height": 800,
         "dragmode": "pan",
