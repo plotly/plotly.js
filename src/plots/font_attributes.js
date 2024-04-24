@@ -115,11 +115,10 @@ module.exports = function(opts) {
             editType: editType,
             valType: 'string',
             dflt: opts.autoShadowDflt ? 'auto' : 'none',
-            extras: ['auto'],
             description: [
                 'Sets the shape and color of the shadow behind text.',
-                'See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow.',
-                '*auto* places minimal shadow and applies contrast text font color.'
+                '*auto* places minimal shadow and applies contrast text font color.',
+                'See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.'
             ].join(' ')
         },
 
