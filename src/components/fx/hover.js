@@ -961,6 +961,9 @@ function createHoverText(hoverData, opts) {
     var fontWeight = opts.fontWeight || fullLayout.font.weight;
     var fontStyle = opts.fontStyle || fullLayout.font.style;
     var fontVariant = opts.fontVariant || fullLayout.font.variant;
+    var fontCapitalize = opts.fontCapitalize || fullLayout.font.capitalize;
+    var fontStriding = opts.fontStriding || fullLayout.font.striding;
+    var fontShadow = opts.fontShadow || fullLayout.font.shadow;
 
     var c0 = hoverData[0];
     var xa = c0.xa;
@@ -1045,6 +1048,9 @@ function createHoverText(hoverData, opts) {
             weight: commonLabelOpts.font.weight || fontWeight,
             style: commonLabelOpts.font.style || fontStyle,
             variant: commonLabelOpts.font.variant || fontVariant,
+            capitalize: commonLabelOpts.font.capitalize || fontCapitalize,
+            striding: commonLabelOpts.font.striding || fontStriding,
+            shadow: commonLabelOpts.font.shadow || fontShadow,
             family: commonLabelOpts.font.family || fontFamily,
             size: commonLabelOpts.font.size || fontSize,
             color: commonLabelOpts.font.color || contrastColor
@@ -1370,6 +1376,9 @@ function createHoverText(hoverData, opts) {
                     weight: fontWeight,
                     style: fontStyle,
                     variant: fontVariant,
+                    capitalize: fontCapitalize,
+                    striding: fontStriding,
+                    shadow: fontShadow,
                     family: fontFamily,
                     size: fontSize
                 });
@@ -1413,7 +1422,10 @@ function createHoverText(hoverData, opts) {
                 color: d.fontColor || contrastColor,
                 weight: d.fontWeight || fontWeight,
                 style: d.fontStyle || fontStyle,
-                variant: d.fontVariant || fontVariant
+                variant: d.fontVariant || fontVariant,
+                capitalize: d.fontCapitalize || fontCapitalize,
+                striding: d.fontStriding || fontStriding,
+                shadow: d.fontShadow || fontShadow,
             })
             .text(text)
             .attr('data-notex', 1)
@@ -1432,7 +1444,10 @@ function createHoverText(hoverData, opts) {
                 color: nameColor,
                 weight: d.fontWeight || fontWeight,
                 style: d.fontStyle || fontStyle,
-                variant: d.fontVariant || fontVariant
+                variant: d.fontVariant || fontVariant,
+                capitalize: d.fontCapitalize || fontCapitalize,
+                striding: d.fontStriding || fontStriding,
+                shadow: d.fontShadow || fontShadow,
             }).text(name)
                 .attr('data-notex', 1)
                 .call(svgTextUtils.positionText, 0, 0)

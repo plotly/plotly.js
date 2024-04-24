@@ -11,6 +11,9 @@ module.exports = function handleLabelDefaults(coerce, layout, lineColor, opts) {
             weight: globalFont.weight,
             style: globalFont.style,
             variant: globalFont.variant,
+            capitalize: globalFont.capitalize,
+            striding: globalFont.striding,
+            shadow: globalFont.shadow,
             family: globalFont.family,
             size: globalFont.size,
             color: lineColor

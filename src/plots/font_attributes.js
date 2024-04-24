@@ -111,7 +111,7 @@ module.exports = function(opts) {
             ].join(' ')
         },
 
-        shadow: opts.noFontCapitalize ? undefined : {
+        shadow: opts.noFontShadow ? undefined : {
             editType: editType,
             valType: 'string',
             dflt: 'none',
@@ -136,7 +136,18 @@ module.exports = function(opts) {
         attrs.family.arrayOk = true;
         attrs.weight.arrayOk = true;
         attrs.style.arrayOk = true;
-        attrs.variant.arrayOk = true;
+        if(!opts.noFontVariant) {
+            attrs.variant.arrayOk = true;
+        }
+        if(!opts.noFontCapitalize) {
+            attrs.capitalize.arrayOk = true;
+        }
+        if(!opts.noFontStriding) {
+            attrs.striding.arrayOk = true;
+        }
+        if(!opts.noFontShadow) {
+            attrs.shadow.arrayOk = true;
+        }
         attrs.size.arrayOk = true;
         attrs.color.arrayOk = true;
     }

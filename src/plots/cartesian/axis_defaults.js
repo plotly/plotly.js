@@ -116,6 +116,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         weight: font.weight,
         style: font.style,
         variant: font.variant,
+        capitalize: font.capitalize,
+        striding: font.striding,
+        shadow: font.shadow,
         size: Lib.bigFont(font.size),
         color: dfltFontColor
     });

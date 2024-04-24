@@ -31,6 +31,9 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             weight: font.weight,
             style: font.style,
             variant: font.variant,
+            capitalize: font.capitalize,
+            striding: font.striding,
+            shadow: font.shadow,
             size: font.size,
             color: dfltFontColor
         });

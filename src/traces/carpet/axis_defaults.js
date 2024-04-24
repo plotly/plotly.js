@@ -113,6 +113,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
             weight: font.weight,
             style: font.style,
             variant: font.variant,
+            capitalize: font.capitalize,
+            striding: font.striding,
+            shadow: font.shadow,
             family: font.family,
             size: Lib.bigFont(font.size),
             color: dfltFontColor

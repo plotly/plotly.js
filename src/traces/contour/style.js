@@ -44,6 +44,9 @@ module.exports = function style(gd) {
                 weight: labelFont.weight,
                 style: labelFont.style,
                 variant: labelFont.variant,
+                capitalize: labelFont.capitalize,
+                striding: labelFont.striding,
+                shadow: labelFont.shadow,
                 family: labelFont.family,
                 size: labelFont.size,
                 color: labelFont.color || (colorLines ? colorMap(d.level) : line.color)

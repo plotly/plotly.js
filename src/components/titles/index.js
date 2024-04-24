@@ -71,6 +71,9 @@ function draw(gd, titleClass, options) {
     var fontWeight = font.weight;
     var fontStyle = font.style;
     var fontVariant = font.variant;
+    var fontCapitalize = font.capitalize;
+    var fontStriding = font.striding;
+    var fontShadow = font.shadow;
 
     // only make this title editable if we positively identify its property
     // as one that has editing enabled.
@@ -151,7 +154,10 @@ function draw(gd, titleClass, options) {
             opacity: opacity * Color.opacity(fontColor),
             'font-weight': fontWeight,
             'font-style': fontStyle,
-            'font-variant': fontVariant
+            'font-variant': fontVariant,
+            'text-transform': Drawing.capitalize2transform(fontCapitalize),
+            'text-shadow': fontShadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(fontColor)) : fontShadow,
+            'text-decoration-line': Drawing.striding2decorationLine(fontStriding),
         })
         .attr(attributes)
         .call(svgTextUtils.convertToTspans, gd);

@@ -1164,6 +1164,9 @@ drawing.textPointStyle = function(s, trace, gd) {
             weight: d.tw || trace.textfont.weight,
             style: d.ty || trace.textfont.style,
             variant: d.tv || trace.textfont.variant,
+            capitalize: d.tC || trace.textfont.capitalize,
+            striding: d.tE || trace.textfont.striding,
+            shadow: d.tS || trace.textfont.shadow,
             size: fontSize,
             color: fontColor
         })

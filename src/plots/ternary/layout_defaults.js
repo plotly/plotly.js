@@ -85,6 +85,9 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
         weight: options.font.weight,
         style: options.font.style,
         variant: options.font.variant,
+        capitalize: options.font.capitalize,
+        striding: options.font.striding,
+        shadow: options.font.shadow,
         family: options.font.family,
         size: Lib.bigFont(options.font.size),
         color: dfltFontColor
@@ -105,6 +108,9 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
             weight: options.font.weight,
             style: options.font.style,
             variant: options.font.variant,
+            capitalize: options.font.capitalize,
+            striding: options.font.striding,
+            shadow: options.font.shadow,
             family: options.font.family,
             size: options.font.size,
             color: dfltFontColor

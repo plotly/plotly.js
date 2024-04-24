@@ -128,6 +128,9 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
         weight: font.weight,
         style: font.style,
         variant: font.variant,
+        capitalize: font.capitalize,
+        striding: font.striding,
+        shadow: font.shadow,
         color: font.color,
         size: Lib.bigFont(tickFont.size)
     });

@@ -551,6 +551,9 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                             weight: font.weight,
                             style: font.style,
                             variant: font.variant,
+                            capitalize: font.capitalize,
+                            striding: font.striding,
+                            shadow: font.shadow,
                         })
                         .text(d.t)
                         .call(svgTextUtils.convertToTspans, gd);

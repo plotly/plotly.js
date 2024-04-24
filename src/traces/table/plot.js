@@ -488,6 +488,9 @@ function supplyStylingValues(columnCell) {
                 weight: gridPick(spec.weight, col, i),
                 style: gridPick(spec.style, col, i),
                 variant: gridPick(spec.variant, col, i),
+                capitalize: gridPick(spec.capitalize, col, i),
+                striding: gridPick(spec.striding, col, i),
+                shadow: gridPick(spec.shadow, col, i),
             };
             d.rowNumber = d.key;
             d.align = gridPick(d.calcdata.cells.align, col, i);

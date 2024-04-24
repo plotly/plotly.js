@@ -515,13 +515,31 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
         helpers.castOption(trace.textfont.variant, pt.pts) ||
         layoutFont.variant;
 
+    var capitalize =
+        helpers.castOption(trace.outsidetextfont.capitalize, pt.pts) ||
+        helpers.castOption(trace.textfont.capitalize, pt.pts) ||
+        layoutFont.capitalize;
+
+    var striding =
+        helpers.castOption(trace.outsidetextfont.striding, pt.pts) ||
+        helpers.castOption(trace.textfont.striding, pt.pts) ||
+        layoutFont.striding;
+
+    var shadow =
+        helpers.castOption(trace.outsidetextfont.shadow, pt.pts) ||
+        helpers.castOption(trace.textfont.shadow, pt.pts) ||
+        layoutFont.shadow;
+
     return {
         color: color,
         family: family,
         size: size,
         weight: weight,
         style: style,
-        variant: variant
+        variant: variant,
+        capitalize: capitalize,
+        striding: striding,
+        shadow: shadow,
     };
 }
 
@@ -560,13 +578,31 @@ function determineInsideTextFont(trace, pt, layoutFont) {
         helpers.castOption(trace.textfont.variant, pt.pts) ||
         layoutFont.variant;
 
+    var capitalize =
+        helpers.castOption(trace.insidetextfont.capitalize, pt.pts) ||
+        helpers.castOption(trace.textfont.capitalize, pt.pts) ||
+        layoutFont.capitalize;
+
+    var striding =
+        helpers.castOption(trace.insidetextfont.striding, pt.pts) ||
+        helpers.castOption(trace.textfont.striding, pt.pts) ||
+        layoutFont.striding;
+
+    var shadow =
+        helpers.castOption(trace.insidetextfont.shadow, pt.pts) ||
+        helpers.castOption(trace.textfont.shadow, pt.pts) ||
+        layoutFont.shadow;
+
     return {
         color: customColor || Color.contrast(pt.color),
         family: family,
         size: size,
         weight: weight,
         style: style,
-        variant: variant
+        variant: variant,
+        capitalize: capitalize,
+        striding: striding,
+        shadow: shadow,
     };
 }
 

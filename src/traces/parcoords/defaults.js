@@ -99,6 +99,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         weight: layout.font.weight,
         style: layout.font.style,
         variant: layout.font.variant,
+        capitalize: layout.font.capitalize,
+        striding: layout.font.striding,
+        shadow: layout.font.shadow,
         family: layout.font.family,
         size: Math.round(layout.font.size / 1.2),
         color: layout.font.color
