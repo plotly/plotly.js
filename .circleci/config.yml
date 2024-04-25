@@ -231,7 +231,7 @@ jobs:
           command: .circleci/test.sh mathjax-firefox82+
 
   make-baselines-virtual-webgl:
-    parallelism: 2
+    parallelism: 4
     docker:
       - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
