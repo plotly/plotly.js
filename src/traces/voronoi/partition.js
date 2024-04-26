@@ -1,7 +1,7 @@
 'use strict';
 
 var d3Hierarchy = require('d3-hierarchy');
-var flipTree = require('./flip_tree');
+var flipTree = require('../treemap/flip_tree');
 
 module.exports = function partition(entry, size, opts) {
     var flipX = opts.flipX;
