@@ -35,6 +35,7 @@ var svgMockList = [
     ['sankey_energy', require('../../image/mocks/sankey_energy.json')],
     ['sunburst_coffee', require('../../image/mocks/sunburst_coffee.json')],
     ['treemap_coffee', require('../../image/mocks/treemap_coffee.json')],
+    ['voronoi_coffee', require('../../image/mocks/zz-voronoi_coffee.json')],
     ['icicle_coffee', require('../../image/mocks/icicle_coffee.json')],
     ['parcats_bad-displayindex', require('../../image/mocks/parcats_bad-displayindex.json')],
     ['scattercarpet', require('../../image/mocks/scattercarpet.json')],
