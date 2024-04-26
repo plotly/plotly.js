@@ -7,5 +7,5 @@ exports.calc = function(gd, trace) {
 };
 
 exports.crossTraceCalc = function(gd) {
-    return calc._runCrossTraceCalc('treemap', gd);
+    return calc._runCrossTraceCalc('voronoi', gd);
 };

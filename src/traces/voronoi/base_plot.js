@@ -2,7 +2,7 @@
 
 var plots = require('../../plots/plots');
 
-exports.name = 'treemap';
+exports.name = 'voronoi';
 
 exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     plots.plotBasePlot(exports.name, gd, traces, transitionOpts, makeOnCompleteCallback);

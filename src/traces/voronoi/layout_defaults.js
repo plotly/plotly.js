@@ -7,6 +7,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
-    coerce('treemapcolorway', layoutOut.colorway);
-    coerce('extendtreemapcolors');
+    coerce('voronoicolorway', layoutOut.colorway);
+    coerce('extendvoronoicolors');
 };

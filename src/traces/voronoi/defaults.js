@@ -95,7 +95,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     };
 
     if(hasPathbar) {
-        // This works even for multi-line labels as treemap pathbar trim out line breaks
+        // This works even for multi-line labels as voronoi pathbar trim out line breaks
         coerce('pathbar.thickness', traceOut.pathbar.textfont.size + 2 * TEXTPAD);
 
         coerce('pathbar.side');

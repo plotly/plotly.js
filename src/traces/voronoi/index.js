@@ -2,7 +2,7 @@
 
 module.exports = {
     moduleType: 'trace',
-    name: 'treemap',
+    name: 'voronoi',
     basePlotModule: require('./base_plot'),
     categories: [],
     animatable: true,
@@ -23,7 +23,7 @@ module.exports = {
     meta: {
         description: [
             'Visualize hierarchal data from leaves (and/or outer branches) towards root',
-            'with rectangles. The treemap sectors are determined by the entries in',
+            'with rectangles. The voronoi sectors are determined by the entries in',
             '*labels* or *ids* and in *parents*.'
         ].join(' ')
     }

@@ -8,8 +8,8 @@ var resizeText = require('../bar/uniform_text').resizeText;
 var fillOne = require('../sunburst/fill_one');
 
 function style(gd) {
-    var s = gd._fullLayout._treemaplayer.selectAll('.trace');
-    resizeText(gd, s, 'treemap');
+    var s = gd._fullLayout._voronoilayer.selectAll('.trace');
+    resizeText(gd, s, 'voronoi');
 
     s.each(function(cd) {
         var gTrace = d3.select(this);

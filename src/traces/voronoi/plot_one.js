@@ -207,7 +207,7 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
     };
 
     // Note that `pad` is just an integer for `icicle`` traces where
-    // `pad` is a hashmap for treemap: pad.t, pad.b, pad.l, and pad.r
+    // `pad` is a hashmap for voronoi: pad.t, pad.b, pad.l, and pad.r
     var pad = trace[isIcicle ? 'tiling' : 'marker'].pad;
 
     var hasFlag = function(f) { return trace.textposition.indexOf(f) !== -1; };

@@ -36,8 +36,8 @@ module.exports = {
             dflt: 'squarify',
             editType: 'plot',
             description: [
-                'Determines d3 treemap solver.',
-                'For more info please refer to https://github.com/d3/d3-hierarchy#treemap-tiling'
+                'Determines d3 voronoi solver.',
+                'For more info please refer to https://github.com/d3/d3-hierarchy#voronoi-tiling'
             ].join(' ')
         },
 
@@ -54,7 +54,7 @@ module.exports = {
                 'is not implied by the ratio; for example, a ratio of two will attempt',
                 'to produce a mixture of rectangles whose width:height ratio is either 2:1 or 1:2.',
                 'When using *squarify*, unlike d3 which uses the Golden Ratio i.e. 1.618034,',
-                'Plotly applies 1 to increase squares in treemap layouts.'
+                'Plotly applies 1 to increase squares in voronoi layouts.'
             ].join(' ')
         },
 
@@ -183,7 +183,7 @@ module.exports = {
             dflt: 'top',
             editType: 'plot',
             description: [
-                'Determines on which side of the the treemap the',
+                'Determines on which side of the the voronoi the',
                 '`pathbar` should be presented.'
             ].join(' ')
         },
@@ -240,7 +240,7 @@ module.exports = {
         description: [
             'Sets the font used for `textinfo` lying outside the sector.',
             'This option refers to the root of the hierarchy',
-            'presented on top left corner of a treemap graph.',
+            'presented on top left corner of a voronoi graph.',
             'Please note that if a hierarchy has multiple root nodes,',
             'this option won\'t have any effect and `insidetextfont` would be used.'
         ].join(' ')
@@ -262,5 +262,5 @@ module.exports = {
     sort: pieAttrs.sort,
     root: sunburstAttrs.root,
 
-    domain: domainAttrs({name: 'treemap', trace: true, editType: 'calc'}),
+    domain: domainAttrs({name: 'voronoi', trace: true, editType: 'calc'}),
 };
