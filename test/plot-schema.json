@@ -42056,7 +42056,7 @@
     },
     "root": {
      "color": {
-      "description": "sets the color of the root node for a sunburst/treemap/icicle trace. this has no effect when a colorscale is used to set the markers.",
+      "description": "sets the color of the root node for a sunburst/treemap/voronoi/icicle trace. this has no effect when a colorscale is used to set the markers.",
       "dflt": "rgba(0,0,0,0)",
       "editType": "calc",
       "valType": "color"
@@ -79606,7 +79606,7 @@
     },
     "root": {
      "color": {
-      "description": "sets the color of the root node for a sunburst/treemap/icicle trace. this has no effect when a colorscale is used to set the markers.",
+      "description": "sets the color of the root node for a sunburst/treemap/voronoi/icicle trace. this has no effect when a colorscale is used to set the markers.",
       "dflt": "rgba(0,0,0,0)",
       "editType": "calc",
       "valType": "color"
@@ -83891,7 +83891,7 @@
     },
     "root": {
      "color": {
-      "description": "sets the color of the root node for a sunburst/treemap/icicle trace. this has no effect when a colorscale is used to set the markers.",
+      "description": "sets the color of the root node for a sunburst/treemap/voronoi/icicle trace. this has no effect when a colorscale is used to set the markers.",
       "dflt": "rgba(0,0,0,0)",
       "editType": "calc",
       "valType": "color"
@@ -87009,6 +87009,1908 @@
     "description": "Draws volume trace between iso-min and iso-max values with coordinates given by four 1-dimensional arrays containing the `value`, `x`, `y` and `z` of every vertex of a uniform or non-uniform 3-D grid. Horizontal or vertical slices, caps as well as spaceframe between iso-min and iso-max values could also be drawn using this trace."
    },
    "type": "volume"
+  },
+  "voronoi": {
+   "animatable": true,
+   "attributes": {
+    "branchvalues": {
+     "description": "Determines how the items in `values` are summed. When set to *total*, items in `values` are taken to be value of all its descendants. When set to *remainder*, items in `values` corresponding to the root and the branches sectors are taken to be the extra part not part of the sum of the values at their leaves.",
+     "dflt": "remainder",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "remainder",
+      "total"
+     ]
+    },
+    "count": {
+     "description": "Determines default for `values` when it is not provided, by inferring a 1 for each of the *leaves* and/or *branches*, otherwise 0.",
+     "dflt": "leaves",
+     "editType": "calc",
+     "flags": [
+      "branches",
+      "leaves"
+     ],
+     "valType": "flaglist"
+    },
+    "customdata": {
+     "description": "Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements",
+     "editType": "calc",
+     "valType": "data_array"
+    },
+    "customdatasrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `customdata`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "domain": {
+     "column": {
+      "description": "If there is a layout grid, use the domain for this column in the grid for this voronoi trace .",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "integer"
+     },
+     "editType": "calc",
+     "role": "object",
+     "row": {
+      "description": "If there is a layout grid, use the domain for this row in the grid for this voronoi trace .",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "integer"
+     },
+     "x": {
+      "description": "Sets the horizontal domain of this voronoi trace (in plot fraction).",
+      "dflt": [
+       0,
+       1
+      ],
+      "editType": "calc",
+      "items": [
+       {
+        "editType": "calc",
+        "max": 1,
+        "min": 0,
+        "valType": "number"
+       },
+       {
+        "editType": "calc",
+        "max": 1,
+        "min": 0,
+        "valType": "number"
+       }
+      ],
+      "valType": "info_array"
+     },
+     "y": {
+      "description": "Sets the vertical domain of this voronoi trace (in plot fraction).",
+      "dflt": [
+       0,
+       1
+      ],
+      "editType": "calc",
+      "items": [
+       {
+        "editType": "calc",
+        "max": 1,
+        "min": 0,
+        "valType": "number"
+       },
+       {
+        "editType": "calc",
+        "max": 1,
+        "min": 0,
+        "valType": "number"
+       }
+      ],
+      "valType": "info_array"
+     }
+    },
+    "hoverinfo": {
+     "arrayOk": true,
+     "description": "Determines which trace information appear on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.",
+     "dflt": "label+text+value+name",
+     "editType": "none",
+     "extras": [
+      "all",
+      "none",
+      "skip"
+     ],
+     "flags": [
+      "label",
+      "text",
+      "value",
+      "name",
+      "current path",
+      "percent root",
+      "percent entry",
+      "percent parent"
+     ],
+     "valType": "flaglist"
+    },
+    "hoverinfosrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `hoverinfo`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hoverlabel": {
+     "align": {
+      "arrayOk": true,
+      "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+      "dflt": "auto",
+      "editType": "none",
+      "valType": "enumerated",
+      "values": [
+       "left",
+       "right",
+       "auto"
+      ]
+     },
+     "alignsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `align`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "bgcolor": {
+      "arrayOk": true,
+      "description": "Sets the background color of the hover labels for this trace",
+      "editType": "none",
+      "valType": "color"
+     },
+     "bgcolorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `bgcolor`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "bordercolor": {
+      "arrayOk": true,
+      "description": "Sets the border color of the hover labels for this trace.",
+      "editType": "none",
+      "valType": "color"
+     },
+     "bordercolorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `bordercolor`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "editType": "none",
+     "font": {
+      "color": {
+       "arrayOk": true,
+       "editType": "none",
+       "valType": "color"
+      },
+      "colorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `color`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "description": "Sets the font used in hover labels.",
+      "editType": "none",
+      "family": {
+       "arrayOk": true,
+       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+       "editType": "none",
+       "noBlank": true,
+       "strict": true,
+       "valType": "string"
+      },
+      "familysrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `family`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "role": "object",
+      "size": {
+       "arrayOk": true,
+       "editType": "none",
+       "min": 1,
+       "valType": "number"
+      },
+      "sizesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "style": {
+       "arrayOk": true,
+       "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+       "dflt": "normal",
+       "editType": "none",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "italic"
+       ]
+      },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "variant": {
+       "arrayOk": true,
+       "description": "Sets the variant of the font.",
+       "dflt": "normal",
+       "editType": "none",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "small-caps",
+        "all-small-caps",
+        "all-petite-caps",
+        "petite-caps",
+        "unicase"
+       ]
+      },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "weight": {
+       "arrayOk": true,
+       "description": "Sets the weight (or boldness) of the font.",
+       "dflt": "normal",
+       "editType": "none",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "bold"
+       ]
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
+      }
+     },
+     "namelength": {
+      "arrayOk": true,
+      "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
+      "dflt": 15,
+      "editType": "none",
+      "min": -1,
+      "valType": "integer"
+     },
+     "namelengthsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `namelength`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "role": "object"
+    },
+    "hovertemplate": {
+     "arrayOk": true,
+     "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `currentPath`, `root`, `entry`, `percentRoot`, `percentEntry` and `percentParent`. Anything contained in tag `<extra>` is displayed in the secondary box, for example \"<extra>{fullData.name}</extra>\". To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatesrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertext": {
+     "arrayOk": true,
+     "description": "Sets hover text elements associated with each sector. If a single string, the same string appears for all data points. If an array of string, the items are mapped in order of this trace's sectors. To be seen, trace `hoverinfo` must contain a *text* flag.",
+     "dflt": "",
+     "editType": "style",
+     "valType": "string"
+    },
+    "hovertextsrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `hovertext`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "ids": {
+     "anim": true,
+     "description": "Assigns id labels to each datum. These ids for object constancy of data points during animation. Should be an array of strings, not numbers or any other type.",
+     "editType": "calc",
+     "valType": "data_array"
+    },
+    "idssrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "insidetextfont": {
+     "color": {
+      "arrayOk": true,
+      "editType": "plot",
+      "valType": "color"
+     },
+     "colorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `color`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "description": "Sets the font used for `textinfo` lying inside the sector.",
+     "editType": "plot",
+     "family": {
+      "arrayOk": true,
+      "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+      "editType": "plot",
+      "noBlank": true,
+      "strict": true,
+      "valType": "string"
+     },
+     "familysrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `family`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "role": "object",
+     "size": {
+      "arrayOk": true,
+      "editType": "plot",
+      "min": 1,
+      "valType": "number"
+     },
+     "sizesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "style": {
+      "arrayOk": true,
+      "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+      "dflt": "normal",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "italic"
+      ]
+     },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "variant": {
+      "arrayOk": true,
+      "description": "Sets the variant of the font.",
+      "dflt": "normal",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "small-caps",
+       "all-small-caps",
+       "all-petite-caps",
+       "petite-caps",
+       "unicase"
+      ]
+     },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "weight": {
+      "arrayOk": true,
+      "description": "Sets the weight (or boldness) of the font.",
+      "dflt": "normal",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "bold"
+      ]
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
+     }
+    },
+    "labels": {
+     "description": "Sets the labels of each of the sectors.",
+     "editType": "calc",
+     "valType": "data_array"
+    },
+    "labelssrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `labels`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
+     "editType": "style",
+     "valType": "subplotid"
+    },
+    "legendgrouptitle": {
+     "editType": "style",
+     "font": {
+      "color": {
+       "editType": "style",
+       "valType": "color"
+      },
+      "description": "Sets this legend group's title font.",
+      "editType": "style",
+      "family": {
+       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+       "editType": "style",
+       "noBlank": true,
+       "strict": true,
+       "valType": "string"
+      },
+      "role": "object",
+      "size": {
+       "editType": "style",
+       "min": 1,
+       "valType": "number"
+      },
+      "style": {
+       "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+       "dflt": "normal",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "italic"
+       ]
+      },
+      "variant": {
+       "description": "Sets the variant of the font.",
+       "dflt": "normal",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "small-caps",
+        "all-small-caps",
+        "all-petite-caps",
+        "petite-caps",
+        "unicase"
+       ]
+      },
+      "weight": {
+       "description": "Sets the weight (or boldness) of the font.",
+       "dflt": "normal",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "bold"
+       ]
+      }
+     },
+     "role": "object",
+     "text": {
+      "description": "Sets the title of the legend group.",
+      "dflt": "",
+      "editType": "style",
+      "valType": "string"
+     }
+    },
+    "legendrank": {
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
+     "dflt": 1000,
+     "editType": "style",
+     "valType": "number"
+    },
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
+    "level": {
+     "anim": true,
+     "description": "Sets the level from which this trace hierarchy is rendered. Set `level` to `''` to start from the root node in the hierarchy. Must be an \"id\" if `ids` is filled in, otherwise plotly attempts to find a matching item in `labels`.",
+     "editType": "plot",
+     "valType": "any"
+    },
+    "marker": {
+     "autocolorscale": {
+      "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if colors is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
+      "dflt": true,
+      "editType": "calc",
+      "impliedEdits": {},
+      "valType": "boolean"
+     },
+     "cauto": {
+      "description": "Determines whether or not the color domain is computed with respect to the input data (here colors) or the bounds set in `marker.cmin` and `marker.cmax` Has an effect only if colors is set to a numerical array. Defaults to `false` when `marker.cmin` and `marker.cmax` are set by the user.",
+      "dflt": true,
+      "editType": "calc",
+      "impliedEdits": {},
+      "valType": "boolean"
+     },
+     "cmax": {
+      "description": "Sets the upper bound of the color domain. Has an effect only if colors is set to a numerical array. Value should have the same units as colors and if set, `marker.cmin` must be set as well.",
+      "dflt": null,
+      "editType": "plot",
+      "impliedEdits": {
+       "cauto": false
+      },
+      "valType": "number"
+     },
+     "cmid": {
+      "description": "Sets the mid-point of the color domain by scaling `marker.cmin` and/or `marker.cmax` to be equidistant to this point. Has an effect only if colors is set to a numerical array. Value should have the same units as colors. Has no effect when `marker.cauto` is `false`.",
+      "dflt": null,
+      "editType": "calc",
+      "impliedEdits": {},
+      "valType": "number"
+     },
+     "cmin": {
+      "description": "Sets the lower bound of the color domain. Has an effect only if colors is set to a numerical array. Value should have the same units as colors and if set, `marker.cmax` must be set as well.",
+      "dflt": null,
+      "editType": "plot",
+      "impliedEdits": {
+       "cauto": false
+      },
+      "valType": "number"
+     },
+     "coloraxis": {
+      "description": "Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis.",
+      "dflt": null,
+      "editType": "calc",
+      "regex": "/^coloraxis([2-9]|[1-9][0-9]+)?$/",
+      "valType": "subplotid"
+     },
+     "colorbar": {
+      "_deprecated": {
+       "title": {
+        "description": "Deprecated in favor of color bar's `title.text`. Note that value of color bar's `title` is no longer a simple *string* but a set of sub-attributes.",
+        "editType": "colorbars",
+        "valType": "string"
+       },
+       "titlefont": {
+        "color": {
+         "editType": "colorbars",
+         "valType": "color"
+        },
+        "description": "Deprecated in favor of color bar's `title.font`.",
+        "editType": "colorbars",
+        "family": {
+         "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+         "editType": "colorbars",
+         "noBlank": true,
+         "strict": true,
+         "valType": "string"
+        },
+        "size": {
+         "editType": "colorbars",
+         "min": 1,
+         "valType": "number"
+        },
+        "style": {
+         "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+         "dflt": "normal",
+         "editType": "colorbars",
+         "valType": "enumerated",
+         "values": [
+          "normal",
+          "italic"
+         ]
+        },
+        "variant": {
+         "description": "Sets the variant of the font.",
+         "dflt": "normal",
+         "editType": "colorbars",
+         "valType": "enumerated",
+         "values": [
+          "normal",
+          "small-caps",
+          "all-small-caps",
+          "all-petite-caps",
+          "petite-caps",
+          "unicase"
+         ]
+        },
+        "weight": {
+         "description": "Sets the weight (or boldness) of the font.",
+         "dflt": "normal",
+         "editType": "colorbars",
+         "valType": "enumerated",
+         "values": [
+          "normal",
+          "bold"
+         ]
+        }
+       },
+       "titleside": {
+        "description": "Deprecated in favor of color bar's `title.side`.",
+        "dflt": "top",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "right",
+         "top",
+         "bottom"
+        ]
+       }
+      },
+      "bgcolor": {
+       "description": "Sets the color of padded area.",
+       "dflt": "rgba(0,0,0,0)",
+       "editType": "colorbars",
+       "valType": "color"
+      },
+      "bordercolor": {
+       "description": "Sets the axis line color.",
+       "dflt": "#444",
+       "editType": "colorbars",
+       "valType": "color"
+      },
+      "borderwidth": {
+       "description": "Sets the width (in px) or the border enclosing this color bar.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "number"
+      },
+      "dtick": {
+       "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+       "editType": "colorbars",
+       "impliedEdits": {
+        "tickmode": "linear"
+       },
+       "valType": "any"
+      },
+      "editType": "colorbars",
+      "exponentformat": {
+       "description": "Determines a formatting rule for the tick exponents. For example, consider the number 1,000,000,000. If *none*, it appears as 1,000,000,000. If *e*, 1e+9. If *E*, 1E+9. If *power*, 1x10^9 (with 9 in a super script). If *SI*, 1G. If *B*, 1B.",
+       "dflt": "B",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "none",
+        "e",
+        "E",
+        "power",
+        "SI",
+        "B"
+       ]
+      },
+      "labelalias": {
+       "description": "Replacement text for specific tick or hover labels. For example using {US: 'USA', CA: 'Canada'} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.",
+       "dflt": false,
+       "editType": "colorbars",
+       "valType": "any"
+      },
+      "len": {
+       "description": "Sets the length of the color bar This measure excludes the padding of both ends. That is, the color bar length is this length minus the padding on both ends.",
+       "dflt": 1,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "number"
+      },
+      "lenmode": {
+       "description": "Determines whether this color bar's length (i.e. the measure in the color variation direction) is set in units of plot *fraction* or in *pixels. Use `len` to set the value.",
+       "dflt": "fraction",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "fraction",
+        "pixels"
+       ]
+      },
+      "minexponent": {
+       "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
+       "dflt": 3,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "number"
+      },
+      "nticks": {
+       "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
+      "orientation": {
+       "description": "Sets the orientation of the colorbar.",
+       "dflt": "v",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "h",
+        "v"
+       ]
+      },
+      "outlinecolor": {
+       "description": "Sets the axis line color.",
+       "dflt": "#444",
+       "editType": "colorbars",
+       "valType": "color"
+      },
+      "outlinewidth": {
+       "description": "Sets the width (in px) of the axis line.",
+       "dflt": 1,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "number"
+      },
+      "role": "object",
+      "separatethousands": {
+       "description": "If \"true\", even 4-digit integers are separated",
+       "dflt": false,
+       "editType": "colorbars",
+       "valType": "boolean"
+      },
+      "showexponent": {
+       "description": "If *all*, all exponents are shown besides their significands. If *first*, only the exponent of the first tick is shown. If *last*, only the exponent of the last tick is shown. If *none*, no exponents appear.",
+       "dflt": "all",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "all",
+        "first",
+        "last",
+        "none"
+       ]
+      },
+      "showticklabels": {
+       "description": "Determines whether or not the tick labels are drawn.",
+       "dflt": true,
+       "editType": "colorbars",
+       "valType": "boolean"
+      },
+      "showtickprefix": {
+       "description": "If *all*, all tick labels are displayed with a prefix. If *first*, only the first tick is displayed with a prefix. If *last*, only the last tick is displayed with a suffix. If *none*, tick prefixes are hidden.",
+       "dflt": "all",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "all",
+        "first",
+        "last",
+        "none"
+       ]
+      },
+      "showticksuffix": {
+       "description": "Same as `showtickprefix` but for tick suffixes.",
+       "dflt": "all",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "all",
+        "first",
+        "last",
+        "none"
+       ]
+      },
+      "thickness": {
+       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
+       "dflt": 30,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "number"
+      },
+      "thicknessmode": {
+       "description": "Determines whether this color bar's thickness (i.e. the measure in the constant color direction) is set in units of plot *fraction* or in *pixels*. Use `thickness` to set the value.",
+       "dflt": "pixels",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "fraction",
+        "pixels"
+       ]
+      },
+      "tick0": {
+       "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
+       "editType": "colorbars",
+       "impliedEdits": {
+        "tickmode": "linear"
+       },
+       "valType": "any"
+      },
+      "tickangle": {
+       "description": "Sets the angle of the tick labels with respect to the horizontal. For example, a `tickangle` of -90 draws the tick labels vertically.",
+       "dflt": "auto",
+       "editType": "colorbars",
+       "valType": "angle"
+      },
+      "tickcolor": {
+       "description": "Sets the tick color.",
+       "dflt": "#444",
+       "editType": "colorbars",
+       "valType": "color"
+      },
+      "tickfont": {
+       "color": {
+        "editType": "colorbars",
+        "valType": "color"
+       },
+       "description": "Sets the color bar's tick label font",
+       "editType": "colorbars",
+       "family": {
+        "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+        "editType": "colorbars",
+        "noBlank": true,
+        "strict": true,
+        "valType": "string"
+       },
+       "role": "object",
+       "size": {
+        "editType": "colorbars",
+        "min": 1,
+        "valType": "number"
+       },
+       "style": {
+        "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+        "dflt": "normal",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "normal",
+         "italic"
+        ]
+       },
+       "variant": {
+        "description": "Sets the variant of the font.",
+        "dflt": "normal",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "normal",
+         "small-caps",
+         "all-small-caps",
+         "all-petite-caps",
+         "petite-caps",
+         "unicase"
+        ]
+       },
+       "weight": {
+        "description": "Sets the weight (or boldness) of the font.",
+        "dflt": "normal",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "normal",
+         "bold"
+        ]
+       }
+      },
+      "tickformat": {
+       "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. And for dates see: https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format. We add two items to d3's date formatter: *%h* for half of the year as a decimal number as well as *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*",
+       "dflt": "",
+       "editType": "colorbars",
+       "valType": "string"
+      },
+      "tickformatstops": {
+       "items": {
+        "tickformatstop": {
+         "dtickrange": {
+          "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*",
+          "editType": "colorbars",
+          "items": [
+           {
+            "editType": "colorbars",
+            "valType": "any"
+           },
+           {
+            "editType": "colorbars",
+            "valType": "any"
+           }
+          ],
+          "valType": "info_array"
+         },
+         "editType": "colorbars",
+         "enabled": {
+          "description": "Determines whether or not this stop is used. If `false`, this stop is ignored even within its `dtickrange`.",
+          "dflt": true,
+          "editType": "colorbars",
+          "valType": "boolean"
+         },
+         "name": {
+          "description": "When used in a template, named items are created in the output figure in addition to any items the figure already has in this array. You can modify these items in the output figure by making your own item with `templateitemname` matching this `name` alongside your modifications (including `visible: false` or `enabled: false` to hide it). Has no effect outside of a template.",
+          "editType": "colorbars",
+          "valType": "string"
+         },
+         "role": "object",
+         "templateitemname": {
+          "description": "Used to refer to a named item in this array in the template. Named items from the template will be created even without a matching item in the input figure, but you can modify one by making an item with `templateitemname` matching its `name`, alongside your modifications (including `visible: false` or `enabled: false` to hide it). If there is no template or no matching item, this item will be hidden unless you explicitly show it with `visible: true`.",
+          "editType": "colorbars",
+          "valType": "string"
+         },
+         "value": {
+          "description": "string - dtickformat for described zoom level, the same as *tickformat*",
+          "dflt": "",
+          "editType": "colorbars",
+          "valType": "string"
+         }
+        }
+       },
+       "role": "object"
+      },
+      "ticklabeloverflow": {
+       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "allow",
+        "hide past div",
+        "hide past domain"
+       ]
+      },
+      "ticklabelposition": {
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
+       "dflt": "outside",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "outside",
+        "inside",
+        "outside top",
+        "inside top",
+        "outside left",
+        "inside left",
+        "outside right",
+        "inside right",
+        "outside bottom",
+        "inside bottom"
+       ]
+      },
+      "ticklabelstep": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 1 (default) means each tick gets a label. A value of 2 means shows every 2nd label. A larger value n means only every nth tick is labeled. `tick0` determines which labels are shown. Not implemented for axes with `type` *log* or *multicategory*, or when `tickmode` is *array*.",
+       "dflt": 1,
+       "editType": "colorbars",
+       "min": 1,
+       "valType": "integer"
+      },
+      "ticklen": {
+       "description": "Sets the tick length (in px).",
+       "dflt": 5,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "number"
+      },
+      "tickmode": {
+       "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
+       "editType": "colorbars",
+       "impliedEdits": {},
+       "valType": "enumerated",
+       "values": [
+        "auto",
+        "linear",
+        "array"
+       ]
+      },
+      "tickprefix": {
+       "description": "Sets a tick label prefix.",
+       "dflt": "",
+       "editType": "colorbars",
+       "valType": "string"
+      },
+      "ticks": {
+       "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
+       "dflt": "",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "outside",
+        "inside",
+        ""
+       ]
+      },
+      "ticksuffix": {
+       "description": "Sets a tick label suffix.",
+       "dflt": "",
+       "editType": "colorbars",
+       "valType": "string"
+      },
+      "ticktext": {
+       "description": "Sets the text displayed at the ticks position via `tickvals`. Only has an effect if `tickmode` is set to *array*. Used with `tickvals`.",
+       "editType": "colorbars",
+       "valType": "data_array"
+      },
+      "ticktextsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `ticktext`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "tickvals": {
+       "description": "Sets the values at which ticks on this axis appear. Only has an effect if `tickmode` is set to *array*. Used with `ticktext`.",
+       "editType": "colorbars",
+       "valType": "data_array"
+      },
+      "tickvalssrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `tickvals`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "tickwidth": {
+       "description": "Sets the tick width (in px).",
+       "dflt": 1,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "number"
+      },
+      "title": {
+       "editType": "colorbars",
+       "font": {
+        "color": {
+         "editType": "colorbars",
+         "valType": "color"
+        },
+        "description": "Sets this color bar's title font. Note that the title's font used to be set by the now deprecated `titlefont` attribute.",
+        "editType": "colorbars",
+        "family": {
+         "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+         "editType": "colorbars",
+         "noBlank": true,
+         "strict": true,
+         "valType": "string"
+        },
+        "role": "object",
+        "size": {
+         "editType": "colorbars",
+         "min": 1,
+         "valType": "number"
+        },
+        "style": {
+         "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+         "dflt": "normal",
+         "editType": "colorbars",
+         "valType": "enumerated",
+         "values": [
+          "normal",
+          "italic"
+         ]
+        },
+        "variant": {
+         "description": "Sets the variant of the font.",
+         "dflt": "normal",
+         "editType": "colorbars",
+         "valType": "enumerated",
+         "values": [
+          "normal",
+          "small-caps",
+          "all-small-caps",
+          "all-petite-caps",
+          "petite-caps",
+          "unicase"
+         ]
+        },
+        "weight": {
+         "description": "Sets the weight (or boldness) of the font.",
+         "dflt": "normal",
+         "editType": "colorbars",
+         "valType": "enumerated",
+         "values": [
+          "normal",
+          "bold"
+         ]
+        }
+       },
+       "role": "object",
+       "side": {
+        "description": "Determines the location of color bar's title with respect to the color bar. Defaults to *top* when `orientation` if *v* and  defaults to *right* when `orientation` if *h*. Note that the title's location used to be set by the now deprecated `titleside` attribute.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "right",
+         "top",
+         "bottom"
+        ]
+       },
+       "text": {
+        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "editType": "colorbars",
+        "valType": "string"
+       }
+      },
+      "x": {
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
+       "editType": "colorbars",
+       "valType": "number"
+      },
+      "xanchor": {
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "left",
+        "center",
+        "right"
+       ]
+      },
+      "xpad": {
+       "description": "Sets the amount of padding (in px) along the x direction.",
+       "dflt": 10,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "number"
+      },
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
+       "valType": "number"
+      },
+      "yanchor": {
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "top",
+        "middle",
+        "bottom"
+       ]
+      },
+      "ypad": {
+       "description": "Sets the amount of padding (in px) along the y direction.",
+       "dflt": 10,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      }
+     },
+     "colors": {
+      "description": "Sets the color of each sector of this trace. If not specified, the default trace color set is used to pick the sector colors.",
+      "editType": "calc",
+      "valType": "data_array"
+     },
+     "colorscale": {
+      "description": "Sets the colorscale. Has an effect only if colors is set to a numerical array. The colorscale must be an array containing arrays mapping a normalized value to an rgb, rgba, hex, hsl, hsv, or named color string. At minimum, a mapping for the lowest (0) and highest (1) values are required. For example, `[[0, 'rgb(0,0,255)'], [1, 'rgb(255,0,0)']]`. To control the bounds of the colorscale in color space, use `marker.cmin` and `marker.cmax`. Alternatively, `colorscale` may be a palette name string of the following list: Blackbody,Bluered,Blues,Cividis,Earth,Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd.",
+      "dflt": null,
+      "editType": "calc",
+      "impliedEdits": {
+       "autocolorscale": false
+      },
+      "valType": "colorscale"
+     },
+     "colorssrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `colors`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "cornerradius": {
+      "description": "Sets the maximum rounding of corners (in px).",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "depthfade": {
+      "description": "Determines if the sector colors are faded towards the background from the leaves up to the headers. This option is unavailable when a `colorscale` is present, defaults to false when `marker.colors` is set, but otherwise defaults to true. When set to *reversed*, the fading direction is inverted, that is the top elements within hierarchy are drawn with fully saturated colors while the leaves are faded towards the background color.",
+      "editType": "style",
+      "valType": "enumerated",
+      "values": [
+       true,
+       false,
+       "reversed"
+      ]
+     },
+     "editType": "calc",
+     "line": {
+      "color": {
+       "arrayOk": true,
+       "description": "Sets the color of the line enclosing each sector. Defaults to the `paper_bgcolor` value.",
+       "dflt": null,
+       "editType": "style",
+       "valType": "color"
+      },
+      "colorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `color`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "editType": "calc",
+      "role": "object",
+      "width": {
+       "arrayOk": true,
+       "description": "Sets the width (in px) of the line enclosing each sector.",
+       "dflt": 1,
+       "editType": "style",
+       "min": 0,
+       "valType": "number"
+      },
+      "widthsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `width`.",
+       "editType": "none",
+       "valType": "string"
+      }
+     },
+     "pad": {
+      "b": {
+       "description": "Sets the padding form the bottom (in px).",
+       "editType": "plot",
+       "min": 0,
+       "valType": "number"
+      },
+      "editType": "calc",
+      "l": {
+       "description": "Sets the padding form the left (in px).",
+       "editType": "plot",
+       "min": 0,
+       "valType": "number"
+      },
+      "r": {
+       "description": "Sets the padding form the right (in px).",
+       "editType": "plot",
+       "min": 0,
+       "valType": "number"
+      },
+      "role": "object",
+      "t": {
+       "description": "Sets the padding form the top (in px).",
+       "editType": "plot",
+       "min": 0,
+       "valType": "number"
+      }
+     },
+     "pattern": {
+      "bgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of background pattern fill. Defaults to a `marker.color` background when `fillmode` is *overlay*. Otherwise, defaults to a transparent background.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "bgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `bgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "description": "Sets the pattern within the marker.",
+      "editType": "style",
+      "fgcolor": {
+       "arrayOk": true,
+       "description": "When there is no colorscale sets the color of foreground pattern fill. Defaults to a `marker.color` background when `fillmode` is *replace*. Otherwise, defaults to dark grey or white to increase contrast with the `bgcolor`.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "fgcolorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `fgcolor`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "fgopacity": {
+       "description": "Sets the opacity of the foreground pattern fill. Defaults to a 0.5 when `fillmode` is *overlay*. Otherwise, defaults to 1.",
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "fillmode": {
+       "description": "Determines whether `marker.color` should be used as a default to `bgcolor` or a `fgcolor`.",
+       "dflt": "replace",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "replace",
+        "overlay"
+       ]
+      },
+      "role": "object",
+      "shape": {
+       "arrayOk": true,
+       "description": "Sets the shape of the pattern fill. By default, no pattern is used for filling the area.",
+       "dflt": "",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "",
+        "/",
+        "\\",
+        "x",
+        "-",
+        "|",
+        "+",
+        "."
+       ]
+      },
+      "shapesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `shape`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "size": {
+       "arrayOk": true,
+       "description": "Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern.",
+       "dflt": 8,
+       "editType": "style",
+       "min": 0,
+       "valType": "number"
+      },
+      "sizesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "solidity": {
+       "arrayOk": true,
+       "description": "Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern.",
+       "dflt": 0.3,
+       "editType": "style",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "soliditysrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `solidity`.",
+       "editType": "none",
+       "valType": "string"
+      }
+     },
+     "reversescale": {
+      "description": "Reverses the color mapping if true. Has an effect only if colors is set to a numerical array. If true, `marker.cmin` will correspond to the last color in the array and `marker.cmax` will correspond to the first color.",
+      "dflt": false,
+      "editType": "plot",
+      "valType": "boolean"
+     },
+     "role": "object",
+     "showscale": {
+      "description": "Determines whether or not a colorbar is displayed for this trace. Has an effect only if colors is set to a numerical array.",
+      "dflt": false,
+      "editType": "calc",
+      "valType": "boolean"
+     }
+    },
+    "maxdepth": {
+     "description": "Sets the number of rendered sectors from any given `level`. Set `maxdepth` to *-1* to render all the levels in the hierarchy.",
+     "dflt": -1,
+     "editType": "plot",
+     "valType": "integer"
+    },
+    "meta": {
+     "arrayOk": true,
+     "description": "Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index.",
+     "editType": "plot",
+     "valType": "any"
+    },
+    "metasrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `meta`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "name": {
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
+     "editType": "style",
+     "valType": "string"
+    },
+    "opacity": {
+     "description": "Sets the opacity of the trace.",
+     "dflt": 1,
+     "editType": "style",
+     "max": 1,
+     "min": 0,
+     "valType": "number"
+    },
+    "outsidetextfont": {
+     "color": {
+      "arrayOk": true,
+      "editType": "plot",
+      "valType": "color"
+     },
+     "colorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `color`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "description": "Sets the font used for `textinfo` lying outside the sector. This option refers to the root of the hierarchy presented on top left corner of a voronoi graph. Please note that if a hierarchy has multiple root nodes, this option won't have any effect and `insidetextfont` would be used.",
+     "editType": "plot",
+     "family": {
+      "arrayOk": true,
+      "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+      "editType": "plot",
+      "noBlank": true,
+      "strict": true,
+      "valType": "string"
+     },
+     "familysrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `family`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "role": "object",
+     "size": {
+      "arrayOk": true,
+      "editType": "plot",
+      "min": 1,
+      "valType": "number"
+     },
+     "sizesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "style": {
+      "arrayOk": true,
+      "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+      "dflt": "normal",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "italic"
+      ]
+     },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "variant": {
+      "arrayOk": true,
+      "description": "Sets the variant of the font.",
+      "dflt": "normal",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "small-caps",
+       "all-small-caps",
+       "all-petite-caps",
+       "petite-caps",
+       "unicase"
+      ]
+     },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "weight": {
+      "arrayOk": true,
+      "description": "Sets the weight (or boldness) of the font.",
+      "dflt": "normal",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "bold"
+      ]
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
+     }
+    },
+    "parents": {
+     "description": "Sets the parent sectors for each of the sectors. Empty string items '' are understood to reference the root node in the hierarchy. If `ids` is filled, `parents` items are understood to be \"ids\" themselves. When `ids` is not set, plotly attempts to find matching items in `labels`, but beware they must be unique.",
+     "editType": "calc",
+     "valType": "data_array"
+    },
+    "parentssrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `parents`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "pathbar": {
+     "edgeshape": {
+      "description": "Determines which shape is used for edges between `barpath` labels.",
+      "dflt": ">",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       ">",
+       "<",
+       "|",
+       "/",
+       "\\"
+      ]
+     },
+     "editType": "calc",
+     "role": "object",
+     "side": {
+      "description": "Determines on which side of the the voronoi the `pathbar` should be presented.",
+      "dflt": "top",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "top",
+       "bottom"
+      ]
+     },
+     "textfont": {
+      "color": {
+       "arrayOk": true,
+       "editType": "plot",
+       "valType": "color"
+      },
+      "colorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `color`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "description": "Sets the font used inside `pathbar`.",
+      "editType": "plot",
+      "family": {
+       "arrayOk": true,
+       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+       "editType": "plot",
+       "noBlank": true,
+       "strict": true,
+       "valType": "string"
+      },
+      "familysrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `family`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "role": "object",
+      "size": {
+       "arrayOk": true,
+       "editType": "plot",
+       "min": 1,
+       "valType": "number"
+      },
+      "sizesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "style": {
+       "arrayOk": true,
+       "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+       "dflt": "normal",
+       "editType": "plot",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "italic"
+       ]
+      },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "variant": {
+       "arrayOk": true,
+       "description": "Sets the variant of the font.",
+       "dflt": "normal",
+       "editType": "plot",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "small-caps",
+        "all-small-caps",
+        "all-petite-caps",
+        "petite-caps",
+        "unicase"
+       ]
+      },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "weight": {
+       "arrayOk": true,
+       "description": "Sets the weight (or boldness) of the font.",
+       "dflt": "normal",
+       "editType": "plot",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "bold"
+       ]
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
+      }
+     },
+     "thickness": {
+      "description": "Sets the thickness of `pathbar` (in px). If not specified the `pathbar.textfont.size` is used with 3 pixles extra padding on each side.",
+      "editType": "plot",
+      "min": 12,
+      "valType": "number"
+     },
+     "visible": {
+      "description": "Determines if the path bar is drawn i.e. outside the trace `domain` and with one pixel gap.",
+      "dflt": true,
+      "editType": "plot",
+      "valType": "boolean"
+     }
+    },
+    "root": {
+     "color": {
+      "description": "sets the color of the root node for a sunburst/treemap/voronoi/icicle trace. this has no effect when a colorscale is used to set the markers.",
+      "dflt": "rgba(0,0,0,0)",
+      "editType": "calc",
+      "valType": "color"
+     },
+     "editType": "calc",
+     "role": "object"
+    },
+    "sort": {
+     "description": "Determines whether or not the sectors are reordered from largest to smallest.",
+     "dflt": true,
+     "editType": "calc",
+     "valType": "boolean"
+    },
+    "stream": {
+     "editType": "calc",
+     "maxpoints": {
+      "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot.",
+      "dflt": 500,
+      "editType": "calc",
+      "max": 10000,
+      "min": 0,
+      "valType": "number"
+     },
+     "role": "object",
+     "token": {
+      "description": "The stream id number links a data trace on a plot with a stream. See https://chart-studio.plotly.com/settings for more details.",
+      "editType": "calc",
+      "noBlank": true,
+      "strict": true,
+      "valType": "string"
+     }
+    },
+    "text": {
+     "description": "Sets text elements associated with each sector. If trace `textinfo` contains a *text* flag, these elements will be seen on the chart. If trace `hoverinfo` contains a *text* flag and *hovertext* is not set, these elements will be seen in the hover labels.",
+     "editType": "plot",
+     "valType": "data_array"
+    },
+    "textfont": {
+     "color": {
+      "arrayOk": true,
+      "editType": "plot",
+      "valType": "color"
+     },
+     "colorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `color`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "description": "Sets the font used for `textinfo`.",
+     "editType": "plot",
+     "family": {
+      "arrayOk": true,
+      "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+      "editType": "plot",
+      "noBlank": true,
+      "strict": true,
+      "valType": "string"
+     },
+     "familysrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `family`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "role": "object",
+     "size": {
+      "arrayOk": true,
+      "editType": "plot",
+      "min": 1,
+      "valType": "number"
+     },
+     "sizesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "style": {
+      "arrayOk": true,
+      "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+      "dflt": "normal",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "italic"
+      ]
+     },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "variant": {
+      "arrayOk": true,
+      "description": "Sets the variant of the font.",
+      "dflt": "normal",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "small-caps",
+       "all-small-caps",
+       "all-petite-caps",
+       "petite-caps",
+       "unicase"
+      ]
+     },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "weight": {
+      "arrayOk": true,
+      "description": "Sets the weight (or boldness) of the font.",
+      "dflt": "normal",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "bold"
+      ]
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
+     }
+    },
+    "textinfo": {
+     "description": "Determines which trace information appear on the graph.",
+     "editType": "plot",
+     "extras": [
+      "none"
+     ],
+     "flags": [
+      "label",
+      "text",
+      "value",
+      "current path",
+      "percent root",
+      "percent entry",
+      "percent parent"
+     ],
+     "valType": "flaglist"
+    },
+    "textposition": {
+     "description": "Sets the positions of the `text` elements.",
+     "dflt": "top left",
+     "editType": "plot",
+     "valType": "enumerated",
+     "values": [
+      "top left",
+      "top center",
+      "top right",
+      "middle left",
+      "middle center",
+      "middle right",
+      "bottom left",
+      "bottom center",
+      "bottom right"
+     ]
+    },
+    "textsrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `text`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "texttemplate": {
+     "arrayOk": true,
+     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `currentPath`, `root`, `entry`, `percentRoot`, `percentEntry`, `percentParent`, `label` and `value`.",
+     "dflt": "",
+     "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatesrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "tiling": {
+     "editType": "calc",
+     "flip": {
+      "description": "Determines if the positions obtained from solver are flipped on each axis.",
+      "dflt": "",
+      "editType": "plot",
+      "flags": [
+       "x",
+       "y"
+      ],
+      "valType": "flaglist"
+     },
+     "packing": {
+      "description": "Determines d3 voronoi solver. For more info please refer to https://github.com/d3/d3-hierarchy#voronoi-tiling",
+      "dflt": "squarify",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "squarify",
+       "binary",
+       "dice",
+       "slice",
+       "slice-dice",
+       "dice-slice"
+      ]
+     },
+     "pad": {
+      "description": "Sets the inner padding (in px).",
+      "dflt": 3,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "role": "object",
+     "squarifyratio": {
+      "description": "When using *squarify* `packing` algorithm, according to https://github.com/d3/d3-hierarchy/blob/v3.1.1/README.md#squarify_ratio this option specifies the desired aspect ratio of the generated rectangles. The ratio must be specified as a number greater than or equal to one. Note that the orientation of the generated rectangles (tall or wide) is not implied by the ratio; for example, a ratio of two will attempt to produce a mixture of rectangles whose width:height ratio is either 2:1 or 1:2. When using *squarify*, unlike d3 which uses the Golden Ratio i.e. 1.618034, Plotly applies 1 to increase squares in voronoi layouts.",
+      "dflt": 1,
+      "editType": "plot",
+      "min": 1,
+      "valType": "number"
+     }
+    },
+    "transforms": {
+     "items": {
+      "transform": {
+       "description": "WARNING: All transforms are deprecated and may be removed from the API in next major version. An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+       "editType": "calc",
+       "role": "object"
+      }
+     },
+     "role": "object"
+    },
+    "type": "voronoi",
+    "uid": {
+     "anim": true,
+     "description": "Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.",
+     "editType": "plot",
+     "valType": "string"
+    },
+    "uirevision": {
+     "description": "Controls persistence of some user-driven changes to the trace: `constraintrange` in `parcoords` traces, as well as some `editable: true` modifications such as `name` and `colorbar.title`. Defaults to `layout.uirevision`. Note that other user-driven trace attribute changes are controlled by `layout` attributes: `trace.visible` is controlled by `layout.legend.uirevision`, `selectedpoints` is controlled by `layout.selectionrevision`, and `colorbar.(x|y)` (accessible with `config: {editable: true}`) is controlled by `layout.editrevision`. Trace changes are tracked by `uid`, which only falls back on trace index if no `uid` is provided. So if your app can add/remove traces before the end of the `data` array, such that the same trace has a different index, you can still preserve user-driven changes if you give each trace a `uid` that stays with it as it moves.",
+     "editType": "none",
+     "valType": "any"
+    },
+    "values": {
+     "description": "Sets the values associated with each of the sectors. Use with `branchvalues` to determine how the values are summed.",
+     "editType": "calc",
+     "valType": "data_array"
+    },
+    "valuessrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `values`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "visible": {
+     "description": "Determines whether or not this trace is visible. If *legendonly*, the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).",
+     "dflt": true,
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      true,
+      false,
+      "legendonly"
+     ]
+    }
+   },
+   "categories": [],
+   "layoutAttributes": {
+    "extendvoronoicolors": {
+     "description": "If `true`, the voronoi slice colors (whether given by `voronoicolorway` or inherited from `colorway`) will be extended to three times its original length by first repeating every color 20% lighter then each color 20% darker. This is intended to reduce the likelihood of reusing the same color when you have many slices, but you can set `false` to disable. Colors provided in the trace, using `marker.colors`, are never extended.",
+     "dflt": true,
+     "editType": "calc",
+     "valType": "boolean"
+    },
+    "voronoicolorway": {
+     "description": "Sets the default voronoi slice colors. Defaults to the main `colorway` used for trace colors. If you specify a new list here it can still be extended with lighter and darker colors, see `extendvoronoicolors`.",
+     "editType": "calc",
+     "valType": "colorlist"
+    }
+   },
+   "meta": {
+    "description": "Visualize hierarchal data from leaves (and/or outer branches) towards root with rectangles. The voronoi sectors are determined by the entries in *labels* or *ids* and in *parents*."
+   },
+   "type": "voronoi"
   },
   "waterfall": {
    "animatable": false,
