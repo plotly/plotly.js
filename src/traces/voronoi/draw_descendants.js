@@ -7,7 +7,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 
 var partition = require('./partition');
 var styleOne = require('./style').styleOne;
-var constants = require('./constants');
+var constants = require('../treemap/constants');
 var helpers = require('../sunburst/helpers');
 var attachFxHandlers = require('../sunburst/fx');
 var formatSliceLabel = require('../sunburst/plot').formatSliceLabel;

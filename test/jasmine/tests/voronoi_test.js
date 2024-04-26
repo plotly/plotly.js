@@ -2,7 +2,7 @@ var Plotly = require('../../../lib/index');
 var Plots = require('../../../src/plots/plots');
 var Lib = require('../../../src/lib');
 var Drawing = require('../../../src/components/drawing');
-var constants = require('../../../src/traces/voronoi/constants');
+var constants = require('../../../src/traces/treemap/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;

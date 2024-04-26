@@ -7,7 +7,7 @@ var colorScaleAttrs = require('../../components/colorscale/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var pieAttrs = require('../pie/attributes');
 var sunburstAttrs = require('../sunburst/attributes');
-var constants = require('./constants');
+var constants = require('../treemap/constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 var pattern = require('../../components/drawing/attributes').pattern;
 

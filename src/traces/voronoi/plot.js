@@ -1,6 +1,6 @@
 'use strict';
 
-var draw = require('./draw');
+var draw = require('../treemap/draw');
 var drawDescendants = require('./draw_descendants');
 
 module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
