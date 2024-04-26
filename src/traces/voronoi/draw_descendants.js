@@ -5,7 +5,8 @@ var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
-var partition = require('./partition');
+var Offset = require('polygon-offset');
+var voronoiTreemap = require('d3-voronoi-treemap').voronoiTreemap;
 var styleOne = require('./style').styleOne;
 var constants = require('../treemap/constants');
 var helpers = require('../sunburst/helpers');
@@ -41,23 +42,69 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
     var noRoomForHeader = (!hasBottom && !trace.marker.pad.t) || (hasBottom && !trace.marker.pad.b);
 
-    // N.B. slice data isn't the calcdata,
-    // grab corresponding calcdata item in sliceData[i].data.data
-    var allData = partition(entry, [width, height], {
-        packing: trace.tiling.packing,
-        squarifyratio: trace.tiling.squarifyratio,
-        flipX: trace.tiling.flip.indexOf('x') > -1,
-        flipY: trace.tiling.flip.indexOf('y') > -1,
-        pad: {
-            inner: trace.tiling.pad,
-            top: trace.marker.pad.t,
-            left: trace.marker.pad.l,
-            right: trace.marker.pad.r,
-            bottom: trace.marker.pad.b,
-        }
+    entry.each(function(pt) {
+        pt.weight = pt.value;
     });
 
-    var sliceData = allData.descendants();
+    Lib.seedPseudoRandom();
+
+    voronoiTreemap()
+        .prng(Lib.pseudoRandom)
+        .clip(createShape(width, height))(entry);
+
+    entry.each(function(pt) {
+        var offsetValue = 2 * (
+            pt.height + 1
+            // pt.depth // TODO: an option could be exposed
+        );
+        if(offsetValue) {
+            var site = pt.polygon.site; // keep track of attached site
+
+            // offset polygon
+            var offset = new Offset();
+            pt.polygon.push(pt.polygon[0]) // duplicate first vertex to close
+            pt.polygon = offset.data(
+                pt.polygon
+            ).padding(offsetValue)[0];
+            if(pt.polygon) pt.polygon.pop(); // delete the vertex we added
+
+            pt.polygon.site = site;
+        }
+
+        var minX = Infinity;
+        var minY = Infinity;
+        var maxX = -Infinity;
+        var maxY = -Infinity;
+
+        var sumX = 0;
+        var sumY = 0;
+        var len = pt.polygon.length;
+        for(var i = 0; i < len; i++) {
+            var x = pt.polygon[i][0];
+            var y = pt.polygon[i][1];
+            minX = Math.min(minX, x);
+            maxX = Math.max(maxX, x);
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+            sumX += x;
+            sumY += y;
+        }
+
+        var ave = [sumX / len, sumY / len];
+        var cen = getCentroid(pt.polygon);
+
+        // Estimating a large orthogonal rectangle
+        // TODO: improve me to find the largest inside the polygon
+        var a = -1;
+        var b = 2;
+        var c = 2;
+        pt.x0 = (a * ave[0] + b * minX + c * cen[0]) / (a + b + c);
+        pt.x1 = (a * ave[0] + b * maxX + c * cen[0]) / (a + b + c);
+        pt.y0 = (a * ave[1] + b * minY + c * cen[1]) / (a + b + c);
+        pt.y1 = (a * ave[1] + b * maxY + c * cen[1]) / (a + b + c);
+    });
+
+    var sliceData = entry.descendants();
 
     var minVisibleDepth = Infinity;
     var maxVisibleDepth = -Infinity;
@@ -213,3 +260,61 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
     return nextOfPrevEntry;
 };
+
+function getCentroid(points) {
+    var len = points.length;
+    if(!len) return [];
+
+    var A2 = 0;
+    var Sx = 0;
+    var Sy = 0;
+    for (var i = 0; i < len; i++) {
+        var p0 = points[i];
+        var p1 = points[(i + 1) % len];
+
+        var Q = p0[0] * p1[1] - p0[1] * p1[0];
+        A2 += Q;
+
+        Sx += (p0[0] + p1[0]) * Q;
+        Sy += (p0[1] + p1[1]) * Q;
+    }
+
+    return [
+        Sx / (A2 * 3),
+        Sy / (A2 * 3)
+    ];
+}
+
+function createShape(width, height) {
+    var points = [];
+    var i;
+    var n = 6;
+    var minX = Infinity;
+    var minY = Infinity;
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+    for(i = 0; i < n; i++) {
+        var t = 2 * Math.PI * i / n;
+        var x = Math.cos(t);
+        var y = Math.sin(t);
+        points.push([x, y])
+
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+    }
+
+    var scale = Math.min(
+        width / (maxX - minX),
+        height / (maxY - minY)
+    );
+
+    for(i = 0; i < n; i++) {
+        var p = points[i];
+        p[0] = p[0] * scale + width / 2;
+        p[1] = p[1] * scale + height / 2;
+    }
+
+    return points
+}

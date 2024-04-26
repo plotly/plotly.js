@@ -249,11 +249,10 @@ module.exports = {
     textposition: {
         valType: 'enumerated',
         values: [
-            'top left', 'top center', 'top right',
-            'middle left', 'middle center', 'middle right',
-            'bottom left', 'bottom center', 'bottom right'
+            'middle center',
+            // TODO: do we want to implement other textposition values for voronoi?
         ],
-        dflt: 'top left',
+        dflt: 'middle center',
         editType: 'plot',
         description: [
             'Sets the positions of the `text` elements.'

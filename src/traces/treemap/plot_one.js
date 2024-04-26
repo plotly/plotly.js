@@ -26,6 +26,7 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
     var trace = cd0.trace;
     var type = trace.type;
     var isIcicle = type === 'icicle';
+    var isVoronoi = type === 'voronoi';
 
     var hierarchy = cd0.hierarchy;
     var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
@@ -41,7 +42,10 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
     }
 
     var isRoot = helpers.isHierarchyRoot(entry);
-    var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
+    var hasTransition =
+        !isVoronoi && // TODO: Could we handle transitions for voronoi?
+        !fullLayout.uniformtext.mode &&
+        helpers.hasTransition(transitionOpts);
 
     var maxDepth = helpers.getMaxDepth(trace);
     var hasVisibleDepth = function(pt) {
@@ -227,6 +231,22 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
         var dx = _x1 - _x0;
         var dy = _y1 - _y0;
         if(!dx || !dy) return '';
+
+        if(isVoronoi) {
+            var path = '';
+            if(d.polygon) {
+                for(var i = 0; i < d.polygon.length; i++) {
+                    path += i ? 'L' : 'M';
+                    path += pos(
+                        viewMapX(d.polygon[i][0]),
+                        viewMapY(d.polygon[i][1])
+                    );
+                }
+                path += 'Z';
+            }
+            // TODO: add cornerradius for voronoi
+            return path;
+        }
 
         var cornerradius = trace.marker.cornerradius || 0;
         var r = Math.min(cornerradius, dx / 2, dy / 2);
