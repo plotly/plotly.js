@@ -62,8 +62,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         moduleHasTextangle: false,
         moduleHasInsideanchor: false
     });
-    coerce('textposition');
-    var bottomText = traceOut.textposition.indexOf('bottom') !== -1;
 
     handleMarkerDefaults(traceIn, traceOut, layout, coerce);
     var withColorscale = traceOut._hasColorscale = (
@@ -75,13 +73,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     } else {
         coerce('marker.depthfade', !(traceOut.marker.colors || []).length);
     }
-
-    var headerSize = traceOut.textfont.size * 2;
-
-    coerce('marker.pad.t', bottomText ? headerSize / 4 : headerSize);
-    coerce('marker.pad.l', headerSize / 4);
-    coerce('marker.pad.r', headerSize / 4);
-    coerce('marker.pad.b', bottomText ? headerSize : headerSize / 4);
 
     coerce('marker.cornerradius');
 

@@ -214,7 +214,11 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
     // `pad` is a hashmap for treemap: pad.t, pad.b, pad.l, and pad.r
     var pad = trace[isIcicle ? 'tiling' : 'marker'].pad;
 
-    var hasFlag = function(f) { return trace.textposition.indexOf(f) !== -1; };
+    var textposition =
+        trace.textposition ||
+        'middle center'; // case of voronoi
+
+    var hasFlag = function(f) { return textposition.indexOf(f) !== -1; };
 
     var hasTop = hasFlag('top');
     var hasLeft = hasFlag('left');
@@ -297,8 +301,8 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
             _hasRight ? 1 : 0;
 
         if(opts.isHeader) {
-            x0 += (isIcicle ? pad : pad.l) - TEXTPAD;
-            x1 -= (isIcicle ? pad : pad.r) - TEXTPAD;
+            x0 += (isVoronoi ? 0 : isIcicle ? pad : pad.l) - TEXTPAD;
+            x1 -= (isVoronoi ? 0 : isIcicle ? pad : pad.r) - TEXTPAD;
             if(x0 >= x1) {
                 var mid = (x0 + x1) / 2;
                 x0 = mid;
@@ -308,10 +312,10 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
             // limit the drawing area for headers
             var limY;
             if(hasBottom) {
-                limY = y1 - (isIcicle ? pad : pad.b);
+                limY = y1 - (isVoronoi ? 0 : isIcicle ? pad : pad.b);
                 if(y0 < limY && limY < y1) y0 = limY;
             } else {
-                limY = y0 + (isIcicle ? pad : pad.t);
+                limY = y0 + (isVoronoi ? 0 : isIcicle ? pad : pad.t);
                 if(y0 < limY && limY < y1) y1 = limY;
             }
         }

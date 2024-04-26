@@ -85,43 +85,6 @@ module.exports = {
     },
 
     marker: extendFlat({
-        pad: {
-            t: {
-                valType: 'number',
-                min: 0,
-                editType: 'plot',
-                description: [
-                    'Sets the padding form the top (in px).'
-                ].join(' ')
-            },
-            l: {
-                valType: 'number',
-                min: 0,
-                editType: 'plot',
-                description: [
-                    'Sets the padding form the left (in px).'
-                ].join(' ')
-            },
-            r: {
-                valType: 'number',
-                min: 0,
-                editType: 'plot',
-                description: [
-                    'Sets the padding form the right (in px).'
-                ].join(' ')
-            },
-            b: {
-                valType: 'number',
-                min: 0,
-                editType: 'plot',
-                description: [
-                    'Sets the padding form the bottom (in px).'
-                ].join(' ')
-            },
-
-            editType: 'calc'
-        },
-
         colors: sunburstAttrs.marker.colors,
 
         pattern: pattern,
@@ -246,18 +209,6 @@ module.exports = {
         ].join(' ')
     }),
 
-    textposition: {
-        valType: 'enumerated',
-        values: [
-            'middle center',
-            // TODO: do we want to implement other textposition values for voronoi?
-        ],
-        dflt: 'middle center',
-        editType: 'plot',
-        description: [
-            'Sets the positions of the `text` elements.'
-        ].join(' ')
-    },
     sort: pieAttrs.sort,
     root: sunburstAttrs.root,
 

@@ -36,12 +36,6 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     var cd0 = cd[0];
     var trace = cd0.trace;
 
-    var hasLeft = trace.textposition.indexOf('left') !== -1;
-    var hasRight = trace.textposition.indexOf('right') !== -1;
-    var hasBottom = trace.textposition.indexOf('bottom') !== -1;
-
-    var noRoomForHeader = (!hasBottom && !trace.marker.pad.t) || (hasBottom && !trace.marker.pad.b);
-
     entry.each(function(pt) {
         pt.weight = pt.value;
     });
@@ -179,10 +173,8 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
         pt._y0 = viewY(pt.y0);
         pt._y1 = viewY(pt.y1);
 
-        pt._hoverX = viewX(pt.x1 - trace.marker.pad.r),
-        pt._hoverY = hasBottom ?
-                viewY(pt.y1 - trace.marker.pad.b / 2) :
-                viewY(pt.y0 + trace.marker.pad.t / 2);
+        pt._hoverX = viewX(pt.x1);
+        pt._hoverY = viewY(pt.y0);
 
         var sliceTop = d3.select(this);
 
@@ -216,7 +208,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             pt._text = '';
         } else {
             if(isHeader) {
-                pt._text = noRoomForHeader ? '' : helpers.getPtLabel(pt) || '';
+                pt._text = '';
             } else {
                 pt._text = formatSliceLabel(pt, entry, trace, cd, fullLayout) || '';
             }
@@ -231,13 +223,11 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
         var font = Lib.ensureUniformFontSize(gd, helpers.determineTextFont(trace, pt, fullLayout.font));
 
-
         var text = pt._text || ' '; // use one space character instead of a blank string to avoid jumps during transition
-        var singleLineHeader = isHeader && text.indexOf('<br>') === -1;
 
         sliceText.text(text)
             .classed('slicetext', true)
-            .attr('text-anchor', hasRight ? 'end' : (hasLeft || singleLineHeader) ? 'start' : 'middle')
+            .attr('text-anchor', 'middle')
             .call(Drawing.font, font)
             .call(svgTextUtils.convertToTspans, gd);
 
