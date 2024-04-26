@@ -74,7 +74,7 @@ module.exports = {
         pad: {
             valType: 'number',
             min: 0,
-            dflt: 3,
+            dflt: 2,
             editType: 'plot',
             description: [
                 'Sets the inner padding (in px).'

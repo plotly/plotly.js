@@ -47,7 +47,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
         .clip(createShape(width, height))(entry);
 
     entry.each(function(pt) {
-        var offsetValue = 2 * (
+        var offsetValue = trace.tiling.pad * (
             pt.height + 1
             // pt.depth // TODO: an option could be exposed
         );
@@ -60,7 +60,11 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             pt.polygon = offset.data(
                 pt.polygon
             ).padding(offsetValue)[0];
-            if(pt.polygon) pt.polygon.pop(); // delete the vertex we added
+            if(pt.polygon) {
+                pt.polygon.pop(); // delete the vertex we added
+            } else {
+                pt.polygon = [];
+            }
 
             pt.polygon.site = site;
         }
