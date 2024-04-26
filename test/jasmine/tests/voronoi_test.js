@@ -2,7 +2,7 @@ var Plotly = require('../../../lib/index');
 var Plots = require('../../../src/plots/plots');
 var Lib = require('../../../src/lib');
 var Drawing = require('../../../src/components/drawing');
-var constants = require('../../../src/traces/treemap/constants');
+var constants = require('../../../src/traces/voronoi/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -19,8 +19,8 @@ var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
 
-var SLICES_SELECTOR = '.treemaplayer path.surface';
-var SLICES_TEXT_SELECTOR = '.treemaplayer text.slicetext';
+var SLICES_SELECTOR = '.voronoilayer path.surface';
+var SLICES_TEXT_SELECTOR = '.voronoilayer text.slicetext';
 
 function _mouseEvent(type, gd, v) {
     return function() {
@@ -48,7 +48,7 @@ function click(gd, v) {
     return _mouseEvent('click', gd, v);
 }
 
-describe('Test treemap defaults:', function() {
+describe('Test voronoi defaults:', function() {
     var gd;
     var fullData;
 
@@ -57,7 +57,7 @@ describe('Test treemap defaults:', function() {
         opts = Array.isArray(opts) ? opts : [opts];
 
         gd.data = opts.map(function(o) {
-            return Lib.extendFlat({type: 'treemap'}, o || {});
+            return Lib.extendFlat({type: 'voronoi'}, o || {});
         });
         gd.layout = layout || {};
 
@@ -191,22 +191,22 @@ describe('Test treemap defaults:', function() {
         expect(fullData[1].textinfo).toBe('label', 'no text');
     });
 
-    it('should use *layout.colorway* as dflt for *treemapcolorway*', function() {
+    it('should use *layout.colorway* as dflt for *voronoicolorway*', function() {
         _supply([
             {labels: [1], parents: ['']}
         ], {
             colorway: ['red', 'blue', 'green']
         });
-        expect(gd._fullLayout.treemapcolorway)
+        expect(gd._fullLayout.voronoicolorway)
             .toEqual(['red', 'blue', 'green'], 'dflt to layout colorway');
 
         _supply([
             {labels: [1], parents: ['']}
         ], {
             colorway: ['red', 'blue', 'green'],
-            treemapcolorway: ['cyan', 'yellow', 'black']
+            voronoicolorway: ['cyan', 'yellow', 'black']
         });
-        expect(gd._fullLayout.treemapcolorway)
+        expect(gd._fullLayout.voronoicolorway)
             .toEqual(['cyan', 'yellow', 'black'], 'user-defined value');
     });
 
@@ -300,7 +300,7 @@ describe('Test treemap defaults:', function() {
     });
 });
 
-describe('Test treemap calc:', function() {
+describe('Test voronoi calc:', function() {
     var gd;
 
     beforeEach(function() {
@@ -312,7 +312,7 @@ describe('Test treemap calc:', function() {
         opts = Array.isArray(opts) ? opts : [opts];
 
         gd.data = opts.map(function(o) {
-            return Lib.extendFlat({type: 'treemap'}, o || {});
+            return Lib.extendFlat({type: 'voronoi'}, o || {});
         });
         gd.layout = layout || {};
 
@@ -365,7 +365,7 @@ describe('Test treemap calc:', function() {
         });
 
         expect(Lib.warn).toHaveBeenCalledTimes(1);
-        expect(Lib.warn).toHaveBeenCalledWith('Multiple implied roots, cannot build treemap hierarchy of trace 0. These roots include: Root1, Root22');
+        expect(Lib.warn).toHaveBeenCalledWith('Multiple implied roots, cannot build voronoi hierarchy of trace 0. These roots include: Root1, Root22');
     });
 
     it('should generate "root of roots" when it can', function() {
@@ -427,7 +427,7 @@ describe('Test treemap calc:', function() {
         });
 
         expect(Lib.warn).toHaveBeenCalledTimes(1);
-        expect(Lib.warn).toHaveBeenCalledWith('Failed to build treemap hierarchy of trace 0. Error: ambiguous: A');
+        expect(Lib.warn).toHaveBeenCalledWith('Failed to build voronoi hierarchy of trace 0. Error: ambiguous: A');
     });
 
     it('should warn ids/parents lead to ambiguous hierarchy', function() {
@@ -438,7 +438,7 @@ describe('Test treemap calc:', function() {
         });
 
         expect(Lib.warn).toHaveBeenCalledTimes(1);
-        expect(Lib.warn).toHaveBeenCalledWith('Failed to build treemap hierarchy of trace 0. Error: ambiguous: b');
+        expect(Lib.warn).toHaveBeenCalledWith('Failed to build voronoi hierarchy of trace 0. Error: ambiguous: b');
     });
 
     it('should accept numbers (even `0`) are ids/parents items', function() {
@@ -566,7 +566,7 @@ describe('Test treemap calc:', function() {
     });
 });
 
-describe('Test treemap plot:', function() {
+describe('Test voronoi plot:', function() {
     var gd;
 
     beforeEach(function() { gd = createGraphDiv(); });
@@ -577,18 +577,18 @@ describe('Test treemap plot:', function() {
         Plotly.newPlot(gd, [{
             labels: ['a', 'b'],
             parents: ['A', 'B'],
-            type: 'treemap'
+            type: 'voronoi'
         }])
         .then(function() {
             var gd3 = d3Select(gd);
-            var element = gd3.select('.treemap trace').node();
+            var element = gd3.select('.voronoi trace').node();
             expect(element).toBe(null);
         })
         .then(done, done.fail);
     });
 });
 
-describe('Test treemap hover:', function() {
+describe('Test voronoi hover:', function() {
     var gd;
 
     var labels0 = ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'];
@@ -601,7 +601,7 @@ describe('Test treemap hover:', function() {
         gd = createGraphDiv();
 
         var data = (spec.traces || [{}]).map(function(t) {
-            t.type = 'treemap';
+            t.type = 'voronoi';
             if(!t.labels) t.labels = labels0.slice();
             if(!t.parents) t.parents = parents0.slice();
             return t;
@@ -793,7 +793,7 @@ describe('Test treemap hover:', function() {
     });
 });
 
-describe('Test treemap hover with and without levels', function() {
+describe('Test voronoi hover with and without levels', function() {
     var gd;
 
     var labels0 = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet', 'Kilo', 'Lima', 'Mike', 'November', 'Oscar', 'Papa', 'Quebec', 'Romeo', 'Sierra', 'Tango', 'Uniform', 'Victor', 'Whiskey', 'X ray', 'Yankee', 'Zulu'];
@@ -807,7 +807,7 @@ describe('Test treemap hover with and without levels', function() {
         gd = createGraphDiv();
 
         var data = (spec.traces || [{}]).map(function(t) {
-            t.type = 'treemap';
+            t.type = 'voronoi';
             t.text = text0;
             t.values = values0;
             t.level = spec.level;
@@ -935,7 +935,7 @@ describe('Test treemap hover with and without levels', function() {
     });
 });
 
-describe('Test treemap hover lifecycle:', function() {
+describe('Test voronoi hover lifecycle:', function() {
     var gd;
     var hoverData;
     var unhoverData;
@@ -965,7 +965,7 @@ describe('Test treemap hover lifecycle:', function() {
     }
 
     it('should fire the correct events', function(done) {
-        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/zz-voronoi_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
@@ -1003,7 +1003,7 @@ describe('Test treemap hover lifecycle:', function() {
     });
 });
 
-describe('Test treemap clicks:', function() {
+describe('Test voronoi clicks:', function() {
     var gd;
     var trackers;
 
@@ -1017,7 +1017,7 @@ describe('Test treemap clicks:', function() {
     function setupListeners(opts) {
         opts = opts || {};
 
-        trackers.treemapclick = [];
+        trackers.voronoiclick = [];
         trackers.click = [];
         trackers.animating = [];
 
@@ -1025,8 +1025,8 @@ describe('Test treemap clicks:', function() {
         // will be in entry [0], which is easier to pick out
 
         return function() {
-            gd.on('plotly_treemapclick', function(d) {
-                trackers.treemapclick.unshift(d);
+            gd.on('plotly_voronoiclick', function(d) {
+                trackers.voronoiclick.unshift(d);
                 if(opts.turnOffAnimation) return false;
             });
             gd.on('plotly_click', function(d) {
@@ -1040,18 +1040,18 @@ describe('Test treemap clicks:', function() {
     }
 
     it('should trigger animation when clicking on branches', function(done) {
-        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/zz-voronoi_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
         .then(function() {
-            if(trackers.treemapclick.length === 1) {
-                expect(trackers.treemapclick[0].event).toBeDefined();
-                expect(trackers.treemapclick[0].points[0].label).toBe('Seth');
-                expect(trackers.treemapclick[0].nextLevel).toBe('Seth');
+            if(trackers.voronoiclick.length === 1) {
+                expect(trackers.voronoiclick[0].event).toBeDefined();
+                expect(trackers.voronoiclick[0].points[0].label).toBe('Seth');
+                expect(trackers.voronoiclick[0].nextLevel).toBe('Seth');
             } else {
-                fail('incorrect plotly_treemapclick triggering');
+                fail('incorrect plotly_voronoiclick triggering');
             }
 
             if(trackers.click.length === 1) {
@@ -1070,17 +1070,17 @@ describe('Test treemap clicks:', function() {
     });
 
     it('should trigger plotly_click event when clicking on leaf node', function(done) {
-        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/zz-voronoi_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 8))
         .then(function() {
-            if(trackers.treemapclick.length === 1) {
-                expect(trackers.treemapclick[0].event).toBeDefined();
-                expect(trackers.treemapclick[0].points[0].label).toBe('Noam');
+            if(trackers.voronoiclick.length === 1) {
+                expect(trackers.voronoiclick[0].event).toBeDefined();
+                expect(trackers.voronoiclick[0].points[0].label).toBe('Noam');
             } else {
-                fail('incorrect plotly_treemapclick triggering');
+                fail('incorrect plotly_voronoiclick triggering');
             }
 
             if(trackers.click.length === 1) {
@@ -1092,7 +1092,7 @@ describe('Test treemap clicks:', function() {
     });
 
     it('should not trigger animation when graph is transitioning', function(done) {
-        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/zz-voronoi_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
@@ -1100,12 +1100,12 @@ describe('Test treemap clicks:', function() {
         .then(function() {
             var msg = 'after 1st click';
 
-            if(trackers.treemapclick.length === 1) {
-                expect(trackers.treemapclick[0].event).toBeDefined(msg);
-                expect(trackers.treemapclick[0].points[0].label).toBe('Seth', msg);
-                expect(trackers.treemapclick[0].nextLevel).toBe('Seth', msg);
+            if(trackers.voronoiclick.length === 1) {
+                expect(trackers.voronoiclick[0].event).toBeDefined(msg);
+                expect(trackers.voronoiclick[0].points[0].label).toBe('Seth', msg);
+                expect(trackers.voronoiclick[0].nextLevel).toBe('Seth', msg);
             } else {
-                fail('incorrect plotly_treemapclick triggering - ' + msg);
+                fail('incorrect plotly_voronoiclick triggering - ' + msg);
             }
 
             if(trackers.click.length === 1) {
@@ -1124,15 +1124,15 @@ describe('Test treemap clicks:', function() {
         .then(function() {
             var msg = 'after 2nd click';
 
-            // should trigger plotly_treemapclick and plotly_click twice,
+            // should trigger plotly_voronoiclick and plotly_click twice,
             // but not plotly_animating
 
-            if(trackers.treemapclick.length === 2) {
-                expect(trackers.treemapclick[0].event).toBeDefined(msg);
-                expect(trackers.treemapclick[0].points[0].label).toBe('Awan', msg);
-                expect(trackers.treemapclick[0].nextLevel).toBe('Awan', msg);
+            if(trackers.voronoiclick.length === 2) {
+                expect(trackers.voronoiclick[0].event).toBeDefined(msg);
+                expect(trackers.voronoiclick[0].points[0].label).toBe('Awan', msg);
+                expect(trackers.voronoiclick[0].nextLevel).toBe('Awan', msg);
             } else {
-                fail('incorrect plotly_treemapclick triggering - ' + msg);
+                fail('incorrect plotly_voronoiclick triggering - ' + msg);
             }
 
             if(trackers.click.length === 2) {
@@ -1151,18 +1151,18 @@ describe('Test treemap clicks:', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to override default click behavior using plotly_treemapclick handler ()', function(done) {
-        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
+    it('should be able to override default click behavior using plotly_voronoiclick handler ()', function(done) {
+        var mock = Lib.extendDeep({}, require('../../image/mocks/zz-voronoi_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners({turnOffAnimation: true}))
         .then(click(gd, 2))
         .then(function() {
-            if(trackers.treemapclick.length === 1) {
-                expect(trackers.treemapclick[0].event).toBeDefined();
-                expect(trackers.treemapclick[0].points[0].label).toBe('Seth');
+            if(trackers.voronoiclick.length === 1) {
+                expect(trackers.voronoiclick[0].event).toBeDefined();
+                expect(trackers.voronoiclick[0].points[0].label).toBe('Seth');
             } else {
-                fail('incorrect plotly_treemapclick triggering');
+                fail('incorrect plotly_voronoiclick triggering');
             }
 
             if(trackers.click.length !== 0) {
@@ -1177,7 +1177,7 @@ describe('Test treemap clicks:', function() {
     });
 });
 
-describe('Test treemap restyle:', function() {
+describe('Test voronoi restyle:', function() {
     var gd;
 
     beforeEach(function() { gd = createGraphDiv(); });
@@ -1189,11 +1189,11 @@ describe('Test treemap restyle:', function() {
     }
 
     it('should be able to toggle visibility', function(done) {
-        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/zz-voronoi_first.json'));
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3Select(gd).select('.treemaplayer');
+                var layer = d3Select(gd).select('.voronoilayer');
                 expect(layer.selectAll('.trace').size()).toBe(exp, msg);
             };
         }
@@ -1208,11 +1208,11 @@ describe('Test treemap restyle:', function() {
     });
 
     it('should be able to restyle *maxdepth* and *level* w/o recomputing the hierarchy', function(done) {
-        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_coffee.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/zz-voronoi_coffee.json'));
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3Select(gd).select('.treemaplayer');
+                var layer = d3Select(gd).select('.voronoilayer');
 
                 expect(layer.selectAll('.slice').size()).toBe(exp, msg);
 
@@ -1240,7 +1240,7 @@ describe('Test treemap restyle:', function() {
     it('should be able to restyle *textinfo*', function(done) {
         var mock = {
             data: [{
-                type: 'treemap',
+                type: 'voronoi',
                 labels: ['Root', 'A', 'B', 'b'],
                 parents: ['', 'Root', 'Root', 'B'],
                 text: ['node0', 'node1', 'node2', 'node3'],
@@ -1251,7 +1251,7 @@ describe('Test treemap restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3Select(gd).select('.treemaplayer');
+                var layer = d3Select(gd).select('.voronoilayer');
                 var tx = [];
 
                 layer.selectAll('text.slicetext').each(function() {
@@ -1298,7 +1298,7 @@ describe('Test treemap restyle:', function() {
     it('should be able to restyle *marker.cornerradius*', function(done) {
         var mock = {
             data: [{
-                type: 'treemap',
+                type: 'voronoi',
                 labels: ['Root', 'A', 'B', 'b'],
                 parents: ['', 'Root', 'Root', 'B'],
                 text: ['node0', 'node1', 'node2', 'node3'],
@@ -1309,7 +1309,7 @@ describe('Test treemap restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3Select(gd).select('.treemaplayer');
+                var layer = d3Select(gd).select('.voronoilayer');
                 layer.selectAll('.surface').each(function() {
                     var surfaces = d3Select(this);
                     var path = surfaces[0][0].getAttribute('d');
@@ -1332,7 +1332,7 @@ describe('Test treemap restyle:', function() {
     });
 });
 
-describe('Test treemap tweening:', function() {
+describe('Test voronoi tweening:', function() {
     var gd;
     var pathTweenFnLookup;
     var textTweenFnLookup;
@@ -1395,7 +1395,7 @@ describe('Test treemap tweening:', function() {
     it('should tween sector exit/update (case: click on branch, no maxdepth)', function(done) {
         var mock = {
             data: [{
-                type: 'treemap', pathbar: { visible: false },
+                type: 'voronoi', pathbar: { visible: false },
                 labels: ['Root', 'A', 'B', 'b'],
                 parents: ['', 'Root', 'Root', 'B']
             }]
@@ -1425,7 +1425,7 @@ describe('Test treemap tweening:', function() {
     it('should tween sector enter/update (case: click on entry, no maxdepth)', function(done) {
         var mock = {
             data: [{
-                type: 'treemap', pathbar: { visible: false },
+                type: 'voronoi', pathbar: { visible: false },
                 labels: ['Root', 'A', 'B', 'b'],
                 parents: ['', 'Root', 'Root', 'B'],
                 level: 'B'
@@ -1456,7 +1456,7 @@ describe('Test treemap tweening:', function() {
     it('should tween sector enter/update/exit (case: click on entry, maxdepth=2)', function(done) {
         var mock = {
             data: [{
-                type: 'treemap', pathbar: { visible: false },
+                type: 'voronoi', pathbar: { visible: false },
                 labels: ['Root', 'A', 'B', 'b'],
                 parents: ['', 'Root', 'Root', 'B'],
                 maxdepth: 2
@@ -1487,7 +1487,7 @@ describe('Test treemap tweening:', function() {
     it('should tween sector enter/update/exit (case: click on entry, maxdepth=2, level=B)', function(done) {
         var mock = {
             data: [{
-                type: 'treemap', pathbar: { visible: false },
+                type: 'voronoi', pathbar: { visible: false },
                 labels: ['Root', 'A', 'B', 'b', 'bb'],
                 parents: ['', 'Root', 'Root', 'B', 'b'],
                 maxdepth: 2,
@@ -1515,7 +1515,7 @@ describe('Test treemap tweening:', function() {
     });
 });
 
-describe('Test treemap interactions edge cases', function() {
+describe('Test voronoi interactions edge cases', function() {
     var gd;
 
     beforeEach(function() { gd = createGraphDiv(); });
@@ -1523,7 +1523,7 @@ describe('Test treemap interactions edge cases', function() {
     afterEach(destroyGraphDiv);
 
     it('should keep tracking hover labels and hover events after *calc* edits', function(done) {
-        var mock = Lib.extendFlat({}, require('../../image/mocks/treemap_first.json'));
+        var mock = Lib.extendFlat({}, require('../../image/mocks/zz-voronoi_first.json'));
         var hoverCnt = 0;
         var unhoverCnt = 0;
 
@@ -1583,7 +1583,7 @@ describe('Test treemap interactions edge cases', function() {
     it('should show falsy zero text', function(done) {
         Plotly.newPlot(gd, {
             data: [{
-                type: 'treemap',
+                type: 'voronoi',
                 parents: ['', 'A', 'B', 'C', 'D', 'E', 'F'],
                 labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
                 values: [7, 6, 5, 4, 3, 2, 1],
@@ -1602,11 +1602,11 @@ describe('Test treemap interactions edge cases', function() {
         .then(done, done.fail);
     });
 
-    it('should transition treemap traces only', function(done) {
+    it('should transition voronoi traces only', function(done) {
         var mock = Lib.extendDeep({}, require('../../image/mocks/display-text_zero-number.json'));
         mock.data[0].visible = false;
-        mock.data[1].type = 'treemap';
-        mock.data[1].name = 'treemap';
+        mock.data[1].type = 'voronoi';
+        mock.data[1].name = 'voronoi';
 
         function _assert(msg, exp) {
             var gd3 = d3Select(gd);
@@ -1614,8 +1614,8 @@ describe('Test treemap interactions edge cases', function() {
                 .toBe(exp.cartesianTraceCnt, '# of cartesian traces');
             expect(gd3.select('.pielayer').selectAll('.trace').size())
                 .toBe(exp.pieTraceCnt, '# of pie traces');
-            expect(gd3.select('.treemaplayer').selectAll('.trace').size())
-                .toBe(exp.treemapTraceCnt, '# of treemap traces');
+            expect(gd3.select('.voronoilayer').selectAll('.trace').size())
+                .toBe(exp.voronoiTraceCnt, '# of voronoi traces');
         }
 
         Plotly.newPlot(gd, mock)
@@ -1623,25 +1623,25 @@ describe('Test treemap interactions edge cases', function() {
             _assert('base', {
                 cartesianTraceCnt: 2,
                 pieTraceCnt: 0,
-                treemapTraceCnt: 1
+                voronoiTraceCnt: 1
             });
         })
         .then(click(gd, 2))
         .then(delay(constants.CLICK_TRANSITION_TIME + 1))
         .then(function() {
-            _assert('after treemap click', {
+            _assert('after voronoi click', {
                 cartesianTraceCnt: 2,
                 pieTraceCnt: 0,
-                treemapTraceCnt: 1
+                voronoiTraceCnt: 1
             });
         })
         .then(done, done.fail);
     });
 
-    it('should be able to transition treemap traces via `Plotly.react`', function(done) {
+    it('should be able to transition voronoi traces via `Plotly.react`', function(done) {
         var mock = Lib.extendDeep({}, require('../../image/mocks/display-text_zero-number.json'));
-        mock.data[1].type = 'treemap';
-        mock.data[1].name = 'treemap';
+        mock.data[1].type = 'voronoi';
+        mock.data[1].name = 'voronoi';
 
         mock.layout.transition = {duration: 200};
 
@@ -1660,9 +1660,9 @@ describe('Test treemap interactions edge cases', function() {
     });
 });
 
-describe('Test treemap texttemplate without `values` should work:', function() {
+describe('Test voronoi texttemplate without `values` should work:', function() {
     checkTextTemplate([{
-        type: 'treemap', pathbar: { visible: false },
+        type: 'voronoi', pathbar: { visible: false },
         labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
         parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
         text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
@@ -1701,9 +1701,9 @@ describe('Test treemap texttemplate without `values` should work:', function() {
     ], /* skipEtra */ true);
 });
 
-describe('Test treemap texttemplate with *total* `values` should work:', function() {
+describe('Test voronoi texttemplate with *total* `values` should work:', function() {
     checkTextTemplate([{
-        type: 'treemap', pathbar: { visible: false },
+        type: 'voronoi', pathbar: { visible: false },
         branchvalues: 'total',
         labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
         parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
@@ -1718,9 +1718,9 @@ describe('Test treemap texttemplate with *total* `values` should work:', functio
     ], /* skipEtra */ true);
 });
 
-describe('Test treemap texttemplate with *remainder* `values` should work:', function() {
+describe('Test voronoi texttemplate with *remainder* `values` should work:', function() {
     checkTextTemplate([{
-        type: 'treemap', pathbar: { visible: false },
+        type: 'voronoi', pathbar: { visible: false },
         branchvalues: 'remainder',
         labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
         parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
@@ -1735,7 +1735,7 @@ describe('Test treemap texttemplate with *remainder* `values` should work:', fun
     ], /* skipEtra */ true);
 });
 
-describe('treemap uniformtext', function() {
+describe('voronoi uniformtext', function() {
     'use strict';
 
     var gd;
@@ -1777,7 +1777,7 @@ describe('treemap uniformtext', function() {
     it('should be able to react with new uniform text options', function(done) {
         var fig = {
             data: [{
-                type: 'treemap', tiling: { packing: 'slice' },
+                type: 'voronoi', tiling: { packing: 'slice' },
                 parents: ['', '', '', '', '', '', '', '', '', ''],
                 labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -1854,7 +1854,7 @@ describe('treemap uniformtext', function() {
     it('should uniform text scales after transition', function(done) {
         Plotly.newPlot(gd, {
             data: [{
-                type: 'treemap',
+                type: 'voronoi',
                 tiling: { packing: 'dice'},
                 pathbar: { visible: false },
                 parents: [
@@ -1917,7 +1917,7 @@ describe('treemap uniformtext', function() {
     });
 });
 
-describe('treemap pathbar react', function() {
+describe('voronoi pathbar react', function() {
     'use strict';
 
     var gd;
@@ -1931,7 +1931,7 @@ describe('treemap pathbar react', function() {
     it('should show and hide pathbar', function(done) {
         var fig = {
             data: [{
-                type: 'treemap',
+                type: 'voronoi',
                 parents: ['', 'A', 'B', 'C'],
                 labels: ['A', 'B', 'C', 'D'],
                 level: 'C'
