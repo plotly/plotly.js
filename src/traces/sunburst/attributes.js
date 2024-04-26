@@ -208,7 +208,7 @@ module.exports = {
             editType: 'calc',
             dflt: 'rgba(0,0,0,0)',
             description: [
-                'sets the color of the root node for a sunburst/treemap/icicle trace.',
+                'sets the color of the root node for a sunburst/treemap/voronoi/icicle trace.',
                 'this has no effect when a colorscale is used to set the markers.'
             ].join(' ')
         },
