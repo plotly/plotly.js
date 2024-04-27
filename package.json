@@ -99,7 +99,6 @@
     "gl-text": "^1.4.0",
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
-    "install": "^0.13.0",
     "is-mobile": "^4.0.0",
     "mouse-change": "^1.4.0",
     "mouse-event-offset": "^3.0.2",
