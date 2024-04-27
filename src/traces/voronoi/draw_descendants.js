@@ -291,18 +291,18 @@ var nShapes = {
     'rectangle': 4,
     'triangle': 3,
     'square': 4,
-    'pentagons': 5,
+    'pentagon': 5,
     'hexagon': 6,
     'heptagon': 7,
-    'octagons': 8,
+    'octagon': 8,
     'nonagon': 9,
     'decagon': 10,
     'undecagon': 11,
-    'dodecagons': 12,
+    'dodecagon': 12,
 
-    // TODO: is this looking good for circles as well as ellipses?
-    'circle': 36,
-    'ellipse': 36,
+    // TODO: is this optimal for circles as well as ellipses?
+    'circle': 360,
+    'ellipse': 360,
 };
 
 function createShape(shape, aspectratio, width, height) {
@@ -315,7 +315,7 @@ function createShape(shape, aspectratio, width, height) {
     var maxY = -Infinity;
     var tStep = 2 * Math.PI / n;
 
-    var tStart = -Math.PI / 2 - tStep / 2; // so that the bottom edge stay horizontal
+    var tStart = Math.PI / 2 - tStep / 2; // so that the bottom edge stay horizontal
     for(i = 0; i < n; i++) {
         var t = i * tStep + tStart;
         var x = Math.cos(t);
@@ -341,10 +341,13 @@ function createShape(shape, aspectratio, width, height) {
         scaleX = scaleY * aspectratio;
     }
 
+    var oX = ((-minX > maxX) ? 1 : -1) * (minX + maxX) / 2
+    var oY = ((-minY > maxY) ? -1 : 1) * (minY + maxY) / 2;
+
     for(i = 0; i < n; i++) {
         var p = points[i];
-        p[0] = p[0] * scaleX + width / 2;
-        p[1] = p[1] * scaleY + height / 2;
+        p[0] = (p[0] + oX) * scaleX + width / 2;
+        p[1] = (p[1] + oY) * scaleY + height / 2;
     }
 
     return points
