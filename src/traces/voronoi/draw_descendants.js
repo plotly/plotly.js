@@ -40,11 +40,19 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
         pt.weight = pt.value;
     });
 
-    Lib.seedPseudoRandom();
+    var tiling = trace.tiling;
+    for(var seed = 0; seed < tiling.seed; seed++) {
+        Lib.seedPseudoRandom();
+    }
 
     voronoiTreemap()
         .prng(Lib.pseudoRandom)
-        .clip(createShape(width, height))(entry);
+        .clip(createShape(
+            tiling.shape,
+            tiling.aspectratio,
+            width,
+            height
+        ))(entry);
 
     entry.each(function(pt) {
         var offsetValue = trace.tiling.pad * (
@@ -279,16 +287,37 @@ function getCentroid(points) {
     ];
 }
 
-function createShape(width, height) {
+var nShapes = {
+    'rectangle': 4,
+    'triangle': 3,
+    'square': 4,
+    'pentagons': 5,
+    'hexagon': 6,
+    'heptagon': 7,
+    'octagons': 8,
+    'nonagon': 9,
+    'decagon': 10,
+    'undecagon': 11,
+    'dodecagons': 12,
+
+    // TODO: is this looking good for circles as well as ellipses?
+    'circle': 36,
+    'ellipse': 36,
+};
+
+function createShape(shape, aspectratio, width, height) {
     var points = [];
     var i;
-    var n = 6;
+    var n = nShapes[shape];
     var minX = Infinity;
     var minY = Infinity;
     var maxX = -Infinity;
     var maxY = -Infinity;
+    var tStep = 2 * Math.PI / n;
+
+    var tStart = -Math.PI / 2 - tStep / 2; // so that the bottom edge stay horizontal
     for(i = 0; i < n; i++) {
-        var t = 2 * Math.PI * i / n;
+        var t = i * tStep + tStart;
         var x = Math.cos(t);
         var y = Math.sin(t);
         points.push([x, y])
@@ -299,15 +328,23 @@ function createShape(width, height) {
         maxY = Math.max(maxY, y);
     }
 
-    var scale = Math.min(
-        width / (maxX - minX),
-        height / (maxY - minY)
-    );
+    var scaleX = width / (maxX - minX);
+    var scaleY = height / (maxY - minY);
+
+    if(aspectratio === 1) {
+        var minScale = Math.min(scaleX, scaleY);
+        scaleX = minScale;
+        scaleY = minScale;
+    } else if(aspectratio > 1) {
+        scaleY = scaleX / aspectratio;
+    } else if(aspectratio > 0) {
+        scaleX = scaleY * aspectratio;
+    }
 
     for(i = 0; i < n; i++) {
         var p = points[i];
-        p[0] = p[0] * scale + width / 2;
-        p[1] = p[1] * scale + height / 2;
+        p[0] = p[0] * scaleX + width / 2;
+        p[1] = p[1] * scaleY + height / 2;
     }
 
     return points

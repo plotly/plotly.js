@@ -23,40 +23,55 @@ module.exports = {
     maxdepth: sunburstAttrs.maxdepth,
 
     tiling: {
-        packing: {
-            valType: 'enumerated',
-            values: [
-                'squarify',
-                'binary',
-                'dice',
-                'slice',
-                'slice-dice',
-                'dice-slice'
-            ],
-            dflt: 'squarify',
+        seed: {
+            valType: 'integer',
+            dflt: 1,
+            min: 1,
+            max: 100,
             editType: 'plot',
             description: [
-                'Determines d3 voronoi solver.',
-                'For more info please refer to https://github.com/d3/d3-hierarchy#voronoi-tiling'
+                'Determines seed which controls creation of identical or different grid representations.',
+
             ].join(' ')
         },
 
-        squarifyratio: {
-            valType: 'number',
-            min: 1,
-            dflt: 1,
+        shape: {
+            valType: 'enumerated',
+            values: [
+                'circle',
+                'ellipse',
+                'rectangle',
+                'triangle',
+                'square',
+                'pentagons',
+                'hexagon',
+                'heptagon',
+                'octagons',
+                'nonagon',
+                'decagon',
+                'undecagon',
+                'dodecagons',
+                // TODO: add other shapes e.g. half circle, pie
+            ],
+            dflt: 'hexagon',
             editType: 'plot',
             description: [
-                'When using *squarify* `packing` algorithm, according to https://github.com/d3/d3-hierarchy/blob/v3.1.1/README.md#squarify_ratio',
-                'this option specifies the desired aspect ratio of the generated rectangles.',
-                'The ratio must be specified as a number greater than or equal to one.',
-                'Note that the orientation of the generated rectangles (tall or wide)',
-                'is not implied by the ratio; for example, a ratio of two will attempt',
-                'to produce a mixture of rectangles whose width:height ratio is either 2:1 or 1:2.',
-                'When using *squarify*, unlike d3 which uses the Golden Ratio i.e. 1.618034,',
-                'Plotly applies 1 to increase squares in voronoi layouts.'
+                'Determines aspect ratio between width and height of shape',
             ].join(' ')
         },
+
+        aspectratio: {
+            valType: 'number',
+            min: 0,
+            editType: 'plot',
+            description: [
+                'Determines aspect ratio between width and height of shape',
+                'Defalts to 0 when `tiling.shape` is set to *rectangle*, *ellipse* or *triangle*.',
+                'Defalts to 1 when `tiling.shape` is set to *square*, *circle*, *pentagon*, *hexagon*, etc.'
+            ].join(' ')
+        },
+
+        // TODO: add rotation?
 
         flip: {
             valType: 'flaglist',
@@ -77,7 +92,7 @@ module.exports = {
             dflt: 2,
             editType: 'plot',
             description: [
-                'Sets the inner padding (in px).'
+                'Sets the inner padding (in px) for each level of the hierarchy.',
             ].join(' ')
         },
 

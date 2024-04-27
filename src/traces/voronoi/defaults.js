@@ -35,11 +35,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('level');
     coerce('maxdepth');
 
-    var packing = coerce('tiling.packing');
-    if(packing === 'squarify') {
-        coerce('tiling.squarifyratio');
-    }
+    var shape = coerce('tiling.shape');
+    coerce('tiling.aspectratio', [
+            'rectangle',
+            'triangle',
+            'ellipse'
+        ].indexOf(shape) !== -1 ? 0 : 1
+    );
 
+    coerce('tiling.seed');
     coerce('tiling.flip');
     coerce('tiling.pad');
 
