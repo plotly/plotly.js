@@ -44,7 +44,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     );
 
     coerce('tiling.seed');
-    coerce('tiling.flip');
     coerce('tiling.pad');
 
     var text = coerce('text');

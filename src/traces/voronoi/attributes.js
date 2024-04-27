@@ -72,19 +72,7 @@ module.exports = {
         },
 
         // TODO: add rotation?
-
-        flip: {
-            valType: 'flaglist',
-            flags: [
-                'x',
-                'y'
-            ],
-            dflt: '',
-            editType: 'plot',
-            description: [
-                'Determines if the positions obtained from solver are flipped on each axis.'
-            ].join(' ')
-        },
+        // TODO: add flip?
 
         pad: {
             valType: 'number',
