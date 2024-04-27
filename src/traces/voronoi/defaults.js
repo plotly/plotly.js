@@ -37,10 +37,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var shape = coerce('tiling.shape');
     coerce('tiling.aspectratio', [
-            'rectangle',
-            'triangle',
-            'ellipse'
-        ].indexOf(shape) !== -1 ? 0 : 1
+        'rectangle',
+        'triangle',
+        'ellipse'
+    ].indexOf(shape) !== -1 ? 0 : 1
     );
 
     coerce('tiling.seed');

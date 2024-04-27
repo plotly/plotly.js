@@ -64,7 +64,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
             // offset polygon
             var offset = new Offset();
-            pt.polygon.push(pt.polygon[0]) // duplicate first vertex to close
+            pt.polygon.push(pt.polygon[0]); // duplicate first vertex to close
             pt.polygon = offset.data(
                 pt.polygon
             ).padding(offsetValue)[0];
@@ -270,7 +270,7 @@ function getCentroid(points) {
     var A2 = 0;
     var Sx = 0;
     var Sy = 0;
-    for (var i = 0; i < len; i++) {
+    for(var i = 0; i < len; i++) {
         var p0 = points[i];
         var p1 = points[(i + 1) % len];
 
@@ -288,21 +288,21 @@ function getCentroid(points) {
 }
 
 var nShapes = {
-    'rectangle': 4,
-    'triangle': 3,
-    'square': 4,
-    'pentagon': 5,
-    'hexagon': 6,
-    'heptagon': 7,
-    'octagon': 8,
-    'nonagon': 9,
-    'decagon': 10,
-    'undecagon': 11,
-    'dodecagon': 12,
+    rectangle: 4,
+    triangle: 3,
+    square: 4,
+    pentagon: 5,
+    hexagon: 6,
+    heptagon: 7,
+    octagon: 8,
+    nonagon: 9,
+    decagon: 10,
+    undecagon: 11,
+    dodecagon: 12,
 
     // TODO: is this optimal for circles as well as ellipses?
-    'circle': 360,
-    'ellipse': 360,
+    circle: 360,
+    ellipse: 360,
 };
 
 function createShape(shape, aspectratio, width, height) {
@@ -320,7 +320,7 @@ function createShape(shape, aspectratio, width, height) {
         var t = i * tStep + tStart;
         var x = Math.cos(t);
         var y = Math.sin(t);
-        points.push([x, y])
+        points.push([x, y]);
 
         minX = Math.min(minX, x);
         maxX = Math.max(maxX, x);
@@ -341,7 +341,7 @@ function createShape(shape, aspectratio, width, height) {
         scaleX = scaleY * aspectratio;
     }
 
-    var oX = ((-minX > maxX) ? 1 : -1) * (minX + maxX) / 2
+    var oX = ((-minX > maxX) ? 1 : -1) * (minX + maxX) / 2;
     var oY = ((-minY > maxY) ? -1 : 1) * (minY + maxY) / 2;
 
     for(i = 0; i < n; i++) {
@@ -350,5 +350,5 @@ function createShape(shape, aspectratio, width, height) {
         p[1] = (p[1] + oY) * scaleY + height / 2;
     }
 
-    return points
+    return points;
 }
