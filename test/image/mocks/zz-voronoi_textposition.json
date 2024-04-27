@@ -4,8 +4,6 @@
             "type": "voronoi",
             "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
-            "name": "bottom left textposition",
-            "textposition": "bottom left",
             "pathbar": {
                 "side": "bottom",
                 "textfont": {
@@ -113,8 +111,6 @@
             "type": "voronoi",
             "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
-            "name": "bottom center textposition",
-            "textposition": "bottom center",
             "pathbar": {
                 "textfont": {
                     "size": 12,
@@ -223,8 +219,6 @@
             "type": "voronoi",
             "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
-            "name": "bottom right textposition",
-            "textposition": "bottom right",
             "pathbar": {
                 "side": "bottom",
                 "textfont": {
@@ -335,8 +329,6 @@
             "type": "voronoi",
             "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
-            "name": "middle left textposition",
-            "textposition": "middle left",
             "pathbar": {
                 "visible": false
             },
@@ -442,8 +434,6 @@
             "type": "voronoi",
             "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
-            "name": "middle center textposition",
-            "textposition": "middle center",
             "pathbar": {
                 "visible": false
             },
@@ -550,8 +540,6 @@
             "type": "voronoi",
             "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
-            "name": "middle right textposition",
-            "textposition": "middle right",
             "pathbar": {
                 "visible": false
             },
@@ -657,8 +645,6 @@
             "type": "voronoi",
             "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
-            "name": "top left textposition",
-            "textposition": "top left",
             "pathbar": {
                 "textfont": {
                     "size": 12,
@@ -768,8 +754,6 @@
             "type": "voronoi",
             "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
-            "name": "top center textposition",
-            "textposition": "top center",
             "pathbar": {
                 "side": "bottom",
                 "textfont": {
@@ -879,8 +863,6 @@
             "type": "voronoi",
             "root": { "color": "yellow" },
             "textinfo": "label+text+percent parent+percent entry+percent root",
-            "name": "top right textposition",
-            "textposition": "top right",
             "pathbar": {
                 "textfont": {
                     "size": 12,

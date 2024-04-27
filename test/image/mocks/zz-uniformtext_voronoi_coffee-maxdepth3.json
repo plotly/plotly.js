@@ -2,9 +2,6 @@
   "data": [
     {
       "type": "voronoi",
-      "tiling": {
-        "packing": "slice-dice"
-      },
       "pathbar": {
         "visible": false
       },

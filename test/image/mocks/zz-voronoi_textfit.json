@@ -3,7 +3,6 @@
         {
             "type": "voronoi",
             "tiling": {
-                "packing": "squarify",
                 "pad": 2
             },
             "pathbar": {
@@ -13,14 +12,6 @@
             },
             "textfont": {
                 "size": 256
-            },
-            "marker": {
-                "pad": {
-                  "t": 32,
-                  "l": 16,
-                  "r": 8,
-                  "b": 4
-                }
             },
             "texttemplate": "%{label}<br>%{text}",
             "labels": [

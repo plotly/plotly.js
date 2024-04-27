@@ -2,6 +2,9 @@
   "data": [
     {
       "type": "voronoi",
+      "tiling": {
+        "shape": "rectangle"
+      },
       "maxdepth": 3,
       "texttemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{entry} <=> %{percentEntry}<br>%{root} <=> %{percentRoot}",
       "hovertemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{entry} <=> %{percentEntry}<br>%{root} <=> %{percentRoot}",
@@ -134,6 +137,9 @@
     },
     {
       "type": "voronoi",
+      "tiling": {
+        "shape": "rectangle"
+      },
       "level": "Victor",
       "texttemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{entry} <=> %{percentEntry}<br>%{root} <=> %{percentRoot}",
       "hovertemplate": "%{currentPath}<i>%{label}</i><br><b>%{text}</b><br><sup>%{value}</sup><br>%{parent} <=> %{percentParent}<br>%{entry} <=> %{percentEntry}<br>%{root} <=> %{percentRoot}",

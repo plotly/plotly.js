@@ -3,7 +3,6 @@
         {
             "type": "voronoi",
             "hoverinfo": "all",
-            "textposition": "middle center",
             "textinfo": "label",
             "textfont": {
                 "size": 10
@@ -12,18 +11,12 @@
                 "visible": true
             },
             "tiling": {
-                "packing": "squarify",
-                "squarifyratio": 1,
+                "shape": "square",
+                "aspectratio": 1,
                 "pad": 0
             },
             "marker": {
-                "depthfade": "reversed",
-                "pad": {
-                    "t": 0,
-                    "l": 0,
-                    "r": 0,
-                    "b": 0
-                }
+                "depthfade": "reversed"
             },
             "labels": [
                 "Alpha",
@@ -95,7 +88,6 @@
         {
             "type": "voronoi",
             "hoverinfo": "all",
-            "textposition": "middle center",
             "textinfo": "label",
             "textfont": {
                 "size": 10
@@ -104,18 +96,12 @@
                 "visible": true
             },
             "tiling": {
-                "packing": "squarify",
-                "squarifyratio": 1.618034,
+                "shape": "square",
+                "aspectratio": 0.75,
                 "pad": 0
             },
             "marker": {
-                "depthfade": "reversed",
-                "pad": {
-                    "t": 0,
-                    "l": 0,
-                    "r": 0,
-                    "b": 0
-                }
+                "depthfade": "reversed"
             },
             "labels": [
                 "Alpha",
@@ -187,7 +173,6 @@
         {
             "type": "voronoi",
             "hoverinfo": "all",
-            "textposition": "middle center",
             "textinfo": "label",
             "textfont": {
                 "size": 10
@@ -196,17 +181,9 @@
                 "visible": true
             },
             "tiling": {
-                "packing": "squarify",
-                "squarifyratio": 1,
+                "shape": "square",
+                "aspectratio": 1,
                 "pad": 0
-            },
-            "marker": {
-                "pad": {
-                    "t": 0,
-                    "l": 0,
-                    "r": 0,
-                    "b": 0
-                }
             },
             "labels": [
                 "Alpha",
@@ -278,7 +255,6 @@
         {
             "type": "voronoi",
             "hoverinfo": "all",
-            "textposition": "middle center",
             "textinfo": "label",
             "textfont": {
                 "size": 10
@@ -287,17 +263,9 @@
                 "visible": true
             },
             "tiling": {
-                "packing": "squarify",
-                "squarifyratio": 1.618034,
+                "shape": "square",
+                "aspectratio": 0.75,
                 "pad": 0
-            },
-            "marker": {
-                "pad": {
-                    "t": 0,
-                    "l": 0,
-                    "r": 0,
-                    "b": 0
-                }
             },
             "labels": [
                 "Alpha",
@@ -384,7 +352,7 @@
             },
             {
                 "showarrow": false,
-                "text": "transposed<br>depthfade: 'reversed'",
+                "text": "aspectratio: 0.75<br>depthfade: 'reversed'",
                 "font": {
                     "size": 16
                 },
@@ -395,7 +363,7 @@
             },
             {
                 "showarrow": false,
-                "text": "rectangle",
+                "text": "square",
                 "font": {
                     "size": 16
                 },
@@ -406,7 +374,7 @@
             },
             {
                 "showarrow": false,
-                "text": "transposed rectangle",
+                "text": "aspectratio: 0.75",
                 "font": {
                     "size": 16
                 },

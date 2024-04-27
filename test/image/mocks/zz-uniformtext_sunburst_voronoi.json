@@ -74,6 +74,10 @@
         },
 		{
             "type": "voronoi",
+            "tiling": {
+                "pad": 4,
+                "shape": "circle"
+            },
             "domain": {
                 "y": [0, 0.5]
             },
@@ -85,7 +89,7 @@
                 },
                 "coloraxis": "coloraxis"
             },
-            "level": "Juliet",
+            "level": "Alpha",
             "labels": [
                 "Alpha",
                 "Bravo",

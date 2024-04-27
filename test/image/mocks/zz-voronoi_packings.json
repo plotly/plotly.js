@@ -4,9 +4,9 @@
             "type": "voronoi",
             "textinfo": "label",
             "hoverinfo": "all",
-            "name": "binary treemap",
+            "name": "ellipse voronoi",
             "tiling": {
-                "packing": "binary"
+                "shape": "ellipse"
             },
             "pathbar": {
                 "edgeshape": "/",
@@ -92,9 +92,9 @@
             "type": "voronoi",
             "textinfo": "label",
             "hoverinfo": "all",
-            "name": "dice-slice treemap",
+            "name": "rectangle voronoi",
             "tiling": {
-                "packing": "dice-slice"
+                "shape": "rectangle"
             },
             "pathbar": {
                 "edgeshape": "|",
@@ -180,9 +180,9 @@
             "type": "voronoi",
             "textinfo": "label",
             "hoverinfo": "all",
-            "name": "squarify treemap",
+            "name": "triangle voronoi",
             "tiling": {
-                "packing": "squarify"
+                "shape": "triangle"
             },
             "pathbar": {
                 "edgeshape": "<",
@@ -268,9 +268,9 @@
             "type": "voronoi",
             "textinfo": "label",
             "hoverinfo": "all",
-            "name": "slice treemap",
+            "name": "circle voronoi",
             "tiling": {
-                "packing": "slice"
+                "shape": "circle"
             },
             "pathbar": {
                 "edgeshape": ">",
@@ -356,9 +356,9 @@
             "type": "voronoi",
             "textinfo": "label",
             "hoverinfo": "all",
-            "name": "slice-dice treemap",
+            "name": "square voronoi",
             "tiling": {
-                "packing": "slice-dice"
+                "shape": "square"
             },
             "pathbar": {
                 "edgeshape": "|",
@@ -444,9 +444,9 @@
             "type": "voronoi",
             "textinfo": "label",
             "hoverinfo": "all",
-            "name": "dice treemap",
+            "name": "pentagon voronoi",
             "tiling": {
-                "packing": "dice"
+                "shape": "pentagon"
             },
             "pathbar": {
                 "edgeshape": "\\",
@@ -535,7 +535,7 @@
         "annotations": [
             {
                 "showarrow": false,
-                "text": "<b>binary</b> treemap<br>with / edgeshape",
+                "text": "<b>ellipse</b> voronoi<br>with / edgeshape",
                 "x": 0.15,
                 "xanchor": "center",
                 "y": 0,
@@ -543,7 +543,7 @@
             },
             {
                 "showarrow": false,
-                "text": "<b>dice-slice</b> treemap<br>with | edgeshape",
+                "text": "<b>rectangle</b> voronoi<br>with | edgeshape",
                 "x": 0.5,
                 "xanchor": "center",
                 "y": 0,
@@ -551,7 +551,7 @@
             },
             {
                 "showarrow": false,
-                "text": "<b>squarify</b> treemap<br>with < edgeshape",
+                "text": "<b>triangle</b> voronoi<br>with < edgeshape",
                 "x": 0.85,
                 "xanchor": "center",
                 "y": 0,
@@ -559,7 +559,7 @@
             },
             {
                 "showarrow": false,
-                "text": "<b>slice</b> treemap<br>with > edgeshape",
+                "text": "<b>circle</b> voronoi<br>with > edgeshape",
                 "x": 0.15,
                 "xanchor": "center",
                 "y": 1,
@@ -567,7 +567,7 @@
             },
             {
                 "showarrow": false,
-                "text": "<b>slice-dice</b> treemap<br>with | edgeshape",
+                "text": "<b>square</b> voronoi<br>with | edgeshape",
                 "x": 0.5,
                 "xanchor": "center",
                 "y": 1,
@@ -575,7 +575,7 @@
             },
             {
                 "showarrow": false,
-                "text": "<b>dice</b> treemap<br>with \\ edgeshape",
+                "text": "<b>pentagon</b> voronoi<br>with \\ edgeshape",
                 "x": 0.85,
                 "xanchor": "center",
                 "y": 1,

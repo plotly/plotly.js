@@ -1,7 +1,7 @@
 {
     "data": [
         {
-            "type": "voronoi", "tiling": { "packing": "slice" },
+            "type": "voronoi",
             "level": "Oscar",
             "parents": [
                 "",
@@ -73,7 +73,7 @@
             }
         },
         {
-            "type": "voronoi", "tiling": { "packing": "slice" },
+            "type": "voronoi",
             "level": "Oscar",
             "parents": [
                 "",
@@ -150,7 +150,7 @@
             }
         },
         {
-            "type": "voronoi", "tiling": { "packing": "slice" },
+            "type": "voronoi",
             "level": "Oscar",
             "parents": [
                 "",
@@ -234,7 +234,7 @@
             }
         },
         {
-            "type": "voronoi", "tiling": { "packing": "slice" },
+            "type": "voronoi",
             "level": "Oscar",
             "parents": [
                 "",

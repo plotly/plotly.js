@@ -10,17 +10,10 @@
                 "visible": true
             },
             "tiling": {
-                "packing": "slice-dice",
-                "pad": 0
+                "shape": "rectangle"
             },
             "marker": {
-                "depthfade": "reversed",
-                "pad": {
-                    "t": 16,
-                    "l": 8,
-                    "r": 4,
-                    "b": 2
-                }
+                "depthfade": "reversed"
             },
             "labels": [
                 "Alpha",
@@ -99,18 +92,10 @@
                 "visible": true
             },
             "tiling": {
-                "packing": "slice-dice",
-                "flip": "y",
-                "pad": 0
+                "shape": "ellipse"
             },
             "marker": {
-                "depthfade": "reversed",
-                "pad": {
-                    "t": 16,
-                    "l": 8,
-                    "r": 4,
-                    "b": 2
-                }
+                "depthfade": "reversed"
             },
             "labels": [
                 "Alpha",
@@ -189,17 +174,10 @@
                 "visible": true
             },
             "tiling": {
-                "packing": "slice-dice",
-                "flip": "x",
-                "pad": 0
+                "shape": "rectangle"
             },
             "marker": {
-                "pad": {
-                    "t": 16,
-                    "l": 8,
-                    "r": 4,
-                    "b": 2
-                }
+                "depthfade": true
             },
             "labels": [
                 "Alpha",
@@ -278,17 +256,10 @@
                 "visible": true
             },
             "tiling": {
-                "packing": "slice-dice",
-                "flip": "x+y",
-                "pad": 0
+                "shape": "ellipse"
             },
             "marker": {
-                "pad": {
-                    "t": 16,
-                    "l": 8,
-                    "r": 4,
-                    "b": 2
-                }
+                "depthfade": true
             },
             "labels": [
                 "Alpha",
@@ -406,7 +377,7 @@
         "annotations": [
             {
                 "showarrow": false,
-                "text": "base<br>depthfade: 'reversed'",
+                "text": "rectangle<br>depthfade: 'reversed'",
                 "font": {
                     "size": 16
                 },
@@ -417,7 +388,7 @@
             },
             {
                 "showarrow": false,
-                "text": "flip y axis<br>depthfade: 'reversed'",
+                "text": "ellipse<br>depthfade: 'reversed'",
                 "font": {
                     "size": 16
                 },
@@ -428,7 +399,7 @@
             },
             {
                 "showarrow": false,
-                "text": "flip x axis",
+                "text": "rectangle<br>depthfade: true",
                 "font": {
                     "size": 16
                 },
@@ -439,7 +410,7 @@
             },
             {
                 "showarrow": false,
-                "text": "flip both axes",
+                "text": "ellipse<br>depthfade: true",
                 "font": {
                     "size": 16
                 },
