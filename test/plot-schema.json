@@ -88377,7 +88377,7 @@
       "editType": "none",
       "valType": "string"
      },
-     "description": "Sets the font used for `textinfo` lying outside the sector. This option refers to the root of the hierarchy presented on top left corner of a voronoi graph. Please note that if a hierarchy has multiple root nodes, this option won't have any effect and `insidetextfont` would be used.",
+     "description": "Sets the font used for `textinfo` lying outside the sector. This option refers to the root of the hierarchy presented when viewing the root of a voronoi graph. Please note that if a hierarchy has multiple root nodes, this option won't have any effect and `insidetextfont` would be used.",
      "editType": "plot",
      "family": {
       "arrayOk": true,
@@ -88484,7 +88484,7 @@
      "editType": "calc",
      "role": "object",
      "side": {
-      "description": "Determines on which side of the the voronoi the `pathbar` should be presented.",
+      "description": "Determines on which side of the the treemap the `pathbar` should be presented.",
       "dflt": "top",
       "editType": "plot",
       "valType": "enumerated",

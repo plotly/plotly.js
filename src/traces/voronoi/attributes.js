@@ -1,26 +1,21 @@
 'use strict';
 
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
-
+var extendFlat = require('../../lib/extend').extendFlat;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-var pieAttrs = require('../pie/attributes');
-var sunburstAttrs = require('../sunburst/attributes');
-var constants = require('../treemap/constants');
-var extendFlat = require('../../lib/extend').extendFlat;
-var pattern = require('../../components/drawing/attributes').pattern;
+var treemapAttrs = require('../treemap/attributes');
+var treemapMarker = treemapAttrs.marker;
 
 module.exports = {
-    labels: sunburstAttrs.labels,
-    parents: sunburstAttrs.parents,
+    labels: treemapAttrs.labels,
+    parents: treemapAttrs.parents,
 
-    values: sunburstAttrs.values,
-    branchvalues: sunburstAttrs.branchvalues,
-    count: sunburstAttrs.count,
+    values: treemapAttrs.values,
+    branchvalues: treemapAttrs.branchvalues,
+    count: treemapAttrs.count,
 
-    level: sunburstAttrs.level,
-    maxdepth: sunburstAttrs.maxdepth,
+    level: treemapAttrs.level,
+    maxdepth: treemapAttrs.maxdepth,
 
     tiling: {
         seed: {
@@ -88,132 +83,44 @@ module.exports = {
     },
 
     marker: extendFlat({
-        colors: sunburstAttrs.marker.colors,
-
-        pattern: pattern,
-
-        depthfade: {
-            valType: 'enumerated',
-            values: [true, false, 'reversed'],
-            editType: 'style',
-            description: [
-                'Determines if the sector colors are faded towards',
-                'the background from the leaves up to the headers.',
-                'This option is unavailable when a `colorscale` is present,',
-                'defaults to false when `marker.colors` is set,',
-                'but otherwise defaults to true.',
-                'When set to *reversed*, the fading direction is inverted,',
-                'that is the top elements within hierarchy are drawn with fully saturated colors',
-                'while the leaves are faded towards the background color.'
-            ].join(' ')
-        },
-
-        line: sunburstAttrs.marker.line,
-
-        cornerradius: {
-            valType: 'number',
-            min: 0,
-            dflt: 0,
-            editType: 'plot',
-            description: [
-                'Sets the maximum rounding of corners (in px).'
-            ].join(' ')
-        },
-
+        colors: treemapMarker.colors,
+        pattern: treemapMarker.pattern,
+        depthfade: treemapMarker.depthfade,
+        line: treemapMarker.line,
+        cornerradius: treemapMarker.cornerradius,
         editType: 'calc',
     },
         colorScaleAttrs('marker', {
             colorAttr: 'colors',
-            anim: false // TODO: set to anim: true?
+            anim: false
         })
     ),
 
-    pathbar: {
-        visible: {
-            valType: 'boolean',
-            dflt: true,
-            editType: 'plot',
-            description: [
-                'Determines if the path bar is drawn',
-                'i.e. outside the trace `domain` and',
-                'with one pixel gap.'
-            ].join(' ')
-        },
+    pathbar: treemapAttrs.pathbar,
 
-        side: {
-            valType: 'enumerated',
-            values: [
-                'top',
-                'bottom'
-            ],
-            dflt: 'top',
-            editType: 'plot',
-            description: [
-                'Determines on which side of the the voronoi the',
-                '`pathbar` should be presented.'
-            ].join(' ')
-        },
+    text: treemapAttrs.text,
+    textinfo: treemapAttrs.textinfo,
 
-        edgeshape: {
-            valType: 'enumerated',
-            values: [
-                '>',
-                '<',
-                '|',
-                '/',
-                '\\'
-            ],
-            dflt: '>',
-            editType: 'plot',
-            description: [
-                'Determines which shape is used for edges between `barpath` labels.'
-            ].join(' ')
-        },
+    hovertext: treemapAttrs.hovertext,
+    hoverinfo: treemapAttrs.hoverinfo,
+    hovertemplate: treemapAttrs.hovertemplate,
+    texttemplate: treemapAttrs.texttemplate,
 
-        thickness: {
-            valType: 'number',
-            min: 12,
-            editType: 'plot',
-            description: [
-                'Sets the thickness of `pathbar` (in px). If not specified the `pathbar.textfont.size` is used',
-                'with 3 pixles extra padding on each side.'
-            ].join(' ')
-        },
-
-        textfont: extendFlat({}, pieAttrs.textfont, {
-            description: 'Sets the font used inside `pathbar`.'
-        }),
-
-        editType: 'calc'
-    },
-
-    text: pieAttrs.text,
-    textinfo: sunburstAttrs.textinfo,
-    // TODO: incorporate `label` and `value` in the eventData
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: constants.eventDataKeys.concat(['label', 'value'])
-    }),
-
-    hovertext: pieAttrs.hovertext,
-    hoverinfo: sunburstAttrs.hoverinfo,
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: constants.eventDataKeys
-    }),
-
-    textfont: pieAttrs.textfont,
-    insidetextfont: pieAttrs.insidetextfont,
-    outsidetextfont: extendFlat({}, pieAttrs.outsidetextfont, {
+    textfont: treemapAttrs.textfont,
+    insidetextfont: treemapAttrs.insidetextfont,
+    outsidetextfont: extendFlat({}, treemapAttrs.outsidetextfont, {
         description: [
             'Sets the font used for `textinfo` lying outside the sector.',
             'This option refers to the root of the hierarchy',
-            'presented on top left corner of a voronoi graph.',
+            'presented when viewing the root of a voronoi graph.',
             'Please note that if a hierarchy has multiple root nodes,',
             'this option won\'t have any effect and `insidetextfont` would be used.'
         ].join(' ')
     }),
 
-    sort: pieAttrs.sort,
-    root: sunburstAttrs.root,
+
+    sort: treemapAttrs.sort, // TODO: possibly unused?
+    root: treemapAttrs.root,
 
     domain: domainAttrs({name: 'voronoi', trace: true, editType: 'calc'}),
 };
