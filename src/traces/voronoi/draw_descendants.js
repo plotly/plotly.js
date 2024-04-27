@@ -40,9 +40,12 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
         pt.weight = pt.value;
     });
 
+
     var tiling = trace.tiling;
+
+    Lib.seedPseudoRandom();
     for(var seed = 0; seed < tiling.seed; seed++) {
-        Lib.seedPseudoRandom();
+        Lib.pseudoRandom();
     }
 
     voronoiTreemap()

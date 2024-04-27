@@ -25,8 +25,8 @@ module.exports = {
     tiling: {
         seed: {
             valType: 'integer',
-            dflt: 1,
-            min: 1,
+            dflt: 0,
+            min: 0,
             max: 100,
             editType: 'plot',
             description: [
