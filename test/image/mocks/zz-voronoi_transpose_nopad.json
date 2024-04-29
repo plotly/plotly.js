@@ -16,6 +16,7 @@
                 "pad": 0
             },
             "marker": {
+                "cornerradius": 10,
                 "depthfade": "reversed"
             },
             "labels": [
@@ -101,6 +102,7 @@
                 "pad": 0
             },
             "marker": {
+                "cornerradius": 10,
                 "depthfade": "reversed"
             },
             "labels": [
@@ -185,6 +187,9 @@
                 "aspectratio": 1,
                 "pad": 0
             },
+            "marker": {
+                "cornerradius": 10
+            },
             "labels": [
                 "Alpha",
                 "Bravo",
@@ -266,6 +271,9 @@
                 "shape": "square",
                 "aspectratio": 0.75,
                 "pad": 0
+            },
+            "marker": {
+                "cornerradius": 10
             },
             "labels": [
                 "Alpha",

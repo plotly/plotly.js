@@ -75,7 +75,7 @@
 		{
             "type": "voronoi",
             "tiling": {
-                "pad": 4,
+                "pad": 2,
                 "shape": "circle"
             },
             "domain": {
@@ -84,6 +84,7 @@
             "count": "leaves+branches",
 			"textinfo": "label",
 			"marker": {
+                "cornerradius": 10,
 				"line": {
 					"color": "#777"
                 },
