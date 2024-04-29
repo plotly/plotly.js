@@ -4,7 +4,7 @@
             "marker": {
                 "coloraxis": "coloraxis"
             },
-            "type": "voronoi",
+            "type": "voronoi", "tiling": { "seed": 0 },
             "level": "Oscar",
             "parents": [
                 "",
@@ -79,7 +79,7 @@
             "marker": {
                 "coloraxis": "coloraxis"
             },
-            "type": "voronoi",
+            "type": "voronoi", "tiling": { "seed": 1 },
             "level": "Oscar",
             "parents": [
                 "",
@@ -159,7 +159,7 @@
             "marker": {
                 "coloraxis": "coloraxis"
             },
-            "type": "voronoi",
+            "type": "voronoi", "tiling": { "seed": 2 },
             "level": "Oscar",
             "parents": [
                 "",
@@ -246,7 +246,7 @@
             "marker": {
                 "coloraxis": "coloraxis"
             },
-            "type": "voronoi",
+            "type": "voronoi", "tiling": { "seed": 1 },
             "level": "Oscar",
             "parents": [
                 "",
