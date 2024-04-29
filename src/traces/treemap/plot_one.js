@@ -2,6 +2,7 @@
 
 var d3 = require('@plotly/d3');
 var interpolate = require('d3-interpolate').interpolate;
+var roundPolygon = require('round-polygon');
 
 var helpers = require('../sunburst/helpers');
 
@@ -236,34 +237,55 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
         var dy = _y1 - _y0;
         if(!dx || !dy) return '';
 
+        var cornerradius = trace.marker.cornerradius || 0;
+        var r = cornerradius;
+        if(!isVoronoi) {
+            r = Math.min(r, dx / 2, dy / 2);
+            if(
+                r &&
+                d.data &&
+                d.data.data &&
+                d.data.data.label
+            ) {
+                if(hasTop) r = Math.min(r, pad.t);
+                if(hasLeft) r = Math.min(r, pad.l);
+                if(hasRight) r = Math.min(r, pad.r);
+                if(hasBottom) r = Math.min(r, pad.b);
+            }
+        }
+
         if(isVoronoi) {
             var path = '';
             if(d.polygon) {
+                var polygonToRound = [];
                 for(var i = 0; i < d.polygon.length; i++) {
-                    path += i ? 'L' : 'M';
-                    path += pos(
-                        viewMapX(d.polygon[i][0]),
-                        viewMapY(d.polygon[i][1])
-                    );
+                    var x = viewMapX(d.polygon[i][0]);
+                    var y = viewMapY(d.polygon[i][1]);
+                    if(r) {
+                        polygonToRound.push({x: x, y: y});
+                    } else {
+                        path += i ? 'L' : 'M';
+                        path += pos(x, y);
+                    }
                 }
+
+                if(r) {
+                    var roundedPolygon = roundPolygon.default(polygonToRound, r);
+                    path = '';
+
+                    var segments = roundPolygon.getSegments(roundedPolygon, 'LENGTH', 3);
+
+                    for(var k = 0; k < segments.length; k++) {
+                        var p = segments[k];
+                        path += k ? 'L' : 'M';
+                        path += pos(p.x, p.y);
+                    }
+                }
+
                 path += 'Z';
             }
-            // TODO: add cornerradius for voronoi
-            return path;
-        }
 
-        var cornerradius = trace.marker.cornerradius || 0;
-        var r = Math.min(cornerradius, dx / 2, dy / 2);
-        if(
-            r &&
-            d.data &&
-            d.data.data &&
-            d.data.data.label
-        ) {
-            if(hasTop) r = Math.min(r, pad.t);
-            if(hasLeft) r = Math.min(r, pad.l);
-            if(hasRight) r = Math.min(r, pad.r);
-            if(hasBottom) r = Math.min(r, pad.b);
+            return path;
         }
 
         var arc = function(rx, ry) { return r ? 'a' + pos(r, r) + ' 0 0 1 ' + pos(rx, ry) : ''; };
