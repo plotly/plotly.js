@@ -419,7 +419,6 @@ exports.drawFramework = function(gd) {
 };
 
 exports.rangePlot = function(gd, plotinfo, cdSubplot) {
-    makeSubplotLayerBelow(gd, plotinfo);
     makeSubplotLayerAbove(gd, plotinfo);
     plotOne(gd, plotinfo, cdSubplot);
     Plots.style(gd);

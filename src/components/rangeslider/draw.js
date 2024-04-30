@@ -504,7 +504,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
 
         var plotinfo = {
             id: id,
-            plotgroup: plotgroup,
+            plotgroup: [undefined, plotgroup],
             xaxis: xa,
             yaxis: ya,
             isRangePlot: true
