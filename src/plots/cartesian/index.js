@@ -353,8 +353,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
     if(hadCartesian && !hasCartesian) {
         // if we've gotten rid of all cartesian traces, remove all the subplot svg items
-
-        purgeSubplotLayers(oldFullLayout._cartesianlayer.selectAll('.subplot'), oldFullLayout);
+        purgeSubplotLayers(oldFullLayout._cartesianlayerBelow.selectAll('.subplot'), oldFullLayout);
+        purgeSubplotLayers(oldFullLayout._cartesianlayerAbove.selectAll('.subplot'), oldFullLayout);
         oldFullLayout._defs.selectAll('.axesclip').remove();
         delete oldFullLayout._axisConstraintGroups;
         delete oldFullLayout._axisMatchGroups;
@@ -365,7 +365,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             var oldSubplotId = oldSubplotList.cartesian[i];
             if(!newPlots[oldSubplotId]) {
                 var selector = '.' + oldSubplotId + ',.' + oldSubplotId + '-x,.' + oldSubplotId + '-y';
-                oldFullLayout._cartesianlayer.selectAll(selector).remove();
+                oldFullLayout._cartesianlayerAbove.selectAll(selector).remove();
+                oldFullLayout._cartesianlayerBelow.selectAll(selector).remove();
                 removeSubplotExtras(oldSubplotId, oldFullLayout);
             }
         }
@@ -376,23 +377,39 @@ exports.drawFramework = function(gd) {
     var fullLayout = gd._fullLayout;
     var subplotData = makeSubplotData(gd);
 
-    var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
+    var subplotLayersAbove = fullLayout._cartesianlayerAbove.selectAll('.subplot')
         .data(subplotData, String);
-
-    subplotLayers.enter().append('g')
-        .attr('class', function(d) { return 'subplot ' + d[0]; });
-
-    subplotLayers.order();
-
-    subplotLayers.exit()
+    subplotLayersAbove.enter().append('g')
+        .attr('class', function(d) { return 'subplot ' + d[0] + '-above'; });
+    subplotLayersAbove.order();
+    subplotLayersAbove.exit()
         .call(purgeSubplotLayers, fullLayout);
 
-    subplotLayers.each(function(d) {
+    var subplotLayersBelow = fullLayout._cartesianlayerBelow.selectAll('.subplot')
+        .data(subplotData, String);
+    subplotLayersBelow.enter().append('g')
+        .attr('class', function(d) { return 'subplot ' + d[0] + '-below'; });
+    subplotLayersBelow.order();
+    subplotLayersBelow.exit()
+        .call(purgeSubplotLayers, fullLayout);
+
+    subplotLayersBelow.each(function(d) {
         var id = d[0];
         var plotinfo = fullLayout._plots[id];
 
-        plotinfo.plotgroup = d3.select(this);
-        makeSubplotLayer(gd, plotinfo);
+        plotinfo.plotgroup = [d3.select(this)];
+        makeSubplotLayerBelow(gd, plotinfo);
+
+        // make separate drag layers for each subplot,
+        // but append them to paper rather than the plot groups,
+        // so they end up on top of the rest
+        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
+    });
+    subplotLayersAbove.each(function(d) {
+        var id = d[0];
+        var plotinfo = fullLayout._plots[id];
+        plotinfo.plotgroup = plotinfo.plotgroup.concat([d3.select(this)]);
+        makeSubplotLayerAbove(gd, plotinfo);
 
         // make separate drag layers for each subplot,
         // but append them to paper rather than the plot groups,
@@ -402,7 +419,8 @@ exports.drawFramework = function(gd) {
 };
 
 exports.rangePlot = function(gd, plotinfo, cdSubplot) {
-    makeSubplotLayer(gd, plotinfo);
+    makeSubplotLayerBelow(gd, plotinfo);
+    makeSubplotLayerAbove(gd, plotinfo);
     plotOne(gd, plotinfo, cdSubplot);
     Plots.style(gd);
 };
@@ -468,8 +486,50 @@ function makeSubplotData(gd) {
     return subplotData;
 }
 
-function makeSubplotLayer(gd, plotinfo) {
-    var plotgroup = plotinfo.plotgroup;
+function makeSubplotLayerBelow(gd, plotinfo) {
+    var plotgroup = plotinfo.plotgroup[0];
+    var hasOnlyLargeSploms = gd._fullLayout._hasOnlyLargeSploms;
+
+    if(!plotinfo.mainplot) {
+        var backLayer = ensureSingle(plotgroup, 'g', 'layer-subplot');
+        plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
+        plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
+
+        plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
+        plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
+        plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+    } else {
+        var mainplotinfo = plotinfo.mainplotinfo;
+
+        // now make the components of overlaid subplots
+        // overlays don't have backgrounds, and append all
+        // their other components to the corresponding
+        // extra groups of their main plots.
+
+        plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
+        plotinfo.gridlayer = mainplotinfo.gridlayer;
+        plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+    }
+
+    // common attributes for all subplots, overlays or not
+
+    if(!hasOnlyLargeSploms) {
+        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
+        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
+        plotinfo.minorGridlayer.selectAll('g')
+            .map(function(d) { return d[0]; })
+            .sort(axisIds.idSort);
+
+        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
+        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
+        plotinfo.gridlayer.selectAll('g')
+            .map(function(d) { return d[0]; })
+            .sort(axisIds.idSort);
+    }
+}
+
+function makeSubplotLayerAbove(gd, plotinfo) {
+    var plotgroup = plotinfo.plotgroup[1];
     var id = plotinfo.id;
     var xLayer = constants.layerValue2layerClass[plotinfo.xaxis.layer];
     var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
@@ -487,18 +547,6 @@ function makeSubplotLayer(gd, plotinfo) {
             plotinfo.xaxislayer = ensureSingle(plotgroup, 'g', 'xaxislayer-above');
             plotinfo.yaxislayer = ensureSingle(plotgroup, 'g', 'yaxislayer-above');
         } else {
-            var backLayer = ensureSingle(plotgroup, 'g', 'layer-subplot');
-            plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
-            plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
-
-            plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
-            plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
-            plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
-
-            var betweenLayer = ensureSingle(plotgroup, 'g', 'layer-between');
-            plotinfo.shapelayerBetween = ensureSingle(betweenLayer, 'g', 'shapelayer');
-            plotinfo.imagelayerBetween = ensureSingle(betweenLayer, 'g', 'imagelayer');
-
             ensureSingle(plotgroup, 'path', 'xlines-below');
             ensureSingle(plotgroup, 'path', 'ylines-below');
             plotinfo.overlinesBelow = ensureSingle(plotgroup, 'g', 'overlines-below');
@@ -526,7 +574,7 @@ function makeSubplotLayer(gd, plotinfo) {
         }
     } else {
         var mainplotinfo = plotinfo.mainplotinfo;
-        var mainplotgroup = mainplotinfo.plotgroup;
+        var mainplotgroup = mainplotinfo.plotgroup[1];
         var xId = id + '-x';
         var yId = id + '-y';
 
@@ -534,10 +582,6 @@ function makeSubplotLayer(gd, plotinfo) {
         // overlays don't have backgrounds, and append all
         // their other components to the corresponding
         // extra groups of their main plots.
-
-        plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
-        plotinfo.gridlayer = mainplotinfo.gridlayer;
-        plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
 
         ensureSingle(mainplotinfo.overlinesBelow, 'path', xId);
         ensureSingle(mainplotinfo.overlinesBelow, 'path', yId);
@@ -559,20 +603,6 @@ function makeSubplotLayer(gd, plotinfo) {
     }
 
     // common attributes for all subplots, overlays or not
-
-    if(!hasOnlyLargeSploms) {
-        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
-        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
-        plotinfo.minorGridlayer.selectAll('g')
-            .map(function(d) { return d[0]; })
-            .sort(axisIds.idSort);
-
-        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
-        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
-        plotinfo.gridlayer.selectAll('g')
-            .map(function(d) { return d[0]; })
-            .sort(axisIds.idSort);
-    }
 
     plotinfo.xlines
         .style('fill', 'none')

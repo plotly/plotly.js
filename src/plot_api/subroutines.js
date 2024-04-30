@@ -133,8 +133,7 @@ function lsInner(gd) {
         } else {
             var xDomain = plotinfo.xaxis.domain;
             var yDomain = plotinfo.yaxis.domain;
-            var plotgroup = plotinfo.plotgroup;
-
+            var plotgroup = plotinfo.plotgroup[0];
             if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
                 var pgNode = plotgroup.node();
                 var plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');

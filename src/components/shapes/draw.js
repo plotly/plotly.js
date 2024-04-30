@@ -93,10 +93,10 @@ function drawOne(gd, index) {
 
     if(options.layer === 'above') {
         drawShape(gd._fullLayout._shapeUpperLayer);
+    } else if(options.layer === 'between') {
+        drawShape(gd._fullLayout.shapeLayerBetween);
     } else if(options.xref === 'paper' || options.yref === 'paper') {
         drawShape(gd._fullLayout._shapeLowerLayer);
-    } else if(options.layer === 'between') {
-        drawShape(plotinfo.shapelayerBetween);
     } else {
         if(plotinfo._hadPlotinfo) {
             var mainPlot = plotinfo.mainplotinfo || plotinfo;
