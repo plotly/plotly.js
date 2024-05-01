@@ -74,7 +74,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     } else {
-        coerce('marker.depthfade', !(traceOut.marker.colors || []).length);
+        var depthfadeDflt = (traceOut.marker.colors || []).length ? false : 'reversed';
+        coerce('marker.depthfade', depthfadeDflt);
     }
 
     coerce('marker.cornerradius');

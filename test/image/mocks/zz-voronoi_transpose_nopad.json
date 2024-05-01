@@ -188,7 +188,8 @@
                 "pad": 0
             },
             "marker": {
-                "cornerradius": 10
+                "cornerradius": 10,
+                "depthfade": true
             },
             "labels": [
                 "Alpha",
@@ -273,7 +274,8 @@
                 "pad": 0
             },
             "marker": {
-                "cornerradius": 10
+                "cornerradius": 10,
+                "depthfade": true
             },
             "labels": [
                 "Alpha",
