@@ -322,7 +322,11 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     if(oldFullLayout._hasOnlyLargeSploms && !newFullLayout._hasOnlyLargeSploms) {
         for(k in oldPlots) {
             plotinfo = oldPlots[k];
-            if(plotinfo.plotgroup) plotinfo.plotgroup.remove();
+            if(plotinfo.plotgroup) {
+                for(var idx = 0; idx < plotinfo.plotgroup.length; idx++) {
+                    plotinfo.plotgroup[idx].remove();
+                }
+            }
         }
     }
 
