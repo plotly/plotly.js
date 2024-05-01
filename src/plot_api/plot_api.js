@@ -3784,8 +3784,8 @@ function makePlotFramework(gd) {
     // single cartesian layer for the whole plot
     fullLayout._cartesianlayerBelow = fullLayout._paper.append('g').classed('cartesianlayer-below', true);
     var layerBetween = fullLayout._paper.append('g').classed('layer-between', true);
-    fullLayout.imageLayerBetween = layerBetween.append('g').classed('imagelayer', true);
-    fullLayout.shapeLayerBetween = layerBetween.append('g').classed('shapelayer', true);
+    fullLayout._imageLayerBetween = layerBetween.append('g').classed('imagelayer', true);
+    fullLayout._shapeLayerBetween = layerBetween.append('g').classed('shapelayer', true);
     fullLayout._cartesianlayerAbove = fullLayout._paper.append('g').classed('cartesianlayer-above', true);
     // single polar layer for the whole plot
     fullLayout._polarlayer = fullLayout._paper.append('g').classed('polarlayer', true);
