@@ -384,7 +384,7 @@ exports.drawFramework = function(gd) {
     var subplotLayersAbove = fullLayout._cartesianlayerAbove.selectAll('.subplot')
         .data(subplotData, String);
     subplotLayersAbove.enter().append('g')
-        .attr('class', function(d) { return 'subplot ' + d[0] + '-above'; });
+        .attr('class', function(d) { return 'subplot ' + d[0]; });
     subplotLayersAbove.order();
     subplotLayersAbove.exit()
         .call(purgeSubplotLayers, fullLayout);
