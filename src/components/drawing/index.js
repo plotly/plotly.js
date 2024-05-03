@@ -51,14 +51,15 @@ drawing.font = function(s, font) {
     if(striding) s.style('text-decoration-line', striding2decorationLine(striding));
 };
 
+var capitalize2transformOptions = {
+    normal: 'none',
+    word: 'capitalize',
+    lower: 'lowercase',
+    upper: 'uppercase'
+};
+
 function capitalize2transform(capitalize) {
-    return (
-        capitalize === 'normal' ?
-            'none' :
-        capitalize === 'word' ?
-            'capitalize' :
-            (capitalize + 'case')
-    );
+    return capitalize2transformOptions[capitalize];
 }
 drawing.capitalize2transform = capitalize2transform;
 
