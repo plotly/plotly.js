@@ -1044,16 +1044,17 @@ function createHoverText(hoverData, opts) {
         var commonBgColor = commonLabelOpts.bgcolor || Color.defaultLine;
         var commonStroke = commonLabelOpts.bordercolor || Color.contrast(commonBgColor);
         var contrastColor = Color.contrast(commonBgColor);
+        var commonLabelOptsFont = commonLabelOpts.font;
         var commonLabelFont = {
-            weight: commonLabelOpts.font.weight || fontWeight,
-            style: commonLabelOpts.font.style || fontStyle,
-            variant: commonLabelOpts.font.variant || fontVariant,
-            capitalize: commonLabelOpts.font.capitalize || fontCapitalize,
-            striding: commonLabelOpts.font.striding || fontStriding,
-            shadow: commonLabelOpts.font.shadow || fontShadow,
-            family: commonLabelOpts.font.family || fontFamily,
-            size: commonLabelOpts.font.size || fontSize,
-            color: commonLabelOpts.font.color || contrastColor
+            weight: commonLabelOptsFont.weight || fontWeight,
+            style: commonLabelOptsFont.style || fontStyle,
+            variant: commonLabelOptsFont.variant || fontVariant,
+            capitalize: commonLabelOptsFont.capitalize || fontCapitalize,
+            striding: commonLabelOptsFont.striding || fontStriding,
+            shadow: commonLabelOptsFont.shadow || fontShadow,
+            family: commonLabelOptsFont.family || fontFamily,
+            size: commonLabelOptsFont.size || fontSize,
+            color: commonLabelOptsFont.color || contrastColor
         };
 
         lpath.style({
