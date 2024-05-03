@@ -53,9 +53,11 @@ drawing.font = function(s, font) {
 
 function capitalize2transform(capitalize) {
     return (
-        capitalize === 'normal' ? 'none' :
-        capitalize === 'word' ? 'capitalize' :
-            capitalize
+        capitalize === 'normal' ?
+            'none' :
+        capitalize === 'word' ?
+            'capitalize' :
+            (capitalize + 'case')
     );
 }
 drawing.capitalize2transform = capitalize2transform;

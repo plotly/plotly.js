@@ -609,8 +609,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -865,8 +865,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -971,8 +971,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -1333,8 +1333,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -1619,8 +1619,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -1863,8 +1863,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -2199,8 +2199,8 @@
      "values": [
       "normal",
       "word",
-      "uppercase",
-      "lowercase"
+      "upper",
+      "lower"
      ]
     },
     "color": {
@@ -3038,8 +3038,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -3127,8 +3127,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -3410,8 +3410,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -3507,8 +3507,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -3653,8 +3653,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -4462,8 +4462,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -4642,8 +4642,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -5087,8 +5087,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -5420,8 +5420,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -5898,8 +5898,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -6113,8 +6113,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -6367,8 +6367,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -6473,8 +6473,8 @@
           "values": [
            "normal",
            "word",
-           "uppercase",
-           "lowercase"
+           "upper",
+           "lower"
           ]
          },
          "color": {
@@ -6940,8 +6940,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -7420,8 +7420,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -7628,8 +7628,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -7766,8 +7766,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -8246,8 +8246,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -8454,8 +8454,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -8592,8 +8592,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -9072,8 +9072,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -9280,8 +9280,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -9573,8 +9573,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -9753,8 +9753,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -10058,8 +10058,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -10181,8 +10181,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -10723,8 +10723,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -11004,8 +11004,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -11180,8 +11180,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -11460,8 +11460,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -11675,8 +11675,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -11782,8 +11782,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -12062,8 +12062,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -12277,8 +12277,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -12390,8 +12390,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -12670,8 +12670,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -12885,8 +12885,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -13072,8 +13072,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -13481,8 +13481,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -13692,8 +13692,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -14486,8 +14486,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -14885,8 +14885,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -15149,8 +15149,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -15304,8 +15304,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -16188,8 +16188,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -16452,8 +16452,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -16934,8 +16934,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -17136,8 +17136,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -17290,8 +17290,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -17457,8 +17457,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -17743,8 +17743,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -17987,8 +17987,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -18439,8 +18439,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -18652,8 +18652,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -19222,8 +19222,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -19425,8 +19425,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -19592,8 +19592,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -19878,8 +19878,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -20122,8 +20122,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -20899,8 +20899,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -21119,8 +21119,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -22442,8 +22442,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -22665,8 +22665,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -23057,8 +23057,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -23504,8 +23504,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -23686,8 +23686,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -23823,8 +23823,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -24270,8 +24270,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -24452,8 +24452,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -24610,8 +24610,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -24719,8 +24719,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -24970,8 +24970,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -25256,8 +25256,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -25500,8 +25500,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -25770,8 +25770,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -25973,8 +25973,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -26363,8 +26363,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -26649,8 +26649,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -26893,8 +26893,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -27157,8 +27157,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -27360,8 +27360,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -27785,8 +27785,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -28071,8 +28071,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -28315,8 +28315,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -28573,8 +28573,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -28776,8 +28776,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -29226,8 +29226,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -29512,8 +29512,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -29756,8 +29756,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -29966,8 +29966,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -30228,8 +30228,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -30435,8 +30435,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -30652,8 +30652,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -31145,8 +31145,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -31431,8 +31431,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -31675,8 +31675,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -31879,8 +31879,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -32109,8 +32109,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -32467,8 +32467,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -32753,8 +32753,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -32997,8 +32997,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -33251,8 +33251,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -33464,8 +33464,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -33922,8 +33922,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -34123,8 +34123,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -34277,8 +34277,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -34444,8 +34444,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -34730,8 +34730,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -34974,8 +34974,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -35322,8 +35322,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -35506,8 +35506,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -36050,8 +36050,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -36240,8 +36240,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -36410,8 +36410,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -36714,8 +36714,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -36904,8 +36904,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -37163,8 +37163,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -37449,8 +37449,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -37693,8 +37693,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -37970,8 +37970,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -38177,8 +38177,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -38350,8 +38350,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -38799,8 +38799,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -39085,8 +39085,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -39329,8 +39329,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -39601,8 +39601,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -39774,8 +39774,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -40506,8 +40506,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -40706,8 +40706,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -40807,8 +40807,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -40974,8 +40974,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -41260,8 +41260,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -41504,8 +41504,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -41956,8 +41956,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -42115,8 +42115,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -42526,8 +42526,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -42812,8 +42812,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -43056,8 +43056,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -43336,8 +43336,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -43527,8 +43527,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -43723,8 +43723,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -44128,8 +44128,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -44414,8 +44414,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -44658,8 +44658,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -44863,8 +44863,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -45128,8 +45128,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -45319,8 +45319,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -45560,8 +45560,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -46058,8 +46058,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -46249,8 +46249,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -46418,8 +46418,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -46585,8 +46585,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -46871,8 +46871,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -47115,8 +47115,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -47471,8 +47471,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -47648,8 +47648,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -47842,8 +47842,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -48231,8 +48231,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -48426,8 +48426,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -48762,8 +48762,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -49100,8 +49100,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -49507,8 +49507,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -49643,8 +49643,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -49781,8 +49781,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -50039,8 +50039,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -50325,8 +50325,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -50569,8 +50569,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -50853,8 +50853,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -51066,8 +51066,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -51655,8 +51655,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -51941,8 +51941,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -52185,8 +52185,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -52490,8 +52490,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -52743,8 +52743,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -53313,8 +53313,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -53545,8 +53545,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -54099,8 +54099,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -54188,8 +54188,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -54349,8 +54349,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -54635,8 +54635,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -54879,8 +54879,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -55138,8 +55138,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -55464,8 +55464,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -55569,8 +55569,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -55736,8 +55736,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -56022,8 +56022,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -56266,8 +56266,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -56549,8 +56549,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -56655,8 +56655,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -56819,8 +56819,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -57098,8 +57098,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -57288,8 +57288,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -57470,8 +57470,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -57738,8 +57738,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -57941,8 +57941,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -58133,8 +58133,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -58450,8 +58450,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -58639,8 +58639,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -59104,8 +59104,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -59277,8 +59277,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -59534,8 +59534,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "capitalizesrc": {
@@ -59897,8 +59897,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "capitalizesrc": {
@@ -60178,8 +60178,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "color": {
@@ -60771,8 +60771,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -60984,8 +60984,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -61249,8 +61249,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -61535,8 +61535,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -61779,8 +61779,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -62813,8 +62813,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -63634,8 +63634,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -63837,8 +63837,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -64004,8 +64004,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -64290,8 +64290,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -64534,8 +64534,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -64813,8 +64813,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -65099,8 +65099,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -65343,8 +65343,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -66282,8 +66282,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -66494,8 +66494,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -66744,8 +66744,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -67030,8 +67030,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -67274,8 +67274,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -68273,8 +68273,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -68670,8 +68670,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -68883,8 +68883,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -69135,8 +69135,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -69421,8 +69421,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -69665,8 +69665,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -70657,8 +70657,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -71230,8 +71230,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -71433,8 +71433,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -71655,8 +71655,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -71941,8 +71941,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -72185,8 +72185,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -73659,8 +73659,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -73872,8 +73872,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -74083,8 +74083,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -74369,8 +74369,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -74613,8 +74613,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -75245,8 +75245,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -75457,8 +75457,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -75707,8 +75707,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -75993,8 +75993,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -76237,8 +76237,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -77257,8 +77257,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -77659,8 +77659,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -77862,8 +77862,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -78071,8 +78071,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -78357,8 +78357,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -78601,8 +78601,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -79909,8 +79909,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -80131,8 +80131,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -80381,8 +80381,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -80667,8 +80667,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -80911,8 +80911,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -81925,8 +81925,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -82322,8 +82322,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -82534,8 +82534,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -82784,8 +82784,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -83070,8 +83070,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -83314,8 +83314,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -84326,8 +84326,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -84736,8 +84736,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -84939,8 +84939,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -85118,8 +85118,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -85404,8 +85404,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -85648,8 +85648,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -86749,8 +86749,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -87035,8 +87035,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -87279,8 +87279,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -87538,8 +87538,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -87735,8 +87735,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -88345,8 +88345,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -88536,8 +88536,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -88717,8 +88717,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -88884,8 +88884,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -89170,8 +89170,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -89414,8 +89414,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -89770,8 +89770,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -89967,8 +89967,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -90274,8 +90274,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -90560,8 +90560,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -90804,8 +90804,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -91347,8 +91347,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -91550,8 +91550,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -92015,8 +92015,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -92368,8 +92368,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -92654,8 +92654,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -92827,8 +92827,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -93166,8 +93166,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -93357,8 +93357,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -93515,8 +93515,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -93682,8 +93682,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -93968,8 +93968,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -94212,8 +94212,8 @@
          "values": [
           "normal",
           "word",
-          "uppercase",
-          "lowercase"
+          "upper",
+          "lower"
          ]
         },
         "color": {
@@ -94613,8 +94613,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -94790,8 +94790,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -94984,8 +94984,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -95414,8 +95414,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -95638,8 +95638,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -96820,8 +96820,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -97106,8 +97106,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -97350,8 +97350,8 @@
         "values": [
          "normal",
          "word",
-         "uppercase",
-         "lowercase"
+         "upper",
+         "lower"
         ]
        },
        "color": {
@@ -97634,8 +97634,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -97847,8 +97847,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -98581,8 +98581,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "capitalizesrc": {
@@ -98814,8 +98814,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -98968,8 +98968,8 @@
        "values": [
         "normal",
         "word",
-        "uppercase",
-        "lowercase"
+        "upper",
+        "lower"
        ]
       },
       "color": {
@@ -99138,8 +99138,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
@@ -99322,8 +99322,8 @@
       "values": [
        "normal",
        "word",
-       "uppercase",
-       "lowercase"
+       "upper",
+       "lower"
       ]
      },
      "capitalizesrc": {
