@@ -603,11 +603,11 @@
     "titlefont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "layoutstyle",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -859,11 +859,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc+arraydraw",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -965,11 +965,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "arraydraw",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -1327,11 +1327,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -1613,11 +1613,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -1857,11 +1857,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -2193,11 +2193,11 @@
    "font": {
     "capitalize": {
      "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-     "dflt": "none",
+     "dflt": "normal",
      "editType": "calc",
      "valType": "enumerated",
      "values": [
-      "none",
+      "normal",
       "word",
       "uppercase",
       "lowercase"
@@ -3032,11 +3032,11 @@
     "font": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "none",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -3121,11 +3121,11 @@
     "grouptitlefont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "none",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -3404,11 +3404,11 @@
     "font": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "legend",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -3501,11 +3501,11 @@
     "grouptitlefont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "legend",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -3647,11 +3647,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "legend",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -4456,11 +4456,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -4636,11 +4636,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -5081,11 +5081,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -5414,11 +5414,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "ticks",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -5892,11 +5892,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -6107,11 +6107,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "ticks",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -6361,11 +6361,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -6467,11 +6467,11 @@
         "font": {
          "capitalize": {
           "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-          "dflt": "none",
+          "dflt": "normal",
           "editType": "calc",
           "valType": "enumerated",
           "values": [
-           "none",
+           "normal",
            "word",
            "uppercase",
            "lowercase"
@@ -6934,11 +6934,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -7414,11 +7414,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -7622,11 +7622,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -7760,11 +7760,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -8240,11 +8240,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -8448,11 +8448,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -8586,11 +8586,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -9066,11 +9066,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -9274,11 +9274,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -9567,11 +9567,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc+arraydraw",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -9747,11 +9747,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc+arraydraw",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -10052,11 +10052,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "arraydraw",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -10175,11 +10175,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "arraydraw",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -10717,11 +10717,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -10998,11 +10998,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -11174,11 +11174,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -11454,11 +11454,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -11669,11 +11669,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -11776,11 +11776,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -12056,11 +12056,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -12271,11 +12271,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -12384,11 +12384,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -12664,11 +12664,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -12879,11 +12879,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -13066,11 +13066,11 @@
     "font": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "layoutstyle",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -13475,11 +13475,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "arraydraw",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -13686,11 +13686,11 @@
      "titlefont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "ticks",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -14480,11 +14480,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -14879,11 +14879,11 @@
     "tickfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "ticks",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -15143,11 +15143,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "ticks",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -15298,11 +15298,11 @@
      "titlefont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "ticks",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -16182,11 +16182,11 @@
     "tickfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "ticks",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -16446,11 +16446,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "ticks",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -16928,11 +16928,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -17130,11 +17130,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -17284,11 +17284,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -17451,11 +17451,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -17737,11 +17737,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -17981,11 +17981,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -18433,11 +18433,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -18646,11 +18646,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -19216,11 +19216,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -19419,11 +19419,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -19586,11 +19586,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -19872,11 +19872,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -20116,11 +20116,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -20893,11 +20893,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -21113,11 +21113,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -22436,11 +22436,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -22659,11 +22659,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -23051,11 +23051,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -23498,11 +23498,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -23680,11 +23680,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -23817,11 +23817,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -24264,11 +24264,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -24446,11 +24446,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -24604,11 +24604,11 @@
     "font": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -24713,11 +24713,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -24964,11 +24964,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -25250,11 +25250,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -25494,11 +25494,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -25764,11 +25764,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -25967,11 +25967,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -26357,11 +26357,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -26643,11 +26643,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -26887,11 +26887,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -27151,11 +27151,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -27354,11 +27354,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -27779,11 +27779,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -28065,11 +28065,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -28309,11 +28309,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -28567,11 +28567,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -28770,11 +28770,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -29220,11 +29220,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -29506,11 +29506,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -29750,11 +29750,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -29960,11 +29960,11 @@
      "labelfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -30222,11 +30222,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -30429,11 +30429,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -30646,11 +30646,11 @@
     "textfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -31139,11 +31139,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -31425,11 +31425,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -31669,11 +31669,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -31873,11 +31873,11 @@
      "labelfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -32103,11 +32103,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -32461,11 +32461,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -32747,11 +32747,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -32991,11 +32991,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -33245,11 +33245,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -33458,11 +33458,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -33916,11 +33916,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -34117,11 +34117,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -34271,11 +34271,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -34438,11 +34438,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -34724,11 +34724,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -34968,11 +34968,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -35316,11 +35316,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -35500,11 +35500,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -36044,11 +36044,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -36234,11 +36234,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -36404,11 +36404,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -36708,11 +36708,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -36898,11 +36898,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -37157,11 +37157,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -37443,11 +37443,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -37687,11 +37687,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -37964,11 +37964,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -38171,11 +38171,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -38344,11 +38344,11 @@
     "textfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -38793,11 +38793,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -39079,11 +39079,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -39323,11 +39323,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -39595,11 +39595,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -39768,11 +39768,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -40500,11 +40500,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -40700,11 +40700,11 @@
     "insidetextfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -40801,11 +40801,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -40968,11 +40968,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -41254,11 +41254,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -41498,11 +41498,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -41950,11 +41950,11 @@
     "outsidetextfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -42109,11 +42109,11 @@
     "textfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -42520,11 +42520,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -42806,11 +42806,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -43050,11 +43050,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -43330,11 +43330,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -43521,11 +43521,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -43717,11 +43717,11 @@
     "textfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -44122,11 +44122,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -44408,11 +44408,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -44652,11 +44652,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -44857,11 +44857,11 @@
      "labelfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -45122,11 +45122,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -45313,11 +45313,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -45554,11 +45554,11 @@
     "textfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -46052,11 +46052,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -46243,11 +46243,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -46412,11 +46412,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -46579,11 +46579,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -46865,11 +46865,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -47109,11 +47109,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -47465,11 +47465,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -47642,11 +47642,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -47836,11 +47836,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -48225,11 +48225,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -48420,11 +48420,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -48756,11 +48756,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -49094,11 +49094,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "plot",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -49501,11 +49501,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -49637,11 +49637,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -49775,11 +49775,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -50033,11 +50033,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -50319,11 +50319,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -50563,11 +50563,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -50847,11 +50847,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -51060,11 +51060,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -51649,11 +51649,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -51935,11 +51935,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -52179,11 +52179,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -52484,11 +52484,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -52737,11 +52737,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -53307,11 +53307,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -53539,11 +53539,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -54093,11 +54093,11 @@
     "labelfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -54182,11 +54182,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -54343,11 +54343,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -54629,11 +54629,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -54873,11 +54873,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -55132,11 +55132,11 @@
     "tickfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -55458,11 +55458,11 @@
     "labelfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -55563,11 +55563,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -55730,11 +55730,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -56016,11 +56016,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -56260,11 +56260,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -56543,11 +56543,11 @@
     "rangefont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -56649,11 +56649,11 @@
     "tickfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -56813,11 +56813,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -57092,11 +57092,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -57282,11 +57282,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -57464,11 +57464,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -57732,11 +57732,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -57935,11 +57935,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -58127,11 +58127,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -58444,11 +58444,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -58633,11 +58633,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -59098,11 +59098,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -59271,11 +59271,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -59528,11 +59528,11 @@
        "capitalize": {
         "arrayOk": true,
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -59891,11 +59891,11 @@
        "capitalize": {
         "arrayOk": true,
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -60172,11 +60172,11 @@
     "textfont": {
      "capitalize": {
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -60765,11 +60765,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -60978,11 +60978,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -61243,11 +61243,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -61529,11 +61529,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -61773,11 +61773,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -62807,11 +62807,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -63628,11 +63628,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -63831,11 +63831,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -63998,11 +63998,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -64284,11 +64284,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -64528,11 +64528,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -64807,11 +64807,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -65093,11 +65093,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -65337,11 +65337,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -66276,11 +66276,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -66488,11 +66488,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -66738,11 +66738,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -67024,11 +67024,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -67268,11 +67268,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -68267,11 +68267,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -68664,11 +68664,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -68877,11 +68877,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -69129,11 +69129,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -69415,11 +69415,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -69659,11 +69659,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -70651,11 +70651,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -71224,11 +71224,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -71427,11 +71427,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -71649,11 +71649,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -71935,11 +71935,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -72179,11 +72179,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -73653,11 +73653,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -73866,11 +73866,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -74077,11 +74077,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -74363,11 +74363,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -74607,11 +74607,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -75239,11 +75239,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -75451,11 +75451,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -75701,11 +75701,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -75987,11 +75987,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -76231,11 +76231,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -77251,11 +77251,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -77653,11 +77653,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -77856,11 +77856,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -78065,11 +78065,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -78351,11 +78351,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -78595,11 +78595,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "calc",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -79903,11 +79903,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -80125,11 +80125,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -80375,11 +80375,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -80661,11 +80661,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -80905,11 +80905,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -81919,11 +81919,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -82316,11 +82316,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -82528,11 +82528,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -82778,11 +82778,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -83064,11 +83064,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -83308,11 +83308,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -84320,11 +84320,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -84730,11 +84730,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -84933,11 +84933,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -85112,11 +85112,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -85398,11 +85398,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -85642,11 +85642,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -86743,11 +86743,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -87029,11 +87029,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -87273,11 +87273,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -87532,11 +87532,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -87729,11 +87729,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -88339,11 +88339,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -88530,11 +88530,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -88711,11 +88711,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -88878,11 +88878,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -89164,11 +89164,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -89408,11 +89408,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -89764,11 +89764,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -89961,11 +89961,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -90268,11 +90268,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -90554,11 +90554,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -90798,11 +90798,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -91341,11 +91341,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -91544,11 +91544,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -92009,11 +92009,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -92362,11 +92362,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -92648,11 +92648,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -92821,11 +92821,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -93160,11 +93160,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -93351,11 +93351,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -93509,11 +93509,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -93676,11 +93676,11 @@
        "titlefont": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -93962,11 +93962,11 @@
       "tickfont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "colorbars",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -94206,11 +94206,11 @@
        "font": {
         "capitalize": {
          "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-         "dflt": "none",
+         "dflt": "normal",
          "editType": "colorbars",
          "valType": "enumerated",
          "values": [
-          "none",
+          "normal",
           "word",
           "uppercase",
           "lowercase"
@@ -94607,11 +94607,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -94784,11 +94784,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "plot",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -94978,11 +94978,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -95408,11 +95408,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -95632,11 +95632,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -96814,11 +96814,11 @@
       "titlefont": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -97100,11 +97100,11 @@
      "tickfont": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -97344,11 +97344,11 @@
       "font": {
        "capitalize": {
         "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-        "dflt": "none",
+        "dflt": "normal",
         "editType": "calc",
         "valType": "enumerated",
         "values": [
-         "none",
+         "normal",
          "word",
          "uppercase",
          "lowercase"
@@ -97628,11 +97628,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -97841,11 +97841,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -98575,11 +98575,11 @@
       "capitalize": {
        "arrayOk": true,
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "none",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -98808,11 +98808,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -98962,11 +98962,11 @@
      "font": {
       "capitalize": {
        "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-       "dflt": "none",
+       "dflt": "normal",
        "editType": "style",
        "valType": "enumerated",
        "values": [
-        "none",
+        "normal",
         "word",
         "uppercase",
         "lowercase"
@@ -99132,11 +99132,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"
@@ -99316,11 +99316,11 @@
      "capitalize": {
       "arrayOk": true,
       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
-      "dflt": "none",
+      "dflt": "normal",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "none",
+       "normal",
        "word",
        "uppercase",
        "lowercase"

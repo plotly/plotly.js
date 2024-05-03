@@ -2373,7 +2373,7 @@ describe('Test axes', function() {
                     weight: 'normal',
                     style: 'normal',
                     variant: 'normal',
-                    capitalize: 'none',
+                    capitalize: 'normal',
                     striding: 'none',
                     shadow: 'none',
                 });
@@ -2396,7 +2396,7 @@ describe('Test axes', function() {
                         weight: 'normal',
                         style: 'normal',
                         variant: 'normal',
-                        capitalize: 'none',
+                        capitalize: 'normal',
                         striding: 'none',
                         shadow: 'none',
                     },
@@ -2419,7 +2419,7 @@ describe('Test axes', function() {
                     weight: 'normal',
                     style: 'normal',
                     variant: 'normal',
-                    capitalize: 'none',
+                    capitalize: 'normal',
                     striding: 'none',
                     shadow: 'none',
                 });

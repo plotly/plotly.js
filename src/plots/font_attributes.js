@@ -89,8 +89,8 @@ module.exports = function(opts) {
         capitalize: opts.noFontCapitalize ? undefined : {
             editType: editType,
             valType: 'enumerated',
-            values: ['none', 'word', 'uppercase', 'lowercase'],
-            dflt: 'none',
+            values: ['normal', 'word', 'uppercase', 'lowercase'],
+            dflt: 'normal',
             description: [
                 'Sets capitalization of text.',
                 'It can be used to make text appear in all-uppercase or all-lowercase,',
