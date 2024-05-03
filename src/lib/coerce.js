@@ -3,6 +3,8 @@
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
+var extendFlat = require('./extend').extendFlat;
+
 var baseTraceAttrs = require('../plots/attributes');
 var colorscales = require('../components/colorscale/scales');
 var Color = require('../components/color');
@@ -457,17 +459,17 @@ exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dfl
  */
 exports.coerceFont = function(coerce, attr, dfltObj, opts) {
     if(!opts) opts = {};
+    dfltObj = extendFlat({}, dfltObj);
+    dfltObj = extendFlat(dfltObj, opts.overrideDflt || {});
 
-    var out = {};
+    var out = {
+        family: coerce(attr + '.family', dfltObj.family),
+        size: coerce(attr + '.size', dfltObj.size),
+        color: coerce(attr + '.color', dfltObj.color),
+        weight: coerce(attr + '.weight', dfltObj.weight),
+        style: coerce(attr + '.style', dfltObj.style),
+    };
 
-    dfltObj = dfltObj || {};
-
-    out.family = coerce(attr + '.family', dfltObj.family);
-    out.size = coerce(attr + '.size', dfltObj.size);
-    out.color = coerce(attr + '.color', dfltObj.color);
-
-    out.weight = coerce(attr + '.weight', dfltObj.weight);
-    out.style = coerce(attr + '.style', dfltObj.style);
     if(!opts.noFontVariant) out.variant = coerce(attr + '.variant', dfltObj.variant);
     if(!opts.noFontStriding) out.striding = coerce(attr + '.striding', dfltObj.striding);
     if(!opts.noFontCapitalize) out.capitalize = coerce(attr + '.capitalize', dfltObj.capitalize);

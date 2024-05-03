@@ -26,17 +26,9 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             (contColor && contColor !== layoutAttributes.color.dflt) ?
             contColor : font.color;
 
-        Lib.coerceFont(coerce, 'tickfont', {
-            family: font.family,
-            weight: font.weight,
-            style: font.style,
-            variant: font.variant,
-            capitalize: font.capitalize,
-            striding: font.striding,
-            shadow: font.shadow,
-            size: font.size,
+        Lib.coerceFont(coerce, 'tickfont', font, { overrideDflt: {
             color: dfltFontColor
-        });
+        }});
 
         if(
             !options.noTicklabelstep &&
