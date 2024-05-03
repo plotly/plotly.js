@@ -114,8 +114,13 @@ exports.valObjectMeta = {
             'are coerced to the `dflt`.'
         ].join(' '),
         requiredOpts: [],
-        otherOpts: ['dflt', 'min', 'max', 'arrayOk'],
+        otherOpts: ['dflt', 'min', 'max', 'arrayOk', 'extras'],
         coerceFunction: function(v, propOut, dflt, opts) {
+            if((opts.extras || []).indexOf(v) !== -1) {
+                propOut.set(v);
+                return;
+            }
+
             if(v % 1 || !isNumeric(v) ||
                     (opts.min !== undefined && v < opts.min) ||
                     (opts.max !== undefined && v > opts.max)) {
