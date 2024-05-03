@@ -128,7 +128,7 @@ function getInsideTextFont(trace, index, layoutFont, barColor) {
             style: defaultFont.style,
             variant: defaultFont.variant,
             capitalize: defaultFont.capitalize,
-            striding: defaultFont.striding,
+            decorline: defaultFont.decorline,
             shadow: defaultFont.shadow,
         };
     }
@@ -153,7 +153,7 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
     var styleValue = helpers.getValue(attributeValue.style, index);
     var variantValue = helpers.getValue(attributeValue.variant, index);
     var capitalizeValue = helpers.getValue(attributeValue.capitalize, index);
-    var stridingValue = helpers.getValue(attributeValue.striding, index);
+    var decorlineValue = helpers.getValue(attributeValue.decorline, index);
     var shadowValue = helpers.getValue(attributeValue.shadow, index);
 
     return {
@@ -171,8 +171,8 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
             attributeDefinition.variant, variantValue, defaultValue.variant),
         capitalize: helpers.coerceString(
             attributeDefinition.variant, capitalizeValue, defaultValue.capitalize),
-        striding: helpers.coerceString(
-            attributeDefinition.variant, stridingValue, defaultValue.striding),
+        decorline: helpers.coerceString(
+            attributeDefinition.variant, decorlineValue, defaultValue.decorline),
         shadow: helpers.coerceString(
             attributeDefinition.variant, shadowValue, defaultValue.shadow),
     };

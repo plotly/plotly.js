@@ -97,7 +97,7 @@ describe('parcoords initialization tests', function() {
                 style: 'italic',
                 variant: 'small-caps',
                 capitalize: 'word',
-                striding: 'under',
+                decorline: 'under',
                 shadow: '1px 1px 2px green',
             };
 
@@ -111,7 +111,7 @@ describe('parcoords initialization tests', function() {
                 style: 'italic',
                 variant: 'small-caps',
                 capitalize: 'word',
-                striding: 'under',
+                decorline: 'under',
                 shadow: '1px 1px 2px green',
             };
 

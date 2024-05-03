@@ -35,7 +35,7 @@ drawing.font = function(s, font) {
     var size = font.size;
     var family = font.family;
     var shadow = font.shadow;
-    var striding = font.striding;
+    var decorline = font.decorline;
     var capitalize = font.capitalize;
 
     if(family) s.style('font-family', family);
@@ -48,7 +48,7 @@ drawing.font = function(s, font) {
 
     if(capitalize) s.style('text-transform', capitalize2transform(capitalize));
     if(shadow) s.style('text-shadow', shadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(color)) : shadow);
-    if(striding) s.style('text-decoration-line', striding2decorationLine(striding));
+    if(decorline) s.style('text-decoration-line', decorline2decorationLine(decorline));
 };
 
 var capitalize2transformOptions = {
@@ -63,9 +63,9 @@ function capitalize2transform(capitalize) {
 }
 drawing.capitalize2transform = capitalize2transform;
 
-function striding2decorationLine(striding) {
+function decorline2decorationLine(decorline) {
     return (
-        striding
+        decorline
             .replace('under', 'underline')
             .replace('over', 'overline')
             .replace('through', 'line-through')
@@ -73,7 +73,7 @@ function striding2decorationLine(striding) {
             .join(' ')
     );
 }
-drawing.striding2decorationLine = striding2decorationLine;
+drawing.decorline2decorationLine = decorline2decorationLine;
 
 /*
  * Positioning helpers
@@ -1168,7 +1168,7 @@ drawing.textPointStyle = function(s, trace, gd) {
             style: d.ty || trace.textfont.style,
             variant: d.tv || trace.textfont.variant,
             capitalize: d.tC || trace.textfont.capitalize,
-            striding: d.tE || trace.textfont.striding,
+            decorline: d.tE || trace.textfont.decorline,
             shadow: d.tS || trace.textfont.shadow,
             size: fontSize,
             color: fontColor

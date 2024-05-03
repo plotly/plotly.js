@@ -42,7 +42,7 @@
     }],
     "layout": {
         "font": {
-            "striding": "under",
+            "decorline": "under",
             "shadow": "auto"
         },
         "template": {

@@ -38,7 +38,7 @@
     "layout": {
         "font": {
             "capitalize": "word",
-            "striding": "under",
+            "decorline": "under",
             "shadow": "auto"
         },
         "title": {"text": "Sankey with messy data"},

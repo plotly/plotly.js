@@ -82,7 +82,7 @@
     "layout": {
         "font": {
             "capitalize": "word",
-            "striding": "under",
+            "decorline": "under",
             "shadow": "auto"
         },
         "width": 800,

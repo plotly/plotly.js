@@ -28,7 +28,7 @@
         "visible": false
     },
     "font": {
-      "striding": "under",
+      "decorline": "under",
       "shadow": "auto",
       "color": "white",
       "family": "Raleway"

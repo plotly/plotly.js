@@ -1040,7 +1040,7 @@ describe('Test lib.js:', function() {
             style: 'italic',
             variant: 'small-caps',
             capitalize: 'word',
-            striding: 'under',
+            decorline: 'under',
             shadow: 'auto',
         };
 
@@ -1053,7 +1053,7 @@ describe('Test lib.js:', function() {
                 style: extendFlat({}, fontAttrs.style, {dflt: defaultFont.style}),
                 variant: extendFlat({}, fontAttrs.variant, {dflt: defaultFont.variant}),
                 capitalize: extendFlat({}, fontAttrs.capitalize, {dflt: defaultFont.capitalize}),
-                striding: extendFlat({}, fontAttrs.striding, {dflt: defaultFont.striding}),
+                decorline: extendFlat({}, fontAttrs.decorline, {dflt: defaultFont.decorline}),
                 shadow: extendFlat({}, fontAttrs.shadow, {dflt: defaultFont.shadow})
             },
             fontNoDefault: fontAttrs
@@ -1089,7 +1089,7 @@ describe('Test lib.js:', function() {
                     style: 'Nice',
                     variant: false,
                     capitalize: true,
-                    striding: false,
+                    decorline: false,
                     shadow: false,
                 }
             };
@@ -1127,7 +1127,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     capitalize: badCapitalize,
-                    striding: badStriding,
+                    decorline: badStriding,
                     shadow: badShadow
                 }
             };
@@ -1140,7 +1140,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     capitalize: defaultFont.capitalize,
-                    striding: defaultFont.striding,
+                    decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
 
@@ -1153,7 +1153,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     capitalize: badCapitalize,
-                    striding: badStriding,
+                    decorline: badStriding,
                     shadow: badShadow
                 }
             };
@@ -1166,7 +1166,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     capitalize: defaultFont.capitalize,
-                    striding: defaultFont.striding,
+                    decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
 
@@ -1179,7 +1179,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     capitalize: badCapitalize,
-                    striding: badStriding,
+                    decorline: badStriding,
                     shadow: badShadow
                 }
             };
@@ -1192,7 +1192,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     capitalize: defaultFont.capitalize,
-                    striding: defaultFont.striding,
+                    decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
 
@@ -1205,7 +1205,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     capitalize: badCapitalize,
-                    striding: badStriding,
+                    decorline: badStriding,
                     shadow: badShadow
                 }
             };
@@ -1218,7 +1218,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     capitalize: defaultFont.capitalize,
-                    striding: defaultFont.striding,
+                    decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
 
@@ -1231,7 +1231,7 @@ describe('Test lib.js:', function() {
                     style: goodStyle,
                     variant: badVariant,
                     capitalize: badCapitalize,
-                    striding: badStriding,
+                    decorline: badStriding,
                     shadow: badShadow
                 }
             };
@@ -1244,7 +1244,7 @@ describe('Test lib.js:', function() {
                     style: goodStyle,
                     variant: defaultFont.variant,
                     capitalize: defaultFont.capitalize,
-                    striding: defaultFont.striding,
+                    decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
 
@@ -1257,7 +1257,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: goodVariant,
                     capitalize: badCapitalize,
-                    striding: badStriding,
+                    decorline: badStriding,
                     shadow: badShadow
                 }
             };
@@ -1270,7 +1270,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: goodVariant,
                     capitalize: defaultFont.capitalize,
-                    striding: defaultFont.striding,
+                    decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
 
@@ -1283,7 +1283,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     capitalize: goodCapitalize,
-                    striding: badStriding,
+                    decorline: badStriding,
                     shadow: badShadow
                 }
             };
@@ -1296,7 +1296,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     capitalize: goodCapitalize,
-                    striding: defaultFont.striding,
+                    decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
 
@@ -1309,7 +1309,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     capitalize: badCapitalize,
-                    striding: goodStriding,
+                    decorline: goodStriding,
                     shadow: badShadow
                 }
             };
@@ -1322,7 +1322,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     capitalize: defaultFont.capitalize,
-                    striding: goodStriding,
+                    decorline: goodStriding,
                     shadow: defaultFont.shadow
                 });
 
@@ -1335,7 +1335,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     capitalize: badCapitalize,
-                    striding: badStriding,
+                    decorline: badStriding,
                     shadow: goodShadow
                 }
             };
@@ -1348,7 +1348,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     capitalize: defaultFont.capitalize,
-                    striding: defaultFont.striding,
+                    decorline: defaultFont.decorline,
                     shadow: goodShadow
                 });
         });

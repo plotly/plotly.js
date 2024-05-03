@@ -87,7 +87,7 @@
         },
         "font": {
             "capitalize": "word",
-            "striding": "under",
+            "decorline": "under",
             "shadow": "auto",
             "family": "Noto Serif, serif"
         },

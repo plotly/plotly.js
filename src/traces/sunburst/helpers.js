@@ -76,7 +76,7 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
         style: exports.getOutsideTextFontKey('style', trace, pt, layoutFont),
         variant: exports.getOutsideTextFontKey('variant', trace, pt, layoutFont),
         capitalize: exports.getOutsideTextFontKey('capitalize', trace, pt, layoutFont),
-        striding: exports.getOutsideTextFontKey('striding', trace, pt, layoutFont),
+        decorline: exports.getOutsideTextFontKey('decorline', trace, pt, layoutFont),
         shadow: exports.getOutsideTextFontKey('shadow', trace, pt, layoutFont),
     };
 }
@@ -107,7 +107,7 @@ function determineInsideTextFont(trace, pt, layoutFont, opts) {
         style: exports.getInsideTextFontKey('style', trace, pt, layoutFont, opts),
         variant: exports.getInsideTextFontKey('variant', trace, pt, layoutFont, opts),
         capitalize: exports.getInsideTextFontKey('capitalize', trace, pt, layoutFont, opts),
-        striding: exports.getInsideTextFontKey('striding', trace, pt, layoutFont, opts),
+        decorline: exports.getInsideTextFontKey('decorline', trace, pt, layoutFont, opts),
         shadow: exports.getInsideTextFontKey('shadow', trace, pt, layoutFont, opts),
     };
 }

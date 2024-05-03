@@ -1449,7 +1449,7 @@ describe('annotation effects', function() {
                     style: 'normal',
                     variant: 'normal',
                     capitalize: 'normal',
-                    striding: 'none',
+                    decorline: 'none',
                     shadow: 'none',
                 }
             });
@@ -1481,7 +1481,7 @@ describe('annotation effects', function() {
                         style: 'normal',
                         variant: 'normal',
                         capitalize: 'normal',
-                        striding: 'none',
+                        decorline: 'none',
                         shadow: 'none',
                     }
                 },
@@ -1500,7 +1500,7 @@ describe('annotation effects', function() {
                     style: 'normal',
                     variant: 'normal',
                     capitalize: 'normal',
-                    striding: 'none',
+                    decorline: 'none',
                     shadow: 'none',
                 }
             });

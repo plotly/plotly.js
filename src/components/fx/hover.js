@@ -962,7 +962,7 @@ function createHoverText(hoverData, opts) {
     var fontStyle = opts.fontStyle || fullLayout.font.style;
     var fontVariant = opts.fontVariant || fullLayout.font.variant;
     var fontCapitalize = opts.fontCapitalize || fullLayout.font.capitalize;
-    var fontStriding = opts.fontStriding || fullLayout.font.striding;
+    var fontDecorline = opts.fontDecorline || fullLayout.font.decorline;
     var fontShadow = opts.fontShadow || fullLayout.font.shadow;
 
     var c0 = hoverData[0];
@@ -1050,7 +1050,7 @@ function createHoverText(hoverData, opts) {
             style: commonLabelOptsFont.style || fontStyle,
             variant: commonLabelOptsFont.variant || fontVariant,
             capitalize: commonLabelOptsFont.capitalize || fontCapitalize,
-            striding: commonLabelOptsFont.striding || fontStriding,
+            decorline: commonLabelOptsFont.decorline || fontDecorline,
             shadow: commonLabelOptsFont.shadow || fontShadow,
             family: commonLabelOptsFont.family || fontFamily,
             size: commonLabelOptsFont.size || fontSize,
@@ -1378,7 +1378,7 @@ function createHoverText(hoverData, opts) {
                     style: fontStyle,
                     variant: fontVariant,
                     capitalize: fontCapitalize,
-                    striding: fontStriding,
+                    decorline: fontDecorline,
                     shadow: fontShadow,
                     family: fontFamily,
                     size: fontSize
@@ -1425,7 +1425,7 @@ function createHoverText(hoverData, opts) {
                 style: d.fontStyle || fontStyle,
                 variant: d.fontVariant || fontVariant,
                 capitalize: d.fontCapitalize || fontCapitalize,
-                striding: d.fontStriding || fontStriding,
+                decorline: d.fontDecorline || fontDecorline,
                 shadow: d.fontShadow || fontShadow,
             })
             .text(text)
@@ -1447,7 +1447,7 @@ function createHoverText(hoverData, opts) {
                 style: d.fontStyle || fontStyle,
                 variant: d.fontVariant || fontVariant,
                 capitalize: d.fontCapitalize || fontCapitalize,
-                striding: d.fontStriding || fontStriding,
+                decorline: d.fontDecorline || fontDecorline,
                 shadow: d.fontShadow || fontShadow,
             }).text(name)
                 .attr('data-notex', 1)

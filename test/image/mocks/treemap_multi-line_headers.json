@@ -25,7 +25,7 @@
             "texttemplate": "<b>%{label}</b>",
             "textfont": {
                 "capitalize": "word",
-                "striding": "under",
+                "decorline": "under",
                 "shadow": "auto",
                 "size": 20
             }

@@ -7,7 +7,7 @@
     "layout": {
         "font": {
             "capitalize": "word",
-            "striding": "under",
+            "decorline": "under",
             "shadow": "auto",
             "weight": "bold",
             "style": "italic",

@@ -70,7 +70,7 @@
     "layout": {
         "font": {
             "capitalize": "word",
-            "striding": "under",
+            "decorline": "under",
             "shadow": "auto"
         },
         "barcornerradius": "50%",

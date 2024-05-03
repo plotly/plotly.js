@@ -56,7 +56,7 @@
     "layout": {
         "font": {
             "capitalize": "word",
-            "striding": "under",
+            "decorline": "under",
             "shadow": "auto"
         },
         "title": {

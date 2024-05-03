@@ -25,7 +25,7 @@
     "layout": {
         "font": {
             "capitalize": "word",
-            "striding": "under",
+            "decorline": "under",
             "shadow": "auto"
         },
         "margin": {"t": 0, "b": 0, "r": 0, "l": 0},

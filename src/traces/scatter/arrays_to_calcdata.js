@@ -21,7 +21,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
         Lib.mergeArray(trace.textfont.style, cd, 'ty');
         Lib.mergeArray(trace.textfont.variant, cd, 'tv');
         Lib.mergeArray(trace.textfont.capitalize, cd, 'tC');
-        Lib.mergeArray(trace.textfont.striding, cd, 'tE');
+        Lib.mergeArray(trace.textfont.decorline, cd, 'tE');
         Lib.mergeArray(trace.textfont.shadow, cd, 'tS');
     }
 

@@ -154,7 +154,7 @@
             "style": "italic",
             "variant": "small-caps",
             "capitalize": "word",
-            "striding": "under",
+            "decorline": "under",
             "shadow": "auto"
         },
         "width": 800,

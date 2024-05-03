@@ -1741,7 +1741,7 @@ function tickTextObj(ax, x, text) {
         fontStyle: tf.style,
         fontVariant: tf.variant,
         fontCapitalize: tf.capitalize,
-        fontStriding: tf.striding,
+        fontStriding: tf.decorline,
         fontShadow: tf.shadow,
         fontColor: tf.color
     };
@@ -3512,7 +3512,7 @@ axes.drawLabels = function(gd, ax, opts) {
                         style: d.fontStyle,
                         variant: d.fontVariant,
                         capitalize: d.fontCapitalize,
-                        striding: d.fontStriding,
+                        decorline: d.fontStriding,
                         shadow: d.fontShadow,
                     })
                     .text(d.text)

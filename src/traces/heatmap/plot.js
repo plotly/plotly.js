@@ -552,7 +552,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                             style: font.style,
                             variant: font.variant,
                             capitalize: font.capitalize,
-                            striding: font.striding,
+                            decorline: font.decorline,
                             shadow: font.shadow,
                         })
                         .text(d.t)

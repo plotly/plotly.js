@@ -170,7 +170,7 @@ describe('Waterfall.supplyDefaults', function() {
                 style: 'italic',
                 variant: 'small-caps',
                 capitalize: 'word',
-                striding: 'under',
+                decorline: 'under',
                 shadow: 'auto',
             }
         };
@@ -181,7 +181,7 @@ describe('Waterfall.supplyDefaults', function() {
             style: 'italic',
             variant: 'small-caps',
             capitalize: 'word',
-            striding: 'under',
+            decorline: 'under',
             shadow: 'auto',
         };
 

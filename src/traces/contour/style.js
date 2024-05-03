@@ -45,7 +45,7 @@ module.exports = function style(gd) {
                 style: labelFont.style,
                 variant: labelFont.variant,
                 capitalize: labelFont.capitalize,
-                striding: labelFont.striding,
+                decorline: labelFont.decorline,
                 shadow: labelFont.shadow,
                 family: labelFont.family,
                 size: labelFont.size,

@@ -520,10 +520,10 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
         helpers.castOption(trace.textfont.capitalize, pt.pts) ||
         layoutFont.capitalize;
 
-    var striding =
-        helpers.castOption(trace.outsidetextfont.striding, pt.pts) ||
-        helpers.castOption(trace.textfont.striding, pt.pts) ||
-        layoutFont.striding;
+    var decorline =
+        helpers.castOption(trace.outsidetextfont.decorline, pt.pts) ||
+        helpers.castOption(trace.textfont.decorline, pt.pts) ||
+        layoutFont.decorline;
 
     var shadow =
         helpers.castOption(trace.outsidetextfont.shadow, pt.pts) ||
@@ -538,7 +538,7 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
         style: style,
         variant: variant,
         capitalize: capitalize,
-        striding: striding,
+        decorline: decorline,
         shadow: shadow,
     };
 }
@@ -583,10 +583,10 @@ function determineInsideTextFont(trace, pt, layoutFont) {
         helpers.castOption(trace.textfont.capitalize, pt.pts) ||
         layoutFont.capitalize;
 
-    var striding =
-        helpers.castOption(trace.insidetextfont.striding, pt.pts) ||
-        helpers.castOption(trace.textfont.striding, pt.pts) ||
-        layoutFont.striding;
+    var decorline =
+        helpers.castOption(trace.insidetextfont.decorline, pt.pts) ||
+        helpers.castOption(trace.textfont.decorline, pt.pts) ||
+        layoutFont.decorline;
 
     var shadow =
         helpers.castOption(trace.insidetextfont.shadow, pt.pts) ||
@@ -601,7 +601,7 @@ function determineInsideTextFont(trace, pt, layoutFont) {
         style: style,
         variant: variant,
         capitalize: capitalize,
-        striding: striding,
+        decorline: decorline,
         shadow: shadow,
     };
 }

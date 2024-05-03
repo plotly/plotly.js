@@ -179,7 +179,7 @@
         },
         "font": {
             "capitalize": "word",
-            "striding": "under",
+            "decorline": "under",
             "shadow": "auto",
             "size": 16
         },

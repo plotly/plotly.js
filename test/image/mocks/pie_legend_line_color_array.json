@@ -39,7 +39,7 @@
     ],
     "layout": {
         "font": {
-            "striding": "under",
+            "decorline": "under",
             "shadow": "auto"
         },
         "width": 400,

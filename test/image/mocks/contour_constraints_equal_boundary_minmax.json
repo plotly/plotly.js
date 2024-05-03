@@ -160,7 +160,7 @@
   "layout": {
     "font": {
       "capitalize": "word",
-      "striding": "under",
+      "decorline": "under",
       "shadow": "auto"
     },
     "grid": {"rows": 4, "columns": 2, "pattern": "independent"},

@@ -471,7 +471,7 @@ exports.coerceFont = function(coerce, attr, dfltObj, opts) {
     };
 
     if(!opts.noFontVariant) out.variant = coerce(attr + '.variant', dfltObj.variant);
-    if(!opts.noFontStriding) out.striding = coerce(attr + '.striding', dfltObj.striding);
+    if(!opts.noFontStriding) out.decorline = coerce(attr + '.decorline', dfltObj.decorline);
     if(!opts.noFontCapitalize) out.capitalize = coerce(attr + '.capitalize', dfltObj.capitalize);
     if(!opts.noFontShadow) {
         var dfltShadow = dfltObj.shadow;

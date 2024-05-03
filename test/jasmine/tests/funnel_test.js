@@ -161,7 +161,7 @@ describe('Funnel.supplyDefaults', function() {
                 style: 'italic',
                 variant: 'small-caps',
                 capitalize: 'word',
-                striding: 'under',
+                decorline: 'under',
                 shadow: 'auto',
             }
         };
@@ -172,7 +172,7 @@ describe('Funnel.supplyDefaults', function() {
             style: 'italic',
             variant: 'small-caps',
             capitalize: 'word',
-            striding: 'under',
+            decorline: 'under',
             shadow: 'auto',
         };
 

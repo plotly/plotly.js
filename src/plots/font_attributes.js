@@ -98,7 +98,7 @@ module.exports = function(opts) {
             ].join(' ')
         },
 
-        striding: opts.noFontStriding ? undefined : {
+        decorline: opts.noFontDecorline ? undefined : {
             editType: editType,
             valType: 'flaglist',
             flags: ['under', 'over', 'through'],
@@ -141,8 +141,8 @@ module.exports = function(opts) {
         if(!opts.noFontCapitalize) {
             attrs.capitalize.arrayOk = true;
         }
-        if(!opts.noFontStriding) {
-            attrs.striding.arrayOk = true;
+        if(!opts.noFontDecorline) {
+            attrs.decorline.arrayOk = true;
         }
         if(!opts.noFontShadow) {
             attrs.shadow.arrayOk = true;
