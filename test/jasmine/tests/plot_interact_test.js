@@ -58,8 +58,8 @@ describe('Test plot structure', function() {
                 Plotly.newPlot(gd, mockData, mockLayout).then(done);
             });
 
-            it('has one *subplot xy* node', function() {
-                expect(countSubplots()).toEqual(1);
+            it('has two *subplot xy* nodes', function() {
+                expect(countSubplots()).toEqual(2);
             });
 
             it('has four clip paths', function() {
@@ -101,19 +101,19 @@ describe('Test plot structure', function() {
 
             it('should be able to get deleted', function(done) {
                 expect(countScatterTraces()).toEqual(mock.data.length);
-                expect(countSubplots()).toEqual(1);
+                expect(countSubplots()).toEqual(2);
 
                 Plotly.deleteTraces(gd, [0]).then(function() {
                     expect(countScatterTraces()).toEqual(0);
-                    expect(countSubplots()).toEqual(1);
+                    expect(countSubplots()).toEqual(2);
                     expect(countClipPaths()).toEqual(4);
                     expect(countDraggers()).toEqual(1);
 
                     return Plotly.relayout(gd, {xaxis: null, yaxis: null});
                 }).then(function() {
                     expect(countScatterTraces()).toEqual(0);
-                    // we still make one empty cartesian subplot if no other subplots are described
-                    expect(countSubplots()).toEqual(1);
+                    // we still make two empty cartesian subplots (bg and fg) if no other subplots are described
+                    expect(countSubplots()).toEqual(2);
                     expect(countClipPaths()).toEqual(4);
                     expect(countDraggers()).toEqual(1);
                 })
@@ -122,40 +122,40 @@ describe('Test plot structure', function() {
 
             it('should restore layout axes when they get deleted', function(done) {
                 expect(countScatterTraces()).toEqual(mock.data.length);
-                expect(countSubplots()).toEqual(1);
+                expect(countSubplots()).toEqual(2);
 
                 Plotly.relayout(gd, {xaxis: null, yaxis: null})
                 .then(function() {
                     expect(countScatterTraces()).toEqual(1);
-                    expect(countSubplots()).toEqual(1);
+                    expect(countSubplots()).toEqual(2);
                     expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
                     expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
 
                     return Plotly.relayout(gd, 'xaxis', null);
                 }).then(function() {
                     expect(countScatterTraces()).toEqual(1);
-                    expect(countSubplots()).toEqual(1);
+                    expect(countSubplots()).toEqual(2);
                     expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
                     expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
 
                     return Plotly.relayout(gd, 'xaxis', {});
                 }).then(function() {
                     expect(countScatterTraces()).toEqual(1);
-                    expect(countSubplots()).toEqual(1);
+                    expect(countSubplots()).toEqual(2);
                     expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
                     expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
 
                     return Plotly.relayout(gd, 'yaxis', null);
                 }).then(function() {
                     expect(countScatterTraces()).toEqual(1);
-                    expect(countSubplots()).toEqual(1);
+                    expect(countSubplots()).toEqual(2);
                     expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
                     expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
 
                     return Plotly.relayout(gd, 'yaxis', {});
                 }).then(function() {
                     expect(countScatterTraces()).toEqual(1);
-                    expect(countSubplots()).toEqual(1);
+                    expect(countSubplots()).toEqual(2);
                     expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
                     expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
                 })
@@ -202,8 +202,8 @@ describe('Test plot structure', function() {
                         .then(done);
                 });
 
-                it('has four *subplot* nodes', function() {
-                    expect(countSubplots()).toEqual(4);
+                it('has eight *subplot* nodes', function() {
+                    expect(countSubplots()).toEqual(8);
                     expect(countClipPaths()).toEqual(12);
                     expect(countDraggers()).toEqual(4);
                 });
@@ -245,8 +245,8 @@ describe('Test plot structure', function() {
                     .then(done);
                 });
 
-                it('has four *subplot* nodes', function() {
-                    expect(countSubplots()).toEqual(4);
+                it('has eight *subplot* nodes', function() {
+                    expect(countSubplots()).toEqual(8);
                     expect(countClipPaths()).toEqual(12);
                     expect(countDraggers()).toEqual(4);
                 });
@@ -285,7 +285,7 @@ describe('Test plot structure', function() {
                 }
 
                 it('should be removed of traces in sequence', function(done) {
-                    expect(countSubplots()).toEqual(4);
+                    expect(countSubplots()).toEqual(8);
                     assertHeatmapNodes(4);
                     assertContourNodes(2);
                     expect(countColorBars()).toEqual(1);
@@ -298,7 +298,7 @@ describe('Test plot structure', function() {
                     });
 
                     Plotly.deleteTraces(gd, [0]).then(function() {
-                        expect(countSubplots()).toEqual(3);
+                        expect(countSubplots()).toEqual(6);
                         expect(countClipPaths()).toEqual(11);
                         expect(countDraggers()).toEqual(3);
                         assertHeatmapNodes(3);
@@ -314,7 +314,7 @@ describe('Test plot structure', function() {
 
                         return Plotly.deleteTraces(gd, [0]);
                     }).then(function() {
-                        expect(countSubplots()).toEqual(2);
+                        expect(countSubplots()).toEqual(4);
                         expect(countClipPaths()).toEqual(7);
                         expect(countDraggers()).toEqual(2);
                         assertHeatmapNodes(2);
@@ -330,7 +330,7 @@ describe('Test plot structure', function() {
 
                         return Plotly.deleteTraces(gd, [0]);
                     }).then(function() {
-                        expect(countSubplots()).toEqual(1);
+                        expect(countSubplots()).toEqual(2);
                         expect(countClipPaths()).toEqual(4);
                         expect(countDraggers()).toEqual(1);
                         assertHeatmapNodes(1);
@@ -346,7 +346,7 @@ describe('Test plot structure', function() {
 
                         return Plotly.deleteTraces(gd, [0]);
                     }).then(function() {
-                        expect(countSubplots()).toEqual(1);
+                        expect(countSubplots()).toEqual(2);
                         expect(countClipPaths()).toEqual(4);
                         expect(countDraggers()).toEqual(1);
                         assertHeatmapNodes(0);
@@ -369,7 +369,7 @@ describe('Test plot structure', function() {
 
                         return Plotly.relayout(gd, update);
                     }).then(function() {
-                        expect(countSubplots()).toEqual(1);
+                        expect(countSubplots()).toEqual(2);
                         expect(countClipPaths()).toEqual(4);
                         expect(countDraggers()).toEqual(1);
                         assertHeatmapNodes(0);
@@ -438,7 +438,7 @@ describe('Test plot structure', function() {
 
                 Plotly.deleteTraces(gd, [0]).then(function() {
                     expect(countPieTraces()).toEqual(0);
-                    expect(countSubplots()).toEqual(1);
+                    expect(countSubplots()).toEqual(2);
                 })
                 .then(done, done.fail);
             });
@@ -451,7 +451,7 @@ describe('Test plot structure', function() {
                 Plotly.restyle(gd, 'type', 'bar').then(function() {
                     expect(countPieTraces()).toEqual(0);
                     expect(countBarTraces()).toEqual(1);
-                    expect(countSubplots()).toEqual(1);
+                    expect(countSubplots()).toEqual(2);
 
                     return Plotly.restyle(gd, 'type', 'pie');
                 }).then(function() {
