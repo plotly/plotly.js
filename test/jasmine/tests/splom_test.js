@@ -766,17 +766,27 @@ describe('Test splom interactions:', function() {
             var msg = ' - call #' + cnt;
             var gd3 = d3Select(gd);
             var subplots = gd3.selectAll('g.cartesianlayer > g.subplot');
+            var subplotsBelow = gd3.selectAll('g.cartesianlayer-below > g.subplot');
             var bgs = gd3.selectAll('.bglayer > rect.bg');
 
             expect(subplots.size())
-                .toBe(exp.subplotCnt, '# of <g.subplot>' + msg);
+            .toBe(exp.subplotCnt, '# of <g.subplot>' + msg);
 
             var failedSubplots = [];
             subplots.each(function(d, i) {
                 var actual = this.children.length;
                 var expected = typeof exp.innerSubplotNodeCnt === 'function' ?
-                    exp.innerSubplotNodeCnt(d[0], i) :
-                    exp.innerSubplotNodeCnt;
+                exp.innerSubplotNodeCnt(d[0], i) :
+                exp.innerSubplotNodeCnt;
+                if(actual !== expected) {
+                    failedSubplots.push([d, actual, 'vs', expected].join(' '));
+                }
+            });
+            subplotsBelow.each(function(d, i) {
+                var actual = this.children.length;
+                var expected = typeof exp.innerSubplotNodeCntBelow === 'function' ?
+                exp.innerSubplotNodeCntBelow(d[0], i) :
+                exp.innerSubplotNodeCntBelow;
                 if(actual !== expected) {
                     failedSubplots.push([d, actual, 'vs', expected].join(' '));
                 }
@@ -795,6 +805,7 @@ describe('Test splom interactions:', function() {
         _newPlot(gd, figLarge).then(function() {
             _assert({
                 subplotCnt: 400,
+                innerSubplotNodeCntBelow: 4,
                 innerSubplotNodeCnt: 4,
                 hasSplomGrid: true,
                 bgCnt: 0
@@ -805,6 +816,7 @@ describe('Test splom interactions:', function() {
         .then(function() {
             _assert({
                 subplotCnt: 400,
+                innerSubplotNodeCntBelow: 4,
                 innerSubplotNodeCnt: 4,
                 hasSplomGrid: true,
                 bgCnt: 400
@@ -815,6 +827,7 @@ describe('Test splom interactions:', function() {
         .then(function() {
             _assert({
                 subplotCnt: 400,
+                innerSubplotNodeCntBelow: 4,
                 innerSubplotNodeCnt: 4,
                 hasSplomGrid: true,
                 bgCnt: 0
@@ -825,7 +838,8 @@ describe('Test splom interactions:', function() {
         .then(function() {
             _assert({
                 subplotCnt: 25,
-                innerSubplotNodeCnt: 19,
+                innerSubplotNodeCntBelow: 4,
+                innerSubplotNodeCnt: 14,
                 hasSplomGrid: false,
                 bgCnt: 0
             });
@@ -838,9 +852,10 @@ describe('Test splom interactions:', function() {
                 // from small -> large splom:
                 // no need to clear subplots children in existing subplots,
                 // new subplots though have reduced number of children.
+                innerSubplotNodeCntBelow: 4,
                 innerSubplotNodeCnt: function(d) {
                     var p = d.match(SUBPLOT_PATTERN);
-                    return (p[1] > 5 || p[2] > 5) ? 4 : 19;
+                    return (p[1] > 5 || p[2] > 5) ? 4 : 14;
                 },
                 hasSplomGrid: true,
                 bgCnt: 0
