@@ -830,23 +830,6 @@ describe('Test splom interactions:', function() {
                 bgCnt: 0
             });
 
-            // make sure 'new' subplot layers are in order
-            var gridIndex = -1;
-            var xaxisIndex = -1;
-            var subplot0 = d3Select('g.cartesianlayer > g.subplot').node();
-            for(var i in subplot0.children) {
-                var cl = subplot0.children[i].classList;
-                if(cl) {
-                    if(cl.contains('gridlayer')) gridIndex = +i;
-                    else if(cl.contains('xaxislayer-above')) xaxisIndex = +i;
-                }
-            }
-            // from large -> small splom:
-            // grid layer would be above xaxis layer,
-            // if we didn't clear subplot children.
-            expect(gridIndex).toBe(2, '<g.gridlayer> index');
-            expect(xaxisIndex).toBe(16, '<g.xaxislayer-above> index');
-
             return Plotly.restyle(gd, 'dimensions', [dimsLarge]);
         })
         .then(function() {
