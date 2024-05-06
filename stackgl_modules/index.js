@@ -11905,6 +11905,17 @@ var identity = new Float32Array([
   0, 0, 1, 0,
   0, 0, 0, 1])
 
+var ab = ArrayBuffer
+var dv = DataView
+
+function isTypedArray(a) {
+    return ab.isView(a) && !(a instanceof dv)
+}
+
+function isArrayOrTypedArray(a) {
+    return Array.isArray(a) || isTypedArray(a)
+}
+
 function copyVec3(a, b) {
   a[0] = b[0]
   a[1] = b[1]
@@ -11992,8 +12003,8 @@ proto.update = function(options) {
       var opt = options[name]
       var prev = this[name]
       var next
-      if(nest ? (Array.isArray(opt) && Array.isArray(opt[0])) :
-                 Array.isArray(opt) ) {
+      if(nest ? (isArrayOrTypedArray(opt) && isArrayOrTypedArray(opt[0])) :
+                 isArrayOrTypedArray(opt) ) {
         this[name] = next = [ cons(opt[0]), cons(opt[1]), cons(opt[2]) ]
       } else {
         this[name] = next = [ cons(opt), cons(opt), cons(opt) ]
@@ -12011,7 +12022,7 @@ proto.update = function(options) {
   var BOOLEAN = parseOption.bind(this, false, Boolean)
   var STRING  = parseOption.bind(this, false, String)
   var COLOR   = parseOption.bind(this, true, function(v) {
-    if(Array.isArray(v)) {
+    if(isArrayOrTypedArray(v)) {
       if(v.length === 3) {
         return [ +v[0], +v[1], +v[2], 1.0 ]
       } else if(v.length === 4) {
