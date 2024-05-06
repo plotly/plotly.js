@@ -1,6 +1,7 @@
 {
   "data": [
     {
+      "textfont": { "weight": 200 },
       "type": "scattermapbox",
       "subplot": "mapbox",
       "name": "20 (20)",
@@ -52,6 +53,7 @@
       ]
     },
     {
+      "textfont": { "weight": 400 },
       "type": "scattermapbox",
       "subplot": "mapbox2",
       "name": "20 (10)",
@@ -100,6 +102,7 @@
       ]
     },
     {
+      "textfont": { "weight": 600 },
       "type": "scattermapbox",
       "subplot": "mapbox3",
       "name": "10 (20)",
@@ -148,6 +151,7 @@
       ]
     },
     {
+      "textfont": { "weight": 800 },
       "type": "scattermapbox",
       "subplot": "mapbox4",
       "name": "10 (10)",
@@ -198,7 +202,6 @@
   ],
   "layout": {
     "font": {
-      "weight": "bold",
       "style": "italic"
     },
     "title": {
