@@ -65049,13 +65049,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
@@ -70939,13 +70937,11 @@
       "description": "Sets the weight (or boldness) of the font.",
       "dflt": "normal",
       "editType": "calc",
-      "extras": [
+      "valType": "enumerated",
+      "values": [
        "normal",
        "bold"
-      ],
-      "max": 1000,
-      "min": 1,
-      "valType": "integer"
+      ]
      },
      "weightsrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",

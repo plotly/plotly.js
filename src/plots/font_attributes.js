@@ -20,6 +20,27 @@ module.exports = function(opts) {
     var editType = opts.editType;
     var colorEditType = opts.colorEditType;
     if(colorEditType === undefined) colorEditType = editType;
+
+    var weight = {
+        editType: editType,
+        valType: 'integer',
+        min: 1,
+        max: 1000,
+        extras: ['normal', 'bold'],
+        dflt: 'normal',
+        description: [
+            'Sets the weight (or boldness) of the font.'
+        ].join(' ')
+    };
+
+    if(opts.noNumericWeightValues) {
+        weight.valType = 'enumerated';
+        weight.values = weight.extras;
+        weight.extras = undefined;
+        weight.min = undefined;
+        weight.max = undefined;
+    }
+
     var attrs = {
         family: {
             valType: 'string',
@@ -49,17 +70,7 @@ module.exports = function(opts) {
             editType: colorEditType
         },
 
-        weight: {
-            editType: editType,
-            valType: 'integer',
-            min: 1,
-            max: 1000,
-            extras: ['normal', 'bold'],
-            dflt: 'normal',
-            description: [
-                'Sets the weight (or boldness) of the font.'
-            ].join(' ')
-        },
+        weight: weight,
 
         style: {
             editType: editType,
