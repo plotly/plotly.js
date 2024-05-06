@@ -369,10 +369,43 @@ function arrayifyAttribute(values, step) {
 
 function getTextFont(trace) {
     var font = trace.textfont;
+    var family = font.family;
+    var style = font.style;
+    var weight = font.weight;
     var str = '';
-    if(font.weight === 'bold') str += ' Bold';
-    if(font.style === 'italic') str += ' Italic';
-    var textFont = font.family;
+
+    if(weight === 'bold') {
+        str += ' Bold';
+    } else if(weight <= 1000) { // numeric font-weight
+        // See supportedFonts
+        if(family.slice(10) === 'Metropolis') {
+            if(weight > 850) str += ' Black';
+            else if(weight > 750) str += ' Extra Bold';
+            else if(weight > 650) str += ' Bold';
+            else if(weight > 550) str += ' Semi Bold';
+            else if(weight > 450) str += ' Medium';
+            else if(weight > 350) str += ' Regular';
+            else if(weight > 250) str += ' Light';
+            else if(weight > 150) str += ' Extra Light';
+            str += ' Thin';
+        } else if(family.slice(9) === 'Open Sans') {
+            if(weight > 750) str += ' Extra Bold';
+            else if(weight > 650) str += ' Bold';
+            else if(weight > 550) str += ' Semibold';
+            else if(weight > 450) str += ' Medium';
+            else if(weight > 350) str += ' Regular';
+            else if(weight > 250) str += ' Light';
+            else if(weight > 150) str += ' Extra Light';
+            str += ' Thin';
+        } else { // Other families
+            if(weight > 500) str += ' Bold';
+            str += ' Regular';
+        }
+    }
+
+    if(style === 'italic') str += ' Italic';
+
+    var textFont = family;
     if(str) textFont = textFont.replace(' Regular', str);
     textFont = textFont.split(', ');
     return textFont;
