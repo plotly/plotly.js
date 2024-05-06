@@ -95,7 +95,7 @@
     "d3-time-format": "^2.2.3",
     "fast-isnumeric": "^1.1.4",
     "gl-mat4": "^1.2.0",
-    "gl-text": "^1.4.0",
+    "gl-text": "github:gl-vis/gl-text#0b891825a16ee9a3c121943f3bdb239afba6a7b1",
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
     "is-mobile": "^4.0.0",
