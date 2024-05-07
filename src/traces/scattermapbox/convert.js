@@ -398,10 +398,8 @@ function getTextFont(trace) {
             else str += ' Thin';
         } else if(parts[0] === 'Open' && parts[1] === 'Sans') {
             str = 'Open Sans';
-
-            // N.B.Extra Bold is not supported although is listed as supported!
-            /* if(weight > 750) str += ' Extra Bold';
-            else */ if(weight > 650) str += ' Bold';
+            if(weight > 750) str += ' Extrabold';
+            else if(weight > 650) str += ' Bold';
             else if(weight > 550) str += ' Semibold';
             else if(weight > 350) str += ' Regular';
             else str += ' Light';
