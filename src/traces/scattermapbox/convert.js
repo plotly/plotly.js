@@ -396,14 +396,14 @@ function getTextFont(trace) {
             else if(weight > 250) str += ' Light';
             else if(weight > 150) str += ' Extra Light';
             else str += ' Thin';
-        } else if(parts[0] === 'Open' && parts[1] === 'Sans') {
+        } else if(parts.slice(0, 2).join(' ') === 'Open Sans') {
             str = 'Open Sans';
             if(weight > 750) str += ' Extrabold';
             else if(weight > 650) str += ' Bold';
             else if(weight > 550) str += ' Semibold';
             else if(weight > 350) str += ' Regular';
             else str += ' Light';
-        } else { // Other families
+        } else if(parts.slice(0, 3).join(' ') === 'Klokantech Noto Sans') {
             str = 'Klokantech Noto Sans';
             if(parts[3] === 'CJK') str += ' CJK';
             str += (weight > 500) ? ' Bold' : ' Regular';
