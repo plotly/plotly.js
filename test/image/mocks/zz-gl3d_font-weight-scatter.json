@@ -52,16 +52,40 @@
     },
     "scene": {
       "xaxis": {
+        "title": {
+          "text": "X",
+          "font": {
+            "size": 20,
+            "color": "red",
+            "weight": 800
+          }
+        },
         "showticklabels": false,
         "showgrid": false,
         "zeroline": false
       },
       "yaxis": {
+        "title": {
+          "text": "Y",
+          "font": {
+            "size": 16,
+            "color": "blue",
+            "weight": 400
+          }
+        },
         "showticklabels": false,
         "showgrid": false,
         "zeroline": false
       },
       "zaxis": {
+        "title": {
+          "text": "Z",
+          "font": {
+            "size": 12,
+            "color": "green",
+            "weight": 200
+          }
+        },
         "showticklabels": false,
         "showgrid": false,
         "zeroline": false
