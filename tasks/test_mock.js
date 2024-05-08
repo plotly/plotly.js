@@ -153,7 +153,7 @@ function notBlackListed(name) {
         'fake_violins',
         'fonts',
         'font-variant-bar',
-        'zz-font-weight-bar',
+        'font-weight-bar',
         'geo_africa-insets',
         'gl2d_10',
         'gl2d_12',
