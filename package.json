@@ -71,7 +71,7 @@
     ]
   },
   "dependencies": {
-    "@plotly/d3": "3.8.1",
+    "@plotly/d3": "3.8.2",
     "@plotly/d3-sankey": "0.7.2",
     "@plotly/d3-sankey-circular": "0.33.1",
     "@plotly/mapbox-gl": "1.13.4",
