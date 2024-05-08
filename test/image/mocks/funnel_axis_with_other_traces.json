@@ -21,7 +21,8 @@
             "type": "histogram",
             "x": [
                 1, 1, 1, 2, 2, 3
-            ]
+            ],
+            "zorder": -10
         },
         {
             "type": "funnel",
@@ -40,7 +41,8 @@
                 3
             ],
             "xaxis": "x2",
-            "yaxis": "y2"
+            "yaxis": "y2",
+            "zorder": 10
         },
         {
             "type": "bar",

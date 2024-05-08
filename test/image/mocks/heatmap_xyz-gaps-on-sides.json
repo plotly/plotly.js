@@ -145,6 +145,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "weight": "bold",
+            "style": "italic",
+            "variant": "small-caps"
+        },
         "title": {"text": "heatmap with x/y/z columns with gaps on the sides"}
     }
 }

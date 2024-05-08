@@ -422,7 +422,10 @@ describe('Drawing', function() {
         it('works with dummy nodes created in Drawing.tester', function() {
             var node = Drawing.tester.append('text')
                 .text('bananas')
-                .call(Drawing.font, '"Open Sans", verdana, arial, sans-serif', 19)
+                .call(Drawing.font, {
+                    family: '"Open Sans", verdana, arial, sans-serif',
+                    size: 19
+                })
                 .call(svgTextUtils.convertToTspans).node();
 
             expect(node.parentNode).toBe(Drawing.tester.node());

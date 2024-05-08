@@ -154,9 +154,19 @@ describe('sankey tests', function() {
 
         it('\'Sankey\' layout dependent specification should have proper types',
             function() {
-                var fullTrace = _supplyWithLayout({}, {font: {family: 'Arial'}});
+                var fullTrace = _supplyWithLayout({}, {font: {
+                    family: 'Arial',
+                    weight: 'bold',
+                    style: 'italic',
+                    variant: 'small-caps'
+                }});
                 expect(fullTrace.textfont)
-                    .toEqual({family: 'Arial'}, 'textfont is defined');
+                    .toEqual({
+                        family: 'Arial',
+                        weight: 'bold',
+                        style: 'italic',
+                        variant: 'small-caps'
+                    }, 'textfont is defined');
             });
 
         it('\'line\' specifications should yield the default values',

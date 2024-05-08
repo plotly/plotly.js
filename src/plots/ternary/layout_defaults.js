@@ -82,6 +82,9 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     containerOut._hovertitle = title === dfltTitle ? title : letterUpper;
 
     Lib.coerceFont(coerce, 'title.font', {
+        weight: options.font.weight,
+        style: options.font.style,
+        variant: options.font.variant,
         family: options.font.family,
         size: Lib.bigFont(options.font.size),
         color: dfltFontColor
@@ -99,6 +102,9 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
         Lib.coerceFont(coerce, 'tickfont', {
+            weight: options.font.weight,
+            style: options.font.style,
+            variant: options.font.variant,
             family: options.font.family,
             size: options.font.size,
             color: dfltFontColor

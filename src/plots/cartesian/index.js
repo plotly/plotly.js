@@ -130,6 +130,10 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     var calcdata = gd.calcdata;
     var i;
 
+    // Traces is a list of trace indices to (re)plot. If it's not provided,
+    // then it's a complete replot so we create a new list and add all trace indices
+    // which are in calcdata.
+
     if(!Array.isArray(traces)) {
         // If traces is not provided, then it's a complete replot and missing
         // traces are removed
@@ -137,14 +141,16 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
         for(i = 0; i < calcdata.length; i++) traces.push(i);
     }
 
+    // For each subplot
     for(i = 0; i < subplots.length; i++) {
         var subplot = subplots[i];
         var subplotInfo = fullLayout._plots[subplot];
 
-        // Get all calcdata for this subplot:
+        // Get all calcdata (traces) for this subplot:
         var cdSubplot = [];
         var pcd;
 
+        // For each trace
         for(var j = 0; j < calcdata.length; j++) {
             var cd = calcdata[j];
             var trace = cd[0].trace;
@@ -178,7 +184,7 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
                 pcd = cd;
             }
         }
-
+        // Plot the traces for this subplot
         plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback);
     }
 };
@@ -189,41 +195,66 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     var modules = fullLayout._modules;
     var _module, cdModuleAndOthers, cdModule;
 
+    // Separate traces by zorder and plot each zorder group separately
+    // TODO: Performance
+    var traceZorderGroups = {};
+    for(var t = 0; t < cdSubplot.length; t++) {
+        var trace = cdSubplot[t][0].trace;
+        var zi = trace.zorder || 0;
+        if(!traceZorderGroups[zi]) traceZorderGroups[zi] = [];
+        traceZorderGroups[zi].push(cdSubplot[t]);
+    }
+
     var layerData = [];
     var zoomScaleQueryParts = [];
 
-    for(var i = 0; i < modules.length; i++) {
-        _module = modules[i];
-        var name = _module.name;
-        var categories = Registry.modules[name].categories;
+    // Plot each zorder group in ascending order
+    var zindices = Object.keys(traceZorderGroups)
+        .map(Number)
+        .sort(Lib.sorterAsc);
+    for(var z = 0; z < zindices.length; z++) {
+        var zorder = zindices[z];
+        // For each "module" (trace type)
+        for(var i = 0; i < modules.length; i++) {
+            _module = modules[i];
+            var name = _module.name;
+            var categories = Registry.modules[name].categories;
 
-        if(categories.svg) {
-            var className = (_module.layerName || name + 'layer');
-            var plotMethod = _module.plot;
+            if(categories.svg) {
+                var classBaseName = (_module.layerName || name + 'layer');
+                var className = classBaseName + (z ? Number(z) + 1 : '');
+                var plotMethod = _module.plot;
 
-            // plot all visible traces of this type on this subplot at once
-            cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
-            cdModule = cdModuleAndOthers[0];
-            // don't need to search the found traces again - in fact we need to NOT
-            // so that if two modules share the same plotter we don't double-plot
-            cdSubplot = cdModuleAndOthers[1];
+                // plot all visible traces of this type on this subplot at once
+                cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod, zorder);
+                cdModule = cdModuleAndOthers[0];
+                // don't need to search the found traces again - in fact we need to NOT
+                // so that if two modules share the same plotter we don't double-plot
+                cdSubplot = cdModuleAndOthers[1];
 
-            if(cdModule.length) {
-                layerData.push({
-                    i: traceLayerClasses.indexOf(className),
-                    className: className,
-                    plotMethod: plotMethod,
-                    cdModule: cdModule
-                });
-            }
+                if(cdModule.length) {
+                    layerData.push({
+                        i: traceLayerClasses.indexOf(classBaseName),
+                        zorder: z,
+                        className: className,
+                        plotMethod: plotMethod,
+                        cdModule: cdModule
+                    });
+                }
 
-            if(categories.zoomScale) {
-                zoomScaleQueryParts.push('.' + className);
+                if(categories.zoomScale) {
+                    zoomScaleQueryParts.push('.' + className);
+                }
             }
         }
     }
-
-    layerData.sort(function(a, b) { return a.i - b.i; });
+    // Sort the layers primarily by z, then by i
+    layerData.sort(function(a, b) {
+        return (
+            (a.zorder || 0) - (b.zorder || 0) ||
+            (a.i - b.i)
+        );
+    });
 
     var layers = plotinfo.plot.selectAll('g.mlayer')
         .data(layerData, function(d) { return d.className; });
@@ -434,7 +465,6 @@ function makeSubplotData(gd) {
         }
         subplotData[i] = d;
     }
-
     return subplotData;
 }
 
@@ -464,6 +494,10 @@ function makeSubplotLayer(gd, plotinfo) {
             plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
             plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
             plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+
+            var betweenLayer = ensureSingle(plotgroup, 'g', 'layer-between');
+            plotinfo.shapelayerBetween = ensureSingle(betweenLayer, 'g', 'shapelayer');
+            plotinfo.imagelayerBetween = ensureSingle(betweenLayer, 'g', 'imagelayer');
 
             ensureSingle(plotgroup, 'path', 'xlines-below');
             ensureSingle(plotgroup, 'path', 'ylines-below');

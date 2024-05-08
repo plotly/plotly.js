@@ -79,15 +79,20 @@ function convert(scene, trace) {
     coneOpts.vertexIntensityBounds = [cOpts.min / trace._normMax, cOpts.max / trace._normMax];
     coneOpts.coneOffset = anchor2coneOffset[trace.anchor];
 
-    if(trace.sizemode === 'scaled') {
+
+    var sizemode = trace.sizemode;
+    if(sizemode === 'scaled') {
         // unitless sizeref
         coneOpts.coneSize = trace.sizeref || 0.5;
-    } else {
+    } else if(sizemode === 'absolute') {
         // sizeref here has unit of velocity
         coneOpts.coneSize = trace.sizeref && trace._normMax ?
             trace.sizeref / trace._normMax :
             0.5;
+    } else if(sizemode === 'raw') {
+        coneOpts.coneSize = trace.sizeref;
     }
+    coneOpts.coneSizemode = sizemode;
 
     var meshData = conePlot(coneOpts);
 

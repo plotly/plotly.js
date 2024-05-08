@@ -11925,6 +11925,9 @@ function Axes(gl) {
 
   this.tickEnable     = [ true, true, true ]
   this.tickFont       = [ 'sans-serif', 'sans-serif', 'sans-serif' ]
+  this.tickFontStyle   = [ 'normal', 'normal', 'normal' ]
+  this.tickFontWeight  = [ 'normal', 'normal', 'normal' ]
+  this.tickFontVariant = [ 'normal', 'normal', 'normal' ]
   this.tickSize       = [ 12, 12, 12 ]
   this.tickAngle      = [ 0, 0, 0 ]
   this.tickAlign      = [ 'auto', 'auto', 'auto' ]
@@ -11938,7 +11941,10 @@ function Axes(gl) {
 
   this.labels         = [ 'x', 'y', 'z' ]
   this.labelEnable    = [ true, true, true ]
-  this.labelFont      = 'sans-serif'
+  this.labelFont      = [ 'sans-serif', 'sans-serif', 'sans-serif' ]
+  this.labelFontStyle   = [ 'normal', 'normal', 'normal' ]
+  this.labelFontWeight  = [ 'normal', 'normal', 'normal' ]
+  this.labelFontVariant = [ 'normal', 'normal', 'normal' ]
   this.labelSize      = [ 20, 20, 20 ]
   this.labelAngle     = [ 0, 0, 0 ]
   this.labelAlign     = [ 'auto', 'auto', 'auto' ]
@@ -12075,9 +12081,13 @@ i_loop:
 
   //Parse tick properties
   BOOLEAN('tickEnable')
-  if(STRING('tickFont')) {
-    ticksUpdate = true  //If font changes, must rebuild vbo
-  }
+
+  //If font changes, must rebuild vbo
+  if(STRING('tickFont')) ticksUpdate = true
+  if(STRING('tickFontStyle')) ticksUpdate = true
+  if(STRING('tickFontWeight')) ticksUpdate = true
+  if(STRING('tickFontVariant')) ticksUpdate = true
+
   NUMBER('tickSize')
   NUMBER('tickAngle')
   NUMBER('tickPad')
@@ -12085,9 +12095,12 @@ i_loop:
 
   //Axis labels
   var labelUpdate = STRING('labels')
-  if(STRING('labelFont')) {
-    labelUpdate = true
-  }
+
+  if(STRING('labelFont')) labelUpdate = true
+  if(STRING('labelFontStyle')) labelUpdate = true
+  if(STRING('labelFontWeight')) labelUpdate = true
+  if(STRING('labelFontVariant')) labelUpdate = true
+
   BOOLEAN('labelEnable')
   NUMBER('labelSize')
   NUMBER('labelPad')
@@ -12120,22 +12133,64 @@ i_loop:
   BOOLEAN('backgroundEnable')
   COLOR('backgroundColor')
 
+  var labelFontOpts = [
+    {
+      family: this.labelFont[0],
+      style: this.labelFontStyle[0],
+      weight: this.labelFontWeight[0],
+      variant: this.labelFontVariant[0],
+    },
+    {
+      family: this.labelFont[1],
+      style: this.labelFontStyle[1],
+      weight: this.labelFontWeight[1],
+      variant: this.labelFontVariant[1],
+    },
+    {
+      family: this.labelFont[2],
+      style: this.labelFontStyle[2],
+      weight: this.labelFontWeight[2],
+      variant: this.labelFontVariant[2],
+    }
+  ]
+
+  var tickFontOpts = [
+    {
+      family: this.tickFont[0],
+      style: this.tickFontStyle[0],
+      weight: this.tickFontWeight[0],
+      variant: this.tickFontVariant[0],
+    },
+    {
+      family: this.tickFont[1],
+      style: this.tickFontStyle[1],
+      weight: this.tickFontWeight[1],
+      variant: this.tickFontVariant[1],
+    },
+    {
+      family: this.tickFont[2],
+      style: this.tickFontStyle[2],
+      weight: this.tickFontWeight[2],
+      variant: this.tickFontVariant[2],
+    }
+  ]
+
   //Update text if necessary
   if(!this._text) {
     this._text = createText(
       this.gl,
       this.bounds,
       this.labels,
-      this.labelFont,
+      labelFontOpts,
       this.ticks,
-      this.tickFont)
+      tickFontOpts)
   } else if(this._text && (labelUpdate || ticksUpdate)) {
     this._text.update(
       this.bounds,
       this.labels,
-      this.labelFont,
+      labelFontOpts,
       this.ticks,
-      this.tickFont)
+      tickFontOpts)
   }
 
   //Update lines if necessary
@@ -13183,15 +13238,25 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
   var data = []
 
   function addItem(t, text, font, size, lineSpacing, styletags) {
-    var fontcache = __TEXT_CACHE[font]
+    var fontKey = [
+      font.style,
+      font.weight,
+      font.variant,
+      font.family
+    ].join('_')
+
+    var fontcache = __TEXT_CACHE[fontKey]
     if(!fontcache) {
-      fontcache = __TEXT_CACHE[font] = {}
+      fontcache = __TEXT_CACHE[fontKey] = {}
     }
     var mesh = fontcache[text]
     if(!mesh) {
       mesh = fontcache[text] = tryVectorizeText(text, {
         triangles: true,
-        font: font,
+        font: font.family,
+        fontStyle: font.style,
+        fontWeight: font.weight,
+        fontVariant: font.variant,
         textAlign: 'center',
         textBaseline: 'middle',
         lineSpacing: lineSpacing,
@@ -13243,10 +13308,18 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
       if(!ticks[d][i].text) {
         continue
       }
+
+      var font = {
+        family: ticks[d][i].font || tickFont[d].family,
+        style: tickFont[d].fontStyle || tickFont[d].style,
+        weight: tickFont[d].fontWeight || tickFont[d].weight,
+        variant: tickFont[d].fontVariant || tickFont[d].variant,
+      }
+
       addItem(
         ticks[d][i].x,
         ticks[d][i].text,
-        ticks[d][i].font || tickFont,
+        font,
         ticks[d][i].fontSize || 12,
         lineSpacing,
         styletags
@@ -13782,6 +13855,7 @@ module.exports = function(vectorfield, bounds) {
 	var positionVectors = [];
 	var vectorScale = Infinity;
 	var skipIt = false;
+	var rawSizemodemode = vectorfield.coneSizemode === 'raw';
 	for (var i = 0; i < positions.length; i++) {
 		var p = positions[i];
 		minX = Math.min(p[0], minX);
@@ -13795,7 +13869,7 @@ module.exports = function(vectorfield, bounds) {
 		if (vec3.length(u) > maxNorm) {
 			maxNorm = vec3.length(u);
 		}
-		if (i) {
+		if (i && !rawSizemodemode) {
 			// Find vector scale [w/ units of time] using "successive" positions
 			// (not "adjacent" with would be O(n^2)),
 			//
@@ -13834,7 +13908,9 @@ module.exports = function(vectorfield, bounds) {
 	}
 	geo.vectorScale = vectorScale;
 
-	var coneScale = vectorfield.coneSize || 0.5;
+	var coneScale = vectorfield.coneSize || (
+		rawSizemodemode ? 1 :0.5
+	);
 
 	if (vectorfield.absoluteConeSize) {
 		coneScale = vectorfield.absoluteConeSize * invertedMaxNorm;
@@ -19261,6 +19337,9 @@ proto.update = function(options) {
       var x     = tick.x
       var text  = tick.text
       var font  = tick.font || 'sans-serif'
+      var fontStyle = tick.fontStyle || 'normal'
+      var fontWeight = tick.fontWeight || 'normal'
+      var fontVariant = tick.fontVariant || 'normal'
       scale = (tick.fontSize || 12)
 
       var coordScale = 1.0 / (bounds[dimension+2] - bounds[dimension])
@@ -19268,7 +19347,11 @@ proto.update = function(options) {
 
       var rows = text.split('\n')
       for(var r = 0; r < rows.length; r++) {
-        data = getText(font, rows[r]).data
+        data = getText(font, rows[r], {
+          fontStyle: fontStyle,
+          fontWeight: fontWeight,
+          fontVariant: fontVariant
+        }).data
         for (j = 0; j < data.length; j += 2) {
           vertices.push(
               data[j] * scale,
@@ -19289,7 +19372,13 @@ proto.update = function(options) {
   for(dimension=0; dimension<2; ++dimension) {
     this.labelOffset[dimension] = Math.floor(vertices.length/3)
 
-    data  = getText(options.labelFont[dimension], options.labels[dimension], { textAlign: 'center' }).data
+    data  = getText(options.labelFont[dimension], options.labels[dimension], {
+      fontStyle: options.labelFontStyle[dimension],
+      fontWeight: options.labelFontWeight[dimension],
+      fontVariant: options.labelFontVariant[dimension],
+      textAlign: 'center'
+    }).data
+
     scale = options.labelSize[dimension]
     for(i=0; i<data.length; i+=2) {
       vertices.push(data[i]*scale, -data[i+1]*scale, 0)
@@ -19301,7 +19390,11 @@ proto.update = function(options) {
 
   //Add title
   this.titleOffset = Math.floor(vertices.length/3)
-  data = getText(options.titleFont, options.title).data
+  data = getText(options.titleFont, options.title, {
+    fontStyle: options.titleFontStyle,
+    fontWeight: options.titleFontWeight,
+    fontVariant: options.titleFontVariant,
+  }).data
   scale = options.titleSize
   for(i=0; i<data.length; i+=2) {
     vertices.push(data[i]*scale, -data[i+1]*scale, 0)
@@ -19838,9 +19931,16 @@ proto.update = function(options) {
     labels:     options.labels    || ['x', 'y'],
     labelSize:  options.labelSize || [12,12],
     labelFont:  options.labelFont || ['sans-serif', 'sans-serif'],
+    labelFontStyle: options.labelFontStyle || ['normal', 'normal'],
+    labelFontWeight: options.labelFontWeight || ['normal', 'normal'],
+    labelFontVariant: options.labelFontVariant || ['normal', 'normal'],
+
     title:      options.title     || '',
     titleSize:  options.titleSize || 18,
-    titleFont:  options.titleFont || 'sans-serif'
+    titleFont:  options.titleFont || 'sans-serif',
+    titleFontStyle: options.titleFontStyle || 'normal',
+    titleFontWeight: options.titleFontWeight || 'normal',
+    titleFontVariant: options.titleFontVariant || 'normal'
   })
 
   this.static = !!options.static;
@@ -21404,9 +21504,16 @@ module.exports = getGlyph
 var GLYPH_CACHE = {}
 
 function getGlyph(symbol, font, pixelRatio) {
-  var fontCache = GLYPH_CACHE[font]
+  var fontKey = [
+    font.style,
+    font.weight,
+    font.variant,
+    font.family
+  ].join('_')
+
+  var fontCache = GLYPH_CACHE[fontKey]
   if(!fontCache) {
-    fontCache = GLYPH_CACHE[font] = {}
+    fontCache = GLYPH_CACHE[fontKey] = {}
   }
   if(symbol in fontCache) {
     return fontCache[symbol]
@@ -21416,7 +21523,10 @@ function getGlyph(symbol, font, pixelRatio) {
     textAlign: "center",
     textBaseline: "middle",
     lineHeight: 1.0,
-    font: font,
+    font: font.family,
+    fontStyle: font.style,
+    fontWeight: font.weight,
+    fontVariant: font.variant,
     lineSpacing: 1.25,
     styletags: {
       breaklines:true,
@@ -21973,6 +22083,32 @@ function get_glyphData(glyphs, index, font, pixelRatio) {
     visible = false
   }
 
+  if(!font) font = {}
+
+  var family = font.family
+  if(Array.isArray(family)) family = family[index]
+  if(!family) family = "normal"
+
+  var weight = font.weight
+  if(Array.isArray(weight)) weight = weight[index]
+  if(!weight) weight = "normal"
+
+  var style = font.style
+  if(Array.isArray(style)) style = style[index]
+  if(!style) style = "normal"
+
+  var variant = font.variant
+  if(Array.isArray(variant)) variant = variant[index]
+  if(!variant) variant = "normal"
+
+  var glyph = getGlyph(str, {
+    family: family,
+    weight: weight,
+    style: style,
+    variant: variant,
+  }, pixelRatio)
+
+
   var glyph = getGlyph(str, font, pixelRatio)
 
   return { mesh:glyph[0],
@@ -22044,7 +22180,13 @@ proto.update = function(options) {
   var points = options.position
 
   //Text font
-  var font      = options.font      || 'normal'
+  var font = {
+    family: options.font || 'normal',
+    style: options.fontStyle || 'normal',
+    weight: options.fontWeight || 'normal',
+    variant: options.fontVariant || 'normal'
+  }
+
   var alignment = options.alignment || [0,0]
 
   var alignmentX;
@@ -40116,9 +40258,21 @@ function unwrap(mesh) {
 
 function textGet(font, text, opts) {
   var opts = opts || {}
-  var fontcache = __TEXT_CACHE[font]
+
+  var fontStyle = opts.fontStyle || 'normal'
+  var fontWeight = opts.fontWeight || 'normal'
+  var fontVariant = opts.fontVariant || 'normal'
+
+  var fontKey = [
+    fontStyle,
+    fontWeight,
+    fontVariant,
+    font
+  ].join('_')
+
+  var fontcache = __TEXT_CACHE[fontKey]
   if(!fontcache) {
-    fontcache = __TEXT_CACHE[font] = {
+    fontcache = __TEXT_CACHE[fontKey] = {
       ' ': {
         data:   new Float32Array(0),
         shape: 0.2
@@ -40131,6 +40285,9 @@ function textGet(font, text, opts) {
       mesh = fontcache[text] = unwrap(vectorizeText(text, {
         triangles:     true,
         font:          font,
+        fontStyle:     fontStyle,
+        fontWeight:    fontWeight,
+        fontVariant:   fontVariant,
         textAlign:     opts.textAlign || 'left',
         textBaseline:  'alphabetic',
         styletags: {

@@ -155,6 +155,7 @@ function notBlackListed(name) {
         'error_bar_style',
         'fake_violins',
         'fonts',
+        'font-variant-bar',
         'geo_africa-insets',
         'gl2d_10',
         'gl2d_12',

@@ -82,6 +82,11 @@
   }
   ],
   "layout": {
+    "font": {
+      "weight": "bold",
+      "style": "italic",
+      "variant": "small-caps"
+    },
     "showlegend": false,
     "width": 800,
     "height": 800,

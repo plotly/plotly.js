@@ -1,1 +1,0 @@
- - Regenerate `stackgl_modules/index.js` using updated dependencies [[#6937](https://github.com/plotly/plotly.js/pull/6937)]

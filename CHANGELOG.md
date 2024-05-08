@@ -9,6 +9,45 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.32.0] -- 2024-04-23
+
+### Added
+ - Add "bold" weight, "italic" style and "small-caps" variant options to fonts [[#6956](https://github.com/plotly/plotly.js/pull/6956)]
+
+### Fixed
+ - Fix applying `autotickangles` on axes with `showdividers` as well as cases
+   where `tickson` is set to "boundaries" [[#6967](https://github.com/plotly/plotly.js/pull/6967)],
+   with thanks to @my-tien for the contribution!
+ - Fix positioning of multi-line axis titles with `standoff` [[#6970](https://github.com/plotly/plotly.js/pull/6970)],
+   with thanks to @my-tien for the contribution!
+
+
+## [2.31.1] -- 2024-04-15
+
+### Fixed
+ - Maintain original drawing order of traces when traces with similar type are sent to back [[#6962](https://github.com/plotly/plotly.js/pull/6962)]
+ - Ensure winning points of hover are listed first when hoversubplots is set to "axis" and sorting by distance [[#6963](https://github.com/plotly/plotly.js/pull/6963)]
+ - Fix duplicated points in splom hover when `hoversubplots` is set to "axis" [[#6965](https://github.com/plotly/plotly.js/pull/6965)]
+
+
+## [2.31.0] -- 2024-04-10
+
+### Added
+ - Add `zorder` attribute to various cartesian traces for controlling stacking order of SVG traces drawn into a subplot [[#6918](https://github.com/plotly/plotly.js/pull/6918), [#6953](https://github.com/plotly/plotly.js/pull/6953)],
+   This feature was anonymously sponsored: thank you to our sponsor!
+ - Add "between" option to shape layer for placing them above grid lines and below traces [[#6927](https://github.com/plotly/plotly.js/pull/6927)],
+   with thanks to @my-tien for the contribution!
+ - Add "raw" `sizemode` to cone trace [[#6938](https://github.com/plotly/plotly.js/pull/6938)]
+ - Add `layout.hoversubplots` to enable hover effects across multiple cartesian suplots sharing one axis [[#6947](https://github.com/plotly/plotly.js/pull/6947), [#6950](https://github.com/plotly/plotly.js/pull/6950)]
+
+### Changed
+ - Regenerate `stackgl_modules/index.js` using updated dependencies [[#6937](https://github.com/plotly/plotly.js/pull/6937)]
+
+### Fixed
+ - Fix hover count in parcats trace [[#6944](https://github.com/plotly/plotly.js/pull/6944)],
+   with thanks to @weiweikee for the contribution!
+
+
 ## [2.30.1] -- 2024-03-15
 
 ### Fixed

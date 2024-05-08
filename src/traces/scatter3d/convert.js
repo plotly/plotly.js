@@ -296,7 +296,10 @@ function convertPlotlyOptions(scene, data) {
         params.textOffset = calculateTextOffset(data.textposition);
         params.textColor = formatColor(data.textfont, 1, len);
         params.textSize = formatParam(data.textfont.size, len, Lib.identity, 12);
-        params.textFont = data.textfont.family;  // arrayOk === false
+        params.textFontFamily = data.textfont.family;
+        params.textFontWeight = data.textfont.weight;
+        params.textFontStyle = data.textfont.style;
+        params.textFontVariant = data.textfont.variant;
         params.textAngle = 0;
     }
 
@@ -445,7 +448,10 @@ proto.update = function(data) {
         size: options.textSize,
         angle: options.textAngle,
         alignment: options.textOffset,
-        font: options.textFont,
+        font: options.textFontFamily,
+        fontWeight: options.textFontWeight,
+        fontStyle: options.textFontStyle,
+        fontVariant: options.textFontVariant,
         orthographic: true,
         lineWidth: 0,
         project: false,

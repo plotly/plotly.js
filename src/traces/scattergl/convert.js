@@ -107,6 +107,9 @@ function convertTextStyle(gd, trace) {
     var tfc = textfontIn.color;
     var tfs = textfontIn.size;
     var tff = textfontIn.family;
+    var tfw = textfontIn.weight;
+    var tfy = textfontIn.style;
+    var tfv = textfontIn.variant;
     var optsOut = {};
     var i;
     var plotGlPixelRatio = gd._context.plotGlPixelRatio;
@@ -184,7 +187,13 @@ function convertTextStyle(gd, trace) {
         optsOut.color = tfc;
     }
 
-    if(isArrayOrTypedArray(tfs) || isArrayOrTypedArray(tff)) {
+    if(
+        isArrayOrTypedArray(tfs) ||
+        Array.isArray(tff) ||
+        Array.isArray(tfw) ||
+        Array.isArray(tfy) ||
+        Array.isArray(tfv)
+    ) {
         // if any textfont param is array - make render a batch
         optsOut.font = new Array(count);
         for(i = 0; i < count; i++) {
@@ -197,11 +206,20 @@ function convertTextStyle(gd, trace) {
                 ) : tfs
             ) * plotGlPixelRatio;
 
-            fonti.family = isArrayOrTypedArray(tff) ? tff[i] : tff;
+            fonti.family = Array.isArray(tff) ? tff[i] : tff;
+            fonti.weight = Array.isArray(tfw) ? tfw[i] : tfw;
+            fonti.style = Array.isArray(tfy) ? tfy[i] : tfy;
+            fonti.variant = Array.isArray(tfv) ? tfv[i] : tfv;
         }
     } else {
         // if both are single values, make render fast single-value
-        optsOut.font = {size: tfs * plotGlPixelRatio, family: tff};
+        optsOut.font = {
+            size: tfs * plotGlPixelRatio,
+            family: tff,
+            weight: tfw,
+            style: tfy,
+            variant: tfv
+        };
     }
 
     return optsOut;

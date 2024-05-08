@@ -118,5 +118,6 @@ module.exports = {
         flags: ['a', 'b', 'text', 'name']
     }),
     hoveron: scatterAttrs.hoveron,
-    hovertemplate: hovertemplateAttrs()
+    hovertemplate: hovertemplateAttrs(),
+    zorder: scatterAttrs.zorder
 };

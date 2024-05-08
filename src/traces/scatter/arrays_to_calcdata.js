@@ -17,6 +17,9 @@ module.exports = function arraysToCalcdata(cd, trace) {
         Lib.mergeArrayCastPositive(trace.textfont.size, cd, 'ts');
         Lib.mergeArray(trace.textfont.color, cd, 'tc');
         Lib.mergeArray(trace.textfont.family, cd, 'tf');
+        Lib.mergeArray(trace.textfont.weight, cd, 'tw');
+        Lib.mergeArray(trace.textfont.style, cd, 'ty');
+        Lib.mergeArray(trace.textfont.variant, cd, 'tv');
     }
 
     var marker = trace.marker;

@@ -1737,6 +1737,9 @@ function tickTextObj(ax, x, text) {
         text: text || '',
         fontSize: tf.size,
         font: tf.family,
+        fontWeight: tf.weight,
+        fontStyle: tf.style,
+        fontVariant: tf.variant,
         fontColor: tf.color
     };
 }
@@ -3498,7 +3501,14 @@ axes.drawLabels = function(gd, ax, opts) {
 
                 thisLabel
                     .call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d))
-                    .call(Drawing.font, d.font, d.fontSize, d.fontColor)
+                    .call(Drawing.font, {
+                        family: d.font,
+                        size: d.fontSize,
+                        color: d.fontColor,
+                        weight: d.fontWeight,
+                        style: d.fontStyle,
+                        variant: d.fontVariant
+                    })
                     .text(d.text)
                     .call(svgTextUtils.convertToTspans, gd);
 
@@ -3748,11 +3758,41 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
             });
 
-            if((ax.tickson === 'boundaries' || ax.showdividers) && !opts.secondary) {
+            // autotickangles
+            // if there are dividers or ticks on boundaries, the labels will be in between and
+            // we need to prevent overlap with the next divider/tick. Else the labels will be on
+            // the ticks and we need to prevent overlap with the next label.
+
+            // TODO should secondary labels also fall into this fix-overlap regime?
+            var preventOverlapWithTick = (ax.tickson === 'boundaries' || ax.showdividers) && !opts.secondary;
+
+            var vLen = vals.length;
+            var tickSpacing = Math.abs((vals[vLen - 1].x - vals[0].x) * ax._m) / (vLen - 1);
+
+            var adjacent = preventOverlapWithTick ? tickSpacing / 2 : tickSpacing;
+            var opposite = preventOverlapWithTick ? ax.ticklen : maxFontSize * 1.25 * maxLines;
+            var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
+            var maxCos = adjacent / hypotenuse;
+            var autoTickAnglesRadians = ax.autotickangles.map(
+                function(degrees) { return degrees * Math.PI / 180; }
+            );
+            var angleRadians = autoTickAnglesRadians.find(
+                function(angle) { return Math.abs(Math.cos(angle)) <= maxCos; }
+            );
+            if(angleRadians === undefined) {
+                // no angle with smaller cosine than maxCos, just pick the angle with smallest cosine
+                angleRadians = autoTickAnglesRadians.reduce(
+                    function(currentMax, nextAngle) {
+                        return Math.abs(Math.cos(currentMax)) < Math.abs(Math.cos(nextAngle)) ? currentMax : nextAngle;
+                    }
+                    , autoTickAnglesRadians[0]
+                );
+            }
+            var newAngle = angleRadians * (180 / Math.PI /* to degrees */);
+
+            if(preventOverlapWithTick) {
                 var gap = 2;
                 if(ax.ticks) gap += ax.tickwidth / 2;
-
-                // TODO should secondary labels also fall into this fix-overlap regime?
 
                 for(i = 0; i < lbbArray.length; i++) {
                     var xbnd = vals[i].xbnd;
@@ -3761,14 +3801,11 @@ axes.drawLabels = function(gd, ax, opts) {
                         (xbnd[0] !== null && (lbb.left - ax.l2p(xbnd[0])) < gap) ||
                         (xbnd[1] !== null && (ax.l2p(xbnd[1]) - lbb.right) < gap)
                     ) {
-                        autoangle = 90;
+                        autoangle = newAngle;
                         break;
                     }
                 }
             } else {
-                var vLen = vals.length;
-                var tickSpacing = Math.abs((vals[vLen - 1].x - vals[0].x) * ax._m) / (vLen - 1);
-
                 var ticklabelposition = ax.ticklabelposition || '';
                 var has = function(str) {
                     return ticklabelposition.indexOf(str) !== -1;
@@ -3779,29 +3816,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 var isBottom = has('bottom');
                 var isAligned = isBottom || isLeft || isTop || isRight;
                 var pad = !isAligned ? 0 :
-                    (ax.tickwidth || 0) + 2 * TEXTPAD;
-
-                // autotickangles
-                var adjacent = tickSpacing;
-                var opposite = maxFontSize * 1.25 * maxLines;
-                var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
-                var maxCos = adjacent / hypotenuse;
-                var autoTickAnglesRadians = ax.autotickangles.map(
-                    function(degrees) { return degrees * Math.PI / 180; }
-                );
-                var angleRadians = autoTickAnglesRadians.find(
-                    function(angle) { return Math.abs(Math.cos(angle)) <= maxCos; }
-                );
-                if(angleRadians === undefined) {
-                    // no angle with smaller cosine than maxCos, just pick the angle with smallest cosine
-                    angleRadians = autoTickAnglesRadians.reduce(
-                        function(currentMax, nextAngle) {
-                            return Math.abs(Math.cos(currentMax)) < Math.abs(Math.cos(nextAngle)) ? currentMax : nextAngle;
-                        }
-                        , autoTickAnglesRadians[0]
-                    );
-                }
-                var newAngle = angleRadians * (180 / Math.PI /* to degrees */);
+                (ax.tickwidth || 0) + 2 * TEXTPAD;
 
                 for(i = 0; i < lbbArray.length - 1; i++) {
                     if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
@@ -4060,9 +4075,7 @@ function approxTitleDepth(ax) {
     var fontSize = ax.title.font.size;
     var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
     if(ax.title.hasOwnProperty('standoff')) {
-        return extraLines ?
-            fontSize * (CAP_SHIFT + (extraLines * LINE_SPACING)) :
-            fontSize * CAP_SHIFT;
+        return fontSize * (CAP_SHIFT + (extraLines * LINE_SPACING));
     } else {
         return extraLines ?
             fontSize * (extraLines + 1) * LINE_SPACING :
@@ -4093,9 +4106,20 @@ function drawTitle(gd, ax) {
     var axLetter = axId.charAt(0);
     var fontSize = ax.title.font.size;
     var titleStandoff;
+    var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
 
     if(ax.title.hasOwnProperty('standoff')) {
-        titleStandoff = ax._depth + ax.title.standoff + approxTitleDepth(ax);
+        // With ax._depth the initial drawing baseline is at the outer axis border (where the
+        // ticklabels are drawn). Since the title text will be drawn above the baseline,
+        // bottom/right axes must be shifted by 1 text line to draw below ticklabels instead of on
+        // top of them, whereas for top/left axes, the first line would be drawn
+        // before the ticklabels, but we need an offset for the descender portion of the first line
+        // and all subsequent lines.
+        if(ax.side === 'bottom' || ax.side === 'right') {
+            titleStandoff = ax._depth + ax.title.standoff + fontSize * CAP_SHIFT;
+        } else if(ax.side === 'top' || ax.side === 'left') {
+            titleStandoff = ax._depth + ax.title.standoff + fontSize * (MID_SHIFT + (extraLines * LINE_SPACING));
+        }
     } else {
         var isInside = insideTicklabelposition(ax);
 

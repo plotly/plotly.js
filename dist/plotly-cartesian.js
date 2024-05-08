@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.30.1
+* plotly.js (cartesian) v2.32.0
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -846,11 +846,11 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
   if (hoverText) {
     var hoverBG = coerce('hoverlabel.bgcolor', globalHoverLabel.bgcolor || (Color.opacity(bgColor) ? Color.rgb(bgColor) : Color.defaultLine));
     var hoverBorder = coerce('hoverlabel.bordercolor', globalHoverLabel.bordercolor || Color.contrast(hoverBG));
-    Lib.coerceFont(coerce, 'hoverlabel.font', {
-      family: globalHoverLabel.font.family,
-      size: globalHoverLabel.font.size,
-      color: globalHoverLabel.font.color || hoverBorder
-    });
+    var fontDflt = Lib.extendFlat({}, globalHoverLabel.font);
+    if (!fontDflt.color) {
+      fontDflt.color = hoverBorder;
+    }
+    Lib.coerceFont(coerce, 'hoverlabel.font', fontDflt);
   }
   coerce('captureevents', !!hoverText);
 };
@@ -1174,7 +1174,10 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         borderColor: hoverOptions.bordercolor,
         fontFamily: hoverFont.family,
         fontSize: hoverFont.size,
-        fontColor: hoverFont.color
+        fontColor: hoverFont.color,
+        fontWeight: hoverFont.weight,
+        fontStyle: hoverFont.style,
+        fontVariant: hoverFont.variant
       }, {
         container: fullLayout._hoverlayer.node(),
         outerContainer: fullLayout._paper.node(),
@@ -2856,6 +2859,9 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
   coerce('title.text', layout._dfltTitle.colorbar);
   var tickFont = colorbarOut.showticklabels ? colorbarOut.tickfont : font;
   var dfltTitleFont = Lib.extendFlat({}, tickFont, {
+    weight: font.weight,
+    style: font.style,
+    variant: font.variant,
     color: font.color,
     size: Lib.bigFont(tickFont.size)
   });
@@ -4958,9 +4964,12 @@ var drawing = module.exports = {};
 // styling functions for plot elements
 // -----------------------------------------------------
 
-drawing.font = function (s, family, size, color) {
-  // also allow the form font(s, {family, size, color})
+drawing.font = function (s, family, size, color, weight, style, variant) {
+  // also allow the form font(s, {family, size, color, weight, style, variant})
   if (Lib.isPlainObject(family)) {
+    variant = family.variant;
+    style = family.style;
+    weight = family.weight;
     color = family.color;
     size = family.size;
     family = family.family;
@@ -4968,6 +4977,9 @@ drawing.font = function (s, family, size, color) {
   if (family) s.style('font-family', family);
   if (size + 1) s.style('font-size', size + 'px');
   if (color) s.call(Color.fill, color);
+  if (weight) s.style('font-weight', weight);
+  if (style) s.style('font-style', style);
+  if (variant) s.style('font-variant', variant);
 };
 
 /*
@@ -5872,7 +5884,14 @@ drawing.textPointStyle = function (s, trace, gd) {
     var pos = d.tp || trace.textposition;
     var fontSize = extracTextFontSize(d, trace);
     var fontColor = selectedTextColorFn ? selectedTextColorFn(d) : d.tc || trace.textfont.color;
-    p.call(drawing.font, d.tf || trace.textfont.family, fontSize, fontColor).text(text).call(svgTextUtils.convertToTspans, gd).call(textPointPosition, pos, fontSize, d.mrc);
+    p.call(drawing.font, {
+      family: d.tf || trace.textfont.family,
+      weight: d.tw || trace.textfont.weight,
+      style: d.ty || trace.textfont.style,
+      variant: d.tv || trace.textfont.variant,
+      size: fontSize,
+      color: fontColor
+    }).text(text).call(svgTextUtils.convertToTspans, gd).call(textPointPosition, pos, fontSize, d.mrc);
   });
 };
 drawing.selectedTextStyle = function (s, trace) {
@@ -7649,6 +7668,9 @@ module.exports = function calc(gd) {
     fillFn(trace.hoverlabel.font.size, cd, 'hts');
     fillFn(trace.hoverlabel.font.color, cd, 'htc');
     fillFn(trace.hoverlabel.font.family, cd, 'htf');
+    fillFn(trace.hoverlabel.font.weight, cd, 'htw');
+    fillFn(trace.hoverlabel.font.style, cd, 'hty');
+    fillFn(trace.hoverlabel.font.variant, cd, 'htv');
     fillFn(trace.hoverlabel.namelength, cd, 'hnl');
     fillFn(trace.hoverlabel.align, cd, 'hta');
   }
@@ -7983,6 +8005,7 @@ var d3 = __webpack_require__(33428);
 var isNumeric = __webpack_require__(38248);
 var tinycolor = __webpack_require__(49760);
 var Lib = __webpack_require__(3400);
+var pushUnique = Lib.pushUnique;
 var strTranslate = Lib.strTranslate;
 var strRotate = Lib.strRotate;
 var Events = __webpack_require__(95924);
@@ -8025,6 +8048,9 @@ var cartesianScatterPoints = {
   scattergl: true,
   splom: true
 };
+function distanceSort(a, b) {
+  return a.distance - b.distance;
+}
 
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
@@ -8153,6 +8179,9 @@ exports.loneHover = function loneHover(hoverItems, opts) {
       fontFamily: hoverItem.fontFamily,
       fontSize: hoverItem.fontSize,
       fontColor: hoverItem.fontColor,
+      fontWeight: hoverItem.fontWeight,
+      fontStyle: hoverItem.fontStyle,
+      fontVariant: hoverItem.fontVariant,
       nameLength: hoverItem.nameLength,
       textAlign: hoverItem.textAlign,
       // filler to make createHoverText happy
@@ -8214,13 +8243,38 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
   // if the user passed in an array of subplots,
   // use those instead of finding overlayed plots
   var subplots = Array.isArray(subplot) ? subplot : [subplot];
+  var spId;
   var fullLayout = gd._fullLayout;
+  var hoversubplots = fullLayout.hoversubplots;
   var plots = fullLayout._plots || [];
   var plotinfo = plots[subplot];
   var hasCartesian = fullLayout._has('cartesian');
+  var hovermode = evt.hovermode || fullLayout.hovermode;
+  var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
+  var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
+  var firstXaxis;
+  var firstYaxis;
+  if (hasCartesian && (hovermodeHasX || hovermodeHasY) && hoversubplots === 'axis') {
+    var subplotsLength = subplots.length;
+    for (var p = 0; p < subplotsLength; p++) {
+      spId = subplots[p];
+      if (plots[spId]) {
+        // 'cartesian' case
+
+        firstXaxis = Axes.getFromId(gd, spId, 'x');
+        firstYaxis = Axes.getFromId(gd, spId, 'y');
+        var subplotsWith = (hovermodeHasX ? firstXaxis : firstYaxis)._subplotsWith;
+        if (subplotsWith && subplotsWith.length) {
+          for (var q = 0; q < subplotsWith.length; q++) {
+            pushUnique(subplots, subplotsWith[q]);
+          }
+        }
+      }
+    }
+  }
 
   // list of all overlaid subplots to look at
-  if (plotinfo) {
+  if (plotinfo && hoversubplots !== 'single') {
     var overlayedSubplots = plotinfo.overlays.map(function (pi) {
       return pi.id;
     });
@@ -8231,7 +8285,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
   var yaArray = new Array(len);
   var supportsCompare = false;
   for (var i = 0; i < len; i++) {
-    var spId = subplots[i];
+    spId = subplots[i];
     if (plots[spId]) {
       // 'cartesian' case
       supportsCompare = true;
@@ -8247,7 +8301,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
       return;
     }
   }
-  var hovermode = evt.hovermode || fullLayout.hovermode;
   if (hovermode && !supportsCompare) hovermode = 'closest';
   if (['x', 'y', 'closest', 'x unified', 'y unified'].indexOf(hovermode) === -1 || !gd.calcdata || gd.querySelector('.zoombox') || gd._dragging) {
     return dragElement.unhoverRaw(gd, evt);
@@ -8300,8 +8353,15 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
       }
     }
   } else {
-    for (curvenum = 0; curvenum < gd.calcdata.length; curvenum++) {
-      cd = gd.calcdata[curvenum];
+    // take into account zorder
+    var zorderedCalcdata = gd.calcdata.slice();
+    zorderedCalcdata.sort(function (a, b) {
+      var aZorder = a[0].trace.zorder || 0;
+      var bZorder = b[0].trace.zorder || 0;
+      return aZorder - bZorder;
+    });
+    for (curvenum = 0; curvenum < zorderedCalcdata.length; curvenum++) {
+      cd = zorderedCalcdata[curvenum];
       trace = cd[0].trace;
       if (trace.hoverinfo !== 'skip' && helpers.isTraceInSubplots(trace, subplots)) {
         searchData.push(cd);
@@ -8369,6 +8429,12 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
       // Explicitly bail out for these two. I don't know how to otherwise prevent
       // the rest of this function from running and failing
       if (['carpet', 'contourcarpet'].indexOf(trace._module.name) !== -1) continue;
+
+      // within one trace mode can sometimes be overridden
+      _mode = hovermode;
+      if (helpers.isUnifiedHover(_mode)) {
+        _mode = _mode.charAt(0);
+      }
       if (trace.type === 'splom') {
         // splom traces do not generate overlay subplots,
         // it is safe to assume here splom traces correspond to the 0th subplot
@@ -8377,12 +8443,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
       } else {
         subplotId = helpers.getSubplot(trace);
         subploti = subplots.indexOf(subplotId);
-      }
-
-      // within one trace mode can sometimes be overridden
-      _mode = hovermode;
-      if (helpers.isUnifiedHover(_mode)) {
-        _mode = _mode.charAt(0);
       }
 
       // container for new point, also used to pass info into module.hoverPoints
@@ -8434,7 +8494,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
       if (fullLayout._splomScenes && fullLayout._splomScenes[trace.uid]) {
         pointData.scene = fullLayout._splomScenes[trace.uid];
       }
-      closedataPreviousLength = hoverData.length;
 
       // for a highlighting array, figure out what
       // we're searching for with this element
@@ -8461,13 +8520,17 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         xval = xvalArray[subploti];
         yval = yvalArray[subploti];
       }
+      closedataPreviousLength = hoverData.length;
 
       // Now if there is range to look in, find the points to hover.
       if (hoverdistance !== 0) {
         if (trace._module && trace._module.hoverPoints) {
           var newPoints = trace._module.hoverPoints(pointData, xval, yval, _mode, {
             finiteRange: true,
-            hoverLayer: fullLayout._hoverlayer
+            hoverLayer: fullLayout._hoverlayer,
+            // options for splom when hovering on same axis
+            hoversubplots: hoversubplots,
+            gd: gd
           });
           if (newPoints) {
             var newPoint;
@@ -8544,6 +8607,8 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var minDistance = Infinity;
     var thisSpikeDistance;
     for (var i = 0; i < pointsData.length; i++) {
+      if (firstXaxis && firstXaxis._id !== pointsData[i].xa._id) continue;
+      if (firstYaxis && firstYaxis._id !== pointsData[i].ya._id) continue;
       thisSpikeDistance = pointsData[i].spikeDistance;
       if (spikeOnWinning && i === 0) thisSpikeDistance = -Infinity;
       if (thisSpikeDistance <= minDistance && thisSpikeDistance <= spikedistance) {
@@ -8579,9 +8644,18 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
   };
   gd._spikepoints = newspikepoints;
   var sortHoverData = function () {
-    hoverData.sort(function (d1, d2) {
-      return d1.distance - d2.distance;
+    // When sorting keep the points in the main subplot at the top
+    // then add points in other subplots
+
+    var hoverDataInSubplot = hoverData.filter(function (a) {
+      return firstXaxis && firstXaxis._id === a.xa._id && firstYaxis && firstYaxis._id === a.ya._id;
     });
+    var hoverDataOutSubplot = hoverData.filter(function (a) {
+      return !(firstXaxis && firstXaxis._id === a.xa._id && firstYaxis && firstYaxis._id === a.ya._id);
+    });
+    hoverDataInSubplot.sort(distanceSort);
+    hoverDataOutSubplot.sort(distanceSort);
+    hoverData = hoverDataInSubplot.concat(hoverDataOutSubplot);
 
     // move period positioned points and box/bar-like traces to the end of the list
     hoverData = orderRangePoints(hoverData, hovermode);
@@ -8769,6 +8843,9 @@ function createHoverText(hoverData, opts) {
   // can override this.
   var fontFamily = opts.fontFamily || constants.HOVERFONT;
   var fontSize = opts.fontSize || constants.HOVERFONTSIZE;
+  var fontWeight = opts.fontWeight || fullLayout.font.weight;
+  var fontStyle = opts.fontStyle || fullLayout.font.style;
+  var fontVariant = opts.fontVariant || fullLayout.font.variant;
   var c0 = hoverData[0];
   var xa = c0.xa;
   var ya = c0.ya;
@@ -8840,6 +8917,9 @@ function createHoverText(hoverData, opts) {
     var commonStroke = commonLabelOpts.bordercolor || Color.contrast(commonBgColor);
     var contrastColor = Color.contrast(commonBgColor);
     var commonLabelFont = {
+      weight: commonLabelOpts.font.weight || fontWeight,
+      style: commonLabelOpts.font.style || fontStyle,
+      variant: commonLabelOpts.font.variant || fontVariant,
       family: commonLabelOpts.font.family || fontFamily,
       size: commonLabelOpts.font.size || fontSize,
       color: commonLabelOpts.font.color || contrastColor
@@ -9119,7 +9199,13 @@ function createHoverText(hoverData, opts) {
     g.append('text').classed('name', true);
     // trace data label (path and text.nums)
     g.append('path').style('stroke-width', '1px');
-    g.append('text').classed('nums', true).call(Drawing.font, fontFamily, fontSize);
+    g.append('text').classed('nums', true).call(Drawing.font, {
+      weight: fontWeight,
+      style: fontStyle,
+      variant: fontVariant,
+      family: fontFamily,
+      size: fontSize
+    });
   });
   hoverLabels.exit().remove();
 
@@ -9145,14 +9231,28 @@ function createHoverText(hoverData, opts) {
     var name = texts[1];
 
     // main label
-    var tx = g.select('text.nums').call(Drawing.font, d.fontFamily || fontFamily, d.fontSize || fontSize, d.fontColor || contrastColor).text(text).attr('data-notex', 1).call(svgTextUtils.positionText, 0, 0).call(svgTextUtils.convertToTspans, gd);
+    var tx = g.select('text.nums').call(Drawing.font, {
+      family: d.fontFamily || fontFamily,
+      size: d.fontSize || fontSize,
+      color: d.fontColor || contrastColor,
+      weight: d.fontWeight || fontWeight,
+      style: d.fontStyle || fontStyle,
+      variant: d.fontVariant || fontVariant
+    }).text(text).attr('data-notex', 1).call(svgTextUtils.positionText, 0, 0).call(svgTextUtils.convertToTspans, gd);
     var tx2 = g.select('text.name');
     var tx2width = 0;
     var tx2height = 0;
 
     // secondary label for non-empty 'name'
     if (name && name !== text) {
-      tx2.call(Drawing.font, d.fontFamily || fontFamily, d.fontSize || fontSize, nameColor).text(name).attr('data-notex', 1).call(svgTextUtils.positionText, 0, 0).call(svgTextUtils.convertToTspans, gd);
+      tx2.call(Drawing.font, {
+        family: d.fontFamily || fontFamily,
+        size: d.fontSize || fontSize,
+        color: nameColor,
+        weight: d.fontWeight || fontWeight,
+        style: d.fontStyle || fontStyle,
+        variant: d.fontVariant || fontVariant
+      }).text(name).attr('data-notex', 1).call(svgTextUtils.positionText, 0, 0).call(svgTextUtils.convertToTspans, gd);
       var t2bb = getBoundingClientRect(gd, tx2.node());
       tx2width = t2bb.width + 2 * HOVERTEXTPAD;
       tx2height = t2bb.height + 2 * HOVERTEXTPAD;
@@ -9630,6 +9730,9 @@ function cleanPoint(d, hovermode) {
   fill('fontFamily', 'htf', 'hoverlabel.font.family');
   fill('fontSize', 'hts', 'hoverlabel.font.size');
   fill('fontColor', 'htc', 'hoverlabel.font.color');
+  fill('fontWeight', 'htw', 'hoverlabel.font.weight');
+  fill('fontStyle', 'hty', 'hoverlabel.font.style');
+  fill('fontVariant', 'htv', 'hoverlabel.font.variant');
   fill('nameLength', 'hnl', 'hoverlabel.namelength');
   fill('textAlign', 'hta', 'hoverlabel.align');
   d.posref = hovermode === 'y' || hovermode === 'closest' && trace.orientation === 'h' ? d.xa._offset + (d.x0 + d.x1) / 2 : d.ya._offset + (d.y0 + d.y1) / 2;
@@ -9964,6 +10067,9 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
     inheritFontAttr('size');
     inheritFontAttr('family');
     inheritFontAttr('color');
+    inheritFontAttr('weight');
+    inheritFontAttr('style');
+    inheritFontAttr('variant');
     if (hasLegend) {
       if (!opts.bgcolor) opts.bgcolor = Color.combine(contOut.legend.bgcolor, contOut.paper_bgcolor);
       if (!opts.bordercolor) opts.bordercolor = contOut.legend.bordercolor;
@@ -9995,6 +10101,7 @@ module.exports = function handleHoverModeDefaults(layoutIn, layoutOut) {
     return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
   }
   coerce('clickmode');
+  coerce('hoversubplots');
   return coerce('hovermode');
 };
 
@@ -10096,6 +10203,12 @@ module.exports = {
     values: ['x', 'y', 'closest', false, 'x unified', 'y unified'],
     dflt: 'closest',
     editType: 'modebar'
+  },
+  hoversubplots: {
+    valType: 'enumerated',
+    values: ['single', 'overlaying', 'axis'],
+    dflt: 'overlaying',
+    editType: 'none'
   },
   hoverdistance: {
     valType: 'integer',
@@ -12847,6 +12960,9 @@ module.exports = function style(s, gd, legend) {
         dEdit.ts = 10;
         dEdit.tc = boundVal('textfont.color', pickFirst);
         dEdit.tf = boundVal('textfont.family', pickFirst);
+        dEdit.tw = boundVal('textfont.weight', pickFirst);
+        dEdit.ty = boundVal('textfont.style', pickFirst);
+        dEdit.tv = boundVal('textfont.variant', pickFirst);
       }
       dMod = [Lib.minExtend(d0, dEdit)];
       tMod = Lib.minExtend(trace, tEdit);
@@ -17788,7 +17904,7 @@ module.exports = templatedArray('shape', {
   },
   layer: {
     valType: 'enumerated',
-    values: ['below', 'above'],
+    values: ['below', 'above', 'between'],
     dflt: 'above',
     editType: 'arraydraw'
   },
@@ -18934,10 +19050,12 @@ function drawOne(gd, index) {
   // this shape is gone - quit now after deleting it
   // TODO: use d3 idioms instead of deleting and redrawing every time
   if (!options._input || options.visible !== true) return;
-  if (options.layer !== 'below') {
+  if (options.layer === 'above') {
     drawShape(gd._fullLayout._shapeUpperLayer);
   } else if (options.xref === 'paper' || options.yref === 'paper') {
     drawShape(gd._fullLayout._shapeLowerLayer);
+  } else if (options.layer === 'between') {
+    drawShape(plotinfo.shapelayerBetween);
   } else {
     if (plotinfo._hadPlotinfo) {
       var mainPlot = plotinfo.mainplotinfo || plotinfo;
@@ -19467,7 +19585,7 @@ module.exports = overrideAll({
     },
     layer: {
       valType: 'enumerated',
-      values: ['below', 'above'],
+      values: ['below', 'above', 'between'],
       dflt: 'above'
     },
     drawdirection: {
@@ -21387,6 +21505,9 @@ function draw(gd, titleClass, options) {
   var fontFamily = font.family;
   var fontSize = font.size;
   var fontColor = font.color;
+  var fontWeight = font.weight;
+  var fontStyle = font.style;
+  var fontVariant = font.variant;
 
   // only make this title editable if we positively identify its property
   // as one that has editing enabled.
@@ -21450,7 +21571,9 @@ function draw(gd, titleClass, options) {
       'font-size': d3.round(fontSize, 2) + 'px',
       fill: Color.rgb(fontColor),
       opacity: opacity * Color.opacity(fontColor),
-      'font-weight': Plots.fontWeight
+      'font-weight': fontWeight,
+      'font-style': fontStyle,
+      'font-variant': fontVariant
     }).attr(attributes).call(svgTextUtils.convertToTspans, gd);
     return Plots.previousPromises(gd);
   }
@@ -24051,12 +24174,16 @@ exports.coerce2 = function (containerIn, containerOut, attributes, attribute, df
  *
  * 'coerce' is a lib.coerce wrapper with implied first three arguments
  */
-exports.coerceFont = function (coerce, attr, dfltObj) {
+exports.coerceFont = function (coerce, attr, dfltObj, opts) {
+  if (!opts) opts = {};
   var out = {};
   dfltObj = dfltObj || {};
   out.family = coerce(attr + '.family', dfltObj.family);
   out.size = coerce(attr + '.size', dfltObj.size);
   out.color = coerce(attr + '.color', dfltObj.color);
+  out.weight = coerce(attr + '.weight', dfltObj.weight);
+  out.style = coerce(attr + '.style', dfltObj.style);
+  if (!opts.noFontVariant) out.variant = coerce(attr + '.variant', dfltObj.variant);
   return out;
 };
 
@@ -39518,6 +39645,9 @@ function tickTextObj(ax, x, text) {
     text: text || '',
     fontSize: tf.size,
     font: tf.family,
+    fontWeight: tf.weight,
+    fontStyle: tf.style,
+    fontVariant: tf.variant,
     fontColor: tf.color
   };
 }
@@ -41068,7 +41198,14 @@ axes.drawLabels = function (gd, ax, opts) {
   .attr('text-anchor', 'middle').each(function (d) {
     var thisLabel = d3.select(this);
     var newPromise = gd._promises.length;
-    thisLabel.call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d)).call(Drawing.font, d.font, d.fontSize, d.fontColor).text(d.text).call(svgTextUtils.convertToTspans, gd);
+    thisLabel.call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d)).call(Drawing.font, {
+      family: d.font,
+      size: d.fontSize,
+      color: d.fontColor,
+      weight: d.fontWeight,
+      style: d.fontStyle,
+      variant: d.fontVariant
+    }).text(d.text).call(svgTextUtils.convertToTspans, gd);
     if (gd._promises[newPromise]) {
       // if we have an async label, we'll deal with that
       // all here so take it out of gd._promises and
@@ -41256,23 +41393,46 @@ axes.drawLabels = function (gd, ax, opts) {
           width: bb.width + 2
         });
       });
-      if ((ax.tickson === 'boundaries' || ax.showdividers) && !opts.secondary) {
+
+      // autotickangles
+      // if there are dividers or ticks on boundaries, the labels will be in between and
+      // we need to prevent overlap with the next divider/tick. Else the labels will be on
+      // the ticks and we need to prevent overlap with the next label.
+
+      // TODO should secondary labels also fall into this fix-overlap regime?
+      var preventOverlapWithTick = (ax.tickson === 'boundaries' || ax.showdividers) && !opts.secondary;
+      var vLen = vals.length;
+      var tickSpacing = Math.abs((vals[vLen - 1].x - vals[0].x) * ax._m) / (vLen - 1);
+      var adjacent = preventOverlapWithTick ? tickSpacing / 2 : tickSpacing;
+      var opposite = preventOverlapWithTick ? ax.ticklen : maxFontSize * 1.25 * maxLines;
+      var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
+      var maxCos = adjacent / hypotenuse;
+      var autoTickAnglesRadians = ax.autotickangles.map(function (degrees) {
+        return degrees * Math.PI / 180;
+      });
+      var angleRadians = autoTickAnglesRadians.find(function (angle) {
+        return Math.abs(Math.cos(angle)) <= maxCos;
+      });
+      if (angleRadians === undefined) {
+        // no angle with smaller cosine than maxCos, just pick the angle with smallest cosine
+        angleRadians = autoTickAnglesRadians.reduce(function (currentMax, nextAngle) {
+          return Math.abs(Math.cos(currentMax)) < Math.abs(Math.cos(nextAngle)) ? currentMax : nextAngle;
+        }, autoTickAnglesRadians[0]);
+      }
+      var newAngle = angleRadians * (180 / Math.PI /* to degrees */);
+
+      if (preventOverlapWithTick) {
         var gap = 2;
         if (ax.ticks) gap += ax.tickwidth / 2;
-
-        // TODO should secondary labels also fall into this fix-overlap regime?
-
         for (i = 0; i < lbbArray.length; i++) {
           var xbnd = vals[i].xbnd;
           var lbb = lbbArray[i];
           if (xbnd[0] !== null && lbb.left - ax.l2p(xbnd[0]) < gap || xbnd[1] !== null && ax.l2p(xbnd[1]) - lbb.right < gap) {
-            autoangle = 90;
+            autoangle = newAngle;
             break;
           }
         }
       } else {
-        var vLen = vals.length;
-        var tickSpacing = Math.abs((vals[vLen - 1].x - vals[0].x) * ax._m) / (vLen - 1);
         var ticklabelposition = ax.ticklabelposition || '';
         var has = function (str) {
           return ticklabelposition.indexOf(str) !== -1;
@@ -41283,26 +41443,6 @@ axes.drawLabels = function (gd, ax, opts) {
         var isBottom = has('bottom');
         var isAligned = isBottom || isLeft || isTop || isRight;
         var pad = !isAligned ? 0 : (ax.tickwidth || 0) + 2 * TEXTPAD;
-
-        // autotickangles
-        var adjacent = tickSpacing;
-        var opposite = maxFontSize * 1.25 * maxLines;
-        var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
-        var maxCos = adjacent / hypotenuse;
-        var autoTickAnglesRadians = ax.autotickangles.map(function (degrees) {
-          return degrees * Math.PI / 180;
-        });
-        var angleRadians = autoTickAnglesRadians.find(function (angle) {
-          return Math.abs(Math.cos(angle)) <= maxCos;
-        });
-        if (angleRadians === undefined) {
-          // no angle with smaller cosine than maxCos, just pick the angle with smallest cosine
-          angleRadians = autoTickAnglesRadians.reduce(function (currentMax, nextAngle) {
-            return Math.abs(Math.cos(currentMax)) < Math.abs(Math.cos(nextAngle)) ? currentMax : nextAngle;
-          }, autoTickAnglesRadians[0]);
-        }
-        var newAngle = angleRadians * (180 / Math.PI /* to degrees */);
-
         for (i = 0; i < lbbArray.length - 1; i++) {
           if (Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
             autoangle = newAngle;
@@ -41502,7 +41642,7 @@ function approxTitleDepth(ax) {
   var fontSize = ax.title.font.size;
   var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
   if (ax.title.hasOwnProperty('standoff')) {
-    return extraLines ? fontSize * (CAP_SHIFT + extraLines * LINE_SPACING) : fontSize * CAP_SHIFT;
+    return fontSize * (CAP_SHIFT + extraLines * LINE_SPACING);
   } else {
     return extraLines ? fontSize * (extraLines + 1) * LINE_SPACING : fontSize;
   }
@@ -41531,8 +41671,19 @@ function drawTitle(gd, ax) {
   var axLetter = axId.charAt(0);
   var fontSize = ax.title.font.size;
   var titleStandoff;
+  var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
   if (ax.title.hasOwnProperty('standoff')) {
-    titleStandoff = ax._depth + ax.title.standoff + approxTitleDepth(ax);
+    // With ax._depth the initial drawing baseline is at the outer axis border (where the
+    // ticklabels are drawn). Since the title text will be drawn above the baseline,
+    // bottom/right axes must be shifted by 1 text line to draw below ticklabels instead of on
+    // top of them, whereas for top/left axes, the first line would be drawn
+    // before the ticklabels, but we need an offset for the descender portion of the first line
+    // and all subsequent lines.
+    if (ax.side === 'bottom' || ax.side === 'right') {
+      titleStandoff = ax._depth + ax.title.standoff + fontSize * CAP_SHIFT;
+    } else if (ax.side === 'top' || ax.side === 'left') {
+      titleStandoff = ax._depth + ax.title.standoff + fontSize * (MID_SHIFT + extraLines * LINE_SPACING);
+    }
   } else {
     var isInside = insideTicklabelposition(ax);
     if (ax.type === 'multicategory') {
@@ -42064,6 +42215,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
   coerce('title.text', dfltTitle);
   Lib.coerceFont(coerce, 'title.font', {
     family: font.family,
+    weight: font.weight,
+    style: font.style,
+    variant: font.variant,
     size: Lib.bigFont(font.size),
     color: dfltFontColor
   });
@@ -44701,19 +44855,28 @@ exports.plot = function (gd, traces, transitionOpts, makeOnCompleteCallback) {
   var subplots = fullLayout._subplots.cartesian;
   var calcdata = gd.calcdata;
   var i;
+
+  // Traces is a list of trace indices to (re)plot. If it's not provided,
+  // then it's a complete replot so we create a new list and add all trace indices
+  // which are in calcdata.
+
   if (!Array.isArray(traces)) {
     // If traces is not provided, then it's a complete replot and missing
     // traces are removed
     traces = [];
     for (i = 0; i < calcdata.length; i++) traces.push(i);
   }
+
+  // For each subplot
   for (i = 0; i < subplots.length; i++) {
     var subplot = subplots[i];
     var subplotInfo = fullLayout._plots[subplot];
 
-    // Get all calcdata for this subplot:
+    // Get all calcdata (traces) for this subplot:
     var cdSubplot = [];
     var pcd;
+
+    // For each trace
     for (var j = 0; j < calcdata.length; j++) {
       var cd = calcdata[j];
       var trace = cd[0].trace;
@@ -44741,6 +44904,7 @@ exports.plot = function (gd, traces, transitionOpts, makeOnCompleteCallback) {
         pcd = cd;
       }
     }
+    // Plot the traces for this subplot
     plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback);
   }
 };
@@ -44749,37 +44913,57 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
   var fullLayout = gd._fullLayout;
   var modules = fullLayout._modules;
   var _module, cdModuleAndOthers, cdModule;
+
+  // Separate traces by zorder and plot each zorder group separately
+  // TODO: Performance
+  var traceZorderGroups = {};
+  for (var t = 0; t < cdSubplot.length; t++) {
+    var trace = cdSubplot[t][0].trace;
+    var zi = trace.zorder || 0;
+    if (!traceZorderGroups[zi]) traceZorderGroups[zi] = [];
+    traceZorderGroups[zi].push(cdSubplot[t]);
+  }
   var layerData = [];
   var zoomScaleQueryParts = [];
-  for (var i = 0; i < modules.length; i++) {
-    _module = modules[i];
-    var name = _module.name;
-    var categories = Registry.modules[name].categories;
-    if (categories.svg) {
-      var className = _module.layerName || name + 'layer';
-      var plotMethod = _module.plot;
 
-      // plot all visible traces of this type on this subplot at once
-      cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
-      cdModule = cdModuleAndOthers[0];
-      // don't need to search the found traces again - in fact we need to NOT
-      // so that if two modules share the same plotter we don't double-plot
-      cdSubplot = cdModuleAndOthers[1];
-      if (cdModule.length) {
-        layerData.push({
-          i: traceLayerClasses.indexOf(className),
-          className: className,
-          plotMethod: plotMethod,
-          cdModule: cdModule
-        });
-      }
-      if (categories.zoomScale) {
-        zoomScaleQueryParts.push('.' + className);
+  // Plot each zorder group in ascending order
+  var zindices = Object.keys(traceZorderGroups).map(Number).sort(Lib.sorterAsc);
+  for (var z = 0; z < zindices.length; z++) {
+    var zorder = zindices[z];
+    // For each "module" (trace type)
+    for (var i = 0; i < modules.length; i++) {
+      _module = modules[i];
+      var name = _module.name;
+      var categories = Registry.modules[name].categories;
+      if (categories.svg) {
+        var classBaseName = _module.layerName || name + 'layer';
+        var className = classBaseName + (z ? Number(z) + 1 : '');
+        var plotMethod = _module.plot;
+
+        // plot all visible traces of this type on this subplot at once
+        cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod, zorder);
+        cdModule = cdModuleAndOthers[0];
+        // don't need to search the found traces again - in fact we need to NOT
+        // so that if two modules share the same plotter we don't double-plot
+        cdSubplot = cdModuleAndOthers[1];
+        if (cdModule.length) {
+          layerData.push({
+            i: traceLayerClasses.indexOf(classBaseName),
+            zorder: z,
+            className: className,
+            plotMethod: plotMethod,
+            cdModule: cdModule
+          });
+        }
+        if (categories.zoomScale) {
+          zoomScaleQueryParts.push('.' + className);
+        }
       }
     }
   }
+  // Sort the layers primarily by z, then by i
   layerData.sort(function (a, b) {
-    return a.i - b.i;
+    return (a.zorder || 0) - (b.zorder || 0) || a.i - b.i;
   });
   var layers = plotinfo.plot.selectAll('g.mlayer').data(layerData, function (d) {
     return d.className;
@@ -44985,6 +45169,9 @@ function makeSubplotLayer(gd, plotinfo) {
       plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
       plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
       plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+      var betweenLayer = ensureSingle(plotgroup, 'g', 'layer-between');
+      plotinfo.shapelayerBetween = ensureSingle(betweenLayer, 'g', 'shapelayer');
+      plotinfo.imagelayerBetween = ensureSingle(betweenLayer, 'g', 'imagelayer');
       ensureSingle(plotgroup, 'path', 'xlines-below');
       ensureSingle(plotgroup, 'path', 'ylines-below');
       plotinfo.overlinesBelow = ensureSingle(plotgroup, 'g', 'overlines-below');
@@ -47367,6 +47554,9 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
     contColor && contColor !== layoutAttributes.color.dflt ? contColor : font.color;
     Lib.coerceFont(coerce, 'tickfont', {
       family: font.family,
+      weight: font.weight,
+      style: font.style,
+      variant: font.variant,
       size: font.size,
       color: dfltFontColor
     });
@@ -48266,6 +48456,7 @@ exports.Q = function (containerOut, layout, coerce, dfltDomains) {
  * @return {object} attributes object containing {family, size, color} as specified
  */
 module.exports = function (opts) {
+  var variantValues = opts.variantValues;
   var editType = opts.editType;
   var colorEditType = opts.colorEditType;
   if (colorEditType === undefined) colorEditType = editType;
@@ -48285,6 +48476,24 @@ module.exports = function (opts) {
       valType: 'color',
       editType: colorEditType
     },
+    weight: {
+      editType: editType,
+      valType: 'enumerated',
+      values: ['normal', 'bold'],
+      dflt: 'normal'
+    },
+    style: {
+      editType: editType,
+      valType: 'enumerated',
+      values: ['normal', 'italic'],
+      dflt: 'normal'
+    },
+    variant: opts.noFontVariant ? undefined : {
+      editType: editType,
+      valType: 'enumerated',
+      values: variantValues || ['normal', 'small-caps', 'all-small-caps', 'all-petite-caps', 'petite-caps', 'unicase'],
+      dflt: 'normal'
+    },
     editType: editType
     // blank strings so compress_attributes can remove
     // TODO - that's uber hacky... better solution?
@@ -48294,6 +48503,9 @@ module.exports = function (opts) {
   if (opts.autoColor) attrs.color.dflt = 'auto';
   if (opts.arrayOk) {
     attrs.family.arrayOk = true;
+    attrs.weight.arrayOk = true;
+    attrs.style.arrayOk = true;
+    attrs.variant.arrayOk = true;
     attrs.size.arrayOk = true;
     attrs.color.arrayOk = true;
   }
@@ -48374,10 +48586,10 @@ exports.KY = function (calcData, type, subplotId) {
  * @param {array} calcdata: as in gd.calcdata
  * @param {object|string|fn} arg1:
  *  the plotting module, or its name, or its plot method
- *
+ * @param {int} arg2: (optional) zorder to filter on
  * @return {array[array]} [foundCalcdata, remainingCalcdata]
  */
-exports._M = function (calcdata, arg1) {
+exports._M = function (calcdata, arg1, arg2) {
   var moduleCalcData = [];
   var remainingCalcData = [];
   var plotMethod;
@@ -48391,9 +48603,11 @@ exports._M = function (calcdata, arg1) {
   if (!plotMethod) {
     return [moduleCalcData, calcdata];
   }
+  var zorder = arg2;
   for (var i = 0; i < calcdata.length; i++) {
     var cd = calcdata[i];
     var trace = cd[0].trace;
+    var filterByZ = trace.zorder !== undefined;
     // N.B.
     // - 'legendonly' traces do not make it past here
     // - skip over 'visible' traces that got trimmed completely during calc transforms
@@ -48403,7 +48617,7 @@ exports._M = function (calcdata, arg1) {
     // would suggest), but by 'module plot method' so that if some traces
     // share the same module plot method (e.g. bar and histogram), we
     // only call it one!
-    if (trace._module && trace._module.plot === plotMethod) {
+    if (trace._module && trace._module.plot === plotMethod && (!filterByZ || trace.zorder === zorder)) {
       moduleCalcData.push(cd);
     } else {
       remainingCalcData.push(cd);
@@ -48796,9 +49010,6 @@ plots.attributes = __webpack_require__(45464);
 plots.attributes.type.values = plots.allTypes;
 plots.fontAttrs = __webpack_require__(25376);
 plots.layoutAttributes = __webpack_require__(64859);
-
-// TODO make this a plot attribute?
-plots.fontWeight = 'normal';
 var transformsRegistry = plots.transformsRegistry;
 var commandModule = __webpack_require__(62460);
 plots.executeAPICommand = commandModule.executeAPICommand;
@@ -52261,6 +52472,9 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
   var title = coerce('title.text', dfltTitle);
   containerOut._hovertitle = title === dfltTitle ? title : letterUpper;
   Lib.coerceFont(coerce, 'title.font', {
+    weight: options.font.weight,
+    style: options.font.style,
+    variant: options.font.variant,
     family: options.font.family,
     size: Lib.bigFont(options.font.size),
     color: dfltFontColor
@@ -52279,6 +52493,9 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
   var showTickLabels = coerce('showticklabels');
   if (showTickLabels) {
     Lib.coerceFont(coerce, 'tickfont', {
+      weight: options.font.weight,
+      style: options.font.style,
+      variant: options.font.variant,
       family: options.font.family,
       size: options.font.size,
       color: dfltFontColor
@@ -53991,6 +54208,20 @@ module.exports = function toSVG(gd, format, scale) {
     if (ff && ff.indexOf('"') !== -1) {
       txt.style('font-family', ff.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
     }
+
+    // Drop normal font-weight, font-style and font-variant to reduce the size
+    var fw = this.style.fontWeight;
+    if (fw && fw === 'normal') {
+      txt.style('font-weight', undefined);
+    }
+    var fs = this.style.fontStyle;
+    if (fs && fs === 'normal') {
+      txt.style('font-style', undefined);
+    }
+    var fv = this.style.fontVariant;
+    if (fv && fv === 'normal') {
+      txt.style('font-variant', undefined);
+    }
   });
   svg.selectAll('.gradient_filled,.pattern_filled').each(function () {
     var pt = d3.select(this);
@@ -54225,6 +54456,7 @@ module.exports = {
     textfont: scatterAttrs.unselected.textfont,
     editType: 'style'
   },
+  zorder: scatterAttrs.zorder,
   _deprecated: {
     bardir: {
       valType: 'enumerated',
@@ -55123,6 +55355,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
   handlePeriodDefaults(traceIn, traceOut, layout, coerce);
   coerce('xhoverformat');
   coerce('yhoverformat');
+  coerce('zorder');
   coerce('orientation', traceOut.x && !traceOut.y ? 'h' : 'v');
   coerce('base');
   coerce('offset');
@@ -56635,7 +56868,7 @@ var attributeInsideTextFont = attributes.insidetextfont;
 var attributeOutsideTextFont = attributes.outsidetextfont;
 var helpers = __webpack_require__(60444);
 function style(gd) {
-  var s = d3.select(gd).selectAll('g.barlayer').selectAll('g.trace');
+  var s = d3.select(gd).selectAll('g[class^="barlayer"]').selectAll('g.trace');
   resizeText(gd, s, 'bar');
   var barcount = s.size();
   var fullLayout = gd._fullLayout;
@@ -56721,7 +56954,10 @@ function getInsideTextFont(trace, index, layoutFont, barColor) {
     defaultFont = {
       color: Color.contrast(barColor),
       family: defaultFont.family,
-      size: defaultFont.size
+      size: defaultFont.size,
+      weight: defaultFont.weight,
+      style: defaultFont.style,
+      variant: defaultFont.variant
     };
   }
   return getFontValue(attributeInsideTextFont, trace.insidetextfont, index, defaultFont);
@@ -56735,10 +56971,16 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
   var familyValue = helpers.getValue(attributeValue.family, index);
   var sizeValue = helpers.getValue(attributeValue.size, index);
   var colorValue = helpers.getValue(attributeValue.color, index);
+  var weightValue = helpers.getValue(attributeValue.weight, index);
+  var styleValue = helpers.getValue(attributeValue.style, index);
+  var variantValue = helpers.getValue(attributeValue.variant, index);
   return {
     family: helpers.coerceString(attributeDefinition.family, familyValue, defaultValue.family),
     size: helpers.coerceNumber(attributeDefinition.size, sizeValue, defaultValue.size),
-    color: helpers.coerceColor(attributeDefinition.color, colorValue, defaultValue.color)
+    color: helpers.coerceColor(attributeDefinition.color, colorValue, defaultValue.color),
+    weight: helpers.coerceString(attributeDefinition.weight, weightValue, defaultValue.weight),
+    style: helpers.coerceString(attributeDefinition.style, styleValue, defaultValue.style),
+    variant: helpers.coerceString(attributeDefinition.variant, variantValue, defaultValue.variant)
   };
 }
 function getBarColor(cd, trace) {
@@ -57112,7 +57354,8 @@ module.exports = {
     flags: ['boxes', 'points'],
     dflt: 'boxes+points',
     editType: 'style'
-  }
+  },
+  zorder: scatterAttrs.zorder
 };
 
 /***/ }),
@@ -57768,6 +58011,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
   handlePointsDefaults(traceIn, traceOut, coerce, {
     prefix: 'box'
   });
+  coerce('zorder');
 }
 function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
   function getDims(arr) {
@@ -58895,7 +59139,8 @@ module.exports = extendFlat({
     dash: dash,
     smoothing: extendFlat({}, scatterLineAttrs.smoothing, {}),
     editType: 'plot'
-  }
+  },
+  zorder: scatterAttrs.zorder
 }, colorScaleAttrs('', {
   cLetter: 'z',
   autoColorDflt: false,
@@ -59440,6 +59685,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
   if (traceOut.contours && traceOut.contours.coloring === 'heatmap') {
     handleHeatmapLabelDefaults(coerce, layout);
   }
+  coerce('zorder');
 };
 
 /***/ }),
@@ -59839,6 +60085,9 @@ module.exports = function handleLabelDefaults(coerce, layout, lineColor, opts) {
   if (showLabels) {
     var globalFont = layout.font;
     Lib.coerceFont(coerce, 'contours.labelfont', {
+      weight: globalFont.weight,
+      style: globalFont.style,
+      variant: globalFont.variant,
       family: globalFont.family,
       size: globalFont.size,
       color: lineColor
@@ -60677,6 +60926,9 @@ module.exports = function style(gd) {
     var labelFont = contours.labelfont;
     c.selectAll('g.contourlabels text').each(function (d) {
       Drawing.font(d3.select(this), {
+        weight: labelFont.weight,
+        style: labelFont.style,
+        variant: labelFont.variant,
         family: labelFont.family,
         size: labelFont.size,
         color: labelFont.color || (colorLines ? colorMap(d.level) : line.color)
@@ -60880,7 +61132,8 @@ module.exports = extendFlat({
   }),
   showlegend: extendFlat({}, baseAttrs.showlegend, {
     dflt: false
-  })
+  }),
+  zorder: scatterAttrs.zorder
 }, {
   transforms: undefined
 }, colorScaleAttrs('', {
@@ -61272,6 +61525,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     prefix: '',
     cLetter: 'z'
   });
+  coerce('zorder');
 };
 
 /***/ }),
@@ -62163,7 +62417,6 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
         }
       }
       var font = trace.textfont;
-      var fontFamily = font.family;
       var fontSize = font.size;
       var globalFontSize = gd._fullLayout.font.size;
       if (!fontSize || fontSize === 'auto') {
@@ -62209,7 +62462,14 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
         if (!fontColor || fontColor === 'auto') {
           fontColor = Color.contrast(d.z === undefined ? gd._fullLayout.plot_bgcolor : 'rgba(' + sclFunc(d.z).join() + ')');
         }
-        thisLabel.attr('data-notex', 1).call(svgTextUtils.positionText, xFn(d), yFn(d)).call(Drawing.font, fontFamily, fontSize, fontColor).text(d.t).call(svgTextUtils.convertToTspans, gd);
+        thisLabel.attr('data-notex', 1).call(svgTextUtils.positionText, xFn(d), yFn(d)).call(Drawing.font, {
+          family: font.family,
+          size: fontSize,
+          color: fontColor,
+          weight: font.weight,
+          style: font.style,
+          variant: font.variant
+        }).text(d.t).call(svgTextUtils.convertToTspans, gd);
       });
     }
   });
@@ -62513,7 +62773,8 @@ module.exports = {
   unselected: barAttrs.unselected,
   _deprecated: {
     bardir: barAttrs._deprecated.bardir
-  }
+  },
+  zorder: barAttrs.zorder
 };
 
 /***/ }),
@@ -63646,6 +63907,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     axis: 'x',
     inherit: 'y'
   });
+  coerce('zorder');
 };
 
 /***/ }),
@@ -64286,6 +64548,7 @@ module.exports = {
 
 
 var baseAttrs = __webpack_require__(45464);
+var zorder = (__webpack_require__(52904).zorder);
 var hovertemplateAttrs = (__webpack_require__(21776)/* .hovertemplateAttrs */ .Ks);
 var extendFlat = (__webpack_require__(92880).extendFlat);
 var colormodel = (__webpack_require__(47797).colormodel);
@@ -64386,6 +64649,7 @@ module.exports = extendFlat({
   hovertemplate: hovertemplateAttrs({}, {
     keys: ['z', 'color', 'colormodel']
   }),
+  zorder: zorder,
   transforms: undefined
 });
 
@@ -64585,6 +64849,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
   coerce('hovertext');
   coerce('hovertemplate');
   traceOut._length = null;
+  coerce('zorder');
 };
 
 /***/ }),
@@ -66006,10 +66271,16 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
   var color = helpers.castOption(trace.outsidetextfont.color, pt.pts) || helpers.castOption(trace.textfont.color, pt.pts) || layoutFont.color;
   var family = helpers.castOption(trace.outsidetextfont.family, pt.pts) || helpers.castOption(trace.textfont.family, pt.pts) || layoutFont.family;
   var size = helpers.castOption(trace.outsidetextfont.size, pt.pts) || helpers.castOption(trace.textfont.size, pt.pts) || layoutFont.size;
+  var weight = helpers.castOption(trace.outsidetextfont.weight, pt.pts) || helpers.castOption(trace.textfont.weight, pt.pts) || layoutFont.weight;
+  var style = helpers.castOption(trace.outsidetextfont.style, pt.pts) || helpers.castOption(trace.textfont.style, pt.pts) || layoutFont.style;
+  var variant = helpers.castOption(trace.outsidetextfont.variant, pt.pts) || helpers.castOption(trace.textfont.variant, pt.pts) || layoutFont.variant;
   return {
     color: color,
     family: family,
-    size: size
+    size: size,
+    weight: weight,
+    style: style,
+    variant: variant
   };
 }
 function determineInsideTextFont(trace, pt, layoutFont) {
@@ -66023,10 +66294,16 @@ function determineInsideTextFont(trace, pt, layoutFont) {
   }
   var family = helpers.castOption(trace.insidetextfont.family, pt.pts) || helpers.castOption(trace.textfont.family, pt.pts) || layoutFont.family;
   var size = helpers.castOption(trace.insidetextfont.size, pt.pts) || helpers.castOption(trace.textfont.size, pt.pts) || layoutFont.size;
+  var weight = helpers.castOption(trace.insidetextfont.weight, pt.pts) || helpers.castOption(trace.textfont.weight, pt.pts) || layoutFont.weight;
+  var style = helpers.castOption(trace.insidetextfont.style, pt.pts) || helpers.castOption(trace.textfont.style, pt.pts) || layoutFont.style;
+  var variant = helpers.castOption(trace.insidetextfont.variant, pt.pts) || helpers.castOption(trace.textfont.variant, pt.pts) || layoutFont.variant;
   return {
     color: customColor || Color.contrast(pt.color),
     family: family,
-    size: size
+    size: size,
+    weight: weight,
+    style: style,
+    variant: variant
   };
 }
 function prerenderTitles(cdModule, gd) {
@@ -66645,6 +66922,9 @@ module.exports = function arraysToCalcdata(cd, trace) {
     Lib.mergeArrayCastPositive(trace.textfont.size, cd, 'ts');
     Lib.mergeArray(trace.textfont.color, cd, 'tc');
     Lib.mergeArray(trace.textfont.family, cd, 'tf');
+    Lib.mergeArray(trace.textfont.weight, cd, 'tw');
+    Lib.mergeArray(trace.textfont.style, cd, 'ty');
+    Lib.mergeArray(trace.textfont.variant, cd, 'tv');
   }
   var marker = trace.marker;
   if (marker) {
@@ -67059,7 +67339,12 @@ module.exports = {
     editType: 'calc',
     colorEditType: 'style',
     arrayOk: true
-  })
+  }),
+  zorder: {
+    valType: 'integer',
+    dflt: 0,
+    editType: 'plot'
+  }
 };
 
 /***/ }),
@@ -67681,6 +67966,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
   handlePeriodDefaults(traceIn, traceOut, layout, coerce);
   coerce('xhoverformat');
   coerce('yhoverformat');
+  coerce('zorder');
   var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
   if (layout.scattermode === 'group' && traceOut.orientation === undefined) {
     coerce('orientation', 'v');
@@ -69760,7 +70046,7 @@ var Lib = __webpack_require__(3400);
 module.exports = function (traceIn, traceOut, layout, coerce, opts) {
   opts = opts || {};
   coerce('textposition');
-  Lib.coerceFont(coerce, 'textfont', opts.font || layout.font);
+  Lib.coerceFont(coerce, 'textfont', opts.font || layout.font, opts);
   if (!opts.noSelect) {
     coerce('selected.textfont.color');
     coerce('unselected.textfont.color');
@@ -70382,7 +70668,8 @@ module.exports = {
     dflt: 'violins+points+kde',
     extras: ['all'],
     editType: 'style'
-  }
+  },
+  zorder: boxAttrs.zorder
 };
 
 /***/ }),
@@ -70620,6 +70907,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     visible: false
   };
   coerce('quartilemethod');
+  coerce('zorder');
 };
 
 /***/ }),
@@ -72029,7 +72317,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.30.1';
+exports.version = '2.32.0';
 
 /***/ }),
 

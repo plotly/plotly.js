@@ -144,6 +144,21 @@ var BOXEVENTS = [1, 2, 1];
 // assumes 5 points in the lasso path
 var LASSOEVENTS = [4, 2, 1];
 
+var mockZorder = {
+    data: [
+        {x: [1, 2], y: [1, 1], type: 'scatter', zorder: 10, marker: {size: 50}},
+        {x: [1, 2], y: [1, 2], type: 'scatter', marker: {size: 50}},
+        {x: [1, 2], y: [1, 3], type: 'scatter', zorder: 5, marker: {size: 50}}
+    ],
+    layout: {
+        width: 400,
+        height: 400,
+        clickmode: 'event+select',
+        dragmode: 'select',
+        hovermode: 'closest'
+    }
+};
+
 describe('Click-to-select', function() {
     var mock14Pts = {
         1: { x: 134, y: 116 },
@@ -263,6 +278,84 @@ describe('Click-to-select', function() {
           .then(function() { assertSelectedPoints(7); })
           .then(done, done.fail);
     });
+
+    it('selects a single data point when being clicked on trace with zorder', function(done) {
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            return _immediateClickPt({ x: 270, y: 150 });
+        })
+        .then(function() {
+            assertSelectedPoints([], [], [1]);
+            return _clickPt({ x: 270, y: 200 });
+        })
+        .then(function() {
+            assertSelectedPoints([], [1], []);
+            return _clickPt({ x: 270, y: 250 });
+        })
+        .then(done, done.fail);
+    });
+
+    it('should only select top most zorder trace if overlapping position on single click', function(done) {
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            return _immediateClickPt({ x: 130, y: 250 });
+        })
+        .then(function() {
+            assertSelectedPoints([0], [], []);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should lasso select all overlapping points regardless of zorder', function(done) {
+        mockZorder.layout.dragmode = 'lasso';
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            drag([[200, 200], [200, 300], [100, 300], [100, 200], [200, 200]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([0]);
+            expect(gd.data[1].selectedpoints).toEqual([0]);
+            expect(gd.data[2].selectedpoints).toEqual([0]);
+        })
+        .then(function() {
+            return doubleClick(200, 200); // Clear selection
+        })
+        .then(function() {
+            drag([[200, 100], [200, 300], [300, 300], [300, 100], [200, 100]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([1]);
+            expect(gd.data[1].selectedpoints).toEqual([1]);
+            expect(gd.data[2].selectedpoints).toEqual([1]);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should box select all overlapping points regardless of zorder', function(done) {
+        mockZorder.layout.dragmode = 'select';
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            drag([[200, 200], [100, 300]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([0]);
+            expect(gd.data[1].selectedpoints).toEqual([0]);
+            expect(gd.data[2].selectedpoints).toEqual([0]);
+        })
+        .then(function() {
+            return doubleClick(200, 200); // Clear selection
+        })
+        .then(function() {
+            drag([[200, 100], [300, 300]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([1]);
+            expect(gd.data[1].selectedpoints).toEqual([1]);
+            expect(gd.data[2].selectedpoints).toEqual([1]);
+        })
+        .then(done, done.fail);
+    });
+
 
     it('cleanly clears and starts selections although add/subtract mode on', function(done) {
         plotMock14()

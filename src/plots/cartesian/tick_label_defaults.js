@@ -28,6 +28,9 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
 
         Lib.coerceFont(coerce, 'tickfont', {
             family: font.family,
+            weight: font.weight,
+            style: font.style,
+            variant: font.variant,
             size: font.size,
             color: dfltFontColor
         });

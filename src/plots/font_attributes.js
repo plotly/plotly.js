@@ -16,6 +16,7 @@
  * @return {object} attributes object containing {family, size, color} as specified
  */
 module.exports = function(opts) {
+    var variantValues = opts.variantValues;
     var editType = opts.editType;
     var colorEditType = opts.colorEditType;
     if(colorEditType === undefined) colorEditType = editType;
@@ -47,6 +48,44 @@ module.exports = function(opts) {
             valType: 'color',
             editType: colorEditType
         },
+
+        weight: {
+            editType: editType,
+            valType: 'enumerated',
+            values: ['normal', 'bold'],
+            dflt: 'normal',
+            description: [
+                'Sets the weight (or boldness) of the font.'
+            ].join(' ')
+        },
+
+        style: {
+            editType: editType,
+            valType: 'enumerated',
+            values: ['normal', 'italic'],
+            dflt: 'normal',
+            description: [
+                'Sets whether a font should be styled with a normal or italic face from its family.'
+            ].join(' ')
+        },
+
+        variant: opts.noFontVariant ? undefined : {
+            editType: editType,
+            valType: 'enumerated',
+            values: variantValues || [
+                'normal',
+                'small-caps',
+                'all-small-caps',
+                'all-petite-caps',
+                'petite-caps',
+                'unicase'
+            ],
+            dflt: 'normal',
+            description: [
+                'Sets the variant of the font.'
+            ].join(' ')
+        },
+
         editType: editType,
         // blank strings so compress_attributes can remove
         // TODO - that's uber hacky... better solution?
@@ -58,6 +97,9 @@ module.exports = function(opts) {
 
     if(opts.arrayOk) {
         attrs.family.arrayOk = true;
+        attrs.weight.arrayOk = true;
+        attrs.style.arrayOk = true;
+        attrs.variant.arrayOk = true;
         attrs.size.arrayOk = true;
         attrs.color.arrayOk = true;
     }
