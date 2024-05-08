@@ -190,7 +190,7 @@ function convertTextStyle(gd, trace) {
     if(
         isArrayOrTypedArray(tfs) ||
         Array.isArray(tff) ||
-        Array.isArray(tfw) ||
+        isArrayOrTypedArray(tfw) ||
         Array.isArray(tfy) ||
         Array.isArray(tfv)
     ) {
@@ -207,7 +207,7 @@ function convertTextStyle(gd, trace) {
             ) * plotGlPixelRatio;
 
             fonti.family = Array.isArray(tff) ? tff[i] : tff;
-            fonti.weight = Array.isArray(tfw) ? tfw[i] : tfw;
+            fonti.weight = weightFallBack(isArrayOrTypedArray(tfw) ? tfw[i] : tfw);
             fonti.style = Array.isArray(tfy) ? tfy[i] : tfy;
             fonti.variant = Array.isArray(tfv) ? tfv[i] : tfv;
         }
@@ -216,7 +216,7 @@ function convertTextStyle(gd, trace) {
         optsOut.font = {
             size: tfs * plotGlPixelRatio,
             family: tff,
-            weight: tfw,
+            weight: weightFallBack(tfw),
             style: tfy,
             variant: tfv
         };
@@ -225,6 +225,14 @@ function convertTextStyle(gd, trace) {
     return optsOut;
 }
 
+// scattergl rendering pipeline has limited support of numeric weight values
+// Here we map the numbers to be either bold or normal.
+function weightFallBack(w) {
+    if(w <= 1000) {
+        return w > 500 ? 'bold' : 'normal';
+    }
+    return w;
+}
 
 function convertMarkerStyle(gd, trace) {
     var count = trace._length;

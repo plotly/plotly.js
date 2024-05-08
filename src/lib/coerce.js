@@ -102,6 +102,8 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt', 'min', 'max', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
+            if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
+
             if(!isNumeric(v) ||
                     (opts.min !== undefined && v < opts.min) ||
                     (opts.max !== undefined && v > opts.max)) {
@@ -116,8 +118,15 @@ exports.valObjectMeta = {
             'are coerced to the `dflt`.'
         ].join(' '),
         requiredOpts: [],
-        otherOpts: ['dflt', 'min', 'max', 'arrayOk'],
+        otherOpts: ['dflt', 'min', 'max', 'arrayOk', 'extras'],
         coerceFunction: function(v, propOut, dflt, opts) {
+            if((opts.extras || []).indexOf(v) !== -1) {
+                propOut.set(v);
+                return;
+            }
+
+            if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
+
             if(v % 1 || !isNumeric(v) ||
                     (opts.min !== undefined && v < opts.min) ||
                     (opts.max !== undefined && v > opts.max)) {
@@ -158,6 +167,8 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt) {
+            if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
+
             if(tinycolor(v).isValid()) propOut.set(v);
             else propOut.set(dflt);
         }
@@ -200,6 +211,8 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt) {
+            if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
+
             if(v === 'auto') propOut.set('auto');
             else if(!isNumeric(v)) propOut.set(dflt);
             else propOut.set(modHalf(+v, 360));

@@ -170,7 +170,7 @@
       "capitalize": "word",
       "decorline": "under",
       "shadow": "auto",
-      "weight": "bold",
+      "weight": 700,
       "style": "italic",
       "variant": "small-caps"
     },

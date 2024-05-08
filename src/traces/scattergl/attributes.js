@@ -44,6 +44,7 @@ var attrs = module.exports = overrideAll({
         editType: 'calc',
         colorEditType: 'style',
         arrayOk: true,
+        noNumericWeightValues: true,
         variantValues: ['normal', 'small-caps'],
         description: 'Sets the text font.'
     }),

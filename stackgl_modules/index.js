@@ -11905,6 +11905,17 @@ var identity = new Float32Array([
   0, 0, 1, 0,
   0, 0, 0, 1])
 
+var ab = ArrayBuffer
+var dv = DataView
+
+function isTypedArray(a) {
+    return ab.isView(a) && !(a instanceof dv)
+}
+
+function isArrayOrTypedArray(a) {
+    return Array.isArray(a) || isTypedArray(a)
+}
+
 function copyVec3(a, b) {
   a[0] = b[0]
   a[1] = b[1]
@@ -11992,8 +12003,8 @@ proto.update = function(options) {
       var opt = options[name]
       var prev = this[name]
       var next
-      if(nest ? (Array.isArray(opt) && Array.isArray(opt[0])) :
-                 Array.isArray(opt) ) {
+      if(nest ? (isArrayOrTypedArray(opt) && isArrayOrTypedArray(opt[0])) :
+                 isArrayOrTypedArray(opt) ) {
         this[name] = next = [ cons(opt[0]), cons(opt[1]), cons(opt[2]) ]
       } else {
         this[name] = next = [ cons(opt), cons(opt), cons(opt) ]
@@ -12011,7 +12022,7 @@ proto.update = function(options) {
   var BOOLEAN = parseOption.bind(this, false, Boolean)
   var STRING  = parseOption.bind(this, false, String)
   var COLOR   = parseOption.bind(this, true, function(v) {
-    if(Array.isArray(v)) {
+    if(isArrayOrTypedArray(v)) {
       if(v.length === 3) {
         return [ +v[0], +v[1], +v[2], 1.0 ]
       } else if(v.length === 4) {
@@ -21678,6 +21689,17 @@ var IDENTITY = [1,0,0,0,
                 0,0,1,0,
                 0,0,0,1]
 
+var ab = ArrayBuffer
+var dv = DataView
+
+function isTypedArray(a) {
+    return ab.isView(a) && !(a instanceof dv)
+}
+
+function isArrayOrTypedArray(a) {
+    return Array.isArray(a) || isTypedArray(a)
+}
+
 module.exports = createPointCloud
 
 function transformMat4(x, m) {
@@ -22065,7 +22087,7 @@ function get_glyphData(glyphs, index, font, pixelRatio) {
   var str
 
   // use the data if presented in an array
-  if(Array.isArray(glyphs)) {
+  if(isArrayOrTypedArray(glyphs)) {
     if(index < glyphs.length) {
       str = glyphs[index]
     } else {
@@ -22086,19 +22108,19 @@ function get_glyphData(glyphs, index, font, pixelRatio) {
   if(!font) font = {}
 
   var family = font.family
-  if(Array.isArray(family)) family = family[index]
+  if(isArrayOrTypedArray(family)) family = family[index]
   if(!family) family = "normal"
 
   var weight = font.weight
-  if(Array.isArray(weight)) weight = weight[index]
+  if(isArrayOrTypedArray(weight)) weight = weight[index]
   if(!weight) weight = "normal"
 
   var style = font.style
-  if(Array.isArray(style)) style = style[index]
+  if(isArrayOrTypedArray(style)) style = style[index]
   if(!style) style = "normal"
 
   var variant = font.variant
-  if(Array.isArray(variant)) variant = variant[index]
+  if(isArrayOrTypedArray(variant)) variant = variant[index]
   if(!variant) variant = "normal"
 
   var glyph = getGlyph(str, {
@@ -22133,7 +22155,7 @@ proto.update = function(options) {
     this.lineWidth = options.lineWidth
   }
   if('project' in options) {
-    if(Array.isArray(options.project)) {
+    if(isArrayOrTypedArray(options.project)) {
       this.axesProject = options.project
     } else {
       var v = !!options.project
@@ -22141,7 +22163,7 @@ proto.update = function(options) {
     }
   }
   if('projectScale' in options) {
-    if(Array.isArray(options.projectScale)) {
+    if(isArrayOrTypedArray(options.projectScale)) {
       this.projectScale = options.projectScale.slice()
     } else {
       var s = +options.projectScale
@@ -22151,7 +22173,7 @@ proto.update = function(options) {
 
   this.projectHasAlpha = false // default to no transparent draw
   if('projectOpacity' in options) {
-    if(Array.isArray(options.projectOpacity)) {
+    if(isArrayOrTypedArray(options.projectOpacity)) {
       this.projectOpacity = options.projectOpacity.slice()
     } else {
       var s = +options.projectOpacity
@@ -22262,8 +22284,8 @@ proto.update = function(options) {
     var color      = [0,0,0,1]
     var lineColor  = [0,0,0,1]
 
-    var isColorArray      = Array.isArray(colors)     && Array.isArray(colors[0])
-    var isLineColorArray  = Array.isArray(lineColors) && Array.isArray(lineColors[0])
+    var isColorArray      = isArrayOrTypedArray(colors)     && isArrayOrTypedArray(colors[0])
+    var isLineColorArray  = isArrayOrTypedArray(lineColors) && isArrayOrTypedArray(lineColors[0])
 
   fill_loop:
     for(var i=0; i<numPoints; ++i) {
@@ -22289,7 +22311,7 @@ proto.update = function(options) {
 
       //Get color
       if(!glyphVisible) color = [1,1,1,0]
-      else if(Array.isArray(colors)) {
+      else if(isArrayOrTypedArray(colors)) {
         var c
         if(isColorArray) {
           if(i < colors.length) {
@@ -22320,7 +22342,7 @@ proto.update = function(options) {
 
       //Get lineColor
       if(!glyphVisible) lineColor = [1,1,1,0]
-      else if(Array.isArray(lineColors)) {
+      else if(isArrayOrTypedArray(lineColors)) {
         var c
         if(isLineColorArray) {
           if(i < lineColors.length) {
@@ -22351,7 +22373,7 @@ proto.update = function(options) {
 
       var size = 0.5
       if(!glyphVisible) size = 0.0
-      else if(Array.isArray(sizes)) {
+      else if(isArrayOrTypedArray(sizes)) {
         if(i < sizes.length) {
           size = +sizes[i]
         } else {
@@ -22365,7 +22387,7 @@ proto.update = function(options) {
 
 
       var angle = 0
-      if(Array.isArray(angles)) {
+      if(isArrayOrTypedArray(angles)) {
         if(i < angles.length) {
           angle = +angles[i]
         } else {
@@ -22390,7 +22412,7 @@ proto.update = function(options) {
       var textOffsetY = alignmentY
 
       var textOffsetX = 0
-      if(Array.isArray(alignmentX)) {
+      if(isArrayOrTypedArray(alignmentX)) {
         if(i < alignmentX.length) {
           textOffsetX = alignmentX[i]
         } else {
@@ -22401,7 +22423,7 @@ proto.update = function(options) {
       }
 
       var textOffsetY = 0
-      if(Array.isArray(alignmentY)) {
+      if(isArrayOrTypedArray(alignmentY)) {
         if(i < alignmentY.length) {
           textOffsetY = alignmentY[i]
         } else {
