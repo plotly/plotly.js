@@ -190,7 +190,7 @@ function convertTextStyle(gd, trace) {
     if(
         isArrayOrTypedArray(tfs) ||
         Array.isArray(tff) ||
-        Lib.isArrayOrTypedArray(tfw) ||
+        isArrayOrTypedArray(tfw) ||
         Array.isArray(tfy) ||
         Array.isArray(tfv)
     ) {
@@ -207,7 +207,7 @@ function convertTextStyle(gd, trace) {
             ) * plotGlPixelRatio;
 
             fonti.family = Array.isArray(tff) ? tff[i] : tff;
-            fonti.weight = weightFallBack(Lib.isArrayOrTypedArray(tfw) ? tfw[i] : tfw);
+            fonti.weight = weightFallBack(isArrayOrTypedArray(tfw) ? tfw[i] : tfw);
             fonti.style = Array.isArray(tfy) ? tfy[i] : tfy;
             fonti.variant = Array.isArray(tfv) ? tfv[i] : tfv;
         }
