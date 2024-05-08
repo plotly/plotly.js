@@ -225,6 +225,8 @@ function convertTextStyle(gd, trace) {
     return optsOut;
 }
 
+// scattergl rendering pipeline has limited support of numeric weight values
+// Here we map the numbers to be either bold or normal.
 function weightFallBack(w) {
     if(w <= 1000) {
         return w > 500 ? 'bold' : 'normal';
