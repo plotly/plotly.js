@@ -200,7 +200,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 fontStyle: hoverFont.style,
                 fontVariant: hoverFont.variant,
                 fontShadow: hoverFont.fontShadow,
-                fontStriding: hoverFont.fontStriding,
+                fontDecorline: hoverFont.fontDecorline,
                 fontCapitalize: hoverFont.fontCapitalize,
             }, {
                 container: fullLayout._hoverlayer.node(),
