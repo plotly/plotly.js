@@ -323,7 +323,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         for(k in oldPlots) {
             plotinfo = oldPlots[k];
             if(plotinfo.plotgroup) {
-                for(var idx = plotinfo.plotgroup.length; idx >= 0; idx--) {
+                for(var idx = plotinfo.plotgroup.length - 1; idx >= 0; idx--) {
                     plotinfo.plotgroup[idx].remove();
                 }
             }
