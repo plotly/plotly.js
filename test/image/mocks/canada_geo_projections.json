@@ -3869,7 +3869,7 @@
   ],
   "layout": {
     "font": {
-      "textcase": "word",
+      "textcase": "headline",
       "decorline": "under",
       "shadow": "auto"
     },

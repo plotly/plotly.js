@@ -159,7 +159,7 @@ describe('sankey tests', function() {
                     weight: 'bold',
                     style: 'italic',
                     variant: 'small-caps',
-                    textcase: 'word',
+                    textcase: 'headline',
                     decorline: 'under',
                     shadow: '1px 1px 2px green',
                 }});
@@ -169,7 +169,7 @@ describe('sankey tests', function() {
                         weight: 'bold',
                         style: 'italic',
                         variant: 'small-caps',
-                        textcase: 'word',
+                        textcase: 'headline',
                         decorline: 'under',
                         shadow: '1px 1px 2px green',
                     }, 'textfont is defined');

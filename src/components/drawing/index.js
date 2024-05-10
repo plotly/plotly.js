@@ -53,7 +53,7 @@ drawing.font = function(s, font) {
 
 var textcase2transformOptions = {
     normal: 'none',
-    word: 'capitalize',
+    headline: 'capitalize',
     lower: 'lowercase',
     upper: 'uppercase'
 };
