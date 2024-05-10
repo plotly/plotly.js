@@ -504,7 +504,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
 
         var plotinfo = {
             id: id,
-            plotgroup: [undefined, plotgroup],
+            plotgroup: [undefined, plotgroup], // ragenslider has no background layer
             xaxis: xa,
             yaxis: ya,
             isRangePlot: true
