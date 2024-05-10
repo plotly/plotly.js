@@ -1,0 +1,36 @@
+{
+    "data": [
+        {
+            "x": [
+                1, 2, 3, 4, 5, 6, 7
+            ],
+            "y": [
+                -1000, 0, 1000, 2000, 3000, 4000, 5000
+            ]
+        }
+    ],
+    "layout": {
+        "shapes": [
+
+            {
+                "layer": "between",
+                "name": "my zeroline y2",
+                "line": {
+                  "color": "yellow",
+                  "width": 3.0
+                },
+                "x0": 0,
+                "x1": 1,
+                "xref": "paper",
+                "y0": 0,
+                "y1": 0,
+                "yref": "y"
+              }
+        ],
+        "yaxis": {
+            "ticklabelposition": "inside top",
+            "zeroline": false
+        }
+        
+    }
+}

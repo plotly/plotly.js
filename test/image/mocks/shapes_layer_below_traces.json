@@ -41,20 +41,6 @@
   "layout": {
     "shapes": [
       {
-        "layer": "between",
-        "name": "my zeroline",
-        "line": {
-          "color": "yellow",
-          "width": 3.0
-        },
-        "x0": 0,
-        "x1": 1,
-        "xref": "paper",
-        "y0": 0,
-        "y1": 0,
-        "yref": "y"
-      },
-      {
         "name": "dashdot line",
         "fillcolor": "rgba(179,179,179,1)",
         "layer": "above",
@@ -139,15 +125,12 @@
         "0",
         "215"
       ],
-      "type": "linear",
-      "zerolinewidth": 6,
-      "zerolinecolor": "rgba(128,128,128,05)"
+      "type": "linear"
     },
     "yaxis2": {
       "gridwidth": 2,
       "side": "right",
-      "overlaying": "y",
-      "zeroline": false
+      "overlaying": "y"
     }
 
   }
