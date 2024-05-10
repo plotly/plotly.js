@@ -961,7 +961,7 @@ function createHoverText(hoverData, opts) {
     var fontWeight = opts.fontWeight || fullLayout.font.weight;
     var fontStyle = opts.fontStyle || fullLayout.font.style;
     var fontVariant = opts.fontVariant || fullLayout.font.variant;
-    var fontCapitalize = opts.fontCapitalize || fullLayout.font.capitalize;
+    var fontTextcase = opts.fontTextcase || fullLayout.font.textcase;
     var fontDecorline = opts.fontDecorline || fullLayout.font.decorline;
     var fontShadow = opts.fontShadow || fullLayout.font.shadow;
 
@@ -1049,7 +1049,7 @@ function createHoverText(hoverData, opts) {
             weight: commonLabelOptsFont.weight || fontWeight,
             style: commonLabelOptsFont.style || fontStyle,
             variant: commonLabelOptsFont.variant || fontVariant,
-            capitalize: commonLabelOptsFont.capitalize || fontCapitalize,
+            textcase: commonLabelOptsFont.textcase || fontTextcase,
             decorline: commonLabelOptsFont.decorline || fontDecorline,
             shadow: commonLabelOptsFont.shadow || fontShadow,
             family: commonLabelOptsFont.family || fontFamily,
@@ -1377,7 +1377,7 @@ function createHoverText(hoverData, opts) {
                     weight: fontWeight,
                     style: fontStyle,
                     variant: fontVariant,
-                    capitalize: fontCapitalize,
+                    textcase: fontTextcase,
                     decorline: fontDecorline,
                     shadow: fontShadow,
                     family: fontFamily,
@@ -1424,7 +1424,7 @@ function createHoverText(hoverData, opts) {
                 weight: d.fontWeight || fontWeight,
                 style: d.fontStyle || fontStyle,
                 variant: d.fontVariant || fontVariant,
-                capitalize: d.fontCapitalize || fontCapitalize,
+                textcase: d.fontTextcase || fontTextcase,
                 decorline: d.fontDecorline || fontDecorline,
                 shadow: d.fontShadow || fontShadow,
             })
@@ -1446,7 +1446,7 @@ function createHoverText(hoverData, opts) {
                 weight: d.fontWeight || fontWeight,
                 style: d.fontStyle || fontStyle,
                 variant: d.fontVariant || fontVariant,
-                capitalize: d.fontCapitalize || fontCapitalize,
+                textcase: d.fontTextcase || fontTextcase,
                 decorline: d.fontDecorline || fontDecorline,
                 shadow: d.fontShadow || fontShadow,
             }).text(name)

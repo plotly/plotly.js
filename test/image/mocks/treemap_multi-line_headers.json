@@ -24,7 +24,7 @@
             "textposition": "middle center",
             "texttemplate": "<b>%{label}</b>",
             "textfont": {
-                "capitalize": "word",
+                "textcase": "word",
                 "decorline": "under",
                 "shadow": "auto",
                 "size": 20

@@ -157,7 +157,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             var dfltFontWeight;
             var dfltFontStyle;
             var dfltFontVariant;
-            var dfltFontCapitalize;
+            var dfltFontTextcase;
             var dfltFontDecorline;
             var dfltFontShadow;
             var font = opts.font || {};
@@ -169,7 +169,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             dfltFontWeight = font.weight;
             dfltFontStyle = font.style;
             dfltFontVariant = font.variant;
-            dfltFontCapitalize = font.capitalize;
+            dfltFontTextcase = font.textcase;
             dfltFontDecorline = font.decorline;
             dfltFontShadow = font.shadow;
 
@@ -179,7 +179,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     weight: dfltFontWeight,
                     style: dfltFontStyle,
                     variant: dfltFontVariant,
-                    capitalize: dfltFontCapitalize,
+                    textcase: dfltFontTextcase,
                     decorline: dfltFontDecorline,
                     shadow: dfltFontShadow,
                     color: dfltFontColor,
@@ -214,7 +214,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     weight: dfltFontWeight,
                     style: dfltFontStyle,
                     variant: dfltFontVariant,
-                    capitalize: dfltFontCapitalize,
+                    textcase: dfltFontTextcase,
                     decorline: dfltFontDecorline,
                     shadow: dfltFontShadow,
                     color: dfltFontColor,

@@ -247,7 +247,7 @@ module.exports = function style(s, gd, legend) {
                 dEdit.tw = boundVal('textfont.weight', pickFirst);
                 dEdit.ty = boundVal('textfont.style', pickFirst);
                 dEdit.tv = boundVal('textfont.variant', pickFirst);
-                dEdit.tC = boundVal('textfont.capitalize', pickFirst);
+                dEdit.tC = boundVal('textfont.textcase', pickFirst);
                 dEdit.tE = boundVal('textfont.decorline', pickFirst);
                 dEdit.tS = boundVal('textfont.shadow', pickFirst);
             }

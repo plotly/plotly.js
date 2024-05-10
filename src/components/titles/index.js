@@ -71,7 +71,7 @@ function draw(gd, titleClass, options) {
     var fontWeight = font.weight;
     var fontStyle = font.style;
     var fontVariant = font.variant;
-    var fontCapitalize = font.capitalize;
+    var fontTextcase = font.textcase;
     var fontDecorline = font.decorline;
     var fontShadow = font.shadow;
 
@@ -155,7 +155,7 @@ function draw(gd, titleClass, options) {
             'font-weight': fontWeight,
             'font-style': fontStyle,
             'font-variant': fontVariant,
-            'text-transform': Drawing.capitalize2transform(fontCapitalize),
+            'text-transform': Drawing.textcase2transform(fontTextcase),
             'text-shadow': fontShadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(fontColor)) : fontShadow,
             'text-decoration-line': Drawing.decorline2decorationLine(fontDecorline),
         })

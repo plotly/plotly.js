@@ -14,7 +14,7 @@ var fontAttr = fontAttrs({
     noFontVariant: true,
     noFontShadow: true,
     noFontDecorline: true,
-    noFontCapitalize: true,
+    noFontTextcase: true,
     description: [
         'Sets the icon text font (color=mapbox.layer.paint.text-color, size=mapbox.layer.layout.text-size).',
         'Has an effect only when `type` is set to *symbol*.'

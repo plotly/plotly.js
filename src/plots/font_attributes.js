@@ -99,7 +99,7 @@ module.exports = function(opts) {
             ].join(' ')
         },
 
-        capitalize: opts.noFontCapitalize ? undefined : {
+        textcase: opts.noFontTextcase ? undefined : {
             editType: editType,
             valType: 'enumerated',
             values: ['normal', 'word', 'upper', 'lower'],
@@ -151,8 +151,8 @@ module.exports = function(opts) {
         if(!opts.noFontVariant) {
             attrs.variant.arrayOk = true;
         }
-        if(!opts.noFontCapitalize) {
-            attrs.capitalize.arrayOk = true;
+        if(!opts.noFontTextcase) {
+            attrs.textcase.arrayOk = true;
         }
         if(!opts.noFontDecorline) {
             attrs.decorline.arrayOk = true;

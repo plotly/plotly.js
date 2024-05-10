@@ -36,7 +36,7 @@ drawing.font = function(s, font) {
     var family = font.family;
     var shadow = font.shadow;
     var decorline = font.decorline;
-    var capitalize = font.capitalize;
+    var textcase = font.textcase;
 
     if(family) s.style('font-family', family);
     if(size + 1) s.style('font-size', size + 'px');
@@ -46,22 +46,22 @@ drawing.font = function(s, font) {
     if(style) s.style('font-style', style);
     if(variant) s.style('font-variant', variant);
 
-    if(capitalize) s.style('text-transform', capitalize2transform(capitalize));
+    if(textcase) s.style('text-transform', textcase2transform(textcase));
     if(shadow) s.style('text-shadow', shadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(color)) : shadow);
     if(decorline) s.style('text-decoration-line', decorline2decorationLine(decorline));
 };
 
-var capitalize2transformOptions = {
+var textcase2transformOptions = {
     normal: 'none',
     word: 'capitalize',
     lower: 'lowercase',
     upper: 'uppercase'
 };
 
-function capitalize2transform(capitalize) {
-    return capitalize2transformOptions[capitalize];
+function textcase2transform(textcase) {
+    return textcase2transformOptions[textcase];
 }
-drawing.capitalize2transform = capitalize2transform;
+drawing.textcase2transform = textcase2transform;
 
 function decorline2decorationLine(decorline) {
     return (
@@ -1167,7 +1167,7 @@ drawing.textPointStyle = function(s, trace, gd) {
             weight: d.tw || trace.textfont.weight,
             style: d.ty || trace.textfont.style,
             variant: d.tv || trace.textfont.variant,
-            capitalize: d.tC || trace.textfont.capitalize,
+            textcase: d.tC || trace.textfont.textcase,
             decorline: d.tE || trace.textfont.decorline,
             shadow: d.tS || trace.textfont.shadow,
             size: fontSize,

@@ -551,7 +551,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                             weight: font.weight,
                             style: font.style,
                             variant: font.variant,
-                            capitalize: font.capitalize,
+                            textcase: font.textcase,
                             decorline: font.decorline,
                             shadow: font.shadow,
                         })

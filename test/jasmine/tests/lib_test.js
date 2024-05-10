@@ -1039,7 +1039,7 @@ describe('Test lib.js:', function() {
             weight: 'bold',
             style: 'italic',
             variant: 'small-caps',
-            capitalize: 'word',
+            textcase: 'word',
             decorline: 'under',
             shadow: 'auto',
         };
@@ -1052,7 +1052,7 @@ describe('Test lib.js:', function() {
                 weight: extendFlat({}, fontAttrs.weight, {dflt: defaultFont.weight}),
                 style: extendFlat({}, fontAttrs.style, {dflt: defaultFont.style}),
                 variant: extendFlat({}, fontAttrs.variant, {dflt: defaultFont.variant}),
-                capitalize: extendFlat({}, fontAttrs.capitalize, {dflt: defaultFont.capitalize}),
+                textcase: extendFlat({}, fontAttrs.textcase, {dflt: defaultFont.textcase}),
                 decorline: extendFlat({}, fontAttrs.decorline, {dflt: defaultFont.decorline}),
                 shadow: extendFlat({}, fontAttrs.shadow, {dflt: defaultFont.shadow})
             },
@@ -1088,7 +1088,7 @@ describe('Test lib.js:', function() {
                     weight: 'BIG',
                     style: 'Nice',
                     variant: false,
-                    capitalize: true,
+                    textcase: true,
                     decorline: false,
                     shadow: false,
                 }
@@ -1111,8 +1111,8 @@ describe('Test lib.js:', function() {
             var goodVariant = 'small-caps';
             var badVariant = false;
 
-            var goodCapitalize = 'word';
-            var badCapitalize = true;
+            var goodTextcase = 'word';
+            var badTextcase = true;
             var goodStriding = 'under';
             var badStriding = 'underline';
             var goodShadow = 'auto';
@@ -1126,7 +1126,7 @@ describe('Test lib.js:', function() {
                     weight: badWeight,
                     style: badStyle,
                     variant: badVariant,
-                    capitalize: badCapitalize,
+                    textcase: badTextcase,
                     decorline: badStriding,
                     shadow: badShadow
                 }
@@ -1139,7 +1139,7 @@ describe('Test lib.js:', function() {
                     weight: defaultFont.weight,
                     style: defaultFont.style,
                     variant: defaultFont.variant,
-                    capitalize: defaultFont.capitalize,
+                    textcase: defaultFont.textcase,
                     decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
@@ -1152,7 +1152,7 @@ describe('Test lib.js:', function() {
                     weight: badWeight,
                     style: badStyle,
                     variant: badVariant,
-                    capitalize: badCapitalize,
+                    textcase: badTextcase,
                     decorline: badStriding,
                     shadow: badShadow
                 }
@@ -1165,7 +1165,7 @@ describe('Test lib.js:', function() {
                     weight: defaultFont.weight,
                     style: defaultFont.style,
                     variant: defaultFont.variant,
-                    capitalize: defaultFont.capitalize,
+                    textcase: defaultFont.textcase,
                     decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
@@ -1178,7 +1178,7 @@ describe('Test lib.js:', function() {
                     weight: badWeight,
                     style: badStyle,
                     variant: badVariant,
-                    capitalize: badCapitalize,
+                    textcase: badTextcase,
                     decorline: badStriding,
                     shadow: badShadow
                 }
@@ -1191,7 +1191,7 @@ describe('Test lib.js:', function() {
                     weight: defaultFont.weight,
                     style: defaultFont.style,
                     variant: defaultFont.variant,
-                    capitalize: defaultFont.capitalize,
+                    textcase: defaultFont.textcase,
                     decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
@@ -1204,7 +1204,7 @@ describe('Test lib.js:', function() {
                     weight: goodWeight,
                     style: badStyle,
                     variant: badVariant,
-                    capitalize: badCapitalize,
+                    textcase: badTextcase,
                     decorline: badStriding,
                     shadow: badShadow
                 }
@@ -1217,7 +1217,7 @@ describe('Test lib.js:', function() {
                     weight: goodWeight,
                     style: defaultFont.style,
                     variant: defaultFont.variant,
-                    capitalize: defaultFont.capitalize,
+                    textcase: defaultFont.textcase,
                     decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
@@ -1230,7 +1230,7 @@ describe('Test lib.js:', function() {
                     weight: badWeight,
                     style: goodStyle,
                     variant: badVariant,
-                    capitalize: badCapitalize,
+                    textcase: badTextcase,
                     decorline: badStriding,
                     shadow: badShadow
                 }
@@ -1243,7 +1243,7 @@ describe('Test lib.js:', function() {
                     weight: defaultFont.weight,
                     style: goodStyle,
                     variant: defaultFont.variant,
-                    capitalize: defaultFont.capitalize,
+                    textcase: defaultFont.textcase,
                     decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
@@ -1256,7 +1256,7 @@ describe('Test lib.js:', function() {
                     weight: badWeight,
                     style: badStyle,
                     variant: goodVariant,
-                    capitalize: badCapitalize,
+                    textcase: badTextcase,
                     decorline: badStriding,
                     shadow: badShadow
                 }
@@ -1269,7 +1269,7 @@ describe('Test lib.js:', function() {
                     weight: defaultFont.weight,
                     style: defaultFont.style,
                     variant: goodVariant,
-                    capitalize: defaultFont.capitalize,
+                    textcase: defaultFont.textcase,
                     decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
@@ -1282,7 +1282,7 @@ describe('Test lib.js:', function() {
                     weight: badWeight,
                     style: badStyle,
                     variant: badVariant,
-                    capitalize: goodCapitalize,
+                    textcase: goodTextcase,
                     decorline: badStriding,
                     shadow: badShadow
                 }
@@ -1295,7 +1295,7 @@ describe('Test lib.js:', function() {
                     weight: defaultFont.weight,
                     style: defaultFont.style,
                     variant: defaultFont.variant,
-                    capitalize: goodCapitalize,
+                    textcase: goodTextcase,
                     decorline: defaultFont.decorline,
                     shadow: defaultFont.shadow
                 });
@@ -1308,7 +1308,7 @@ describe('Test lib.js:', function() {
                     weight: badWeight,
                     style: badStyle,
                     variant: badVariant,
-                    capitalize: badCapitalize,
+                    textcase: badTextcase,
                     decorline: goodStriding,
                     shadow: badShadow
                 }
@@ -1321,7 +1321,7 @@ describe('Test lib.js:', function() {
                     weight: defaultFont.weight,
                     style: defaultFont.style,
                     variant: defaultFont.variant,
-                    capitalize: defaultFont.capitalize,
+                    textcase: defaultFont.textcase,
                     decorline: goodStriding,
                     shadow: defaultFont.shadow
                 });
@@ -1334,7 +1334,7 @@ describe('Test lib.js:', function() {
                     weight: badWeight,
                     style: badStyle,
                     variant: badVariant,
-                    capitalize: badCapitalize,
+                    textcase: badTextcase,
                     decorline: badStriding,
                     shadow: goodShadow
                 }
@@ -1347,7 +1347,7 @@ describe('Test lib.js:', function() {
                     weight: defaultFont.weight,
                     style: defaultFont.style,
                     variant: defaultFont.variant,
-                    capitalize: defaultFont.capitalize,
+                    textcase: defaultFont.textcase,
                     decorline: defaultFont.decorline,
                     shadow: goodShadow
                 });

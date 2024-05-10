@@ -488,7 +488,7 @@ function supplyStylingValues(columnCell) {
                 weight: gridPick(spec.weight, col, i),
                 style: gridPick(spec.style, col, i),
                 variant: gridPick(spec.variant, col, i),
-                capitalize: gridPick(spec.capitalize, col, i),
+                textcase: gridPick(spec.textcase, col, i),
                 decorline: gridPick(spec.decorline, col, i),
                 shadow: gridPick(spec.shadow, col, i),
             };

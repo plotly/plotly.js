@@ -45,7 +45,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             noSelect: true,
             noFontShadow: true,
             noFontDecorline: true,
-            noFontCapitalize: true,
+            noFontTextcase: true,
         });
     }
 

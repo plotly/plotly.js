@@ -16,7 +16,7 @@
     ],
     "layout":{
         "font": {
-            "capitalize": "word",
+            "textcase": "word",
             "decorline": "under",
             "shadow": "auto"
         },

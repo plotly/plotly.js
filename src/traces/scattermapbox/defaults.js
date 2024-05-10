@@ -75,7 +75,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 noFontVariant: true,
                 noFontShadow: true,
                 noFontDecorline: true,
-                noFontCapitalize: true,
+                noFontTextcase: true,
                 font: {
                     family: isSupportedFont(layoutFontFamily) ? layoutFontFamily : 'Open Sans Regular',
                     weight: layout.font.weight,

@@ -107,7 +107,7 @@ function handleLayerDefaults(layerIn, layerOut) {
                 noFontVariant: true,
                 noFontShadow: true,
                 noFontDecorline: true,
-                noFontCapitalize: true,
+                noFontTextcase: true,
             });
             coerce('symbol.textposition');
             coerce('symbol.placement');

@@ -159,7 +159,7 @@ var attrs = module.exports = overrideAll({
     textfont: fontAttrs({
         noFontShadow: true,
         noFontDecorline: true,
-        noFontCapitalize: true,
+        noFontTextcase: true,
         editType: 'calc',
         colorEditType: 'style',
         arrayOk: true,
