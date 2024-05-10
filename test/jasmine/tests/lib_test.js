@@ -1039,7 +1039,7 @@ describe('Test lib.js:', function() {
             weight: 'bold',
             style: 'italic',
             variant: 'small-caps',
-            textcase: 'headline',
+            textcase: 'caps',
             decorline: 'under',
             shadow: 'auto',
         };
@@ -1111,7 +1111,7 @@ describe('Test lib.js:', function() {
             var goodVariant = 'small-caps';
             var badVariant = false;
 
-            var goodTextcase = 'headline';
+            var goodTextcase = 'caps';
             var badTextcase = true;
             var goodStriding = 'under';
             var badStriding = 'underline';

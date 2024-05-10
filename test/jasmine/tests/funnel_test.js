@@ -160,7 +160,7 @@ describe('Funnel.supplyDefaults', function() {
                 weight: 'bold',
                 style: 'italic',
                 variant: 'small-caps',
-                textcase: 'headline',
+                textcase: 'caps',
                 decorline: 'under',
                 shadow: 'auto',
             }
@@ -171,7 +171,7 @@ describe('Funnel.supplyDefaults', function() {
             weight: 'bold',
             style: 'italic',
             variant: 'small-caps',
-            textcase: 'headline',
+            textcase: 'caps',
             decorline: 'under',
             shadow: 'auto',
         };

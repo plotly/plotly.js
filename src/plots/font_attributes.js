@@ -102,7 +102,7 @@ module.exports = function(opts) {
         textcase: opts.noFontTextcase ? undefined : {
             editType: editType,
             valType: 'enumerated',
-            values: ['normal', 'headline', 'upper', 'lower'],
+            values: ['normal', 'caps', 'upper', 'lower'],
             dflt: 'normal',
             description: [
                 'Sets capitalization of text.',

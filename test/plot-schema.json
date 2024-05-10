@@ -657,7 +657,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -916,7 +916,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -1024,7 +1024,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -1387,7 +1387,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -1676,7 +1676,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -1922,7 +1922,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -2263,7 +2263,7 @@
      "valType": "enumerated",
      "values": [
       "normal",
-      "headline",
+      "caps",
       "upper",
       "lower"
      ]
@@ -3103,7 +3103,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -3192,7 +3192,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -3477,7 +3477,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -3576,7 +3576,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -3724,7 +3724,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -4537,7 +4537,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -4719,7 +4719,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -5166,7 +5166,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -5500,7 +5500,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -5981,7 +5981,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -6198,7 +6198,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -6454,7 +6454,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -6562,7 +6562,7 @@
           "valType": "enumerated",
           "values": [
            "normal",
-           "headline",
+           "caps",
            "upper",
            "lower"
           ]
@@ -7030,7 +7030,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -7513,7 +7513,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -7723,7 +7723,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -7862,7 +7862,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -8345,7 +8345,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -8555,7 +8555,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -8694,7 +8694,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -9177,7 +9177,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -9387,7 +9387,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -9682,7 +9682,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -9864,7 +9864,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -10171,7 +10171,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -10296,7 +10296,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -10840,7 +10840,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -11123,7 +11123,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -11300,7 +11300,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -11583,7 +11583,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -11800,7 +11800,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -11908,7 +11908,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -12191,7 +12191,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -12408,7 +12408,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -12522,7 +12522,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -12805,7 +12805,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -13022,7 +13022,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -13211,7 +13211,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -13622,7 +13622,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -13834,7 +13834,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -14631,7 +14631,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -15032,7 +15032,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -15298,7 +15298,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -15454,7 +15454,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -16341,7 +16341,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -16607,7 +16607,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -17127,7 +17127,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -17331,7 +17331,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -17451,7 +17451,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -17619,7 +17619,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -17908,7 +17908,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -18154,7 +18154,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -18644,7 +18644,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -18859,7 +18859,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -19431,7 +19431,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -19600,7 +19600,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -19768,7 +19768,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -20057,7 +20057,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -20303,7 +20303,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -21118,7 +21118,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -21304,7 +21304,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -22665,7 +22665,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -22854,7 +22854,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -23247,7 +23247,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -23697,7 +23697,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -23881,7 +23881,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -24019,7 +24019,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -24469,7 +24469,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -24653,7 +24653,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -24816,7 +24816,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -24924,7 +24924,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -25176,7 +25176,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -25465,7 +25465,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -25711,7 +25711,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -26019,7 +26019,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -26188,7 +26188,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -26579,7 +26579,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -26868,7 +26868,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -27114,7 +27114,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -27416,7 +27416,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -27585,7 +27585,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -28011,7 +28011,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -28300,7 +28300,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -28546,7 +28546,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -28842,7 +28842,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -29011,7 +29011,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -29462,7 +29462,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -29751,7 +29751,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -29997,7 +29997,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -30209,7 +30209,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -30509,7 +30509,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -30682,7 +30682,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -30903,7 +30903,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -31395,7 +31395,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -31684,7 +31684,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -31930,7 +31930,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -32136,7 +32136,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -32368,7 +32368,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -32727,7 +32727,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -33016,7 +33016,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -33262,7 +33262,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -33554,7 +33554,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -33733,7 +33733,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -34229,7 +34229,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -34432,7 +34432,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -34552,7 +34552,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -34720,7 +34720,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -35009,7 +35009,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -35255,7 +35255,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -35641,7 +35641,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -35827,7 +35827,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -36373,7 +36373,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -36565,7 +36565,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -36701,7 +36701,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -37043,7 +37043,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -37235,7 +37235,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -37459,7 +37459,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -37748,7 +37748,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -37994,7 +37994,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -38309,7 +38309,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -38482,7 +38482,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -38659,7 +38659,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -39107,7 +39107,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -39396,7 +39396,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -39642,7 +39642,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -39952,7 +39952,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -40091,7 +40091,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -40861,7 +40861,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -41027,7 +41027,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -41130,7 +41130,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -41298,7 +41298,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -41587,7 +41587,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -41833,7 +41833,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -42287,7 +42287,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -42448,7 +42448,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -42860,7 +42860,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -43149,7 +43149,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -43395,7 +43395,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -43713,7 +43713,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -43870,7 +43870,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -44070,7 +44070,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -44474,7 +44474,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -44763,7 +44763,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -45009,7 +45009,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -45216,7 +45216,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -45519,7 +45519,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -45676,7 +45676,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -45921,7 +45921,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -46455,7 +46455,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -46648,7 +46648,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -46783,7 +46783,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -46951,7 +46951,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -47240,7 +47240,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -47486,7 +47486,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -47880,7 +47880,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -48059,7 +48059,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -48255,7 +48255,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -48646,7 +48646,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -48807,7 +48807,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -49145,7 +49145,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -49485,7 +49485,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -49894,7 +49894,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -50032,7 +50032,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -50172,7 +50172,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -50431,7 +50431,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -50720,7 +50720,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -50966,7 +50966,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -51288,7 +51288,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -51467,7 +51467,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -52057,7 +52057,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -52346,7 +52346,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -52592,7 +52592,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -52935,7 +52935,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -53154,7 +53154,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -53762,7 +53762,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -53960,7 +53960,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -54516,7 +54516,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -54607,7 +54607,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -54769,7 +54769,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -55058,7 +55058,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -55304,7 +55304,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -55565,7 +55565,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -55893,7 +55893,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -56000,7 +56000,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -56168,7 +56168,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -56457,7 +56457,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -56703,7 +56703,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -56988,7 +56988,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -57096,7 +57096,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -57267,7 +57267,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -57579,7 +57579,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -57771,7 +57771,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -57919,7 +57919,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -58225,7 +58225,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -58430,7 +58430,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -58624,7 +58624,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -58943,7 +58943,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -59098,7 +59098,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -59601,7 +59601,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -59740,7 +59740,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -60035,7 +60035,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -60400,7 +60400,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -60647,7 +60647,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -61278,7 +61278,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -61457,7 +61457,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -61723,7 +61723,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -62012,7 +62012,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -62258,7 +62258,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -63330,7 +63330,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -64153,7 +64153,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -64322,7 +64322,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -64490,7 +64490,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -64779,7 +64779,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -65025,7 +65025,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -65305,7 +65305,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -65594,7 +65594,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -65840,7 +65840,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -66819,7 +66819,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -66997,7 +66997,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -67248,7 +67248,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -67537,7 +67537,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -67783,7 +67783,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -68820,7 +68820,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -69219,7 +69219,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -69398,7 +69398,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -69651,7 +69651,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -69940,7 +69940,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -70186,7 +70186,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -71216,7 +71216,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -71791,7 +71791,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -71960,7 +71960,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -72183,7 +72183,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -72472,7 +72472,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -72718,7 +72718,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -74230,7 +74230,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -74409,7 +74409,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -74621,7 +74621,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -74910,7 +74910,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -75156,7 +75156,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -75828,7 +75828,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -76006,7 +76006,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -76257,7 +76257,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -76546,7 +76546,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -76792,7 +76792,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -77850,7 +77850,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -78254,7 +78254,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -78423,7 +78423,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -78633,7 +78633,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -78922,7 +78922,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -79168,7 +79168,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -80514,7 +80514,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -80702,7 +80702,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -80953,7 +80953,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -81242,7 +81242,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -81488,7 +81488,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -82540,7 +82540,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -82939,7 +82939,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -83117,7 +83117,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -83368,7 +83368,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -83657,7 +83657,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -83903,7 +83903,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -84953,7 +84953,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -85365,7 +85365,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -85534,7 +85534,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -85714,7 +85714,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -86003,7 +86003,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -86249,7 +86249,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -87351,7 +87351,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -87640,7 +87640,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -87886,7 +87886,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -88183,7 +88183,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -88346,7 +88346,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -88994,7 +88994,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -89187,7 +89187,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -89334,7 +89334,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -89502,7 +89502,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -89791,7 +89791,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -90037,7 +90037,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -90431,7 +90431,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -90630,7 +90630,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -90902,7 +90902,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -91191,7 +91191,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -91437,7 +91437,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -92018,7 +92018,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -92187,7 +92187,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -92690,7 +92690,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -93045,7 +93045,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -93333,7 +93333,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -93472,7 +93472,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -93849,7 +93849,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -94042,7 +94042,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -94166,7 +94166,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -94334,7 +94334,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -94623,7 +94623,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -94869,7 +94869,7 @@
          "valType": "enumerated",
          "values": [
           "normal",
-          "headline",
+          "caps",
           "upper",
           "lower"
          ]
@@ -95308,7 +95308,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -95487,7 +95487,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -95683,7 +95683,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -96115,7 +96115,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -96305,7 +96305,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -97488,7 +97488,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -97777,7 +97777,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -98023,7 +98023,7 @@
         "valType": "enumerated",
         "values": [
          "normal",
-         "headline",
+         "caps",
          "upper",
          "lower"
         ]
@@ -98345,7 +98345,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -98524,7 +98524,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -99296,7 +99296,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -99531,7 +99531,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -99651,7 +99651,7 @@
        "valType": "enumerated",
        "values": [
         "normal",
-        "headline",
+        "caps",
         "upper",
         "lower"
        ]
@@ -99859,7 +99859,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]
@@ -100045,7 +100045,7 @@
       "valType": "enumerated",
       "values": [
        "normal",
-       "headline",
+       "caps",
        "upper",
        "lower"
       ]

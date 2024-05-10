@@ -57,7 +57,7 @@ describe('table initialization tests', function() {
                 weight: 'bold',
                 style: 'italic',
                 variant: 'small-caps',
-                textcase: 'headline',
+                textcase: 'caps',
                 decorline: 'under',
                 shadow: 'auto',
             };
@@ -71,7 +71,7 @@ describe('table initialization tests', function() {
                 weight: 'bold',
                 style: 'italic',
                 variant: 'small-caps',
-                textcase: 'headline',
+                textcase: 'caps',
                 decorline: 'under',
                 shadow: 'auto',
             };
@@ -93,7 +93,7 @@ describe('table initialization tests', function() {
                     weight: 'bold',
                     style: 'italic',
                     variant: 'small-caps',
-                    textcase: 'headline',
+                    textcase: 'caps',
                     decorline: 'under',
                     shadow: 'auto',
                 }
@@ -160,7 +160,7 @@ describe('table initialization tests', function() {
                     weight: 'bold',
                     style: 'italic',
                     variant: 'small-caps',
-                    textcase: 'headline',
+                    textcase: 'caps',
                     decorline: 'under',
                     shadow: 'auto',
                 }
@@ -180,7 +180,7 @@ describe('table initialization tests', function() {
                     weight: 'bold',
                     style: 'italic',
                     variant: 'small-caps',
-                    textcase: 'headline',
+                    textcase: 'caps',
                     decorline: 'under',
                     shadow: 'auto',
                 }

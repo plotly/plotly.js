@@ -178,7 +178,7 @@
             "gridcolor": "white"
         },
         "font": {
-            "textcase": "headline",
+            "textcase": "caps",
             "decorline": "under",
             "shadow": "auto",
             "size": 16

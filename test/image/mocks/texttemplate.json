@@ -167,7 +167,7 @@
   ],
   "layout": {
     "font": {
-      "textcase": "headline",
+      "textcase": "caps",
       "decorline": "under",
       "shadow": "auto",
       "weight": 700,
