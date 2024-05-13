@@ -61,7 +61,6 @@ var textcase2transformOptions = {
 function textcase2transform(textcase) {
     return textcase2transformOptions[textcase];
 }
-drawing.textcase2transform = textcase2transform;
 
 function decorline2decorationLine(decorline) {
     return (
@@ -73,7 +72,6 @@ function decorline2decorationLine(decorline) {
             .join(' ')
     );
 }
-drawing.decorline2decorationLine = decorline2decorationLine;
 
 /*
  * Positioning helpers

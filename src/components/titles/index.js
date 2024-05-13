@@ -147,17 +147,17 @@ function draw(gd, titleClass, options) {
 
         titleEl.attr('transform', transformVal);
 
-        titleEl.style({
-            'font-family': fontFamily,
-            'font-size': d3.round(fontSize, 2) + 'px',
-            fill: Color.rgb(fontColor),
-            opacity: opacity * Color.opacity(fontColor),
-            'font-weight': fontWeight,
-            'font-style': fontStyle,
-            'font-variant': fontVariant,
-            'text-transform': Drawing.textcase2transform(fontTextcase),
-            'text-shadow': fontShadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(fontColor)) : fontShadow,
-            'text-decoration-line': Drawing.decorline2decorationLine(fontDecorline),
+        titleEl.style('opacity', opacity * Color.opacity(fontColor))
+        .call(Drawing.font, {
+            color: Color.rgb(fontColor),
+            size: d3.round(fontSize, 2),
+            family: fontFamily,
+            weight: fontWeight,
+            style: fontStyle,
+            variant: fontVariant,
+            textcase: fontTextcase,
+            shadow: fontShadow,
+            decorline: fontDecorline,
         })
         .attr(attributes)
         .call(svgTextUtils.convertToTspans, gd);
