@@ -2,11 +2,11 @@
   "data": [
     {
       "hovertemplate": "%{text}",
-      "texttemplate": "Rien ne se perd, rien ne se crée, tout se transforme<br>%{text}",
+      "texttemplate": "Rien ne se perd, rien ne se crée, tout se transforme!<br>%{text}",
       "mode": "text",
       "text": [
         "normal",
-        "caps",
+        "word caps",
         "upper",
         "lower"
       ],
@@ -15,7 +15,7 @@
         "size": 16,
         "textcase": [
           "normal",
-          "caps",
+          "word caps",
           "upper",
           "lower"
         ]

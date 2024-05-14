@@ -86,7 +86,7 @@
             }
         },
         "font": {
-            "textcase": "caps",
+            "textcase": "word caps",
             "decorline": "under",
             "shadow": "auto",
             "family": "Noto Serif, serif"

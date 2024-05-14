@@ -16,7 +16,7 @@
     ],
     "layout":{
         "font": {
-            "textcase": "caps",
+            "textcase": "word caps",
             "decorline": "under",
             "shadow": "auto"
         },
