@@ -489,7 +489,7 @@ function supplyStylingValues(columnCell) {
                 style: gridPick(spec.style, col, i),
                 variant: gridPick(spec.variant, col, i),
                 textcase: gridPick(spec.textcase, col, i),
-                decorline: gridPick(spec.decorline, col, i),
+                lineposition: gridPick(spec.lineposition, col, i),
                 shadow: gridPick(spec.shadow, col, i),
             };
             d.rowNumber = d.key;

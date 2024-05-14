@@ -44,7 +44,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleTextDefaults(traceIn, traceOut, layout, coerce, {
             noSelect: true,
             noFontShadow: true,
-            noFontDecorline: true,
+            noFontLineposition: true,
             noFontTextcase: true,
         });
     }

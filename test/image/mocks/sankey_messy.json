@@ -38,7 +38,7 @@
     "layout": {
         "font": {
             "textcase": "word caps",
-            "decorline": "under",
+            "lineposition": "under",
             "shadow": "auto"
         },
         "title": {"text": "Sankey with messy data"},

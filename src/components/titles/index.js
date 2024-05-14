@@ -72,7 +72,7 @@ function draw(gd, titleClass, options) {
     var fontStyle = font.style;
     var fontVariant = font.variant;
     var fontTextcase = font.textcase;
-    var fontDecorline = font.decorline;
+    var fontLineposition = font.lineposition;
     var fontShadow = font.shadow;
 
     // only make this title editable if we positively identify its property
@@ -157,7 +157,7 @@ function draw(gd, titleClass, options) {
             variant: fontVariant,
             textcase: fontTextcase,
             shadow: fontShadow,
-            decorline: fontDecorline,
+            lineposition: fontLineposition,
         })
         .attr(attributes)
         .call(svgTextUtils.convertToTspans, gd);

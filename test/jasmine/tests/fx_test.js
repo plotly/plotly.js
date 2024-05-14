@@ -158,7 +158,7 @@ describe('Fx defaults', function() {
                     style: 'italic',
                     variant: 'small-caps',
                     textcase: 'word caps',
-                    decorline: 'under',
+                    lineposition: 'under',
                     shadow: 'auto',
                 }
             }
@@ -175,7 +175,7 @@ describe('Fx defaults', function() {
                 style: 'italic',
                 variant: 'small-caps',
                 textcase: 'word caps',
-                decorline: 'under',
+                lineposition: 'under',
                 shadow: 'auto',
             },
             align: 'auto',
@@ -193,7 +193,7 @@ describe('Fx defaults', function() {
                 style: 'italic',
                 variant: 'small-caps',
                 textcase: 'word caps',
-                decorline: 'under',
+                lineposition: 'under',
                 shadow: 'auto',
             },
             align: 'auto',
@@ -211,7 +211,7 @@ describe('Fx defaults', function() {
                 style: 'italic',
                 variant: 'small-caps',
                 textcase: 'word caps',
-                decorline: 'under',
+                lineposition: 'under',
                 shadow: 'auto',
             }
         });
@@ -227,7 +227,7 @@ describe('Fx defaults', function() {
                 style: 'italic',
                 variant: 'small-caps',
                 textcase: 'word caps',
-                decorline: 'under',
+                lineposition: 'under',
                 shadow: 'auto',
             }
         });

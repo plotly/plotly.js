@@ -2374,7 +2374,7 @@ describe('Test axes', function() {
                     style: 'normal',
                     variant: 'normal',
                     textcase: 'normal',
-                    decorline: 'none',
+                    lineposition: 'none',
                     shadow: 'none',
                 });
                 expect(yaxis.tickangle).toBe('auto');
@@ -2397,7 +2397,7 @@ describe('Test axes', function() {
                         style: 'normal',
                         variant: 'normal',
                         textcase: 'normal',
-                        decorline: 'none',
+                        lineposition: 'none',
                         shadow: 'none',
                     },
                     tickangle: -20
@@ -2420,7 +2420,7 @@ describe('Test axes', function() {
                     style: 'normal',
                     variant: 'normal',
                     textcase: 'normal',
-                    decorline: 'none',
+                    lineposition: 'none',
                     shadow: 'none',
                 });
                 expect(yaxis.tickangle).toBe(-20);

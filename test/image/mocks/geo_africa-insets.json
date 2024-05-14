@@ -222,7 +222,7 @@
     "layout": {
         "font": {
             "textcase": "word caps",
-            "decorline": "under",
+            "lineposition": "under",
             "shadow": "auto"
         },
         "geo2": {

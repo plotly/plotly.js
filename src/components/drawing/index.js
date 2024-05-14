@@ -35,7 +35,7 @@ drawing.font = function(s, font) {
     var size = font.size;
     var family = font.family;
     var shadow = font.shadow;
-    var decorline = font.decorline;
+    var lineposition = font.lineposition;
     var textcase = font.textcase;
 
     if(family) s.style('font-family', family);
@@ -48,7 +48,7 @@ drawing.font = function(s, font) {
 
     if(textcase) s.style('text-transform', textcase2transform(textcase));
     if(shadow) s.style('text-shadow', shadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(color)) : shadow);
-    if(decorline) s.style('text-decoration-line', decorline2decorationLine(decorline));
+    if(lineposition) s.style('text-decoration-line', lineposition2decorationLine(lineposition));
 };
 
 var textcase2transformOptions = {
@@ -62,9 +62,9 @@ function textcase2transform(textcase) {
     return textcase2transformOptions[textcase];
 }
 
-function decorline2decorationLine(decorline) {
+function lineposition2decorationLine(lineposition) {
     return (
-        decorline
+        lineposition
             .replace('under', 'underline')
             .replace('over', 'overline')
             .replace('through', 'line-through')
@@ -1166,7 +1166,7 @@ drawing.textPointStyle = function(s, trace, gd) {
             style: d.ty || trace.textfont.style,
             variant: d.tv || trace.textfont.variant,
             textcase: d.tC || trace.textfont.textcase,
-            decorline: d.tE || trace.textfont.decorline,
+            lineposition: d.tE || trace.textfont.lineposition,
             shadow: d.tS || trace.textfont.shadow,
             size: fontSize,
             color: fontColor

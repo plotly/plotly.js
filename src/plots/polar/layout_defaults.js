@@ -158,7 +158,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             var dfltFontStyle;
             var dfltFontVariant;
             var dfltFontTextcase;
-            var dfltFontDecorline;
+            var dfltFontLineposition;
             var dfltFontShadow;
             var font = opts.font || {};
 
@@ -170,7 +170,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             dfltFontStyle = font.style;
             dfltFontVariant = font.variant;
             dfltFontTextcase = font.textcase;
-            dfltFontDecorline = font.decorline;
+            dfltFontLineposition = font.lineposition;
             dfltFontShadow = font.shadow;
 
             handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
@@ -180,7 +180,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     style: dfltFontStyle,
                     variant: dfltFontVariant,
                     textcase: dfltFontTextcase,
-                    decorline: dfltFontDecorline,
+                    lineposition: dfltFontLineposition,
                     shadow: dfltFontShadow,
                     color: dfltFontColor,
                     size: dfltFontSize,
@@ -215,7 +215,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     style: dfltFontStyle,
                     variant: dfltFontVariant,
                     textcase: dfltFontTextcase,
-                    decorline: dfltFontDecorline,
+                    lineposition: dfltFontLineposition,
                     shadow: dfltFontShadow,
                     color: dfltFontColor,
                     size: Lib.bigFont(dfltFontSize),

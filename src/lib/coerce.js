@@ -484,7 +484,7 @@ exports.coerceFont = function(coerce, attr, dfltObj, opts) {
     };
 
     if(!opts.noFontVariant) out.variant = coerce(attr + '.variant', dfltObj.variant);
-    if(!opts.noFontDecorline) out.decorline = coerce(attr + '.decorline', dfltObj.decorline);
+    if(!opts.noFontLineposition) out.lineposition = coerce(attr + '.lineposition', dfltObj.lineposition);
     if(!opts.noFontTextcase) out.textcase = coerce(attr + '.textcase', dfltObj.textcase);
     if(!opts.noFontShadow) {
         var dfltShadow = dfltObj.shadow;

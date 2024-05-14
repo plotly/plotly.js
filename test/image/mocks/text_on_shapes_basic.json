@@ -7,7 +7,7 @@
     "layout": {
         "font": {
             "textcase": "word caps",
-            "decorline": "under",
+            "lineposition": "under",
             "shadow": "auto",
             "weight": "bold",
             "style": "italic",

@@ -106,7 +106,7 @@ function handleLayerDefaults(layerIn, layerOut) {
             Lib.coerceFont(coerce, 'symbol.textfont', undefined, {
                 noFontVariant: true,
                 noFontShadow: true,
-                noFontDecorline: true,
+                noFontLineposition: true,
                 noFontTextcase: true,
             });
             coerce('symbol.textposition');

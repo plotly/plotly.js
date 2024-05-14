@@ -160,7 +160,7 @@ describe('sankey tests', function() {
                     style: 'italic',
                     variant: 'small-caps',
                     textcase: 'word caps',
-                    decorline: 'under',
+                    lineposition: 'under',
                     shadow: '1px 1px 2px green',
                 }});
                 expect(fullTrace.textfont)
@@ -170,7 +170,7 @@ describe('sankey tests', function() {
                         style: 'italic',
                         variant: 'small-caps',
                         textcase: 'word caps',
-                        decorline: 'under',
+                        lineposition: 'under',
                         shadow: '1px 1px 2px green',
                     }, 'textfont is defined');
             });

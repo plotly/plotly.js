@@ -111,7 +111,7 @@ module.exports = function(opts) {
             ].join(' ')
         },
 
-        decorline: opts.noFontDecorline ? undefined : {
+        lineposition: opts.noFontLineposition ? undefined : {
             editType: editType,
             valType: 'flaglist',
             flags: ['under', 'over', 'through'],
@@ -154,8 +154,8 @@ module.exports = function(opts) {
         if(!opts.noFontTextcase) {
             attrs.textcase.arrayOk = true;
         }
-        if(!opts.noFontDecorline) {
-            attrs.decorline.arrayOk = true;
+        if(!opts.noFontLineposition) {
+            attrs.lineposition.arrayOk = true;
         }
         if(!opts.noFontShadow) {
             attrs.shadow.arrayOk = true;

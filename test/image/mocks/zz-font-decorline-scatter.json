@@ -15,7 +15,7 @@
       "textfont": {
         "family": "Inter",
         "size": 16,
-        "decorline": [
+        "lineposition": [
           "normal",
           "over",
           "through",

@@ -13,7 +13,7 @@ var constants = require('./constants');
 var fontAttr = fontAttrs({
     noFontVariant: true,
     noFontShadow: true,
-    noFontDecorline: true,
+    noFontLineposition: true,
     noFontTextcase: true,
     description: [
         'Sets the icon text font (color=mapbox.layer.paint.text-color, size=mapbox.layer.layout.text-size).',

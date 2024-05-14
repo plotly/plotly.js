@@ -1040,7 +1040,7 @@ describe('Test lib.js:', function() {
             style: 'italic',
             variant: 'small-caps',
             textcase: 'word caps',
-            decorline: 'under',
+            lineposition: 'under',
             shadow: 'auto',
         };
 
@@ -1053,7 +1053,7 @@ describe('Test lib.js:', function() {
                 style: extendFlat({}, fontAttrs.style, {dflt: defaultFont.style}),
                 variant: extendFlat({}, fontAttrs.variant, {dflt: defaultFont.variant}),
                 textcase: extendFlat({}, fontAttrs.textcase, {dflt: defaultFont.textcase}),
-                decorline: extendFlat({}, fontAttrs.decorline, {dflt: defaultFont.decorline}),
+                lineposition: extendFlat({}, fontAttrs.lineposition, {dflt: defaultFont.lineposition}),
                 shadow: extendFlat({}, fontAttrs.shadow, {dflt: defaultFont.shadow})
             },
             fontNoDefault: fontAttrs
@@ -1089,7 +1089,7 @@ describe('Test lib.js:', function() {
                     style: 'Nice',
                     variant: false,
                     textcase: true,
-                    decorline: false,
+                    lineposition: false,
                     shadow: false,
                 }
             };
@@ -1113,8 +1113,8 @@ describe('Test lib.js:', function() {
 
             var goodTextcase = 'word caps';
             var badTextcase = true;
-            var goodStriding = 'under';
-            var badStriding = 'underline';
+            var goodLineposition = 'under';
+            var badLineposition = 'underline';
             var goodShadow = 'auto';
             var badShadow = false;
 
@@ -1127,7 +1127,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     textcase: badTextcase,
-                    decorline: badStriding,
+                    lineposition: badLineposition,
                     shadow: badShadow
                 }
             };
@@ -1140,7 +1140,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     textcase: defaultFont.textcase,
-                    decorline: defaultFont.decorline,
+                    lineposition: defaultFont.lineposition,
                     shadow: defaultFont.shadow
                 });
 
@@ -1153,7 +1153,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     textcase: badTextcase,
-                    decorline: badStriding,
+                    lineposition: badLineposition,
                     shadow: badShadow
                 }
             };
@@ -1166,7 +1166,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     textcase: defaultFont.textcase,
-                    decorline: defaultFont.decorline,
+                    lineposition: defaultFont.lineposition,
                     shadow: defaultFont.shadow
                 });
 
@@ -1179,7 +1179,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     textcase: badTextcase,
-                    decorline: badStriding,
+                    lineposition: badLineposition,
                     shadow: badShadow
                 }
             };
@@ -1192,7 +1192,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     textcase: defaultFont.textcase,
-                    decorline: defaultFont.decorline,
+                    lineposition: defaultFont.lineposition,
                     shadow: defaultFont.shadow
                 });
 
@@ -1205,7 +1205,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     textcase: badTextcase,
-                    decorline: badStriding,
+                    lineposition: badLineposition,
                     shadow: badShadow
                 }
             };
@@ -1218,7 +1218,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     textcase: defaultFont.textcase,
-                    decorline: defaultFont.decorline,
+                    lineposition: defaultFont.lineposition,
                     shadow: defaultFont.shadow
                 });
 
@@ -1231,7 +1231,7 @@ describe('Test lib.js:', function() {
                     style: goodStyle,
                     variant: badVariant,
                     textcase: badTextcase,
-                    decorline: badStriding,
+                    lineposition: badLineposition,
                     shadow: badShadow
                 }
             };
@@ -1244,7 +1244,7 @@ describe('Test lib.js:', function() {
                     style: goodStyle,
                     variant: defaultFont.variant,
                     textcase: defaultFont.textcase,
-                    decorline: defaultFont.decorline,
+                    lineposition: defaultFont.lineposition,
                     shadow: defaultFont.shadow
                 });
 
@@ -1257,7 +1257,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: goodVariant,
                     textcase: badTextcase,
-                    decorline: badStriding,
+                    lineposition: badLineposition,
                     shadow: badShadow
                 }
             };
@@ -1270,7 +1270,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: goodVariant,
                     textcase: defaultFont.textcase,
-                    decorline: defaultFont.decorline,
+                    lineposition: defaultFont.lineposition,
                     shadow: defaultFont.shadow
                 });
 
@@ -1283,7 +1283,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     textcase: goodTextcase,
-                    decorline: badStriding,
+                    lineposition: badLineposition,
                     shadow: badShadow
                 }
             };
@@ -1296,7 +1296,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     textcase: goodTextcase,
-                    decorline: defaultFont.decorline,
+                    lineposition: defaultFont.lineposition,
                     shadow: defaultFont.shadow
                 });
 
@@ -1309,7 +1309,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     textcase: badTextcase,
-                    decorline: goodStriding,
+                    lineposition: goodLineposition,
                     shadow: badShadow
                 }
             };
@@ -1322,7 +1322,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     textcase: defaultFont.textcase,
-                    decorline: goodStriding,
+                    lineposition: goodLineposition,
                     shadow: defaultFont.shadow
                 });
 
@@ -1335,7 +1335,7 @@ describe('Test lib.js:', function() {
                     style: badStyle,
                     variant: badVariant,
                     textcase: badTextcase,
-                    decorline: badStriding,
+                    lineposition: badLineposition,
                     shadow: goodShadow
                 }
             };
@@ -1348,7 +1348,7 @@ describe('Test lib.js:', function() {
                     style: defaultFont.style,
                     variant: defaultFont.variant,
                     textcase: defaultFont.textcase,
-                    decorline: defaultFont.decorline,
+                    lineposition: defaultFont.lineposition,
                     shadow: goodShadow
                 });
         });

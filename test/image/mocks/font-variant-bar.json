@@ -31,7 +31,7 @@
   ],
   "layout": {
     "font": {
-      "decorline": "under",
+      "lineposition": "under",
       "shadow": "auto"
     },
     "showlegend": false,

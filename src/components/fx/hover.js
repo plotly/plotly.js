@@ -962,7 +962,7 @@ function createHoverText(hoverData, opts) {
     var fontStyle = opts.fontStyle || fullLayout.font.style;
     var fontVariant = opts.fontVariant || fullLayout.font.variant;
     var fontTextcase = opts.fontTextcase || fullLayout.font.textcase;
-    var fontDecorline = opts.fontDecorline || fullLayout.font.decorline;
+    var fontLineposition = opts.fontLineposition || fullLayout.font.lineposition;
     var fontShadow = opts.fontShadow || fullLayout.font.shadow;
 
     var c0 = hoverData[0];
@@ -1050,7 +1050,7 @@ function createHoverText(hoverData, opts) {
             style: commonLabelOptsFont.style || fontStyle,
             variant: commonLabelOptsFont.variant || fontVariant,
             textcase: commonLabelOptsFont.textcase || fontTextcase,
-            decorline: commonLabelOptsFont.decorline || fontDecorline,
+            lineposition: commonLabelOptsFont.lineposition || fontLineposition,
             shadow: commonLabelOptsFont.shadow || fontShadow,
             family: commonLabelOptsFont.family || fontFamily,
             size: commonLabelOptsFont.size || fontSize,
@@ -1378,7 +1378,7 @@ function createHoverText(hoverData, opts) {
                     style: fontStyle,
                     variant: fontVariant,
                     textcase: fontTextcase,
-                    decorline: fontDecorline,
+                    lineposition: fontLineposition,
                     shadow: fontShadow,
                     family: fontFamily,
                     size: fontSize
@@ -1425,7 +1425,7 @@ function createHoverText(hoverData, opts) {
                 style: d.fontStyle || fontStyle,
                 variant: d.fontVariant || fontVariant,
                 textcase: d.fontTextcase || fontTextcase,
-                decorline: d.fontDecorline || fontDecorline,
+                lineposition: d.fontLineposition || fontLineposition,
                 shadow: d.fontShadow || fontShadow,
             })
             .text(text)
@@ -1447,7 +1447,7 @@ function createHoverText(hoverData, opts) {
                 style: d.fontStyle || fontStyle,
                 variant: d.fontVariant || fontVariant,
                 textcase: d.fontTextcase || fontTextcase,
-                decorline: d.fontDecorline || fontDecorline,
+                lineposition: d.fontLineposition || fontLineposition,
                 shadow: d.fontShadow || fontShadow,
             }).text(name)
                 .attr('data-notex', 1)

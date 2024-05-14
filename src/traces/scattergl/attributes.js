@@ -39,7 +39,7 @@ var attrs = module.exports = overrideAll({
     textposition: scatterAttrs.textposition,
     textfont: fontAttrs({
         noFontShadow: true,
-        noFontDecorline: true,
+        noFontLineposition: true,
         noFontTextcase: true,
         editType: 'calc',
         colorEditType: 'style',

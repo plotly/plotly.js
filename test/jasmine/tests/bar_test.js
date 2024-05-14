@@ -160,7 +160,7 @@ describe('Bar.supplyDefaults', function() {
                 style: 'italic',
                 variant: 'small-caps',
                 textcase: 'word caps',
-                decorline: 'under',
+                lineposition: 'under',
                 shadow: 'auto',
             }
         };
@@ -171,7 +171,7 @@ describe('Bar.supplyDefaults', function() {
             style: 'italic',
             variant: 'small-caps',
             textcase: 'word caps',
-            decorline: 'under',
+            lineposition: 'under',
             shadow: 'auto',
         };
 
