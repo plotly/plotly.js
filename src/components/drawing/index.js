@@ -46,10 +46,14 @@ drawing.font = function(s, font) {
     if(style) s.style('font-style', style);
     if(variant) s.style('font-variant', variant);
 
-    if(textcase) s.style('text-transform', textcase2transform(textcase));
-    if(shadow) s.style('text-shadow', shadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(color)) : shadow);
-    if(lineposition) s.style('text-decoration-line', lineposition2decorationLine(lineposition));
+    if(textcase) s.style('text-transform', dropNone(textcase2transform(textcase)));
+    if(shadow) s.style('text-shadow', shadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(color)) : dropNone(shadow));
+    if(lineposition) s.style('text-decoration-line', dropNone(lineposition2decorationLine(lineposition)));
 };
+
+function dropNone(a) {
+    return a === 'none' ? undefined : a;
+}
 
 var textcase2transformOptions = {
     normal: 'none',
