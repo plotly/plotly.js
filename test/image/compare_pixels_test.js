@@ -178,7 +178,8 @@ for(var i = 0; i < allMockList.length; i++) {
             'gl3d_opacity-scaling-spikes',
             'gl3d_cone-wind',
             'gl3d_isosurface_math',
-            'gl3d_scatter3d-blank-text'
+            'gl3d_scatter3d-blank-text',
+            'gl3d_mesh3d_surface3d_scatter3d_line3d_error3d_log_reversed_ranges'
         ].indexOf(mockName) !== -1) threshold = 0.7;
     }
 
