@@ -13,6 +13,11 @@
         ]
     }],
     "layout": {
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "width": 500,
         "height": 300,
         "title": {

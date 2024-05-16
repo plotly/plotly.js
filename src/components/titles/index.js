@@ -71,6 +71,9 @@ function draw(gd, titleClass, options) {
     var fontWeight = font.weight;
     var fontStyle = font.style;
     var fontVariant = font.variant;
+    var fontTextcase = font.textcase;
+    var fontLineposition = font.lineposition;
+    var fontShadow = font.shadow;
 
     // only make this title editable if we positively identify its property
     // as one that has editing enabled.
@@ -144,14 +147,17 @@ function draw(gd, titleClass, options) {
 
         titleEl.attr('transform', transformVal);
 
-        titleEl.style({
-            'font-family': fontFamily,
-            'font-size': d3.round(fontSize, 2) + 'px',
-            fill: Color.rgb(fontColor),
-            opacity: opacity * Color.opacity(fontColor),
-            'font-weight': fontWeight,
-            'font-style': fontStyle,
-            'font-variant': fontVariant
+        titleEl.style('opacity', opacity * Color.opacity(fontColor))
+        .call(Drawing.font, {
+            color: Color.rgb(fontColor),
+            size: d3.round(fontSize, 2),
+            family: fontFamily,
+            weight: fontWeight,
+            style: fontStyle,
+            variant: fontVariant,
+            textcase: fontTextcase,
+            shadow: fontShadow,
+            lineposition: fontLineposition,
         })
         .attr(attributes)
         .call(svgTextUtils.convertToTspans, gd);

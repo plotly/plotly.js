@@ -36,7 +36,10 @@
     "font": {
       "weight": "bold",
       "style": "italic",
-      "variant": "small-caps"
+      "variant": "small-caps",
+      "textcase": "word caps",
+      "lineposition": "under",
+      "shadow": "auto"
     },
     "meta": {
       "global": "GrApH",

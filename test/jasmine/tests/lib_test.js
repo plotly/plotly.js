@@ -1038,7 +1038,10 @@ describe('Test lib.js:', function() {
             color: 'neon pink with sparkles',
             weight: 'bold',
             style: 'italic',
-            variant: 'small-caps'
+            variant: 'small-caps',
+            textcase: 'word caps',
+            lineposition: 'under',
+            shadow: 'auto',
         };
 
         var attributes = {
@@ -1048,7 +1051,10 @@ describe('Test lib.js:', function() {
                 color: extendFlat({}, fontAttrs.color, {dflt: defaultFont.color}),
                 weight: extendFlat({}, fontAttrs.weight, {dflt: defaultFont.weight}),
                 style: extendFlat({}, fontAttrs.style, {dflt: defaultFont.style}),
-                variant: extendFlat({}, fontAttrs.variant, {dflt: defaultFont.variant})
+                variant: extendFlat({}, fontAttrs.variant, {dflt: defaultFont.variant}),
+                textcase: extendFlat({}, fontAttrs.textcase, {dflt: defaultFont.textcase}),
+                lineposition: extendFlat({}, fontAttrs.lineposition, {dflt: defaultFont.lineposition}),
+                shadow: extendFlat({}, fontAttrs.shadow, {dflt: defaultFont.shadow})
             },
             fontNoDefault: fontAttrs
         };
@@ -1081,7 +1087,10 @@ describe('Test lib.js:', function() {
                     color: 42,
                     weight: 'BIG',
                     style: 'Nice',
-                    variant: false
+                    variant: false,
+                    textcase: true,
+                    lineposition: false,
+                    shadow: false,
                 }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
@@ -1102,6 +1111,13 @@ describe('Test lib.js:', function() {
             var goodVariant = 'small-caps';
             var badVariant = false;
 
+            var goodTextcase = 'word caps';
+            var badTextcase = true;
+            var goodLineposition = 'under';
+            var badLineposition = 'underline';
+            var goodShadow = 'auto';
+            var badShadow = false;
+
             containerIn = {
                 fontWithDefault: {
                     family: goodFamily,
@@ -1109,7 +1125,10 @@ describe('Test lib.js:', function() {
                     color: badColor,
                     weight: badWeight,
                     style: badStyle,
-                    variant: badVariant
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
                 }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
@@ -1119,7 +1138,10 @@ describe('Test lib.js:', function() {
                     color: defaultFont.color,
                     weight: defaultFont.weight,
                     style: defaultFont.style,
-                    variant: defaultFont.variant
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
                 });
 
             containerIn = {
@@ -1129,7 +1151,10 @@ describe('Test lib.js:', function() {
                     color: badColor,
                     weight: badWeight,
                     style: badStyle,
-                    variant: badVariant
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
                 }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
@@ -1139,7 +1164,10 @@ describe('Test lib.js:', function() {
                     color: defaultFont.color,
                     weight: defaultFont.weight,
                     style: defaultFont.style,
-                    variant: defaultFont.variant
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
                 });
 
             containerIn = {
@@ -1149,7 +1177,10 @@ describe('Test lib.js:', function() {
                     color: goodColor,
                     weight: badWeight,
                     style: badStyle,
-                    variant: badVariant
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
                 }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
@@ -1159,7 +1190,10 @@ describe('Test lib.js:', function() {
                     color: goodColor,
                     weight: defaultFont.weight,
                     style: defaultFont.style,
-                    variant: defaultFont.variant
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
                 });
 
             containerIn = {
@@ -1169,7 +1203,10 @@ describe('Test lib.js:', function() {
                     color: badColor,
                     weight: goodWeight,
                     style: badStyle,
-                    variant: badVariant
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
                 }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
@@ -1179,7 +1216,10 @@ describe('Test lib.js:', function() {
                     color: defaultFont.color,
                     weight: goodWeight,
                     style: defaultFont.style,
-                    variant: defaultFont.variant
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
                 });
 
             containerIn = {
@@ -1189,7 +1229,10 @@ describe('Test lib.js:', function() {
                     color: badColor,
                     weight: badWeight,
                     style: goodStyle,
-                    variant: badVariant
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
                 }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
@@ -1199,7 +1242,10 @@ describe('Test lib.js:', function() {
                     color: defaultFont.color,
                     weight: defaultFont.weight,
                     style: goodStyle,
-                    variant: defaultFont.variant
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
                 });
 
             containerIn = {
@@ -1209,7 +1255,10 @@ describe('Test lib.js:', function() {
                     color: badColor,
                     weight: badWeight,
                     style: badStyle,
-                    variant: goodVariant
+                    variant: goodVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
                 }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
@@ -1219,7 +1268,88 @@ describe('Test lib.js:', function() {
                     color: defaultFont.color,
                     weight: defaultFont.weight,
                     style: defaultFont.style,
-                    variant: goodVariant
+                    variant: goodVariant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant,
+                    textcase: goodTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant,
+                    textcase: goodTextcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: goodLineposition,
+                    shadow: badShadow
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: goodLineposition,
+                    shadow: defaultFont.shadow
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: goodShadow
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: goodShadow
                 });
         });
     });

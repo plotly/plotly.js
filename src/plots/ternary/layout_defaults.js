@@ -81,14 +81,10 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     var title = coerce('title.text', dfltTitle);
     containerOut._hovertitle = title === dfltTitle ? title : letterUpper;
 
-    Lib.coerceFont(coerce, 'title.font', {
-        weight: options.font.weight,
-        style: options.font.style,
-        variant: options.font.variant,
-        family: options.font.family,
+    Lib.coerceFont(coerce, 'title.font', options.font, { overrideDflt: {
         size: Lib.bigFont(options.font.size),
         color: dfltFontColor
-    });
+    }});
 
     // range is just set by 'min' - max is determined by the other axes mins
     coerce('min');
@@ -101,14 +97,9 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
-        Lib.coerceFont(coerce, 'tickfont', {
-            weight: options.font.weight,
-            style: options.font.style,
-            variant: options.font.variant,
-            family: options.font.family,
-            size: options.font.size,
+        Lib.coerceFont(coerce, 'tickfont', options.font, { overrideDflt: {
             color: dfltFontColor
-        });
+        }});
         coerce('tickangle');
         coerce('tickformat');
     }

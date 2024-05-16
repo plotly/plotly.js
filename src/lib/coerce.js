@@ -3,6 +3,8 @@
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
+var extendFlat = require('./extend').extendFlat;
+
 var baseTraceAttrs = require('../plots/attributes');
 var colorscales = require('../components/colorscale/scales');
 var Color = require('../components/color');
@@ -100,6 +102,8 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt', 'min', 'max', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
+            if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
+
             if(!isNumeric(v) ||
                     (opts.min !== undefined && v < opts.min) ||
                     (opts.max !== undefined && v > opts.max)) {
@@ -114,8 +118,15 @@ exports.valObjectMeta = {
             'are coerced to the `dflt`.'
         ].join(' '),
         requiredOpts: [],
-        otherOpts: ['dflt', 'min', 'max', 'arrayOk'],
+        otherOpts: ['dflt', 'min', 'max', 'arrayOk', 'extras'],
         coerceFunction: function(v, propOut, dflt, opts) {
+            if((opts.extras || []).indexOf(v) !== -1) {
+                propOut.set(v);
+                return;
+            }
+
+            if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
+
             if(v % 1 || !isNumeric(v) ||
                     (opts.min !== undefined && v < opts.min) ||
                     (opts.max !== undefined && v > opts.max)) {
@@ -156,6 +167,8 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt) {
+            if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
+
             if(tinycolor(v).isValid()) propOut.set(v);
             else propOut.set(dflt);
         }
@@ -198,6 +211,8 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt) {
+            if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
+
             if(v === 'auto') propOut.set('auto');
             else if(!isNumeric(v)) propOut.set(dflt);
             else propOut.set(modHalf(+v, 360));
@@ -457,18 +472,27 @@ exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dfl
  */
 exports.coerceFont = function(coerce, attr, dfltObj, opts) {
     if(!opts) opts = {};
+    dfltObj = extendFlat({}, dfltObj);
+    dfltObj = extendFlat(dfltObj, opts.overrideDflt || {});
 
-    var out = {};
+    var out = {
+        family: coerce(attr + '.family', dfltObj.family),
+        size: coerce(attr + '.size', dfltObj.size),
+        color: coerce(attr + '.color', dfltObj.color),
+        weight: coerce(attr + '.weight', dfltObj.weight),
+        style: coerce(attr + '.style', dfltObj.style),
+    };
 
-    dfltObj = dfltObj || {};
-
-    out.family = coerce(attr + '.family', dfltObj.family);
-    out.size = coerce(attr + '.size', dfltObj.size);
-    out.color = coerce(attr + '.color', dfltObj.color);
-
-    out.weight = coerce(attr + '.weight', dfltObj.weight);
-    out.style = coerce(attr + '.style', dfltObj.style);
     if(!opts.noFontVariant) out.variant = coerce(attr + '.variant', dfltObj.variant);
+    if(!opts.noFontLineposition) out.lineposition = coerce(attr + '.lineposition', dfltObj.lineposition);
+    if(!opts.noFontTextcase) out.textcase = coerce(attr + '.textcase', dfltObj.textcase);
+    if(!opts.noFontShadow) {
+        var dfltShadow = dfltObj.shadow;
+        if(dfltShadow === 'none' && opts.autoShadowDflt) {
+            dfltShadow = 'auto';
+        }
+        out.shadow = coerce(attr + '.shadow', dfltShadow);
+    }
 
     return out;
 };

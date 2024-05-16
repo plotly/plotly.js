@@ -24,6 +24,9 @@
             "textposition": "middle center",
             "texttemplate": "<b>%{label}</b>",
             "textfont": {
+                "textcase": "word caps",
+                "lineposition": "under",
+                "shadow": "auto",
                 "size": 20
             }
         }

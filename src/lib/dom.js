@@ -134,6 +134,9 @@ function getElementAndAncestors(element) {
     while(isTransformableElement(element)) {
         allElements.push(element);
         element = element.parentNode;
+        if(typeof ShadowRoot === 'function' && element instanceof ShadowRoot) {
+            element = element.host;
+        }
     }
     return allElements;
 }
