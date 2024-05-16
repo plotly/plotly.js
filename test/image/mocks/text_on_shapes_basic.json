@@ -6,6 +6,9 @@
     }],
     "layout": {
         "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto",
             "weight": "bold",
             "style": "italic",
             "variant": "small-caps"

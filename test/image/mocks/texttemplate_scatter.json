@@ -83,6 +83,9 @@
   ],
   "layout": {
     "font": {
+      "textcase": "word caps",
+      "lineposition": "under",
+      "shadow": "auto",
       "weight": "700",
       "style": "italic",
       "variant": "small-caps"

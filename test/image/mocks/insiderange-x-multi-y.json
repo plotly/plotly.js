@@ -41,6 +41,10 @@
         "y": [1000, 10, 100, 1]
     }],
     "layout": {
+        "font": {
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "template": {
             "layout": {
                 "yaxis": {

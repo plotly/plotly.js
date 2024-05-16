@@ -30,6 +30,10 @@
     }
   ],
   "layout": {
+    "font": {
+      "lineposition": "under",
+      "shadow": "auto"
+    },
     "showlegend": false,
     "margin": {
       "l": 0,

@@ -56,7 +56,10 @@ describe('table initialization tests', function() {
                 color: 'blue',
                 weight: 'bold',
                 style: 'italic',
-                variant: 'small-caps'
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             };
 
             supplyAllDefaults(gd);
@@ -67,7 +70,10 @@ describe('table initialization tests', function() {
                 color: 'blue',
                 weight: 'bold',
                 style: 'italic',
-                variant: 'small-caps'
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             };
 
             expect(gd._fullData[0].header.font).toEqual(expected);
@@ -86,7 +92,10 @@ describe('table initialization tests', function() {
                     color: '#444',
                     weight: 'bold',
                     style: 'italic',
-                    variant: 'small-caps'
+                    variant: 'small-caps',
+                    textcase: 'word caps',
+                    lineposition: 'under',
+                    shadow: 'auto',
                 }
             };
 
@@ -150,7 +159,10 @@ describe('table initialization tests', function() {
                     color: '#444',
                     weight: 'bold',
                     style: 'italic',
-                    variant: 'small-caps'
+                    variant: 'small-caps',
+                    textcase: 'word caps',
+                    lineposition: 'under',
+                    shadow: 'auto',
                 }
             });
 
@@ -167,7 +179,10 @@ describe('table initialization tests', function() {
                     color: '#444',
                     weight: 'bold',
                     style: 'italic',
-                    variant: 'small-caps'
+                    variant: 'small-caps',
+                    textcase: 'word caps',
+                    lineposition: 'under',
+                    shadow: 'auto',
                 }
             });
         });

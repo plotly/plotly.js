@@ -15,6 +15,11 @@
         }
     ],
     "layout":{
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "height":400,
         "width":400,
         "barmode":"group",

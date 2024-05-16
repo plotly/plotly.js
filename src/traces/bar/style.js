@@ -126,7 +126,10 @@ function getInsideTextFont(trace, index, layoutFont, barColor) {
             size: defaultFont.size,
             weight: defaultFont.weight,
             style: defaultFont.style,
-            variant: defaultFont.variant
+            variant: defaultFont.variant,
+            textcase: defaultFont.textcase,
+            lineposition: defaultFont.lineposition,
+            shadow: defaultFont.shadow,
         };
     }
 
@@ -149,6 +152,9 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
     var weightValue = helpers.getValue(attributeValue.weight, index);
     var styleValue = helpers.getValue(attributeValue.style, index);
     var variantValue = helpers.getValue(attributeValue.variant, index);
+    var textcaseValue = helpers.getValue(attributeValue.textcase, index);
+    var linepositionValue = helpers.getValue(attributeValue.lineposition, index);
+    var shadowValue = helpers.getValue(attributeValue.shadow, index);
 
     return {
         family: helpers.coerceString(
@@ -162,7 +168,13 @@ function getFontValue(attributeDefinition, attributeValue, index, defaultValue) 
         style: helpers.coerceString(
             attributeDefinition.style, styleValue, defaultValue.style),
         variant: helpers.coerceString(
-            attributeDefinition.variant, variantValue, defaultValue.variant)
+            attributeDefinition.variant, variantValue, defaultValue.variant),
+        textcase: helpers.coerceString(
+            attributeDefinition.variant, textcaseValue, defaultValue.textcase),
+        lineposition: helpers.coerceString(
+            attributeDefinition.variant, linepositionValue, defaultValue.lineposition),
+        shadow: helpers.coerceString(
+            attributeDefinition.variant, shadowValue, defaultValue.shadow),
     };
 }
 

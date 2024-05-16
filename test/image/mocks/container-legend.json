@@ -23,6 +23,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "margin": {"t": 0, "b": 0, "r": 0, "l": 0},
         "title": {
             "text": "Multiple legends | Legends 1 & 2 with container ref",

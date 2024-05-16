@@ -166,17 +166,23 @@ describe('Waterfall.supplyDefaults', function() {
                 family: 'arial',
                 color: '#AAA',
                 size: 13,
-                weight: 'normal',
-                style: 'normal',
-                variant: 'normal'
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             }
         };
         var layoutFontMinusColor = {
             family: 'arial',
             size: 13,
-            weight: 'normal',
-            style: 'normal',
-            variant: 'normal'
+            weight: 'bold',
+            style: 'italic',
+            variant: 'small-caps',
+            textcase: 'word caps',
+            lineposition: 'under',
+            shadow: 'auto',
         };
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);

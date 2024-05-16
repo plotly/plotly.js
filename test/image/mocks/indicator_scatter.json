@@ -28,6 +28,8 @@
         "visible": false
     },
     "font": {
+      "lineposition": "under",
+      "shadow": "auto",
       "color": "white",
       "family": "Raleway"
     },
