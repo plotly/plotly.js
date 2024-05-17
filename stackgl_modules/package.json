@@ -28,7 +28,7 @@
     "gl-spikes2d": "^1.0.2",
     "gl-spikes3d": "^1.0.11",
     "gl-streamtube3d": "^1.4.2",
-    "gl-surface3d": "github:hborchardt/gl-surface3d#6c75a5b44781c2aaec543237312df1f14274feac",
+    "gl-surface3d": "^1.6.2",
     "glslify": "^7.1.1",
     "incremental-convex-hull": "plotly/incremental-convex-hull#v1.1.0",
     "is-mobile": "^4.0.0",
