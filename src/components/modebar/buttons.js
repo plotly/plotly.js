@@ -7,6 +7,7 @@ var Icons = require('../../fonts/ploticon');
 var eraseActiveShape = require('../shapes/draw').eraseActiveShape;
 var Lib = require('../../lib');
 var _ = Lib._;
+var lodash = require('lodash');  // Import lodash, not using default _
 
 var modeBarButtons = module.exports = {};
 
@@ -669,6 +670,165 @@ modeBarButtons.toggleSpikelines = {
         Registry.call('_guiRelayout', gd, setSpikelineVisibility(gd));
     }
 };
+
+// modeBarButtons.tooltip = {
+    // name: 'tooltip',
+    // title: function(gd) { return _(gd, 'Add Tooltip to Points'); },
+    // icon: Icons.tooltip_annotate,
+    // attr: '_tooltipEnabled',
+    // val: 'on',
+    // click: function(gd) {
+        // var fullLayout = gd._fullLayout;
+        // var tooltipEnabled = fullLayout._tooltipEnabled;
+
+        // fullLayout._tooltipEnabled = tooltipEnabled === 'on' ? 'off' : 'on';
+        
+        // if (fullLayout._tooltipEnabled === 'on') {
+            // gd.on('plotly_click', function(data) { addTooltip(gd, data); });
+        // } else {
+            // gd.removeListener('plotly_click', function(data) { addTooltip(gd, data); });
+        // }
+
+        //Print to console for testing
+        // console.log('Tooltip is now', fullLayout._tooltipEnabled);
+    // }
+// };
+
+// function addTooltip(gd, data) {
+    // var pts = data.points[0];
+    // var fullLayout = gd._fullLayout;
+    
+    // var newAnnotation = {
+        // x: pts.x,
+        // y: pts.y,
+        // xref: 'x',
+        // yref: 'y',
+        // text: `x: ${pts.x},<br>y: ${pts.y}`,
+        // showarrow: true,
+        // arrowhead: 7,
+        // ax: 0,
+        // ay: -40,
+        // font: {
+            // color: 'black',
+            // family: 'Arial',
+            // size: 12
+        // },
+        // arrowcolor: 'black',
+        // arrowsize: 1.8,
+        // arrowwidth: 1,
+        // xanchor: 'left',
+        // align: 'left'
+    // };
+
+    // var existingIndex = fullLayout.annotations.findIndex(function(ann) {
+        // return ann.x === pts.x && ann.y === pts.y;
+    // });
+
+    // if (existingIndex === -1) {
+        // fullLayout.annotations.push(newAnnotation);
+        // Plotly.relayout(gd, { annotations: fullLayout.annotations });
+    // }
+// }
+
+/**
+ * ModeBar buttons configuration
+ */
+modeBarButtons.tooltip = {
+    name: 'tooltip',
+    title: function(gd) { return _(gd, 'Add Tooltip to Points'); },
+    icon: Icons.tooltip_annotate,
+    attr: '_tooltipEnabled',
+    val: 'on',
+    click: function(gd) {
+        var fullLayout = gd._fullLayout;
+        var tooltipEnabled = fullLayout._tooltipEnabled;
+
+        fullLayout._tooltipEnabled = tooltipEnabled === 'on' ? 'off' : 'on';
+
+        if (fullLayout._tooltipEnabled === 'on') {
+            gd._tooltipClickHandler = function(data) { tooltipClickHandler(gd, data); };
+            gd.on('plotly_click', gd._tooltipClickHandler);
+        } else {
+            gd.removeListener('plotly_click', gd._tooltipClickHandler);
+        }
+
+        if (mustRun) {
+            mustRun = false;
+            gd.on('plotly_relayout', function(eventData) { removeEmptyAnnotations(gd, eventData); });
+        }
+
+        // Print to console for testing
+        console.log('Tooltip is now', fullLayout._tooltipEnabled);
+    }
+};
+
+function tooltipClickHandler(gd, data) {
+    addTooltip(gd, data, DEFAULT_TEMPLATE, DEFAULT_STYLE);
+}
+
+function addTooltip(gd, data, userTemplate, customStyle) {
+    lodash.defaults(customStyle, DEFAULT_STYLE);
+
+    var pts = data.points[0];
+    var fullLayout = gd._fullLayout;
+
+    var text = Lib.hovertemplateString(userTemplate, {}, fullLayout._d3locale, pts, {});
+
+    var newAnnotation = {
+        x: pts.x,
+        y: pts.y,
+        xref: 'x',
+        yref: 'y',
+        text: text,
+        showarrow: true,
+        ax: 5,
+        ay: -20
+    };
+
+    lodash.defaults(newAnnotation, customStyle);
+
+    var existingIndex = fullLayout.annotations.findIndex(function(ann) {
+        return ann.x === pts.x && ann.y === pts.y;
+    });
+
+    if (existingIndex === -1) {
+        fullLayout.annotations.push(newAnnotation);
+        Plotly.relayout(gd, { annotations: fullLayout.annotations });
+    }
+}
+
+function removeEmptyAnnotations(gd, eventData) {
+    for (let key in eventData) {
+        if (key.includes('annotations[') && key.includes('].text')) {
+            const index = key.match(/annotations\[(\d+)\]\.text/)[1];
+            if (eventData[key] === '') {
+                var updatedAnnotations = gd.layout.annotations || [];
+                updatedAnnotations.splice(index, 1);
+                Plotly.relayout(gd, { annotations: updatedAnnotations });
+                break;
+            }
+        }
+    }
+}
+
+// Define default template and style
+const DEFAULT_TEMPLATE = "x: %{x},<br>y: %{y}";
+const DEFAULT_STYLE = {
+    align: "left",
+    arrowcolor: "black",
+    arrowhead: 3,
+    arrowsize: 1.8,
+    arrowwidth: 1,
+    font: {
+        color: "black",
+        family: "Arial",
+        size: 12
+    },
+    showarrow: true,
+    xanchor: "left"
+};
+
+let mustRun = true;
 
 function setSpikelineVisibility(gd) {
     var fullLayout = gd._fullLayout;

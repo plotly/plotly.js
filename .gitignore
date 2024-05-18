@@ -4,6 +4,7 @@ build/*
 !build/plotcss.js
 !build/README.md
 
+dist/*
 dist/*.LICENSE.txt
 
 npm-debug.log*
@@ -17,3 +18,4 @@ tags
 !.npmignore
 !.eslintrc
 !.eslintignore
+/dist

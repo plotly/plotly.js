@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plotly Tooltip Button Test</title>
+    <script src="./dist/plotly.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #plot {
+            width: 100%;
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Plotly Tooltip Button Test</h1>
+    <div id="plot"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var data = [{
+                x: [1, 2, 3, 4, 5],
+                y: [1, 3, 2, 5, 4],
+                type: 'scatter'
+            }];
+
+            var layout = {
+                title: 'Test Plot'
+            };
+
+            var config = {
+                editable: true,//editable is important to allow Tooltip drag-positionning and deletion
+                modeBarButtonsToAdd: ['tooltip', 'hoverclosest', 'hovercompare', 'togglespikelines'],  // Add the tooltip button
+                displaylogo: false,  // Optionally hide the Plotly logo
+                displayModeBar: true  // Ensure the modebar is displayed
+            };
+
+            Plotly.newPlot('plot', data, layout, config).then(function() {
+                // Wait for the plot to be fully initialized before querying the button
+                var tooltipButton = document.querySelector('.modebar-btn[data-title="Add Tooltip to Points"]');
+
+                if (tooltipButton) {
+                    tooltipButton.addEventListener('click', function() {
+                        console.log('Tooltip button clicked');
+                    });
+                } else {
+                    console.error('Tooltip button not found');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
