@@ -11,6 +11,7 @@ To delete a tooltip, click on its text and delete it.
 tooltips can be customized with an optional `tooltiptemplate` (possibilities equivalent to [hovertemplate](https://plotly.com/javascript/reference/scatter/#scatter-hovertemplate)) and `tooltip` annotation options (possibilities equivalent to [annotations](https://plotly.com/javascript/text-and-annotations/))
 ![image](https://github.com/kb-/plotly.js/assets/2260417/f7258b47-6eb2-4c3c-a3ce-f23899fe57e1)
 
+This update is compatible with Dash when a figure is created with a Dictionary passed to dcc.Graph (see example in *demo* folder), but not yet with Plotly.py (its implementation enforces a limited set of properties).
 
 
 ---
