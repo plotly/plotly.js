@@ -671,68 +671,6 @@ modeBarButtons.toggleSpikelines = {
     }
 };
 
-// modeBarButtons.tooltip = {
-    // name: 'tooltip',
-    // title: function(gd) { return _(gd, 'Add Tooltip to Points'); },
-    // icon: Icons.tooltip_annotate,
-    // attr: '_tooltipEnabled',
-    // val: 'on',
-    // click: function(gd) {
-        // var fullLayout = gd._fullLayout;
-        // var tooltipEnabled = fullLayout._tooltipEnabled;
-
-        // fullLayout._tooltipEnabled = tooltipEnabled === 'on' ? 'off' : 'on';
-        
-        // if (fullLayout._tooltipEnabled === 'on') {
-            // gd.on('plotly_click', function(data) { addTooltip(gd, data); });
-        // } else {
-            // gd.removeListener('plotly_click', function(data) { addTooltip(gd, data); });
-        // }
-
-        //Print to console for testing
-        // console.log('Tooltip is now', fullLayout._tooltipEnabled);
-    // }
-// };
-
-// function addTooltip(gd, data) {
-    // var pts = data.points[0];
-    // var fullLayout = gd._fullLayout;
-    
-    // var newAnnotation = {
-        // x: pts.x,
-        // y: pts.y,
-        // xref: 'x',
-        // yref: 'y',
-        // text: `x: ${pts.x},<br>y: ${pts.y}`,
-        // showarrow: true,
-        // arrowhead: 7,
-        // ax: 0,
-        // ay: -40,
-        // font: {
-            // color: 'black',
-            // family: 'Arial',
-            // size: 12
-        // },
-        // arrowcolor: 'black',
-        // arrowsize: 1.8,
-        // arrowwidth: 1,
-        // xanchor: 'left',
-        // align: 'left'
-    // };
-
-    // var existingIndex = fullLayout.annotations.findIndex(function(ann) {
-        // return ann.x === pts.x && ann.y === pts.y;
-    // });
-
-    // if (existingIndex === -1) {
-        // fullLayout.annotations.push(newAnnotation);
-        // Plotly.relayout(gd, { annotations: fullLayout.annotations });
-    // }
-// }
-
-/**
- * ModeBar buttons configuration
- */
 modeBarButtons.tooltip = {
     name: 'tooltip',
     title: function(gd) { return _(gd, 'Add Tooltip to Points'); },
@@ -752,21 +690,18 @@ modeBarButtons.tooltip = {
                 var userTemplate = trace.tooltiptemplate || DEFAULT_TEMPLATE;
                 var customStyle = lodash.defaults({}, trace.tooltip, DEFAULT_STYLE);  // Merge custom style with default
                 tooltipClickHandler(gd, data, userTemplate, customStyle);
-            }; 
+            };
             gd.on('plotly_click', gd._tooltipClickHandler);
         } else {
             gd.removeListener('plotly_click', gd._tooltipClickHandler);
         }
 
-        if (mustRun) {
-            mustRun = false;
+        if (!gd._relayoutHandlerAdded) {
+            gd._relayoutHandlerAdded = true;
             gd.on('plotly_relayout', function(eventData) {
                 removeEmptyAnnotations(gd, eventData);
             });
         }
-
-        // Print to console for testing
-        console.log('Tooltip is now', fullLayout._tooltipEnabled);
     }
 };
 

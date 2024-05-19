@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Plotly Tooltip Button Test</title>
     <script src="../dist/plotly.js"></script>
+    <script src="../dist/plotly-locale-de.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,7 +62,15 @@
                 }
             };
             
-            var data = [trace1];
+            var trace2 = {
+                name: 'Trace 2',
+                x: generateDateTime('2024-04-01T12:00:00Z', 5),
+                y: generateRandomYValues(5),
+                type: 'scatter',
+                tooltiptemplate: "%{fullData.name}<br>%{x|%H:%M:%S}<br>y: %{y:.2e}",
+            };
+            
+            var data = [trace1, trace2];
             
             var layout = {
                 title: 'Custom Tooltip Example'
@@ -71,7 +80,8 @@
                 editable: true,//editable is important to allow Tooltip drag-positionning and deletion
                 modeBarButtonsToAdd: ['tooltip', 'hoverclosest', 'hovercompare', 'togglespikelines'],  // Add the tooltip button
                 displaylogo: false,  // Optionally hide the Plotly logo
-                displayModeBar: true  // Ensure the modebar is displayed
+                displayModeBar: true,  // Ensure the modebar is displayed
+                locale: 'de'
             };
 
             Plotly.newPlot('plot', data, layout, config).then(function() {

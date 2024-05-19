@@ -1,4 +1,4 @@
-Add Tooltip to Points                                  // components/modebar/buttons.js:738
+Add Tooltip to Points                                  // components/modebar/buttons.js:676
 Autoscale                                              // components/modebar/buttons.js:209
 Box Select                                             // components/modebar/buttons.js:117
 Click to enter Colorscale title                        // plots/plots.js:321
