@@ -19,14 +19,52 @@
     <div id="plot"></div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            var data = [{
-                x: [1, 2, 3, 4, 5],
-                y: [1, 3, 2, 5, 4],
-                type: 'scatter'
-            }];
+        
+            // Generate date and time values
+            function generateDateTime(start, count) {
+                let dates = [];
+                let current = new Date(start);
+                for (let i = 0; i < count; i++) {
+                    dates.push(new Date(current));
+                    current.setHours(current.getHours() + 7);
+                }
+                return dates;
+            }
+            
+            // Generate random y-values
+            function generateRandomYValues(count) {
+                return Array.from({ length: count }, () => Math.random() * 20);
+            }
+            
+            // Generate data points
+            var xValues = generateDateTime('2024-04-01T12:00:00Z', 10);
 
+            var trace1 = {
+                name: 'Trace 1',
+                x: generateDateTime('2024-04-01T12:00:00Z', 5),
+                y: generateRandomYValues(5),
+                type: 'scatter',
+                tooltiptemplate: "%{fullData.name}<br>%{x|%H:%M:%S}<br>y: %{y:.2e}",
+                tooltip: {
+                    align: 'left',
+                    arrowcolor: 'blue',
+                    arrowhead: 2,
+                    arrowsize: 1.2,
+                    arrowwidth: 1,
+                    font: {
+                        color: 'red',
+                        family: 'Arial',
+                        size: 16
+                    },
+                    showarrow: true,
+                    xanchor: 'left'
+                }
+            };
+            
+            var data = [trace1];
+            
             var layout = {
-                title: 'Test Plot'
+                title: 'Custom Tooltip Example'
             };
 
             var config = {

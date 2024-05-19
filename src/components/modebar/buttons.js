@@ -746,7 +746,13 @@ modeBarButtons.tooltip = {
         fullLayout._tooltipEnabled = tooltipEnabled === 'on' ? 'off' : 'on';
 
         if (fullLayout._tooltipEnabled === 'on') {
-            gd._tooltipClickHandler = function(data) { tooltipClickHandler(gd, data); };
+            gd._tooltipClickHandler = function(data) {
+                var traceIndex = data.points[0].curveNumber;
+                var trace = gd.data[traceIndex];
+                var userTemplate = trace.tooltiptemplate || DEFAULT_TEMPLATE;
+                var customStyle = lodash.defaults({}, trace.tooltip, DEFAULT_STYLE);  // Merge custom style with default
+                tooltipClickHandler(gd, data, userTemplate, customStyle);
+            }; 
             gd.on('plotly_click', gd._tooltipClickHandler);
         } else {
             gd.removeListener('plotly_click', gd._tooltipClickHandler);
@@ -754,7 +760,9 @@ modeBarButtons.tooltip = {
 
         if (mustRun) {
             mustRun = false;
-            gd.on('plotly_relayout', function(eventData) { removeEmptyAnnotations(gd, eventData); });
+            gd.on('plotly_relayout', function(eventData) {
+                removeEmptyAnnotations(gd, eventData);
+            });
         }
 
         // Print to console for testing
@@ -762,16 +770,15 @@ modeBarButtons.tooltip = {
     }
 };
 
-function tooltipClickHandler(gd, data) {
-    addTooltip(gd, data, DEFAULT_TEMPLATE, DEFAULT_STYLE);
+function tooltipClickHandler(gd, data, userTemplate, customStyle) {
+    addTooltip(gd, data, userTemplate, customStyle);
 }
 
 function addTooltip(gd, data, userTemplate, customStyle) {
-    lodash.defaults(customStyle, DEFAULT_STYLE);
-
     var pts = data.points[0];
     var fullLayout = gd._fullLayout;
 
+    // Convert template to text using Plotly hovertemplate formatting method                                                                        
     var text = Lib.hovertemplateString(userTemplate, {}, fullLayout._d3locale, pts, {});
 
     var newAnnotation = {
