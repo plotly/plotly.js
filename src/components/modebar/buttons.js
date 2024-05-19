@@ -8,6 +8,7 @@ var eraseActiveShape = require('../shapes/draw').eraseActiveShape;
 var Lib = require('../../lib');
 var _ = Lib._;
 var lodash = require('lodash');  // Import lodash, not using default _
+var Plotly = require('../../plot_api/plot_api');
 
 var modeBarButtons = module.exports = {};
 
@@ -671,6 +672,23 @@ modeBarButtons.toggleSpikelines = {
     }
 };
 
+// Define default template and style
+var DEFAULT_TEMPLATE = 'x: %{x},<br>y: %{y}';
+var DEFAULT_STYLE = {
+    align: 'left',
+    arrowcolor: 'black',
+    arrowhead: 3,
+    arrowsize: 1.8,
+    arrowwidth: 1,
+    font: {
+        color: 'black',
+        family: 'Arial',
+        size: 12
+    },
+    showarrow: true,
+    xanchor: 'left'
+};
+
 modeBarButtons.tooltip = {
     name: 'tooltip',
     title: function(gd) { return _(gd, 'Add Tooltip to Points'); },
@@ -683,7 +701,7 @@ modeBarButtons.tooltip = {
 
         fullLayout._tooltipEnabled = tooltipEnabled === 'on' ? 'off' : 'on';
 
-        if (fullLayout._tooltipEnabled === 'on') {
+        if(fullLayout._tooltipEnabled === 'on') {
             gd._tooltipClickHandler = function(data) {
                 var traceIndex = data.points[0].curveNumber;
                 var trace = gd.data[traceIndex];
@@ -696,7 +714,7 @@ modeBarButtons.tooltip = {
             gd.removeListener('plotly_click', gd._tooltipClickHandler);
         }
 
-        if (!gd._relayoutHandlerAdded) {
+        if(!gd._relayoutHandlerAdded) {
             gd._relayoutHandlerAdded = true;
             gd.on('plotly_relayout', function(eventData) {
                 removeEmptyAnnotations(gd, eventData);
@@ -713,7 +731,7 @@ function addTooltip(gd, data, userTemplate, customStyle) {
     var pts = data.points[0];
     var fullLayout = gd._fullLayout;
 
-    // Convert template to text using Plotly hovertemplate formatting method                                                                        
+    // Convert template to text using Plotly hovertemplate formatting method
     var text = Lib.hovertemplateString(userTemplate, {}, fullLayout._d3locale, pts, {});
 
     var newAnnotation = {
@@ -733,17 +751,17 @@ function addTooltip(gd, data, userTemplate, customStyle) {
         return ann.x === pts.x && ann.y === pts.y;
     });
 
-    if (existingIndex === -1) {
+    if(existingIndex === -1) {
         fullLayout.annotations.push(newAnnotation);
         Plotly.relayout(gd, { annotations: fullLayout.annotations });
     }
 }
 
 function removeEmptyAnnotations(gd, eventData) {
-    for (let key in eventData) {
-        if (key.includes('annotations[') && key.includes('].text')) {
-            const index = key.match(/annotations\[(\d+)\]\.text/)[1];
-            if (eventData[key] === '') {
+    for(var key in eventData) {
+        if(key.includes('annotations[') && key.includes('].text')) {
+            var index = key.match(/annotations\[(\d+)\]\.text/)[1];
+            if(eventData[key] === '') {
                 var updatedAnnotations = gd.layout.annotations || [];
                 updatedAnnotations.splice(index, 1);
                 Plotly.relayout(gd, { annotations: updatedAnnotations });
@@ -752,25 +770,6 @@ function removeEmptyAnnotations(gd, eventData) {
         }
     }
 }
-
-// Define default template and style
-const DEFAULT_TEMPLATE = "x: %{x},<br>y: %{y}";
-const DEFAULT_STYLE = {
-    align: "left",
-    arrowcolor: "black",
-    arrowhead: 3,
-    arrowsize: 1.8,
-    arrowwidth: 1,
-    font: {
-        color: "black",
-        family: "Arial",
-        size: 12
-    },
-    showarrow: true,
-    xanchor: "left"
-};
-
-let mustRun = true;
 
 function setSpikelineVisibility(gd) {
     var fullLayout = gd._fullLayout;
