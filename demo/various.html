@@ -20,6 +20,20 @@
     <div id="scatter-plot" class="plot"></div>
     <div id="bar-plot" class="plot"></div>
     <div id="heatmap-plot" class="plot"></div>
+    <div id="histogram-plot" class="plot"></div>
+    <div id="histogram2d-plot" class="plot"></div>
+    <div id="histogram2dcontour-plot" class="plot"></div>
+    <div id="scattergl-plot" class="plot"></div>
+    <div id="splom-plot" class="plot"></div>
+    <div id="pointcloud-plot" class="plot"></div>
+    <div id="ohlc-plot" class="plot"></div>
+    <div id="candlestick-plot" class="plot"></div>
+    <div id="scatterternary-plot" class="plot"></div>
+    <div id="scatterpolargl-plot" class="plot"></div>
+    <div id="carpet-plot" class="plot"></div>
+    <div id="scattercarpet-plot" class="plot"></div>
+    <div id="contourcarpet-plot" class="plot"></div>
+    <div id="scattermapbox-plot" class="plot"></div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             
@@ -54,7 +68,6 @@
                 tooltiptemplate: scatterTooltipTemplate,
             }];
 
-
             var barData = [{
                 x: ['A', 'B', 'C', 'D'],
                 y: [10, 20, 15, 25],
@@ -83,8 +96,175 @@
                 tooltiptemplate: "x: %{x:.2f},<br>y: %{y:.2f},<br>z: %{z:.3f}"
             }];
 
+            var histogramData = [{
+                name:'H1',
+                x: generateRandomYValues(100),
+                type: 'histogram',
+                tooltiptemplate: "Count: %{y}"
+            },
+            {
+                name:'H2',
+                x: generateRandomYValues(100),
+                type: 'histogram',
+                tooltiptemplate: "Count: %{y}"
+            },
+            {
+                name:'H2',
+                x: generateRandomYValues(100),
+                type: 'histogram',
+                tooltiptemplate: "%{fullData.name}<br>x: %{x}<br>Count: %{y}"
+            }
+            ];
+
+            var histogram2dData = [{
+                x: generateRandomYValues(200),
+                y: generateRandomYValues(200),
+                type: 'histogram2d',
+                colorscale: 'Blues',
+                tooltiptemplate: "x: %{x}<br>y: %{y}<br>Count: %{z}"
+            }];
+
+            var histogram2dContourData = [{
+                x: generateRandomYValues(200),
+                y: generateRandomYValues(200),
+                type: 'histogram2dcontour',
+                colorscale: 'Electric',
+                tooltip: {
+                    bgcolor: "rgba(255, 255, 255, 0.2)"
+                },
+                tooltiptemplate: "x: %{x}<br>y: %{y}<br>Count: %{z}"
+            }];
+            
+            var scatterglData = [{
+                name: 'ScatterGL Trace',
+                x: generateDateTime('2025-04-01T12:00:00Z', 1000),
+                y: generateRandomYValues(1000),
+                type: 'scattergl',
+                tooltiptemplate: "%{fullData.name}<br>%{x|%H:%M:%S}<br>y: %{y:.2e}",
+            }];
+
+            var splomData = [{
+                type: 'splom',
+                dimensions: [
+                    {label: 'A', values: generateRandomYValues(100)},
+                    {label: 'B', values: generateRandomYValues(100)},
+                    {label: 'C', values: generateRandomYValues(100)},
+                    {label: 'D', values: generateRandomYValues(100)}
+                ],
+                tooltiptemplate: "x: %{x}<br>y: %{y}"
+            }];
+
+            var pointcloudData = [{
+                x: generateRandomYValues(1000),
+                y: generateRandomYValues(1000),
+                type: 'pointcloud',
+                tooltiptemplate: "x: %{x}<br>y: %{y}"
+            }];
+            
+            var ohlcData = [{
+                x: generateDateTime('2025-04-01T12:00:00Z', 10),
+                close: generateRandomYValues(10),
+                decreasing: {line: {color: 'red'}},
+                high: generateRandomYValues(10),
+                increasing: {line: {color: 'green'}},
+                low: generateRandomYValues(10),
+                open: generateRandomYValues(10),
+                type: 'ohlc',
+                tooltiptemplate: "Open: %{open}<br>High: %{high}<br>Low: %{low}<br>Close: %{close}<br>Date: %{x|%Y-%m-%d}"
+            }];
+
+            var candlestickData = [{
+                x: generateDateTime('2025-04-01T12:00:00Z', 10),
+                close: generateRandomYValues(10),
+                decreasing: {line: {color: 'red'}},
+                high: generateRandomYValues(10),
+                increasing: {line: {color: 'green'}},
+                low: generateRandomYValues(10),
+                open: generateRandomYValues(10),
+                type: 'candlestick',
+                tooltiptemplate: "Open: %{open}<br>High: %{high}<br>Low: %{low}<br>Close: %{close}<br>Date: %{x|%Y-%m-%d}"
+            }];
+
+            var scatterternaryData = [{
+                type: 'scatterternary',
+                mode: 'markers',
+                a: generateRandomYValues(10),
+                b: generateRandomYValues(10),
+                c: generateRandomYValues(10),
+                text: generateRandomYValues(10).map(String),
+                marker: {
+                    symbol: 100,
+                    color: 'blue',
+                    size: 14,
+                    line: {width: 2}
+                },
+                tooltiptemplate: "A: %{a}<br>B: %{b}<br>C: %{c}"
+            }];
+
+            var scatterpolarglData = [{
+                type: 'scatterpolargl',
+                r: generateRandomYValues(10),
+                theta: generateRandomYValues(10),
+                mode: 'markers',
+                marker: {
+                    color: 'orange',
+                    size: 12,
+                    symbol: 'circle'
+                },
+                tooltiptemplate: "r: %{r}<br>Theta: %{theta}"
+            }];
+            
+            var carpetData = [{
+                type: 'carpet',
+                a: [1, 2, 3, 4, 5],
+                b: [2, 3, 4, 5, 6],
+                y: [10, 20, 30, 40, 50],
+                x: [1, 2, 3, 4, 5],
+                aaxis: {
+                    title: 'a-axis',
+                    gridcolor: 'red'
+                },
+                baxis: {
+                    title: 'b-axis',
+                    gridcolor: 'blue'
+                },
+                tooltiptemplate: "A: %{a}<br>B: %{b}<br>Y: %{y}<br>X: %{x}"
+            }];
+
+            var scattercarpetData = [{
+                type: 'scattercarpet',
+                a: [1, 2, 3, 4, 5],
+                b: [2, 3, 4, 5, 6],
+                y: [10, 20, 30, 40, 50],
+                mode: 'markers',
+                marker: {
+                    size: 12,
+                    color: 'orange'
+                },
+                tooltiptemplate: "A: %{a}<br>B: %{b}<br>Y: %{y}"
+            }];
+
+            var contourcarpetData = [{
+                type: 'contourcarpet',
+                a: [1, 2, 3, 4, 5],
+                b: [2, 3, 4, 5, 6],
+                z: [10, 20, 30, 40, 50],
+                colorscale: 'Viridis',
+                tooltiptemplate: "A: %{a}<br>B: %{b}<br>Z: %{z}"
+            }];
+            
+            var scattermapboxData = [{
+                type: 'scattermapbox',
+                lon: [10, 20, 30, 40],
+                lat: [20, 30, 40, 50],
+                mode: 'markers',
+                marker: {
+                    size: 14
+                },
+                tooltiptemplate: "Lon: %{lon}<br>Lat: %{lat}"
+            }];
+
             var layout = {
-                title: 'Custom Tooltip Example'
             };
 
             var config = {
@@ -92,7 +272,6 @@
                 modeBarButtonsToAdd: ['tooltip', 'hoverclosest', 'hovercompare', 'togglespikelines'],
                 displaylogo: false,
                 displayModeBar: true,
-                locale: 'en'
             };
 
             function createPlot(id, data, layout, config) {
@@ -109,9 +288,18 @@
             }
 
             createPlot('scatter-plot', scatterData, Object.assign({}, layout), config);
-            createPlot('bar-plot', barData, Object.assign({}, Object.assign({}, layout), { xaxis: { type: 'category' } }), config);
+            createPlot('bar-plot', barData, Object.assign({}, layout, { xaxis: { type: 'category' } }), config);
             createPlot('heatmap-plot', heatmapData, Object.assign({}, layout), config);
-
+            createPlot('histogram-plot', histogramData, {'title':'(has arrow snapping position issues, not always matching hover label position)'}, config);
+            createPlot('histogram2d-plot', histogram2dData, Object.assign({}, layout), config);
+            createPlot('histogram2dcontour-plot', histogram2dContourData, Object.assign({}, {'title':'(has some arrow snapping position issues, but identical to hover label position)'}), config);
+            createPlot('scattergl-plot', scatterglData, Object.assign({}, layout), config);
+            createPlot('splom-plot', splomData, {'title':'(only works for the 1st plot. Arrow always snaps in the 1st plot despite right hover label position)'}, config);
+            createPlot('pointcloud-plot', pointcloudData, {'title':'NOT ACTIVE'}, config);
+            createPlot('ohlc-plot', ohlcData, Object.assign({}, {'title':'(Arrow snaps mid-height)'}), config);
+            createPlot('candlestick-plot', candlestickData, Object.assign({}, {'title':'(Arrow snaps mid-height)'}), config);
+            createPlot('scatterternary-plot', scatterternaryData, Object.assign({}, {'title':'NOT ACTIVE'}), config);
+            createPlot('scatterpolargl-plot', scatterpolarglData, Object.assign({}, {'title':'NOT ACTIVE'}), config);
         });
     </script>
 </body>
