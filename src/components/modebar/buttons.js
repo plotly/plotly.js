@@ -731,30 +731,32 @@ function addTooltip(gd, data, userTemplate, customStyle) {
     var pts = data.points[0];
     var fullLayout = gd._fullLayout;
 
-    // Convert template to text using Plotly hovertemplate formatting method
-    var text = Lib.hovertemplateString(userTemplate, {}, fullLayout._d3locale, pts, {});
+    if(pts && pts.xaxis && pts.yaxis && fullLayout) {
+        // Convert template to text using Plotly hovertemplate formatting method
+        var text = Lib.hovertemplateString(userTemplate, {}, fullLayout._d3locale, pts, {});
 
-    var newAnnotation = {
-        // handle log axis https://plotly.com/javascript/text-and-annotations/#annotations-with-log-axes
-        x: pts.xaxis.type === 'log' ? Math.log10(pts.x) : pts.x,
-        y: pts.yaxis.type === 'log' ? Math.log10(pts.y) : pts.y,
-        xref: 'x',
-        yref: 'y',
-        text: text,
-        showarrow: true,
-        ax: 5,
-        ay: -20
-    };
+        var newAnnotation = {
+            // handle log axis https://plotly.com/javascript/text-and-annotations/#annotations-with-log-axes
+            x: pts.xaxis.type === 'log' ? Math.log10(pts.x) : pts.x,
+            y: pts.yaxis.type === 'log' ? Math.log10(pts.y) : pts.y,
+            xref: 'x',
+            yref: 'y',
+            text: text,
+            showarrow: true,
+            ax: 5,
+            ay: -20
+        };
 
-    lodash.defaults(newAnnotation, customStyle);
+        lodash.defaults(newAnnotation, customStyle);
 
-    var existingIndex = fullLayout.annotations.findIndex(function(ann) {
-        return ann.x === pts.x && ann.y === pts.y;
-    });
+        var existingIndex = fullLayout.annotations.findIndex(function(ann) {
+            return ann.x === pts.x && ann.y === pts.y;
+        });
 
-    if(existingIndex === -1) {
-        fullLayout.annotations.push(newAnnotation);
-        Plotly.relayout(gd, { annotations: fullLayout.annotations });
+        if(existingIndex === -1) {
+            fullLayout.annotations.push(newAnnotation);
+            Plotly.relayout(gd, { annotations: fullLayout.annotations });
+        }
     }
 }
 
