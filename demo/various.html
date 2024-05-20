@@ -18,6 +18,7 @@
 <body>
     <h1>Plotly Tooltip Button Test</h1>
     <div id="scatter-plot" class="plot"></div>
+    <div id="scatterLog-plot" class="plot"></div>
     <div id="bar-plot" class="plot"></div>
     <div id="heatmap-plot" class="plot"></div>
     <div id="histogram-plot" class="plot"></div>
@@ -67,6 +68,31 @@
                 type: 'scatter',
                 tooltiptemplate: scatterTooltipTemplate,
             }];
+            
+            var scatterLogTooltipTemplate = "%{fullData.name}<br>%{x:.2e}<br>y: %{y:.2e}";
+            var scatterLogData = [{
+              x: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+              y: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+              type: 'scatter',
+              tooltiptemplate: scatterLogTooltipTemplate,
+            },
+            {
+              x: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+              y: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+              type: 'scatter',
+              tooltiptemplate: scatterLogTooltipTemplate,
+            }];
+            
+            var scatterLogLayout = {
+              xaxis: {
+                type: 'log',
+                autorange: true
+              },
+              yaxis: {
+                type: 'log',
+                autorange: true
+              }
+            };
 
             var barData = [{
                 x: ['A', 'B', 'C', 'D'],
@@ -216,42 +242,100 @@
             
             var carpetData = [{
                 type: 'carpet',
-                a: [1, 2, 3, 4, 5],
-                b: [2, 3, 4, 5, 6],
-                y: [10, 20, 30, 40, 50],
-                x: [1, 2, 3, 4, 5],
+                a: [4, 4, 4, 4.5, 4.5, 4.5, 5, 5, 5, 6, 6, 6].map(a => a * 1e-6),
+                b: [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3].map(b => b * 1e6),
+                y: [2, 3.5, 4, 3, 4.5, 5, 5.5, 6.5, 7.5, 8, 8.5, 10],
                 aaxis: {
-                    title: 'a-axis',
-                    gridcolor: 'red'
+                    tickprefix: 'a = ',
+                    ticksuffix: 'm',
+                    smoothing: 1,
+                    minorgridcount: 9,
                 },
                 baxis: {
-                    title: 'b-axis',
-                    gridcolor: 'blue'
+                    tickprefix: 'b = ',
+                    ticksuffix: 'Pa',
+                    smoothing: 1,
+                    minorgridcount: 9,
                 },
-                tooltiptemplate: "A: %{a}<br>B: %{b}<br>Y: %{y}<br>X: %{x}"
+                tooltiptemplate: "A: %{a:.2s}m<br>B: %{b:.2s}Pa<br>y: %{y:.2s}"
             }];
 
-            var scattercarpetData = [{
-                type: 'scattercarpet',
-                a: [1, 2, 3, 4, 5],
-                b: [2, 3, 4, 5, 6],
-                y: [10, 20, 30, 40, 50],
-                mode: 'markers',
-                marker: {
-                    size: 12,
-                    color: 'orange'
+            var scattercarpetData = [
+                {
+                    type: 'carpet',
+                    a: [4, 4, 4, 4.5, 4.5, 4.5, 5, 5, 5, 6, 6, 6].map(a => a * 1e-6),
+                    b: [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3].map(b => b * 1e6),
+                    y: [2, 3.5, 4, 3, 4.5, 5, 5.5, 6.5, 7.5, 8, 8.5, 10],
+                    aaxis: {
+                        tickprefix: 'a = ',
+                        ticksuffix: 'm',
+                        smoothing: 1,
+                        minorgridcount: 9,
+                    },
+                    baxis: {
+                        tickprefix: 'b = ',
+                        ticksuffix: 'Pa',
+                        smoothing: 1,
+                        minorgridcount: 9,
+                    }
                 },
-                tooltiptemplate: "A: %{a}<br>B: %{b}<br>Y: %{y}"
-            }];
+                {
+                    type: 'scattercarpet',
+                    a: [4, 4.5, 5, 6].map(a => a * 1e-6),
+                    b: [1.5, 2.5, 1.5, 2.5].map(b => b * 1e6),
+                    line: {shape: 'spline', smoothing: 1},
+                    tooltiptemplate: "A: %{a:.2s}m<br>B: %{b:.2s}Pa<br>y: %{y:.2s}"
+                }
+            ];
 
-            var contourcarpetData = [{
-                type: 'contourcarpet',
-                a: [1, 2, 3, 4, 5],
-                b: [2, 3, 4, 5, 6],
-                z: [10, 20, 30, 40, 50],
-                colorscale: 'Viridis',
-                tooltiptemplate: "A: %{a}<br>B: %{b}<br>Z: %{z}"
-            }];
+            var contourcarpetData = [
+                {
+                    type: 'contourcarpet',
+                    a: [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+                    b: [4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6],
+                    z: [1, 1.96, 2.56, 3.0625, 4, 5.0625, 1, 7.5625, 9, 12.25, 15.21, 14.0625],
+                    autocontour: false,
+                    contours: {
+                        start: 1,
+                        end: 14,
+                        size: 1
+                    },
+                    line: {
+                        width: 2,
+                        smoothing: 0
+                    },
+                    colorbar: {
+                        len: 0.4,
+                        y: 0.25
+                    },
+                    tooltiptemplate: "A: %{a}<br>B: %{b}<br>Z: %{z}",
+                },
+                {
+                    type: 'carpet',
+                    a: [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+                    b: [4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6],
+                    x: [2, 3, 4, 5, 2.2, 3.1, 4.1, 5.1, 1.5, 2.5, 3.5, 4.5],
+                    y: [1, 1.4, 1.6, 1.75, 2, 2.5, 2.7, 2.75, 3, 3.5, 3.7, 3.75],
+                    aaxis: {
+                        tickprefix: "a = ",
+                        smoothing: 0,
+                        minorgridcount: 9,
+                        type: 'linear'
+                    },
+                    baxis: {
+                        tickprefix: "b = ",
+                        smoothing: 0,
+                        minorgridcount: 9,
+                        type: 'linear'
+                    }
+                }
+            ];
+            
+            contourcarpetLayout = {
+                margin: { t: 40, r: 30, b: 30, l: 30 },
+                yaxis: { range: [0.388, 4.361] },
+                xaxis: { range: [0.667, 5.932] }
+            }
             
             var scattermapboxData = [{
                 type: 'scattermapbox',
@@ -288,6 +372,7 @@
             }
 
             createPlot('scatter-plot', scatterData, Object.assign({}, layout), config);
+            createPlot('scatterLog-plot', scatterLogData, Object.assign({'title':'(Arrow snaps at 10^coord)'},scatterLogLayout), config);
             createPlot('bar-plot', barData, Object.assign({}, layout, { xaxis: { type: 'category' } }), config);
             createPlot('heatmap-plot', heatmapData, Object.assign({}, layout), config);
             createPlot('histogram-plot', histogramData, {'title':'(has arrow snapping position issues, not always matching hover label position)'}, config);
@@ -300,6 +385,10 @@
             createPlot('candlestick-plot', candlestickData, Object.assign({}, {'title':'(Arrow snaps mid-height)'}), config);
             createPlot('scatterternary-plot', scatterternaryData, Object.assign({}, {'title':'NOT ACTIVE'}), config);
             createPlot('scatterpolargl-plot', scatterpolarglData, Object.assign({}, {'title':'NOT ACTIVE'}), config);
+            createPlot('carpet-plot', carpetData, {'title':'NOT ACTIVE'}, config);
+            createPlot('scattercarpet-plot', scattercarpetData, {'title':'(Arrow snaps at wrong position)'}, config);
+            createPlot('contourcarpet-plot', contourcarpetData, Object.assign(contourcarpetLayout, {'title':'NOT ACTIVE'}), config);
+            createPlot('scattermapbox-plot', scattermapboxData, Object.assign({}, layout), config);
         });
     </script>
 </body>
