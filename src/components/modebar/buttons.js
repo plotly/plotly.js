@@ -735,8 +735,9 @@ function addTooltip(gd, data, userTemplate, customStyle) {
     var text = Lib.hovertemplateString(userTemplate, {}, fullLayout._d3locale, pts, {});
 
     var newAnnotation = {
-        x: pts.x,
-        y: pts.y,
+        // handle log axis https://plotly.com/javascript/text-and-annotations/#annotations-with-log-axes
+        x: pts.xaxis.type === 'log' ? Math.log10(pts.x) : pts.x,
+        y: pts.yaxis.type === 'log' ? Math.log10(pts.y) : pts.y,
         xref: 'x',
         yref: 'y',
         text: text,

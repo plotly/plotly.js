@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Plotly Tooltip Button Test</title>
     <script src="../dist/plotly.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -34,7 +35,8 @@
     <div id="carpet-plot" class="plot"></div>
     <div id="scattercarpet-plot" class="plot"></div>
     <div id="contourcarpet-plot" class="plot"></div>
-    <div id="scattermapbox-plot" class="plot"></div>
+    <div id="parcoords-plot" class="plot"></div>
+    <div id="surface-plot" class="plot"></div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             
@@ -337,16 +339,75 @@
                 xaxis: { range: [0.667, 5.932] }
             }
             
-            var scattermapboxData = [{
-                type: 'scattermapbox',
-                lon: [10, 20, 30, 40],
-                lat: [20, 30, 40, 50],
-                mode: 'markers',
-                marker: {
-                    size: 14
+            var parcoordsData = [{
+                type: 'parcoords',
+                line: {
+                    color: 'blue'
                 },
-                tooltiptemplate: "Lon: %{lon}<br>Lat: %{lat}"
+                dimensions: [{
+                    range: [1, 5],
+                    constraintrange: [1, 2],
+                    label: 'A',
+                    values: [1, 4]
+                }, {
+                    range: [1, 5],
+                    label: 'B',
+                    values: [3, 1.5],
+                    tickvals: [1.5, 3, 4.5]
+                }, {
+                    range: [1, 5],
+                    label: 'C',
+                    values: [2, 4],
+                    tickvals: [1, 2, 4, 5],
+                    ticktext: ['text 1', 'text 2', 'text 4', 'text 5']
+                }, {
+                    range: [1, 5],
+                    label: 'D',
+                    values: [4, 2]
+                }],
+                tooltiptemplate: "Dim A: %{a}<br>Dim B: %{b}<br>Dim C: %{c}<br>Dim D: %{d}"
             }];
+            
+            d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/api_docs/mt_bruno_elevation.csv', function(err, rows) {
+                if (err) {
+                    console.error('Error loading CSV data:', err);
+                    return;
+                }
+
+                // Convert the object into an array of rows
+                rows = Object.values(rows);
+
+                function unpack(rows, key) {
+                    return rows.map(function(row) { return row[key]; });
+                }
+
+                var z_data = [];
+                for (var i = 0; i < 24; i++) {
+                    z_data.push(unpack(rows, i));
+                }
+
+                var surfaceData = [{
+                    z: z_data,
+                    type: 'surface',
+                    tooltiptemplate: "x: %{x}<br>y: %{y}<br>z: %{z}"
+                }];
+
+                var surfaceLayout = {
+                    title: 'Mt Bruno Elevation',
+                    autosize: false,
+                    width: 500,
+                    height: 500,
+                    margin: {
+                        l: 65,
+                        r: 50,
+                        b: 65,
+                        t: 90
+                    }
+                };
+
+                Plotly.newPlot('surface-plot', surfaceData, Object.assign(surfaceLayout, {'title':'NOT ACTIVE'}));
+            });
+ 
 
             var layout = {
             };
@@ -372,7 +433,7 @@
             }
 
             createPlot('scatter-plot', scatterData, Object.assign({}, layout), config);
-            createPlot('scatterLog-plot', scatterLogData, Object.assign({'title':'(Arrow snaps at 10^coord)'},scatterLogLayout), config);
+            createPlot('scatterLog-plot', scatterLogData, Object.assign({},scatterLogLayout), config);
             createPlot('bar-plot', barData, Object.assign({}, layout, { xaxis: { type: 'category' } }), config);
             createPlot('heatmap-plot', heatmapData, Object.assign({}, layout), config);
             createPlot('histogram-plot', histogramData, {'title':'(has arrow snapping position issues, not always matching hover label position)'}, config);
@@ -383,12 +444,13 @@
             createPlot('pointcloud-plot', pointcloudData, {'title':'NOT ACTIVE'}, config);
             createPlot('ohlc-plot', ohlcData, Object.assign({}, {'title':'(Arrow snaps mid-height)'}), config);
             createPlot('candlestick-plot', candlestickData, Object.assign({}, {'title':'(Arrow snaps mid-height)'}), config);
-            createPlot('scatterternary-plot', scatterternaryData, Object.assign({}, {'title':'NOT ACTIVE'}), config);
-            createPlot('scatterpolargl-plot', scatterpolarglData, Object.assign({}, {'title':'NOT ACTIVE'}), config);
+            createPlot('scatterternary-plot', scatterternaryData, {'title':'NOT ACTIVE'}, config);
+            createPlot('scatterpolargl-plot', scatterpolarglData, {'title':'NOT ACTIVE'}, config);
             createPlot('carpet-plot', carpetData, {'title':'NOT ACTIVE'}, config);
             createPlot('scattercarpet-plot', scattercarpetData, {'title':'(Arrow snaps at wrong position)'}, config);
             createPlot('contourcarpet-plot', contourcarpetData, Object.assign(contourcarpetLayout, {'title':'NOT ACTIVE'}), config);
-            createPlot('scattermapbox-plot', scattermapboxData, Object.assign({}, layout), config);
+            createPlot('parcoords-plot', parcoordsData, {'title':'NOT ACTIVE'}, config);
+
         });
     </script>
 </body>
