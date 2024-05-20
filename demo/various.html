@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plotly Tooltip Button Test</title>
+    <script src="../dist/plotly.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .plot {
+            width: 100%;
+            height: 600px;
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Plotly Tooltip Button Test</h1>
+    <div id="scatter-plot" class="plot"></div>
+    <div id="bar-plot" class="plot"></div>
+    <div id="heatmap-plot" class="plot"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            function generateDateTime(start, count) {
+                let dates = [];
+                let current = new Date(start);
+                for (let i = 0; i < count; i++) {
+                    dates.push(new Date(current));
+                    current.setHours(current.getHours() + 7);
+                }
+                return dates;
+            }
+            
+            function generateRandomYValues(count) {
+                return Array.from({ length: count }, () => Math.random() * 20);
+            }
+			
+			var scatterTooltipTemplate = "%{fullData.name}<br>%{x|%H:%M:%S}<br>y: %{y:.2e}";
+
+            var scatterData = [{
+                name: 'Scatter Trace 1',
+                x: generateDateTime('2025-04-01T12:00:00Z', 5),
+                y: generateRandomYValues(5),
+                type: 'scatter',
+                tooltiptemplate: scatterTooltipTemplate,
+			},
+			{
+                name: 'Scatter Trace 2',
+                x: generateDateTime('2025-04-01T12:00:00Z', 5),
+                y: generateRandomYValues(5),
+                type: 'scatter',
+                tooltiptemplate: scatterTooltipTemplate,
+            }];
+
+
+            var barData = [{
+                x: ['A', 'B', 'C', 'D'],
+                y: [10, 20, 15, 25],
+                type: 'bar',
+                tooltiptemplate: "%{x}<br>y: %{y}",
+            }];
+
+            // Generate heatmap data
+            var x = Array.from({ length: 400 }, (_, i) => i / 40);
+            var y = Array.from({ length: 400 }, (_, i) => i / 40);
+            var z = Array.from({ length: 400 }, (_, i) => 
+                Array.from({ length: 400 }, (_, j) => 
+                    Math.sin(i / 40) * Math.cos(j / 40)
+                )
+            );
+
+            var heatmapData = [{
+                z: z,
+                x: x,
+                y: y,
+                type: 'heatmap',
+                colorscale: 'Viridis',
+				tooltip: {
+                    bgcolor: "rgba(255, 255, 255, 0.2)"
+                },
+                tooltiptemplate: "x: %{x:.2f},<br>y: %{y:.2f},<br>z: %{z:.3f}"
+            }];
+
+            var layout = {
+                title: 'Custom Tooltip Example'
+            };
+
+            var config = {
+                editable: true,
+                modeBarButtonsToAdd: ['tooltip', 'hoverclosest', 'hovercompare', 'togglespikelines'],
+                displaylogo: false,
+                displayModeBar: true,
+                locale: 'en'
+            };
+
+            function createPlot(id, data, layout, config) {
+                Plotly.newPlot(id, data, layout, config).then(function() {
+                    var tooltipButton = document.querySelector('.modebar-btn[data-title="Add Tooltip to Points"]');
+                    if (tooltipButton) {
+                        tooltipButton.addEventListener('click', function() {
+                            console.log('Tooltip button clicked');
+                        });
+                    } else {
+                        console.error('Tooltip button not found');
+                    }
+                });
+            }
+
+            createPlot('scatter-plot', scatterData, Object.assign({}, layout), config);
+            createPlot('bar-plot', barData, Object.assign({}, Object.assign({}, layout), { xaxis: { type: 'category' } }), config);
+            createPlot('heatmap-plot', heatmapData, Object.assign({}, layout), config);
+
+        });
+    </script>
+</body>
+</html>
