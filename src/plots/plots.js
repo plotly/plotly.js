@@ -1494,6 +1494,13 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('title.y');
     coerce('title.yanchor');
 
+    coerce('title.subtitle.text');
+    Lib.coerceFont(coerce, 'title.subtitle.font', font, {
+        overrideDflt: {
+            size: Math.round(fontSize * 1.1)
+        }
+    });
+
     if(titleAutomargin) {
         // when automargin=true
         // title.y is 1 or 0 if paper ref
