@@ -1190,6 +1190,20 @@ module.exports = {
             'Used with `categoryorder`.'
         ].join(' ')
     },
+    categoryanchor: {
+        valType: 'enumerated',
+        dflt: 'center',
+        values: [
+            'center', 'start', 'end'
+        ],
+        editType: 'calc',
+        description: [
+            'Defines if references to a category are anchored to the center, start or end of the',
+            'category. I.e. when specifying a shape or annotation and using category names as',
+            'coordinates, these can refer to the start, center or end of the category.',
+            'Defaults to center. Only has an effect on category axes.'
+        ].join(' ')
+    },
     uirevision: {
         valType: 'any',
         editType: 'none',

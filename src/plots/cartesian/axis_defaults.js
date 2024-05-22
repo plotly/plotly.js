@@ -96,6 +96,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
 
+    containerOut.categoryanchor = containerIn.categoryanchor || 'center';
+
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
 
     var dfltColor = coerce('color');

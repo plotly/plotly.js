@@ -179,7 +179,12 @@ module.exports = function setConvert(ax, fullLayout) {
     }
 
     function getRangePosition(v) {
-        return isNumeric(v) ? +v : getCategoryIndex(v);
+        if(isNumeric(v)) {
+            return +v;
+        }
+        var shift = (ax.categoryanchor === 'start') ? -0.5 :
+                    (ax.categoryanchor === 'end') ? 0.5 : 0;
+        return getCategoryIndex(v) + shift;
     }
 
     // include 2 fractional digits on pixel, for PDF zooming etc

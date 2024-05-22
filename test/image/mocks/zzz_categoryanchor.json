@@ -1,0 +1,56 @@
+{
+    "data": [
+        {
+            "x": [
+                "A", "B", "C", "D"
+            ],
+            "y": [
+                1, 2, 3, 4
+            ],
+            "type": "bar"
+        }
+    ],
+    "layout": {
+        "shapes": [
+            {
+                "layer": "above",
+                "name": "divider",
+                "line": {
+                  "color": "yellow",
+                  "width": 3.0
+                },
+                "x0": "C",
+                "x1": "C",
+                "y0": 0,
+                "y1": 1,
+                "yref": "paper"
+            },
+            {
+                "layer": "above",
+                "name": "centered",
+                "line": {
+                  "color": "pink",
+                  "width": 3.0
+                },
+                "x0": 2,
+                "x1": 2,
+                "y0": 0,
+                "y1": 1,
+                "yref": "paper"
+            }
+        ],
+        "annotations": [
+            {
+                "text": "hi",
+                "xref": "xaxis",
+                "yref": "yaxis",
+                "x": "B",
+                "y": 2
+            }
+        ],
+        "xaxis": {
+            "categoryanchor": "end"
+        }
+        
+    }
+}
