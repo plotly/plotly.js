@@ -75,6 +75,18 @@ function draw(gd, titleClass, options) {
     var fontLineposition = font.lineposition;
     var fontShadow = font.shadow;
 
+    // Get subtitle properties
+    var subtitle = cont.title.subtitle;
+    var subtitleTxt = (subtitle && subtitle.text ? subtitle.text : '').trim();
+    console.log({
+        titleTxt: txt,
+        subtitleTxt: subtitleTxt,
+    });
+    // Prototype for subtitle: Use HTML tags to tack subtitle onto title
+    if(subtitleTxt) {
+        txt = txt + '<br><sub>' + subtitleTxt + '</sub>';
+    }
+
     // only make this title editable if we positively identify its property
     // as one that has editing enabled.
     var editAttr;

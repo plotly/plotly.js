@@ -20,6 +20,7 @@ globalFont.family.dflt = '"Open Sans", verdana, arial, sans-serif';
 globalFont.size.dflt = 12;
 globalFont.color.dflt = colorAttrs.defaultLine;
 
+
 module.exports = {
     font: globalFont,
     title: {
@@ -41,6 +42,18 @@ module.exports = {
                 'by the now deprecated `titlefont` attribute.'
             ].join(' ')
         }),
+        subtitle: {
+            text: {
+                valType: 'string',
+                editType: 'layoutstyle',
+                description: 'Sets the plot\'s subtitle.'
+            },
+            font: fontAttrs({
+                editType: 'layoutstyle',
+                description: 'Sets the subtitle font.'
+            }),
+            editType: 'layoutstyle',
+        },
         xref: {
             valType: 'enumerated',
             dflt: 'container',
