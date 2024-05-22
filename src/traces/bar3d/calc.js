@@ -1,44 +1,44 @@
 'use strict';
 
 var colorscaleCalc = require('../../components/colorscale/calc');
-var processGrid = require('../streamtube/calc').processGrid;
 var filter = require('../streamtube/calc').filter;
 
 module.exports = function calc(gd, trace) {
-    trace._len = Math.min(
+    var i;
+    var len = Math.min(
         trace.x.length,
         trace.y.length,
-        trace.z.length,
         trace.value.length
     );
 
-    trace._x = filter(trace.x, trace._len);
-    trace._y = filter(trace.y, trace._len);
-    trace._z = filter(trace.z, trace._len);
-    trace._value = filter(trace.value, trace._len);
+    trace._len = len;
+    trace._value = filter(trace.value, len);
+    trace._Xs = filter(trace.x, len);
+    trace._Ys = filter(trace.y, len);
 
-    var grid = processGrid(trace);
-    trace._gridFill = grid.fill;
-    trace._Xs = grid.Xs;
-    trace._Ys = grid.Ys;
-    trace._Zs = grid.Zs;
-    trace._len = grid.len;
+    if(!trace.base) trace.base = new Array(len).fill(0); // TODO: Improve me!
+    trace.z = trace.base; // TODO: why we need to add z to trace?
+
+    trace._Zs = filter(trace.base, len);
+
+    for(i = 0; i < trace._Zs.length; i++) {
+        var base = trace._Zs[i];
+        if(!base || isNaN(base)) trace._Zs[i] = 0;
+    }
 
     var min = Infinity;
     var max = -Infinity;
-    for(var i = 0; i < trace._len; i++) {
-        var v = trace._value[i];
-        min = Math.min(min, v);
-        max = Math.max(max, v);
+    for(i = 0; i < trace._len; i++) {
+        var h =
+            trace._Zs[i] +
+            trace._value[i];
+
+        min = Math.min(min, h);
+        max = Math.max(max, h);
     }
 
-    trace._minValues = min;
-    trace._maxValues = max;
-    trace._vMin = (trace.isomin === undefined || trace.isomin === null) ? min : trace.isomin;
-    trace._vMax = (trace.isomax === undefined || trace.isomin === null) ? max : trace.isomax;
-
     colorscaleCalc(gd, trace, {
-        vals: [trace._vMin, trace._vMax],
+        vals: [min, max],
         containerStr: '',
         cLetter: 'c'
     });

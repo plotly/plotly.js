@@ -2,13 +2,13 @@
 
 module.exports = {
     attributes: require('./attributes'),
-    supplyDefaults: require('./defaults').supplyDefaults,
+    supplyDefaults: require('./defaults'),
     calc: require('./calc'),
     colorbar: {
         min: 'cmin',
         max: 'cmax'
     },
-    plot: require('./convert').createbar3dTrace,
+    plot: require('./convert'),
 
     moduleType: 'trace',
     name: 'bar3d',
@@ -16,10 +16,7 @@ module.exports = {
     categories: ['gl3d', 'showLegend'],
     meta: {
         description: [
-            'Draws bar3ds between iso-min and iso-max values with coordinates given by',
-            'four 1-dimensional arrays containing the `value`, `x`, `y` and `z` of every vertex',
-            'of a uniform or non-uniform 3-D grid. Horizontal or vertical slices, caps as well as',
-            'spaceframe between iso-min and iso-max values could also be drawn using this trace.'
+            'Draws bar3ds with the height in `z` direction.'
         ].join(' ')
     }
 };
