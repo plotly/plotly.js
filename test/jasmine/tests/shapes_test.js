@@ -1487,8 +1487,8 @@ describe('Test shapes', function() {
     function testShapeDrag(dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
-        var x2p = helpers.getDataToPixel(gd, xa);
-        var y2p = helpers.getDataToPixel(gd, ya, true);
+        var x2p = helpers.getDataToPixel(gd, xa, layoutShape.x_shift);
+        var y2p = helpers.getDataToPixel(gd, ya, layoutShape.y_shift, true);
 
         var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
@@ -1514,8 +1514,8 @@ describe('Test shapes', function() {
     function testPathDrag(dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
-        var x2p = helpers.getDataToPixel(gd, xa);
-        var y2p = helpers.getDataToPixel(gd, ya, true);
+        var x2p = helpers.getDataToPixel(gd, xa, layoutShape.x_shift);
+        var y2p = helpers.getDataToPixel(gd, ya, layoutShape.y_shift, true);
 
         var initialPath = layoutShape.path;
         var initialCoordinates = getPathCoordinates(initialPath, x2p, y2p);
@@ -1546,8 +1546,8 @@ describe('Test shapes', function() {
     function testShapeResize(direction, dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
-        var x2p = helpers.getDataToPixel(gd, xa);
-        var y2p = helpers.getDataToPixel(gd, ya, true);
+        var x2p = helpers.getDataToPixel(gd, xa, layoutShape.x_shift);
+        var y2p = helpers.getDataToPixel(gd, ya, layoutShape.y_shift, true);
 
         var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
@@ -1590,9 +1590,8 @@ describe('Test shapes', function() {
 
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
-        var x2p = helpers.getDataToPixel(gd, xa);
-        var y2p = helpers.getDataToPixel(gd, ya, true);
-
+        var x2p = helpers.getDataToPixel(gd, xa, layoutShape.x_shift);
+        var y2p = helpers.getDataToPixel(gd, ya, layoutShape.y_shift, true);
 
         promise = promise.then(function() {
             var dragHandle = pointToMove === 'start' ?

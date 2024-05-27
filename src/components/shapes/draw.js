@@ -225,10 +225,12 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     // setup conversion functions
     var xa = Axes.getFromId(gd, shapeOptions.xref);
     var xRefType = Axes.getRefType(shapeOptions.xref);
+    var xShift = shapeOptions.x_shift;
     var ya = Axes.getFromId(gd, shapeOptions.yref);
     var yRefType = Axes.getRefType(shapeOptions.yref);
-    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
-    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+    var yShift = shapeOptions.y_shift;
+    var x2p = helpers.getDataToPixel(gd, xa, xShift, false, xRefType);
+    var y2p = helpers.getDataToPixel(gd, ya, yShift, true, yRefType);
     var p2x = helpers.getPixelToData(gd, xa, false, xRefType);
     var p2y = helpers.getPixelToData(gd, ya, true, yRefType);
 

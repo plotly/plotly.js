@@ -53,7 +53,7 @@ exports.extractPathCoords = function(path, paramsToUse, isRaw) {
     return extractedCoordinates;
 };
 
-exports.getDataToPixel = function(gd, axis, isVertical, refType, shift) {
+exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
     var gs = gd._fullLayout._size;
     var dataToPixel;
 
@@ -74,7 +74,7 @@ exports.getDataToPixel = function(gd, axis, isVertical, refType, shift) {
                         shiftPixels = axis.r2p(d2r(0.5, true)) * shift;
                     }
                 }
-                return axis._offset + axis.r2p(d2r(v, true)) + shiftPixels;
+                return axis._offset + axis.r2p(d2r(v, true)) + (shiftPixels || 0);
             };
 
             if(axis.type === 'date') dataToPixel = exports.decodeDate(dataToPixel);
