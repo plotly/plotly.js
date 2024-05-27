@@ -698,6 +698,22 @@ module.exports = {
             'In other cases the default is *hide past div*.'
         ].join(' ')
     },
+    ticklabelshiftx: {
+        valType: 'number',
+        dflt: 0,
+        editType: 'ticks',
+        description: [
+            'Horizontally shifts the tick labels by the specified number of pixels.'
+        ].join(' ')
+    },
+    ticklabelshifty: {
+        valType: 'number',
+        dflt: 0,
+        editType: 'ticks',
+        description: [
+            'Vertically shifts the tick labels by the specified number of pixels.'
+        ].join(' ')
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],

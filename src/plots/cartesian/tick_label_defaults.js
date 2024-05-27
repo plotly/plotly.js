@@ -16,6 +16,8 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
+        coerce('ticklabelshiftx');
+        coerce('ticklabelshifty');
         var font = options.font || {};
         var contColor = containerOut.color;
         var position = containerOut.ticklabelposition || '';

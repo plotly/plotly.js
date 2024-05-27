@@ -2968,20 +2968,23 @@ axes.makeTransTickFn = function(ax) {
 
 axes.makeTransTickLabelFn = function(ax) {
     var uv = getTickLabelUV(ax);
+    var shiftx = ax.ticklabelshiftx;
+    var shifty = ax.ticklabelshifty;
+
     var u = uv[0];
     var v = uv[1];
 
     return ax._id.charAt(0) === 'x' ?
         function(d) {
             return strTranslate(
-                u + ax._offset + ax.l2p(getPosX(d)),
-                v
+                u + ax._offset + ax.l2p(getPosX(d)) + shiftx,
+                v + shifty
             );
         } :
         function(d) {
             return strTranslate(
-                v,
-                u + ax._offset + ax.l2p(getPosX(d))
+                v + shiftx,
+                u + ax._offset + ax.l2p(getPosX(d)) + shifty
             );
         };
 };

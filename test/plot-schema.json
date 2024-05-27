@@ -15154,6 +15154,18 @@
       "inside bottom"
      ]
     },
+    "ticklabelshiftx": {
+     "description": "Horizontally shifts the tick labels by the specified number of pixels.",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "number"
+    },
+    "ticklabelshifty": {
+     "description": "Vertically shifts the tick labels by the specified number of pixels.",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "number"
+    },
     "ticklabelstep": {
      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 1 (default) means each tick gets a label. A value of 2 means shows every 2nd label. A larger value n means only every nth tick is labeled. `tick0` determines which labels are shown. Not implemented for axes with `type` *log* or *multicategory*, or when `tickmode` is *array*.",
      "dflt": 1,
@@ -16462,6 +16474,18 @@
       "outside bottom",
       "inside bottom"
      ]
+    },
+    "ticklabelshiftx": {
+     "description": "Horizontally shifts the tick labels by the specified number of pixels.",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "number"
+    },
+    "ticklabelshifty": {
+     "description": "Vertically shifts the tick labels by the specified number of pixels.",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "number"
     },
     "ticklabelstep": {
      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 1 (default) means each tick gets a label. A value of 2 means shows every 2nd label. A larger value n means only every nth tick is labeled. `tick0` determines which labels are shown. Not implemented for axes with `type` *log* or *multicategory*, or when `tickmode` is *array*.",
