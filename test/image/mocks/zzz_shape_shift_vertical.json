@@ -1,0 +1,56 @@
+{
+    "data": [
+        {
+            "x": [
+                "A", "B", "C", "D"
+            ],
+            "y": [
+                1, 2, 3, 4
+            ],
+            "type": "bar"
+        }
+    ],
+    "layout": {
+        "width": 600,
+        "shapes": [
+            {
+                "layer": "above",
+                "type": "line",
+                "label": {
+                    "text": "right from A",
+                    "textposition": "end",
+                    "textangle": 0
+                },
+                "line": {
+                  "color": "yellow",
+                  "width": 3.0
+                },
+                "x0": "A",
+                "x1": "A",
+                "y0": 0,
+                "y1": 0.5,
+                "x_shift": 0.5,
+                "yref": "paper"
+            },
+            {
+                "layer": "above",
+                "type": "line",
+                "label": {
+                    "text": "slightly left from D",
+                    "textposition": "end",
+                    "textangle": 0
+                },
+                "line": {
+                  "color": "pink",
+                  "width": 3.0
+                },
+                "x0": 3,
+                "x1": 3,
+                "y0": 0,
+                "y1": 0.5,
+                "x_shift": -0.25,
+                "yref": "paper"
+            }
+        ]
+    }
+}

@@ -220,7 +220,28 @@ module.exports = templatedArray('shape', {
             'See `type` and `ysizemode` for more info.'
         ].join(' ')
     },
-
+    x_shift: {
+        valType: 'number',
+        dflt: 0,
+        min: -0.5,
+        max: 0.5,
+        editType: 'calc',
+        description: [
+            'Only relevant if xref is a (multi-)category axes. Shifts x0 and x1 by a fraction of',
+            'the reference unit.'
+        ].join(' ')
+    },
+    y_shift: {
+        valType: 'number',
+        dflt: 0,
+        min: -0.5,
+        max: 0.5,
+        editType: 'calc',
+        description: [
+            'Only relevant if yref is a (multi-)category axes. Shifts y0 and y1 by a fraction of',
+            'the reference unit.'
+        ].join(' ')
+    },
     path: {
         valType: 'string',
         editType: 'calc+arraydraw',

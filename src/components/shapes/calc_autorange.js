@@ -27,7 +27,7 @@ module.exports = function calcAutorange(gd) {
             var vx1 = shape.xsizemode === 'pixel' ? shape.xanchor : shape.x1;
             ax = Axes.getFromId(gd, shape.xref);
 
-            bounds = shapeBounds(ax, vx0, vx1, shape.path, constants.paramIsX);
+            bounds = shapeBounds(ax, vx0, vx1, shape.path, shape.x_shift, constants.paramIsX);
             if(bounds) {
                 shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcXPaddingOptions(shape));
             }
@@ -38,7 +38,7 @@ module.exports = function calcAutorange(gd) {
             var vy1 = shape.ysizemode === 'pixel' ? shape.yanchor : shape.y1;
             ax = Axes.getFromId(gd, shape.yref);
 
-            bounds = shapeBounds(ax, vy0, vy1, shape.path, constants.paramIsY);
+            bounds = shapeBounds(ax, vy0, vy1, shape.path, shape.y_shift, constants.paramIsY);
             if(bounds) {
                 shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcYPaddingOptions(shape));
             }
@@ -77,8 +77,13 @@ function calcPaddingOptions(lineWidth, sizeMode, v0, v1, path, isYAxis) {
     }
 }
 
-function shapeBounds(ax, v0, v1, path, paramsToUse) {
-    var convertVal = (ax.type === 'category' || ax.type === 'multicategory') ? ax.r2c : ax.d2c;
+function shapeBounds(ax, v0, v1, path, shift, paramsToUse) {
+    var convertVal;
+    if(ax.type === 'category' || ax.type === 'multicategory') {
+        convertVal = function(v) { return ax.r2c(v) + shift; };
+    } else {
+        convertVal = ax.d2c;
+    }
 
     if(v0 !== undefined) return [convertVal(v0), convertVal(v1)];
     if(!path) return;
