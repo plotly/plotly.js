@@ -9550,6 +9550,14 @@
         "path"
        ]
       },
+      "x_shift": {
+       "description": "Only relevant if xref is a (multi-)category axes. Shifts x0 and x1 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "arraydraw",
+       "max": 0.5,
+       "min": -0.5,
+       "valType": "number"
+      },
       "x0": {
        "description": "Sets the selection's starting x position.",
        "editType": "arraydraw",
@@ -9568,6 +9576,14 @@
         "paper",
         "/^x([2-9]|[1-9][0-9]+)?( domain)?$/"
        ]
+      },
+      "y_shift": {
+       "description": "Only relevant if yref is a (multi-)category axes. Shifts y0 and y1 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "arraydraw",
+       "max": 0.5,
+       "min": -0.5,
+       "valType": "number"
       },
       "y0": {
        "description": "Sets the selection's starting y position.",
