@@ -2968,8 +2968,8 @@ axes.makeTransTickFn = function(ax) {
 
 axes.makeTransTickLabelFn = function(ax) {
     var uv = getTickLabelUV(ax);
-    var shiftx = ax.ticklabelshiftx;
-    var shifty = ax.ticklabelshifty;
+    var shiftx = ax.ticklabelshiftx || 0;
+    var shifty = ax.ticklabelshifty || 0;
 
     var u = uv[0];
     var v = uv[1];
