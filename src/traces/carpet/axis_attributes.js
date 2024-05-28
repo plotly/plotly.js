@@ -157,6 +157,8 @@ module.exports = {
             'Has an effect only if `tickmode` is set to *auto*.'
         ].join(' ')
     },
+    ticklabelshiftx: axesAttrs.ticklabelshiftx,
+    ticklabelshifty: axesAttrs.ticklabelshifty,
     tickvals: {
         valType: 'data_array',
         editType: 'calc',

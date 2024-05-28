@@ -33,6 +33,8 @@ var axisTickAttrs = overrideAll({
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
+    ticklabelshiftx: axesAttrs.ticklabelshiftx,
+    ticklabelshifty: axesAttrs.ticklabelshifty,
     ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
     labelalias: axesAttrs.labelalias,

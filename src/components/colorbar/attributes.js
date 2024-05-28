@@ -169,7 +169,6 @@ module.exports = overrideAll({
             'In other cases the default is *hide past div*.'
         ].join(' ')
     }),
-
     // ticklabelposition: not used directly, as values depend on orientation
     // left/right options are for x axes, and top/bottom options are for y axes
     ticklabelposition: {
@@ -188,7 +187,8 @@ module.exports = overrideAll({
             'top and bottom when `orientation` is *v*.'
         ].join(' ')
     },
-
+    ticklabelshiftx: axesAttrs.ticklabelshiftx,
+    ticklabelshifty: axesAttrs.ticklabelshifty,
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,

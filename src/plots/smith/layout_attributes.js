@@ -18,6 +18,8 @@ var axisLineGridAttr = overrideAll({
 }, 'plot', 'from-root');
 
 var axisTickAttrs = overrideAll({
+    ticklabelshiftx: axesAttrs.ticklabelshiftx,
+    ticklabelshifty: axesAttrs.ticklabelshifty,
     ticklen: axesAttrs.ticklen,
     tickwidth: extendFlat({}, axesAttrs.tickwidth, {dflt: 2}),
     tickcolor: axesAttrs.tickcolor,
