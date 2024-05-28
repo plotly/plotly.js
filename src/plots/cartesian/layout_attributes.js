@@ -699,7 +699,7 @@ module.exports = {
         ].join(' ')
     },
     ticklabelshiftx: {
-        valType: 'number',
+        valType: 'integer',
         dflt: 0,
         editType: 'ticks',
         description: [
@@ -707,7 +707,7 @@ module.exports = {
         ].join(' ')
     },
     ticklabelshifty: {
-        valType: 'number',
+        valType: 'integer',
         dflt: 0,
         editType: 'ticks',
         description: [

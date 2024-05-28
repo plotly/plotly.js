@@ -157,8 +157,22 @@ module.exports = {
             'Has an effect only if `tickmode` is set to *auto*.'
         ].join(' ')
     },
-    ticklabelshiftx: axesAttrs.ticklabelshiftx,
-    ticklabelshifty: axesAttrs.ticklabelshifty,
+    ticklabelshiftx: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'calc',
+        description: [
+            'Horizontally shifts the tick labels by the specified number of pixels.'
+        ].join(' ')
+    },
+    ticklabelshifty: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'calc',
+        description: [
+            'Vertically shifts the tick labels by the specified number of pixels.'
+        ].join(' ')
+    },
     tickvals: {
         valType: 'data_array',
         editType: 'calc',
