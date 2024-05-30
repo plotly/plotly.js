@@ -53,6 +53,10 @@ var cartesianScatterPoints = {
     splom: true
 };
 
+function distanceSort(a, b) {
+    return a.distance - b.distance;
+}
+
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
 //   to hover on
@@ -189,6 +193,9 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             fontFamily: hoverItem.fontFamily,
             fontSize: hoverItem.fontSize,
             fontColor: hoverItem.fontColor,
+            fontWeight: hoverItem.fontWeight,
+            fontStyle: hoverItem.fontStyle,
+            fontVariant: hoverItem.fontVariant,
             nameLength: hoverItem.nameLength,
             textAlign: hoverItem.textAlign,
 
@@ -270,6 +277,9 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
     var hovermodeHasY = (hovermode || '').charAt(0) === 'y';
 
+    var firstXaxis;
+    var firstYaxis;
+
     if(hasCartesian && (hovermodeHasX || hovermodeHasY) && hoversubplots === 'axis') {
         var subplotsLength = subplots.length;
         for(var p = 0; p < subplotsLength; p++) {
@@ -277,8 +287,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             if(plots[spId]) {
                 // 'cartesian' case
 
+                firstXaxis = Axes.getFromId(gd, spId, 'x');
+                firstYaxis = Axes.getFromId(gd, spId, 'y');
+
                 var subplotsWith = (
-                    Axes.getFromId(gd, spId, hovermodeHasX ? 'x' : 'y')
+                    hovermodeHasX ? firstXaxis : firstYaxis
                 )._subplotsWith;
 
                 if(subplotsWith && subplotsWith.length) {
@@ -661,6 +674,9 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         var thisSpikeDistance;
 
         for(var i = 0; i < pointsData.length; i++) {
+            if(firstXaxis && firstXaxis._id !== pointsData[i].xa._id) continue;
+            if(firstYaxis && firstYaxis._id !== pointsData[i].ya._id) continue;
+
             thisSpikeDistance = pointsData[i].spikeDistance;
             if(spikeOnWinning && i === 0) thisSpikeDistance = -Infinity;
 
@@ -700,9 +716,26 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     gd._spikepoints = newspikepoints;
 
     var sortHoverData = function() {
-        if(hoversubplots !== 'axis') {
-            hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
-        }
+        // When sorting keep the points in the main subplot at the top
+        // then add points in other subplots
+
+        var hoverDataInSubplot = hoverData.filter(function(a) {
+            return (
+                (firstXaxis && firstXaxis._id === a.xa._id) &&
+                (firstYaxis && firstYaxis._id === a.ya._id)
+            );
+        });
+
+        var hoverDataOutSubplot = hoverData.filter(function(a) {
+            return !(
+                (firstXaxis && firstXaxis._id === a.xa._id) &&
+                (firstYaxis && firstYaxis._id === a.ya._id)
+            );
+        });
+
+        hoverDataInSubplot.sort(distanceSort);
+        hoverDataOutSubplot.sort(distanceSort);
+        hoverData = hoverDataInSubplot.concat(hoverDataOutSubplot);
 
         // move period positioned points and box/bar-like traces to the end of the list
         hoverData = orderRangePoints(hoverData, hovermode);
@@ -925,6 +958,12 @@ function createHoverText(hoverData, opts) {
     // can override this.
     var fontFamily = opts.fontFamily || constants.HOVERFONT;
     var fontSize = opts.fontSize || constants.HOVERFONTSIZE;
+    var fontWeight = opts.fontWeight || fullLayout.font.weight;
+    var fontStyle = opts.fontStyle || fullLayout.font.style;
+    var fontVariant = opts.fontVariant || fullLayout.font.variant;
+    var fontTextcase = opts.fontTextcase || fullLayout.font.textcase;
+    var fontLineposition = opts.fontLineposition || fullLayout.font.lineposition;
+    var fontShadow = opts.fontShadow || fullLayout.font.shadow;
 
     var c0 = hoverData[0];
     var xa = c0.xa;
@@ -1005,10 +1044,17 @@ function createHoverText(hoverData, opts) {
         var commonBgColor = commonLabelOpts.bgcolor || Color.defaultLine;
         var commonStroke = commonLabelOpts.bordercolor || Color.contrast(commonBgColor);
         var contrastColor = Color.contrast(commonBgColor);
+        var commonLabelOptsFont = commonLabelOpts.font;
         var commonLabelFont = {
-            family: commonLabelOpts.font.family || fontFamily,
-            size: commonLabelOpts.font.size || fontSize,
-            color: commonLabelOpts.font.color || contrastColor
+            weight: commonLabelOptsFont.weight || fontWeight,
+            style: commonLabelOptsFont.style || fontStyle,
+            variant: commonLabelOptsFont.variant || fontVariant,
+            textcase: commonLabelOptsFont.textcase || fontTextcase,
+            lineposition: commonLabelOptsFont.lineposition || fontLineposition,
+            shadow: commonLabelOptsFont.shadow || fontShadow,
+            family: commonLabelOptsFont.family || fontFamily,
+            size: commonLabelOptsFont.size || fontSize,
+            color: commonLabelOptsFont.color || contrastColor
         };
 
         lpath.style({
@@ -1327,7 +1373,16 @@ function createHoverText(hoverData, opts) {
             g.append('path')
                 .style('stroke-width', '1px');
             g.append('text').classed('nums', true)
-                .call(Drawing.font, fontFamily, fontSize);
+                .call(Drawing.font, {
+                    weight: fontWeight,
+                    style: fontStyle,
+                    variant: fontVariant,
+                    textcase: fontTextcase,
+                    lineposition: fontLineposition,
+                    shadow: fontShadow,
+                    family: fontFamily,
+                    size: fontSize
+                });
         });
     hoverLabels.exit().remove();
 
@@ -1362,10 +1417,17 @@ function createHoverText(hoverData, opts) {
 
         // main label
         var tx = g.select('text.nums')
-            .call(Drawing.font,
-                d.fontFamily || fontFamily,
-                d.fontSize || fontSize,
-                d.fontColor || contrastColor)
+            .call(Drawing.font, {
+                family: d.fontFamily || fontFamily,
+                size: d.fontSize || fontSize,
+                color: d.fontColor || contrastColor,
+                weight: d.fontWeight || fontWeight,
+                style: d.fontStyle || fontStyle,
+                variant: d.fontVariant || fontVariant,
+                textcase: d.fontTextcase || fontTextcase,
+                lineposition: d.fontLineposition || fontLineposition,
+                shadow: d.fontShadow || fontShadow,
+            })
             .text(text)
             .attr('data-notex', 1)
             .call(svgTextUtils.positionText, 0, 0)
@@ -1377,11 +1439,17 @@ function createHoverText(hoverData, opts) {
 
         // secondary label for non-empty 'name'
         if(name && name !== text) {
-            tx2.call(Drawing.font,
-                    d.fontFamily || fontFamily,
-                    d.fontSize || fontSize,
-                    nameColor)
-                .text(name)
+            tx2.call(Drawing.font, {
+                family: d.fontFamily || fontFamily,
+                size: d.fontSize || fontSize,
+                color: nameColor,
+                weight: d.fontWeight || fontWeight,
+                style: d.fontStyle || fontStyle,
+                variant: d.fontVariant || fontVariant,
+                textcase: d.fontTextcase || fontTextcase,
+                lineposition: d.fontLineposition || fontLineposition,
+                shadow: d.fontShadow || fontShadow,
+            }).text(name)
                 .attr('data-notex', 1)
                 .call(svgTextUtils.positionText, 0, 0)
                 .call(svgTextUtils.convertToTspans, gd);
@@ -1923,6 +1991,9 @@ function cleanPoint(d, hovermode) {
     fill('fontFamily', 'htf', 'hoverlabel.font.family');
     fill('fontSize', 'hts', 'hoverlabel.font.size');
     fill('fontColor', 'htc', 'hoverlabel.font.color');
+    fill('fontWeight', 'htw', 'hoverlabel.font.weight');
+    fill('fontStyle', 'hty', 'hoverlabel.font.style');
+    fill('fontVariant', 'htv', 'hoverlabel.font.variant');
     fill('nameLength', 'hnl', 'hoverlabel.namelength');
     fill('textAlign', 'hta', 'hoverlabel.align');
 

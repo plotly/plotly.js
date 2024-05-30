@@ -500,10 +500,46 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
         helpers.castOption(trace.textfont.size, pt.pts) ||
         layoutFont.size;
 
+    var weight =
+        helpers.castOption(trace.outsidetextfont.weight, pt.pts) ||
+        helpers.castOption(trace.textfont.weight, pt.pts) ||
+        layoutFont.weight;
+
+    var style =
+        helpers.castOption(trace.outsidetextfont.style, pt.pts) ||
+        helpers.castOption(trace.textfont.style, pt.pts) ||
+        layoutFont.style;
+
+    var variant =
+        helpers.castOption(trace.outsidetextfont.variant, pt.pts) ||
+        helpers.castOption(trace.textfont.variant, pt.pts) ||
+        layoutFont.variant;
+
+    var textcase =
+        helpers.castOption(trace.outsidetextfont.textcase, pt.pts) ||
+        helpers.castOption(trace.textfont.textcase, pt.pts) ||
+        layoutFont.textcase;
+
+    var lineposition =
+        helpers.castOption(trace.outsidetextfont.lineposition, pt.pts) ||
+        helpers.castOption(trace.textfont.lineposition, pt.pts) ||
+        layoutFont.lineposition;
+
+    var shadow =
+        helpers.castOption(trace.outsidetextfont.shadow, pt.pts) ||
+        helpers.castOption(trace.textfont.shadow, pt.pts) ||
+        layoutFont.shadow;
+
     return {
         color: color,
         family: family,
-        size: size
+        size: size,
+        weight: weight,
+        style: style,
+        variant: variant,
+        textcase: textcase,
+        lineposition: lineposition,
+        shadow: shadow,
     };
 }
 
@@ -527,10 +563,46 @@ function determineInsideTextFont(trace, pt, layoutFont) {
         helpers.castOption(trace.textfont.size, pt.pts) ||
         layoutFont.size;
 
+    var weight =
+        helpers.castOption(trace.insidetextfont.weight, pt.pts) ||
+        helpers.castOption(trace.textfont.weight, pt.pts) ||
+        layoutFont.weight;
+
+    var style =
+        helpers.castOption(trace.insidetextfont.style, pt.pts) ||
+        helpers.castOption(trace.textfont.style, pt.pts) ||
+        layoutFont.style;
+
+    var variant =
+        helpers.castOption(trace.insidetextfont.variant, pt.pts) ||
+        helpers.castOption(trace.textfont.variant, pt.pts) ||
+        layoutFont.variant;
+
+    var textcase =
+        helpers.castOption(trace.insidetextfont.textcase, pt.pts) ||
+        helpers.castOption(trace.textfont.textcase, pt.pts) ||
+        layoutFont.textcase;
+
+    var lineposition =
+        helpers.castOption(trace.insidetextfont.lineposition, pt.pts) ||
+        helpers.castOption(trace.textfont.lineposition, pt.pts) ||
+        layoutFont.lineposition;
+
+    var shadow =
+        helpers.castOption(trace.insidetextfont.shadow, pt.pts) ||
+        helpers.castOption(trace.textfont.shadow, pt.pts) ||
+        layoutFont.shadow;
+
     return {
         color: customColor || Color.contrast(pt.color),
         family: family,
-        size: size
+        size: size,
+        weight: weight,
+        style: style,
+        variant: variant,
+        textcase: textcase,
+        lineposition: lineposition,
+        shadow: shadow,
     };
 }
 

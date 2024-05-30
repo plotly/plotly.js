@@ -221,7 +221,8 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             var categories = Registry.modules[name].categories;
 
             if(categories.svg) {
-                var className = (_module.layerName || name + 'layer') + (z ? Number(z) + 1 : '');
+                var classBaseName = (_module.layerName || name + 'layer');
+                var className = classBaseName + (z ? Number(z) + 1 : '');
                 var plotMethod = _module.plot;
 
                 // plot all visible traces of this type on this subplot at once
@@ -233,7 +234,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
 
                 if(cdModule.length) {
                     layerData.push({
-                        i: traceLayerClasses.indexOf(className),
+                        i: traceLayerClasses.indexOf(classBaseName),
                         zorder: z,
                         className: className,
                         plotMethod: plotMethod,
@@ -248,7 +249,12 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         }
     }
     // Sort the layers primarily by z, then by i
-    layerData.sort(function(a, b) { return (a.zorder || 0) - (b.zorder || 0) || a.i - b.i; });
+    layerData.sort(function(a, b) {
+        return (
+            (a.zorder || 0) - (b.zorder || 0) ||
+            (a.i - b.i)
+        );
+    });
 
     var layers = plotinfo.plot.selectAll('g.mlayer')
         .data(layerData, function(d) { return d.className; });

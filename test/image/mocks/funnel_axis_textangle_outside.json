@@ -80,6 +80,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "width": 800,
         "height": 800,
         "dragmode": "pan",

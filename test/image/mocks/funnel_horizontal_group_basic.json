@@ -51,6 +51,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "title": {
             "text": "plotly repos | April 10 2019"
         },

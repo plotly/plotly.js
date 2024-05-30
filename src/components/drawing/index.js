@@ -27,17 +27,55 @@ var drawing = module.exports = {};
 // styling functions for plot elements
 // -----------------------------------------------------
 
-drawing.font = function(s, family, size, color) {
-    // also allow the form font(s, {family, size, color})
-    if(Lib.isPlainObject(family)) {
-        color = family.color;
-        size = family.size;
-        family = family.family;
-    }
+drawing.font = function(s, font) {
+    var variant = font.variant;
+    var style = font.style;
+    var weight = font.weight;
+    var color = font.color;
+    var size = font.size;
+    var family = font.family;
+    var shadow = font.shadow;
+    var lineposition = font.lineposition;
+    var textcase = font.textcase;
+
     if(family) s.style('font-family', family);
     if(size + 1) s.style('font-size', size + 'px');
     if(color) s.call(Color.fill, color);
+
+    if(weight) s.style('font-weight', weight);
+    if(style) s.style('font-style', style);
+    if(variant) s.style('font-variant', variant);
+
+    if(textcase) s.style('text-transform', dropNone(textcase2transform(textcase)));
+    if(shadow) s.style('text-shadow', shadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(color)) : dropNone(shadow));
+    if(lineposition) s.style('text-decoration-line', dropNone(lineposition2decorationLine(lineposition)));
 };
+
+function dropNone(a) {
+    return a === 'none' ? undefined : a;
+}
+
+var textcase2transformOptions = {
+    normal: 'none',
+    lower: 'lowercase',
+    upper: 'uppercase',
+    'word caps': 'capitalize'
+};
+
+function textcase2transform(textcase) {
+    return textcase2transformOptions[textcase];
+}
+
+function lineposition2decorationLine(lineposition) {
+    return (
+        lineposition
+            .replace('under', 'underline')
+            .replace('over', 'overline')
+            .replace('through', 'line-through')
+            .split('+')
+            .join(' ')
+    );
+}
 
 /*
  * Positioning helpers
@@ -1126,10 +1164,17 @@ drawing.textPointStyle = function(s, trace, gd) {
             selectedTextColorFn(d) :
             (d.tc || trace.textfont.color);
 
-        p.call(drawing.font,
-                d.tf || trace.textfont.family,
-                fontSize,
-                fontColor)
+        p.call(drawing.font, {
+            family: d.tf || trace.textfont.family,
+            weight: d.tw || trace.textfont.weight,
+            style: d.ty || trace.textfont.style,
+            variant: d.tv || trace.textfont.variant,
+            textcase: d.tC || trace.textfont.textcase,
+            lineposition: d.tE || trace.textfont.lineposition,
+            shadow: d.tS || trace.textfont.shadow,
+            size: fontSize,
+            color: fontColor
+        })
             .text(text)
             .call(svgTextUtils.convertToTspans, gd)
             .call(textPointPosition, pos, fontSize, d.mrc);

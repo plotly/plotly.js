@@ -2502,6 +2502,12 @@ describe('hover on subplots when hoversubplots is set to *single* and x hovermod
     });
 });
 
+function assertFirstPointOn(gd, xaxisId, yaxisId) {
+    // first point should be on the main subplot
+    expect(gd._hoverdata[0].xaxis._id).toBe(xaxisId);
+    expect(gd._hoverdata[0].yaxis._id).toBe(yaxisId);
+}
+
 describe('hover on subplots when hoversubplots is set to *axis* and x hovermodes', function() {
     'use strict';
 
@@ -2551,6 +2557,9 @@ describe('hover on subplots when hoversubplots is set to *axis* and x hovermodes
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {xval: pos}, subplot);
         expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x', 'y');
+
         assertHoverLabelContent({
             nums: ['1', '10', '100'],
             name: ['trace 0', 'trace 1', 'trace 2'],
@@ -2561,6 +2570,8 @@ describe('hover on subplots when hoversubplots is set to *axis* and x hovermodes
         subplot = 'xy2';
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {xval: pos}, subplot);
+
+        assertFirstPointOn(gd, 'x', 'y2');
 
         expect(gd._hoverdata.length).toBe(3);
         assertHoverLabelContent({
@@ -2573,6 +2584,8 @@ describe('hover on subplots when hoversubplots is set to *axis* and x hovermodes
         subplot = 'xy3';
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {xval: pos}, subplot);
+
+        assertFirstPointOn(gd, 'x', 'y3');
 
         expect(gd._hoverdata.length).toBe(3);
         assertHoverLabelContent({
@@ -2587,6 +2600,8 @@ describe('hover on subplots when hoversubplots is set to *axis* and x hovermodes
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {xval: pos}, subplot);
         expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x', 'y');
     });
 });
 
@@ -2639,6 +2654,9 @@ describe('hover on subplots when hoversubplots is set to *axis* and y hovermodes
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {yval: pos}, subplot);
         expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x', 'y');
+
         assertHoverLabelContent({
             nums: ['1', '10', '100'],
             name: ['trace 0', 'trace 1', 'trace 2'],
@@ -2651,6 +2669,9 @@ describe('hover on subplots when hoversubplots is set to *axis* and y hovermodes
         Plotly.Fx.hover(gd, {yval: pos}, subplot);
 
         expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x2', 'y');
+
         assertHoverLabelContent({
             nums: ['2', '20', '200'],
             name: ['trace 0', 'trace 1', 'trace 2'],
@@ -2663,6 +2684,9 @@ describe('hover on subplots when hoversubplots is set to *axis* and y hovermodes
         Plotly.Fx.hover(gd, {yval: pos}, subplot);
 
         expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x3', 'y');
+
         assertHoverLabelContent({
             nums: ['3', '30', '300'],
             name: ['trace 0', 'trace 1', 'trace 2'],
@@ -2675,6 +2699,8 @@ describe('hover on subplots when hoversubplots is set to *axis* and y hovermodes
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {yval: pos}, subplot);
         expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x', 'y');
     });
 });
 
@@ -2697,7 +2723,8 @@ describe('splom hover on subplots when hoversubplots is set to *axis* and (x|y) 
     it('splom hoversubplots: *axis*', function() {
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {x: 200, y: 200}, 'xy');
-        expect(gd._hoverdata.length).toBe(3);
+        assertFirstPointOn(gd, 'x', 'y');
+        expect(gd._hoverdata.length).toBe(2);
         assertHoverLabelContent({
             nums: ['100', '100k'],
             name: ['', ''],
@@ -2705,15 +2732,16 @@ describe('splom hover on subplots when hoversubplots is set to *axis* and (x|y) 
         });
 
         Plotly.relayout(gd, 'hovermode', 'x unified');
-
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {x: 200, y: 200}, 'xy');
-        expect(gd._hoverdata.length).toBe(3);
+        assertFirstPointOn(gd, 'x', 'y');
+        expect(gd._hoverdata.length).toBe(2);
 
         Plotly.relayout(gd, 'hovermode', 'y unified');
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {x: 200, y: 200}, 'xy');
-        expect(gd._hoverdata.length).toBe(3);
+        assertFirstPointOn(gd, 'x', 'y');
+        expect(gd._hoverdata.length).toBe(2);
     });
 });
 
@@ -2753,7 +2781,8 @@ describe('splom hover *axis* hoversubplots splom points on same position should 
     it('splom *axis* hoversubplots', function() {
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {}, 'xy');
-        expect(gd._hoverdata.length).toBe(5);
+        assertFirstPointOn(gd, 'x', 'y');
+        expect(gd._hoverdata.length).toBe(4);
         assertHoverLabelContent({
             nums: ['1', '1', '1', '1'],
             name: ['', '', '', ''],
@@ -2762,7 +2791,8 @@ describe('splom hover *axis* hoversubplots splom points on same position should 
 
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {}, 'xy2');
-        expect(gd._hoverdata.length).toBe(4);
+        assertFirstPointOn(gd, 'x', 'y2');
+        expect(gd._hoverdata.length).toBe(3);
         assertHoverLabelContent({
             nums: ['1', '2', '2'],
             name: ['', '', ''],
@@ -2771,7 +2801,8 @@ describe('splom hover *axis* hoversubplots splom points on same position should 
 
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {}, 'xy3');
-        expect(gd._hoverdata.length).toBe(4);
+        assertFirstPointOn(gd, 'x', 'y3');
+        expect(gd._hoverdata.length).toBe(3);
         assertHoverLabelContent({
             nums: ['1', '2', '2'],
             name: ['', '', ''],
@@ -2780,7 +2811,8 @@ describe('splom hover *axis* hoversubplots splom points on same position should 
 
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {}, 'xy4');
-        expect(gd._hoverdata.length).toBe(5);
+        assertFirstPointOn(gd, 'x', 'y4');
+        expect(gd._hoverdata.length).toBe(4);
         assertHoverLabelContent({
             nums: ['1', '3', '3', '3'],
             name: ['', '', '', ''],
@@ -2789,7 +2821,8 @@ describe('splom hover *axis* hoversubplots splom points on same position should 
 
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {}, 'x2y');
-        expect(gd._hoverdata.length).toBe(5);
+        assertFirstPointOn(gd, 'x2', 'y');
+        expect(gd._hoverdata.length).toBe(4);
         assertHoverLabelContent({
             nums: ['1', '3', '3', '3'],
             name: ['', '', '', ''],
@@ -2798,7 +2831,8 @@ describe('splom hover *axis* hoversubplots splom points on same position should 
 
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {}, 'x3y');
-        expect(gd._hoverdata.length).toBe(5);
+        assertFirstPointOn(gd, 'x3', 'y');
+        expect(gd._hoverdata.length).toBe(4);
         assertHoverLabelContent({
             nums: ['1', '3', '3', '3'],
             name: ['', '', '', ''],
@@ -2807,7 +2841,8 @@ describe('splom hover *axis* hoversubplots splom points on same position should 
 
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {}, 'x4y');
-        expect(gd._hoverdata.length).toBe(5);
+        assertFirstPointOn(gd, 'x4', 'y');
+        expect(gd._hoverdata.length).toBe(4);
         assertHoverLabelContent({
             nums: ['1', '3', '3', '3'],
             name: ['', '', '', ''],

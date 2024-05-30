@@ -86,6 +86,9 @@
             }
         },
         "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto",
             "family": "Noto Serif, serif"
         },
         "geo": {

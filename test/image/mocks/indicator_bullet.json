@@ -122,6 +122,11 @@
     "value": 220
   }],
   "layout": {
+    "font": {
+      "weight": "bold",
+      "style": "italic",
+      "variant": "small-caps"
+    },
     "width": 600,
     "height": 250,
     "margin": {

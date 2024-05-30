@@ -52,6 +52,11 @@
     }
   ],
   "layout": {
+    "font": {
+      "textcase": "word caps",
+      "lineposition": "under",
+      "shadow": "auto"
+    },
     "xaxis": {
       "autorangeoptions": {
         "clipmin": 0.5,
