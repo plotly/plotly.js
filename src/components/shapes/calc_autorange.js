@@ -27,7 +27,7 @@ module.exports = function calcAutorange(gd) {
             var vx1 = shape.xsizemode === 'pixel' ? shape.xanchor : shape.x1;
             ax = Axes.getFromId(gd, shape.xref);
 
-            bounds = shapeBounds(ax, vx0, vx1, shape.path, shape.x_shift, constants.paramIsX);
+            bounds = shapeBounds(ax, vx0, vx1, shape.path, shape.xshift, constants.paramIsX);
             if(bounds) {
                 shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcXPaddingOptions(shape));
             }
@@ -38,7 +38,7 @@ module.exports = function calcAutorange(gd) {
             var vy1 = shape.ysizemode === 'pixel' ? shape.yanchor : shape.y1;
             ax = Axes.getFromId(gd, shape.yref);
 
-            bounds = shapeBounds(ax, vy0, vy1, shape.path, shape.y_shift, constants.paramIsY);
+            bounds = shapeBounds(ax, vy0, vy1, shape.path, shape.yshift, constants.paramIsY);
             if(bounds) {
                 shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcYPaddingOptions(shape));
             }

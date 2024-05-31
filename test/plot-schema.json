@@ -9550,14 +9550,6 @@
         "path"
        ]
       },
-      "x_shift": {
-       "description": "Only relevant if xref is a (multi-)category axes. Shifts x0 and x1 by a fraction of the reference unit.",
-       "dflt": 0,
-       "editType": "arraydraw",
-       "max": 0.5,
-       "min": -0.5,
-       "valType": "number"
-      },
       "x0": {
        "description": "Sets the selection's starting x position.",
        "editType": "arraydraw",
@@ -9577,8 +9569,8 @@
         "/^x([2-9]|[1-9][0-9]+)?( domain)?$/"
        ]
       },
-      "y_shift": {
-       "description": "Only relevant if yref is a (multi-)category axes. Shifts y0 and y1 by a fraction of the reference unit.",
+      "xshift": {
+       "description": "Only relevant if xref is a (multi-)category axes. Shifts x0 and x1 by a fraction of the reference unit.",
        "dflt": 0,
        "editType": "arraydraw",
        "max": 0.5,
@@ -9603,6 +9595,14 @@
         "paper",
         "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
        ]
+      },
+      "yshift": {
+       "description": "Only relevant if yref is a (multi-)category axes. Shifts y0 and y1 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "arraydraw",
+       "max": 0.5,
+       "min": -0.5,
+       "valType": "number"
       }
      }
     },
@@ -10016,14 +10016,6 @@
         "legendonly"
        ]
       },
-      "x_shift": {
-       "description": "Only relevant if xref is a (multi-)category axes. Shifts x0 and x1 by a fraction of the reference unit.",
-       "dflt": 0,
-       "editType": "calc",
-       "max": 0.5,
-       "min": -0.5,
-       "valType": "number"
-      },
       "x0": {
        "description": "Sets the shape's starting x position. See `type` and `xsizemode` for more info.",
        "editType": "calc+arraydraw",
@@ -10048,6 +10040,14 @@
         "/^x([2-9]|[1-9][0-9]+)?( domain)?$/"
        ]
       },
+      "xshift": {
+       "description": "Only relevant if xref is a (multi-)category axes. Shifts x0 and x1 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "calc",
+       "max": 0.5,
+       "min": -0.5,
+       "valType": "number"
+      },
       "xsizemode": {
        "description": "Sets the shapes's sizing mode along the x axis. If set to *scaled*, `x0`, `x1` and x coordinates within `path` refer to data values on the x axis or a fraction of the plot area's width (`xref` set to *paper*). If set to *pixel*, `xanchor` specifies the x position in terms of data or plot fraction but `x0`, `x1` and x coordinates within `path` are pixels relative to `xanchor`. This way, the shape can have a fixed width while maintaining a position relative to data or plot fraction.",
        "dflt": "scaled",
@@ -10057,14 +10057,6 @@
         "scaled",
         "pixel"
        ]
-      },
-      "y_shift": {
-       "description": "Only relevant if yref is a (multi-)category axes. Shifts y0 and y1 by a fraction of the reference unit.",
-       "dflt": 0,
-       "editType": "calc",
-       "max": 0.5,
-       "min": -0.5,
-       "valType": "number"
       },
       "y0": {
        "description": "Sets the shape's starting y position. See `type` and `ysizemode` for more info.",
@@ -10089,6 +10081,14 @@
         "paper",
         "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
        ]
+      },
+      "yshift": {
+       "description": "Only relevant if yref is a (multi-)category axes. Shifts y0 and y1 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "calc",
+       "max": 0.5,
+       "min": -0.5,
+       "valType": "number"
       },
       "ysizemode": {
        "description": "Sets the shapes's sizing mode along the y axis. If set to *scaled*, `y0`, `y1` and y coordinates within `path` refer to data values on the y axis or a fraction of the plot area's height (`yref` set to *paper*). If set to *pixel*, `yanchor` specifies the y position in terms of data or plot fraction but `y0`, `y1` and y coordinates within `path` are pixels relative to `yanchor`. This way, the shape can have a fixed height while maintaining a position relative to data or plot fraction.",

@@ -53,7 +53,8 @@ module.exports = overrideAll(templatedArray('selection', {
         valType: 'any',
         description: 'Sets the selection\'s end y position.'
     },
-    x_shift: {
+
+    xshift: {
         valType: 'number',
         dflt: 0,
         min: -0.5,
@@ -64,7 +65,7 @@ module.exports = overrideAll(templatedArray('selection', {
             'the reference unit.'
         ].join(' ')
     },
-    y_shift: {
+    yshift: {
         valType: 'number',
         dflt: 0,
         min: -0.5,
@@ -75,6 +76,7 @@ module.exports = overrideAll(templatedArray('selection', {
             'the reference unit.'
         ].join(' ')
     },
+
     path: {
         valType: 'string',
         editType: 'arraydraw',

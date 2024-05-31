@@ -226,20 +226,20 @@ exports.getPathString = function(gd, options) {
     }
     if(options.xsizemode === 'pixel') {
         var xAnchorPos = x2p(options.xanchor);
-        x0 = xAnchorPos + options.x0 + shiftUnitX * options.x_shift;
-        x1 = xAnchorPos + options.x1 + shiftUnitX * options.x_shift;
+        x0 = xAnchorPos + options.x0 + shiftUnitX * options.xshift;
+        x1 = xAnchorPos + options.x1 + shiftUnitX * options.xshift;
     } else {
-        x0 = x2p(options.x0) + shiftUnitX * options.x_shift;
-        x1 = x2p(options.x1) + shiftUnitX * options.x_shift;
+        x0 = x2p(options.x0) + shiftUnitX * options.xshift;
+        x1 = x2p(options.x1) + shiftUnitX * options.xshift;
     }
 
     if(options.ysizemode === 'pixel') {
         var yAnchorPos = y2p(options.yanchor);
-        y0 = yAnchorPos - options.y0 - shiftUnitY * options.y_shift;
-        y1 = yAnchorPos - options.y1 - shiftUnitY * options.y_shift;
+        y0 = yAnchorPos - options.y0 - shiftUnitY * options.yshift;
+        y1 = yAnchorPos - options.y1 - shiftUnitY * options.yshift;
     } else {
-        y0 = y2p(options.y0) - shiftUnitY * options.y_shift;
-        y1 = y2p(options.y1) - shiftUnitY * options.y_shift;
+        y0 = y2p(options.y0) - shiftUnitY * options.yshift;
+        y1 = y2p(options.y1) - shiftUnitY * options.yshift;
     }
 
     if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;

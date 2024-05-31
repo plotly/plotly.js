@@ -89,10 +89,10 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         // Setup conversion functions
         var xa = Axes.getFromId(gd, options.xref);
         var xRefType = Axes.getRefType(options.xref);
-        var xShift = options.x_shift;
+        var xShift = options.xshift;
         var ya = Axes.getFromId(gd, options.yref);
         var yRefType = Axes.getRefType(options.yref);
-        var yShift = options.y_shift;
+        var yShift = options.yshift;
         var x2p = helpers.getDataToPixel(gd, xa, xShift, false, xRefType);
         var y2p = helpers.getDataToPixel(gd, ya, yShift, true, yRefType);
         shapex0 = x2p(options.x0);

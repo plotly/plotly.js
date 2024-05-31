@@ -75,8 +75,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         var pos2r;
         var r2pos;
 
-        coerce('x_shift');
-        coerce('y_shift');
+        coerce('xshift');
+        coerce('yshift');
 
         // xref, yref
         var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, undefined,

@@ -169,7 +169,17 @@ module.exports = templatedArray('shape', {
             'See `type` and `xsizemode` for more info.'
         ].join(' ')
     },
-
+    xshift: {
+        valType: 'number',
+        dflt: 0,
+        min: -0.5,
+        max: 0.5,
+        editType: 'calc',
+        description: [
+            'Only relevant if xref is a (multi-)category axes. Shifts x0 and x1 by a fraction of',
+            'the reference unit.'
+        ].join(' ')
+    },
     yref: extendFlat({}, annAttrs.yref, {
         description: [
             'Sets the shape\'s y coordinate axis.',
@@ -220,18 +230,7 @@ module.exports = templatedArray('shape', {
             'See `type` and `ysizemode` for more info.'
         ].join(' ')
     },
-    x_shift: {
-        valType: 'number',
-        dflt: 0,
-        min: -0.5,
-        max: 0.5,
-        editType: 'calc',
-        description: [
-            'Only relevant if xref is a (multi-)category axes. Shifts x0 and x1 by a fraction of',
-            'the reference unit.'
-        ].join(' ')
-    },
-    y_shift: {
+    yshift: {
         valType: 'number',
         dflt: 0,
         min: -0.5,
