@@ -80,9 +80,7 @@ function crossTraceDefaults(fullData, fullLayout) {
                 traceOut.marker.cornerradius = validateCornerradius(r);
             }
 
-            if(fullLayout.barmode === 'group') {
-                handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
-            }
+            handleGroupingDefaults(fullLayout.barmode, traceIn, traceOut, fullLayout, coerce);
         }
     }
 }

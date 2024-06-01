@@ -75,7 +75,7 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
 
     switch(opts.mode) {
         case 'overlay':
-            setGroupPositionsInOverlayMode(pa, sa, calcTraces, opts);
+            setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces, opts);
             break;
 
         case 'group':
@@ -94,7 +94,7 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
                 setGroupPositionsInGroupMode(gd, pa, sa, included, opts);
             }
             if(excluded.length) {
-                setGroupPositionsInOverlayMode(pa, sa, excluded, opts);
+                setGroupPositionsInOverlayMode(gd, pa, sa, excluded, opts);
             }
             break;
 
@@ -119,7 +119,7 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
                 setGroupPositionsInStackOrRelativeMode(gd, pa, sa, included, opts);
             }
             if(excluded.length) {
-                setGroupPositionsInOverlayMode(pa, sa, excluded, opts);
+                setGroupPositionsInOverlayMode(gd, pa, sa, excluded, opts);
             }
             break;
     }
@@ -217,7 +217,7 @@ function initBase(sa, calcTraces) {
     }
 }
 
-function setGroupPositionsInOverlayMode(pa, sa, calcTraces, opts) {
+function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces, opts) {
     // update position axis and set bar offsets and widths
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
@@ -229,7 +229,7 @@ function setGroupPositionsInOverlayMode(pa, sa, calcTraces, opts) {
         });
 
         // set bar offsets and widths, and update position axis
-        setOffsetAndWidth(pa, sieve, opts);
+        setOffsetAndWidth(gd, pa, sieve, opts);
 
         // set bar bases and sizes, and update size axis
         //
@@ -253,7 +253,7 @@ function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces, opts) {
     });
 
     // set bar offsets and widths, and update position axis
-    setOffsetAndWidthInGroupMode(gd, pa, sieve, opts);
+    setOffsetAndWidth(gd, pa, sieve, opts);
 
     // relative-stack bars within the same trace that would otherwise
     // be hidden
@@ -276,7 +276,7 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces, opts) {
     });
 
     // set bar offsets and widths, and update position axis
-    setOffsetAndWidth(pa, sieve, opts);
+    setOffsetAndWidth(gd, pa, sieve, opts);
 
     // set bar bases and sizes, and update size axis
     stackBars(sa, sieve, opts);
@@ -300,43 +300,7 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces, opts) {
     if(opts.norm) normalizeBars(sa, sieve, opts);
 }
 
-function setOffsetAndWidth(pa, sieve, opts) {
-    var minDiff = sieve.minDiff;
-    var calcTraces = sieve.traces;
-
-    // set bar offsets and widths
-    var barGroupWidth = minDiff * (1 - opts.gap);
-    var barWidthPlusGap = barGroupWidth;
-    var barWidth = barWidthPlusGap * (1 - (opts.groupgap || 0));
-
-    // computer bar group center and bar offset
-    var offsetFromCenter = -barWidth / 2;
-
-    for(var i = 0; i < calcTraces.length; i++) {
-        var calcTrace = calcTraces[i];
-        var t = calcTrace[0].t;
-
-        // store bar width and offset for this trace
-        t.barwidth = barWidth;
-        t.poffset = offsetFromCenter;
-        t.bargroupwidth = barGroupWidth;
-        t.bardelta = minDiff;
-    }
-
-    // stack bars that only differ by rounding
-    sieve.binWidth = calcTraces[0][0].t.barwidth / 100;
-
-    // if defined, apply trace offset and width
-    applyAttributes(sieve);
-
-    // store the bar center in each calcdata item
-    setBarCenterAndWidth(pa, sieve);
-
-    // update position axes
-    updatePositionAxis(pa, sieve);
-}
-
-function setOffsetAndWidthInGroupMode(gd, pa, sieve, opts) {
+function setOffsetAndWidth(gd, pa, sieve, opts) {
     var fullLayout = gd._fullLayout;
     var positions = sieve.positions;
     var distinctPositions = sieve.distinctPositions;
@@ -615,6 +579,7 @@ function stackBars(sa, sieve, opts) {
 
         isFunnel = (fullTrace.type === 'funnel');
 
+        var offset = calcTrace[0].t.poffset;
         var pts = [];
 
         for(j = 0; j < calcTrace.length; j++) {
@@ -629,8 +594,7 @@ function stackBars(sa, sieve, opts) {
                     value = bar.s + bar.b;
                 }
 
-                var base = sieve.put(bar.p, value);
-
+                var base = sieve.put(bar.p + offset, value);
                 var top = base + value;
 
                 // store the bar base and top in each calcdata item
