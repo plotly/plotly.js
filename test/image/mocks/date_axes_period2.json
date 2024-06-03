@@ -131,7 +131,6 @@
         },
         "xaxis": {
             "minor": { "ticks": "inside" },
-            "ticklabelshiftx": 15,
             "tickcolor": "black",
             "gridcolor": "orange",
             "range": [
@@ -198,7 +197,6 @@
         },
         "xaxis7": {
             "minor": { "ticks": "inside" },
-            "ticklabelshifty": -10,
             "tickcolor": "black",
             "gridcolor": "orange",
             "range": [
