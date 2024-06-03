@@ -96,6 +96,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
 
+    if(axType === 'category' || axType === 'multicategory') {
+        containerOut.categoryshapeshiftstart = containerIn.categoryshapeshiftstart || 0;
+        containerOut.categoryshapeshiftend = containerIn.categoryshapeshiftend || 0;
+    }
+
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
 
     var dfltColor = coerce('color');

@@ -14034,6 +14034,28 @@
       "median descending"
      ]
     },
+    "categoryshapeshiftend": {
+     "description": [
+      "Only relevant if axis is a (multi-)category axes. Shifts x1/y1 by a fraction of the",
+      "reference unit."
+     ],
+     "dflt": 0,
+     "editType": "calc",
+     "max": 0.5,
+     "min": -0.5,
+     "valType": "number"
+    },
+    "categoryshapeshiftstart": {
+     "description": [
+      "Only relevant if axis is a (multi-)category axes. Shifts x0/y0 by a fraction of the",
+      "reference unit."
+     ],
+     "dflt": 0,
+     "editType": "calc",
+     "max": 0.5,
+     "min": -0.5,
+     "valType": "number"
+    },
     "color": {
      "description": "Sets default for all colors associated with this axis all at once: line, font, tick, and grid colors. Grid color is lightened by blending this with the plot background Individual pieces can override this.",
      "dflt": "#444",
@@ -15659,6 +15681,28 @@
       "median ascending",
       "median descending"
      ]
+    },
+    "categoryshapeshiftend": {
+     "description": [
+      "Only relevant if axis is a (multi-)category axes. Shifts x1/y1 by a fraction of the",
+      "reference unit."
+     ],
+     "dflt": 0,
+     "editType": "calc",
+     "max": 0.5,
+     "min": -0.5,
+     "valType": "number"
+    },
+    "categoryshapeshiftstart": {
+     "description": [
+      "Only relevant if axis is a (multi-)category axes. Shifts x0/y0 by a fraction of the",
+      "reference unit."
+     ],
+     "dflt": 0,
+     "editType": "calc",
+     "max": 0.5,
+     "min": -0.5,
+     "valType": "number"
     },
     "color": {
      "description": "Sets default for all colors associated with this axis all at once: line, font, tick, and grid colors. Grid color is lightened by blending this with the plot background Individual pieces can override this.",

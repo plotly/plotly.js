@@ -1487,13 +1487,19 @@ describe('Test shapes', function() {
     function testShapeDrag(dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
-        var x2p = helpers.getDataToPixel(gd, xa);
-        var y2p = helpers.getDataToPixel(gd, ya, true);
+        var x2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, xa, shift);
+            return dataToPixel(v);
+        };
+        var y2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true);
+            return dataToPixel(v);
+        };
 
-        var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
+        var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p, xa, ya);
 
         return drag({node: node, dpos: [dx, dy]}).then(function() {
-            var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
+            var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p, xa, ya);
 
             expect(finalCoordinates.x0 - initialCoordinates.x0).toBeCloseTo(dx);
             expect(finalCoordinates.x1 - initialCoordinates.x1).toBeCloseTo(dx);
@@ -1502,12 +1508,16 @@ describe('Test shapes', function() {
         });
     }
 
-    function getShapeCoordinates(layoutShape, x2p, y2p) {
+    function getShapeCoordinates(layoutShape, x2p, y2p, xa, ya) {
+        var shiftXStart = xa ? xa.categoryshapeshiftstart : 0;
+        var shiftXEnd = xa ? xa.categoryshapeshiftend : 0;
+        var shiftYStart = ya ? ya.categoryshapeshiftstart : 0;
+        var shiftYEnd = ya ? ya.categoryshapeshiftend : 0;
         return {
-            x0: x2p(layoutShape.x0),
-            x1: x2p(layoutShape.x1),
-            y0: y2p(layoutShape.y0),
-            y1: y2p(layoutShape.y1)
+            x0: x2p(layoutShape.x0, shiftXStart),
+            x1: x2p(layoutShape.x1, shiftXEnd),
+            y0: y2p(layoutShape.y0, shiftYStart),
+            y1: y2p(layoutShape.y1, shiftYEnd)
         };
     }
 
@@ -1549,10 +1559,10 @@ describe('Test shapes', function() {
         var x2p = helpers.getDataToPixel(gd, xa);
         var y2p = helpers.getDataToPixel(gd, ya, true);
 
-        var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
+        var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p, xa, ya);
 
         return drag({node: node, dpos: [dx, dy], edge: direction}).then(function() {
-            var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
+            var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p, xa, ya);
 
             var keyN, keyS, keyW, keyE;
             if(initialCoordinates.y0 < initialCoordinates.y1) {
@@ -1599,9 +1609,9 @@ describe('Test shapes', function() {
               getResizeLineOverStartPointElement() :
               getResizeLineOverEndPointElement();
 
-            var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
+            var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p, xa, ya);
             return drag({node: dragHandle, dpos: [10, 10]}).then(function() {
-                var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
+                var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p, xa, ya);
 
                 if(pointToMove === 'start') {
                     expect(finalCoordinates.x0 - initialCoordinates.x0).toBeCloseTo(10);

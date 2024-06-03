@@ -1190,6 +1190,28 @@ module.exports = {
             'Used with `categoryorder`.'
         ].join(' ')
     },
+    categoryshapeshiftstart: {
+        valType: 'number',
+        dflt: 0,
+        min: -0.5,
+        max: 0.5,
+        editType: 'calc',
+        description: [
+            'Only relevant if axis is a (multi-)category axes. Shifts x0/y0 by a fraction of the',
+            'reference unit.'
+        ]
+    },
+    categoryshapeshiftend: {
+        valType: 'number',
+        dflt: 0,
+        min: -0.5,
+        max: 0.5,
+        editType: 'calc',
+        description: [
+            'Only relevant if axis is a (multi-)category axes. Shifts x1/y1 by a fraction of the',
+            'reference unit.'
+        ]
+    },
     uirevision: {
         valType: 'any',
         editType: 'none',

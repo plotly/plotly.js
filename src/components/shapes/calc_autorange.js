@@ -23,22 +23,18 @@ module.exports = function calcAutorange(gd) {
 
         // paper and axis domain referenced shapes don't affect autorange
         if(shape.xref !== 'paper' && xRefType !== 'domain') {
-            var vx0 = shape.xsizemode === 'pixel' ? shape.xanchor : shape.x0;
-            var vx1 = shape.xsizemode === 'pixel' ? shape.xanchor : shape.x1;
             ax = Axes.getFromId(gd, shape.xref);
 
-            bounds = shapeBounds(ax, vx0, vx1, shape.path, constants.paramIsX);
+            bounds = shapeBounds(ax, shape, constants.paramIsX, false);
             if(bounds) {
                 shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcXPaddingOptions(shape));
             }
         }
 
         if(shape.yref !== 'paper' && yRefType !== 'domain') {
-            var vy0 = shape.ysizemode === 'pixel' ? shape.yanchor : shape.y0;
-            var vy1 = shape.ysizemode === 'pixel' ? shape.yanchor : shape.y1;
             ax = Axes.getFromId(gd, shape.yref);
 
-            bounds = shapeBounds(ax, vy0, vy1, shape.path, constants.paramIsY);
+            bounds = shapeBounds(ax, shape, constants.paramIsY, true);
             if(bounds) {
                 shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcYPaddingOptions(shape));
             }
@@ -77,15 +73,37 @@ function calcPaddingOptions(lineWidth, sizeMode, v0, v1, path, isYAxis) {
     }
 }
 
-function shapeBounds(ax, v0, v1, path, paramsToUse) {
-    var convertVal = (ax.type === 'category' || ax.type === 'multicategory') ? ax.r2c : ax.d2c;
+function shapeBounds(ax, shape, paramsToUse, isVerticalAxis) {
+    var v0;
+    var v1;
+    var shiftStart = 0;
+    var shiftEnd = 0;
+    if(shape.xsizemode === 'pixel') {
+        v0 = isVerticalAxis ? shape.yanchor : shape.xanchor;
+        v1 = isVerticalAxis ? shape.yanchor : shape.xanchor;
+    } else {
+        v0 = isVerticalAxis ? shape.y0 : shape.x0;
+        v1 = isVerticalAxis ? shape.y1 : shape.x1;
+    }
 
-    if(v0 !== undefined) return [convertVal(v0), convertVal(v1)];
-    if(!path) return;
+    var convertVal;
+
+    if(ax.type === 'category' || ax.type === 'multicategory') {
+        convertVal = ax.r2c;
+        if(shape.xsizemode === 'scale') {
+            shiftStart = ax.categoryshapeshiftstart;
+            shiftEnd = ax.categoryshapeshiftend;
+        }
+    } else {
+        convertVal = ax.d2c;
+    }
+
+    if(v0 !== undefined) return [convertVal(v0) + shiftStart, convertVal(v1) + shiftEnd];
+    if(!shape.path) return;
 
     var min = Infinity;
     var max = -Infinity;
-    var segments = path.match(constants.segmentRE);
+    var segments = shape.path.match(constants.segmentRE);
     var i;
     var segment;
     var drawnParam;

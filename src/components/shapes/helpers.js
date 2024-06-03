@@ -53,7 +53,7 @@ exports.extractPathCoords = function(path, paramsToUse, isRaw) {
     return extractedCoordinates;
 };
 
-exports.getDataToPixel = function(gd, axis, isVertical, refType) {
+exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
     var gs = gd._fullLayout._size;
     var dataToPixel;
 
@@ -66,7 +66,15 @@ exports.getDataToPixel = function(gd, axis, isVertical, refType) {
             var d2r = exports.shapePositionToRange(axis);
 
             dataToPixel = function(v) {
-                return axis._offset + axis.r2p(d2r(v, true));
+                var shiftPixels = 0;
+                if(axis.type === 'category' || axis.type === 'multicategory') {
+                    if(isVertical) {
+                        shiftPixels = ((axis.r2p(1) - axis.r2p(0)) * shift);
+                    } else {
+                        shiftPixels = axis.r2p(0.5) * shift;
+                    }
+                }
+                return axis._offset + axis.r2p(d2r(v, true)) + shiftPixels;
             };
 
             if(axis.type === 'date') dataToPixel = exports.decodeDate(dataToPixel);
@@ -179,6 +187,10 @@ exports.getPathString = function(gd, options) {
     var ya = Axes.getFromId(gd, options.yref);
     var gs = gd._fullLayout._size;
     var x2r, x2p, y2r, y2p;
+    var xShiftStart = 0;
+    var xShiftEnd = 0;
+    var yShiftStart = 0;
+    var yShiftEnd = 0;
     var x0, x1, y0, y1;
 
     if(xa) {
@@ -187,6 +199,11 @@ exports.getPathString = function(gd, options) {
         } else {
             x2r = exports.shapePositionToRange(xa);
             x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
+            if(xa.type === 'category' || xa.type === 'multicategory') {
+                var shiftUnitX = xa.r2p(0.5);
+                xShiftStart = shiftUnitX * xa.categoryshapeshiftstart;
+                xShiftEnd = shiftUnitX * xa.categoryshapeshiftend;
+            }
         }
     } else {
         x2p = function(v) { return gs.l + gs.w * v; };
@@ -198,6 +215,11 @@ exports.getPathString = function(gd, options) {
         } else {
             y2r = exports.shapePositionToRange(ya);
             y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
+            if(ya.type === 'category' || ya.type === 'multicategory') {
+                var shiftUnitY = ya.r2p(0) - ya.r2p(1);
+                yShiftStart = shiftUnitY * ya.categoryshapeshiftstart;
+                yShiftEnd = shiftUnitY * ya.categoryshapeshiftend;
+            }
         }
     } else {
         y2p = function(v) { return gs.t + gs.h * (1 - v); };
@@ -211,20 +233,20 @@ exports.getPathString = function(gd, options) {
 
     if(options.xsizemode === 'pixel') {
         var xAnchorPos = x2p(options.xanchor);
-        x0 = xAnchorPos + options.x0;
-        x1 = xAnchorPos + options.x1;
+        x0 = xAnchorPos + options.x0 + xShiftStart;
+        x1 = xAnchorPos + options.x1 + xShiftEnd;
     } else {
-        x0 = x2p(options.x0);
-        x1 = x2p(options.x1);
+        x0 = x2p(options.x0) + xShiftStart;
+        x1 = x2p(options.x1) + xShiftEnd;
     }
 
     if(options.ysizemode === 'pixel') {
         var yAnchorPos = y2p(options.yanchor);
-        y0 = yAnchorPos - options.y0;
-        y1 = yAnchorPos - options.y1;
+        y0 = yAnchorPos - options.y0 - yShiftStart;
+        y1 = yAnchorPos - options.y1 - yShiftEnd;
     } else {
-        y0 = y2p(options.y0);
-        y1 = y2p(options.y1);
+        y0 = y2p(options.y0) - yShiftStart;
+        y1 = y2p(options.y1) - yShiftEnd;
     }
 
     if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;

@@ -1,0 +1,130 @@
+{
+    "data": [
+        {
+            "y": [
+                ["A", "A", "B", "B"], ["C", "D", "C", "D"]
+            ],
+            "x": [
+                1, 2, 3, 4
+            ],
+            "type": "bar",
+            "marker": {
+                "color": "rgba(153, 217, 234, 1)"
+            },
+            "orientation": "h"
+        },
+        {
+            "y": [
+                ["A", "A", "B", "B"], ["C", "D", "C", "D"]
+            ],
+            "x": [
+                4, 3, 2, 1
+            ],
+            "type": "bar",
+            "orientation": "h"
+        },
+        {
+            "y": ["A", "B", "C", "D"],
+            "x": [
+                1, 2, 3, 4
+            ],
+            "type": "bar",
+            "marker": {
+                "color": "rgba(153, 217, 234, 1)"
+            },
+            "yaxis": "y2",
+            "xaxis": "x2",
+            "orientation": "h"
+        },
+        {
+            "y": [
+                ["A", "A", "B", "B"], ["C", "D", "C", "D"]
+            ],
+            "x": [
+                4, 3, 2, 1
+            ],
+            "type": "bar",
+            "marker": {
+                "color": "rgba(214, 120, 120, 1)"
+            },
+            "yaxis": "y3",
+            "xaxis": "x3",
+            "orientation": "h"
+        }
+    ],
+    "layout": {
+        "grid": {
+            "rows": 2,
+            "columns": 2,
+            "xgap": 0.1,
+            "ygap": 0.1,
+            "pattern": "independent"
+        },
+        "shapes": [
+            {
+                "layer": "above",
+                "type": "rect",
+                "label": {
+                    "text": "around A,D",
+                    "textposition": "bottom center",
+                    "textangle": 0
+                },
+                "line": {
+                  "color": "black",
+                  "width": 3.0
+                },
+                "y0": ["A", "D"],
+                "y1": ["A", "D"],
+                "x0": 0,
+                "x1": 1,
+                "xref": "x domain"
+            },
+            {
+                "layer": "above",
+                "type": "line",
+                "label": {
+                    "text": "on B",
+                    "textposition": "middle",
+                    "textangle": 0
+                },
+                "line": {
+                  "color": "blue",
+                  "width": 3.0
+                },
+                "y0": "B",
+                "y1": "B",
+                "yref": "y2",
+                "x0": 0,
+                "x1": 0.25,
+                "xref": "x2 domain"
+            },
+            {
+                "layer": "above",
+                "type": "line",
+                "label": {
+                    "text": "Before B,D",
+                    "textposition": "middle",
+                    "textangle": 0
+                },
+                "line": {
+                  "color": "green",
+                  "width": 3.0
+                },
+                "y0": ["B", "D"],
+                "y1": ["B", "D"],
+                "yref": "y3",
+                "x0": 0,
+                "x1": 0.25,
+                "xref": "x3 domain"
+            }
+        ],
+        "yaxis": {
+            "categoryshapeshiftstart": -0.5,
+            "categoryshapeshiftend": 0.5
+        },
+        "yaxis3": {
+            "categoryshapeshiftstart": -0.5,
+            "categoryshapeshiftend": -0.5
+        }
+    }
+}
