@@ -78,12 +78,14 @@ function shapeBounds(ax, shape, paramsToUse, isVerticalAxis) {
     var v1;
     var shiftStart = 0;
     var shiftEnd = 0;
-    if(shape.xsizemode === 'pixel') {
-        v0 = isVerticalAxis ? shape.yanchor : shape.xanchor;
-        v1 = isVerticalAxis ? shape.yanchor : shape.xanchor;
+    if(isVerticalAxis) {
+        var isYSizeModePixel = shape.ysizemode === 'pixel';
+        v0 = isYSizeModePixel ? shape.yanchor : shape.y0;
+        v1 = isYSizeModePixel ? shape.yanchor : shape.y1;
     } else {
-        v0 = isVerticalAxis ? shape.y0 : shape.x0;
-        v1 = isVerticalAxis ? shape.y1 : shape.x1;
+        var isXSizeModePixel = shape.xsizemode === 'pixel';
+        v0 = isXSizeModePixel ? shape.xanchor : shape.x0;
+        v1 = isXSizeModePixel ? shape.xanchor : shape.x1;
     }
 
     var convertVal;
