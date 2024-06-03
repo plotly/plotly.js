@@ -31,6 +31,7 @@ function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
 
         var defaultOptions = {
             noAutotickangles: true,
+            noTicklabelrunoffstandoff: true,
             noTicklabelstep: true,
             tickfont: 'x',
             id: axLetter + 'axis',

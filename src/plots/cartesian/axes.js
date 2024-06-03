@@ -2968,8 +2968,8 @@ axes.makeTransTickFn = function(ax) {
 
 axes.makeTransTickLabelFn = function(ax) {
     var uv = getTickLabelUV(ax);
-    var shiftx = ax.ticklabelshiftx || 0;
-    var shifty = ax.ticklabelshifty || 0;
+    var runoff = ax.ticklabelrunoff || 0;
+    var standoff = ax.ticklabelstandoff || 0;
 
     var u = uv[0];
     var v = uv[1];
@@ -2977,14 +2977,14 @@ axes.makeTransTickLabelFn = function(ax) {
     return ax._id.charAt(0) === 'x' ?
         function(d) {
             return strTranslate(
-                u + ax._offset + ax.l2p(getPosX(d)) + shiftx,
-                v + shifty
+                u + ax._offset + ax.l2p(getPosX(d)) + standoff,
+                v + runoff
             );
         } :
         function(d) {
             return strTranslate(
-                v + shiftx,
-                u + ax._offset + ax.l2p(getPosX(d)) + shifty
+                v + runoff,
+                u + ax._offset + ax.l2p(getPosX(d)) + standoff
             );
         };
 };

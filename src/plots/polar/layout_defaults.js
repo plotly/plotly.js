@@ -186,7 +186,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     size: dfltFontSize,
                     family: dfltFontFamily
                 },
-                noAutotickangles: axName === 'angularaxis'
+                noAutotickangles: axName === 'angularaxis',
+                noTicklabelrunoffstandoff: true
             });
 
             handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});

@@ -698,20 +698,20 @@ module.exports = {
             'In other cases the default is *hide past div*.'
         ].join(' ')
     },
-    ticklabelshiftx: {
+    ticklabelrunoff: {
         valType: 'integer',
         dflt: 0,
         editType: 'ticks',
         description: [
-            'Horizontally shifts the tick labels by the specified number of pixels.'
+            'Shifts the tick labels by the specified number of pixels in parallel to the axis.'
         ].join(' ')
     },
-    ticklabelshifty: {
+    ticklabelstandoff: {
         valType: 'integer',
         dflt: 0,
         editType: 'ticks',
         description: [
-            'Vertically shifts the tick labels by the specified number of pixels.'
+            'Shifts the tick labels by the specified number of pixels orthogonally to the axis.'
         ].join(' ')
     },
     mirror: {

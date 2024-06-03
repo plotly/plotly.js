@@ -93,8 +93,6 @@ module.exports = overrideAll({
     ticks: axesAttrs.ticks,
     mirror: axesAttrs.mirror,
     ticklen: axesAttrs.ticklen,
-    ticklabelshiftx: axesAttrs.ticklabelshiftx,
-    ticklabelshifty: axesAttrs.ticklabelshifty,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
     showticklabels: axesAttrs.showticklabels,
