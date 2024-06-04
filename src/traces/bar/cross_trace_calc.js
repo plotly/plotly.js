@@ -311,34 +311,43 @@ function setOffsetAndWidth(gd, pa, sieve, opts) {
     // if there aren't any overlapping positions,
     // let them have full width even if mode is group
     var overlap = (positions.length !== distinctPositions.length);
-    var barGroupWidth = minDiff * (1 - opts.gap);
 
-    var groupId = getAxisGroup(fullLayout, pa._id) + calcTraces[0][0].trace.orientation;
-    var alignmentGroups = fullLayout._alignmentOpts[groupId] || {};
+    var barGroupWidth = minDiff * (1 - opts.gap);
+    var barWidthPlusGap;
+    var barWidth;
+    var offsetFromCenter;
+    var alignmentGroups;
+    if(pa._id === 'angularaxis') {
+        barWidthPlusGap = barGroupWidth;
+        barWidth = barWidthPlusGap * (1 - (opts.groupgap || 0));
+        offsetFromCenter = -barWidth / 2;
+    } else { // collect groups and calculate values in loop below
+        var groupId = getAxisGroup(fullLayout, pa._id) + calcTraces[0][0].trace.orientation;
+        alignmentGroups = fullLayout._alignmentOpts[groupId] || {};
+    }
 
     for(var i = 0; i < nTraces; i++) {
         var calcTrace = calcTraces[i];
         var trace = calcTrace[0].trace;
+        if(pa._id !== 'angularaxis') {
+            var alignmentGroupOpts = alignmentGroups[trace.alignmentgroup] || {};
+            var nOffsetGroups = Object.keys(alignmentGroupOpts.offsetGroups || {}).length;
 
-        var alignmentGroupOpts = alignmentGroups[trace.alignmentgroup] || {};
-        var nOffsetGroups = Object.keys(alignmentGroupOpts.offsetGroups || {}).length;
+            if(nOffsetGroups) {
+                barWidthPlusGap = barGroupWidth / nOffsetGroups;
+            } else {
+                barWidthPlusGap = overlap ? barGroupWidth / nTraces : barGroupWidth;
+            }
 
-        var barWidthPlusGap;
-        if(nOffsetGroups) {
-            barWidthPlusGap = barGroupWidth / nOffsetGroups;
-        } else {
-            barWidthPlusGap = overlap ? barGroupWidth / nTraces : barGroupWidth;
-        }
+            barWidth = barWidthPlusGap * (1 - (opts.groupgap || 0));
 
-        var barWidth = barWidthPlusGap * (1 - (opts.groupgap || 0));
-
-        var offsetFromCenter;
-        if(nOffsetGroups) {
-            offsetFromCenter = ((2 * trace._offsetIndex + 1 - nOffsetGroups) * barWidthPlusGap - barWidth) / 2;
-        } else {
-            offsetFromCenter = overlap ?
-                ((2 * i + 1 - nTraces) * barWidthPlusGap - barWidth) / 2 :
-                -barWidth / 2;
+            if(nOffsetGroups) {
+                offsetFromCenter = ((2 * trace._offsetIndex + 1 - nOffsetGroups) * barWidthPlusGap - barWidth) / 2;
+            } else {
+                offsetFromCenter = overlap ?
+                    ((2 * i + 1 - nTraces) * barWidthPlusGap - barWidth) / 2 :
+                    -barWidth / 2;
+            }
         }
 
         var t = calcTrace[0].t;
@@ -358,7 +367,11 @@ function setOffsetAndWidth(gd, pa, sieve, opts) {
     setBarCenterAndWidth(pa, sieve);
 
     // update position axes
-    updatePositionAxis(pa, sieve, overlap);
+    if(pa._id !== 'angularaxis') {
+        updatePositionAxis(pa, sieve);
+    } else {
+        updatePositionAxis(pa, sieve, overlap);
+    }
 }
 
 function applyAttributes(sieve) {
@@ -579,7 +592,8 @@ function stackBars(sa, sieve, opts) {
 
         isFunnel = (fullTrace.type === 'funnel');
 
-        var offset = calcTrace[0].t.poffset;
+        var offset = fullTrace.type === 'barpolar' ? 0 : calcTrace[0].t.poffset;
+
         var pts = [];
 
         for(j = 0; j < calcTrace.length; j++) {
