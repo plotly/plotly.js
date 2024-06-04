@@ -76,16 +76,22 @@ function draw(gd, titleClass, options) {
     var fontShadow = font.shadow;
 
     // Get subtitle properties
+    var subtitleProp = options.subtitlePropName;
+    var subtitleEnabled = !!(subtitleProp);
+    var subtitlePlaceholder = options.subtitlePlaceholder;
+
     var subtitle = cont.title.subtitle;
     var subtitleTxt = (subtitle && subtitle.text ? subtitle.text : '').trim();
-    console.log({
-        titleTxt: txt,
-        subtitleTxt: subtitleTxt,
-    });
-    // Prototype for subtitle: Use HTML tags to tack subtitle onto title
-    if(subtitleTxt) {
-        txt = txt + '<br><sub>' + subtitleTxt + '</sub>';
-    }
+    var subtitleFont = subtitle && subtitle.font ? subtitle.font : {};
+    var subFontFamily = subtitleFont.family;
+    var subFontSize = subtitleFont.size;
+    var subFontColor = subtitleFont.color;
+    var subFontWeight = subtitleFont.weight;
+    var subFontStyle = subtitleFont.style;
+    var subFontVariant = subtitleFont.variant;
+    var subFontTextcase = subtitleFont.textcase;
+    var subFontLineposition = subtitleFont.lineposition;
+    var subFontShadow = subtitleFont.shadow;
 
     // only make this title editable if we positively identify its property
     // as one that has editing enabled.
@@ -120,7 +126,7 @@ function draw(gd, titleClass, options) {
         hColorbarMoveTitle = fullLayout._hColorbarMoveTitle;
     }
 
-    var el = group.selectAll('text')
+    var el = group.selectAll('text.' + titleClass)
         .data(elShouldExist ? [0] : []);
     el.enter().append('text');
     el.text(txt)
@@ -132,13 +138,28 @@ function draw(gd, titleClass, options) {
         .attr('class', titleClass);
     el.exit().remove();
 
-    if(!elShouldExist) return group;
-
-    function titleLayout(titleEl) {
-        Lib.syncOrAsync([drawTitle, scootTitle], titleEl);
+    var subtitleEl = null;
+    if(subtitleEnabled && (subtitleTxt || editable)) {
+        var subtitleClass = titleClass + '-subtitle';
+        var subtitleElShouldExist = subtitleTxt || editable;
+        subtitleEl = group.selectAll('text.' + subtitleClass)
+            .data(subtitleElShouldExist ? [0] : []);
+        subtitleEl.enter().append('text');
+        subtitleEl.text(subtitleTxt).attr('class', subtitleClass);
+        subtitleEl.exit().remove();
     }
 
-    function drawTitle(titleEl) {
+
+    if(!elShouldExist) return group;
+
+    function titleLayout(titleEl, subtitleEl) {
+        Lib.syncOrAsync([drawTitle, scootTitle], { t: titleEl, st: subtitleEl });
+    }
+
+    function drawTitle(titleAndSubtitleEls) {
+        var titleEl = titleAndSubtitleEls.t;
+        var subtitleEl = titleAndSubtitleEls.st;
+
         var transformVal;
 
         if(!transform && hColorbarMoveTitle) {
@@ -172,12 +193,34 @@ function draw(gd, titleClass, options) {
             lineposition: fontLineposition,
         })
         .attr(attributes)
-        .call(svgTextUtils.convertToTspans, gd);
+            .call(svgTextUtils.convertToTspans, gd);
+
+        var subtitleAttributes = Object.assign({}, attributes);
+        subtitleAttributes.y += Drawing.bBox(titleEl.node()).height;
+
+        if(subtitleEl) {
+            subtitleEl.attr('transform', transformVal);
+            subtitleEl.style('opacity', opacity * Color.opacity(subFontColor))
+            .call(Drawing.font, {
+                color: Color.rgb(subFontColor),
+                size: d3.round(subFontSize * 0.8, 2),
+                family: subFontFamily,
+                weight: subFontWeight,
+                style: subFontStyle,
+                variant: subFontVariant,
+                textcase: subFontTextcase,
+                shadow: subFontShadow,
+                lineposition: subFontLineposition,
+            })
+            .attr(subtitleAttributes)
+                .call(svgTextUtils.convertToTspans, gd);
+        }
 
         return Plots.previousPromises(gd);
     }
 
-    function scootTitle(titleElIn) {
+    function scootTitle(titleAndSubtitleEls) {
+        var titleElIn = titleAndSubtitleEls.t;
         var titleGroup = d3.select(titleElIn.node().parentNode);
 
         if(avoid && avoid.selection && avoid.side && txt) {
@@ -251,12 +294,12 @@ function draw(gd, titleClass, options) {
         }
     }
 
-    el.call(titleLayout);
+    el.call(titleLayout, subtitleEl);
 
-    function setPlaceholder() {
+    function setPlaceholder(element, placeholderText) {
         opacity = 0;
         isplaceholder = true;
-        el.text(placeholder)
+        element.text(placeholderText)
             .on('mouseover.opacity', function() {
                 d3.select(this).transition()
                     .duration(interactConstants.SHOW_PLACEHOLDER).style('opacity', 1);
@@ -268,7 +311,7 @@ function draw(gd, titleClass, options) {
     }
 
     if(editable) {
-        if(!txt) setPlaceholder();
+        if(!txt) setPlaceholder(el, placeholder);
         else el.on('.opacity', null);
 
         el.call(svgTextUtils.makeEditable, {gd: gd})
@@ -287,6 +330,23 @@ function draw(gd, titleClass, options) {
                 this.text(d || ' ')
                     .call(svgTextUtils.positionText, attributes.x, attributes.y);
             });
+
+        if(subtitleEnabled) {
+            if(!subtitleTxt) setPlaceholder(subtitleEl, subtitlePlaceholder);
+            else subtitleEl.on('.opacity', null);
+            subtitleEl.call(svgTextUtils.makeEditable, {gd: gd})
+                .on('edit', function(text) {
+                    Registry.call('_guiRelayout', gd, 'title.subtitle.text', text);
+                })
+                .on('cancel', function() {
+                    this.text(this.attr('data-unformatted'))
+                        .call(titleLayout);
+                })
+                .on('input', function(d) {
+                    this.text(d || ' ')
+                        .call(svgTextUtils.positionText, subtitleEl.attr('x'), subtitleEl.attr('y'));
+                });
+        }
     }
     el.classed('js-placeholder', isplaceholder);
 

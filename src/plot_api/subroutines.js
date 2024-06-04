@@ -408,17 +408,19 @@ exports.drawMainTitle = function(gd) {
     Titles.draw(gd, 'gtitle', {
         propContainer: fullLayout,
         propName: 'title.text',
+        subtitlePropName: 'title.subtitle.text',
         placeholder: fullLayout._dfltTitle.plot,
+        subtitlePlaceholder: fullLayout._dfltTitle.plotsubtitle,
         attributes: ({
             x: x,
             y: y,
             'text-anchor': textAnchor,
             dy: dy
-        })
+        }),
     });
 
     if(title.text && title.automargin) {
-        var titleObj = d3.selectAll('.gtitle');
+        var titleObj = d3.selectAll('.g-gtitle');
         var titleHeight = Drawing.bBox(titleObj.node()).height;
         var pushMargin = needsMarginPush(gd, title, titleHeight);
         if(pushMargin > 0) {
