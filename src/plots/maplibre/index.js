@@ -13,8 +13,6 @@ var MapLibre = require('./maplibre');
 
 var MAPLIBRE = 'maplibre';
 
-var constants = exports.constants = require('./constants');
-
 exports.name = MAPLIBRE;
 
 exports.attr = 'subplot';
