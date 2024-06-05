@@ -48,7 +48,7 @@ var stylesMapLibre = {
             minzoom: 0,
             maxzoom: 22
         }],
-        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
     },
     'white-bg': {
         id: 'white-bg',
@@ -61,7 +61,7 @@ var stylesMapLibre = {
             minzoom: 0,
             maxzoom: 22
         }],
-        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
     },
     'carto-positron': {
         id: 'carto-positron',
@@ -81,7 +81,7 @@ var stylesMapLibre = {
             minzoom: 0,
             maxzoom: 22
         }],
-        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
     },
     'carto-darkmatter': {
         id: 'carto-darkmatter',
@@ -101,7 +101,7 @@ var stylesMapLibre = {
             minzoom: 0,
             maxzoom: 22
         }],
-        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
     },
     'stamen-terrain': {
         id: 'stamen-terrain',
@@ -121,7 +121,7 @@ var stylesMapLibre = {
             minzoom: 0,
             maxzoom: 22
         }],
-        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
     },
     'stamen-toner': {
         id: 'stamen-toner',
@@ -141,7 +141,7 @@ var stylesMapLibre = {
             minzoom: 0,
             maxzoom: 22
         }],
-        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
     },
     'stamen-watercolor': {
         id: 'stamen-watercolor',
@@ -161,7 +161,7 @@ var stylesMapLibre = {
             minzoom: 0,
             maxzoom: 22
         }],
-        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
     }
 };
 
