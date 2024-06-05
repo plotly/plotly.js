@@ -1901,42 +1901,6 @@ describe('maplibre toImage', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should generate image data with config credentials', function(done) {
-        Plotly.newPlot(gd, [{
-            type: 'scattermaplibre',
-            lon: [0, 10, 20],
-            lat: [-10, 10, -10]
-        }], {}, {
-
-        })
-        .then(function() {
-            return Plotly.toImage(gd);
-        })
-        .then(function(imgData) {
-            expect(imgData.length).toBeGreaterThan(MINIMUM_LENGTH);
-        })
-        .then(done, done.fail);
-    }, LONG_TIMEOUT_INTERVAL);
-
-    it('@gl should generate image data with layout credentials', function(done) {
-        Plotly.newPlot(gd, [{
-            type: 'scattermaplibre',
-            lon: [0, 10, 20],
-            lat: [-10, 10, -10]
-        }], {
-            maplibre: {
-            }
-        })
-        .then(function() {
-            return Plotly.toImage(gd);
-        })
-        .then(function(imgData) {
-            expect(imgData.length).toBeGreaterThan(MINIMUM_LENGTH);
-        })
-        .then(done, done.fail);
-    }, LONG_TIMEOUT_INTERVAL);
-});
-
 function getMapInfo(gd) {
     var subplot = gd._fullLayout.maplibre._subplot;
     var map = subplot.map;
