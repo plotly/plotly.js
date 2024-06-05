@@ -10,9 +10,6 @@ dirOut = os.path.join(root, 'build', 'test_images')
 pio.templates.default = 'none'
 pio.kaleido.scope.plotlyjs = os.path.join(root, 'build', 'plotly.js')
 
-_credentials = open(os.path.join(root, 'build', 'credentials.json'), 'r')
-_credentials.close()
-
 allFormats = ['svg', 'jpg', 'jpeg', 'webp', 'eps', 'pdf']
 # 'png' is tested by image-test
 

@@ -55,9 +55,6 @@ if 'virtual-webgl' in sys.argv or 'virtual-webgl=' in sys.argv :
 pio.kaleido.scope.plotlyjs = plotlyjs
 pio.templates.default = 'none'
 
-_credentials = open(os.path.join(root, 'build', 'credentials.json'), 'r')
-_credentials.close()
-
 ALL_MOCKS = [os.path.splitext(a)[0] for a in os.listdir(dirIn) if a.endswith('.json')]
 ALL_MOCKS.sort()
 
