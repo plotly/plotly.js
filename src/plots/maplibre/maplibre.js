@@ -1,6 +1,6 @@
 'use strict';
 
-var maplibregl = require('maplibre-gl/dist/maplibre-gl-dev');
+var maplibregl = require('maplibre-gl/dist/maplibre-gl');
 
 var Lib = require('../../lib');
 var geoUtils = require('../../lib/geo_location_utils');
