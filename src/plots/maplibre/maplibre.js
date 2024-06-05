@@ -54,9 +54,6 @@ var proto = MapLibre.prototype;
 
 proto.plot = function(calcData, fullLayout, promises) {
     var self = this;
-    var opts = fullLayout[self.id];
-
-    
 
     var promise;
 
@@ -80,7 +77,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     // store style id and URL or object
     var styleObj = self.styleObj = getStyleObj(opts.style, fullLayout);
 
-    
+
     var bounds = opts.bounds;
     var maxBounds = bounds ? [[bounds.west, bounds.south], [bounds.east, bounds.north]] : null;
 
@@ -782,8 +779,6 @@ function getStyleObj(val, fullLayout) {
         } else {
             styleObj.style = val;
         }
-        
-        
     } else {
         styleObj.id = constants.styleValueDflt;
         styleObj.style = convertStyleVal(constants.styleValueDflt);

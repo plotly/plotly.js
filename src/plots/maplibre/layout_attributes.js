@@ -27,7 +27,7 @@ var attrs = module.exports = overrideAll({
 
     domain: domainAttrs({name: 'maplibre'}),
 
-    
+
     style: {
         valType: 'any',
         values: constants.styleValuesMapLibre.concat(constants.styleValuesNonMapbox),

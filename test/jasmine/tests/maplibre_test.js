@@ -2,7 +2,6 @@ var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
 var Fx = require('../../../src/components/fx');
 
-var constants = require('../../../src/plots/maplibre/constants');
 var supplyLayoutDefaults = require('../../../src/plots/maplibre/layout_defaults');
 
 var d3Select = require('../../strict-d3').select;
@@ -32,7 +31,7 @@ var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 var noop = function() {};
 
 Plotly.setPlotConfig({
-    
+
 });
 
 describe('maplibre defaults', function() {
@@ -244,52 +243,6 @@ describe('maplibre defaults', function() {
         supplyAllDefaults(gd);
         expect(gd._fullLayout.dragmode).toBe('pan');
     });
-});
-
-describe('maplibre credentials', function() {
-    var gd;
-
-    var dummyToken = 'asfdsa124331wersdsa1321q3';
-
-    var osmStyle = {
-        id: 'osm',
-        version: 8,
-        sources: {
-            'osm-tiles': {
-                type: 'raster',
-                tiles: [
-                    'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                ],
-                tileSize: 256
-            }
-        },
-        layers: [{
-            id: 'osm-tiles',
-            type: 'raster',
-            source: 'osm-tiles',
-            minzoom: 0,
-            maxzoom: 22
-        }]
-    };
-
-    beforeEach(function() {
-        gd = createGraphDiv();
-
-        Plotly.setPlotConfig({
-            
-        });
-    });
-
-    afterEach(function() {
-        Plotly.purge(gd);
-        destroyGraphDiv();
-
-        Plotly.setPlotConfig({
-            
-        });
-    });
-    
 });
 
 describe('maplibre plots', function() {
@@ -935,7 +888,6 @@ describe('maplibre plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    
 
     it('@gl should be able to update traces', function(done) {
         function assertDataPts(lengths) {
@@ -1335,7 +1287,7 @@ describe('maplibre plots', function() {
                 expect(s.text()).toEqual('© MapLibre © OpenStreetMap Improve this map');
                 assertLinks(s, [
                     'https://www.openstreetmap.org/about/',
-                    
+
                 ]);
             })
             .then(done, done.fail);
@@ -1932,7 +1884,7 @@ describe('maplibre toImage', function() {
 
     it('@gl should generate image data with global credentials', function(done) {
         Plotly.setPlotConfig({
-            
+
         });
 
         Plotly.newPlot(gd, [{
@@ -1955,7 +1907,7 @@ describe('maplibre toImage', function() {
             lon: [0, 10, 20],
             lat: [-10, 10, -10]
         }], {}, {
-            
+
         })
         .then(function() {
             return Plotly.toImage(gd);

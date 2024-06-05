@@ -325,7 +325,7 @@ plots.supplyDefaults = function(gd, opts) {
 
     var formatObj = getFormatObj(gd, d3FormatKeys);
 
-    
+
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
     if(oldFullLayout._initialAutoSizeIsDone) {

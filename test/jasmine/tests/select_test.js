@@ -685,10 +685,8 @@ describe('Click-to-select', function() {
           });
 
         [
-            testCase('scattermaplibre', require('../../image/mocks/maplibre_0.json'), 650, 195, [[2], []], {},
-              { ),
-            testCase('choroplethmaplibre', require('../../image/mocks/maplibre_choropleth0.json'), 270, 220, [[0]], {},
-              { )
+            testCase('scattermaplibre', require('../../image/mocks/maplibre_0.json'), 650, 195, [[2], []], {}),
+            testCase('choroplethmaplibre', require('../../image/mocks/maplibre_choropleth0.json'), 270, 220, [[0]], {})
         ]
           .forEach(function(testCase) {
               it('@gl trace type ' + testCase.label, function(done) {
@@ -772,10 +770,8 @@ describe('Click-to-select', function() {
         });
 
         [
-            testCase('maplibre', require('../../image/mocks/maplibre_0.json'), 650, 195, [[2], []], {},
-              { ),
-            testCase('maplibre', require('../../image/mocks/maplibre_choropleth0.json'), 270, 220, [[0], []], {},
-              { )
+            testCase('maplibre', require('../../image/mocks/maplibre_0.json'), 650, 195, [[2], []], {}),
+            testCase('maplibre', require('../../image/mocks/maplibre_choropleth0.json'), 270, 220, [[0], []], {})
         ].forEach(function(testCase) {
             it('@gl for base plot ' + testCase.label, function(done) {
                 _run(testCase, done);
@@ -2055,7 +2051,7 @@ describe('Test select box and lasso per trace:', function() {
             delete fig.layout.maplibre.bounds;
 
             fig.config = {
-                
+
             };
             addInvisible(fig);
 
@@ -2115,7 +2111,7 @@ describe('Test select box and lasso per trace:', function() {
 
             fig.layout.dragmode = 'select';
             fig.config = {
-                
+
             };
             addInvisible(fig);
 
@@ -3232,7 +3228,7 @@ describe('Test select box and lasso per trace:', function() {
 
         fig.layout.dragmode = 'select';
         fig.config = {
-            
+
         };
         addInvisible(fig);
 

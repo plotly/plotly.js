@@ -1382,7 +1382,7 @@ describe('ModeBar', function() {
                         zoom: 8
                     }
                 }, {
-                    
+
                 })
                 .then(function() {
                     _assert(10, 10, 8);

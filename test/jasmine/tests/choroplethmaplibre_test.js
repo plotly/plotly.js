@@ -549,7 +549,7 @@ describe('Test choroplethmaplibre hover:', function() {
 
         if(!fig.layout) fig.layout = {};
         if(!fig.layout.maplibre) fig.layout.maplibre = {};
-        
+
 
         var pos = s.pos || [270, 220];
 

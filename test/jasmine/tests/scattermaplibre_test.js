@@ -711,7 +711,7 @@ describe('scattermaplibre hover', function() {
 
     beforeAll(function(done) {
         Plotly.setPlotConfig({
-            
+
         });
 
         gd = createGraphDiv();
@@ -964,7 +964,7 @@ describe('Test plotly events on a scattermaplibre plot:', function() {
 
     beforeAll(function() {
         Plotly.setPlotConfig({
-            
+
         });
     });
 
@@ -1142,7 +1142,7 @@ describe('Test plotly events on a scattermaplibre plot when css transform is pre
 
     beforeAll(function() {
         Plotly.setPlotConfig({
-            
+
         });
     });
 
@@ -1259,7 +1259,7 @@ describe('scattermaplibre restyle', function() {
 
     beforeAll(function() {
         Plotly.setPlotConfig({
-            
+
         });
 
         gd = createGraphDiv();

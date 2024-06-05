@@ -1365,7 +1365,7 @@ describe('filter resulting in empty coordinate arrays', function() {
         var mockList = require('../assets/mock_lists').maplibre;
 
         Plotly.setPlotConfig({
-            
+
         });
 
         mockList.forEach(function(d) {

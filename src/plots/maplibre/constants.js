@@ -183,7 +183,6 @@ module.exports = {
     //     'Please install @plotly/maplibre-gl@' + requiredVersion + '.'
     // ].join('\n'),
 
-    
 
     missingStyleErrorMsg: [
         'No valid maplibre style found, please set `maplibre.style` to one of:',
@@ -191,9 +190,8 @@ module.exports = {
         'or use a tile service.'
     ].join('\n'),
 
-    
 
     mapOnErrorMsg: 'MapLibre error.',
 
-    
+
 };

@@ -17,7 +17,7 @@ describe('Test plotly.min.js', function() {
     });
 
     Plotly.setPlotConfig({
-        
+
     });
 
     mockLists.all.forEach(function(mockSpec) {

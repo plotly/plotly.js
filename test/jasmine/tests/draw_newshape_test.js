@@ -769,7 +769,7 @@ describe('Draw new shapes to layout', function() {
                     data: fig.data,
                     layout: fig.layout,
                     config: {
-                        
+
                     }
                 })
                     .then(function() {

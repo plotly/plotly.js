@@ -292,7 +292,7 @@ describe('Test densitymaplibre hover:', function() {
 
         if(!fig.layout) fig.layout = {};
         if(!fig.layout.maplibre) fig.layout.maplibre = {};
-        
+
 
         var pos = s.pos || [353, 143];
 
@@ -511,7 +511,7 @@ describe('Test densitymaplibre interactions:', function() {
             lat: [15, 25, 35],
             z: [1, 20, 5]
         }], {}, {
-            
+
         })
         .then(function() { _assert('after first', 'densitymaplibre'); })
         .then(function() { return Plotly.restyle(gd, 'type', 'scattermaplibre'); })
