@@ -217,6 +217,19 @@ exports.call = function() {
     return exports.apiMethodRegistry[name].apply(null, args);
 };
 
+function addCss(fileName) {
+
+    var head = document.head;
+    var link = document.createElement("link");
+  
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = fileName;
+  
+    head.appendChild(link);
+  }
+
+  
 function registerTraceModule(_module) {
     var thisType = _module.name;
     var categoriesIn = _module.categories;
@@ -264,18 +277,21 @@ function registerTraceModule(_module) {
     var basePlotModule = _module.basePlotModule;
     var bpmName = basePlotModule.name;
 
-    // add mapbox-gl CSS here to avoid console warning on instantiation
-    if(bpmName === 'mapbox') {
-        var styleRules = basePlotModule.constants.styleRules;
-        for(var k in styleRules) {
-            addStyleRule('.js-plotly-plot .plotly .mapboxgl-' + k, styleRules[k]);
-        }
+    // add maplibre-gl CSS here to avoid console warning on instantiation
+    if(bpmName === 'maplibre') {
+
+        addCss('https://unpkg.com/maplibre-gl@^4.3.2/dist/maplibre-gl.css')
+
+        // var styleRules = basePlotModule.constants.styleRules;
+        // for(var k in styleRules) {
+        //     addStyleRule('.js-plotly-plot .plotly ' + k, styleRules[k]);
+        // }
     }
 
     // if `plotly-geo-assets.js` is not included,
     // add `PlotlyGeoAssets` global to stash references to all fetched
     // topojson / geojson data
-    if((bpmName === 'geo' || bpmName === 'mapbox') &&
+    if((bpmName === 'geo' || bpmName === 'maplibre') &&
         (window.PlotlyGeoAssets === undefined)
     ) {
         window.PlotlyGeoAssets = {topojson: {}};

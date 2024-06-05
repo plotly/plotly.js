@@ -71,15 +71,15 @@ var glMockList = [
     ['gl3d_volume_multiple-traces', require('../../image/mocks/gl3d_volume_multiple-traces.json')]
 ];
 
-var mapboxMockList = [
-    ['scattermapbox', require('../../image/mocks/mapbox_bubbles-text.json')],
-    ['choroplethmapbox', require('../../image/mocks/mapbox_choropleth0.json')],
-    ['densitymapbox', require('../../image/mocks/mapbox_density0.json')]
+var maplibreMockList = [
+    ['scattermaplibre', require('../../image/mocks/maplibre_bubbles-text.json')],
+    ['choroplethmaplibre', require('../../image/mocks/maplibre_choropleth0.json')],
+    ['densitymaplibre', require('../../image/mocks/maplibre_density0.json')]
 ];
 
 module.exports = {
     svg: svgMockList,
     gl: glMockList,
-    mapbox: mapboxMockList,
-    all: svgMockList.concat(glMockList).concat(mapboxMockList)
+    maplibre: maplibreMockList,
+    all: svgMockList.concat(glMockList).concat(maplibreMockList)
 };

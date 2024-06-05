@@ -517,7 +517,7 @@ function setPlotContext(gd, config) {
         szOut.cartesian = 1;
         szOut.gl3d = 1;
         szOut.geo = 1;
-        szOut.mapbox = 1;
+        szOut.maplibre = 1;
     } else if(typeof szIn === 'string') {
         var parts = szIn.split('+');
         for(i = 0; i < parts.length; i++) {
@@ -526,7 +526,7 @@ function setPlotContext(gd, config) {
     } else if(szIn !== false) {
         szOut.gl3d = 1;
         szOut.geo = 1;
-        szOut.mapbox = 1;
+        szOut.maplibre = 1;
     }
 }
 
@@ -2387,7 +2387,7 @@ var layoutUIControlPatterns = [
     {pattern: /^(ternary\d*\.[abc]axis)\.(min|title\.text)$/},
     {pattern: /^(polar\d*\.radialaxis)\.((auto)?range|angle|title\.text)/},
     {pattern: /^(polar\d*\.angularaxis)\.rotation/},
-    {pattern: /^(mapbox\d*)\.(center|zoom|bearing|pitch)/},
+    {pattern: /^(maplibre\d*)\.(center|zoom|bearing|pitch)/},
 
     {pattern: /^legend\.(x|y)$/, attr: 'editrevision'},
     {pattern: /^(shapes|annotations)/, attr: 'editrevision'},

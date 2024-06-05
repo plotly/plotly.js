@@ -46,7 +46,7 @@ try {
 }
 
 var partialBundleNames = [
-    'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance', 'strict'
+    'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'maplibre', 'finance', 'strict'
 ];
 
 var partialBundleTraces = {
@@ -104,11 +104,11 @@ var partialBundleTraces = {
         'surface',
         'volume'
     ],
-    mapbox: [
-        'choroplethmapbox',
-        'densitymapbox',
+    maplibre: [
+        'choroplethmaplibre',
+        'densitymaplibre',
         'scatter',
-        'scattermapbox'
+        'scattermaplibre'
     ],
     strict: [
         'bar',
@@ -117,11 +117,11 @@ var partialBundleTraces = {
         'candlestick',
         'carpet',
         'choropleth',
-        'choroplethmapbox',
+        'choroplethmaplibre',
         'cone',
         'contour',
         'contourcarpet',
-        'densitymapbox',
+        'densitymaplibre',
         'funnel',
         'funnelarea',
         'heatmap',
@@ -145,7 +145,7 @@ var partialBundleTraces = {
         'scatter3d',
         'scattercarpet',
         'scattergeo',
-        'scattermapbox',
+        'scattermaplibre',
         'scatterpolar',
         'scatterpolargl',
         'scattersmith',
@@ -237,10 +237,6 @@ module.exports = {
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
 
-    // this mapbox access token is 'public', no need to hide it
-    // more info: https://www.mapbox.com/help/define-access-token/
-    mapboxAccessToken: 'pk.eyJ1IjoicGxvdGx5LWRvY3MiLCJhIjoiY2xpMGYyNWgxMGJhdzNzbXhtNGI0Nnk0aSJ9.0oBvi_UUZ0O1N0xk0yfRwg',
-    pathToCredentials: path.join(pathToBuild, 'credentials.json'),
 
     testContainerImage: 'plotly/testbed:latest',
     testContainerName: process.env.PLOTLYJS_TEST_CONTAINER_NAME || 'imagetest',

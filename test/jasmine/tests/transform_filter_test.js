@@ -260,7 +260,7 @@ describe('filter transforms calc:', function() {
         };
 
         var trace1 = {
-            type: 'scattermapbox',
+            type: 'scattermaplibre',
             lon: [-90, -40, 100, 120, 130],
             lat: [-50, -40, 10, 20, 30],
             transforms: [{
@@ -1361,11 +1361,11 @@ describe('filter resulting in empty coordinate arrays', function() {
         });
     });
 
-    describe('mapbox mocks', function() {
-        var mockList = require('../assets/mock_lists').mapbox;
+    describe('maplibre mocks', function() {
+        var mockList = require('../assets/mock_lists').maplibre;
 
         Plotly.setPlotConfig({
-            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
+            
         });
 
         mockList.forEach(function(d) {

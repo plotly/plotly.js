@@ -136,7 +136,7 @@
    ]
   },
   "doubleClickDelay": {
-   "description": "Sets the delay for registering a double-click in ms. This is the time interval (in ms) between first mousedown and 2nd mouseup to constitute a double-click. This setting propagates to all on-subplot double clicks (except for geo and mapbox) and on-legend double clicks.",
+   "description": "Sets the delay for registering a double-click in ms. This is the time interval (in ms) between first mousedown and 2nd mouseup to constitute a double-click. This setting propagates to all on-subplot double clicks (except for geo and maplibre) and on-legend double clicks.",
    "dflt": 300,
    "min": 0,
    "valType": "number"
@@ -244,11 +244,7 @@
    "min": 0,
    "valType": "integer"
   },
-  "mapboxAccessToken": {
-   "description": "Mapbox access token (required to plot mapbox trace types) If using an Mapbox Atlas server, set this option to '' so that plotly.js won't attempt to authenticate to the public Mapbox server.",
-   "dflt": null,
-   "valType": "string"
-  },
+  
   "modeBarButtons": {
    "description": "Define fully custom mode bar buttons as nested array, where the outer arrays represents button groups, and the inner arrays have buttons config objects or names of default buttons See ./components/modebar/buttons.js for more info.",
    "dflt": false,
@@ -295,8 +291,8 @@
    "valType": "boolean"
   },
   "scrollZoom": {
-   "description": "Determines whether mouse wheel or two-finger scroll zooms is enable. Turned on by default for gl3d, geo and mapbox subplots (as these subplot types do not have zoombox via pan), but turned off by default for cartesian subplots. Set `scrollZoom` to *false* to disable scrolling for all subplots.",
-   "dflt": "gl3d+geo+mapbox",
+   "description": "Determines whether mouse wheel or two-finger scroll zooms is enable. Turned on by default for gl3d, geo and maplibre subplots (as these subplot types do not have zoombox via pan), but turned off by default for cartesian subplots. Set `scrollZoom` to *false* to disable scrolling for all subplots.",
+   "dflt": "gl3d+geo+maplibre",
    "extras": [
     true,
     false
@@ -305,7 +301,7 @@
     "cartesian",
     "gl3d",
     "geo",
-    "mapbox"
+    "maplibre"
    ],
    "valType": "flaglist"
   },
@@ -3871,20 +3867,13 @@
      ]
     }
    },
-   "mapbox": {
+   "maplibre": {
     "_arrayAttrRegexps": [
      {}
     ],
     "_isSubplotObj": true,
-    "accesstoken": {
-     "description": "Sets the mapbox access token to be used for this mapbox map. Alternatively, the mapbox access token can be set in the configuration options under `mapboxAccessToken`. Note that accessToken are only required when `style` (e.g with values : basic, streets, outdoors, light, dark, satellite, satellite-streets ) and/or a layout layer references the Mapbox server.",
-     "editType": "plot",
-     "noBlank": true,
-     "strict": true,
-     "valType": "string"
-    },
     "bearing": {
-     "description": "Sets the bearing angle of the map in degrees counter-clockwise from North (mapbox.bearing).",
+     "description": "Sets the bearing angle of the map in degrees counter-clockwise from North (maplibre.bearing).",
      "dflt": 0,
      "editType": "plot",
      "valType": "number"
@@ -3931,7 +3920,7 @@
     },
     "domain": {
      "column": {
-      "description": "If there is a layout grid, use the domain for this column in the grid for this mapbox subplot .",
+      "description": "If there is a layout grid, use the domain for this column in the grid for this maplibre subplot .",
       "dflt": 0,
       "editType": "plot",
       "min": 0,
@@ -3940,14 +3929,14 @@
      "editType": "plot",
      "role": "object",
      "row": {
-      "description": "If there is a layout grid, use the domain for this row in the grid for this mapbox subplot .",
+      "description": "If there is a layout grid, use the domain for this row in the grid for this maplibre subplot .",
       "dflt": 0,
       "editType": "plot",
       "min": 0,
       "valType": "integer"
      },
      "x": {
-      "description": "Sets the horizontal domain of this mapbox subplot (in plot fraction).",
+      "description": "Sets the horizontal domain of this maplibre subplot (in plot fraction).",
       "dflt": [
        0,
        1
@@ -3970,7 +3959,7 @@
       "valType": "info_array"
      },
      "y": {
-      "description": "Sets the vertical domain of this mapbox subplot (in plot fraction).",
+      "description": "Sets the vertical domain of this maplibre subplot (in plot fraction).",
       "dflt": [
        0,
        1
@@ -4005,7 +3994,7 @@
        "circle": {
         "editType": "plot",
         "radius": {
-         "description": "Sets the circle radius (mapbox.layer.paint.circle-radius). Has an effect only when `type` is set to *circle*.",
+         "description": "Sets the circle radius (maplibre.layer.paint.circle-radius). Has an effect only when `type` is set to *circle*.",
          "dflt": 15,
          "editType": "plot",
          "valType": "number"
@@ -4013,7 +4002,7 @@
         "role": "object"
        },
        "color": {
-        "description": "Sets the primary layer color. If `type` is *circle*, color corresponds to the circle color (mapbox.layer.paint.circle-color) If `type` is *line*, color corresponds to the line color (mapbox.layer.paint.line-color) If `type` is *fill*, color corresponds to the fill color (mapbox.layer.paint.fill-color) If `type` is *symbol*, color corresponds to the icon color (mapbox.layer.paint.icon-color)",
+        "description": "Sets the primary layer color. If `type` is *circle*, color corresponds to the circle color (maplibre.layer.paint.circle-color) If `type` is *line*, color corresponds to the line color (maplibre.layer.paint.line-color) If `type` is *fill*, color corresponds to the fill color (maplibre.layer.paint.fill-color) If `type` is *symbol*, color corresponds to the icon color (maplibre.layer.paint.icon-color)",
         "dflt": "#444",
         "editType": "plot",
         "valType": "color"
@@ -4027,7 +4016,7 @@
        "fill": {
         "editType": "plot",
         "outlinecolor": {
-         "description": "Sets the fill outline color (mapbox.layer.paint.fill-outline-color). Has an effect only when `type` is set to *fill*.",
+         "description": "Sets the fill outline color (maplibre.layer.paint.fill-outline-color). Has an effect only when `type` is set to *fill*.",
          "dflt": "#444",
          "editType": "plot",
          "valType": "color"
@@ -4036,7 +4025,7 @@
        },
        "line": {
         "dash": {
-         "description": "Sets the length of dashes and gaps (mapbox.layer.paint.line-dasharray). Has an effect only when `type` is set to *line*.",
+         "description": "Sets the length of dashes and gaps (maplibre.layer.paint.line-dasharray). Has an effect only when `type` is set to *line*.",
          "editType": "plot",
          "valType": "data_array"
         },
@@ -4048,14 +4037,14 @@
         "editType": "plot",
         "role": "object",
         "width": {
-         "description": "Sets the line width (mapbox.layer.paint.line-width). Has an effect only when `type` is set to *line*.",
+         "description": "Sets the line width (maplibre.layer.paint.line-width). Has an effect only when `type` is set to *line*.",
          "dflt": 2,
          "editType": "plot",
          "valType": "number"
         }
        },
        "maxzoom": {
-        "description": "Sets the maximum zoom level (mapbox.layer.maxzoom). At zoom levels equal to or greater than the maxzoom, the layer will be hidden.",
+        "description": "Sets the maximum zoom level (maplibre.layer.maxzoom). At zoom levels equal to or greater than the maxzoom, the layer will be hidden.",
         "dflt": 24,
         "editType": "plot",
         "max": 24,
@@ -4063,7 +4052,7 @@
         "valType": "number"
        },
        "minzoom": {
-        "description": "Sets the minimum zoom level (mapbox.layer.minzoom). At zoom levels less than the minzoom, the layer will be hidden.",
+        "description": "Sets the minimum zoom level (maplibre.layer.minzoom). At zoom levels less than the minzoom, the layer will be hidden.",
         "dflt": 0,
         "editType": "plot",
         "max": 24,
@@ -4076,7 +4065,7 @@
         "valType": "string"
        },
        "opacity": {
-        "description": "Sets the opacity of the layer. If `type` is *circle*, opacity corresponds to the circle opacity (mapbox.layer.paint.circle-opacity) If `type` is *line*, opacity corresponds to the line opacity (mapbox.layer.paint.line-opacity) If `type` is *fill*, opacity corresponds to the fill opacity (mapbox.layer.paint.fill-opacity) If `type` is *symbol*, opacity corresponds to the icon/text opacity (mapbox.layer.paint.text-opacity)",
+        "description": "Sets the opacity of the layer. If `type` is *circle*, opacity corresponds to the circle opacity (maplibre.layer.paint.circle-opacity) If `type` is *line*, opacity corresponds to the line opacity (maplibre.layer.paint.line-opacity) If `type` is *fill*, opacity corresponds to the fill opacity (maplibre.layer.paint.fill-opacity) If `type` is *symbol*, opacity corresponds to the icon/text opacity (maplibre.layer.paint.text-opacity)",
         "dflt": 1,
         "editType": "plot",
         "max": 1,
@@ -4085,7 +4074,7 @@
        },
        "role": "object",
        "source": {
-        "description": "Sets the source data for this layer (mapbox.layer.source). When `sourcetype` is set to *geojson*, `source` can be a URL to a GeoJSON or a GeoJSON object. When `sourcetype` is set to *vector* or *raster*, `source` can be a URL or an array of tile URLs. When `sourcetype` is set to *image*, `source` can be a URL to an image.",
+        "description": "Sets the source data for this layer (maplibre.layer.source). When `sourcetype` is set to *geojson*, `source` can be a URL to a GeoJSON or a GeoJSON object. When `sourcetype` is set to *vector* or *raster*, `source` can be a URL or an array of tile URLs. When `sourcetype` is set to *image*, `source` can be a URL to an image.",
         "editType": "plot",
         "valType": "any"
        },
@@ -4095,7 +4084,7 @@
         "valType": "string"
        },
        "sourcelayer": {
-        "description": "Specifies the layer to use from a vector tile source (mapbox.layer.source-layer). Required for *vector* source type that supports multiple layers.",
+        "description": "Specifies the layer to use from a vector tile source (maplibre.layer.source-layer). Required for *vector* source type that supports multiple layers.",
         "dflt": "",
         "editType": "plot",
         "valType": "string"
@@ -4115,19 +4104,19 @@
        "symbol": {
         "editType": "plot",
         "icon": {
-         "description": "Sets the symbol icon image (mapbox.layer.layout.icon-image). Full list: https://www.mapbox.com/maki-icons/",
+         "description": "Sets the symbol icon image (maplibre.layer.layout.icon-image). Full list: https://www.mapbox.com/maki-icons/",
          "dflt": "marker",
          "editType": "plot",
          "valType": "string"
         },
         "iconsize": {
-         "description": "Sets the symbol icon size (mapbox.layer.layout.icon-size). Has an effect only when `type` is set to *symbol*.",
+         "description": "Sets the symbol icon size (maplibre.layer.layout.icon-size). Has an effect only when `type` is set to *symbol*.",
          "dflt": 10,
          "editType": "plot",
          "valType": "number"
         },
         "placement": {
-         "description": "Sets the symbol and/or text placement (mapbox.layer.layout.symbol-placement). If `placement` is *point*, the label is placed where the geometry is located If `placement` is *line*, the label is placed along the line of the geometry If `placement` is *line-center*, the label is placed on the center of the geometry",
+         "description": "Sets the symbol and/or text placement (maplibre.layer.layout.symbol-placement). If `placement` is *point*, the label is placed where the geometry is located If `placement` is *line*, the label is placed along the line of the geometry If `placement` is *line-center*, the label is placed on the center of the geometry",
          "dflt": "point",
          "editType": "plot",
          "valType": "enumerated",
@@ -4139,7 +4128,7 @@
         },
         "role": "object",
         "text": {
-         "description": "Sets the symbol text (mapbox.layer.layout.text-field).",
+         "description": "Sets the symbol text (maplibre.layer.layout.text-field).",
          "dflt": "",
          "editType": "plot",
          "valType": "string"
@@ -4149,7 +4138,7 @@
           "editType": "plot",
           "valType": "color"
          },
-         "description": "Sets the icon text font (color=mapbox.layer.paint.text-color, size=mapbox.layer.layout.text-size). Has an effect only when `type` is set to *symbol*.",
+         "description": "Sets the icon text font (color=maplibre.layer.paint.text-color, size=maplibre.layer.layout.text-size). Has an effect only when `type` is set to *symbol*.",
          "editType": "plot",
          "family": {
           "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
@@ -4236,14 +4225,14 @@
      "role": "object"
     },
     "pitch": {
-     "description": "Sets the pitch angle of the map (in degrees, where *0* means perpendicular to the surface of the map) (mapbox.pitch).",
+     "description": "Sets the pitch angle of the map (in degrees, where *0* means perpendicular to the surface of the map) (maplibre.pitch).",
      "dflt": 0,
      "editType": "plot",
      "valType": "number"
     },
     "role": "object",
     "style": {
-     "description": "Defines the map layers that are rendered by default below the trace layers defined in `data`, which are themselves by default rendered below the layers defined in `layout.mapbox.layers`.  These layers can be defined either explicitly as a Mapbox Style object which can contain multiple layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS) or implicitly by using one of the built-in style objects which use WMSes which do not require any access tokens, or by using a default Mapbox style or custom Mapbox style URL, both of which require a Mapbox access token  Note that Mapbox access token can be set in the `accesstoken` attribute or in the `mapboxAccessToken` config option.  Mapbox Style objects are of the form described in the Mapbox GL JS documentation available at https://docs.mapbox.com/mapbox-gl-js/style-spec  The built-in plotly.js styles objects are: carto-darkmatter, carto-positron, open-street-map, stamen-terrain, stamen-toner, stamen-watercolor, white-bg  The built-in Mapbox styles are: basic, streets, outdoors, light, dark, satellite, satellite-streets  Mapbox style URLs are of the form: mapbox://mapbox.mapbox-<name>-<version>",
+     "description": "Defines the map layers that are rendered by default below the trace layers defined in `data`, which are themselves by default rendered below the layers defined in `layout.maplibre.layers`.  These layers can be defined either explicitly as a MapLibre Style object which can contain multiple layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS) or implicitly by using one of the built-in style objects which use WMSes or by using a custom MapLibre style URL.  MapLibre Style objects are of the form described in the MapLibre GL JS documentation available at https://maplibre.org/maplibre-style-spec  The built-in plotly.js styles objects are: carto-darkmatter, carto-positron, open-street-map, stamen-terrain, stamen-toner, stamen-watercolor, white-bg  The built-in MapLibre styles are: basic, streets, outdoors, light, dark, satellite, satellite-streets  MapLibre style URLs are of the form: maplibre://maplibre.maplibre-<name>-<version>",
      "dflt": "basic",
      "editType": "plot",
      "valType": "any",
@@ -4270,7 +4259,7 @@
      "valType": "any"
     },
     "zoom": {
-     "description": "Sets the zoom level of the map (mapbox.zoom).",
+     "description": "Sets the zoom level of the map (maplibre.zoom).",
      "dflt": 1,
      "editType": "plot",
      "valType": "number"
@@ -4387,7 +4376,7 @@
     },
     "remove": {
      "arrayOk": true,
-     "description": "Determines which predefined modebar buttons to remove. Similar to `config.modeBarButtonsToRemove` option. This may include *autoScale2d*, *autoscale*, *editInChartStudio*, *editinchartstudio*, *hoverCompareCartesian*, *hovercompare*, *lasso*, *lasso2d*, *orbitRotation*, *orbitrotation*, *pan*, *pan2d*, *pan3d*, *reset*, *resetCameraDefault3d*, *resetCameraLastSave3d*, *resetGeo*, *resetSankeyGroup*, *resetScale2d*, *resetViewMapbox*, *resetViews*, *resetcameradefault*, *resetcameralastsave*, *resetsankeygroup*, *resetscale*, *resetview*, *resetviews*, *select*, *select2d*, *sendDataToCloud*, *senddatatocloud*, *tableRotation*, *tablerotation*, *toImage*, *toggleHover*, *toggleSpikelines*, *togglehover*, *togglespikelines*, *toimage*, *zoom*, *zoom2d*, *zoom3d*, *zoomIn2d*, *zoomInGeo*, *zoomInMapbox*, *zoomOut2d*, *zoomOutGeo*, *zoomOutMapbox*, *zoomin*, *zoomout*.",
+     "description": "Determines which predefined modebar buttons to remove. Similar to `config.modeBarButtonsToRemove` option. This may include *autoScale2d*, *autoscale*, *editInChartStudio*, *editinchartstudio*, *hoverCompareCartesian*, *hovercompare*, *lasso*, *lasso2d*, *orbitRotation*, *orbitrotation*, *pan*, *pan2d*, *pan3d*, *reset*, *resetCameraDefault3d*, *resetCameraLastSave3d*, *resetGeo*, *resetSankeyGroup*, *resetScale2d*, *resetViewMapLibre*, *resetViews*, *resetcameradefault*, *resetcameralastsave*, *resetsankeygroup*, *resetscale*, *resetview*, *resetviews*, *select*, *select2d*, *sendDataToCloud*, *senddatatocloud*, *tableRotation*, *tablerotation*, *toImage*, *toggleHover*, *toggleSpikelines*, *togglehover*, *togglespikelines*, *toimage*, *zoom*, *zoom2d*, *zoom3d*, *zoomIn2d*, *zoomInGeo*, *zoomInMapLibre*, *zoomOut2d*, *zoomOutGeo*, *zoomOutMapLibre*, *zoomin*, *zoomout*.",
      "dflt": "",
      "editType": "modebar",
      "valType": "string"
@@ -26494,7 +26483,7 @@
    },
    "type": "choropleth"
   },
-  "choroplethmapbox": {
+  "choroplethmaplibre": {
    "animatable": false,
    "attributes": {
     "autocolorscale": {
@@ -26505,7 +26494,7 @@
      "valType": "boolean"
     },
     "below": {
-     "description": "Determines if the choropleth polygons will be inserted before the layer with the specified ID. By default, choroplethmapbox traces are placed above the water layers. If set to '', the layer will be inserted above every existing layer.",
+     "description": "Determines if the choropleth polygons will be inserted before the layer with the specified ID. By default, choroplethmaplibre traces are placed above the water layers. If set to '', the layer will be inserted above every existing layer.",
      "editType": "plot",
      "valType": "string"
     },
@@ -27768,8 +27757,8 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
-     "dflt": "mapbox",
+     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.maplibre`. If *maplibre2*, the data refer to `layout.maplibre2`, and so on.",
+     "dflt": "maplibre",
      "editType": "calc",
      "valType": "subplotid"
     },
@@ -27795,7 +27784,7 @@
      },
      "role": "object"
     },
-    "type": "choroplethmapbox",
+    "type": "choroplethmaplibre",
     "uid": {
      "description": "Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.",
      "editType": "plot",
@@ -27876,16 +27865,16 @@
     }
    },
    "categories": [
-    "mapbox",
+    "maplibre",
     "gl",
     "noOpacity",
     "showLegend"
    ],
    "meta": {
     "description": "GeoJSON features to be filled are set in `geojson` The data that describes the choropleth value-to-color mapping is set in `locations` and `z`.",
-    "hr_name": "choropleth_mapbox"
+    "hr_name": "choropleth_maplibre"
    },
-   "type": "choroplethmapbox"
+   "type": "choroplethmaplibre"
   },
   "cone": {
    "animatable": false,
@@ -32642,7 +32631,7 @@
    },
    "type": "contourcarpet"
   },
-  "densitymapbox": {
+  "densitymaplibre": {
    "animatable": false,
    "attributes": {
     "autocolorscale": {
@@ -32653,7 +32642,7 @@
      "valType": "boolean"
     },
     "below": {
-     "description": "Determines if the densitymapbox trace will be inserted before the layer with the specified ID. By default, densitymapbox traces are placed below the first layer of type symbol If set to '', the layer will be inserted above every existing layer.",
+     "description": "Determines if the densitymaplibre trace will be inserted before the layer with the specified ID. By default, densitymaplibre traces are placed below the first layer of type symbol If set to '', the layer will be inserted above every existing layer.",
      "editType": "plot",
      "valType": "string"
     },
@@ -33821,7 +33810,7 @@
     },
     "radius": {
      "arrayOk": true,
-     "description": "Sets the radius of influence of one `lon` / `lat` point in pixels. Increasing the value makes the densitymapbox trace smoother, but less detailed.",
+     "description": "Sets the radius of influence of one `lon` / `lat` point in pixels. Increasing the value makes the densitymaplibre trace smoother, but less detailed.",
      "dflt": 30,
      "editType": "plot",
      "min": 1,
@@ -33870,8 +33859,8 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
-     "dflt": "mapbox",
+     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.maplibre`. If *maplibre2*, the data refer to `layout.maplibre2`, and so on.",
+     "dflt": "maplibre",
      "editType": "calc",
      "valType": "subplotid"
     },
@@ -33897,7 +33886,7 @@
      },
      "role": "object"
     },
-    "type": "densitymapbox",
+    "type": "densitymaplibre",
     "uid": {
      "description": "Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.",
      "editType": "plot",
@@ -33963,15 +33952,15 @@
     }
    },
    "categories": [
-    "mapbox",
+    "maplibre",
     "gl",
     "showLegend"
    ],
    "meta": {
     "description": "Draws a bivariate kernel density estimation with a Gaussian kernel from `lon` and `lat` coordinates and optional `z` values using a colorscale.",
-    "hr_name": "density_mapbox"
+    "hr_name": "density_maplibre"
    },
-   "type": "densitymapbox"
+   "type": "densitymaplibre"
   },
   "funnel": {
    "animatable": false,
@@ -73965,11 +73954,11 @@
    },
    "type": "scattergl"
   },
-  "scattermapbox": {
+  "scattermaplibre": {
    "animatable": false,
    "attributes": {
     "below": {
-     "description": "Determines if this scattermapbox trace's layers are to be inserted before the layer with the specified ID. By default, scattermapbox layers are inserted above all the base layers. To place the scattermapbox layers above every other layer, set `below` to *''*.",
+     "description": "Determines if this scattermaplibre trace's layers are to be inserted before the layer with the specified ID. By default, scattermaplibre layers are inserted above all the base layers. To place the scattermaplibre layers above every other layer, set `below` to *''*.",
      "editType": "calc",
      "valType": "string"
     },
@@ -75455,8 +75444,8 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
-     "dflt": "mapbox",
+     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.maplibre`. If *maplibre2*, the data refer to `layout.maplibre2`, and so on.",
+     "dflt": "maplibre",
      "editType": "calc",
      "valType": "subplotid"
     },
@@ -75472,7 +75461,7 @@
       "editType": "calc",
       "valType": "color"
      },
-     "description": "Sets the icon text font (color=mapbox.layer.paint.text-color, size=mapbox.layer.layout.text-size). Has an effect only when `type` is set to *symbol*.",
+     "description": "Sets the icon text font (color=maplibre.layer.paint.text-color, size=maplibre.layer.layout.text-size). Has an effect only when `type` is set to *symbol*.",
      "editType": "calc",
      "family": {
       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
@@ -75556,7 +75545,7 @@
      },
      "role": "object"
     },
-    "type": "scattermapbox",
+    "type": "scattermaplibre",
     "uid": {
      "description": "Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.",
      "editType": "plot",
@@ -75606,17 +75595,17 @@
     }
    },
    "categories": [
-    "mapbox",
+    "maplibre",
     "gl",
     "symbols",
     "showLegend",
     "scatter-like"
    ],
    "meta": {
-    "description": "The data visualized as scatter point, lines or marker symbols on a Mapbox GL geographic map is provided by longitude/latitude pairs in `lon` and `lat`.",
-    "hrName": "scatter_mapbox"
+    "description": "The data visualized as scatter point, lines or marker symbols on a MapLibre GL geographic map is provided by longitude/latitude pairs in `lon` and `lat`.",
+    "hrName": "scatter_maplibre"
    },
-   "type": "scattermapbox"
+   "type": "scattermaplibre"
   },
   "scatterpolar": {
    "animatable": false,

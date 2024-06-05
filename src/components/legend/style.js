@@ -541,13 +541,13 @@ module.exports = function style(s, gd, legend) {
                     useGradient = true;
                     break;
                 case 'choropleth' :
-                case 'choroplethmapbox' :
+                case 'choroplethmaplibre' :
                     ptsData = [
                         ['M-6,-6V6H6V-6Z']
                     ];
                     useGradient = true;
                     break;
-                case 'densitymapbox' :
+                case 'densitymaplibre' :
                     ptsData = [
                         ['M-6,0 a6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0']
                     ];

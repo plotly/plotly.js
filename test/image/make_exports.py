@@ -11,7 +11,6 @@ pio.templates.default = 'none'
 pio.kaleido.scope.plotlyjs = os.path.join(root, 'build', 'plotly.js')
 
 _credentials = open(os.path.join(root, 'build', 'credentials.json'), 'r')
-pio.kaleido.scope.mapbox_access_token = json.load(_credentials)['MAPBOX_ACCESS_TOKEN']
 _credentials.close()
 
 allFormats = ['svg', 'jpg', 'jpeg', 'webp', 'eps', 'pdf']
@@ -27,7 +26,7 @@ allNames = [
     'image_astronaut_source',
     'gl2d_no-clustering2',
     'gl3d_surface-heatmap-treemap_transparent-colorscale',
-    'mapbox_density-multiple_legend',
+    'maplibre_density-multiple_legend',
     'smith_modes',
     'zsmooth_methods',
     'fonts',

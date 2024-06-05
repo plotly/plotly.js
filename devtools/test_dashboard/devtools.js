@@ -19,10 +19,6 @@ var Tabs = {
             // use local topojson files
             topojsonURL: '../../node_modules/sane-topojson/dist/',
 
-            // register mapbox access token
-            // run `npm run preset` if you haven't yet
-            mapboxAccessToken: credentials.MAPBOX_ACCESS_TOKEN,
-
             // show all logs in console
             logging: 2
         });

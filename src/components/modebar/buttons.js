@@ -651,7 +651,7 @@ modeBarButtons.resetViews = {
         handleCamera3d(gd, ev);
 
         resetView(gd, 'geo');
-        resetView(gd, 'mapbox');
+        resetView(gd, 'maplibre');
     }
 };
 
@@ -684,42 +684,42 @@ function setSpikelineVisibility(gd) {
     return aobj;
 }
 
-modeBarButtons.resetViewMapbox = {
-    name: 'resetViewMapbox',
+modeBarButtons.resetViewMapLibre = {
+    name: 'resetViewMapLibre',
     _cat: 'resetView',
     title: function(gd) { return _(gd, 'Reset view'); },
     attr: 'reset',
     icon: Icons.home,
     click: function(gd) {
-        resetView(gd, 'mapbox');
+        resetView(gd, 'maplibre');
     }
 };
 
-modeBarButtons.zoomInMapbox = {
-    name: 'zoomInMapbox',
+modeBarButtons.zoomInMapLibre = {
+    name: 'zoomInMapLibre',
     _cat: 'zoomin',
     title: function(gd) { return _(gd, 'Zoom in'); },
     attr: 'zoom',
     val: 'in',
     icon: Icons.zoom_plus,
-    click: handleMapboxZoom
+    click: handleMapLibreZoom
 };
 
-modeBarButtons.zoomOutMapbox = {
-    name: 'zoomOutMapbox',
+modeBarButtons.zoomOutMapLibre = {
+    name: 'zoomOutMapLibre',
     _cat: 'zoomout',
     title: function(gd) { return _(gd, 'Zoom out'); },
     attr: 'zoom',
     val: 'out',
     icon: Icons.zoom_minus,
-    click: handleMapboxZoom
+    click: handleMapLibreZoom
 };
 
-function handleMapboxZoom(gd, ev) {
+function handleMapLibreZoom(gd, ev) {
     var button = ev.currentTarget;
     var val = button.getAttribute('data-val');
     var fullLayout = gd._fullLayout;
-    var subplotIds = fullLayout._subplots.mapbox || [];
+    var subplotIds = fullLayout._subplots.maplibre || [];
     var scalar = 1.05;
     var aObj = {};
 

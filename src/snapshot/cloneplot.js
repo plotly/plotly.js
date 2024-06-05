@@ -143,7 +143,6 @@ module.exports = function clonePlot(graphObj, options) {
             displaylogo: options.displaylogo || false,
             showLink: options.showLink || false,
             showTips: options.showTips || false,
-            mapboxAccessToken: context.mapboxAccessToken
         }
     };
 

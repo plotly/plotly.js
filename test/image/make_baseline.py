@@ -56,7 +56,6 @@ pio.kaleido.scope.plotlyjs = plotlyjs
 pio.templates.default = 'none'
 
 _credentials = open(os.path.join(root, 'build', 'credentials.json'), 'r')
-pio.kaleido.scope.mapbox_access_token = json.load(_credentials)['MAPBOX_ACCESS_TOKEN']
 _credentials.close()
 
 ALL_MOCKS = [os.path.splitext(a)[0] for a in os.listdir(dirIn) if a.endswith('.json')]
@@ -95,10 +94,10 @@ allNames += [item for item, had_item in zip(LAST, HAD) if had_item]
 
 # unable to generate baselines for the following mocks
 blacklist = [
-    'mapbox_density0-legend',
-    'mapbox_osm-style',
-    'mapbox_stamen-style', # Could pass by setting mapboxAccessToken to a stadiamaps.com token
-    'mapbox_custom-style' # Figure out why needed this in https://github.com/plotly/plotly.js/pull/6610
+    'maplibre_density0-legend',
+    'maplibre_osm-style',
+    'maplibre_stamen-style',
+    'maplibre_custom-style' # Figure out why needed this in https://github.com/plotly/plotly.js/pull/6610
 ]
 allNames = [a for a in allNames if a not in blacklist]
 

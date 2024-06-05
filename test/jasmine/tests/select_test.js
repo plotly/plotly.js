@@ -685,10 +685,10 @@ describe('Click-to-select', function() {
           });
 
         [
-            testCase('scattermapbox', require('../../image/mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN }),
-            testCase('choroplethmapbox', require('../../image/mocks/mapbox_choropleth0.json'), 270, 220, [[0]], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN })
+            testCase('scattermaplibre', require('../../image/mocks/maplibre_0.json'), 650, 195, [[2], []], {},
+              { ),
+            testCase('choroplethmaplibre', require('../../image/mocks/maplibre_choropleth0.json'), 270, 220, [[0]], {},
+              { )
         ]
           .forEach(function(testCase) {
               it('@gl trace type ' + testCase.label, function(done) {
@@ -772,10 +772,10 @@ describe('Click-to-select', function() {
         });
 
         [
-            testCase('mapbox', require('../../image/mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN }),
-            testCase('mapbox', require('../../image/mocks/mapbox_choropleth0.json'), 270, 220, [[0], []], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN })
+            testCase('maplibre', require('../../image/mocks/maplibre_0.json'), 650, 195, [[2], []], {},
+              { ),
+            testCase('maplibre', require('../../image/mocks/maplibre_choropleth0.json'), 270, 220, [[0], []], {},
+              { )
         ].forEach(function(testCase) {
             it('@gl for base plot ' + testCase.label, function(done) {
                 _run(testCase, done);
@@ -2039,23 +2039,23 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@gl should work on scattermapbox traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@gl should work on scattermaplibre traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['lon', 'lat']);
-            var assertRanges = makeAssertRanges('mapbox');
-            var assertLassoPoints = makeAssertLassoPoints('mapbox');
+            var assertRanges = makeAssertRanges('maplibre');
+            var assertLassoPoints = makeAssertLassoPoints('maplibre');
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_bubbles-text'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/maplibre_bubbles-text'));
 
             fig.data[0].lon.push(null);
             fig.data[0].lat.push(null);
 
             fig.layout.dragmode = 'select';
 
-            delete fig.layout.mapbox.bounds;
+            delete fig.layout.maplibre.bounds;
 
             fig.config = {
-                mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
+                
             };
             addInvisible(fig);
 
@@ -2070,7 +2070,7 @@ describe('Test select box and lasso per trace:', function() {
                         assertRanges([[21.99, 34.55], [38.14, 25.98]]);
                         assertSelectedPoints({0: [2]});
                     },
-                    null, BOXEVENTS, 'scattermapbox select'
+                    null, BOXEVENTS, 'scattermaplibre select'
                 );
             })
             .then(function() {
@@ -2086,7 +2086,7 @@ describe('Test select box and lasso per trace:', function() {
                             [13.28, 25.97], [13.28, 14.33], [25.71, 14.33], [25.71, 25.97], [13.28, 25.97]
                         ]);
                     },
-                    null, LASSOEVENTS, 'scattermapbox lasso'
+                    null, LASSOEVENTS, 'scattermaplibre lasso'
                 );
             })
             .then(function() {
@@ -2095,7 +2095,7 @@ describe('Test select box and lasso per trace:', function() {
             })
             .then(function() {
                 return _run(hasCssTransform,
-                    [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermapbox pan'
+                    [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermaplibre pan'
                 );
             })
             .then(done, done.fail);
@@ -2103,19 +2103,19 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@gl should work on choroplethmapbox traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@gl should work on choroplethmaplibre traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['location', 'z']);
-            var assertRanges = makeAssertRanges('mapbox');
-            var assertLassoPoints = makeAssertLassoPoints('mapbox');
+            var assertRanges = makeAssertRanges('maplibre');
+            var assertLassoPoints = makeAssertLassoPoints('maplibre');
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_choropleth0.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/maplibre_choropleth0.json'));
 
             fig.data[0].locations.push(null);
 
             fig.layout.dragmode = 'select';
             fig.config = {
-                mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
+                
             };
             addInvisible(fig);
 
@@ -2130,7 +2130,7 @@ describe('Test select box and lasso per trace:', function() {
                         assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
                         assertSelectedPoints({0: [0]});
                     },
-                    null, BOXEVENTS, 'choroplethmapbox select'
+                    null, BOXEVENTS, 'choroplethmaplibre select'
                 );
             })
             .then(function() {
@@ -2147,7 +2147,7 @@ describe('Test select box and lasso per trace:', function() {
                             [-67.84, 43.936], [-74.06, 43.936]
                         ]);
                     },
-                    null, LASSOEVENTS, 'choroplethmapbox lasso'
+                    null, LASSOEVENTS, 'choroplethmaplibre lasso'
                 );
             })
             .then(done, done.fail);
@@ -3220,19 +3220,19 @@ describe('Test select box and lasso per trace:', function() {
         });
     });
 
-    it('@gl should work on choroplethmapbox traces after adding a new trace on top:', function(done) {
+    it('@gl should work on choroplethmaplibre traces after adding a new trace on top:', function(done) {
         var assertPoints = makeAssertPoints(['location', 'z']);
-        var assertRanges = makeAssertRanges('mapbox');
-        var assertLassoPoints = makeAssertLassoPoints('mapbox');
+        var assertRanges = makeAssertRanges('maplibre');
+        var assertLassoPoints = makeAssertLassoPoints('maplibre');
         var assertSelectedPoints = makeAssertSelectedPoints();
 
-        var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_choropleth0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/maplibre_choropleth0.json'));
 
         fig.data[0].locations.push(null);
 
         fig.layout.dragmode = 'select';
         fig.config = {
-            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
+            
         };
         addInvisible(fig);
 
@@ -3242,7 +3242,7 @@ describe('Test select box and lasso per trace:', function() {
         .then(function() {
             // add a scatter points on top
             fig.data[3] = {
-                type: 'scattermapbox',
+                type: 'scattermaplibre',
                 marker: { size: 40 },
                 lon: [-70],
                 lat: [40]
@@ -3258,7 +3258,7 @@ describe('Test select box and lasso per trace:', function() {
                     assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
                     assertSelectedPoints({0: [0], 3: []});
                 },
-                null, BOXEVENTS, 'choroplethmapbox select'
+                null, BOXEVENTS, 'choroplethmaplibre select'
             );
         })
         .then(function() {
@@ -3275,7 +3275,7 @@ describe('Test select box and lasso per trace:', function() {
                         [-67.84, 43.936], [-74.06, 43.936]
                     ]);
                 },
-                null, LASSOEVENTS, 'choroplethmapbox lasso'
+                null, LASSOEVENTS, 'choroplethmaplibre lasso'
             );
         })
         .then(done, done.fail);

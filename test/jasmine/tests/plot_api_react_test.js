@@ -18,8 +18,6 @@ var mouseEvent = require('../assets/mouse_event');
 var drag = require('../assets/drag');
 var delay = require('../assets/delay');
 
-var MAPBOX_ACCESS_TOKEN = require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN;
-
 describe('@noCIdep Plotly.react', function() {
     var mockedMethods = [
         'doTraceStyle',
@@ -882,16 +880,16 @@ describe('@noCIdep Plotly.react', function() {
         });
     });
 
-    mockLists.mapbox.forEach(function(mockSpec) {
+    mockLists.maplibre.forEach(function(mockSpec) {
         it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbpox mocks)', function(done) {
             Plotly.setPlotConfig({
-                mapboxAccessToken: MAPBOX_ACCESS_TOKEN
+                
             });
             _runReactMock(mockSpec, done);
         });
     });
 
-    // since CI breaks up gl/svg types, and drops scattermapbox, this test won't work there
+    // since CI breaks up gl/svg types, and drops scattermaplibre, this test won't work there
     // but I should hope that if someone is doing something as major as adding a new type,
     // they'll run the full test suite locally!
     it('@noCI tested every trace & transform type at least once', function() {
@@ -1899,24 +1897,24 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(done);
     });
 
-    it('@gl preserves mapbox view changes using mapbox.uirevision', function(done) {
-        function fig(mainRev, mapboxRev) {
+    it('@gl preserves maplibre view changes using maplibre.uirevision', function(done) {
+        function fig(mainRev, maplibreRev) {
             return {
-                data: [{lat: [1, 2], lon: [1, 2], type: 'scattermapbox'}],
+                data: [{lat: [1, 2], lon: [1, 2], type: 'scattermaplibre'}],
                 layout: {
                     uirevision: mainRev,
-                    mapbox: {uirevision: mapboxRev}
+                    maplibre: {uirevision: maplibreRev}
                 }
             };
         }
 
         function attrs(original) {
             return {
-                'mapbox.center.lat': original ? [undefined, 0] : 1,
-                'mapbox.center.lon': original ? [undefined, 0] : 2,
-                'mapbox.zoom': original ? [undefined, 1] : 3,
-                'mapbox.bearing': original ? [undefined, 0] : 4,
-                'mapbox.pitch': original ? [undefined, 0] : 5
+                'maplibre.center.lat': original ? [undefined, 0] : 1,
+                'maplibre.center.lon': original ? [undefined, 0] : 2,
+                'maplibre.zoom': original ? [undefined, 1] : 3,
+                'maplibre.bearing': original ? [undefined, 0] : 4,
+                'maplibre.pitch': original ? [undefined, 0] : 5
             };
         }
 
@@ -1928,7 +1926,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkEdited = checkState([], attrs());
 
         Plotly.setPlotConfig({
-            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
+            
         });
 
         _run(fig, editMap, checkInitial, checkEdited).then(done);
@@ -2283,14 +2281,14 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         .then(done, done.fail);
     });
 
-    it('@gl mapbox subplots should preserve viewport changes after panning', function(done) {
+    it('@gl maplibre subplots should preserve viewport changes after panning', function(done) {
         Plotly.setPlotConfig({
-            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
+            
         });
 
         function _react() {
             return Plotly.react(gd, [{
-                type: 'scattermapbox',
+                type: 'scattermaplibre',
                 lon: [3, 1, 2],
                 lat: [2, 3, 1]
             }], {
@@ -2300,7 +2298,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             });
         }
 
-        // see mapbox_test.js for rationale
+        // see maplibre_test.js for rationale
         function _mouseEvent(type, pos) {
             return new Promise(function(resolve) {
                 mouseEvent(type, pos[0], pos[1], {
@@ -2310,7 +2308,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             });
         }
 
-        // see mapbox_test.js for rationale
+        // see maplibre_test.js for rationale
         function _drag(p0, p1) {
             return _mouseEvent('mousemove', p0)
                 .then(function() { return _mouseEvent('mousedown', p0); })
@@ -2324,30 +2322,30 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         function _assertGUI(msg) {
             var TOL = 2;
 
-            var mapbox = gd.layout.mapbox || {};
-            expect((mapbox.center || {}).lon).toBeCloseTo(-17.578, TOL, msg);
-            expect((mapbox.center || {}).lat).toBeCloseTo(17.308, TOL, msg);
-            expect(mapbox.zoom).toBe(1);
+            var maplibre = gd.layout.maplibre || {};
+            expect((maplibre.center || {}).lon).toBeCloseTo(-17.578, TOL, msg);
+            expect((maplibre.center || {}).lat).toBeCloseTo(17.308, TOL, msg);
+            expect(maplibre.zoom).toBe(1);
 
-            var fullMapbox = gd._fullLayout.mapbox || {};
-            expect(fullMapbox.center.lon).toBeCloseTo(-17.578, TOL, msg);
-            expect(fullMapbox.center.lat).toBeCloseTo(17.308, TOL, msg);
-            expect(fullMapbox.zoom).toBe(1);
+            var fullMapLibre = gd._fullLayout.maplibre || {};
+            expect(fullMapLibre.center.lon).toBeCloseTo(-17.578, TOL, msg);
+            expect(fullMapLibre.center.lat).toBeCloseTo(17.308, TOL, msg);
+            expect(fullMapLibre.zoom).toBe(1);
 
             var preGUI = gd._fullLayout._preGUI;
-            expect(preGUI['mapbox.center.lon']).toBe(null, msg);
-            expect(preGUI['mapbox.center.lat']).toBe(null, msg);
-            expect(preGUI['mapbox.zoom']).toBe(null, msg);
+            expect(preGUI['maplibre.center.lon']).toBe(null, msg);
+            expect(preGUI['maplibre.center.lat']).toBe(null, msg);
+            expect(preGUI['maplibre.zoom']).toBe(null, msg);
         }
 
         _react()
         .then(function() {
-            expect(gd.layout.mapbox).toEqual({});
+            expect(gd.layout.maplibre).toEqual({});
 
-            var fullMapbox = gd._fullLayout.mapbox;
-            expect(fullMapbox.center.lon).toBe(0);
-            expect(fullMapbox.center.lat).toBe(0);
-            expect(fullMapbox.zoom).toBe(1);
+            var fullMapLibre = gd._fullLayout.maplibre;
+            expect(fullMapLibre.center.lon).toBe(0);
+            expect(fullMapLibre.center.lat).toBe(0);
+            expect(fullMapLibre.zoom).toBe(1);
 
             expect(gd._fullLayout._preGUI).toEqual({});
         })
