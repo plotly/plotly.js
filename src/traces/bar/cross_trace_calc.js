@@ -352,6 +352,7 @@ function setOffsetAndWidth(gd, pa, sieve, opts) {
 
         var t = calcTrace[0].t;
         t.barwidth = barWidth;
+        t.offsetindex = trace._offsetIndex;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
         t.bardelta = minDiff;
@@ -569,18 +570,20 @@ function stackBars(sa, sieve, opts) {
     var isFunnel;
     var i, j;
     var bar;
+    var offsetIndex;
 
     for(i = 0; i < calcTraces.length; i++) {
         calcTrace = calcTraces[i];
         fullTrace = calcTrace[0].trace;
 
         if(fullTrace.type === 'funnel') {
+            offsetIndex = calcTrace[0].t.offsetindex;
             for(j = 0; j < calcTrace.length; j++) {
                 bar = calcTrace[j];
 
                 if(bar.s !== BADNUM) {
                     // create base of funnels
-                    sieve.put(bar.p, -0.5 * bar.s);
+                    sieve.put(bar.p + offsetIndex, -0.5 * bar.s);
                 }
             }
         }
@@ -592,7 +595,7 @@ function stackBars(sa, sieve, opts) {
 
         isFunnel = (fullTrace.type === 'funnel');
 
-        var offset = fullTrace.type === 'barpolar' ? 0 : calcTrace[0].t.poffset;
+        offsetIndex = fullTrace.type === 'barpolar' ? 0 : calcTrace[0].t.offsetindex;
 
         var pts = [];
 
@@ -608,7 +611,7 @@ function stackBars(sa, sieve, opts) {
                     value = bar.s + bar.b;
                 }
 
-                var base = sieve.put(bar.p + offset, value);
+                var base = sieve.put(bar.p + offsetIndex, value);
                 var top = base + value;
 
                 // store the bar base and top in each calcdata item
