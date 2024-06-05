@@ -12,14 +12,12 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
         return Lib.coerce(traceOut._input, traceOut, attributes, attr);
     }
 
-    if(fullLayout.scattermode === 'group') {
-        for(i = 0; i < fullData.length; i++) {
-            traceOut = fullData[i];
+    for(i = 0; i < fullData.length; i++) {
+        traceOut = fullData[i];
 
-            if(traceOut.type === 'scatter') {
-                traceIn = traceOut._input;
-                handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
-            }
+        if(traceOut.type === 'scatter') {
+            traceIn = traceOut._input;
+            handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce, fullLayout.scattermode);
         }
     }
 

@@ -77,13 +77,10 @@ function crossTraceDefaults(fullData, fullLayout) {
         return Lib.coerce(traceOut._input, traceOut, attributes, attr);
     }
 
-    if(fullLayout.funnelmode === 'group') {
-        for(var i = 0; i < fullData.length; i++) {
-            traceOut = fullData[i];
-            traceIn = traceOut._input;
-
-            handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
-        }
+    for(var i = 0; i < fullData.length; i++) {
+        traceOut = fullData[i];
+        traceIn = traceOut._input;
+        handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce, fullLayout.funnelmode);
     }
 }
 

@@ -303,9 +303,7 @@ function crossTraceDefaults(fullData, fullLayout) {
 
         if(traceType === 'box' || traceType === 'violin') {
             traceIn = traceOut._input;
-            if(fullLayout[traceType + 'mode'] === 'group') {
-                handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
-            }
+            handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce, fullLayout[traceType + 'mode']);
         }
     }
 }

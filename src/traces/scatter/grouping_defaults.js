@@ -31,8 +31,7 @@ module.exports = function handleGroupingDefaults(traceIn, traceOut, fullLayout, 
     var offsetGroupOpts = offsetGroups[offsetgroup];
     // in barmode 'group', traces without offsetgroup receive their own offsetgroup
     // in other barmodes, traces without offsetgroup are assigned to the same offset group
-    var isBarTrace = traceOut.type === 'bar' || traceOut.type === 'waterfall';
-    if((isBarTrace && barmode !== 'group') || offsetgroup) {
+    if(barmode !== 'group' || offsetgroup) {
         if(!offsetGroupOpts) {
             offsetGroupOpts = offsetGroups[offsetgroup] = {
                 offsetIndex: Object.keys(offsetGroups).length
