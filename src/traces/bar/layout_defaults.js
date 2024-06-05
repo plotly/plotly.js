@@ -37,7 +37,7 @@ module.exports = function(layoutIn, layoutOut, fullData) {
             // with other barmodes bars are grouped next to each other when sharing the same axes
             // and using different offsetgroups
             subploti += trace._input.offsetgroup;
-            if(!usedSubplots[subploti]) gappedAnyway = true;
+            if(usedSubplots.length > 0 && !usedSubplots[subploti]) gappedAnyway = true;
             usedSubplots[subploti] = true;
         }
 
