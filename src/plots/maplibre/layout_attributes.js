@@ -46,9 +46,7 @@ var attrs = module.exports = overrideAll({
             '',
             'The built-in plotly.js styles objects are:', constants.styleValuesNonMapbox.join(', '),
             '',
-            'The built-in MapLibre styles are:', constants.styleValuesMapLibre.join(', '),
-            '',
-            'MapLibre style URLs are of the form: maplibre://maplibre.maplibre-<name>-<version>'
+            'The built-in MapLibre styles are:', constants.styleValuesMapLibre.join(', ')+'.',
         ].join(' ')
     },
 

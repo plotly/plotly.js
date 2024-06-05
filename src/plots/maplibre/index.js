@@ -111,38 +111,6 @@ exports.toSVG = function(gd) {
 
         var subplotDiv = d3.select(opts._subplot.div);
 
-        // Append logo if visible
-        var hidden = subplotDiv.select('.maplibregl-ctrl-logo').node().offsetParent === null;
-        if(!hidden) {
-            var logo = fullLayout._glimages.append('g');
-            logo.attr('transform', strTranslate(size.l + size.w * domain.x[0] + 10, size.t + size.h * (1 - domain.y[0]) - 31));
-            logo.append('path')
-              .attr('d', constants.maplibreLogo.path0)
-              .style({
-                  opacity: 0.9,
-                  fill: '#ffffff',
-                  'enable-background': 'new'
-              });
-
-            logo.append('path')
-              .attr('d', constants.maplibreLogo.path1)
-              .style('opacity', 0.35)
-              .style('enable-background', 'new');
-
-            logo.append('path')
-              .attr('d', constants.maplibreLogo.path2)
-              .style('opacity', 0.35)
-              .style('enable-background', 'new');
-
-            logo.append('polygon')
-              .attr('points', constants.maplibreLogo.polygon)
-              .style({
-                  opacity: 0.9,
-                  fill: '#ffffff',
-                  'enable-background': 'new'
-              });
-        }
-
         // Add attributions
         var attributions = subplotDiv
                               .select('.maplibregl-ctrl-attrib').text()
