@@ -170,7 +170,7 @@ var styleValuesMapLibre = sortObjectKeys(stylesMapLibre);
 module.exports = {
     requiredVersion: requiredVersion,
 
-    
+
     styleValueDflt: 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
     stylesMapLibre: stylesMapLibre,
     styleValuesMapLibre: styleValuesMapLibre,
