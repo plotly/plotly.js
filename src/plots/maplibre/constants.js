@@ -171,7 +171,7 @@ module.exports = {
     requiredVersion: requiredVersion,
 
 
-    styleValueDflt: 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
+    styleValueDflt: 'carto-positron',
     stylesMapLibre: stylesMapLibre,
     styleValuesMapLibre: styleValuesMapLibre,
 
