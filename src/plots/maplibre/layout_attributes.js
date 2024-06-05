@@ -30,7 +30,7 @@ var attrs = module.exports = overrideAll({
 
     style: {
         valType: 'any',
-        values: constants.styleValuesMapLibre.concat(constants.styleValuesNonMapbox),
+        values: constants.styleValuesMapLibre,
         dflt: constants.styleValueDflt,
         description: [
             'Defines the map layers that are rendered by default below the trace layers defined in `data`,',
@@ -39,14 +39,12 @@ var attrs = module.exports = overrideAll({
             'These layers can be defined either explicitly as a MapLibre Style object which can contain multiple',
             'layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS)',
             'or implicitly by using one of the built-in style objects which use WMSes',
-            'or by using a custom MapLibre style URL',
+            'or by using a custom style URL',
             '',
             'MapLibre Style objects are of the form described in the MapLibre GL JS documentation available at',
             'https://maplibre.org/maplibre-style-spec/',
             '',
-            'The built-in plotly.js styles objects are:', constants.styleValuesNonMapbox.join(', '),
-            '',
-            'The built-in MapLibre styles are:', constants.styleValuesMapLibre.join(', ') + '.',
+            'The built-in plotly.js styles objects are:', constants.styleValuesMapLibre.join(', ') + '.'
         ].join(' ')
     },
 

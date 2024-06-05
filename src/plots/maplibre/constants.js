@@ -26,7 +26,7 @@ var stamenWaterColor = [
     'under <a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'
 ].join(' ');
 
-var stylesNonMapbox = {
+var stylesMapLibre = {
     'open-street-map': {
         id: 'osm',
         version: 8,
@@ -165,15 +165,15 @@ var stylesNonMapbox = {
     }
 };
 
-var styleValuesNonMapbox = sortObjectKeys(stylesNonMapbox);
+var styleValuesMapLibre = sortObjectKeys(stylesMapLibre);
 
 module.exports = {
     requiredVersion: requiredVersion,
 
-    styleValuesMapLibre: [],
-    styleValueDflt: 'carto-positron',
-    stylesNonMapbox: stylesNonMapbox,
-    styleValuesNonMapbox: styleValuesNonMapbox,
+    
+    styleValueDflt: 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
+    stylesMapLibre: stylesMapLibre,
+    styleValuesMapLibre: styleValuesMapLibre,
 
     traceLayerPrefix: 'plotly-trace-layer-',
     layoutLayerPrefix: 'plotly-layout-layer-',
@@ -186,7 +186,7 @@ module.exports = {
 
     missingStyleErrorMsg: [
         'No valid maplibre style found, please set `maplibre.style` to one of:',
-        styleValuesNonMapbox.join(', '),
+        styleValuesMapLibre.join(', '),
         'or use a tile service.'
     ].join('\n'),
 

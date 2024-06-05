@@ -764,8 +764,8 @@ function getStyleObj(val, fullLayout) {
     } else if(typeof val === 'string') {
         styleObj.id = val;
 
-        if(constants.stylesNonMapbox[val]) {
-            styleObj.style = constants.stylesNonMapbox[val];
+        if(constants.stylesMapLibre[val]) {
+            styleObj.style = constants.stylesMapLibre[val];
             var spec = styleObj.style.sources['plotly-' + val];
             var tiles = spec ? spec.tiles : undefined;
             if(
