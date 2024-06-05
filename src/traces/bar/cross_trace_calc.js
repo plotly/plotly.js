@@ -367,7 +367,7 @@ function setOffsetAndWidth(gd, pa, sieve, opts) {
     setBarCenterAndWidth(pa, sieve);
 
     // update position axes
-    if(pa._id !== 'angularaxis') {
+    if(pa._id === 'angularaxis') {
         updatePositionAxis(pa, sieve);
     } else {
         updatePositionAxis(pa, sieve, overlap);
