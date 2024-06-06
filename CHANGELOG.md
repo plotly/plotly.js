@@ -9,6 +9,11 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [next-major]
+
+### Breaking
+ - Replace @plotly/mapbox-gl with maplibre-gl [[#7015](https://github.com/plotly/plotly.js/pull/7015)]
+ 
 ## [2.33.0] -- 2024-05-29
 
 ### Added
