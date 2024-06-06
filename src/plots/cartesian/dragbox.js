@@ -886,14 +886,11 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 ya = sp.yaxis;
 
                 if(sp._scene) {
-                    var xrng = Lib.simpleMap(xa.range, xa.r2l);
-                    var yrng = Lib.simpleMap(ya.range, ya.r2l);
-
                     if(xa.limitRange) xa.limitRange();
                     if(ya.limitRange) ya.limitRange();
 
-                    xrng = xa.range;
-                    yrng = ya.range;
+                    var xrng = Lib.simpleMap(xa.range, xa.r2l);
+                    var yrng = Lib.simpleMap(ya.range, ya.r2l);
 
                     sp._scene.update({range: [xrng[0], yrng[0], xrng[1], yrng[1]]});
                 }
