@@ -3,7 +3,7 @@
 var Lib = require('../../lib');
 
 /**
- * Convert plotly.js 'textposition' to maplibre-gl 'anchor' and 'offset'
+ * Convert plotly.js 'textposition' to mapbox-gl 'anchor' and 'offset'
  * (with the help of the icon size).
  *
  * @param {string} textpostion : plotly.js textposition value
