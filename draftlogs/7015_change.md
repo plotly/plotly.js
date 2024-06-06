@@ -1,0 +1,1 @@
+- Replace @plotly/mapbox-gl with maplibre-gl [[#7015](https://github.com/plotly/plotly.js/pull/7015)]
