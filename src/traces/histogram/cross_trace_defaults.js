@@ -112,7 +112,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
             // N.B. need to coerce *alignmentgroup* before *bingroup*, as traces
             // in same alignmentgroup "have to match"
             if(!traceIs(traceOut, '2dMap')) {
-                handleGroupingDefaults(traceOut._input, traceOut, fullLayout, coerce);
+                handleGroupingDefaults(traceOut._input, traceOut, fullLayout, coerce, fullLayout.barmode);
             }
         }
     }
