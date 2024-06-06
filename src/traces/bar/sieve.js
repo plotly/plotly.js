@@ -69,8 +69,8 @@ function Sieve(traces, opts) {
  * @param {number} value
  * @returns {number} Previous bin value
  */
-Sieve.prototype.put = function put(position, value) {
-    var label = this.getLabel(position, value);
+Sieve.prototype.put = function put(position, group, value) {
+    var label = this.getLabel(position, group, value);
     var oldValue = this.bins[label] || 0;
 
     this.bins[label] = oldValue + value;
@@ -87,8 +87,8 @@ Sieve.prototype.put = function put(position, value) {
  *                           (required if this.sepNegVal is true)
  * @returns {number} Current bin value
  */
-Sieve.prototype.get = function get(position, value) {
-    var label = this.getLabel(position, value);
+Sieve.prototype.get = function get(position, group, value) {
+    var label = this.getLabel(position, group, value);
     return this.bins[label] || 0;
 };
 
@@ -103,10 +103,10 @@ Sieve.prototype.get = function get(position, value) {
  * (prefixed with a 'v' if value is negative and this.sepNegVal is
  * true; otherwise prefixed with '^')
  */
-Sieve.prototype.getLabel = function getLabel(position, value) {
+Sieve.prototype.getLabel = function getLabel(position, group, value) {
     var prefix = (value < 0 && this.sepNegVal) ? 'v' : '^';
     var label = (this.overlapNoMerge) ?
         position :
         Math.round(position / this.binWidth);
-    return prefix + label;
+    return prefix + label + 'g' + group;
 };
