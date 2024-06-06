@@ -79,8 +79,10 @@ function crossTraceDefaults(fullData, fullLayout) {
 
     for(var i = 0; i < fullData.length; i++) {
         traceOut = fullData[i];
-        traceIn = traceOut._input;
-        handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce, fullLayout.funnelmode);
+        if(traceOut.type === 'funnel') {
+            traceIn = traceOut._input;
+            handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce, fullLayout.funnelmode);
+        }
     }
 }
 
