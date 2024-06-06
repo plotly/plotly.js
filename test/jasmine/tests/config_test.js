@@ -881,8 +881,8 @@ describe('config argument', function() {
         });
 
         it('should honor scrollZoom flaglist', function(done) {
-            plot({scrollZoom: 'maplibre+cartesian'}).then(function() {
-                expect(gd._context.scrollZoom).toBe('maplibre+cartesian');
+            plot({scrollZoom: 'mapbox+cartesian'}).then(function() {
+                expect(gd._context.scrollZoom).toBe('mapbox+cartesian');
                 expect(gd._context._scrollZoom).toEqual({mapbox: 1, cartesian: 1});
             })
             .then(done, done.fail);

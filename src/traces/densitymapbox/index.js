@@ -31,7 +31,7 @@ module.exports = {
     basePlotModule: require('../../plots/mapbox'),
     categories: ['mapbox', 'gl', 'showLegend'],
     meta: {
-        hr_name: 'density_maplibre',
+        hr_name: 'density_mapbox',
         description: [
             'Draws a bivariate kernel density estimation with a Gaussian kernel',
             'from `lon` and `lat` coordinates and optional `z` values using a colorscale.'

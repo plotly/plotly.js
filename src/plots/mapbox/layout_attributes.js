@@ -16,7 +16,7 @@ var fontAttr = fontAttrs({
     noFontLineposition: true,
     noFontTextcase: true,
     description: [
-        'Sets the icon text font (color=maplibre.layer.paint.text-color, size=maplibre.layer.layout.text-size).',
+        'Sets the icon text font (color=mapbox.layer.paint.text-color, size=mapbox.layer.layout.text-size).',
         'Has an effect only when `type` is set to *symbol*.'
     ].join(' ')
 });
@@ -63,7 +63,7 @@ var attrs = module.exports = overrideAll({
     zoom: {
         valType: 'number',
         dflt: 1,
-        description: 'Sets the zoom level of the map (maplibre.zoom).'
+        description: 'Sets the zoom level of the map (mapbox.zoom).'
     },
     bearing: {
         valType: 'number',
@@ -75,7 +75,7 @@ var attrs = module.exports = overrideAll({
         dflt: 0,
         description: [
             'Sets the pitch angle of the map',
-            '(in degrees, where *0* means perpendicular to the surface of the map) (maplibre.pitch).'
+            '(in degrees, where *0* means perpendicular to the surface of the map) (mapbox.pitch).'
         ].join(' ')
     },
 
@@ -131,7 +131,7 @@ var attrs = module.exports = overrideAll({
         source: {
             valType: 'any',
             description: [
-                'Sets the source data for this layer (maplibre.layer.source).',
+                'Sets the source data for this layer (mapbox.layer.source).',
                 'When `sourcetype` is set to *geojson*, `source` can be a URL to a GeoJSON',
                 'or a GeoJSON object.',
                 'When `sourcetype` is set to *vector* or *raster*, `source` can be a URL or',
@@ -144,7 +144,7 @@ var attrs = module.exports = overrideAll({
             valType: 'string',
             dflt: '',
             description: [
-                'Specifies the layer to use from a vector tile source (maplibre.layer.source-layer).',
+                'Specifies the layer to use from a vector tile source (mapbox.layer.source-layer).',
                 'Required for *vector* source type that supports multiple layers.'
             ].join(' ')
         },
@@ -198,10 +198,10 @@ var attrs = module.exports = overrideAll({
             dflt: defaultLine,
             description: [
                 'Sets the primary layer color.',
-                'If `type` is *circle*, color corresponds to the circle color (maplibre.layer.paint.circle-color)',
-                'If `type` is *line*, color corresponds to the line color (maplibre.layer.paint.line-color)',
-                'If `type` is *fill*, color corresponds to the fill color (maplibre.layer.paint.fill-color)',
-                'If `type` is *symbol*, color corresponds to the icon color (maplibre.layer.paint.icon-color)'
+                'If `type` is *circle*, color corresponds to the circle color (mapbox.layer.paint.circle-color)',
+                'If `type` is *line*, color corresponds to the line color (mapbox.layer.paint.line-color)',
+                'If `type` is *fill*, color corresponds to the fill color (mapbox.layer.paint.fill-color)',
+                'If `type` is *symbol*, color corresponds to the icon color (mapbox.layer.paint.icon-color)'
             ].join(' ')
         },
         opacity: {
@@ -211,10 +211,10 @@ var attrs = module.exports = overrideAll({
             dflt: 1,
             description: [
                 'Sets the opacity of the layer.',
-                'If `type` is *circle*, opacity corresponds to the circle opacity (maplibre.layer.paint.circle-opacity)',
-                'If `type` is *line*, opacity corresponds to the line opacity (maplibre.layer.paint.line-opacity)',
-                'If `type` is *fill*, opacity corresponds to the fill opacity (maplibre.layer.paint.fill-opacity)',
-                'If `type` is *symbol*, opacity corresponds to the icon/text opacity (maplibre.layer.paint.text-opacity)'
+                'If `type` is *circle*, opacity corresponds to the circle opacity (mapbox.layer.paint.circle-opacity)',
+                'If `type` is *line*, opacity corresponds to the line opacity (mapbox.layer.paint.line-opacity)',
+                'If `type` is *fill*, opacity corresponds to the fill opacity (mapbox.layer.paint.fill-opacity)',
+                'If `type` is *symbol*, opacity corresponds to the icon/text opacity (mapbox.layer.paint.text-opacity)'
             ].join(' ')
         },
         minzoom: {
@@ -223,7 +223,7 @@ var attrs = module.exports = overrideAll({
             max: 24,
             dflt: 0,
             description: [
-                'Sets the minimum zoom level (maplibre.layer.minzoom).',
+                'Sets the minimum zoom level (mapbox.layer.minzoom).',
                 'At zoom levels less than the minzoom, the layer will be hidden.',
             ].join(' ')
         },
@@ -233,7 +233,7 @@ var attrs = module.exports = overrideAll({
             max: 24,
             dflt: 24,
             description: [
-                'Sets the maximum zoom level (maplibre.layer.maxzoom).',
+                'Sets the maximum zoom level (mapbox.layer.maxzoom).',
                 'At zoom levels equal to or greater than the maxzoom, the layer will be hidden.'
             ].join(' ')
         },
@@ -244,7 +244,7 @@ var attrs = module.exports = overrideAll({
                 valType: 'number',
                 dflt: 15,
                 description: [
-                    'Sets the circle radius (maplibre.layer.paint.circle-radius).',
+                    'Sets the circle radius (mapbox.layer.paint.circle-radius).',
                     'Has an effect only when `type` is set to *circle*.'
                 ].join(' ')
             }
@@ -255,14 +255,14 @@ var attrs = module.exports = overrideAll({
                 valType: 'number',
                 dflt: 2,
                 description: [
-                    'Sets the line width (maplibre.layer.paint.line-width).',
+                    'Sets the line width (mapbox.layer.paint.line-width).',
                     'Has an effect only when `type` is set to *line*.'
                 ].join(' ')
             },
             dash: {
                 valType: 'data_array',
                 description: [
-                    'Sets the length of dashes and gaps (maplibre.layer.paint.line-dasharray).',
+                    'Sets the length of dashes and gaps (mapbox.layer.paint.line-dasharray).',
                     'Has an effect only when `type` is set to *line*.'
                 ].join(' ')
             }
@@ -273,7 +273,7 @@ var attrs = module.exports = overrideAll({
                 valType: 'color',
                 dflt: defaultLine,
                 description: [
-                    'Sets the fill outline color (maplibre.layer.paint.fill-outline-color).',
+                    'Sets the fill outline color (mapbox.layer.paint.fill-outline-color).',
                     'Has an effect only when `type` is set to *fill*.'
                 ].join(' ')
             }
@@ -284,7 +284,7 @@ var attrs = module.exports = overrideAll({
                 valType: 'string',
                 dflt: 'marker',
                 description: [
-                    'Sets the symbol icon image (maplibre.layer.layout.icon-image).',
+                    'Sets the symbol icon image (mapbox.layer.layout.icon-image).',
                     'Full list: https://www.mapbox.com/maki-icons/'
                 ].join(' ')
             },
@@ -292,7 +292,7 @@ var attrs = module.exports = overrideAll({
                 valType: 'number',
                 dflt: 10,
                 description: [
-                    'Sets the symbol icon size (maplibre.layer.layout.icon-size).',
+                    'Sets the symbol icon size (mapbox.layer.layout.icon-size).',
                     'Has an effect only when `type` is set to *symbol*.'
                 ].join(' ')
             },
@@ -300,7 +300,7 @@ var attrs = module.exports = overrideAll({
                 valType: 'string',
                 dflt: '',
                 description: [
-                    'Sets the symbol text (maplibre.layer.layout.text-field).'
+                    'Sets the symbol text (mapbox.layer.layout.text-field).'
                 ].join(' ')
             },
             placement: {
@@ -308,7 +308,7 @@ var attrs = module.exports = overrideAll({
                 values: ['point', 'line', 'line-center'],
                 dflt: 'point',
                 description: [
-                    'Sets the symbol and/or text placement (maplibre.layer.layout.symbol-placement).',
+                    'Sets the symbol and/or text placement (mapbox.layer.layout.symbol-placement).',
                     'If `placement` is *point*, the label is placed where the geometry is located',
                     'If `placement` is *line*, the label is placed along the line of the geometry',
                     'If `placement` is *line-center*, the label is placed on the center of the geometry',

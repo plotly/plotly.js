@@ -1360,7 +1360,7 @@ describe('ModeBar', function() {
             });
         });
 
-        describe('maplibre handlers', function() {
+        describe('mapbox handlers', function() {
             it('@gl button *resetViewMapbox* should reset the maplibre view attribute to their default', function(done) {
                 var gd = createGraphDiv();
 

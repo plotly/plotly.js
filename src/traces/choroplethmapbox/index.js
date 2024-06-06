@@ -46,7 +46,7 @@ module.exports = {
     basePlotModule: require('../../plots/mapbox'),
     categories: ['mapbox', 'gl', 'noOpacity', 'showLegend'],
     meta: {
-        hr_name: 'choropleth_maplibre',
+        hr_name: 'choropleth_mapbox',
         description: [
             'GeoJSON features to be filled are set in `geojson`',
             'The data that describes the choropleth value-to-color mapping',

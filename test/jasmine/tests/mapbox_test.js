@@ -375,13 +375,13 @@ describe('mapbox plots', function() {
         _mouseEvent('mousemove', pointPos, noop).then(function() {
             return Plotly.relayout(gd, {'mapbox.zoom': 5});
         }).then(function() {
-            // First relayout on maplibre.zoom results in setZoom call
+            // First relayout on mapbox.zoom results in setZoom call
             expect(map.setZoom).toHaveBeenCalledWith(5);
             expect(map.setZoom).toHaveBeenCalledTimes(1);
         }).then(function() {
             mouseEvent('scroll', pointPos[0], pointPos[1], {deltaY: -400});
             return Plotly.relayout(gd, {'mapbox.zoom': 2}).then(function() {
-                // Second relayout on maplibre.zoom does not result in setZoom
+                // Second relayout on mapbox.zoom does not result in setZoom
                 // call since a scroll wheel zoom is underway
                 expect(map.setZoom).toHaveBeenCalledTimes(1);
             });

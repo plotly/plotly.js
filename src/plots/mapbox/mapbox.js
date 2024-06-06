@@ -320,7 +320,7 @@ proto.updateLayout = function(fullLayout) {
     this.updateFx(fullLayout);
     this.map.resize();
 
-    if(this.gd._context._scrollZoom.maplibre) {
+    if(this.gd._context._scrollZoom.mapbox) {
         map.scrollZoom.enable();
     } else {
         map.scrollZoom.disable();
