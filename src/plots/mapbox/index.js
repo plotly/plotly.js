@@ -68,9 +68,6 @@ exports.plot = function plot(gd) {
     }
 };
 
-exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-};
-
 exports.toSVG = function(gd) {
     var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots[MAPBOX];

@@ -104,15 +104,13 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         compact: true
     }));
 
-    map.setTransformRequest((url, resourceType)=>{
-
-        url = url.replace('https://fonts.openmaptiles.org/Open Sans Extrabold', 'https://fonts.openmaptiles.org/Open Sans Extra Bold')
-        url = url.replace('https://fonts.openmaptiles.org/Open Sans Regular,Arial Unicode MS Regular', 'https://fonts.openmaptiles.org/Klokantech Noto Sans Regular')
+    map.setTransformRequest(function(url) {
+        url = url.replace('https://fonts.openmaptiles.org/Open Sans Extrabold', 'https://fonts.openmaptiles.org/Open Sans Extra Bold');
+        url = url.replace('https://fonts.openmaptiles.org/Open Sans Regular,Arial Unicode MS Regular', 'https://fonts.openmaptiles.org/Klokantech Noto Sans Regular');
         return {
             url: url
-        }
-
-    })
+        };
+    });
 
 
     // make sure canvas does not inherit left and top css
@@ -431,8 +429,8 @@ proto.initFx = function(calcData, fullLayout) {
             self.wheeling = false;
         }
 
-        if(fullLayoutNow?._rehover) {
-            fullLayoutNow?._rehover();
+        if(fullLayoutNow && fullLayoutNow._rehover) {
+            fullLayoutNow._rehover();
         }
     });
 
