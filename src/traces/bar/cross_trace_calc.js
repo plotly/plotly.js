@@ -352,7 +352,7 @@ function setOffsetAndWidth(gd, pa, sieve, opts) {
 
         var t = calcTrace[0].t;
         t.barwidth = barWidth;
-        t.offsetindex = trace._offsetIndex;
+        t.offsetindex = trace._offsetIndex || 0;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
         t.bardelta = minDiff;
