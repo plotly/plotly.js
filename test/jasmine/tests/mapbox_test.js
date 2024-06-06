@@ -517,7 +517,7 @@ describe('mapbox plots', function() {
         // TODO
         // this one now logs:
         // 'Unable to perform style diff: Unimplemented: setSprite..  Rebuilding the style from scratch.'
-        // https://github.com/maplibre/maplibre-gl-js/issues/6933
+        // https://github.com/mapbox/mapbox-gl-js/issues/6933
 
         assertLayout('Mapbox Dark');
 
@@ -805,7 +805,7 @@ describe('mapbox plots', function() {
         // TODO
         // this one now logs:
         // 'Unable to perform style diff: Unimplemented: setSprite, setLayerProperty..  Rebuilding the style from scratch.'
-        // github.com/maplibre/maplibre-gl-js/issues/6933/
+        // github.com/mapbox/mapbox-gl-js/issues/6933/
 
         Plotly.react(gd, makeFigure('blue')).then(function() {
             _assert('rgba(0,0,255,1)');

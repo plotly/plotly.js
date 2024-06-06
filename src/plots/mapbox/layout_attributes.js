@@ -27,7 +27,6 @@ var attrs = module.exports = overrideAll({
 
     domain: domainAttrs({name: 'mapbox'}),
 
-
     style: {
         valType: 'any',
         values: constants.styleValuesMapbox,
