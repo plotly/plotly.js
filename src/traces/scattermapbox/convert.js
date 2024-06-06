@@ -417,10 +417,6 @@ function getTextFont(trace) {
     else if(str === 'Open Sans Regular Bold Italic') str = 'Open Sans Bold Italic';
     else if(str === 'Klokantech Noto Sans Regular Italic') str = 'Klokantech Noto Sans Italic';
 
-    // Openmaptiles called it Extra Bold, instead of Extrabold - https://github.com/openmaptiles/fonts/issues/24
-    else if(str === 'Open Sans Extrabold') str = 'Open Sans Extra Bold';
-    else if(str === 'Open Sans Extrabold Italic') str = 'Open Sans Extra Bold Italic';
-
     // Ensure the result is a supported font
     if(!isSupportedFont(str)) {
         str = family;
