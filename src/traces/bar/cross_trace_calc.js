@@ -284,12 +284,12 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces, opts) {
     // flag the outmost bar (for text display purposes)
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
-
+        var offsetIndex = calcTrace[0].t.offsetindex;
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
 
             if(bar.s !== BADNUM) {
-                var isOutmostBar = ((bar.b + bar.s) === sieve.get(bar.p, bar.s));
+                var isOutmostBar = ((bar.b + bar.s) === sieve.get(bar.p, offsetIndex, bar.s));
                 if(isOutmostBar) bar._outmost = true;
             }
         }
@@ -583,7 +583,7 @@ function stackBars(sa, sieve, opts) {
 
                 if(bar.s !== BADNUM) {
                     // create base of funnels
-                    sieve.put(bar.p + offsetIndex, -0.5 * bar.s);
+                    sieve.put(bar.p, offsetIndex, -0.5 * bar.s);
                 }
             }
         }
@@ -611,7 +611,7 @@ function stackBars(sa, sieve, opts) {
                     value = bar.s + bar.b;
                 }
 
-                var base = sieve.put(bar.p + offsetIndex, value);
+                var base = sieve.put(bar.p, offsetIndex, value);
                 var top = base + value;
 
                 // store the bar base and top in each calcdata item
@@ -644,12 +644,12 @@ function sieveBars(sieve) {
 
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
-
+        var offsetIndex = calcTrace[0].t.offsetindex;
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
 
             if(bar.s !== BADNUM) {
-                sieve.put(bar.p, bar.b + bar.s);
+                sieve.put(bar.p, offsetIndex, bar.b + bar.s);
             }
         }
     }
@@ -661,6 +661,7 @@ function unhideBarsWithinTrace(sieve, pa) {
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
         var fullTrace = calcTrace[0].trace;
+        var offsetIndex = calcTrace[0].t.offsetindex;
 
         if(fullTrace.base === undefined) {
             var inTraceSieve = new Sieve([calcTrace], {
@@ -674,7 +675,7 @@ function unhideBarsWithinTrace(sieve, pa) {
 
                 if(bar.p !== BADNUM) {
                     // stack current bar and get previous sum
-                    var base = inTraceSieve.put(bar.p, bar.b + bar.s);
+                    var base = inTraceSieve.put(bar.p, offsetIndex, bar.b + bar.s);
 
                     // if previous sum if non-zero, this means:
                     // multiple bars have same starting point are potentially hidden,
@@ -707,6 +708,7 @@ function normalizeBars(sa, sieve, opts) {
 
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
+        var offsetIndex = calcTrace[0].t.offsetindex;
         var fullTrace = calcTrace[0].trace;
         var pts = [];
         var tozero = false;
@@ -716,7 +718,7 @@ function normalizeBars(sa, sieve, opts) {
             var bar = calcTrace[j];
 
             if(bar.s !== BADNUM) {
-                var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
+                var scale = Math.abs(sTop / sieve.get(bar.p, offsetIndex, bar.s));
                 bar.b *= scale;
                 bar.s *= scale;
 
