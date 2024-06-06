@@ -27749,7 +27749,7 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.mapbox`. If *maplibre2*, the data refer to `layout.mapbox2`, and so on.",
+     "description": "Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
      "dflt": "mapbox",
      "editType": "calc",
      "valType": "subplotid"
@@ -33851,7 +33851,7 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.mapbox`. If *maplibre2*, the data refer to `layout.mapbox2`, and so on.",
+     "description": "Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
      "dflt": "mapbox",
      "editType": "calc",
      "valType": "subplotid"
@@ -75436,7 +75436,7 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.mapbox`. If *maplibre2*, the data refer to `layout.mapbox2`, and so on.",
+     "description": "Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
      "dflt": "mapbox",
      "editType": "calc",
      "valType": "subplotid"
