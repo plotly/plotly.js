@@ -55,7 +55,7 @@
   ],
   "layout": {
     "mapbox": {
-      "style": "carto-positron",
+      "style": "outdoors",
       "zoom": 0.5,
       "center": {
         "lon": 0,

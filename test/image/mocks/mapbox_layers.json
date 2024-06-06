@@ -30,7 +30,7 @@
   "layout": {
     "mapbox": {
       "domain": {"x": [0, 0.48], "y": [0, 1]},
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -73.59194521800514,
         "lat": 45.50110152988742
@@ -542,7 +542,7 @@
         },
         {
           "sourcetype": "vector",
-          "source": "insert-terrain-source",
+          "source": "mapbox://mapbox.mapbox-terrain-v2",
           "sourcelayer": "contour",
           "type": "line",
           "color": "red",
@@ -555,7 +555,7 @@
 
     "mapbox2": {
       "domain": {"x": [0.52, 1], "y": [0, 1]},
-      "style": "carto-positron",
+      "style": "mapbox://styles/mapbox/light-v10",
       "zoom": 4.5,
       "center": {"lon": -74.5, "lat": 42},
       "layers": [
@@ -574,7 +574,7 @@
             [-71.516, 37.936],
             [-80.425, 37.936]
           ],
-          "source": "https://maplibre.org/maplibre-gl-js/docs/assets/radar.gif",
+          "source": "https://docs.mapbox.com/mapbox-gl-js/assets/radar.gif",
           "opacity": 0.3
         }
       ]

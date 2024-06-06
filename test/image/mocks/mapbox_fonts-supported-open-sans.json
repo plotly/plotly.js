@@ -319,7 +319,7 @@
     },
     "mapbox": {
       "zoom": 3,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 50
@@ -331,7 +331,7 @@
     },
     "mapbox2": {
       "zoom": 3,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 50
@@ -343,7 +343,7 @@
     },
     "mapbox3": {
       "zoom": 3,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 50
@@ -355,7 +355,7 @@
     },
     "mapbox4": {
       "zoom": 3,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 50
@@ -367,7 +367,7 @@
     },
     "mapbox5": {
       "zoom": 3,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 50
@@ -379,7 +379,7 @@
     },
     "mapbox6": {
       "zoom": 3,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 50
@@ -391,7 +391,7 @@
     },
     "mapbox7": {
       "zoom": 3,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 50
@@ -403,7 +403,7 @@
     },
     "mapbox8": {
       "zoom": 3,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 50
@@ -415,7 +415,7 @@
     },
     "mapbox9": {
       "zoom": 3,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 50
@@ -427,7 +427,7 @@
     },
     "mapbox10": {
       "zoom": 3,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 50

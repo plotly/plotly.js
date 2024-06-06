@@ -49,7 +49,7 @@
         "south": -30,
         "north": 30
       },
-      "style": "carto-positron",
+      "style": "light",
       "zoom": 2.5,
       "center": {
         "lon": 19.5,

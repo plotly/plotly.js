@@ -37,7 +37,7 @@
   ],
   "layout": {
     "mapbox": {
-      "style": "carto-darkmatter",
+      "style": "dark",
       "center": {
         "lon": -4.71092760419225,
         "lat": 19.475789009298566

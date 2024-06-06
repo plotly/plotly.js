@@ -6,7 +6,7 @@
     ],
     "layout": {
       "mapbox": {
-        "style": "carto-positron",
+        "style": "outdoors",
         "layers": [
           {
             "sourcetype": "geojson",

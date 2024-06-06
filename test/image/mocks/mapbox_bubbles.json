@@ -73,7 +73,7 @@
   ],
   "layout": {
     "mapbox": {
-      "style": "carto-positron",
+      "style": "light",
       "zoom": 0.5
     },
     "showlegend": false,

@@ -48,7 +48,7 @@
   ],
   "layout": {
     "mapbox": {
-      "style": "carto-darkmatter",
+      "style": "mapbox://styles/plotly-js-tests/ck4og36lx0vnj1cpdl8y0cr8m",
       "center": {
         "lon": -73.60287319770295,
         "lat": 45.50110152988742
@@ -56,7 +56,7 @@
       "zoom": 11.4
     },
     "mapbox2": {
-      "style": "carto-positron",
+      "style": "satellite-streets",
       "center": {
         "lon": -73.60287319770295,
         "lat": 45.50110152988742

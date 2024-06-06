@@ -209,7 +209,7 @@
     },
     "mapbox": {
       "zoom": 2,
-      "style": "carto-darkmatter",
+      "style": "dark",
       "center": {
         "lon": -90,
         "lat": 45
@@ -221,7 +221,7 @@
     },
     "mapbox2": {
       "zoom": 2,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 45
@@ -233,7 +233,7 @@
     },
     "mapbox3": {
       "zoom": 2,
-      "style": "carto-positron",
+      "style": "light",
       "center": {
         "lon": -90,
         "lat": 45
@@ -245,7 +245,7 @@
     },
     "mapbox4": {
       "zoom": 2,
-      "style": "carto-darkmatter",
+      "style": "dark",
       "center": {
         "lon": -90,
         "lat": 45

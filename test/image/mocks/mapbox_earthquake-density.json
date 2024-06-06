@@ -36672,7 +36672,7 @@
         "lon": -120,
         "lat": 50
       },
-      "style": "carto-positron",
+      "style": "satellite",
       "zoom": 2
     },
     "coloraxis": {

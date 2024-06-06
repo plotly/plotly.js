@@ -30,7 +30,7 @@
   }],
   "layout": {
     "mapbox": {
-      "style": "carto-positron",
+      "style": "light",
       "center": {"lat": 20}
     },
     "width": 600,
