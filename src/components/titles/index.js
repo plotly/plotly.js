@@ -178,6 +178,14 @@ function draw(gd, titleClass, options) {
             transformVal = null;
         }
 
+        function adjustSubtitlePosition(titleElMathGroup) {
+            if(titleElMathGroup && subtitleEl) {
+                var titleHeight = titleElMathGroup.node().getBBox().height;
+                var newSubtitleY = Number(subtitleEl.attr('y')) + titleHeight;
+                subtitleEl.attr('y', newSubtitleY);
+            }
+        }
+
         titleEl.attr('transform', transformVal);
 
         titleEl.style('opacity', opacity * Color.opacity(fontColor))
@@ -193,7 +201,7 @@ function draw(gd, titleClass, options) {
             lineposition: fontLineposition,
         })
         .attr(attributes)
-            .call(svgTextUtils.convertToTspans, gd);
+            .call(svgTextUtils.convertToTspans, gd, adjustSubtitlePosition);
 
         var subtitleAttributes = Object.assign({}, attributes);
         subtitleAttributes.y += Drawing.bBox(titleEl.node()).height;
