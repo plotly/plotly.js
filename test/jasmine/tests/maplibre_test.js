@@ -1900,6 +1900,7 @@ describe('maplibre toImage', function() {
         })
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
+})
 
 function getMapInfo(gd) {
     var subplot = gd._fullLayout.maplibre._subplot;
