@@ -22,7 +22,7 @@ module.exports = {
             }
         }, {
             test: /\.js$/,
-            include: /node_modules[\\\/](buffer|d3-color|d3-interpolate|is-mobile|maplibre-gl)[\\\/]/,
+            include: /node_modules[\\\/](buffer|d3-color|d3-interpolate|is-mobile)[\\\/]/,
             use: {
                 loader: 'babel-loader',
                 options: {
