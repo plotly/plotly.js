@@ -1,7 +1,7 @@
 var path = require('path');
 
 module.exports = {
-    target: ['web', 'es5'],
+    target: ['web', 'es2016'],
     entry: './main.js',
     output: {
         path: path.resolve('.'),

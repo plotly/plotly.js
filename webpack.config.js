@@ -2,7 +2,7 @@ var path = require('path');
 var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = {
-    target: ['web', 'es5'],
+    target: ['web', 'es2016'],
     entry: './lib/index.js',
     output: {
         path: path.resolve('./build'),

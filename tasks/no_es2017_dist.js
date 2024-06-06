@@ -16,7 +16,7 @@ function assertES5() {
         ignore: false,
         overrideConfig: {
             parserOptions: {
-                ecmaVersion: 5
+                ecmaVersion: 2016
             }
         }
     });

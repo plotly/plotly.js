@@ -263,7 +263,7 @@ func.defaultConfig = {
     },
 
     webpack: {
-        target: ['web', 'es5'],
+        target: ['web', 'es2016'],
         module: {
             rules: webpackConfig.module.rules
         },
