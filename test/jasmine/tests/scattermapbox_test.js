@@ -649,7 +649,7 @@ describe('scattermapbox convert', function() {
             fill: 'toself'
         }));
 
-        // not optimal, but doesn't break anything as maplibre-gl accepts empty
+        // not optimal, but doesn't break anything as mapbox-gl accepts empty
         // coordinate arrays
         assertVisibility(opts, ['visible', 'visible', 'none', 'none']);
 

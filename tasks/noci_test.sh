@@ -22,7 +22,7 @@ test_jasmine () {
     npm run test-jasmine -- --tags=noCI,noCIdep --nowatch || EXIT_STATE=$?
 }
 
-# having problem creating baselines for 2 maplibre mocks using kaleido
+# having problem creating baselines for 2 mapbox mocks using kaleido
 # we must use orca
 test_image () {
     $root/../orca/bin/orca.js graph \

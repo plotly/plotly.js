@@ -31,7 +31,7 @@ function Mapbox(gd, id) {
     this.container = fullLayout._glcontainer.node();
     this.isStatic = context.staticPlot;
 
-    // unique id for this MapLibre instance
+    // unique id for this Mapbox instance
     this.uid = fullLayout._uid + '-' + this.id;
 
     // create framework on instantiation for a smoother first plot call
@@ -515,8 +515,8 @@ proto.initFx = function(calcData, fullLayout) {
 
             if(clickMode.indexOf('event') > -1) {
                 // TODO: this does not support right-click. If we want to support it, we
-                // would likely need to change maplibre to use dragElement instead of straight
-                // maplibre event binding. Or perhaps better, make a simple wrapper with the
+                // would likely need to change mapbox to use dragElement instead of straight
+                // mapbox event binding. Or perhaps better, make a simple wrapper with the
                 // right mousedown, mousemove, and mouseup handlers just for a left/right click
                 // pie would use this too.
                 Fx.click(gd, evt.originalEvent);
@@ -594,8 +594,8 @@ proto.updateFx = function(fullLayout) {
         self.div.ontouchstart = null;
         self.div.removeEventListener('touchstart', self.div._ontouchstart);
         // TODO: this does not support right-click. If we want to support it, we
-        // would likely need to change maplibre to use dragElement instead of straight
-        // maplibre event binding. Or perhaps better, make a simple wrapper with the
+        // would likely need to change mapbox to use dragElement instead of straight
+        // mapbox event binding. Or perhaps better, make a simple wrapper with the
         // right mousedown, mousemove, and mouseup handlers just for a left/right click
         // pie would use this too.
         self.onClickInPanHandler = self.onClickInPanFn(self.dragOptions);
@@ -789,7 +789,7 @@ function getStyleObj(val, fullLayout) {
     return styleObj;
 }
 
-// if style is part of the 'official' maplibre values, add URL prefix and suffix
+// if style is part of the 'official' mapbox values, add URL prefix and suffix
 function convertStyleVal(val) {
     return constants.styleUrlPrefix + val + '-' + constants.styleUrlSuffix;
 }

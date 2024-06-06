@@ -320,7 +320,7 @@
       "r": 10
     },
     "title": {
-      "text": "Supported Open Sans fonts in maplibre",
+      "text": "Supported Open Sans fonts in mapbox",
       "font": {
         "weight": 800,
         "style": "italic"

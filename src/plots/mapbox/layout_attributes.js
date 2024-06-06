@@ -68,7 +68,7 @@ var attrs = module.exports = overrideAll({
     bearing: {
         valType: 'number',
         dflt: 0,
-        description: 'Sets the bearing angle of the map in degrees counter-clockwise from North (maplibre.bearing).'
+        description: 'Sets the bearing angle of the map in degrees counter-clockwise from North (mapbox.bearing).'
     },
     pitch: {
         valType: 'number',

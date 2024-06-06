@@ -289,7 +289,7 @@
       "r": 10
     },
     "title": {
-      "text": "Supported Metropolis fonts in maplibre",
+      "text": "Supported Metropolis fonts in mapbox",
       "font": {
         "weight": 800,
         "style": "italic"

@@ -136,7 +136,7 @@
    ]
   },
   "doubleClickDelay": {
-   "description": "Sets the delay for registering a double-click in ms. This is the time interval (in ms) between first mousedown and 2nd mouseup to constitute a double-click. This setting propagates to all on-subplot double clicks (except for geo and maplibre) and on-legend double clicks.",
+   "description": "Sets the delay for registering a double-click in ms. This is the time interval (in ms) between first mousedown and 2nd mouseup to constitute a double-click. This setting propagates to all on-subplot double clicks (except for geo and mapbox) and on-legend double clicks.",
    "dflt": 300,
    "min": 0,
    "valType": "number"
@@ -290,8 +290,8 @@
    "valType": "boolean"
   },
   "scrollZoom": {
-   "description": "Determines whether mouse wheel or two-finger scroll zooms is enable. Turned on by default for gl3d, geo and maplibre subplots (as these subplot types do not have zoombox via pan), but turned off by default for cartesian subplots. Set `scrollZoom` to *false* to disable scrolling for all subplots.",
-   "dflt": "gl3d+geo+maplibre",
+   "description": "Determines whether mouse wheel or two-finger scroll zooms is enable. Turned on by default for gl3d, geo and mapbox subplots (as these subplot types do not have zoombox via pan), but turned off by default for cartesian subplots. Set `scrollZoom` to *false* to disable scrolling for all subplots.",
+   "dflt": "gl3d+geo+mapbox",
    "extras": [
     true,
     false
@@ -3872,7 +3872,7 @@
     ],
     "_isSubplotObj": true,
     "bearing": {
-     "description": "Sets the bearing angle of the map in degrees counter-clockwise from North (maplibre.bearing).",
+     "description": "Sets the bearing angle of the map in degrees counter-clockwise from North (mapbox.bearing).",
      "dflt": 0,
      "editType": "plot",
      "valType": "number"
@@ -3919,7 +3919,7 @@
     },
     "domain": {
      "column": {
-      "description": "If there is a layout grid, use the domain for this column in the grid for this maplibre subplot .",
+      "description": "If there is a layout grid, use the domain for this column in the grid for this mapbox subplot .",
       "dflt": 0,
       "editType": "plot",
       "min": 0,
@@ -3928,14 +3928,14 @@
      "editType": "plot",
      "role": "object",
      "row": {
-      "description": "If there is a layout grid, use the domain for this row in the grid for this maplibre subplot .",
+      "description": "If there is a layout grid, use the domain for this row in the grid for this mapbox subplot .",
       "dflt": 0,
       "editType": "plot",
       "min": 0,
       "valType": "integer"
      },
      "x": {
-      "description": "Sets the horizontal domain of this maplibre subplot (in plot fraction).",
+      "description": "Sets the horizontal domain of this mapbox subplot (in plot fraction).",
       "dflt": [
        0,
        1
@@ -3958,7 +3958,7 @@
       "valType": "info_array"
      },
      "y": {
-      "description": "Sets the vertical domain of this maplibre subplot (in plot fraction).",
+      "description": "Sets the vertical domain of this mapbox subplot (in plot fraction).",
       "dflt": [
        0,
        1

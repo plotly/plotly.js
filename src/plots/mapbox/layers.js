@@ -61,7 +61,7 @@ proto.needsNewImage = function(opts) {
 
 proto.needsNewSource = function(opts) {
     // for some reason changing layer to 'fill' or 'symbol'
-    // w/o changing the source throws an exception in maplibre-gl 0.18 ;
+    // w/o changing the source throws an exception in mapbox-gl 0.18 ;
     // stay safe and make new source on type changes
     return (
         this.sourceType !== opts.sourcetype ||
