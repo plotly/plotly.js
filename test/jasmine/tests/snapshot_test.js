@@ -83,7 +83,6 @@ describe('Plotly.Snapshot', function() {
                 showLink: false,
                 showTips: false,
                 setBackground: 'opaque',
-
             };
 
             var themeTile = Plotly.Snapshot.clone(dummyGraphObj, themeOptions);

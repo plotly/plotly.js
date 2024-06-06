@@ -1883,8 +1883,7 @@ describe('mapbox toImage', function() {
     });
 
     it('@gl should generate image data with global credentials', function(done) {
-        Plotly.setPlotConfig({
-        });
+        Plotly.setPlotConfig({});
 
         Plotly.newPlot(gd, [{
             type: 'scattermapbox',
