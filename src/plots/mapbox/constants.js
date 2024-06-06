@@ -26,7 +26,60 @@ var stamenWaterColor = [
     'under <a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'
 ].join(' ');
 
+
+
+var cartoPositron = {
+    id: 'carto-positron',
+    version: 8,
+    sources: {
+        'plotly-carto-positron': {
+            type: 'raster',
+            attribution: carto,
+            tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'],
+            tileSize: 256
+        }
+    },
+    layers: [{
+        id: 'plotly-carto-positron',
+        type: 'raster',
+        source: 'plotly-carto-positron',
+        minzoom: 0,
+        maxzoom: 22
+    }],
+    glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+};
+
+var cartoDarkmatter = {
+    id: 'carto-darkmatter',
+    version: 8,
+    sources: {
+        'plotly-carto-darkmatter': {
+            type: 'raster',
+            attribution: carto,
+            tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'],
+            tileSize: 256
+        }
+    },
+    layers: [{
+        id: 'plotly-carto-darkmatter',
+        type: 'raster',
+        source: 'plotly-carto-darkmatter',
+        minzoom: 0,
+        maxzoom: 22
+    }],
+    glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+}
+
+
+
 var stylesMapbox = {
+    'basic': cartoPositron,
+    'streets': cartoPositron,
+    'outdoors': cartoPositron,
+    'light': cartoPositron,
+    'dark': cartoDarkmatter,
+    'satellite': cartoPositron,
+    'satellite-streets': cartoPositron,
     'open-street-map': {
         id: 'osm',
         version: 8,
@@ -63,46 +116,8 @@ var stylesMapbox = {
         }],
         glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
-    'carto-positron': {
-        id: 'carto-positron',
-        version: 8,
-        sources: {
-            'plotly-carto-positron': {
-                type: 'raster',
-                attribution: carto,
-                tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'],
-                tileSize: 256
-            }
-        },
-        layers: [{
-            id: 'plotly-carto-positron',
-            type: 'raster',
-            source: 'plotly-carto-positron',
-            minzoom: 0,
-            maxzoom: 22
-        }],
-        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
-    },
-    'carto-darkmatter': {
-        id: 'carto-darkmatter',
-        version: 8,
-        sources: {
-            'plotly-carto-darkmatter': {
-                type: 'raster',
-                attribution: carto,
-                tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'],
-                tileSize: 256
-            }
-        },
-        layers: [{
-            id: 'plotly-carto-darkmatter',
-            type: 'raster',
-            source: 'plotly-carto-darkmatter',
-            minzoom: 0,
-            maxzoom: 22
-        }],
-        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
-    },
+    'carto-positron': cartoPositron,
+    'carto-darkmatter': cartoDarkmatter,
     'stamen-terrain': {
         id: 'stamen-terrain',
         version: 8,
