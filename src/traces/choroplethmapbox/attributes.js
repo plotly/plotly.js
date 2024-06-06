@@ -55,7 +55,7 @@ module.exports = extendFlat({
     // 'below' is used currently for layout.mapbox.layers,
     // even though it's not very plotly-esque.
     //
-    // Note also, that the maplibre-gl style don't all have the same layers,
+    // Note also, that the mapbox-gl style don't all have the same layers,
     // see https://codepen.io/etpinard/pen/ydVMwM for full list
     below: {
         valType: 'string',

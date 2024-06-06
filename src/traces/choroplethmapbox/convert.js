@@ -12,12 +12,12 @@ var geoUtils = require('../../lib/geo_location_utils');
 /* N.B.
  *
  * We fetch the GeoJSON files "ourselves" (during
- * maplibre.prototype.fetchMapData) where they are stored in a global object
+ * mapbox.prototype.fetchMapData) where they are stored in a global object
  * named `PlotlyGeoAssets` (same as for topojson files in `geo` subplots).
  *
- * MapLibre does allow using URLs as geojson sources, but does NOT allow filtering
+ * Mapbox does allow using URLs as geojson sources, but does NOT allow filtering
  * features by feature `id` that are not numbers (more info in:
- * https://github.com/maplibre/maplibre-gl-js/issues/8088).
+ * https://github.com/mapbox/mapbox-gl-js/issues/8088).
  */
 
 function convert(calcTrace) {

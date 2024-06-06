@@ -5,7 +5,7 @@ var texttemplateAttrs = require('../../plots/template_attributes').texttemplateA
 var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
-var maplibreAttrs = require('../../plots/mapbox/layout_attributes');
+var mapboxAttrs = require('../../plots/mapbox/layout_attributes');
 var baseAttrs = require('../../plots/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
@@ -154,8 +154,8 @@ module.exports = overrideAll({
     fill: scatterGeoAttrs.fill,
     fillcolor: makeFillcolorAttr(),
 
-    textfont: maplibreAttrs.layers.symbol.textfont,
-    textposition: maplibreAttrs.layers.symbol.textposition,
+    textfont: mapboxAttrs.layers.symbol.textfont,
+    textposition: mapboxAttrs.layers.symbol.textposition,
 
     below: {
         valType: 'string',
