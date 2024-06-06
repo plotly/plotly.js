@@ -28,54 +28,15 @@ var stamenWaterColor = [
 
 
 
-var cartoPositron = {
-    id: 'carto-positron',
-    version: 8,
-    sources: {
-        'plotly-carto-positron': {
-            type: 'raster',
-            attribution: carto,
-            tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'],
-            tileSize: 256
-        }
-    },
-    layers: [{
-        id: 'plotly-carto-positron',
-        type: 'raster',
-        source: 'plotly-carto-positron',
-        minzoom: 0,
-        maxzoom: 22
-    }],
-    glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
-};
-
-var cartoDarkmatter = {
-    id: 'carto-darkmatter',
-    version: 8,
-    sources: {
-        'plotly-carto-darkmatter': {
-            type: 'raster',
-            attribution: carto,
-            tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'],
-            tileSize: 256
-        }
-    },
-    layers: [{
-        id: 'plotly-carto-darkmatter',
-        type: 'raster',
-        source: 'plotly-carto-darkmatter',
-        minzoom: 0,
-        maxzoom: 22
-    }],
-    glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
-}
-
+var cartoPositron = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+var cartoDarkmatter = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
+var cartoVoyager = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
 
 var stylesMapbox = {
-    'basic': cartoPositron,
+    'basic': cartoVoyager,
     'streets': cartoPositron,
-    'outdoors': cartoPositron,
+    'outdoors': cartoVoyager,
     'light': cartoPositron,
     'dark': cartoDarkmatter,
     'satellite': cartoPositron,

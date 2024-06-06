@@ -774,15 +774,24 @@ function getStyleObj(val, fullLayout) {
 
         if(constants.stylesMapbox[val]) {
             styleObj.style = constants.stylesMapbox[val];
-            var spec = styleObj.style.sources['plotly-' + val];
-            var tiles = spec ? spec.tiles : undefined;
-            if(
-                tiles &&
-                tiles[0] &&
-                tiles[0].slice(-9) === '?api_key='
-            ) {
-                // provide api_key for stamen styles
-                tiles[0] += fullLayout._mapboxAccessToken;
+
+            if (typeof styleObj.style == 'string'){
+                if (styleObj.style.slice(-9) === '?api_key='){
+                    // provide api_key for stamen styles
+                    styleObj.style += fullLayout._mapboxAccessToken;
+                }
+            } else {
+
+                var spec = styleObj.style.sources['plotly-' + val];
+                var tiles = spec ? spec.tiles : undefined;
+                if(
+                    tiles &&
+                    tiles[0] &&
+                    tiles[0].slice(-9) === '?api_key='
+                ) {
+                    // provide api_key for stamen styles
+                    tiles[0] += fullLayout._mapboxAccessToken;
+                }
             }
         } else {
             styleObj.style = val;
