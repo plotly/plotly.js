@@ -104,6 +104,18 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         compact: true
     }));
 
+    map.setTransformRequest((url, resourceType)=>{
+
+        console.log(url)
+
+        url = url.replace('https://fonts.openmaptiles.org/Open Sans Extrabold', 'https://fonts.openmaptiles.org/Open Sans Extra Bold')
+        url = url.replace('https://fonts.openmaptiles.org/Open Sans Regular,Arial Unicode MS Regular', 'https://fonts.openmaptiles.org/Open Sans Regular')
+        return {
+            url: url
+        }
+
+    })
+
 
     // make sure canvas does not inherit left and top css
     map._canvas.style.left = '0px';
