@@ -431,8 +431,8 @@ proto.initFx = function(calcData, fullLayout) {
             self.wheeling = false;
         }
 
-        if(fullLayoutNow._rehover) {
-            fullLayoutNow._rehover();
+        if(fullLayoutNow?._rehover) {
+            fullLayoutNow?._rehover();
         }
     });
 
