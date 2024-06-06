@@ -9,6 +9,11 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [next-major]
+
+### Breaking
+ - Bump build target to 2016, and drop IE support [[#7017](https://github.com/plotly/plotly.js/pull/7017)]
+
 ## [2.33.0] -- 2024-05-29
 
 ### Added
