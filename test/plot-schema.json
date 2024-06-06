@@ -300,7 +300,7 @@
     "cartesian",
     "gl3d",
     "geo",
-    "maplibre"
+    "mapbox"
    ],
    "valType": "flaglist"
   },
@@ -3866,7 +3866,7 @@
      ]
     }
    },
-   "maplibre": {
+   "mapbox": {
     "_arrayAttrRegexps": [
      {}
     ],
@@ -4231,7 +4231,7 @@
     },
     "role": "object",
     "style": {
-     "description": "Defines the map layers that are rendered by default below the trace layers defined in `data`, which are themselves by default rendered below the layers defined in `layout.maplibre.layers`.  These layers can be defined either explicitly as a MapLibre Style object which can contain multiple layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS) or implicitly by using one of the built-in style objects which use WMSes or by using a custom style URL  MapLibre Style objects are of the form described in the MapLibre GL JS documentation available at https://maplibre.org/maplibre-style-spec/  The built-in plotly.js styles objects are: carto-darkmatter, carto-positron, open-street-map, stamen-terrain, stamen-toner, stamen-watercolor, white-bg.",
+     "description": "Defines the map layers that are rendered by default below the trace layers defined in `data`, which are themselves by default rendered below the layers defined in `layout.mapbox.layers`.  These layers can be defined either explicitly as a MapLibre Style object which can contain multiple layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS) or implicitly by using one of the built-in style objects which use WMSes or by using a custom style URL  MapLibre Style objects are of the form described in the MapLibre GL JS documentation available at https://maplibre.org/maplibre-style-spec/  The built-in plotly.js styles objects are: carto-darkmatter, carto-positron, open-street-map, stamen-terrain, stamen-toner, stamen-watercolor, white-bg.",
      "dflt": "carto-positron",
      "editType": "plot",
      "valType": "any",
@@ -4368,7 +4368,7 @@
     },
     "remove": {
      "arrayOk": true,
-     "description": "Determines which predefined modebar buttons to remove. Similar to `config.modeBarButtonsToRemove` option. This may include *autoScale2d*, *autoscale*, *editInChartStudio*, *editinchartstudio*, *hoverCompareCartesian*, *hovercompare*, *lasso*, *lasso2d*, *orbitRotation*, *orbitrotation*, *pan*, *pan2d*, *pan3d*, *reset*, *resetCameraDefault3d*, *resetCameraLastSave3d*, *resetGeo*, *resetSankeyGroup*, *resetScale2d*, *resetViewMapLibre*, *resetViews*, *resetcameradefault*, *resetcameralastsave*, *resetsankeygroup*, *resetscale*, *resetview*, *resetviews*, *select*, *select2d*, *sendDataToCloud*, *senddatatocloud*, *tableRotation*, *tablerotation*, *toImage*, *toggleHover*, *toggleSpikelines*, *togglehover*, *togglespikelines*, *toimage*, *zoom*, *zoom2d*, *zoom3d*, *zoomIn2d*, *zoomInGeo*, *zoomInMapLibre*, *zoomOut2d*, *zoomOutGeo*, *zoomOutMapLibre*, *zoomin*, *zoomout*.",
+     "description": "Determines which predefined modebar buttons to remove. Similar to `config.modeBarButtonsToRemove` option. This may include *autoScale2d*, *autoscale*, *editInChartStudio*, *editinchartstudio*, *hoverCompareCartesian*, *hovercompare*, *lasso*, *lasso2d*, *orbitRotation*, *orbitrotation*, *pan*, *pan2d*, *pan3d*, *reset*, *resetCameraDefault3d*, *resetCameraLastSave3d*, *resetGeo*, *resetSankeyGroup*, *resetScale2d*, *resetViewMapbox*, *resetViews*, *resetcameradefault*, *resetcameralastsave*, *resetsankeygroup*, *resetscale*, *resetview*, *resetviews*, *select*, *select2d*, *sendDataToCloud*, *senddatatocloud*, *tableRotation*, *tablerotation*, *toImage*, *toggleHover*, *toggleSpikelines*, *togglehover*, *togglespikelines*, *toimage*, *zoom*, *zoom2d*, *zoom3d*, *zoomIn2d*, *zoomInGeo*, *zoomInMapbox*, *zoomOut2d*, *zoomOutGeo*, *zoomOutMapbox*, *zoomin*, *zoomout*.",
      "dflt": "",
      "editType": "modebar",
      "valType": "string"
@@ -26475,7 +26475,7 @@
    },
    "type": "choropleth"
   },
-  "choroplethmaplibre": {
+  "choroplethmapbox": {
    "animatable": false,
    "attributes": {
     "autocolorscale": {
@@ -26486,7 +26486,7 @@
      "valType": "boolean"
     },
     "below": {
-     "description": "Determines if the choropleth polygons will be inserted before the layer with the specified ID. By default, choroplethmaplibre traces are placed above the water layers. If set to '', the layer will be inserted above every existing layer.",
+     "description": "Determines if the choropleth polygons will be inserted before the layer with the specified ID. By default, choroplethmapbox traces are placed above the water layers. If set to '', the layer will be inserted above every existing layer.",
      "editType": "plot",
      "valType": "string"
     },
@@ -27749,8 +27749,8 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.maplibre`. If *maplibre2*, the data refer to `layout.maplibre2`, and so on.",
-     "dflt": "maplibre",
+     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.mapbox`. If *maplibre2*, the data refer to `layout.mapbox2`, and so on.",
+     "dflt": "mapbox",
      "editType": "calc",
      "valType": "subplotid"
     },
@@ -27776,7 +27776,7 @@
      },
      "role": "object"
     },
-    "type": "choroplethmaplibre",
+    "type": "choroplethmapbox",
     "uid": {
      "description": "Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.",
      "editType": "plot",
@@ -27857,7 +27857,7 @@
     }
    },
    "categories": [
-    "maplibre",
+    "mapbox",
     "gl",
     "noOpacity",
     "showLegend"
@@ -27866,7 +27866,7 @@
     "description": "GeoJSON features to be filled are set in `geojson` The data that describes the choropleth value-to-color mapping is set in `locations` and `z`.",
     "hr_name": "choropleth_maplibre"
    },
-   "type": "choroplethmaplibre"
+   "type": "choroplethmapbox"
   },
   "cone": {
    "animatable": false,
@@ -32623,7 +32623,7 @@
    },
    "type": "contourcarpet"
   },
-  "densitymaplibre": {
+  "densitymapbox": {
    "animatable": false,
    "attributes": {
     "autocolorscale": {
@@ -32634,7 +32634,7 @@
      "valType": "boolean"
     },
     "below": {
-     "description": "Determines if the densitymaplibre trace will be inserted before the layer with the specified ID. By default, densitymaplibre traces are placed below the first layer of type symbol If set to '', the layer will be inserted above every existing layer.",
+     "description": "Determines if the densitymapbox trace will be inserted before the layer with the specified ID. By default, densitymapbox traces are placed below the first layer of type symbol If set to '', the layer will be inserted above every existing layer.",
      "editType": "plot",
      "valType": "string"
     },
@@ -33802,7 +33802,7 @@
     },
     "radius": {
      "arrayOk": true,
-     "description": "Sets the radius of influence of one `lon` / `lat` point in pixels. Increasing the value makes the densitymaplibre trace smoother, but less detailed.",
+     "description": "Sets the radius of influence of one `lon` / `lat` point in pixels. Increasing the value makes the densitymapbox trace smoother, but less detailed.",
      "dflt": 30,
      "editType": "plot",
      "min": 1,
@@ -33851,8 +33851,8 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.maplibre`. If *maplibre2*, the data refer to `layout.maplibre2`, and so on.",
-     "dflt": "maplibre",
+     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.mapbox`. If *maplibre2*, the data refer to `layout.mapbox2`, and so on.",
+     "dflt": "mapbox",
      "editType": "calc",
      "valType": "subplotid"
     },
@@ -33878,7 +33878,7 @@
      },
      "role": "object"
     },
-    "type": "densitymaplibre",
+    "type": "densitymapbox",
     "uid": {
      "description": "Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.",
      "editType": "plot",
@@ -33944,7 +33944,7 @@
     }
    },
    "categories": [
-    "maplibre",
+    "mapbox",
     "gl",
     "showLegend"
    ],
@@ -33952,7 +33952,7 @@
     "description": "Draws a bivariate kernel density estimation with a Gaussian kernel from `lon` and `lat` coordinates and optional `z` values using a colorscale.",
     "hr_name": "density_maplibre"
    },
-   "type": "densitymaplibre"
+   "type": "densitymapbox"
   },
   "funnel": {
    "animatable": false,
@@ -73946,11 +73946,11 @@
    },
    "type": "scattergl"
   },
-  "scattermaplibre": {
+  "scattermapbox": {
    "animatable": false,
    "attributes": {
     "below": {
-     "description": "Determines if this scattermaplibre trace's layers are to be inserted before the layer with the specified ID. By default, scattermaplibre layers are inserted above all the base layers. To place the scattermaplibre layers above every other layer, set `below` to *''*.",
+     "description": "Determines if this scattermapbox trace's layers are to be inserted before the layer with the specified ID. By default, scattermapbox layers are inserted above all the base layers. To place the scattermapbox layers above every other layer, set `below` to *''*.",
      "editType": "calc",
      "valType": "string"
     },
@@ -75436,8 +75436,8 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.maplibre`. If *maplibre2*, the data refer to `layout.maplibre2`, and so on.",
-     "dflt": "maplibre",
+     "description": "Sets a reference between this trace's data coordinates and a maplibre subplot. If *maplibre* (the default value), the data refer to `layout.mapbox`. If *maplibre2*, the data refer to `layout.mapbox2`, and so on.",
+     "dflt": "mapbox",
      "editType": "calc",
      "valType": "subplotid"
     },
@@ -75537,7 +75537,7 @@
      },
      "role": "object"
     },
-    "type": "scattermaplibre",
+    "type": "scattermapbox",
     "uid": {
      "description": "Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.",
      "editType": "plot",
@@ -75587,7 +75587,7 @@
     }
    },
    "categories": [
-    "maplibre",
+    "mapbox",
     "gl",
     "symbols",
     "showLegend",
@@ -75595,9 +75595,9 @@
    ],
    "meta": {
     "description": "The data visualized as scatter point, lines or marker symbols on a MapLibre GL geographic map is provided by longitude/latitude pairs in `lon` and `lat`.",
-    "hrName": "scatter_maplibre"
+    "hrName": "scatter_mapbox"
    },
-   "type": "scattermaplibre"
+   "type": "scattermapbox"
   },
   "scatterpolar": {
    "animatable": false,

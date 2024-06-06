@@ -157,12 +157,12 @@ var configAttributes = {
 
     scrollZoom: {
         valType: 'flaglist',
-        flags: ['cartesian', 'gl3d', 'geo', 'maplibre'],
+        flags: ['cartesian', 'gl3d', 'geo', 'mapbox'],
         extras: [true, false],
-        dflt: 'gl3d+geo+maplibre',
+        dflt: 'gl3d+geo+mapbox',
         description: [
             'Determines whether mouse wheel or two-finger scroll zooms is enable.',
-            'Turned on by default for gl3d, geo and maplibre subplots',
+            'Turned on by default for gl3d, geo and mapbox subplots',
             '(as these subplot types do not have zoombox via pan),',
             'but turned off by default for cartesian subplots.',
             'Set `scrollZoom` to *false* to disable scrolling for all subplots.'
@@ -192,7 +192,7 @@ var configAttributes = {
             'This is the time interval (in ms) between first mousedown and',
             '2nd mouseup to constitute a double-click.',
             'This setting propagates to all on-subplot double clicks',
-            '(except for geo and maplibre) and on-legend double clicks.'
+            '(except for geo and mapbox) and on-legend double clicks.'
         ].join(' ')
     },
 

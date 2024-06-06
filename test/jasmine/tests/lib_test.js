@@ -2569,7 +2569,7 @@ describe('Test lib.js:', function() {
         });
 
         it('puts simple subplots in the right order', function() {
-            ['scene', 'geo', 'ternary', 'maplibre'].forEach(function(v) {
+            ['scene', 'geo', 'ternary', 'mapbox'].forEach(function(v) {
                 var a = [v + '100', v + '43', v, v + '10', v + '2'];
                 a.sort(Lib.subplotSort);
                 expect(a).toEqual([v, v + '2', v + '10', v + '43', v + '100']);

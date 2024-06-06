@@ -886,7 +886,7 @@ describe('Test Plots', function() {
         var subplotSelectors = {
             gl3d: '.gl-container>div[id^="scene"]',
             geo: '.geolayer>g',
-            maplibre: '.maplibregl-map',
+            mapbox: '.maplibregl-map',
             parcoords: '.parcoords-line-layers',
             pie: '.pielayer .trace',
             sankey: '.sankey',
@@ -971,7 +971,7 @@ describe('Test Plots', function() {
                 scene: {},
                 geo: {},
                 ternary: {},
-                maplibre: {}
+                mapbox: {}
             })
             .then(function() {
                 assertSubplots({pie: 1}, 'just pie');

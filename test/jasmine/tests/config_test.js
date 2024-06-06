@@ -849,7 +849,7 @@ describe('config argument', function() {
         it('should fill in scrollZoom default', function(done) {
             plot(undefined).then(function() {
                 expect(gd._context.scrollZoom).toBe('gl3d+geo+maplibre');
-                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, maplibre: 1});
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
             .then(done, done.fail);
@@ -858,7 +858,7 @@ describe('config argument', function() {
         it('should fill in blank scrollZoom value', function(done) {
             plot({scrollZoom: null}).then(function() {
                 expect(gd._context.scrollZoom).toBe(null);
-                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, maplibre: 1});
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
             .then(done, done.fail);
@@ -867,7 +867,7 @@ describe('config argument', function() {
         it('should honor scrollZoom:true', function(done) {
             plot({scrollZoom: true}).then(function() {
                 expect(gd._context.scrollZoom).toBe(true);
-                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, maplibre: 1});
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1});
             })
             .then(done, done.fail);
         });
@@ -883,7 +883,7 @@ describe('config argument', function() {
         it('should honor scrollZoom flaglist', function(done) {
             plot({scrollZoom: 'maplibre+cartesian'}).then(function() {
                 expect(gd._context.scrollZoom).toBe('maplibre+cartesian');
-                expect(gd._context._scrollZoom).toEqual({maplibre: 1, cartesian: 1});
+                expect(gd._context._scrollZoom).toEqual({mapbox: 1, cartesian: 1});
             })
             .then(done, done.fail);
         });

@@ -63,16 +63,16 @@ argv._.forEach(function(pattern) {
 allMockList = allMockList.filter(function(a) {
     return (
         // used to pass before 2023 Jun 20
-        a !== 'maplibre_stamen-style' &&
+        a !== 'mapbox_stamen-style' &&
 
         // skip for now | TODO: figure out why needed this in https://github.com/plotly/plotly.js/pull/6610
-        a !== 'maplibre_custom-style'
+        a !== 'mapbox_custom-style'
     );
 });
 
 if(virtualWebgl) {
     allMockList = allMockList.filter(function(a) {
-        return a.slice(0, 2) === 'gl' || a.slice(0, 6) === 'maplibre';
+        return a.slice(0, 2) === 'gl' || a.slice(0, 6) === 'mapbox';
     });
 }
 
@@ -107,15 +107,15 @@ for(var i = 0; i < allMockList.length; i++) {
 
     // skip blacklist
     if([
-        'maplibre_density0-legend',
-        'maplibre_osm-style'
+        'mapbox_density0-legend',
+        'mapbox_osm-style'
     ].indexOf(mockName) !== -1) {
         continue;
     }
 
-    var isMapLibre = mockName.substr(0, 7) === 'maplibre_';
+    var isMapbox = mockName.substr(0, 7) === 'mapbox_';
     var isOtherFlaky = [
-        // list flaky mocks other than maplibre:
+        // list flaky mocks other than mapbox:
         'gl3d_bunny-hull'
     ].indexOf(mockName) !== -1;
 
@@ -160,14 +160,14 @@ for(var i = 0; i < allMockList.length; i++) {
         height: height
     });
 
-    var shouldBePixelPerfect = !(isMapLibre || isOtherFlaky);
+    var shouldBePixelPerfect = !(isMapbox || isOtherFlaky);
 
     var threshold = shouldBePixelPerfect ? 0 : [
         // more flaky
-        'maplibre_angles',
-        'maplibre_layers',
-        'maplibre_custom-style',
-        'maplibre_geojson-attributes'
+        'mapbox_angles',
+        'mapbox_layers',
+        'mapbox_custom-style',
+        'mapbox_geojson-attributes'
     ].indexOf(mockName) !== -1 ? 1 : 0.15;
 
     if(virtualWebgl) {

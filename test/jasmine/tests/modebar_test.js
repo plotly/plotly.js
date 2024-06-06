@@ -475,16 +475,16 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
-        it('creates mode bar (maplibre version)', function() {
+        it('creates mode bar (mapbox version)', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d'],
-                ['zoomInMapLibre', 'zoomOutMapLibre', 'resetViewMapLibre']
+                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox']
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._basePlotModules = [{ name: 'maplibre' }];
-            gd._fullData = [{type: 'scattermaplibre'}];
+            gd._fullLayout._basePlotModules = [{ name: 'mapbox' }];
+            gd._fullData = [{type: 'scattermapbox'}];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -492,15 +492,15 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
-        it('creates mode bar (maplibre + selected version)', function() {
+        it('creates mode bar (mapbox + selected version)', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d', 'select2d', 'lasso2d'],
-                ['zoomInMapLibre', 'zoomOutMapLibre', 'resetViewMapLibre']
+                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox']
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._basePlotModules = [{ name: 'maplibre' }];
+            gd._fullLayout._basePlotModules = [{ name: 'mapbox' }];
             gd._fullData = [{
                 type: 'scatter',
                 visible: true,
@@ -1361,23 +1361,23 @@ describe('ModeBar', function() {
         });
 
         describe('maplibre handlers', function() {
-            it('@gl button *resetViewMapLibre* should reset the maplibre view attribute to their default', function(done) {
+            it('@gl button *resetViewMapbox* should reset the maplibre view attribute to their default', function(done) {
                 var gd = createGraphDiv();
 
                 function _assert(centerLon, centerLat, zoom) {
-                    var maplibreLayout = gd._fullLayout.maplibre;
+                    var mapboxLayout = gd._fullLayout.mapbox;
 
-                    expect(maplibreLayout.center.lon).toBe(centerLon, 'center.lon');
-                    expect(maplibreLayout.center.lat).toBe(centerLat, 'center.lat');
-                    expect(maplibreLayout.zoom).toBe(zoom, 'zoom');
+                    expect(mapboxLayout.center.lon).toBe(centerLon, 'center.lon');
+                    expect(mapboxLayout.center.lat).toBe(centerLat, 'center.lat');
+                    expect(mapboxLayout.zoom).toBe(zoom, 'zoom');
                 }
 
                 Plotly.newPlot(gd, [{
-                    type: 'scattermaplibre',
+                    type: 'scattermapbox',
                     lon: [10, 20, 30],
                     lat: [10, 20, 30]
                 }], {
-                    maplibre: {
+                    mapbox: {
                         center: {lon: 10, lat: 10},
                         zoom: 8
                     }
@@ -1388,14 +1388,14 @@ describe('ModeBar', function() {
                     _assert(10, 10, 8);
 
                     return Plotly.relayout(gd, {
-                        'maplibre.zoom': 10,
-                        'maplibre.center.lon': 30
+                        'mapbox.zoom': 10,
+                        'mapbox.center.lon': 30
                     });
                 })
                 .then(function() {
                     _assert(30, 10, 10);
 
-                    var button = selectButton(gd._fullLayout._modeBar, 'resetViewMapLibre');
+                    var button = selectButton(gd._fullLayout._modeBar, 'resetViewMapbox');
 
                     button.isActive(false);
                     button.click(false);
@@ -1448,7 +1448,7 @@ describe('ModeBar', function() {
 
                     // mock for custom geo + ternary bundle
                     delete gd._fullLayout._subplots.gl3d;
-                    delete gd._fullLayout._subplots.maplibre;
+                    delete gd._fullLayout._subplots.mapbox;
 
                     selectButton(gd._fullLayout._modeBar, 'resetViews').click();
                 })

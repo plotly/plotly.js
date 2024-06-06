@@ -680,8 +680,8 @@ describe('Draw new shapes to layout', function() {
             ]
         },
         {
-            name: 'maplibre',
-            json: require('../../image/mocks/maplibre_angles'),
+            name: 'mapbox',
+            json: require('../../image/mocks/mapbox_angles'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,

@@ -26,8 +26,8 @@ test_jasmine () {
 # we must use orca
 test_image () {
     $root/../orca/bin/orca.js graph \
-        $root/test/image/mocks/maplibre_osm-style.json \
-        $root/test/image/mocks/maplibre_density0-legend.json \
+        $root/test/image/mocks/mapbox_osm-style.json \
+        $root/test/image/mocks/mapbox_density0-legend.json \
         --mathjax $root/node_modules/mathjax-v2/MathJax.js \
         --plotly $root/build/plotly.js \
         --output-dir $root/test/image/baselines/ \

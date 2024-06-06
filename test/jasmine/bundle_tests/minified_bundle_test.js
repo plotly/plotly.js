@@ -3,7 +3,7 @@
 
 var mockLists = require('../assets/mock_lists');
 
-// only needed for maplibre subplots
+// only needed for mapbox subplots
 var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe('Test plotly.min.js', function() {

@@ -134,7 +134,7 @@ describe('plot schema', function() {
         var cnt = 0;
 
         var astrs = [
-            'xaxis', 'yaxis', 'scene', 'geo', 'ternary', 'maplibre', 'polar', 'smith',
+            'xaxis', 'yaxis', 'scene', 'geo', 'ternary', 'mapbox', 'polar', 'smith',
             // not really a 'subplot' object but supports yaxis, yaxis2, yaxis3,
             // ... counters, so list it here
             'xaxis.rangeslider.yaxis',
@@ -171,7 +171,7 @@ describe('plot schema', function() {
             'xaxis.rangeselector.buttons',
             'updatemenus',
             'sliders',
-            'maplibre.layers'
+            'mapbox.layers'
         ];
 
         astrs.forEach(function(astr) {
