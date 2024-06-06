@@ -25,7 +25,7 @@
   "layout": {
     "width": 500,
     "height": 500,
-    "title": {"text": "MapLibre with texttemplate"},
+    "title": {"text": "Mapbox with texttemplate"},
     "margin": {"t": 30, "b": 0, "l": 0, "r": 0},
     "mapbox": {
       "center": {

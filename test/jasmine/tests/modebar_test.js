@@ -1381,9 +1381,7 @@ describe('ModeBar', function() {
                         center: {lon: 10, lat: 10},
                         zoom: 8
                     }
-                }, {
-
-                })
+                }, {})
                 .then(function() {
                     _assert(10, 10, 8);
 

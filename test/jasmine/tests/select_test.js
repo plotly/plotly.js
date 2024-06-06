@@ -2051,7 +2051,6 @@ describe('Test select box and lasso per trace:', function() {
             delete fig.layout.mapbox.bounds;
 
             fig.config = {
-
             };
             addInvisible(fig);
 
@@ -2111,7 +2110,6 @@ describe('Test select box and lasso per trace:', function() {
 
             fig.layout.dragmode = 'select';
             fig.config = {
-
             };
             addInvisible(fig);
 
@@ -3228,7 +3226,6 @@ describe('Test select box and lasso per trace:', function() {
 
         fig.layout.dragmode = 'select';
         fig.config = {
-
         };
         addInvisible(fig);
 

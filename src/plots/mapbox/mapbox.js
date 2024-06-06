@@ -336,7 +336,7 @@ proto.resolveOnRender = function(resolve) {
             // resolve at end of render loop
             //
             // Need a 10ms delay (0ms should suffice to skip a thread in the
-            // render loop) to workaround maplibre-gl bug introduced in v1.3.0
+            // render loop) to workaround mapbox-gl bug introduced in v1.3.0
             setTimeout(resolve, 10);
         }
     });

@@ -711,7 +711,6 @@ describe('scattermapbox hover', function() {
 
     beforeAll(function(done) {
         Plotly.setPlotConfig({
-
         });
 
         gd = createGraphDiv();
@@ -964,7 +963,6 @@ describe('Test plotly events on a scattermapbox plot:', function() {
 
     beforeAll(function() {
         Plotly.setPlotConfig({
-
         });
     });
 
@@ -1142,7 +1140,6 @@ describe('Test plotly events on a scattermapbox plot when css transform is prese
 
     beforeAll(function() {
         Plotly.setPlotConfig({
-
         });
     });
 
@@ -1259,7 +1256,6 @@ describe('scattermapbox restyle', function() {
 
     beforeAll(function() {
         Plotly.setPlotConfig({
-
         });
 
         gd = createGraphDiv();

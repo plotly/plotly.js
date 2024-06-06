@@ -883,7 +883,6 @@ describe('@noCIdep Plotly.react', function() {
     mockLists.mapbox.forEach(function(mockSpec) {
         it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbpox mocks)', function(done) {
             Plotly.setPlotConfig({
-
             });
             _runReactMock(mockSpec, done);
         });
@@ -1926,7 +1925,6 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkEdited = checkState([], attrs());
 
         Plotly.setPlotConfig({
-
         });
 
         _run(fig, editMap, checkInitial, checkEdited).then(done);
@@ -2283,7 +2281,6 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
 
     it('@gl maplibre subplots should preserve viewport changes after panning', function(done) {
         Plotly.setPlotConfig({
-
         });
 
         function _react() {

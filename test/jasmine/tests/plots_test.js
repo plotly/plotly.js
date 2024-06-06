@@ -899,7 +899,7 @@ describe('Test Plots', function() {
         }
 
         // opts.cartesian and opts.gl2d should be arrays of subplot ids ('xy', 'x2y2' etc)
-        // others should be counts: gl3d, geo, maplibre, parcoords, pie, ternary
+        // others should be counts: gl3d, geo, mapbox, parcoords, pie, ternary
         // if omitted, that subplot type is assumed to not exist
         function assertSubplots(opts, msg) {
             msg = msg || '';
