@@ -45,7 +45,7 @@
   ],
   "layout": {
     "mapbox": {
-      "style": "light",
+      "style": "carto-positron-nolabels",
       "zoom": 0.3
     },
     "width": 800,
