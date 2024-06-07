@@ -106,6 +106,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     map.setTransformRequest(function(url) {
         url = url.replace('https://fonts.openmaptiles.org/Open Sans Extrabold', 'https://fonts.openmaptiles.org/Open Sans Extra Bold');
+        url = url.replace('https://tiles.basemaps.cartocdn.com/fonts/Open Sans Extrabold', 'https://fonts.openmaptiles.org/Open Sans Extra Bold');
         url = url.replace('https://fonts.openmaptiles.org/Open Sans Regular,Arial Unicode MS Regular', 'https://fonts.openmaptiles.org/Klokantech Noto Sans Regular');
         return {
             url: url
