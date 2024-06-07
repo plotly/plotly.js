@@ -91,8 +91,10 @@ allNames += [item for item, had_item in zip(LAST, HAD) if had_item]
 
 # unable to generate baselines for the following mocks
 blacklist = [
+  'gl2d_pointcloud-basic',
+  'gl2d_heatmapgl',
+  'gl2d_heatmapgl_discrete',
   'mapbox_stamen-style',
-  
   'plot_types', 
   'trace_metatext', 
   'zz-gl3d_surface_small_timerange',
