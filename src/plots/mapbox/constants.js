@@ -129,9 +129,9 @@ var arcgisSat = {
 var stylesMapbox = {
     basic: cartoVoyager,
     streets: cartoVoyager,
-    outdoors: cartoVoyagerNoLabels,
-    light: cartoPositronNoLabels,
-    dark: cartoDarkmatterNoLabels,
+    outdoors: cartoVoyager,
+    light: cartoPositron,
+    dark: cartoDarkmatter,
     satellite: arcgisSat,
     'satellite-streets': arcgisSatHybrid,
     'open-street-map': {
