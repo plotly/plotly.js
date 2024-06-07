@@ -75,7 +75,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     var opts = fullLayout[self.id];
 
     // store style id and URL or object
-    var styleObj = self.styleObj = getStyleObj(opts.style, fullLayout);
+    var styleObj = self.styleObj = getStyleObj(opts.style);
 
 
     var bounds = opts.bounds;
@@ -148,7 +148,7 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
     self.rejectOnError(reject);
 
     var promises = [];
-    var styleObj = getStyleObj(opts.style, fullLayout);
+    var styleObj = getStyleObj(opts.style);
 
     if(JSON.stringify(self.styleObj) !== JSON.stringify(styleObj)) {
         self.styleObj = styleObj;
@@ -764,7 +764,7 @@ proto.getViewEditsWithDerived = function(cont) {
     return obj;
 };
 
-function getStyleObj(val, fullLayout) {
+function getStyleObj(val) {
     var styleObj = {};
 
     if(Lib.isPlainObject(val)) {
