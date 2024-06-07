@@ -97,7 +97,7 @@ blacklist = [
   'mapbox_custom-style',
   'plot_types', 
   'trace_metatext', 
-  'gl2d_heatmapgl',
+  'gl2d_heatmapgl', # Transform failed with error code 525: gl-fbo: Parameters are too large for FBO
   'zz-gl3d_surface_small_timerange',
 ]
 allNames = [a for a in allNames if a not in blacklist]
