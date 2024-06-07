@@ -5,10 +5,6 @@ var sortObjectKeys = require('../../lib/sort_object_keys');
 var requiredVersion = '1.13.4';
 
 var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-var carto = [
-    '© <a target="_blank" href="https://carto.com/">Carto</a>',
-    OSM
-].join(' ');
 
 var stamenTerrainOrToner = [
     'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>',
@@ -27,7 +23,6 @@ var stamenWaterColor = [
 ].join(' ');
 
 
-
 var cartoPositron = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
 var cartoDarkmatter = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 var cartoVoyager = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
@@ -36,108 +31,108 @@ var cartoDarkmatterNoLabels = 'https://basemaps.cartocdn.com/gl/dark-matter-nola
 var cartoVoyagerNoLabels = 'https://basemaps.cartocdn.com/gl/voyager-nolabels-gl-style/style.json';
 var arcgisSatHybrid = 'https://raw.githubusercontent.com/go2garret/maps/main/src/assets/json/arcgis_hybrid.json';
 var arcgisSat = {
-    "version": 8,
-    "name": "orto",
-    "metadata": {},
-    "center": [
-      1.537786,
-      41.837539
+    version: 8,
+    name: 'orto',
+    metadata: {},
+    center: [
+        1.537786,
+        41.837539
     ],
-    "zoom": 12,
-    "bearing": 0,
-    "pitch": 0,
-    "light": {
-      "anchor": "viewport",
-      "color": "white",
-      "intensity": 0.4,
-      "position": [
-        1.15,
-        45,
-        30
-      ]
+    zoom: 12,
+    bearing: 0,
+    pitch: 0,
+    light: {
+        anchor: 'viewport',
+        color: 'white',
+        intensity: 0.4,
+        position: [
+            1.15,
+            45,
+            30
+        ]
     },
-    "sources": {
-      "ortoEsri": {
-        "type": "raster",
-        "tiles": [
-          "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-        ],
-        "tileSize": 256,
-        "maxzoom": 18,
-        "attribution": "ESRI &copy; <a href='http://www.esri.com'>ESRI</a>"
-      },
-      "ortoInstaMaps": {
-        "type": "raster",
-        "tiles": [
-          "https://tilemaps.icgc.cat/mapfactory/wmts/orto_8_12/CAT3857/{z}/{x}/{y}.png"
-        ],
-        "tileSize": 256,
-        "maxzoom": 13
-      },
-      "ortoICGC": {
-        "type": "raster",
-        "tiles": [
-          "https://geoserveis.icgc.cat/icc_mapesmultibase/noutm/wmts/orto/GRID3857/{z}/{x}/{y}.jpeg"
-        ],
-        "tileSize": 256,
-        "minzoom": 13.1,
-        "maxzoom": 20
-      },
-      "openmaptiles": {
-        "type": "vector",
-        "url": "https://geoserveis.icgc.cat/contextmaps/basemap.json"
-      }
+    sources: {
+        ortoEsri: {
+            type: 'raster',
+            tiles: [
+                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+            ],
+            tileSize: 256,
+            maxzoom: 18,
+            attribution: 'ESRI &copy; <a href=\'http://www.esri.com\'>ESRI</a>'
+        },
+        ortoInstaMaps: {
+            type: 'raster',
+            tiles: [
+                'https://tilemaps.icgc.cat/mapfactory/wmts/orto_8_12/CAT3857/{z}/{x}/{y}.png'
+            ],
+            tileSize: 256,
+            maxzoom: 13
+        },
+        ortoICGC: {
+            type: 'raster',
+            tiles: [
+                'https://geoserveis.icgc.cat/icc_mapesmultibase/noutm/wmts/orto/GRID3857/{z}/{x}/{y}.jpeg'
+            ],
+            tileSize: 256,
+            minzoom: 13.1,
+            maxzoom: 20
+        },
+        openmaptiles: {
+            type: 'vector',
+            url: 'https://geoserveis.icgc.cat/contextmaps/basemap.json'
+        }
     },
-    
-    "sprite": "https://geoserveis.icgc.cat/contextmaps/sprites/sprite@1",
-    "glyphs": "https://geoserveis.icgc.cat/contextmaps/glyphs/{fontstack}/{range}.pbf",
-    "layers": [
-      {
-        "id": "background",
-        "type": "background",
-        "paint": {
-          "background-color": "#F4F9F4"
-        }
-      },
-      {
-        "id": "ortoEsri",
-        "type": "raster",
-        "source": "ortoEsri",
-        "maxzoom": 16,
-        "layout": {
-          "visibility": "visible"
-        }
-      },
-      {
-        "id": "ortoICGC",
-        "type": "raster",
-        "source": "ortoICGC",
-        "minzoom": 13.1,
-        "maxzoom": 19,
-        "layout": {
-          "visibility": "visible"
-        }
-      },
-      {
-        "id": "ortoInstaMaps",
-        "type": "raster",
-        "source": "ortoInstaMaps",
-        "maxzoom": 13,
-        "layout": {
-          "visibility": "visible"
-        }
-      },
+
+    sprite: 'https://geoserveis.icgc.cat/contextmaps/sprites/sprite@1',
+    glyphs: 'https://geoserveis.icgc.cat/contextmaps/glyphs/{fontstack}/{range}.pbf',
+    layers: [
+        {
+            id: 'background',
+            type: 'background',
+            paint: {
+                'background-color': '#F4F9F4'
+            }
+        },
+        {
+            id: 'ortoEsri',
+            type: 'raster',
+            source: 'ortoEsri',
+            maxzoom: 16,
+            layout: {
+                visibility: 'visible'
+            }
+        },
+        {
+            id: 'ortoICGC',
+            type: 'raster',
+            source: 'ortoICGC',
+            minzoom: 13.1,
+            maxzoom: 19,
+            layout: {
+                visibility: 'visible'
+            }
+        },
+        {
+            id: 'ortoInstaMaps',
+            type: 'raster',
+            source: 'ortoInstaMaps',
+            maxzoom: 13,
+            layout: {
+                visibility: 'visible'
+            }
+        },
     ],
-    
-  };
+
+};
 
 var stylesMapbox = {
-    'basic': cartoVoyager,
-    'streets': cartoPositron,
-    'outdoors': cartoVoyagerNoLabels,
-    'light': cartoPositronNoLabels,
-    'dark': cartoDarkmatterNoLabels,
-    'satellite': arcgisSat,
+    basic: cartoVoyager,
+    streets: cartoPositron,
+    outdoors: cartoVoyagerNoLabels,
+    light: cartoPositronNoLabels,
+    dark: cartoDarkmatterNoLabels,
+    satellite: arcgisSat,
     'satellite-streets': arcgisSatHybrid,
     'open-street-map': {
         id: 'osm',

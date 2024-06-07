@@ -776,13 +776,12 @@ function getStyleObj(val, fullLayout) {
         if(constants.stylesMapbox[val]) {
             styleObj.style = constants.stylesMapbox[val];
 
-            if (typeof styleObj.style == 'string'){
-                if (styleObj.style.slice(-9) === '?api_key='){
+            if(typeof styleObj.style === 'string') {
+                if(styleObj.style.slice(-9) === '?api_key=') {
                     // provide api_key for stamen styles
                     styleObj.style += fullLayout._mapboxAccessToken;
                 }
             } else {
-
                 var spec = styleObj.style.sources['plotly-' + val];
                 var tiles = spec ? spec.tiles : undefined;
                 if(
