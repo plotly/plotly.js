@@ -519,16 +519,16 @@ describe('mapbox plots', function() {
         // 'Unable to perform style diff: Unimplemented: setSprite..  Rebuilding the style from scratch.'
         // https://github.com/mapbox/mapbox-gl-js/issues/6933
 
-        assertLayout('Mapbox Dark');
+        assertLayout('Dark Matter without labels');
 
         Plotly.relayout(gd, 'mapbox.style', 'carto-positron')
         .then(function() {
-            assertLayout('Mapbox Light');
+            assertLayout('Positron');
 
             return Plotly.relayout(gd, 'mapbox.style', 'carto-darkmatter');
         })
         .then(function() {
-            assertLayout('Mapbox Dark');
+            assertLayout('Dark Matter');
         })
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
@@ -1223,7 +1223,7 @@ describe('mapbox plots', function() {
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('© Carto © OpenStreetMap contributors');
+                expect(s.text()).toEqual('© CARTO, © OpenStreetMap contributors');
                 assertLinks(s, [
                     'https://carto.com/',
                     'https://www.openstreetmap.org/copyright'
@@ -1284,7 +1284,7 @@ describe('mapbox plots', function() {
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('© MapLibre © OpenStreetMap Improve this map');
+                expect(s.text()).toEqual('© CARTO, © OpenStreetMap contributors');
                 assertLinks(s, [
                     'https://www.openstreetmap.org/about/',
 

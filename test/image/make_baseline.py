@@ -91,13 +91,11 @@ allNames += [item for item, had_item in zip(LAST, HAD) if had_item]
 
 # unable to generate baselines for the following mocks
 blacklist = [
-  'gl2d_heatmapgl_discrete',
   'mapbox_stamen-style',
   'mapbox_layers',
   'mapbox_custom-style',
   'plot_types', 
   'trace_metatext', 
-  'gl2d_heatmapgl', # Transform failed with error code 525: gl-fbo: Parameters are too large for FBO
   'zz-gl3d_surface_small_timerange',
 ]
 allNames = [a for a in allNames if a not in blacklist]
