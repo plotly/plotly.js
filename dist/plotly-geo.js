@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.32.0
+* plotly.js (geo) v2.33.0
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -1087,7 +1087,10 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         fontColor: hoverFont.color,
         fontWeight: hoverFont.weight,
         fontStyle: hoverFont.style,
-        fontVariant: hoverFont.variant
+        fontVariant: hoverFont.variant,
+        fontShadow: hoverFont.fontShadow,
+        fontLineposition: hoverFont.fontLineposition,
+        fontTextcase: hoverFont.fontTextcase
       }, {
         container: fullLayout._hoverlayer.node(),
         outerContainer: fullLayout._paper.node(),
@@ -2768,11 +2771,8 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
   handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
   coerce('title.text', layout._dfltTitle.colorbar);
   var tickFont = colorbarOut.showticklabels ? colorbarOut.tickfont : font;
-  var dfltTitleFont = Lib.extendFlat({}, tickFont, {
-    weight: font.weight,
-    style: font.style,
-    variant: font.variant,
-    color: font.color,
+  var dfltTitleFont = Lib.extendFlat({}, font, {
+    family: tickFont.family,
     size: Lib.bigFont(tickFont.size)
   });
   Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
@@ -4874,23 +4874,41 @@ var drawing = module.exports = {};
 // styling functions for plot elements
 // -----------------------------------------------------
 
-drawing.font = function (s, family, size, color, weight, style, variant) {
-  // also allow the form font(s, {family, size, color, weight, style, variant})
-  if (Lib.isPlainObject(family)) {
-    variant = family.variant;
-    style = family.style;
-    weight = family.weight;
-    color = family.color;
-    size = family.size;
-    family = family.family;
-  }
+drawing.font = function (s, font) {
+  var variant = font.variant;
+  var style = font.style;
+  var weight = font.weight;
+  var color = font.color;
+  var size = font.size;
+  var family = font.family;
+  var shadow = font.shadow;
+  var lineposition = font.lineposition;
+  var textcase = font.textcase;
   if (family) s.style('font-family', family);
   if (size + 1) s.style('font-size', size + 'px');
   if (color) s.call(Color.fill, color);
   if (weight) s.style('font-weight', weight);
   if (style) s.style('font-style', style);
   if (variant) s.style('font-variant', variant);
+  if (textcase) s.style('text-transform', dropNone(textcase2transform(textcase)));
+  if (shadow) s.style('text-shadow', shadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(color)) : dropNone(shadow));
+  if (lineposition) s.style('text-decoration-line', dropNone(lineposition2decorationLine(lineposition)));
 };
+function dropNone(a) {
+  return a === 'none' ? undefined : a;
+}
+var textcase2transformOptions = {
+  normal: 'none',
+  lower: 'lowercase',
+  upper: 'uppercase',
+  'word caps': 'capitalize'
+};
+function textcase2transform(textcase) {
+  return textcase2transformOptions[textcase];
+}
+function lineposition2decorationLine(lineposition) {
+  return lineposition.replace('under', 'underline').replace('over', 'overline').replace('through', 'line-through').split('+').join(' ');
+}
 
 /*
  * Positioning helpers
@@ -5799,6 +5817,9 @@ drawing.textPointStyle = function (s, trace, gd) {
       weight: d.tw || trace.textfont.weight,
       style: d.ty || trace.textfont.style,
       variant: d.tv || trace.textfont.variant,
+      textcase: d.tC || trace.textfont.textcase,
+      lineposition: d.tE || trace.textfont.lineposition,
+      shadow: d.tS || trace.textfont.shadow,
       size: fontSize,
       color: fontColor
     }).text(text).call(svgTextUtils.convertToTspans, gd).call(textPointPosition, pos, fontSize, d.mrc);
@@ -8756,6 +8777,9 @@ function createHoverText(hoverData, opts) {
   var fontWeight = opts.fontWeight || fullLayout.font.weight;
   var fontStyle = opts.fontStyle || fullLayout.font.style;
   var fontVariant = opts.fontVariant || fullLayout.font.variant;
+  var fontTextcase = opts.fontTextcase || fullLayout.font.textcase;
+  var fontLineposition = opts.fontLineposition || fullLayout.font.lineposition;
+  var fontShadow = opts.fontShadow || fullLayout.font.shadow;
   var c0 = hoverData[0];
   var xa = c0.xa;
   var ya = c0.ya;
@@ -8826,13 +8850,17 @@ function createHoverText(hoverData, opts) {
     var commonBgColor = commonLabelOpts.bgcolor || Color.defaultLine;
     var commonStroke = commonLabelOpts.bordercolor || Color.contrast(commonBgColor);
     var contrastColor = Color.contrast(commonBgColor);
+    var commonLabelOptsFont = commonLabelOpts.font;
     var commonLabelFont = {
-      weight: commonLabelOpts.font.weight || fontWeight,
-      style: commonLabelOpts.font.style || fontStyle,
-      variant: commonLabelOpts.font.variant || fontVariant,
-      family: commonLabelOpts.font.family || fontFamily,
-      size: commonLabelOpts.font.size || fontSize,
-      color: commonLabelOpts.font.color || contrastColor
+      weight: commonLabelOptsFont.weight || fontWeight,
+      style: commonLabelOptsFont.style || fontStyle,
+      variant: commonLabelOptsFont.variant || fontVariant,
+      textcase: commonLabelOptsFont.textcase || fontTextcase,
+      lineposition: commonLabelOptsFont.lineposition || fontLineposition,
+      shadow: commonLabelOptsFont.shadow || fontShadow,
+      family: commonLabelOptsFont.family || fontFamily,
+      size: commonLabelOptsFont.size || fontSize,
+      color: commonLabelOptsFont.color || contrastColor
     };
     lpath.style({
       fill: commonBgColor,
@@ -9113,6 +9141,9 @@ function createHoverText(hoverData, opts) {
       weight: fontWeight,
       style: fontStyle,
       variant: fontVariant,
+      textcase: fontTextcase,
+      lineposition: fontLineposition,
+      shadow: fontShadow,
       family: fontFamily,
       size: fontSize
     });
@@ -9147,7 +9178,10 @@ function createHoverText(hoverData, opts) {
       color: d.fontColor || contrastColor,
       weight: d.fontWeight || fontWeight,
       style: d.fontStyle || fontStyle,
-      variant: d.fontVariant || fontVariant
+      variant: d.fontVariant || fontVariant,
+      textcase: d.fontTextcase || fontTextcase,
+      lineposition: d.fontLineposition || fontLineposition,
+      shadow: d.fontShadow || fontShadow
     }).text(text).attr('data-notex', 1).call(svgTextUtils.positionText, 0, 0).call(svgTextUtils.convertToTspans, gd);
     var tx2 = g.select('text.name');
     var tx2width = 0;
@@ -9161,7 +9195,10 @@ function createHoverText(hoverData, opts) {
         color: nameColor,
         weight: d.fontWeight || fontWeight,
         style: d.fontStyle || fontStyle,
-        variant: d.fontVariant || fontVariant
+        variant: d.fontVariant || fontVariant,
+        textcase: d.fontTextcase || fontTextcase,
+        lineposition: d.fontLineposition || fontLineposition,
+        shadow: d.fontShadow || fontShadow
       }).text(name).attr('data-notex', 1).call(svgTextUtils.positionText, 0, 0).call(svgTextUtils.convertToTspans, gd);
       var t2bb = getBoundingClientRect(gd, tx2.node());
       tx2width = t2bb.width + 2 * HOVERTEXTPAD;
@@ -11226,9 +11263,11 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     return Lib.coerce(traceIn, traceOut, plotsAttrs, attr, dflt);
   };
   var globalFont = layoutOut.font || {};
-  var grouptitlefont = Lib.coerceFont(coerce, 'grouptitlefont', Lib.extendFlat({}, globalFont, {
-    size: Math.round(globalFont.size * 1.1)
-  }));
+  var grouptitlefont = Lib.coerceFont(coerce, 'grouptitlefont', globalFont, {
+    overrideDflt: {
+      size: Math.round(globalFont.size * 1.1)
+    }
+  });
   var legendTraceCount = 0;
   var legendReallyHasATrace = false;
   var defaultOrder = 'normal';
@@ -11735,17 +11774,22 @@ function drawOne(gd, opts) {
       dragElement.init({
         element: legend.node(),
         gd: gd,
-        prepFn: function () {
+        prepFn: function (e) {
+          if (e.target === scrollBar.node()) {
+            return;
+          }
           var transform = Drawing.getTranslate(legend);
           x0 = transform.x;
           y0 = transform.y;
         },
         moveFn: function (dx, dy) {
-          var newX = x0 + dx;
-          var newY = y0 + dy;
-          Drawing.setTranslate(legend, newX, newY);
-          xf = dragElement.align(newX, legendObj._width, gs.l, gs.l + gs.w, legendObj.xanchor);
-          yf = dragElement.align(newY + legendObj._height, -legendObj._height, gs.t + gs.h, gs.t, legendObj.yanchor);
+          if (x0 !== undefined && y0 !== undefined) {
+            var newX = x0 + dx;
+            var newY = y0 + dy;
+            Drawing.setTranslate(legend, newX, newY);
+            xf = dragElement.align(newX, legendObj._width, gs.l, gs.l + gs.w, legendObj.xanchor);
+            yf = dragElement.align(newY + legendObj._height, -legendObj._height, gs.t + gs.h, gs.t, legendObj.yanchor);
+          }
         },
         doneFn: function () {
           if (xf !== undefined && yf !== undefined) {
@@ -12873,6 +12917,9 @@ module.exports = function style(s, gd, legend) {
         dEdit.tw = boundVal('textfont.weight', pickFirst);
         dEdit.ty = boundVal('textfont.style', pickFirst);
         dEdit.tv = boundVal('textfont.variant', pickFirst);
+        dEdit.tC = boundVal('textfont.textcase', pickFirst);
+        dEdit.tE = boundVal('textfont.lineposition', pickFirst);
+        dEdit.tS = boundVal('textfont.shadow', pickFirst);
       }
       dMod = [Lib.minExtend(d0, dEdit)];
       tMod = Lib.minExtend(trace, tEdit);
@@ -21418,6 +21465,9 @@ function draw(gd, titleClass, options) {
   var fontWeight = font.weight;
   var fontStyle = font.style;
   var fontVariant = font.variant;
+  var fontTextcase = font.textcase;
+  var fontLineposition = font.lineposition;
+  var fontShadow = font.shadow;
 
   // only make this title editable if we positively identify its property
   // as one that has editing enabled.
@@ -21476,14 +21526,16 @@ function draw(gd, titleClass, options) {
       transformVal = null;
     }
     titleEl.attr('transform', transformVal);
-    titleEl.style({
-      'font-family': fontFamily,
-      'font-size': d3.round(fontSize, 2) + 'px',
-      fill: Color.rgb(fontColor),
-      opacity: opacity * Color.opacity(fontColor),
-      'font-weight': fontWeight,
-      'font-style': fontStyle,
-      'font-variant': fontVariant
+    titleEl.style('opacity', opacity * Color.opacity(fontColor)).call(Drawing.font, {
+      color: Color.rgb(fontColor),
+      size: d3.round(fontSize, 2),
+      family: fontFamily,
+      weight: fontWeight,
+      style: fontStyle,
+      variant: fontVariant,
+      textcase: fontTextcase,
+      shadow: fontShadow,
+      lineposition: fontLineposition
     }).attr(attributes).call(svgTextUtils.convertToTspans, gd);
     return Plots.previousPromises(gd);
   }
@@ -23778,6 +23830,7 @@ module.exports = function clearResponsive(gd) {
 
 var isNumeric = __webpack_require__(8248);
 var tinycolor = __webpack_require__(9760);
+var extendFlat = (__webpack_require__(2880).extendFlat);
 var baseTraceAttrs = __webpack_require__(5464);
 var colorscales = __webpack_require__(8304);
 var Color = __webpack_require__(6308);
@@ -23820,6 +23873,7 @@ exports.valObjectMeta = {
   },
   number: {
     coerceFunction: function (v, propOut, dflt, opts) {
+      if (isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
       if (!isNumeric(v) || opts.min !== undefined && v < opts.min || opts.max !== undefined && v > opts.max) {
         propOut.set(dflt);
       } else propOut.set(+v);
@@ -23827,6 +23881,11 @@ exports.valObjectMeta = {
   },
   integer: {
     coerceFunction: function (v, propOut, dflt, opts) {
+      if ((opts.extras || []).indexOf(v) !== -1) {
+        propOut.set(v);
+        return;
+      }
+      if (isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
       if (v % 1 || !isNumeric(v) || opts.min !== undefined && v < opts.min || opts.max !== undefined && v > opts.max) {
         propOut.set(dflt);
       } else propOut.set(+v);
@@ -23843,6 +23902,7 @@ exports.valObjectMeta = {
   },
   color: {
     coerceFunction: function (v, propOut, dflt) {
+      if (isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
       if (tinycolor(v).isValid()) propOut.set(v);else propOut.set(dflt);
     }
   },
@@ -23861,6 +23921,7 @@ exports.valObjectMeta = {
   },
   angle: {
     coerceFunction: function (v, propOut, dflt) {
+      if (isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
       if (v === 'auto') propOut.set('auto');else if (!isNumeric(v)) propOut.set(dflt);else propOut.set(modHalf(+v, 360));
     }
   },
@@ -24067,14 +24128,25 @@ exports.coerce2 = function (containerIn, containerOut, attributes, attribute, df
  */
 exports.coerceFont = function (coerce, attr, dfltObj, opts) {
   if (!opts) opts = {};
-  var out = {};
-  dfltObj = dfltObj || {};
-  out.family = coerce(attr + '.family', dfltObj.family);
-  out.size = coerce(attr + '.size', dfltObj.size);
-  out.color = coerce(attr + '.color', dfltObj.color);
-  out.weight = coerce(attr + '.weight', dfltObj.weight);
-  out.style = coerce(attr + '.style', dfltObj.style);
+  dfltObj = extendFlat({}, dfltObj);
+  dfltObj = extendFlat(dfltObj, opts.overrideDflt || {});
+  var out = {
+    family: coerce(attr + '.family', dfltObj.family),
+    size: coerce(attr + '.size', dfltObj.size),
+    color: coerce(attr + '.color', dfltObj.color),
+    weight: coerce(attr + '.weight', dfltObj.weight),
+    style: coerce(attr + '.style', dfltObj.style)
+  };
   if (!opts.noFontVariant) out.variant = coerce(attr + '.variant', dfltObj.variant);
+  if (!opts.noFontLineposition) out.lineposition = coerce(attr + '.lineposition', dfltObj.lineposition);
+  if (!opts.noFontTextcase) out.textcase = coerce(attr + '.textcase', dfltObj.textcase);
+  if (!opts.noFontShadow) {
+    var dfltShadow = dfltObj.shadow;
+    if (dfltShadow === 'none' && opts.autoShadowDflt) {
+      dfltShadow = 'auto';
+    }
+    out.shadow = coerce(attr + '.shadow', dfltShadow);
+  }
   return out;
 };
 
@@ -24833,6 +24905,9 @@ function getElementAndAncestors(element) {
   while (isTransformableElement(element)) {
     allElements.push(element);
     element = element.parentNode;
+    if (typeof ShadowRoot === 'function' && element instanceof ShadowRoot) {
+      element = element.host;
+    }
   }
   return allElements;
 }
@@ -39938,6 +40013,9 @@ function tickTextObj(ax, x, text) {
     fontWeight: tf.weight,
     fontStyle: tf.style,
     fontVariant: tf.variant,
+    fontTextcase: tf.textcase,
+    fontLineposition: tf.lineposition,
+    fontShadow: tf.shadow,
     fontColor: tf.color
   };
 }
@@ -41494,7 +41572,10 @@ axes.drawLabels = function (gd, ax, opts) {
       color: d.fontColor,
       weight: d.fontWeight,
       style: d.fontStyle,
-      variant: d.fontVariant
+      variant: d.fontVariant,
+      textcase: d.fontTextcase,
+      lineposition: d.fontLineposition,
+      shadow: d.fontShadow
     }).text(d.text).call(svgTextUtils.convertToTspans, gd);
     if (gd._promises[newPromise]) {
       // if we have an async label, we'll deal with that
@@ -42503,13 +42584,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
   handlePrefixSuffixDefaults(containerIn, containerOut, coerce, axType, options);
   if (!visible) return containerOut;
   coerce('title.text', dfltTitle);
-  Lib.coerceFont(coerce, 'title.font', {
-    family: font.family,
-    weight: font.weight,
-    style: font.style,
-    variant: font.variant,
-    size: Lib.bigFont(font.size),
-    color: dfltFontColor
+  Lib.coerceFont(coerce, 'title.font', font, {
+    overrideDflt: {
+      size: Lib.bigFont(font.size),
+      color: dfltFontColor
+    }
   });
 
   // major ticks
@@ -47842,13 +47921,10 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
     // as with titlefont.color, inherit axis.color only if one was
     // explicitly provided
     contColor && contColor !== layoutAttributes.color.dflt ? contColor : font.color;
-    Lib.coerceFont(coerce, 'tickfont', {
-      family: font.family,
-      weight: font.weight,
-      style: font.style,
-      variant: font.variant,
-      size: font.size,
-      color: dfltFontColor
+    Lib.coerceFont(coerce, 'tickfont', font, {
+      overrideDflt: {
+        color: dfltFontColor
+      }
     });
     if (!options.noTicklabelstep && axType !== 'multicategory' && axType !== 'log') {
       coerce('ticklabelstep');
@@ -48750,6 +48826,21 @@ module.exports = function (opts) {
   var editType = opts.editType;
   var colorEditType = opts.colorEditType;
   if (colorEditType === undefined) colorEditType = editType;
+  var weight = {
+    editType: editType,
+    valType: 'integer',
+    min: 1,
+    max: 1000,
+    extras: ['normal', 'bold'],
+    dflt: 'normal'
+  };
+  if (opts.noNumericWeightValues) {
+    weight.valType = 'enumerated';
+    weight.values = weight.extras;
+    weight.extras = undefined;
+    weight.min = undefined;
+    weight.max = undefined;
+  }
   var attrs = {
     family: {
       valType: 'string',
@@ -48766,12 +48857,7 @@ module.exports = function (opts) {
       valType: 'color',
       editType: colorEditType
     },
-    weight: {
-      editType: editType,
-      valType: 'enumerated',
-      values: ['normal', 'bold'],
-      dflt: 'normal'
-    },
+    weight: weight,
     style: {
       editType: editType,
       valType: 'enumerated',
@@ -48784,6 +48870,24 @@ module.exports = function (opts) {
       values: variantValues || ['normal', 'small-caps', 'all-small-caps', 'all-petite-caps', 'petite-caps', 'unicase'],
       dflt: 'normal'
     },
+    textcase: opts.noFontTextcase ? undefined : {
+      editType: editType,
+      valType: 'enumerated',
+      values: ['normal', 'word caps', 'upper', 'lower'],
+      dflt: 'normal'
+    },
+    lineposition: opts.noFontLineposition ? undefined : {
+      editType: editType,
+      valType: 'flaglist',
+      flags: ['under', 'over', 'through'],
+      extras: ['none'],
+      dflt: 'none'
+    },
+    shadow: opts.noFontShadow ? undefined : {
+      editType: editType,
+      valType: 'string',
+      dflt: opts.autoShadowDflt ? 'auto' : 'none'
+    },
     editType: editType
     // blank strings so compress_attributes can remove
     // TODO - that's uber hacky... better solution?
@@ -48795,7 +48899,18 @@ module.exports = function (opts) {
     attrs.family.arrayOk = true;
     attrs.weight.arrayOk = true;
     attrs.style.arrayOk = true;
-    attrs.variant.arrayOk = true;
+    if (!opts.noFontVariant) {
+      attrs.variant.arrayOk = true;
+    }
+    if (!opts.noFontTextcase) {
+      attrs.textcase.arrayOk = true;
+    }
+    if (!opts.noFontLineposition) {
+      attrs.lineposition.arrayOk = true;
+    }
+    if (!opts.noFontShadow) {
+      attrs.shadow.arrayOk = true;
+    }
     attrs.size.arrayOk = true;
     attrs.color.arrayOk = true;
   }
@@ -52338,9 +52453,11 @@ plots.supplyLayoutGlobalDefaults = function (layoutIn, layoutOut, formatObj) {
   coerce('autotypenumbers');
   var font = Lib.coerceFont(coerce, 'font');
   var fontSize = font.size;
-  Lib.coerceFont(coerce, 'title.font', Lib.extendFlat({}, font, {
-    size: Math.round(fontSize * 1.4)
-  }));
+  Lib.coerceFont(coerce, 'title.font', font, {
+    overrideDflt: {
+      size: Math.round(fontSize * 1.4)
+    }
+  });
   coerce('title.text', layoutOut._dfltTitle.plot);
   coerce('title.xref');
   var titleYref = coerce('title.yref');
@@ -55384,7 +55501,8 @@ module.exports = function toSVG(gd, format, scale) {
 
     // Drop normal font-weight, font-style and font-variant to reduce the size
     var fw = this.style.fontWeight;
-    if (fw && fw === 'normal') {
+    if (fw && (fw === 'normal' || fw === '400')) {
+      // font-weight 400 is similar to normal
       txt.style('font-weight', undefined);
     }
     var fs = this.style.fontStyle;
@@ -56871,6 +56989,9 @@ module.exports = function arraysToCalcdata(cd, trace) {
     Lib.mergeArray(trace.textfont.weight, cd, 'tw');
     Lib.mergeArray(trace.textfont.style, cd, 'ty');
     Lib.mergeArray(trace.textfont.variant, cd, 'tv');
+    Lib.mergeArray(trace.textfont.textcase, cd, 'tC');
+    Lib.mergeArray(trace.textfont.lineposition, cd, 'tE');
+    Lib.mergeArray(trace.textfont.shadow, cd, 'tS');
   }
   var marker = trace.marker;
   if (marker) {
@@ -61562,7 +61683,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.32.0';
+exports.version = '2.33.0';
 
 /***/ }),
 
@@ -61600,7 +61721,7 @@ function isMobile(opts) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
   var d3 = {
-    version: "3.8.0"
+    version: "3.8.2"
   };
   var d3_arraySlice = [].slice, d3_array = function(list) {
     return d3_arraySlice.call(list);
@@ -66470,10 +66591,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
     };
   }
   d3.random = {
-    normal: function(µ, σ) {
+    normal: function(mu, sigma) {
       var n = arguments.length;
-      if (n < 2) σ = 1;
-      if (n < 1) µ = 0;
+      if (n < 2) sigma = 1;
+      if (n < 1) mu = 0;
       return function() {
         var x, y, r;
         do {
@@ -66481,7 +66602,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
           y = Math.random() * 2 - 1;
           r = x * x + y * y;
         } while (!r || r > 1);
-        return µ + σ * x * Math.sqrt(-2 * Math.log(r) / r);
+        return mu + sigma * x * Math.sqrt(-2 * Math.log(r) / r);
       };
     },
     logNormal: function() {
