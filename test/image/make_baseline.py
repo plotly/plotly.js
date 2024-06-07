@@ -94,6 +94,7 @@ blacklist = [
 
   'mapbox_stamen-style',
   'mapbox_layers',
+  'mapbox_custom-style',
   'plot_types', 
   'trace_metatext', 
   'zz-gl3d_surface_small_timerange',
