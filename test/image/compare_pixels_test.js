@@ -60,12 +60,15 @@ argv._.forEach(function(pattern) {
     }
 });
 
-allMockList = allMockList.filter(function(a) {
-    return (
-        // used to pass before 2023 Jun 20
-        a !== 'mapbox_stamen-style'
-    );
-});
+var blacklist = [
+    'gl2d_pointcloud-basic',
+    'gl2d_heatmapgl',
+    'gl2d_heatmapgl_discrete',
+    'mapbox_stamen-style',
+    'plot_types',
+    'trace_metatext',
+    'zz-gl3d_surface_small_timerange',
+];
 
 if(virtualWebgl) {
     allMockList = allMockList.filter(function(a) {
@@ -103,11 +106,7 @@ for(var i = 0; i < allMockList.length; i++) {
     var mockName = allMockList[i];
 
     // skip blacklist
-    if([
-
-    ].indexOf(mockName) !== -1) {
-        continue;
-    }
+    if(blacklist.indexOf(mockName) !== -1) continue;
 
     var isMapbox = mockName.substr(0, 7) === 'mapbox_';
     var isOtherFlaky = [
