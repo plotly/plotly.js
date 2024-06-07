@@ -104,8 +104,7 @@ for(var i = 0; i < allMockList.length; i++) {
 
     // skip blacklist
     if([
-        'mapbox_density0-legend',
-        'mapbox_osm-style'
+        
     ].indexOf(mockName) !== -1) {
         continue;
     }
