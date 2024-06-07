@@ -107,7 +107,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
             var alignmentGroups = fullLayout._alignmentOpts[traceType][groupId] || {};
             var alignmentGroupOpts = alignmentGroups[trace.alignmentgroup] || {};
             var nOffsetGroups = Object.keys(alignmentGroupOpts.offsetGroups || {}).length;
-            if(group) {
+            if(group || nOffsetGroups) {
                 var num = nOffsetGroups || numTotal;
                 var shift = nOffsetGroups ? trace._offsetIndex : t.num;
 
