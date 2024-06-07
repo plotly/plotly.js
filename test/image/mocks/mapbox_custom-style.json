@@ -56,7 +56,7 @@
       "zoom": 11.4
     },
     "mapbox2": {
-      "style": "satellite-streets",
+      "style": "satellite",
       "center": {
         "lon": -73.60287319770295,
         "lat": 45.50110152988742
