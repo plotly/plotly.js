@@ -66,6 +66,7 @@ function Sieve(traces, opts) {
  *
  * @method
  * @param {number} position
+ * @param {number} group
  * @param {number} value
  * @returns {number} Previous bin value
  */
@@ -83,6 +84,7 @@ Sieve.prototype.put = function put(position, group, value) {
  *
  * @method
  * @param {number} position  Position of datum
+ * @param {number} group
  * @param {number} [value]   Value of datum
  *                           (required if this.sepNegVal is true)
  * @returns {number} Current bin value
@@ -97,6 +99,7 @@ Sieve.prototype.get = function get(position, group, value) {
  *
  * @method
  * @param {number} position  Position of datum
+ * @param {number} group
  * @param {number} [value]   Value of datum
  *                           (required if this.sepNegVal is true)
  * @returns {string} Bin label
