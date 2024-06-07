@@ -97,6 +97,7 @@ blacklist = [
   'mapbox_custom-style',
   'plot_types', 
   'trace_metatext', 
+  'gl2d_heatmapgl',
   'zz-gl3d_surface_small_timerange',
 ]
 allNames = [a for a in allNames if a not in blacklist]
