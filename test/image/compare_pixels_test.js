@@ -164,10 +164,6 @@ for(var i = 0; i < allMockList.length; i++) {
 
     var threshold = shouldBePixelPerfect ? 0 : [
         // more flaky
-        'mapbox_angles',
-        'mapbox_layers',
-        'mapbox_custom-style',
-        'mapbox_geojson-attributes'
     ].indexOf(mockName) !== -1 ? 1 : 0.15;
 
     if(virtualWebgl) {
