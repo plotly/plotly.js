@@ -31,6 +31,9 @@ var stamenWaterColor = [
 var cartoPositron = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
 var cartoDarkmatter = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 var cartoVoyager = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
+var cartoPositronNoLabels = 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json';
+var cartoDarkmatterNoLabels = 'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json';
+var cartoVoyagerNoLabels = 'https://basemaps.cartocdn.com/gl/voyager-nolabels-gl-style/style.json';
 var arcgisSat = 'https://raw.githubusercontent.com/go2garret/maps/main/src/assets/json/arcgis_hybrid.json';
 
 var stylesMapbox = {
@@ -78,6 +81,10 @@ var stylesMapbox = {
     },
     'carto-positron': cartoPositron,
     'carto-darkmatter': cartoDarkmatter,
+    'carto-voyager': cartoVoyager,
+    'carto-positron-nolabels': cartoPositronNoLabels,
+    'carto-darkmatter-nolabels': cartoDarkmatterNoLabels,
+    'carto-voyager-nolabels': cartoVoyagerNoLabels,
     'stamen-terrain': {
         id: 'stamen-terrain',
         version: 8,
