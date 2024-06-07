@@ -1225,7 +1225,7 @@ describe('mapbox plots', function() {
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('© CARTO, © OpenStreetMap contributors');
                 assertLinks(s, [
-                    'https://carto.com/',
+                    'https://carto.com/about-carto/',
                     'https://www.openstreetmap.org/copyright'
                 ]);
             })
@@ -1359,7 +1359,7 @@ describe('mapbox plots', function() {
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual([XSS + attr, '© MapLibre © OpenStreetMap Improve this map'].join(' | '));
+                expect(s.text()).toEqual([XSS + attr, '© CARTO, © OpenStreetMap contributors'].join(' | '));
                 expect(s.html().indexOf('<img src=x onerror="alert(XSS);">')).toBe(-1);
                 expect(s.html().indexOf('&lt;img src=x onerror="alert(XSS);"&gt;')).not.toBe(-1);
             })
