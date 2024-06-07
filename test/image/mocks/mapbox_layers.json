@@ -539,23 +539,13 @@
           "below": "water",
           "color": "#ece2f0",
           "opacity": 0.8
-        },
-        {
-          "sourcetype": "vector",
-          "source": "mapbox://mapbox.mapbox-terrain-v2",
-          "sourcelayer": "contour",
-          "type": "line",
-          "color": "red",
-          "line": {
-            "width": 2
-          }
         }
       ]
     },
 
     "mapbox2": {
       "domain": {"x": [0.52, 1], "y": [0, 1]},
-      "style": "mapbox://styles/mapbox/light-v10",
+      "style": "light",
       "zoom": 4.5,
       "center": {"lon": -74.5, "lat": 42},
       "layers": [

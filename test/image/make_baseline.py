@@ -91,9 +91,6 @@ allNames += [item for item, had_item in zip(LAST, HAD) if had_item]
 
 # unable to generate baselines for the following mocks
 blacklist = [
-  'mapbox_stamen-style',
-  'mapbox_layers',
-  'mapbox_custom-style',
   'plot_types', 
   'trace_metatext', 
   'zz-gl3d_surface_small_timerange',
