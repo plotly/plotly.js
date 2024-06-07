@@ -31,7 +31,7 @@ var stamenWaterColor = [
 var cartoPositron = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
 var cartoDarkmatter = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 var cartoVoyager = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
-
+var arcgisSat = 'https://raw.githubusercontent.com/go2garret/maps/main/src/assets/json/arcgis_hybrid.json';
 
 var stylesMapbox = {
     'basic': cartoVoyager,
@@ -39,8 +39,8 @@ var stylesMapbox = {
     'outdoors': cartoVoyager,
     'light': cartoPositron,
     'dark': cartoDarkmatter,
-    'satellite': cartoPositron,
-    'satellite-streets': cartoPositron,
+    'satellite': arcgisSat,
+    'satellite-streets': arcgisSat,
     'open-street-map': {
         id: 'osm',
         version: 8,
@@ -49,8 +49,7 @@ var stylesMapbox = {
                 type: 'raster',
                 attribution: OSM,
                 tiles: [
-                    'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
                 ],
                 tileSize: 256
             }
