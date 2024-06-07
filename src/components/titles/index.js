@@ -178,15 +178,20 @@ function draw(gd, titleClass, options) {
             transformVal = null;
         }
 
+        titleEl.attr('transform', transformVal);
+
+        // Callback to adjust the subtitle position after mathjax is rendered
+        // Mathjax is rendered asynchronously, which is why this step needs to be
+        // passed as a callback
         function adjustSubtitlePosition(titleElMathGroup) {
             if(titleElMathGroup && subtitleEl) {
-                var titleHeight = titleElMathGroup.node().getBBox().height;
-                var newSubtitleY = Number(subtitleEl.attr('y')) + titleHeight;
-                subtitleEl.attr('y', newSubtitleY);
+                var titleMathHeight = titleElMathGroup.node().getBBox().height;
+                if(titleMathHeight) {
+                    var newSubtitleY = Number(subtitleEl.attr('y')) + titleMathHeight;
+                    subtitleEl.attr('y', newSubtitleY);
+                }
             }
         }
-
-        titleEl.attr('transform', transformVal);
 
         titleEl.style('opacity', opacity * Color.opacity(fontColor))
         .call(Drawing.font, {
