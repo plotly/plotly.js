@@ -322,8 +322,9 @@ function setOffsetAndWidth(gd, pa, sieve, opts) {
         barWidth = barWidthPlusGap * (1 - (opts.groupgap || 0));
         offsetFromCenter = -barWidth / 2;
     } else { // collect groups and calculate values in loop below
-        var groupId = getAxisGroup(fullLayout, pa._id) + calcTraces[0][0].trace.orientation;
-        alignmentGroups = fullLayout._alignmentOpts[groupId] || {};
+        var firstTrace = calcTraces[0][0].trace;
+        var groupId = getAxisGroup(fullLayout, pa._id) + firstTrace.orientation;
+        alignmentGroups = fullLayout._alignmentOpts[firstTrace.type][groupId] || {};
     }
 
     for(var i = 0; i < nTraces; i++) {
