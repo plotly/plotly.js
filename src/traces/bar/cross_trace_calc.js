@@ -300,6 +300,18 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces, opts) {
     if(opts.norm) normalizeBars(sa, sieve, opts);
 }
 
+/**
+ * Mode group: Traces should be offsetted to other traces at the same position if they have a
+ *      different offsetgroup or if no offsetgroups are specified.
+ *      If there are no other traces at the same position, the trace will not be offsetted and it
+ *      can occupy the whole width.
+ *      If two traces share an offsetgroup, they should overlap.
+ * Mode overlay/stack/relative: Traces should be offseted to other traces at the same position if
+ *      they have a different offsetgroup.
+ *      If two traces share an offsetgroup or if no offsetgroups are specified, they should instead
+ *      overlap/stack.
+ * Angular axes (for barpolar type) don't support group offsets.
+ */
 function setOffsetAndWidth(gd, pa, sieve, opts) {
     var fullLayout = gd._fullLayout;
     var positions = sieve.positions;
