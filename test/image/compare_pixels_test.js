@@ -63,10 +63,7 @@ argv._.forEach(function(pattern) {
 allMockList = allMockList.filter(function(a) {
     return (
         // used to pass before 2023 Jun 20
-        a !== 'mapbox_stamen-style' &&
-
-        // skip for now | TODO: figure out why needed this in https://github.com/plotly/plotly.js/pull/6610
-        a !== 'mapbox_custom-style'
+        a !== 'mapbox_stamen-style'
     );
 });
 
