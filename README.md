@@ -16,6 +16,13 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 
 [Contact us](https://plotly.com/products/consulting-and-oem/) for Plotly.js consulting, dashboard development, application integration, and feature additions.
 
+<div align="center">
+  <a href="https://dash.plotly.com/project-maintenance">
+    <img src="https://dash.plotly.com/assets/images/maintained-by-plotly.png" width="400px" alt="Maintained by Plotly">
+  </a>
+</div>
+
+
 ## Table of contents
 
 * [Load as a node module](#load-as-a-node-module)
