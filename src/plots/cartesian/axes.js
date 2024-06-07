@@ -2974,17 +2974,35 @@ axes.makeTransTickLabelFn = function(ax) {
     var u = uv[0];
     var v = uv[1];
 
-    return ax._id.charAt(0) === 'x' ?
+    var isXaxis = ax._id.charAt(0) === 'x';
+    var isYaxis = !isXaxis;
+    var isReversed = ax.range[0] > ax.range[1];
+    var ticksInside = ax.ticklabelposition && ax.ticklabelposition.indexOf('inside') !== -1;
+    var ticksOutside = !ticksInside;
+
+    if(runoff) {
+        var runoffSign = isReversed ? -1 : 1;
+        runoff = runoff * runoffSign;
+    }
+    if(standoff) {
+        var standoffSign =
+            isXaxis && ax.side === 'bottom' && ticksOutside ||
+            isXaxis && ax.side === 'top' && ticksInside ||
+            isYaxis && ax.side === 'right' && ticksOutside ||
+            isYaxis && ax.side === 'left' && ticksInside ? 1 : -1;
+        standoff = standoff * standoffSign;
+    }
+    return isXaxis ?
         function(d) {
             return strTranslate(
-                u + ax._offset + ax.l2p(getPosX(d)) + standoff,
-                v + runoff
+                u + ax._offset + ax.l2p(getPosX(d)) + runoff,
+                v + standoff
             );
         } :
         function(d) {
             return strTranslate(
-                v + runoff,
-                u + ax._offset + ax.l2p(getPosX(d)) + standoff
+                v + standoff,
+                u + ax._offset + ax.l2p(getPosX(d)) + runoff
             );
         };
 };
