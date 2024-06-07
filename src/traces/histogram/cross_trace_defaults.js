@@ -116,8 +116,10 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
             }
         }
     }
-
-    var alignmentOpts = fullLayout._alignmentOpts || {};
+    var alignmentOpts = {};
+    if(fullLayout._alignmentOpts.histogram !== undefined) {
+        alignmentOpts = fullLayout._alignmentOpts.histogram || {};
+    }
 
     // Look for traces that "have to match", that is:
     // - 1d histogram traces on the same subplot with same orientation under barmode:stack,
@@ -136,7 +138,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
             if(fullLayout.barmode === 'group' && traceOut.alignmentgroup) {
                 var pa = traceOut[binDir + 'axis'];
                 var aGroupId = getAxisGroup(fullLayout, pa) + traceOut.orientation;
-                if((alignmentOpts[aGroupId] || {})[traceOut.alignmentgroup]) {
+                if((alignmentOpts.histogram[aGroupId] || {})[traceOut.alignmentgroup]) {
                     groupName = aGroupId;
                 }
             }
