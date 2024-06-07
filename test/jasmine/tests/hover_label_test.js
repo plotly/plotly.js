@@ -1668,6 +1668,10 @@ describe('hover info', function() {
             return Math.max(0, overlap);
         }
 
+        function labelCount() {
+            return d3Select(gd).selectAll('g.hovertext').size();
+        }
+
         it('centered-aligned, should render labels inside boxes', function(done) {
             var trace1 = {
                 x: ['giraffes'],
@@ -1786,6 +1790,59 @@ describe('hover info', function() {
                   .toBeWithin(2, 1);
             })
             .then(done, done.fail);
+        });
+
+        it('does not overlap lebels for different trace types', function(done) {
+            function trace(name, type, delta) {
+                return {
+                    name: name,
+                    type: type,
+                    y: [0 + delta, 1 + delta, 2 + delta],
+                    x: ['CAT 1', 'CAT 2', 'CAT 3'],
+                };
+            }
+
+            var scatterName = 'scatter_';
+            var barName = 'bar_';
+            var data = [];
+            var i;
+            for(i = 0; i < 3; i++) {
+                data.push(trace(barName + i, 'bar', 0.0));
+                data.push(trace(scatterName + i, 'scatter', 0.1));
+            }
+            var layout = {
+                width: 600,
+                height: 400,
+                hovermode: 'x',
+            };
+
+            Plotly.newPlot(gd, data, layout)
+                .then(function() {
+                    _hoverNatural(gd, 200, 200);
+                })
+                .then(function() {
+                    expect(labelCount()).toBe(6);
+                })
+                .then(function() {
+                    var nodes = [];
+                    for(i = 0; i < 3; i++) {
+                        nodes.push(hoverInfoNodes(barName + i).secondaryBox.getBoundingClientRect());
+                        nodes.push(hoverInfoNodes(scatterName + i).secondaryBox.getBoundingClientRect());
+                    }
+                    nodes.sort(function(a, b) { return a.top - b.top; });
+
+                    for(i = 0; i < 5; i++) {
+                        expect(
+                calcLineOverlap(
+                    nodes[i].top,
+                    nodes[i].bottom,
+                    nodes[i + 1].top,
+                    nodes[i + 1].bottom
+                )
+                ).toBeWithin(2, 1);
+                    }
+                })
+              .then(done, done.fail);
         });
     });
 

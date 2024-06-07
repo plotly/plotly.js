@@ -9,6 +9,26 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.33.0] -- 2024-05-29
+
+### Added
+ - Add support for numeric text font `weight` [[#6990](https://github.com/plotly/plotly.js/pull/6990)]
+ - Add `shadow`, `lineposition` and `textcase` options to SVG fonts [[#6983](https://github.com/plotly/plotly.js/pull/6983)]
+
+### Fixed
+ - Fix unicode variable names in @plotly/d3 [[#6992](https://github.com/plotly/plotly.js/pull/6992)],
+   with thanks to @GeorchW for the contribution!
+ - Fix `getFullTransformMatrix` in shadow DOM [[#6996](https://github.com/plotly/plotly.js/pull/6996)],
+   with thanks to @OpportunityLiu for the contribution!
+ - Fix drag on legend scrollbar while `edits.legendPosition` is `true` [[#6997](https://github.com/plotly/plotly.js/pull/6997)],
+   with thanks to @OpportunityLiu for the contribution!
+ - Fix numerical instability in 3D plots [[6998](https://github.com/plotly/plotly.js/pull/6998)],
+   with thanks to @hborchardt for the contribution!
+ - Fix numerical precision of drawing surface trace [[6999](https://github.com/plotly/plotly.js/pull/6999)],
+   with thanks to @hborchardt for the contribution!
+ - Fix isosurface maximum value calculation when `isomax` is set to null [[#7002](https://github.com/plotly/plotly.js/pull/7002)]
+
+
 ## [2.32.0] -- 2024-04-23
 
 ### Added
