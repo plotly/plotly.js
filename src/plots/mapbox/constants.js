@@ -248,7 +248,7 @@ module.exports = {
     requiredVersion: requiredVersion,
 
 
-    styleValueDflt: 'carto-positron',
+    styleValueDflt: 'basic',
     stylesMapbox: stylesMapbox,
     styleValuesMapbox: styleValuesMapbox,
 
