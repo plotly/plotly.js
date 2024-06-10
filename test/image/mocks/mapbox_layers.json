@@ -545,7 +545,7 @@
 
     "mapbox2": {
       "domain": {"x": [0.52, 1], "y": [0, 1]},
-      "style": "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+      "style": "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
       "zoom": 4.5,
       "center": {"lon": -74.5, "lat": 42},
       "layers": [
