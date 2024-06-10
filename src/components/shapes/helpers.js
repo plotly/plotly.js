@@ -56,6 +56,7 @@ exports.extractPathCoords = function(path, paramsToUse, isRaw) {
 exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
     var gs = gd._fullLayout._size;
     var dataToPixel;
+    shift = shift || 0;
 
     if(axis) {
         if(refType === 'domain') {
