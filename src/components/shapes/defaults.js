@@ -75,11 +75,6 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         var pos2r;
         var r2pos;
 
-        coerce('x0shift');
-        coerce('x1shift');
-        coerce('y0shift');
-        coerce('y1shift');
-
         // xref, yref
         var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, undefined,
             'paper');
@@ -90,6 +85,10 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
             ax._shapeIndices.push(shapeOut._index);
             r2pos = helpers.rangeToShapePosition(ax);
             pos2r = helpers.shapePositionToRange(ax);
+            if(ax.type === 'category' || ax.type === 'multicategory') {
+                coerce(axLetter + '0shift');
+                coerce(axLetter + '1shift');
+            }
         } else {
             pos2r = r2pos = Lib.identity;
         }
