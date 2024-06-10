@@ -38,11 +38,12 @@
                   "color": "black",
                   "width": 3.0
                 },
-                "y0": ["A", "C"],
+                "y0": ["A", "D"],
                 "y1": ["A", "D"],
                 "x0": 0,
                 "x1": 0.25,
-                "yshift": 0.5,
+                "y0shift": -0.5,
+                "y1shift": 0.5,
                 "xref": "paper"
             },
             {
@@ -79,7 +80,8 @@
                 "y1": ["B", "D"],
                 "x0": 0,
                 "x1": 0.25,
-                "yshift": -0.5,
+                "y0shift": -0.5,
+                "y1shift": -0.5,
                 "xref": "paper"
             }
         ]

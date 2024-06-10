@@ -69,12 +69,12 @@ exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
                 var shiftPixels = 0;
                 if(axis.type === 'category' || axis.type === 'multicategory') {
                     if(isVertical) {
-                        shiftPixels = -1 * ((gs.h - axis.r2p(d2r(0.5, true))) * shift);
+                        shiftPixels = ((axis.r2p(1) - axis.r2p(0)) * shift);
                     } else {
-                        shiftPixels = axis.r2p(d2r(0.5, true)) * shift;
+                        shiftPixels = axis.r2p(0.5) * shift;
                     }
                 }
-                return axis._offset + axis.r2p(d2r(v, true)) + (shiftPixels || 0);
+                return axis._offset + axis.r2p(d2r(v, true)) + shiftPixels;
             };
 
             if(axis.type === 'date') dataToPixel = exports.decodeDate(dataToPixel);
@@ -187,8 +187,10 @@ exports.getPathString = function(gd, options) {
     var ya = Axes.getFromId(gd, options.yref);
     var gs = gd._fullLayout._size;
     var x2r, x2p, y2r, y2p;
-    var shiftUnitX = 0;
-    var shiftUnitY = 0;
+    var xShiftStart = 0;
+    var xShiftEnd = 0;
+    var yShiftStart = 0;
+    var yShiftEnd = 0;
     var x0, x1, y0, y1;
 
     if(xa) {
@@ -198,7 +200,9 @@ exports.getPathString = function(gd, options) {
             x2r = exports.shapePositionToRange(xa);
             x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
             if(xa.type === 'category' || xa.type === 'multicategory') {
-                shiftUnitX = xa.r2p(x2r(0.5, true));
+                var shiftUnitX = xa.r2p(0.5);
+                xShiftStart = shiftUnitX * options.x0shift;
+                xShiftEnd = shiftUnitX * options.x1shift;
             }
         }
     } else {
@@ -212,7 +216,9 @@ exports.getPathString = function(gd, options) {
             y2r = exports.shapePositionToRange(ya);
             y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
             if(ya.type === 'category' || ya.type === 'multicategory') {
-                shiftUnitY = gs.h - ya.r2p(y2r(0.5, true));
+                var shiftUnitY = ya.r2p(0) - ya.r2p(1);
+                yShiftStart = shiftUnitY * options.y0shift;
+                yShiftEnd = shiftUnitY * options.y1shift;
             }
         }
     } else {
@@ -226,20 +232,20 @@ exports.getPathString = function(gd, options) {
     }
     if(options.xsizemode === 'pixel') {
         var xAnchorPos = x2p(options.xanchor);
-        x0 = xAnchorPos + options.x0 + shiftUnitX * options.xshift;
-        x1 = xAnchorPos + options.x1 + shiftUnitX * options.xshift;
+        x0 = xAnchorPos + options.x0 + xShiftStart;
+        x1 = xAnchorPos + options.x1 + xShiftEnd;
     } else {
-        x0 = x2p(options.x0) + shiftUnitX * options.xshift;
-        x1 = x2p(options.x1) + shiftUnitX * options.xshift;
+        x0 = x2p(options.x0) + xShiftStart;
+        x1 = x2p(options.x1) + xShiftEnd;
     }
 
     if(options.ysizemode === 'pixel') {
         var yAnchorPos = y2p(options.yanchor);
-        y0 = yAnchorPos - options.y0 - shiftUnitY * options.yshift;
-        y1 = yAnchorPos - options.y1 - shiftUnitY * options.yshift;
+        y0 = yAnchorPos - options.y0 - yShiftStart;
+        y1 = yAnchorPos - options.y1 - yShiftEnd;
     } else {
-        y0 = y2p(options.y0) - shiftUnitY * options.yshift;
-        y1 = y2p(options.y1) - shiftUnitY * options.yshift;
+        y0 = y2p(options.y0) - yShiftStart;
+        y1 = y2p(options.y1) - yShiftEnd;
     }
 
     if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;

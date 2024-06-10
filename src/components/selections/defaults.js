@@ -49,8 +49,10 @@ function handleSelectionDefaults(selectionIn, selectionOut, fullLayout) {
     coerce('line.color');
     coerce('line.width');
     coerce('line.dash');
-    coerce('xshift');
-    coerce('yshift');
+    coerce('x0shift');
+    coerce('x1shift');
+    coerce('y0shift');
+    coerce('y1shift');
 
     // positioning
     var axLetters = ['x', 'y'];

@@ -9555,10 +9555,26 @@
        "editType": "arraydraw",
        "valType": "any"
       },
+      "x0shift": {
+       "description": "Only relevant if xref is a (multi-)category axes. Shifts x0 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "arraydraw",
+       "max": 1,
+       "min": -1,
+       "valType": "number"
+      },
       "x1": {
        "description": "Sets the selection's end x position.",
        "editType": "arraydraw",
        "valType": "any"
+      },
+      "x1shift": {
+       "description": "Only relevant if xref is a (multi-)category axes. Shifts x1 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "arraydraw",
+       "max": 1,
+       "min": -1,
+       "valType": "number"
       },
       "xref": {
        "description": "Sets the selection's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x  axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis.",
@@ -9569,23 +9585,31 @@
         "/^x([2-9]|[1-9][0-9]+)?( domain)?$/"
        ]
       },
-      "xshift": {
-       "description": "Only relevant if xref is a (multi-)category axes. Shifts x0 and x1 by a fraction of the reference unit.",
-       "dflt": 0,
-       "editType": "arraydraw",
-       "max": 0.5,
-       "min": -0.5,
-       "valType": "number"
-      },
       "y0": {
        "description": "Sets the selection's starting y position.",
        "editType": "arraydraw",
        "valType": "any"
       },
+      "y0shift": {
+       "description": "Only relevant if yref is a (multi-)category axes. Shifts y0 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "arraydraw",
+       "max": 1,
+       "min": -1,
+       "valType": "number"
+      },
       "y1": {
        "description": "Sets the selection's end y position.",
        "editType": "arraydraw",
        "valType": "any"
+      },
+      "y1shift": {
+       "description": "Only relevant if yref is a (multi-)category axes. Shifts y1 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "arraydraw",
+       "max": 1,
+       "min": -1,
+       "valType": "number"
       },
       "yref": {
        "description": "Sets the selection's x coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y  axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis.",
@@ -9595,14 +9619,6 @@
         "paper",
         "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
        ]
-      },
-      "yshift": {
-       "description": "Only relevant if yref is a (multi-)category axes. Shifts y0 and y1 by a fraction of the reference unit.",
-       "dflt": 0,
-       "editType": "arraydraw",
-       "max": 0.5,
-       "min": -0.5,
-       "valType": "number"
       }
      }
     },
@@ -10021,10 +10037,26 @@
        "editType": "calc+arraydraw",
        "valType": "any"
       },
+      "x0shift": {
+       "description": "Only relevant if xref is a (multi-)category axes. Shifts x0 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "calc",
+       "max": 1,
+       "min": -1,
+       "valType": "number"
+      },
       "x1": {
        "description": "Sets the shape's end x position. See `type` and `xsizemode` for more info.",
        "editType": "calc+arraydraw",
        "valType": "any"
+      },
+      "x1shift": {
+       "description": "Only relevant if xref is a (multi-)category axes. Shifts x1 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "calc",
+       "max": 1,
+       "min": -1,
+       "valType": "number"
       },
       "xanchor": {
        "description": "Only relevant in conjunction with `xsizemode` set to *pixel*. Specifies the anchor point on the x axis to which `x0`, `x1` and x coordinates within `path` are relative to. E.g. useful to attach a pixel sized shape to a certain data value. No effect when `xsizemode` not set to *pixel*.",
@@ -10039,14 +10071,6 @@
         "paper",
         "/^x([2-9]|[1-9][0-9]+)?( domain)?$/"
        ]
-      },
-      "xshift": {
-       "description": "Only relevant if xref is a (multi-)category axes. Shifts x0 and x1 by a fraction of the reference unit.",
-       "dflt": 0,
-       "editType": "calc",
-       "max": 0.5,
-       "min": -0.5,
-       "valType": "number"
       },
       "xsizemode": {
        "description": "Sets the shapes's sizing mode along the x axis. If set to *scaled*, `x0`, `x1` and x coordinates within `path` refer to data values on the x axis or a fraction of the plot area's width (`xref` set to *paper*). If set to *pixel*, `xanchor` specifies the x position in terms of data or plot fraction but `x0`, `x1` and x coordinates within `path` are pixels relative to `xanchor`. This way, the shape can have a fixed width while maintaining a position relative to data or plot fraction.",
@@ -10063,10 +10087,26 @@
        "editType": "calc+arraydraw",
        "valType": "any"
       },
+      "y0shift": {
+       "description": "Only relevant if yref is a (multi-)category axes. Shifts y0 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "calc",
+       "max": 1,
+       "min": -1,
+       "valType": "number"
+      },
       "y1": {
        "description": "Sets the shape's end y position. See `type` and `ysizemode` for more info.",
        "editType": "calc+arraydraw",
        "valType": "any"
+      },
+      "y1shift": {
+       "description": "Only relevant if yref is a (multi-)category axes. Shifts y1 by a fraction of the reference unit.",
+       "dflt": 0,
+       "editType": "calc",
+       "max": 1,
+       "min": -1,
+       "valType": "number"
       },
       "yanchor": {
        "description": "Only relevant in conjunction with `ysizemode` set to *pixel*. Specifies the anchor point on the y axis to which `y0`, `y1` and y coordinates within `path` are relative to. E.g. useful to attach a pixel sized shape to a certain data value. No effect when `ysizemode` not set to *pixel*.",
@@ -10081,14 +10121,6 @@
         "paper",
         "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
        ]
-      },
-      "yshift": {
-       "description": "Only relevant if yref is a (multi-)category axes. Shifts y0 and y1 by a fraction of the reference unit.",
-       "dflt": 0,
-       "editType": "calc",
-       "max": 0.5,
-       "min": -0.5,
-       "valType": "number"
       },
       "ysizemode": {
        "description": "Sets the shapes's sizing mode along the y axis. If set to *scaled*, `y0`, `y1` and y coordinates within `path` refer to data values on the y axis or a fraction of the plot area's height (`yref` set to *paper*). If set to *pixel*, `yanchor` specifies the y position in terms of data or plot fraction but `y0`, `y1` and y coordinates within `path` are pixels relative to `yanchor`. This way, the shape can have a fixed height while maintaining a position relative to data or plot fraction.",

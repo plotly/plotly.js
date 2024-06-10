@@ -29,7 +29,8 @@
                 "x1": "A",
                 "y0": 0,
                 "y1": 0.5,
-                "xshift": 0.5,
+                "x0shift": 0.5,
+                "x1shift": 0.5,
                 "yref": "paper"
             },
             {
@@ -48,17 +49,19 @@
                 "x1": 3,
                 "y0": 0,
                 "y1": 0.5,
-                "xshift": -0.25,
+                "x0shift": -0.25,
+                "x1shift": -0.25,
                 "yref": "paper"
             }
         ],
         "selections": [
             {
                 "x0": 0,
-                "x1": 4,
+                "x1": 3,
                 "y0": 1,
                 "y1": 3,
-                "xshift": -0.5
+                "x0shift": -0.5,
+                "x1shift": 0.5
             }
         ]
     }

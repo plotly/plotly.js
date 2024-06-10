@@ -88,17 +88,25 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         // and convert them to pixel coordinates
         // Setup conversion functions
         var xa = Axes.getFromId(gd, options.xref);
+        var xShiftStart = options.x0shift;
+        var xShiftEnd = options.x1shift;
         var xRefType = Axes.getRefType(options.xref);
-        var xShift = options.xshift;
         var ya = Axes.getFromId(gd, options.yref);
+        var yShiftStart = options.y0shift;
+        var yShiftEnd = options.y1shift;
         var yRefType = Axes.getRefType(options.yref);
-        var yShift = options.yshift;
-        var x2p = helpers.getDataToPixel(gd, xa, xShift, false, xRefType);
-        var y2p = helpers.getDataToPixel(gd, ya, yShift, true, yRefType);
-        shapex0 = x2p(options.x0);
-        shapex1 = x2p(options.x1);
-        shapey0 = y2p(options.y0);
-        shapey1 = y2p(options.y1);
+        var x2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, xa, shift, false, xRefType);
+            return dataToPixel(v);
+        };
+        var y2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true, yRefType);
+            return dataToPixel(v);
+        };
+        shapex0 = x2p(options.x0, xShiftStart);
+        shapex1 = x2p(options.x1, xShiftEnd);
+        shapey0 = y2p(options.y0, yShiftStart);
+        shapey1 = y2p(options.y1, yShiftEnd);
     }
 
     // Handle `auto` angle
