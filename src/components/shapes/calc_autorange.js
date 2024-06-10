@@ -83,7 +83,7 @@ function shapeBounds(ax, shape, paramsToUse) {
 
     var convertVal = isCategory ? ax.r2c : ax.d2c;
 
-    var isSizeModeScale = shape[dim + 'sizemode'] === 'scale';
+    var isSizeModeScale = shape[dim + 'sizemode'] === 'scaled';
     if(isSizeModeScale) {
         v0 = shape[dim + '0'];
         v1 = shape[dim + '1'];
