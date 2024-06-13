@@ -111,7 +111,8 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     var font = layout.font;
     var opts = {
         noAutotickangles: true,
-        noTicklabelrunoffstandoff: true,
+        noTicklabelrunoff: true,
+        noTicklabelstandoff: true,
         outerTicks: false,
         font: font
     };

@@ -133,7 +133,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
             font: layout.font,
             noAutotickangles: true,
             outerTicks: true,
-            noTicklabelrunoffstandoff: true
+            noTicklabelrunoff: true,
+            noTicklabelstandoff: true
         };
         handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');
         handlePrefixSuffixDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
