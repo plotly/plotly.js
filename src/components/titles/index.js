@@ -60,7 +60,6 @@ function draw(gd, titleClass, options) {
     var fullLayout = gd._fullLayout;
 
     var opacity = 1;
-    var isplaceholder = false;
     var title = cont.title;
     var txt = (title && title.text ? title.text : '').trim();
 
@@ -82,6 +81,7 @@ function draw(gd, titleClass, options) {
 
     var subtitle = cont.title.subtitle;
     var subtitleTxt = (subtitle && subtitle.text ? subtitle.text : '').trim();
+    var subtitleOpacity = 1;
     var subtitleFont = subtitle && subtitle.font ? subtitle.font : {};
     var subFontFamily = subtitleFont.family;
     var subFontSize = subtitleFont.size;
@@ -95,21 +95,31 @@ function draw(gd, titleClass, options) {
 
     // only make this title editable if we positively identify its property
     // as one that has editing enabled.
+    // Subtitle is editable if and only if title is editable
     var editAttr;
     if(prop === 'title.text') editAttr = 'titleText';
     else if(prop.indexOf('axis') !== -1) editAttr = 'axisTitleText';
     else if(prop.indexOf('colorbar' !== -1)) editAttr = 'colorbarTitleText';
     var editable = gd._context.edits[editAttr];
 
+    function matchesPlaceholder(text, placeholder) {
+        if(text == undefined || placeholder == undefined) return false;
+        return text.replace(numStripRE, ' % ') === placeholder.replace(numStripRE, ' % ');
+        return answer;
+    }
+
     if(txt === '') opacity = 0;
-    // look for placeholder text while stripping out numbers from eg X2, Y3
-    // this is just for backward compatibility with the old version that had
-    // "Click to enter X2 title" and may have gotten saved in some old plots,
-    // we don't want this to show up when these are displayed.
-    else if(txt.replace(numStripRE, ' % ') === placeholder.replace(numStripRE, ' % ')) {
+    else if(matchesPlaceholder(txt, placeholder)) {
+        if (!editable) txt = '';
         opacity = 0.2;
-        isplaceholder = true;
-        if(!editable) txt = '';
+    }
+
+    if(subtitleEnabled) {
+        if(subtitleTxt === '') subtitleOpacity = 0;
+        else if(matchesPlaceholder(subtitleTxt, subtitlePlaceholder)) {
+            if(!editable) subtitleTxt = '';
+            subtitleOpacity = 0.2;
+        }
     }
 
     if(options._meta) {
@@ -208,12 +218,12 @@ function draw(gd, titleClass, options) {
         .attr(attributes)
             .call(svgTextUtils.convertToTspans, gd, adjustSubtitlePosition);
 
-        var subtitleAttributes = Object.assign({}, attributes);
-        subtitleAttributes.y += Drawing.bBox(titleEl.node()).height;
-
         if(subtitleEl) {
+            var subtitleAttributes = Object.assign({}, attributes);
+            subtitleAttributes.y += Drawing.bBox(titleEl.node()).height;
+
             subtitleEl.attr('transform', transformVal);
-            subtitleEl.style('opacity', opacity * Color.opacity(subFontColor))
+            subtitleEl.style('opacity', subtitleOpacity * Color.opacity(subFontColor))
             .call(Drawing.font, {
                 color: Color.rgb(subFontColor),
                 size: d3.round(subFontSize * 0.8, 2),
@@ -310,8 +320,6 @@ function draw(gd, titleClass, options) {
     el.call(titleLayout, subtitleEl);
 
     function setPlaceholder(element, placeholderText) {
-        opacity = 0;
-        isplaceholder = true;
         element.text(placeholderText)
             .on('mouseover.opacity', function() {
                 d3.select(this).transition()
@@ -321,11 +329,17 @@ function draw(gd, titleClass, options) {
                 d3.select(this).transition()
                     .duration(interactConstants.HIDE_PLACEHOLDER).style('opacity', 0);
             });
+        element.classed('js-placeholder', true);
     }
 
+    el.classed('js-placeholder', false);
+    if(subtitleEnabled) subtitleEl.classed('js-placeholder', false);
+
+
     if(editable) {
-        if(!txt) setPlaceholder(el, placeholder);
-        else el.on('.opacity', null);
+        if(!txt) {
+            setPlaceholder(el, placeholder);
+        } else el.on('.opacity', null);
 
         el.call(svgTextUtils.makeEditable, {gd: gd})
             .on('edit', function(text) {
@@ -345,8 +359,17 @@ function draw(gd, titleClass, options) {
             });
 
         if(subtitleEnabled) {
-            if(!subtitleTxt) setPlaceholder(subtitleEl, subtitlePlaceholder);
-            else subtitleEl.on('.opacity', null);
+            // Adjust subtitle position now that title placeholder has been added
+            // Only adjust if subtitle is enabled and title has a placeholder
+            if(subtitleEnabled && el.classed('js-placeholder')) {
+                var ht = Drawing.bBox(el.node()).height;
+                var newSubtitleY = Number(subtitleEl.attr('y')) + ht;
+                subtitleEl.attr('y', newSubtitleY);
+
+            }
+            if(!subtitleTxt) {
+                setPlaceholder(subtitleEl, subtitlePlaceholder);
+            } else subtitleEl.on('.opacity', null);
             subtitleEl.call(svgTextUtils.makeEditable, {gd: gd})
                 .on('edit', function(text) {
                     Registry.call('_guiRelayout', gd, 'title.subtitle.text', text);
@@ -361,7 +384,6 @@ function draw(gd, titleClass, options) {
                 });
         }
     }
-    el.classed('js-placeholder', isplaceholder);
 
     return group;
 }
