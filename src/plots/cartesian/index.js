@@ -507,8 +507,9 @@ function makeSubplotLayer(gd, plotinfo) {
             ensureSingle(plotgroup, 'g', 'yaxislayer-below');
             plotinfo.overaxesBelow = ensureSingle(plotgroup, 'g', 'overaxes-below');
 
-            plotinfo.plot = ensureSingle(plotgroup, 'g', 'plot');
+            ensureSingle(plotgroup, 'g', 'plot');
             plotinfo.overplot = ensureSingle(plotgroup, 'g', 'overplot');
+            plotinfo.plot = ensureSingle(plotinfo.overplot, 'g', id);
 
             plotinfo.xlines = ensureSingle(plotgroup, 'path', 'xlines-above');
             plotinfo.ylines = ensureSingle(plotgroup, 'path', 'ylines-above');

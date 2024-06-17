@@ -1592,7 +1592,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                     [['yaxis'], [-0.318, 3.318]],
                     [['xaxis2', 'yaxis2'], [-0.588, 8.824]]
                 ]);
-                x2y2 = d3Select('.subplot.x2y2 .plot');
+                x2y2 = d3Select('.subplot.x2y2 .overplot').select('.x2y2');
                 expect(x2y2.attr('transform')).toBe('translate(50,50)');
                 mx = gd._fullLayout.xaxis._m;
                 my = gd._fullLayout.yaxis._m;

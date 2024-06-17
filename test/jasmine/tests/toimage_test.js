@@ -240,7 +240,10 @@ describe('Plotly.toImage', function() {
         })
         .then(function(svg) {
             var svgDOM = parser.parseFromString(svg, 'image/svg+xml');
-            var gSubplot = svgDOM.getElementsByClassName('plot')[0];
+            var gSubplot = svgDOM
+                .getElementsByClassName('overplot')[0]
+                .getElementsByClassName('xy')[0];
+
             var clipPath = gSubplot.getAttribute('clip-path');
             var len = clipPath.length;
 
