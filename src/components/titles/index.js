@@ -79,7 +79,7 @@ function draw(gd, titleClass, options) {
     var subtitleEnabled = !!(subtitleProp);
     var subtitlePlaceholder = options.subtitlePlaceholder;
 
-    var subtitle = cont.title.subtitle;
+    var subtitle = (cont.title || {}).subtitle;
     var subtitleTxt = (subtitle && subtitle.text ? subtitle.text : '').trim();
     var subtitleOpacity = 1;
     var subtitleFont = subtitle && subtitle.font ? subtitle.font : {};
@@ -103,14 +103,13 @@ function draw(gd, titleClass, options) {
     var editable = gd._context.edits[editAttr];
 
     function matchesPlaceholder(text, placeholder) {
-        if(text == undefined || placeholder == undefined) return false;
+        if(text === undefined || placeholder === undefined) return false;
         return text.replace(numStripRE, ' % ') === placeholder.replace(numStripRE, ' % ');
-        return answer;
     }
 
     if(txt === '') opacity = 0;
     else if(matchesPlaceholder(txt, placeholder)) {
-        if (!editable) txt = '';
+        if(!editable) txt = '';
         opacity = 0.2;
     }
 
@@ -333,7 +332,7 @@ function draw(gd, titleClass, options) {
     }
 
     el.classed('js-placeholder', false);
-    if(subtitleEnabled) subtitleEl.classed('js-placeholder', false);
+    if(subtitleEl) subtitleEl.classed('js-placeholder', false);
 
 
     if(editable) {
@@ -365,8 +364,8 @@ function draw(gd, titleClass, options) {
                 var ht = Drawing.bBox(el.node()).height;
                 var newSubtitleY = Number(subtitleEl.attr('y')) + ht;
                 subtitleEl.attr('y', newSubtitleY);
-
             }
+
             if(!subtitleTxt) {
                 setPlaceholder(subtitleEl, subtitlePlaceholder);
             } else subtitleEl.on('.opacity', null);
