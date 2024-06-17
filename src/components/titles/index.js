@@ -104,6 +104,10 @@ function draw(gd, titleClass, options) {
 
     function matchesPlaceholder(text, placeholder) {
         if(text === undefined || placeholder === undefined) return false;
+        // look for placeholder text while stripping out numbers from eg X2, Y3
+        // this is just for backward compatibility with the old version that had
+        // "Click to enter X2 title" and may have gotten saved in some old plots,
+        // we don't want this to show up when these are displayed.
         return text.replace(numStripRE, ' % ') === placeholder.replace(numStripRE, ' % ');
     }
 
