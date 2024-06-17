@@ -188,3 +188,4 @@ See the [Releases section](https://github.com/plotly/plotly.js/releases) of our 
 * Implementation help may be found on community.plot.com (tagged [`plotly-js`](https://community.plotly.com/c/plotly-js)) or
   on Stack Overflow (tagged [`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
 * Developers should use the keyword `plotly` on packages which modify or add to the functionality of plotly.js when distributing through [npm](https://www.npmjs.com/browse/keyword/plotly).
+
