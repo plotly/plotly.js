@@ -420,7 +420,7 @@ exports.drawMainTitle = function(gd) {
     });
 
     if(title.text && title.automargin) {
-        var titleObj = d3.selectAll('.g-gtitle');
+        var titleObj = d3.selectAll('.gtitle');
         var titleHeight = Drawing.bBox(titleObj.node()).height;
         var pushMargin = needsMarginPush(gd, title, titleHeight);
         if(pushMargin > 0) {
