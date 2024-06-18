@@ -48,6 +48,9 @@ var numStripRE = / [XY][0-9]* /;
  *  @return {selection} d3 selection of title container group
  */
 function draw(gd, titleClass, options) {
+
+    var fullLayout = gd._fullLayout;
+
     var cont = options.propContainer;
     var prop = options.propName;
     var placeholder = options.placeholder;
@@ -56,12 +59,10 @@ function draw(gd, titleClass, options) {
     var attributes = options.attributes;
     var transform = options.transform;
     var group = options.containerGroup;
-
-    var fullLayout = gd._fullLayout;
-
     var opacity = 1;
     var title = cont.title;
     var txt = (title && title.text ? title.text : '').trim();
+    var titleIsPlaceholder = false;
 
     var font = title && title.font ? title.font : {};
     var fontFamily = font.family;
@@ -78,10 +79,11 @@ function draw(gd, titleClass, options) {
     var subtitleProp = options.subtitlePropName;
     var subtitleEnabled = !!(subtitleProp);
     var subtitlePlaceholder = options.subtitlePlaceholder;
-
     var subtitle = (cont.title || {}).subtitle;
     var subtitleTxt = (subtitle && subtitle.text ? subtitle.text : '').trim();
+    var subtitleIsPlaceholder = false;
     var subtitleOpacity = 1;
+
     var subtitleFont = subtitle && subtitle.font ? subtitle.font : {};
     var subFontFamily = subtitleFont.family;
     var subFontSize = subtitleFont.size;
@@ -115,6 +117,7 @@ function draw(gd, titleClass, options) {
     else if(matchesPlaceholder(txt, placeholder)) {
         if(!editable) txt = '';
         opacity = 0.2;
+        titleIsPlaceholder = true;
     }
 
     if(subtitleEnabled) {
@@ -122,6 +125,7 @@ function draw(gd, titleClass, options) {
         else if(matchesPlaceholder(subtitleTxt, subtitlePlaceholder)) {
             if(!editable) subtitleTxt = '';
             subtitleOpacity = 0.2;
+            subtitleIsPlaceholder = true;
         }
     }
 
@@ -334,16 +338,12 @@ function draw(gd, titleClass, options) {
                 d3.select(this).transition()
                     .duration(interactConstants.HIDE_PLACEHOLDER).style('opacity', 0);
             });
-        element.classed('js-placeholder', true);
     }
-
-    el.classed('js-placeholder', false);
-    if(subtitleEl) subtitleEl.classed('js-placeholder', false);
-
 
     if(editable) {
         if(!txt) {
             setPlaceholder(el, placeholder);
+            titleIsPlaceholder = true;
         } else el.on('.opacity', null);
 
         el.call(svgTextUtils.makeEditable, {gd: gd})
@@ -374,6 +374,7 @@ function draw(gd, titleClass, options) {
 
             if(!subtitleTxt) {
                 setPlaceholder(subtitleEl, subtitlePlaceholder);
+                subtitleIsPlaceholder = true;
             } else subtitleEl.on('.opacity', null);
             subtitleEl.call(svgTextUtils.makeEditable, {gd: gd})
                 .on('edit', function(text) {
@@ -389,6 +390,9 @@ function draw(gd, titleClass, options) {
                 });
         }
     }
+
+    el.classed('js-placeholder', titleIsPlaceholder);
+    if(subtitleEl) subtitleEl.classed('js-placeholder', subtitleIsPlaceholder);
 
     return group;
 }
