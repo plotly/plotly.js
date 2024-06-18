@@ -54,6 +54,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "title": {
             "text": "bars + colorbar = <3"
         },

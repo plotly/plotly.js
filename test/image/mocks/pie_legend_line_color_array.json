@@ -38,6 +38,10 @@
         }
     ],
     "layout": {
+        "font": {
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "width": 400,
         "height": 400,
         "title": { "text": "pie-like legend with line.color array of length > 3" }

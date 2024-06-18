@@ -10,6 +10,7 @@ var Colorscale = require('../../components/colorscale');
 var Drawing = require('../../components/drawing');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var subTypes = require('../scatter/subtypes');
+var isSupportedFont = require('./constants').isSupportedFont;
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
@@ -369,11 +370,58 @@ function arrayifyAttribute(values, step) {
 
 function getTextFont(trace) {
     var font = trace.textfont;
-    var str = '';
-    if(font.weight === 'bold') str += ' Bold';
-    if(font.style === 'italic') str += ' Italic';
-    var textFont = font.family;
-    if(str) textFont = textFont.replace(' Regular', str);
-    textFont = textFont.split(', ');
+    var family = font.family;
+    var style = font.style;
+    var weight = font.weight;
+
+    var parts = family.split(' ');
+    var isItalic = parts[parts.length - 1] === 'Italic';
+    if(isItalic) parts.pop();
+    isItalic = isItalic || style === 'italic';
+
+    var str = parts.join(' ');
+    if(weight === 'bold' && parts.indexOf('Bold') === -1) {
+        str += ' Bold';
+    } else if(weight <= 1000) { // numeric font-weight
+        // See supportedFonts
+
+        if(parts[0] === 'Metropolis') {
+            str = 'Metropolis';
+            if(weight > 850) str += ' Black';
+            else if(weight > 750) str += ' Extra Bold';
+            else if(weight > 650) str += ' Bold';
+            else if(weight > 550) str += ' Semi Bold';
+            else if(weight > 450) str += ' Medium';
+            else if(weight > 350) str += ' Regular';
+            else if(weight > 250) str += ' Light';
+            else if(weight > 150) str += ' Extra Light';
+            else str += ' Thin';
+        } else if(parts.slice(0, 2).join(' ') === 'Open Sans') {
+            str = 'Open Sans';
+            if(weight > 750) str += ' Extrabold';
+            else if(weight > 650) str += ' Bold';
+            else if(weight > 550) str += ' Semibold';
+            else if(weight > 350) str += ' Regular';
+            else str += ' Light';
+        } else if(parts.slice(0, 3).join(' ') === 'Klokantech Noto Sans') {
+            str = 'Klokantech Noto Sans';
+            if(parts[3] === 'CJK') str += ' CJK';
+            str += (weight > 500) ? ' Bold' : ' Regular';
+        }
+    }
+
+    if(isItalic) str += ' Italic';
+
+    if(str === 'Open Sans Regular Italic') str = 'Open Sans Italic';
+    else if(str === 'Open Sans Regular Bold') str = 'Open Sans Bold';
+    else if(str === 'Open Sans Regular Bold Italic') str = 'Open Sans Bold Italic';
+    else if(str === 'Klokantech Noto Sans Regular Italic') str = 'Klokantech Noto Sans Italic';
+
+    // Ensure the result is a supported font
+    if(!isSupportedFont(str)) {
+        str = family;
+    }
+
+    var textFont = str.split(', ');
     return textFont;
 }

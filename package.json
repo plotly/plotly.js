@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "2.32.0",
+  "version": "2.33.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -71,7 +71,7 @@
     ]
   },
   "dependencies": {
-    "@plotly/d3": "3.8.1",
+    "@plotly/d3": "3.8.2",
     "@plotly/d3-sankey": "0.7.2",
     "@plotly/d3-sankey-circular": "0.33.1",
     "@plotly/mapbox-gl": "1.13.4",

@@ -51,6 +51,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "title": {
             "text": "Heatmap text color should contrast with<br>background on cells with missing data"
         },

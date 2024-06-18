@@ -1476,9 +1476,9 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     var font = Lib.coerceFont(coerce, 'font');
     var fontSize = font.size;
 
-    Lib.coerceFont(coerce, 'title.font', Lib.extendFlat({}, font, {
+    Lib.coerceFont(coerce, 'title.font', font, { overrideDflt: {
         size: Math.round(fontSize * 1.4)
-    }));
+    }});
 
     coerce('title.text', layoutOut._dfltTitle.plot);
     coerce('title.xref');

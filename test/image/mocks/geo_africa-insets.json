@@ -220,6 +220,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "geo2": {
             "showland": true,
             "domain": {

@@ -1740,6 +1740,9 @@ function tickTextObj(ax, x, text) {
         fontWeight: tf.weight,
         fontStyle: tf.style,
         fontVariant: tf.variant,
+        fontTextcase: tf.textcase,
+        fontLineposition: tf.lineposition,
+        fontShadow: tf.shadow,
         fontColor: tf.color
     };
 }
@@ -3507,7 +3510,10 @@ axes.drawLabels = function(gd, ax, opts) {
                         color: d.fontColor,
                         weight: d.fontWeight,
                         style: d.fontStyle,
-                        variant: d.fontVariant
+                        variant: d.fontVariant,
+                        textcase: d.fontTextcase,
+                        lineposition: d.fontLineposition,
+                        shadow: d.fontShadow,
                     })
                     .text(d.text)
                     .call(svgTextUtils.convertToTspans, gd);

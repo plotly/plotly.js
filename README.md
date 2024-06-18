@@ -16,6 +16,13 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 
 [Contact us](https://plotly.com/products/consulting-and-oem/) for Plotly.js consulting, dashboard development, application integration, and feature additions.
 
+<div align="center">
+  <a href="https://dash.plotly.com/project-maintenance">
+    <img src="https://dash.plotly.com/assets/images/maintained-by-plotly.png" width="400px" alt="Maintained by Plotly">
+  </a>
+</div>
+
+
 ## Table of contents
 
 * [Load as a node module](#load-as-a-node-module)
@@ -55,7 +62,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 
 ```html
 <head>
-    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+    <script src="https://cdn.plot.ly/plotly-2.33.0.min.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="gd"></div>
@@ -72,7 +79,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 Alternatively you may consider using [native ES6 import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in the script tag.
 ```html
 <script type="module">
-    import "https://cdn.plot.ly/plotly-2.32.0.min.js"
+    import "https://cdn.plot.ly/plotly-2.33.0.min.js"
     Plotly.newPlot("gd", [{ y: [1, 2, 3] }])
 </script>
 ```
@@ -82,7 +89,7 @@ Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastl
 ### Un-minified versions are also available on CDN
 While non-minified source files may contain characters outside UTF-8, it is recommended that you specify the `charset` when loading those bundles.
 ```html
-<script src="https://cdn.plot.ly/plotly-2.32.0.js" charset="utf-8"></script>
+<script src="https://cdn.plot.ly/plotly-2.33.0.js" charset="utf-8"></script>
 ```
 
 > Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.5. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.

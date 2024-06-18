@@ -107,7 +107,7 @@ module.exports = function toSVG(gd, format, scale) {
 
             // Drop normal font-weight, font-style and font-variant to reduce the size
             var fw = this.style.fontWeight;
-            if(fw && fw === 'normal') {
+            if(fw && (fw === 'normal' || fw === '400')) { // font-weight 400 is similar to normal
                 txt.style('font-weight', undefined);
             }
             var fs = this.style.fontStyle;

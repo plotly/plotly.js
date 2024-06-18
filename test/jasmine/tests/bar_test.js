@@ -158,7 +158,10 @@ describe('Bar.supplyDefaults', function() {
                 size: 13,
                 weight: 'bold',
                 style: 'italic',
-                variant: 'small-caps'
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             }
         };
         var layoutFontMinusColor = {
@@ -166,7 +169,10 @@ describe('Bar.supplyDefaults', function() {
             size: 13,
             weight: 'bold',
             style: 'italic',
-            variant: 'small-caps'
+            variant: 'small-caps',
+            textcase: 'word caps',
+            lineposition: 'under',
+            shadow: 'auto',
         };
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);

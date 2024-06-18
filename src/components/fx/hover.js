@@ -961,6 +961,9 @@ function createHoverText(hoverData, opts) {
     var fontWeight = opts.fontWeight || fullLayout.font.weight;
     var fontStyle = opts.fontStyle || fullLayout.font.style;
     var fontVariant = opts.fontVariant || fullLayout.font.variant;
+    var fontTextcase = opts.fontTextcase || fullLayout.font.textcase;
+    var fontLineposition = opts.fontLineposition || fullLayout.font.lineposition;
+    var fontShadow = opts.fontShadow || fullLayout.font.shadow;
 
     var c0 = hoverData[0];
     var xa = c0.xa;
@@ -1041,13 +1044,17 @@ function createHoverText(hoverData, opts) {
         var commonBgColor = commonLabelOpts.bgcolor || Color.defaultLine;
         var commonStroke = commonLabelOpts.bordercolor || Color.contrast(commonBgColor);
         var contrastColor = Color.contrast(commonBgColor);
+        var commonLabelOptsFont = commonLabelOpts.font;
         var commonLabelFont = {
-            weight: commonLabelOpts.font.weight || fontWeight,
-            style: commonLabelOpts.font.style || fontStyle,
-            variant: commonLabelOpts.font.variant || fontVariant,
-            family: commonLabelOpts.font.family || fontFamily,
-            size: commonLabelOpts.font.size || fontSize,
-            color: commonLabelOpts.font.color || contrastColor
+            weight: commonLabelOptsFont.weight || fontWeight,
+            style: commonLabelOptsFont.style || fontStyle,
+            variant: commonLabelOptsFont.variant || fontVariant,
+            textcase: commonLabelOptsFont.textcase || fontTextcase,
+            lineposition: commonLabelOptsFont.lineposition || fontLineposition,
+            shadow: commonLabelOptsFont.shadow || fontShadow,
+            family: commonLabelOptsFont.family || fontFamily,
+            size: commonLabelOptsFont.size || fontSize,
+            color: commonLabelOptsFont.color || contrastColor
         };
 
         lpath.style({
@@ -1370,6 +1377,9 @@ function createHoverText(hoverData, opts) {
                     weight: fontWeight,
                     style: fontStyle,
                     variant: fontVariant,
+                    textcase: fontTextcase,
+                    lineposition: fontLineposition,
+                    shadow: fontShadow,
                     family: fontFamily,
                     size: fontSize
                 });
@@ -1413,7 +1423,10 @@ function createHoverText(hoverData, opts) {
                 color: d.fontColor || contrastColor,
                 weight: d.fontWeight || fontWeight,
                 style: d.fontStyle || fontStyle,
-                variant: d.fontVariant || fontVariant
+                variant: d.fontVariant || fontVariant,
+                textcase: d.fontTextcase || fontTextcase,
+                lineposition: d.fontLineposition || fontLineposition,
+                shadow: d.fontShadow || fontShadow,
             })
             .text(text)
             .attr('data-notex', 1)
@@ -1432,7 +1445,10 @@ function createHoverText(hoverData, opts) {
                 color: nameColor,
                 weight: d.fontWeight || fontWeight,
                 style: d.fontStyle || fontStyle,
-                variant: d.fontVariant || fontVariant
+                variant: d.fontVariant || fontVariant,
+                textcase: d.fontTextcase || fontTextcase,
+                lineposition: d.fontLineposition || fontLineposition,
+                shadow: d.fontShadow || fontShadow,
             }).text(name)
                 .attr('data-notex', 1)
                 .call(svgTextUtils.positionText, 0, 0)
@@ -1808,8 +1824,7 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabelBo
             var p1 = g1[0];
             topOverlap = p0.pos + p0.dp + p0.size - p1.pos - p1.dp + p1.size;
 
-            // Only group points that lie on the same axes
-            if(topOverlap > 0.01 && (p0.pmin === p1.pmin) && (p0.pmax === p1.pmax)) {
+            if(topOverlap > 0.01) {
                 // push the new point(s) added to this group out of the way
                 for(j = g1.length - 1; j >= 0; j--) g1[j].dp += topOverlap;
 

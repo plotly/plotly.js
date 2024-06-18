@@ -785,6 +785,9 @@
         }
     ],
     "layout": {
+        "font": {
+            "shadow": "auto"
+        },
         "title": {"text": "The World's countries"},
         "geo": {
             "domain": {
