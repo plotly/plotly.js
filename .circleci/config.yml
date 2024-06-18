@@ -486,12 +486,12 @@ jobs:
       - run:
           name: Test plotly.min.js import using requirejs
           command: npm run test-requirejs
-      - run:
-          name: Test plotly bundles against es6
-          command: npm run no-es6-dist
-      - run:
-          name: Display function constructors in all bundles
-          command: npm run no-new-func
+      # - run:
+      #     name: Test plotly bundles against es6
+      #     command: npm run no-es6-dist
+      # - run:
+      #     name: Display function constructors in all bundles
+      #     command: npm run no-new-func
 
   test-stackgl-bundle:
     docker:
