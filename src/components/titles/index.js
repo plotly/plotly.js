@@ -200,7 +200,9 @@ function draw(gd, titleClass, options) {
             if(titleElMathGroup && subtitleEl) {
                 var titleMathHeight = titleElMathGroup.node().getBBox().height;
                 if(titleMathHeight) {
-                    var newSubtitleY = Number(subtitleEl.attr('y')) + titleMathHeight;
+                    // Increase the y position of the subtitle by the height of the title,
+                    // plus a (somewhat arbitrary) 10px of padding
+                    var newSubtitleY = Number(subtitleEl.attr('y')) + titleMathHeight + 10;
                     subtitleEl.attr('y', newSubtitleY);
                 }
             }
