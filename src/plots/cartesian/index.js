@@ -459,10 +459,18 @@ function makeSubplotData(gd) {
 
         // use info about axis layer and overlaying pattern
         // to clean what need to be cleaned up in exit selection
-        var d = [id, xa.layer, ya.layer, xa.overlaying || '', ya.overlaying || ''];
+        var d = [id];
         for(j = 0; j < plotinfo.overlays.length; j++) {
             d.push(plotinfo.overlays[j].id);
         }
+
+        d = d.concat([
+            xa.layer,
+            ya.layer,
+            xa.overlaying || '',
+            ya.overlaying || ''
+        ]);
+
         subplotData[i] = d;
     }
     return subplotData;
