@@ -56,7 +56,6 @@ exports.extractPathCoords = function(path, paramsToUse, isRaw) {
 exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
     var gs = gd._fullLayout._size;
     var dataToPixel;
-    shift = shift || 0;
 
     if(axis) {
         if(refType === 'domain') {
@@ -67,14 +66,7 @@ exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
             var d2r = exports.shapePositionToRange(axis);
 
             dataToPixel = function(v) {
-                var shiftPixels = 0;
-                if(axis.type === 'category' || axis.type === 'multicategory') {
-                    if(isVertical) {
-                        shiftPixels = ((axis.r2p(1) - axis.r2p(0)) * shift);
-                    } else {
-                        shiftPixels = axis.r2p(0.5) * shift;
-                    }
-                }
+                var shiftPixels = getPixelShift(axis, shift);
                 return axis._offset + axis.r2p(d2r(v, true)) + shiftPixels;
             };
 
@@ -188,10 +180,10 @@ exports.getPathString = function(gd, options) {
     var ya = Axes.getFromId(gd, options.yref);
     var gs = gd._fullLayout._size;
     var x2r, x2p, y2r, y2p;
-    var xShiftStart = 0;
-    var xShiftEnd = 0;
-    var yShiftStart = 0;
-    var yShiftEnd = 0;
+    var xShiftStart = getPixelShift(xa, options.x0shift);
+    var xShiftEnd = getPixelShift(xa, options.x1shift);
+    var yShiftStart = getPixelShift(ya, options.y0shift);
+    var yShiftEnd = getPixelShift(ya, options.y1shift);
     var x0, x1, y0, y1;
 
     if(xa) {
@@ -200,11 +192,6 @@ exports.getPathString = function(gd, options) {
         } else {
             x2r = exports.shapePositionToRange(xa);
             x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
-            if(xa.type === 'category' || xa.type === 'multicategory') {
-                var shiftUnitX = xa.r2p(0.5);
-                xShiftStart = shiftUnitX * options.x0shift;
-                xShiftEnd = shiftUnitX * options.x1shift;
-            }
         }
     } else {
         x2p = function(v) { return gs.l + gs.w * v; };
@@ -216,11 +203,6 @@ exports.getPathString = function(gd, options) {
         } else {
             y2r = exports.shapePositionToRange(ya);
             y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
-            if(ya.type === 'category' || ya.type === 'multicategory') {
-                var shiftUnitY = ya.r2p(0) - ya.r2p(1);
-                yShiftStart = shiftUnitY * options.y0shift;
-                yShiftEnd = shiftUnitY * options.y1shift;
-            }
         }
     } else {
         y2p = function(v) { return gs.t + gs.h * (1 - v); };
@@ -242,11 +224,11 @@ exports.getPathString = function(gd, options) {
 
     if(options.ysizemode === 'pixel') {
         var yAnchorPos = y2p(options.yanchor);
-        y0 = yAnchorPos - options.y0 - yShiftStart;
-        y1 = yAnchorPos - options.y1 - yShiftEnd;
+        y0 = yAnchorPos - options.y0 + yShiftStart;
+        y1 = yAnchorPos - options.y1 + yShiftEnd;
     } else {
-        y0 = y2p(options.y0) - yShiftStart;
-        y1 = y2p(options.y1) - yShiftEnd;
+        y0 = y2p(options.y0) + yShiftStart;
+        y1 = y2p(options.y1) + yShiftEnd;
     }
 
     if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
@@ -300,4 +282,20 @@ function convertPath(options, x2p, y2p) {
 
         return segmentType + paramString;
     });
+}
+
+function getPixelShift(axis, shift) {
+    shift = shift || 0;
+    var shiftPixels = 0;
+    if(axis) {
+        var isVertical = axis._id.charAt(0) === 'y';
+        if(axis.type === 'category' || axis.type === 'multicategory') {
+            if(isVertical) {
+                shiftPixels = ((axis.r2p(1) - axis.r2p(0)) * shift);
+            } else {
+                shiftPixels = axis.r2p(0.5) * shift;
+            }
+        }
+    }
+    return shiftPixels;
 }
