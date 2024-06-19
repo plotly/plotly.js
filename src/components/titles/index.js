@@ -48,7 +48,6 @@ var numStripRE = / [XY][0-9]* /;
  *  @return {selection} d3 selection of title container group
  */
 function draw(gd, titleClass, options) {
-
     var fullLayout = gd._fullLayout;
 
     var cont = options.propContainer;
@@ -365,8 +364,8 @@ function draw(gd, titleClass, options) {
 
         if(subtitleEnabled) {
             // Adjust subtitle position now that title placeholder has been added
-            // Only adjust if subtitle is enabled and title has a placeholder
-            if(subtitleEnabled && el.classed('js-placeholder')) {
+            // Only adjust if subtitle is enabled and title text was originally empty
+            if(subtitleEnabled && !txt) {
                 var ht = Drawing.bBox(el.node()).height;
                 var newSubtitleY = Number(subtitleEl.attr('y')) + ht;
                 subtitleEl.attr('y', newSubtitleY);
