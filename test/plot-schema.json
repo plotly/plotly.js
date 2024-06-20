@@ -57413,12 +57413,18 @@
      }
     },
     "hole": {
+     "arrayOk": true,
      "description": "Sets the fraction of the radius to cut out of the pie. Use this to make a donut chart.",
      "dflt": 0,
      "editType": "calc",
      "max": 1,
      "min": 0,
      "valType": "number"
+    },
+    "holesrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `hole`.",
+     "editType": "none",
+     "valType": "string"
     },
     "hoverinfo": {
      "arrayOk": true,

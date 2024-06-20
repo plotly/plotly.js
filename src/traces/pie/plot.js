@@ -98,6 +98,9 @@ function plot(gd, cdModule) {
                 }
 
                 var hole = trace.hole;
+                if(hole) {
+                    hole = +helpers.castOption(trace.hole, pt.pts) || 0;
+                }
                 if(pt.v === cd0.vTotal) { // 100% fails bcs arc start and end are identical
                     var outerCircle = 'M' + (cx + pt.px0[0]) + ',' + (cy + pt.px0[1]) +
                         arc(pt.px0, pt.pxmid, true, 1) +
@@ -803,7 +806,7 @@ function calcMaxHalfSize(a, halfAngle, r, ring) {
 }
 
 function getInscribedRadiusFraction(pt, cd0) {
-    if(pt.v === cd0.vTotal && !cd0.trace.hole) return 1;// special case of 100% with no hole
+    if(pt.v === cd0.vTotal && !(Lib.isArrayOrTypedArray(cd0.trace.hole) ? [pt.i] : cd0.trace.hole)) return 1;// special case of 100% with no hole
 
     return Math.min(1 / (1 + 1 / Math.sin(pt.halfangle)), pt.ring / 2);
 }
@@ -833,7 +836,7 @@ function positionTitleInside(cd0) {
     return {
         x: cd0.cx,
         y: cd0.cy,
-        scale: cd0.trace.hole * cd0.r * 2 / textDiameter,
+        scale: (Lib.isArrayOrTypedArray(cd0.trace.hole) ? Math.min.apply(null, cd0.trace.hole) : cd0.trace.hole) * cd0.r * 2 / textDiameter,
         tx: 0,
         ty: - cd0.titleBox.height / 2 + cd0.trace.title.font.size
     };
@@ -1161,7 +1164,7 @@ function setCoords(cd) {
         cdi.largeArc = (cdi.v > cd0.vTotal / 2) ? 1 : 0;
 
         cdi.halfangle = Math.PI * Math.min(cdi.v / cd0.vTotal, 0.5);
-        cdi.ring = 1 - trace.hole;
+        cdi.ring = 1 - (Lib.isArrayOrTypedArray(cd0.trace.hole) ? trace.hole[i] : trace.hole);
         cdi.rInscribed = getInscribedRadiusFraction(cdi, cd0);
     }
 }
