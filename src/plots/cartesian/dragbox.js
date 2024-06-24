@@ -502,28 +502,20 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             function doZoom(v) {
                 return ax.l2r(v0 + (v - v0) * zoom);
             }
-            let rangeMinValue = doZoom(axRange[0]);
-            if (rangeMinValue < 0 && xAxis && zoom > 1 && checkForViolation)
-            {
+            var rangeMinValue = doZoom(axRange[0]);
+            if(rangeMinValue < 0 && xAxis && zoom > 1 && checkForViolation) {
                 axisBoundViolated = true;
                 ax.range[0] = 0;
-            }
-            else if (rangeMinValue < -0.5 && !xAxis && zoom > 1 && checkForViolation)
-            {
+            } else if(rangeMinValue < -0.5 && !xAxis && zoom > 1 && checkForViolation) {
                 axisBoundViolated = true;
                 ax.range[0] = -0.5;
-            }
-            else
-                ax.range[0] = rangeMinValue;
+            } else {ax.range[0] = rangeMinValue;}
 
-            let rangeMaxValue = doZoom(axRange[1]);
-            if (rangeMaxValue > max && zoom > 1 && checkForViolation)
-            {
+            var rangeMaxValue = doZoom(axRange[1]);
+            if(rangeMaxValue > max && zoom > 1 && checkForViolation) {
                 axisBoundViolated = true;
                 ax.range[1] = max;
-            }
-            else
-                ax.range[1] = rangeMaxValue;
+            } else {ax.range[1] = rangeMaxValue;}
 
             return axisBoundViolated;
         }
@@ -533,29 +525,21 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             // zoom it about the center
             if(!ew) xfrac = 0.5;
 
-            let xAxisBoundViolated = false;
+            var xAxisBoundViolated = false;
             for(i = 0; i < xaxes.length; i++) {
-                let xMin = xaxes[i].range[0];
-                let xMax = xaxes[i].range[1];
+                var xMin = xaxes[i].range[0];
+                var xMax = xaxes[i].range[1];
 
-                if (xMax - xMin < 15 && zoom < 1)
-                    xAxisBoundViolated = true;
-                else
-                {
-                    let categoryArrayLength = 0;
-                    if (xaxes[i].categoryarray)
-                        categoryArrayLength = xaxes[i].categoryarray.length;
+                if(xMax - xMin < 15 && zoom < 1) {xAxisBoundViolated = true;} else {
+                    var categoryArrayLength = 0;
+                    if(xaxes[i].categoryarray) {categoryArrayLength = xaxes[i].categoryarray.length;}
 
-                    if (categoryArrayLength == 0)
-                        zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, false);
-                    else
-                        xAxisBoundViolated = zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, true);
+                    if(categoryArrayLength === 0) {zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, false);} else {xAxisBoundViolated = zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, true);}
                 }
             }
             updateMatchedAxRange('x');
 
-            if (!xAxisBoundViolated)
-            {
+            if(!xAxisBoundViolated) {
                 scrollViewBox[2] *= zoom;
                 scrollViewBox[0] += scrollViewBox[2] * xfrac * (1 / zoom - 1);
             }
@@ -563,27 +547,20 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(editY) {
             if(!ns) yfrac = 0.5;
 
-            let yAxisBoundViolated = false;
+            var yAxisBoundViolated = false;
             for(i = 0; i < yaxes.length; i++) {
-                let yMin = yaxes[i].range[0];
-                let yMax = yaxes[i].range[1];
+                var yMin = yaxes[i].range[0];
+                var yMax = yaxes[i].range[1];
 
-                let hasCategoryArray = yaxes[i].categoryarray;
+                var hasCategoryArray = yaxes[i].categoryarray;
 
-                if (yMax - yMin < 10 && zoom < 1 && hasCategoryArray)
-                    yAxisBoundViolated = true;
-                else
-                {
-                    if (hasCategoryArray)
-                        yAxisBoundViolated = zoomWheelOneAxis(yaxes[i], yfrac, zoom, yaxes[i].categoryarray.length - 0.5, false, true);
-                    else
-                        zoomWheelOneAxis(yaxes[i], yfrac, zoom, 0, false, false);
+                if(yMax - yMin < 10 && zoom < 1 && hasCategoryArray) {yAxisBoundViolated = true;} else {
+                    if(hasCategoryArray) {yAxisBoundViolated = zoomWheelOneAxis(yaxes[i], yfrac, zoom, yaxes[i].categoryarray.length - 0.5, false, true);} else {zoomWheelOneAxis(yaxes[i], yfrac, zoom, 0, false, false);}
                 }
             }
             updateMatchedAxRange('y');
 
-            if (!yAxisBoundViolated)
-            {
+            if(!yAxisBoundViolated) {
                 scrollViewBox[3] *= zoom;
                 scrollViewBox[1] += scrollViewBox[3] * (1 - yfrac) * (1 / zoom - 1);
             }
@@ -816,29 +793,24 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var axId = activeAxIds[i];
             var ax = getFromId(gd, axId);
             Axes.drawOne(gd, ax, {skipTitle: true});
-            let lowRange = ax.range[0];
-            let highRange = ax.range[1];
+            var lowRange = ax.range[0];
+            var highRange = ax.range[1];
 
-            if (lowRange < 0)
-                lowRange = 0;
+            if(lowRange < 0) {lowRange = 0;}
 
-            let categoryArrayLength = 0;
-            if (ax.categoryarray)
-                categoryArrayLength = ax.categoryarray.length;
+            var categoryArrayLength = 0;
+            if(ax.categoryarray) {categoryArrayLength = ax.categoryarray.length;}
 
-            if (highRange > categoryArrayLength)
-                highRange = categoryArrayLength - 1;
+            if(highRange > categoryArrayLength) {highRange = categoryArrayLength - 1;}
 
-            let lowIdxInt = Math.round(lowRange);
-            let highIdxInt = Math.round(highRange);
+            var lowIdxInt = Math.round(lowRange);
+            var highIdxInt = Math.round(highRange);
 
-            let lowIdxCategory = null;
-            let highIdxCategory = null;
+            var lowIdxCategory = null;
+            var highIdxCategory = null;
 
-            if (lowIdxInt >= 0 && lowIdxInt < categoryArrayLength)
-                lowIdxCategory = ax.categoryarray[lowIdxInt];
-            if (highIdxInt >= 0 && highIdxInt < categoryArrayLength)
-                highIdxCategory = ax.categoryarray[highIdxInt];
+            if(lowIdxInt >= 0 && lowIdxInt < categoryArrayLength) {lowIdxCategory = ax.categoryarray[lowIdxInt];}
+            if(highIdxInt >= 0 && highIdxInt < categoryArrayLength) {highIdxCategory = ax.categoryarray[highIdxInt];}
 
             updates[ax._name + '.range[0]'] = ax.range[0];
             updates[ax._name + '.range[1]'] = ax.range[1];
@@ -1187,13 +1159,10 @@ function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes) {
             var axRangeLinearSpan = axi._rl[1] - axRangeLinear0;
             var updatedR0 = axRangeLinear0 + axRangeLinearSpan * r0Fraction;
             var updatedR1 = axRangeLinear0 + axRangeLinearSpan * r1Fraction;
-            if (updatedR1 - updatedR0 > 8)
-            {
+            if(updatedR1 - updatedR0 > 8) {
                 updates[axi._name + '.range[0]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction);
                 updates[axi._name + '.range[1]'] = axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction);
-            }
-            else
-            {
+            } else {
                 updates[axi._name + '.range[0]'] = axi._rl[0];
                 updates[axi._name + '.range[1]'] = axi._rl[1];
             }
