@@ -109,7 +109,11 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
     var font = layout.font;
-    var opts = {outerTicks: false, font: font};
+    var opts = {
+        noAutotickangles: true,
+        outerTicks: false,
+        font: font
+    };
     if(ticklabelposition.indexOf('inside') !== -1) {
         opts.bgColor = 'black'; // could we instead use the average of colors in the scale?
     }
@@ -120,8 +124,9 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('title.text', layout._dfltTitle.colorbar);
 
     var tickFont = colorbarOut.showticklabels ? colorbarOut.tickfont : font;
-    var dfltTitleFont = Lib.extendFlat({}, tickFont, {
-        color: font.color,
+
+    var dfltTitleFont = Lib.extendFlat({}, font, {
+        family: tickFont.family,
         size: Lib.bigFont(tickFont.size)
     });
     Lib.coerceFont(coerce, 'title.font', dfltTitleFont);

@@ -17,6 +17,9 @@
     }
   ],
   "layout": {
+    "font": {
+      "shadow": "auto"
+    },
     "width": 400,
     "height": 400,
     "xaxis": {"zeroline": false, "showline": true, "mirror": true, "dtick": 1},

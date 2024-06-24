@@ -2,7 +2,7 @@
 
 var sortObjectKeys = require('../../lib/sort_object_keys');
 
-var requiredVersion = '1.10.1';
+var requiredVersion = '1.13.4';
 
 var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 var carto = [
@@ -47,7 +47,8 @@ var stylesNonMapbox = {
             source: 'plotly-osm-tiles',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'white-bg': {
         id: 'white-bg',
@@ -59,7 +60,8 @@ var stylesNonMapbox = {
             paint: {'background-color': '#FFFFFF'},
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'carto-positron': {
         id: 'carto-positron',
@@ -78,7 +80,8 @@ var stylesNonMapbox = {
             source: 'plotly-carto-positron',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'carto-darkmatter': {
         id: 'carto-darkmatter',
@@ -97,7 +100,8 @@ var stylesNonMapbox = {
             source: 'plotly-carto-darkmatter',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'stamen-terrain': {
         id: 'stamen-terrain',
@@ -106,7 +110,7 @@ var stylesNonMapbox = {
             'plotly-stamen-terrain': {
                 type: 'raster',
                 attribution: stamenTerrainOrToner,
-                tiles: ['https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png'],
+                tiles: ['https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}.png?api_key='],
                 tileSize: 256
             }
         },
@@ -116,7 +120,8 @@ var stylesNonMapbox = {
             source: 'plotly-stamen-terrain',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'stamen-toner': {
         id: 'stamen-toner',
@@ -125,7 +130,7 @@ var stylesNonMapbox = {
             'plotly-stamen-toner': {
                 type: 'raster',
                 attribution: stamenTerrainOrToner,
-                tiles: ['https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'],
+                tiles: ['https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}.png?api_key='],
                 tileSize: 256
             }
         },
@@ -135,7 +140,8 @@ var stylesNonMapbox = {
             source: 'plotly-stamen-toner',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     },
     'stamen-watercolor': {
         id: 'stamen-watercolor',
@@ -144,7 +150,7 @@ var stylesNonMapbox = {
             'plotly-stamen-watercolor': {
                 type: 'raster',
                 attribution: stamenWaterColor,
-                tiles: ['https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png'],
+                tiles: ['https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg?api_key='],
                 tileSize: 256
             }
         },
@@ -154,7 +160,8 @@ var stylesNonMapbox = {
             source: 'plotly-stamen-watercolor',
             minzoom: 0,
             maxzoom: 22
-        }]
+        }],
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
     }
 };
 
@@ -176,7 +183,7 @@ module.exports = {
 
     wrongVersionErrorMsg: [
         'Your custom plotly.js bundle is not using the correct mapbox-gl version',
-        'Please install mapbox-gl@' + requiredVersion + '.'
+        'Please install @plotly/mapbox-gl@' + requiredVersion + '.'
     ].join('\n'),
 
     noAccessTokenErrorMsg: [

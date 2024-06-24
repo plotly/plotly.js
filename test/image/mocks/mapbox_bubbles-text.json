@@ -38,6 +38,10 @@
     }
   ],
   "layout": {
+    "font": {
+      "weight": "bold",
+      "style": "italic"
+    },
     "mapbox": {
       "bounds": {
         "west": -60,

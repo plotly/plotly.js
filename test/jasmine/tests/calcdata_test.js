@@ -1074,8 +1074,14 @@ describe('calculated data and points', function() {
                             if(categoryorder === 'total descending') finalOrder.reverse();
                             var expectedAgg = [['a', 7], ['b', 2], ['c', 3]];
 
-                            if(trace.type === 'ohlc' || trace.type === 'candlestick') expectedAgg = [['a', 14], ['b', 4], ['c', 6]];
-                            if(trace.type.match(/histogram/)) expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
+                            if(trace.type === 'ohlc' || trace.type === 'candlestick') {
+                                expectedAgg = [['a', 14], ['b', 4], ['c', 6]];
+                                if(categoryorder === 'total descending') finalOrder = ['a', 'c', 'b'];
+                            }
+                            if(trace.type.match(/histogram/)) {
+                                expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
+                                if(categoryorder === 'total descending') finalOrder = ['a', 'b', 'c'];
+                            }
 
                             checkAggregatedValue(baseMock, expectedAgg, finalOrder, done);
                         });

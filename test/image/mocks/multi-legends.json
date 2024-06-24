@@ -55,9 +55,28 @@
                 "text": "Legend 3"
             }
         },
-        "hovermode": "x unified"
+        "hovermode": "x unified",
+        "dragmode": "drawline",
+        "newshape": {
+            "legend": "legend2",
+            "line": {
+                "color": "pink"
+            },
+            "label": {
+                "text": "new shape"
+            },
+            "showlegend": true
+        }
     },
     "config": {
-        "editable": true
+        "editable": true,
+        "modeBarButtonsToAdd": [
+            "drawline",
+            "drawopenpath",
+            "drawclosedpath",
+            "drawcircle",
+            "drawrect",
+            "eraseshape"
+        ]
     }
 }

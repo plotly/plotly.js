@@ -129,6 +129,11 @@
     }
   ],
   "layout": {
+    "font": {
+      "weight": 700,
+      "style": "italic",
+      "variant": "small-caps"
+    },
     "height": 450,
     "width": 550
   }

@@ -62,6 +62,7 @@ lib.toLogRange = require('./to_log_range');
 lib.relinkPrivateKeys = require('./relink_private');
 
 var arrayModule = require('./array');
+lib.isArrayBuffer = arrayModule.isArrayBuffer;
 lib.isTypedArray = arrayModule.isTypedArray;
 lib.isArrayOrTypedArray = arrayModule.isArrayOrTypedArray;
 lib.isArray1D = arrayModule.isArray1D;
@@ -684,8 +685,8 @@ lib.getTargetArray = function(trace, transformOpts) {
 
     if(typeof target === 'string' && target) {
         var array = lib.nestedProperty(trace, target).get();
-        return Array.isArray(array) ? array : false;
-    } else if(Array.isArray(target)) {
+        return lib.isArrayOrTypedArray(array) ? array : false;
+    } else if(lib.isArrayOrTypedArray(target)) {
         return target;
     }
 
@@ -925,6 +926,11 @@ lib.objectFromPath = function(path, value) {
 var dottedPropertyRegex = /^([^\[\.]+)\.(.+)?/;
 var indexedPropertyRegex = /^([^\.]+)\[([0-9]+)\](\.)?(.+)?/;
 
+function notValid(prop) {
+    // guard against polluting __proto__ and other internals getters and setters
+    return prop.slice(0, 2) === '__';
+}
+
 lib.expandObjectPaths = function(data) {
     var match, key, prop, datum, idx, dest, trailingPath;
     if(typeof data === 'object' && !Array.isArray(data)) {
@@ -933,6 +939,7 @@ lib.expandObjectPaths = function(data) {
                 if((match = key.match(dottedPropertyRegex))) {
                     datum = data[key];
                     prop = match[1];
+                    if(notValid(prop)) continue;
 
                     delete data[key];
 
@@ -941,6 +948,8 @@ lib.expandObjectPaths = function(data) {
                     datum = data[key];
 
                     prop = match[1];
+                    if(notValid(prop)) continue;
+
                     idx = parseInt(match[2]);
 
                     delete data[key];
@@ -969,9 +978,12 @@ lib.expandObjectPaths = function(data) {
                     } else {
                         // This is the case where this property is the end of the line,
                         // e.g. xaxis.range[0]
+
+                        if(notValid(prop)) continue;
                         data[prop][idx] = lib.expandObjectPaths(datum);
                     }
                 } else {
+                    if(notValid(key)) continue;
                     data[key] = lib.expandObjectPaths(data[key]);
                 }
             }
@@ -1207,7 +1219,9 @@ function templateFormatString(string, labels, d3locale) {
             var fmt;
             if(format[0] === ':') {
                 fmt = d3locale ? d3locale.numberFormat : lib.numberFormat;
-                value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+                if(value !== '') { // e.g. skip missing data on heatmap
+                    value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+                }
             }
 
             if(format[0] === '|') {

@@ -41,11 +41,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 letter: axName[0],
                 data: options.data,
                 showGrid: true,
+                noAutotickangles: true,
                 noTickson: true,
                 noTicklabelmode: true,
                 noTicklabelstep: true,
                 noTicklabelposition: true,
                 noTicklabeloverflow: true,
+                noInsiderange: true,
                 bgColor: options.bgColor,
                 calendar: options.calendar
             },

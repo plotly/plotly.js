@@ -118,10 +118,14 @@
         "title": {
             "text": "Canadian cities",
             "font": {
+                "color": "yellow",
+                "shadow": "2px 2px 4px red",
                 "size": 28
             }
         },
-        "font": {},
+        "font": {
+            "shadow": "auto"
+        },
         "geo": {
             "scope": "north america",
             "lonaxis": {

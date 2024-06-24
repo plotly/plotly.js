@@ -54,10 +54,16 @@
         }
     ],
     "layout": {
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "title": {
             "text": "bars + colorbar = <3"
         },
         "xaxis": {
+            "autorangeoptions" : {"minallowed": 0.5},
             "type": "linear",
             "range": [
                 -0.5,

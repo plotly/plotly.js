@@ -31,6 +31,8 @@ function validateOpacity(opacityIn) {
 
 function formatColor(containerIn, opacityIn, len) {
     var colorIn = containerIn.color;
+    if(colorIn && colorIn._inputArray) colorIn = colorIn._inputArray;
+
     var isArrayColorIn = isArrayOrTypedArray(colorIn);
     var isArrayOpacityIn = isArrayOrTypedArray(opacityIn);
     var cOpts = Colorscale.extractOpts(containerIn);

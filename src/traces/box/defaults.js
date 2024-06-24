@@ -40,9 +40,17 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
             if(sd && sd.length) boxmeanDflt = 'sd';
         }
     }
-    coerce('boxmean', boxmeanDflt);
 
     coerce('whiskerwidth');
+    var sizemode = coerce('sizemode');
+    var boxmean;
+    if(sizemode === 'quartiles') {
+        boxmean = coerce('boxmean', boxmeanDflt);
+    }
+    coerce('showwhiskers', sizemode === 'quartiles');
+    if((sizemode === 'sd') || (boxmean === 'sd')) {
+        coerce('sdmultiple');
+    }
     coerce('width');
     coerce('quartilemethod');
 
@@ -59,6 +67,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     if(notched) coerce('notchwidth');
 
     handlePointsDefaults(traceIn, traceOut, coerce, {prefix: 'box'});
+    coerce('zorder');
 }
 
 function handleSampleDefaults(traceIn, traceOut, coerce, layout) {

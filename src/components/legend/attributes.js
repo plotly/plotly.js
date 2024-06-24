@@ -105,6 +105,13 @@ module.exports = {
         editType: 'legend',
         description: 'Determines what entrywidth means.',
     },
+    indentation: {
+        valType: 'number',
+        min: -15,
+        dflt: 0,
+        editType: 'legend',
+        description: 'Sets the indentation (in px) of the legend entries.',
+    },
     itemsizing: {
         valType: 'enumerated',
         values: ['trace', 'constant'],
@@ -267,7 +274,7 @@ module.exports = {
         }),
         side: {
             valType: 'enumerated',
-            values: ['top', 'left', 'top left'],
+            values: ['top', 'left', 'top left', 'top center', 'top right'],
             editType: 'legend',
             description: [
                 'Determines the location of legend\'s title',
@@ -275,6 +282,7 @@ module.exports = {
                 'Defaulted to *top* with `orientation` is *h*.',
                 'Defaulted to *left* with `orientation` is *v*.',
                 'The *top left* options could be used to expand',
+                'top center and top right are for horizontal alignment',
                 'legend area in both x and y sides.'
             ].join(' ')
         },

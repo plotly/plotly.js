@@ -35,6 +35,12 @@ function sankeyModel(layout, d, traceIndex) {
     var horizontal = trace.orientation === 'h';
     var nodePad = trace.node.pad;
     var nodeThickness = trace.node.thickness;
+    var nodeAlign = {
+        justify: d3Sankey.sankeyJustify,
+        left: d3Sankey.sankeyLeft,
+        right: d3Sankey.sankeyRight,
+        center: d3Sankey.sankeyCenter
+    }[trace.node.align];
 
     var width = layout.width * (domain.x[1] - domain.x[0]);
     var height = layout.height * (domain.y[1] - domain.y[0]);
@@ -61,6 +67,7 @@ function sankeyModel(layout, d, traceIndex) {
       .nodeId(function(d) {
           return d.pointNumber;
       })
+      .nodeAlign(nodeAlign)
       .nodes(nodes)
       .links(links);
 
@@ -292,6 +299,7 @@ function sankeyModel(layout, d, traceIndex) {
 
 function linkModel(d, l, i) {
     var tc = tinycolor(l.color);
+    var htc = tinycolor(l.hovercolor);
     var basicKey = l.source.label + '|' + l.target.label;
     var key = basicKey + '__' + i;
 
@@ -307,6 +315,8 @@ function linkModel(d, l, i) {
         link: l,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
+        tinyColorHoverHue: Color.tinyRGB(htc),
+        tinyColorHoverAlpha: htc.getAlpha(),
         linkPath: linkPath,
         linkLineColor: d.linkLineColor,
         linkLineWidth: d.linkLineWidth,
@@ -990,7 +1000,6 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             Drawing.font(e, d.textFont);
             svgTextUtils.convertToTspans(e, gd);
         })
-        .style('text-shadow', svgTextUtils.makeTextShadow(gd._fullLayout.paper_bgcolor))
         .attr('text-anchor', function(d) {
             return (d.horizontal && d.left) ? 'end' : 'start';
         })

@@ -166,6 +166,14 @@
     }
   ],
   "layout": {
+    "font": {
+      "textcase": "word caps",
+      "lineposition": "under",
+      "shadow": "auto",
+      "weight": 700,
+      "style": "italic",
+      "variant": "small-caps"
+    },
     "width": 1000,
     "height": 500,
     "margin": {"t": 5, "b": 25, "l": 15, "r": 0},

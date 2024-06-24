@@ -2,6 +2,7 @@
 
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
 var baseAttrs = require('../../plots/attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
@@ -151,7 +152,7 @@ module.exports = overrideAll({
             'of the trace if it has gaps) into a closed shape.'
         ].join(' ')
     },
-    fillcolor: scatterAttrs.fillcolor,
+    fillcolor: makeFillcolorAttr(),
 
     selected: scatterAttrs.selected,
     unselected: scatterAttrs.unselected,

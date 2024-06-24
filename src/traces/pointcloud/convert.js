@@ -2,6 +2,7 @@
 
 var createPointCloudRenderer = require('../../../stackgl_modules').gl_pointcloud2d;
 
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var str2RGBArray = require('../../lib/str2rgbarray');
 var findExtremes = require('../../plots/cartesian/autorange').findExtremes;
 var getTraceColor = require('../scatter/get_trace_color');
@@ -48,7 +49,7 @@ proto.handlePick = function(pickResult) {
         traceCoord: this.pickXYData ?
             [this.pickXYData[index * 2], this.pickXYData[index * 2 + 1]] :
             [this.pickXData[index], this.pickYData[index]],
-        textLabel: Array.isArray(this.textLabels) ?
+        textLabel: isArrayOrTypedArray(this.textLabels) ?
             this.textLabels[index] :
             this.textLabels,
         color: this.color,

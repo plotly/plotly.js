@@ -8,7 +8,7 @@ var handleText = require('../bar/defaults').handleText;
 var coercePattern = require('../../lib').coercePattern;
 
 function handleLabelsAndValues(labels, values) {
-    var hasLabels = Array.isArray(labels);
+    var hasLabels = Lib.isArrayOrTypedArray(labels);
     var hasValues = Lib.isArrayOrTypedArray(values);
     var len = Math.min(
         hasLabels ? labels.length : Infinity,
@@ -86,7 +86,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var textData = coerce('text');
     var textTemplate = coerce('texttemplate');
     var textInfo;
-    if(!textTemplate) textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
+    if(!textTemplate) textInfo = coerce('textinfo', Lib.isArrayOrTypedArray(textData) ? 'text+percent' : 'percent');
 
     coerce('hovertext');
     coerce('hovertemplate');
@@ -111,6 +111,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         if(textposition === 'inside' || textposition === 'auto' || Array.isArray(textposition)) {
             coerce('insidetextorientation');
         }
+    } else if(textInfo === 'none') {
+        coerce('textposition', 'none');
     }
 
     handleDomainDefaults(traceOut, layout, coerce);

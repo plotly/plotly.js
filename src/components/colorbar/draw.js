@@ -117,6 +117,7 @@ function makeColorBarData(gd) {
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         trace = cd[0].trace;
+        if(!trace._module) continue;
         var moduleOpts = trace._module.colorbar;
 
         if(trace.visible === true && moduleOpts) {
@@ -512,7 +513,7 @@ function drawColorBar(g, opts, gd) {
             .data(fillLevels);
         fills.enter().append('rect')
             .classed(cn.cbfill, true)
-            .style('stroke', 'none');
+            .attr('style', '');
         fills.exit().remove();
 
         var zBounds = zrange
@@ -1000,9 +1001,11 @@ function mockColorBarAxis(gd, opts, zrange) {
     var axisOptions = {
         letter: letter,
         font: fullLayout.font,
+        noAutotickangles: letter === 'y',
         noHover: true,
         noTickson: true,
         noTicklabelmode: true,
+        noInsideRange: true,
         calendar: fullLayout.calendar  // not really necessary (yet?)
     };
 

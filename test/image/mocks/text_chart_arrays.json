@@ -120,6 +120,11 @@
         }
     ],
     "layout": {
+        "font": {
+            "weight": "bold",
+            "style": "italic",
+            "variant": "small-caps"
+        },
         "showlegend": true,
         "xaxis": {
             "type": "linear",

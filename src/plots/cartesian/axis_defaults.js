@@ -15,6 +15,7 @@ var handleTickLabelDefaults = require('./tick_label_defaults');
 var handlePrefixSuffixDefaults = require('./prefix_suffix_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
 var handleLineGridDefaults = require('./line_grid_defaults');
+var handleRangeDefaults = require('./range_defaults');
 var setConvert = require('./set_convert');
 
 var DAY_OF_WEEK = require('./constants').WEEKDAY_PATTERN;
@@ -91,13 +92,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     setConvert(containerOut, layoutOut);
 
-    var autorangeDflt = !containerOut.isValidRange(containerIn.range);
-    if(autorangeDflt && options.reverseDflt) autorangeDflt = 'reversed';
-    var autoRange = coerce('autorange', autorangeDflt);
-    if(autoRange && (axType === 'linear' || axType === '-')) coerce('rangemode');
-
-    coerce('range');
-    containerOut.cleanRange();
+    handleRangeDefaults(containerIn, containerOut, coerce, options);
 
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
 
@@ -116,11 +111,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     if(!visible) return containerOut;
 
     coerce('title.text', dfltTitle);
-    Lib.coerceFont(coerce, 'title.font', {
-        family: font.family,
+    Lib.coerceFont(coerce, 'title.font', font, { overrideDflt: {
         size: Lib.bigFont(font.size),
         color: dfltFontColor
-    });
+    }});
 
     // major ticks
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);

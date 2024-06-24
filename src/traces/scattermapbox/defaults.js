@@ -8,6 +8,7 @@ var handleLineDefaults = require('../scatter/line_defaults');
 var handleTextDefaults = require('../scatter/text_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var attributes = require('./attributes');
+var isSupportedFont = require('./constants').isSupportedFont;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -31,11 +32,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('mode');
     coerce('below');
 
-    if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noDash: true});
-        coerce('connectgaps');
-    }
-
     if(subTypes.hasMarkers(traceOut)) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true, noAngle: true});
 
@@ -48,6 +44,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             if(Lib.isArrayOrTypedArray(marker.size)) marker.size = marker.size[0];
             if(Lib.isArrayOrTypedArray(marker.color)) marker.color = marker.color[0];
         }
+    }
+
+    if(subTypes.hasLines(traceOut)) {
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noDash: true});
+        coerce('connectgaps');
     }
 
     var clusterMaxzoom = coerce2('cluster.maxzoom');
@@ -63,10 +64,26 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         clusterSize !== false ||
         clusterOpacity !== false;
 
-    coerce('cluster.enabled', clusterEnabledDflt);
+    var clusterEnabled = coerce('cluster.enabled', clusterEnabledDflt);
 
-    if(subTypes.hasText(traceOut)) {
-        handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
+    if(clusterEnabled || subTypes.hasText(traceOut)) {
+        var layoutFontFamily = layout.font.family;
+
+        handleTextDefaults(traceIn, traceOut, layout, coerce,
+            {
+                noSelect: true,
+                noFontVariant: true,
+                noFontShadow: true,
+                noFontLineposition: true,
+                noFontTextcase: true,
+                font: {
+                    family: isSupportedFont(layoutFontFamily) ? layoutFontFamily : 'Open Sans Regular',
+                    weight: layout.font.weight,
+                    style: layout.font.style,
+                    size: layout.font.size,
+                    color: layout.font.color
+                }
+            });
     }
 
     coerce('fill');

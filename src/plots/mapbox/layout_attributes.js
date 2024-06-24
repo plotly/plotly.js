@@ -11,6 +11,10 @@ var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var constants = require('./constants');
 
 var fontAttr = fontAttrs({
+    noFontVariant: true,
+    noFontShadow: true,
+    noFontLineposition: true,
+    noFontTextcase: true,
     description: [
         'Sets the icon text font (color=mapbox.layer.paint.text-color, size=mapbox.layer.layout.text-size).',
         'Has an effect only when `type` is set to *symbol*.'

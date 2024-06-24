@@ -36,6 +36,11 @@
             }
         }],
     "layout": {
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "title": {"text": "Sankey with messy data"},
         "width": 600,
         "height": 800

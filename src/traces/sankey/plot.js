@@ -62,24 +62,33 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
 }
 
 function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-    var label = sankeyLink.datum().link.label;
-
-    sankeyLink.style('fill-opacity', function(l) {
+    sankeyLink.style('fill', function(l) {
         if(!l.link.concentrationscale) {
-            return 0.4;
+            return l.tinyColorHoverHue;
+        }
+    }).style('fill-opacity', function(l) {
+        if(!l.link.concentrationscale) {
+            return l.tinyColorHoverAlpha;
         }
     });
 
-    if(label) {
-        ownTrace(sankey, d)
-            .selectAll('.' + cn.sankeyLink)
-            .filter(function(l) {return l.link.label === label;})
-            .style('fill-opacity', function(l) {
-                if(!l.link.concentrationscale) {
-                    return 0.4;
-                }
-            });
-    }
+    sankeyLink.each(function(curLink) {
+        var label = curLink.link.label;
+        if(label !== '') {
+            ownTrace(sankey, d)
+                .selectAll('.' + cn.sankeyLink)
+                .filter(function(l) {return l.link.label === label;})
+                .style('fill', function(l) {
+                    if(!l.link.concentrationscale) {
+                        return l.tinyColorHoverHue;
+                    }
+                }).style('fill-opacity', function(l) {
+                    if(!l.link.concentrationscale) {
+                        return l.tinyColorHoverAlpha;
+                    }
+                });
+        }
+    });
 
     if(visitNodes) {
         ownTrace(sankey, d)
@@ -90,15 +99,22 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 }
 
 function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
-    var label = sankeyLink.datum().link.label;
+    sankeyLink.style('fill', function(l) {
+        return l.tinyColorHue;
+    }).style('fill-opacity', function(l) {
+        return l.tinyColorAlpha;
+    });
 
-    sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
-    if(label) {
-        ownTrace(sankey, d)
-            .selectAll('.' + cn.sankeyLink)
-            .filter(function(l) {return l.link.label === label;})
-            .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
-    }
+    sankeyLink.each(function(curLink) {
+        var label = curLink.link.label;
+        if(label !== '') {
+            ownTrace(sankey, d)
+                .selectAll('.' + cn.sankeyLink)
+                .filter(function(l) {return l.link.label === label;})
+                .style('fill', function(l) {return l.tinyColorHue;})
+                .style('fill-opacity', function(l) {return l.tinyColorAlpha;});
+        }
+    });
 
     if(visitNodes) {
         ownTrace(sankey, d)
@@ -210,6 +226,12 @@ module.exports = function plot(gd, calcData) {
                 fontFamily: castHoverOption(obj, 'font.family'),
                 fontSize: castHoverOption(obj, 'font.size'),
                 fontColor: castHoverOption(obj, 'font.color'),
+                fontWeight: castHoverOption(obj, 'font.weight'),
+                fontStyle: castHoverOption(obj, 'font.style'),
+                fontVariant: castHoverOption(obj, 'font.variant'),
+                fontTextcase: castHoverOption(obj, 'font.textcase'),
+                fontLineposition: castHoverOption(obj, 'font.lineposition'),
+                fontShadow: castHoverOption(obj, 'font.shadow'),
                 nameLength: castHoverOption(obj, 'namelength'),
                 textAlign: castHoverOption(obj, 'align'),
                 idealAlign: d3.event.x < hoverCenter[0] ? 'right' : 'left',
@@ -304,6 +326,12 @@ module.exports = function plot(gd, calcData) {
             fontFamily: castHoverOption(obj, 'font.family'),
             fontSize: castHoverOption(obj, 'font.size'),
             fontColor: castHoverOption(obj, 'font.color'),
+            fontWeight: castHoverOption(obj, 'font.weight'),
+            fontStyle: castHoverOption(obj, 'font.style'),
+            fontVariant: castHoverOption(obj, 'font.variant'),
+            fontTextcase: castHoverOption(obj, 'font.textcase'),
+            fontLineposition: castHoverOption(obj, 'font.lineposition'),
+            fontShadow: castHoverOption(obj, 'font.shadow'),
             nameLength: castHoverOption(obj, 'namelength'),
             textAlign: castHoverOption(obj, 'align'),
             idealAlign: 'left',

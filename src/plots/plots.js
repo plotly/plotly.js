@@ -4,6 +4,7 @@ var d3 = require('@plotly/d3');
 var timeFormatLocale = require('d3-time-format').timeFormatLocale;
 var formatLocale = require('d3-format').formatLocale;
 var isNumeric = require('fast-isnumeric');
+var b64encode = require('base64-arraybuffer');
 
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
@@ -33,9 +34,6 @@ plots.attributes = require('./attributes');
 plots.attributes.type.values = plots.allTypes;
 plots.fontAttrs = require('./font_attributes');
 plots.layoutAttributes = require('./layout_attributes');
-
-// TODO make this a plot attribute?
-plots.fontWeight = 'normal';
 
 var transformsRegistry = plots.transformsRegistry;
 
@@ -1356,7 +1354,10 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
         }
 
         if(_module && _module.selectPoints) {
-            coerce('selectedpoints');
+            var selectedpoints = coerce('selectedpoints');
+            if(Lib.isTypedArray(selectedpoints)) {
+                traceOut.selectedpoints = Array.from(selectedpoints);
+            }
         }
 
         plots.supplyTransformDefaults(traceIn, traceOut, layout);
@@ -1475,9 +1476,9 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     var font = Lib.coerceFont(coerce, 'font');
     var fontSize = font.size;
 
-    Lib.coerceFont(coerce, 'title.font', Lib.extendFlat({}, font, {
+    Lib.coerceFont(coerce, 'title.font', font, { overrideDflt: {
         size: Math.round(fontSize * 1.4)
-    }));
+    }});
 
     coerce('title.text', layoutOut._dfltTitle.plot);
     coerce('title.xref');
@@ -2278,11 +2279,29 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
             return o;
         }
 
-        if(Array.isArray(d)) {
+        var dIsArray = Array.isArray(d);
+        var dIsTypedArray = Lib.isTypedArray(d);
+
+        if((dIsArray || dIsTypedArray) && d.dtype && d.shape) {
+            var bdata = d.bdata;
+            return stripObj({
+                dtype: d.dtype,
+                shape: d.shape,
+
+                bdata:
+                    // case of ArrayBuffer
+                    Lib.isArrayBuffer(bdata) ? b64encode.encode(bdata) :
+                    // case of b64 string
+                    bdata
+
+            }, keepFunction);
+        }
+
+        if(dIsArray) {
             return d.map(function(x) {return stripObj(x, keepFunction);});
         }
 
-        if(Lib.isTypedArray(d)) {
+        if(dIsTypedArray) {
             return Lib.simpleMap(d, Lib.identity);
         }
 
@@ -3207,6 +3226,14 @@ function sortAxisCategoriesByValue(axList, gd) {
         median: function(values) {return Lib.median(values);}
     };
 
+    function sortAscending(a, b) {
+        return a[1] - b[1];
+    }
+
+    function sortDescending(a, b) {
+        return b[1] - a[1];
+    }
+
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
         if(ax.type !== 'category') continue;
@@ -3328,9 +3355,7 @@ function sortAxisCategoriesByValue(axList, gd) {
             }
 
             // Sort by aggregated value
-            categoriesAggregatedValue.sort(function(a, b) {
-                return a[1] - b[1];
-            });
+            categoriesAggregatedValue.sort(order === 'descending' ? sortDescending : sortAscending);
 
             ax._categoriesAggregatedValue = categoriesAggregatedValue;
 
@@ -3338,11 +3363,6 @@ function sortAxisCategoriesByValue(axList, gd) {
             ax._initialCategories = categoriesAggregatedValue.map(function(c) {
                 return c[0];
             });
-
-            // Reverse if descending
-            if(order === 'descending') {
-                ax._initialCategories.reverse();
-            }
 
             // Sort all matching axes
             affectedTraces = affectedTraces.concat(ax.sortByInitialCategories());

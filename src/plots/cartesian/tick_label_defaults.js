@@ -26,11 +26,9 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             (contColor && contColor !== layoutAttributes.color.dflt) ?
             contColor : font.color;
 
-        Lib.coerceFont(coerce, 'tickfont', {
-            family: font.family,
-            size: font.size,
+        Lib.coerceFont(coerce, 'tickfont', font, { overrideDflt: {
             color: dfltFontColor
-        });
+        }});
 
         if(
             !options.noTicklabelstep &&
@@ -40,7 +38,12 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             coerce('ticklabelstep');
         }
 
-        if(!options.noAng) coerce('tickangle');
+        if(!options.noAng) {
+            var tickAngle = coerce('tickangle');
+            if(!options.noAutotickangles && tickAngle === 'auto') {
+                coerce('autotickangles');
+            }
+        }
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
