@@ -154,7 +154,9 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
             var subplotInfo = fullLayout._plots[subplot];
 
             if(z > 0) {
-                var idWithZ = subplotInfo.id + zindexSeparator + (z + 1);
+                var idWithZ = subplotInfo.id;
+                if(idWithZ.indexOf(zindexSeparator) !== -1) continue;
+                idWithZ += zindexSeparator + (z + 1);
                 subplotInfo = Lib.extendFlat({}, subplotInfo, {
                     id: idWithZ,
                     plot: fullLayout._cartesianlayer.selectAll('.subplot').select('.' + idWithZ)
