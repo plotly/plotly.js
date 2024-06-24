@@ -13,6 +13,7 @@ var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 
 var sunburstExtendedColorWays = {};
 var treemapExtendedColorWays = {};
+var voronoiExtendedColorWays = {};
 var icicleExtendedColorWays = {};
 
 exports.calc = function(gd, trace) {
@@ -248,6 +249,7 @@ exports._runCrossTraceCalc = function(desiredType, gd) {
         colorWay = generateExtendedColors(colorWay,
             desiredType === 'icicle' ? icicleExtendedColorWays :
             desiredType === 'treemap' ? treemapExtendedColorWays :
+            desiredType === 'voronoi' ? voronoiExtendedColorWays :
                 sunburstExtendedColorWays
         );
     }
