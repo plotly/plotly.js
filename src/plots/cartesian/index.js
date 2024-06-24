@@ -372,6 +372,10 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
         for(i = 0; i < oldSubplotList.cartesian.length; i++) {
             var oldSubplotId = oldSubplotList.cartesian[i];
+
+            // skip zindex layes in this process
+            if(oldSubplotId.indexOf(zindexSeparator) !== -1) continue;
+
             if(!newPlots[oldSubplotId]) {
                 var selector = '.' + oldSubplotId + ',.' + oldSubplotId + '-x,.' + oldSubplotId + '-y';
                 oldFullLayout._cartesianlayer.selectAll(selector).remove();
