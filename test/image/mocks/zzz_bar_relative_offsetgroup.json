@@ -1,0 +1,47 @@
+{
+    "data": [
+      {
+        "type": "bar",
+        "x": [ "A", "B", "C"],
+        "y": [ 10, 10, 10 ],
+        "offsetgroup": 1,
+        "hovertext": "offsetgroup: 1"
+      },
+      {
+        "type": "bar",
+        "x": [ "A", "B", "C"],
+        "y": [ 20, 20, 20 ],
+        "offsetgroup": 1,
+        "hovertext": "offsetgroup: 1"
+      },
+      {
+        "type": "bar",
+        "x": [ "A", "B", "C"],
+        "y": [ 30, 30, 30 ],
+        "offsetgroup": 2,
+        "hovertext": "offsetgroup: 2"
+      },
+      {
+        "type": "bar",
+        "x": [ "A", "B", "C"],
+        "y": [ 40, 40, 40 ],
+        "offsetgroup": 2,
+        "hovertext": "offsetgroup: 2"
+      },
+      {
+        "type": "bar",
+        "x": [ "A", "B", "C"],
+        "y": [ -50, 50, 50 ],
+        "offsetgroup": 2,
+        "hovertext": "offsetgroup: 2"
+      }
+    ],
+    "layout": {
+        "width": 600,
+      "showlegend": false,
+      "barmode": "relative",
+      "title": {
+        "text": "Separately stacked bars with barmode 'relative'"
+      }
+    }
+  }
