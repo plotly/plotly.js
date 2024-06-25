@@ -169,7 +169,28 @@ module.exports = templatedArray('shape', {
             'See `type` and `xsizemode` for more info.'
         ].join(' ')
     },
-
+    x0shift: {
+        valType: 'number',
+        dflt: 0,
+        min: -1,
+        max: 1,
+        editType: 'calc',
+        description: [
+            'Only relevant if `xref` is a (multi-)category axes. Shifts `x0` by a fraction of the',
+            'reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.'
+        ].join(' ')
+    },
+    x1shift: {
+        valType: 'number',
+        dflt: 0,
+        min: -1,
+        max: 1,
+        editType: 'calc',
+        description: [
+            'Only relevant if `xref` is a (multi-)category axes. Shifts `x1` by a fraction of the',
+            'reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.'
+        ].join(' ')
+    },
     yref: extendFlat({}, annAttrs.yref, {
         description: [
             'Sets the shape\'s y coordinate axis.',
@@ -220,7 +241,28 @@ module.exports = templatedArray('shape', {
             'See `type` and `ysizemode` for more info.'
         ].join(' ')
     },
-
+    y0shift: {
+        valType: 'number',
+        dflt: 0,
+        min: -1,
+        max: 1,
+        editType: 'calc',
+        description: [
+            'Only relevant if `yref` is a (multi-)category axes. Shifts `y0` by a fraction of the',
+            'reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.'
+        ].join(' ')
+    },
+    y1shift: {
+        valType: 'number',
+        dflt: 0,
+        min: -1,
+        max: 1,
+        editType: 'calc',
+        description: [
+            'Only relevant if `yref` is a (multi-)category axes. Shifts `y1` by a fraction of the',
+            'reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.'
+        ].join(' ')
+    },
     path: {
         valType: 'string',
         editType: 'calc+arraydraw',
