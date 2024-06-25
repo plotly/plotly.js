@@ -7,6 +7,8 @@ var Lib = require('../../lib');
 var Icons = require('../../fonts/ploticon');
 var version = require('../../version').version;
 
+var cspNoInlineStyle = require('./../../lib').cspNoInlineStyle;
+
 var Parser = new DOMParser();
 
 /**
@@ -56,11 +58,19 @@ proto.update = function(graphInfo, buttons) {
     var style = fullLayout.modebar;
     var bgSelector = context.displayModeBar === 'hover' ? '.js-plotly-plot .plotly:hover ' : '';
 
-    Lib.deleteRelatedStyleRule(modeBarId);
-    Lib.addRelatedStyleRule(modeBarId, bgSelector + '#' + modeBarId + ' .modebar-group', 'background-color: ' + style.bgcolor);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + style.color);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + style.activecolor);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn.active .icon path', 'fill: ' + style.activecolor);
+    if(cspNoInlineStyle) {
+        // set style rules on elements in csp strict style src compliant manner
+        Lib.setStyleOnElements(bgSelector + '#' + modeBarId + ' .modebar-group', 'background-color: ' + style.bgcolor);
+        Lib.setStyleOnElements('#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + style.color);
+        Lib.setStyleOnElementForEvent('#' + modeBarId + ' .modebar-btn', 'hover', '.icon path', 'fill: ' + style.activecolor, 'fill: ' + style.color);
+        Lib.setStyleOnElementForEvent('#' + modeBarId + ' .modebar-btn', 'active', '.icon path', 'fill: ' + style.activecolor, 'fill: ' + style.color);
+    } else {
+        Lib.deleteRelatedStyleRule(modeBarId);
+        Lib.addRelatedStyleRule(modeBarId, bgSelector + '#' + modeBarId + ' .modebar-group', 'background-color: ' + style.bgcolor);
+        Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + style.color);
+        Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + style.activecolor);
+        Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn.active .icon path', 'fill: ' + style.activecolor);
+    }
 
     // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons);
