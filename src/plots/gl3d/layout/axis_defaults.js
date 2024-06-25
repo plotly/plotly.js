@@ -42,6 +42,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 data: options.data,
                 showGrid: true,
                 noAutotickangles: true,
+                noDrawminorticklabel: true,
                 noTickson: true,
                 noTicklabelmode: true,
                 noTicklabelstep: true,
