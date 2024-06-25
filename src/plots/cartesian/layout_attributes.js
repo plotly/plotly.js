@@ -698,6 +698,15 @@ module.exports = {
             'In other cases the default is *hide past div*.'
         ].join(' ')
     },
+    drawminorticklabel: {
+        valType: 'integer',
+        editType: 'calc',
+        description: [
+            'Instead of drawing the major tick label, draw the label for the minor tick',
+            'that is n positions away from the major tick. E.g. to always draw the label for the',
+            'minor tick before each major tick, choose `drawminorticklabel` -1'
+        ].join(' ')
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],

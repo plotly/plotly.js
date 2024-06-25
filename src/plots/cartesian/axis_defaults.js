@@ -59,6 +59,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
+    if(axType !== 'category' && axType !== 'multicategory' && axType !== 'log') {
+        coerce('drawminorticklabel');
+    }
+
     var ticklabelposition = '';
     if(!options.noTicklabelposition || axType === 'multicategory') {
         ticklabelposition = Lib.coerce(containerIn, containerOut, {
