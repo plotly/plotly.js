@@ -66,5 +66,7 @@ module.exports = {
     layerValue2layerClass: {
         'above traces': 'above',
         'below traces': 'below'
-    }
+    },
+
+    zindexSeparator: 'z', // used for zindex of cartesian subplots e.g. xy, xyz2, xyz3, etc.
 };
