@@ -15154,6 +15154,18 @@
       "inside bottom"
      ]
     },
+    "ticklabelrunoff": {
+     "description": "Shifts the tick labels by the specified number of pixels in parallel to the axis. Positive values move the labels in the positive direction of the axis.",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "integer"
+    },
+    "ticklabelstandoff": {
+     "description": "Shifts the tick labels by the specified number of pixels orthogonally to the axis. A positive `ticklabelstandoff` will move the labels farther away from the plot area if `ticklabelposition` is \"outside\", and deeper into the plotarea if `ticklabelposition` is \"inside\".",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "integer"
+    },
     "ticklabelstep": {
      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 1 (default) means each tick gets a label. A value of 2 means shows every 2nd label. A larger value n means only every nth tick is labeled. `tick0` determines which labels are shown. Not implemented for axes with `type` *log* or *multicategory*, or when `tickmode` is *array*.",
      "dflt": 1,
@@ -16462,6 +16474,18 @@
       "outside bottom",
       "inside bottom"
      ]
+    },
+    "ticklabelrunoff": {
+     "description": "Shifts the tick labels by the specified number of pixels in parallel to the axis. Positive values move the labels in the positive direction of the axis.",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "integer"
+    },
+    "ticklabelstandoff": {
+     "description": "Shifts the tick labels by the specified number of pixels orthogonally to the axis. A positive `ticklabelstandoff` will move the labels farther away from the plot area if `ticklabelposition` is \"outside\", and deeper into the plotarea if `ticklabelposition` is \"inside\".",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "integer"
     },
     "ticklabelstep": {
      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 1 (default) means each tick gets a label. A value of 2 means shows every 2nd label. A larger value n means only every nth tick is labeled. `tick0` determines which labels are shown. Not implemented for axes with `type` *log* or *multicategory*, or when `tickmode` is *array*.",

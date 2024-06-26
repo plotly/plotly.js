@@ -698,6 +698,26 @@ module.exports = {
             'In other cases the default is *hide past div*.'
         ].join(' ')
     },
+    ticklabelrunoff: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'ticks',
+        description: [
+            'Shifts the tick labels by the specified number of pixels in parallel to the axis.',
+            'Positive values move the labels in the positive direction of the axis.'
+        ].join(' ')
+    },
+    ticklabelstandoff: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'ticks',
+        description: [
+            'Shifts the tick labels by the specified number of pixels orthogonally to the axis.',
+            'A positive `ticklabelstandoff` will move the labels farther away from the plot area',
+            'if `ticklabelposition` is "outside", and deeper into the plotarea if',
+            '`ticklabelposition` is "inside".'
+        ].join(' ')
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
