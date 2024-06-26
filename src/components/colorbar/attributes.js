@@ -188,6 +188,7 @@ module.exports = overrideAll({
             'top and bottom when `orientation` is *v*.'
         ].join(' ')
     },
+
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
