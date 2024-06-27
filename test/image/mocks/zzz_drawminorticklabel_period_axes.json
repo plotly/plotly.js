@@ -164,7 +164,7 @@
     },
     "xaxis2": {
       "title": {
-        "text": "xaxis2: Label of minor tick before each major tick is drawn"
+        "text": "xaxis2: Period before each major tick is labeled"
       },
       "dtick": "M12",
       "minor": {
@@ -175,7 +175,7 @@
       },
       "tickformat": "%b %Y",
       "drawminorticklabel": -1,
-      "tickangle": 30,
+      "tickangle": 90,
       "ticklabelmode": "period",
       "ticklen": 18,
       "ticks": "inside",
