@@ -31,6 +31,7 @@ var HALFDAY = ONEDAY / 2;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
+var ONEMICROSEC = constants.ONEMICROSEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 
@@ -908,7 +909,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var calendar = ax.calendar;
     var ticklabelstep = ax.ticklabelstep;
     var isPeriod = ax.ticklabelmode === 'period';
-
+    var drawMinorTickLabel = ax.drawminorticklabel;
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
@@ -921,6 +922,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     var tickVals = [];
     var minorTickVals = [];
+    // all ticks for which labels are drawn which is not necessarily the major ticks when
+    // `drawminorticklabel` is set.
+    var labelTickVals = [];
 
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
 
@@ -1075,6 +1079,47 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
+    // check if drawMinorTickLabel makes sense, otherwise ignore it
+    if(!minorTickVals || minorTickVals.length < 2) {
+        drawMinorTickLabel = false;
+    } else {
+        var diff = minorTickVals[1].value - minorTickVals[0].value;
+        if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
+            drawMinorTickLabel = false;
+        }
+    }
+    // Determine for which ticks to draw labels
+    if(!drawMinorTickLabel) {
+        labelTickVals = tickVals;
+    } else {
+        // Collect and sort all major and minor ticks, to find the minor ticks `drawMinorTickLabel`
+        // steps away from each major tick. For those minor ticks we want to draw the label.
+
+        var allTickVals = tickVals.concat(minorTickVals);
+        if(isPeriod && tickVals.length) {
+            // first major tick was just added for period handling
+            allTickVals = allTickVals.slice(1);
+        }
+        allTickVals =
+            allTickVals
+            .sort(function(a, b) { return a.value - b.value; })
+            .filter(function(tick, index, self) {
+                return index === 0 || tick.value !== self[index - 1].value;
+            });
+
+        var majorTickIndices =
+            allTickVals
+            .map(function(item, index) { return item.minor === undefined ? index : null; })
+            .filter(function(index) { return index !== null; });
+
+        majorTickIndices.forEach(function(majorIdx) {
+            var minorIdx = majorIdx + drawMinorTickLabel;
+            if(minorIdx >= 0 && minorIdx < allTickVals.length) {
+                labelTickVals.push(allTickVals[minorIdx]);
+            }
+        });
+    }
+
     if(hasMinor) {
         var canOverlap =
             (ax.minor.ticks === 'inside' && ax.ticks === 'outside') ||
@@ -1108,7 +1153,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    if(isPeriod) positionPeriodTicks(tickVals, ax, ax._definedDelta);
+    if(isPeriod) positionPeriodTicks(labelTickVals, ax, ax._definedDelta);
 
     var i;
     if(ax.rangebreaks) {
@@ -1166,38 +1211,44 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     tickVals = tickVals.concat(minorTickVals);
 
-    var t, p;
+    function setTickLabel(ax, tickVal) {
+        var t = axes.tickText(
+            ax,
+            tickVal.value,
+            false, // hover
+            tickVal.simpleLabel // noSuffixPrefix
+        );
+        var p = tickVal.periodX;
+        if(p !== undefined) {
+            t.periodX = p;
+            if(p > maxRange || p < minRange) { // hide label if outside the range
+                if(p > maxRange) t.periodX = maxRange;
+                if(p < minRange) t.periodX = minRange;
+
+                hideLabel(t);
+            }
+        }
+        return t;
+    }
+
+    var t;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
 
         if(_minor) {
-            minorTicks.push({
-                x: _value,
-                minor: true
-            });
+            if(drawMinorTickLabel && labelTickVals.indexOf(tickVals[i]) !== -1) {
+                t = setTickLabel(ax, tickVals[i]);
+            } else {
+                t = { x: _value };
+            }
+            t.minor = true;
+            minorTicks.push(t);
         } else {
             lastVisibleHead = ax._prevDateHead;
-
-            t = axes.tickText(
-                ax,
-                _value,
-                false, // hover
-                tickVals[i].simpleLabel // noSuffixPrefix
-            );
-
-            p = tickVals[i].periodX;
-            if(p !== undefined) {
-                t.periodX = p;
-                if(p > maxRange || p < minRange) { // hide label if outside the range
-                    if(p > maxRange) t.periodX = maxRange;
-                    if(p < minRange) t.periodX = minRange;
-
-                    hideLabel(t);
-                }
-            }
-
-            if(tickVals[i].skipLabel) {
+            t = setTickLabel(ax, tickVals[i]);
+            if(tickVals[i].skipLabel ||
+                drawMinorTickLabel && labelTickVals.indexOf(tickVals[i]) === -1) {
                 hideLabel(t);
             }
 
@@ -4522,4 +4573,39 @@ function setShiftVal(ax, axShifts) {
     return ax.autoshift ?
         axShifts[ax.overlaying][ax.side] :
         (ax.shift || 0);
+}
+
+/**
+ * Checks if the given period is at least the period described by the tickformat or larger. If that
+ * is the case, they are compatible, because then the tickformat can be used to describe the period.
+ * E.g. it doesn't make sense to put a year label on a period spanning only a month.
+ * @param {number} period in ms
+ * @param {string} tickformat
+ * @returns {boolean}
+ */
+function periodCompatibleWithTickformat(period, tickformat) {
+    if(/%f/.test(tickformat)) {
+        if(period < ONEMICROSEC) return false;
+    } else if(/%L/.test(tickformat)) {
+        if(period < 1) return false;
+    } else if(/%[SX]/.test(tickformat)) {
+        if(period < ONESEC) return false;
+    } else if(/%M/.test(tickformat)) {
+        if(period < ONEMIN) return false;
+    } else if(/%[HI]/.test(tickformat)) {
+        if(period < ONEHOUR) return false;
+    } else if(/%p/.test(tickformat)) {
+        if(period < HALFDAY) return false;
+    } else if(/%[Aadejuwx]/.test(tickformat)) {
+        if(period < ONEDAY) return false;
+    } else if(/%[UVW]/.test(tickformat)) {
+        if(period < ONEWEEK) return false;
+    } else if(/%[Bbm]/.test(tickformat)) {
+        if(period < ONEMINMONTH) return false;
+    } else if(/%[q]/.test(tickformat)) {
+        if(period < ONEMINQUARTER) return false;
+    } else if(/%[Yy]/.test(tickformat)) {
+        if(period < ONEMINYEAR) return false;
+    }
+    return true;
 }
