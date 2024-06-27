@@ -159,7 +159,7 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
                 idWithZ += zindexSeparator + (z + 1);
                 subplotInfo = Lib.extendFlat({}, subplotInfo, {
                     id: idWithZ,
-                    plot: fullLayout._cartesianlayer.selectAll('.subplot').select('.' + idWithZ)
+                    plot: fullLayout._cartesianlayerAbove.selectAll('.subplot').select('.' + idWithZ)
                 });
             }
 
