@@ -3150,31 +3150,14 @@ axes.makeLabelFns = function(ax, shift, angle) {
     var isAligned = isBottom || isLeft || isTop || isRight;
 
     var insideTickLabels = has('inside');
-
-    var minorTicksInside = ax.minor && ax.minor.ticks === 'inside';
-    var minorTicksOutside = ax.minor && ax.minor.ticks === 'outside';
-
-    var labelsOverMajorTicks = false;
-    var labelsOverMinorTicks = false;
-    if(insideTickLabels) {
-        if(ax.ticks === 'inside') {
-            labelsOverMajorTicks = true;
-        } else if(minorTicksInside) {
-            labelsOverMinorTicks = true;
-        }
-    } else {
-        if(ax.ticks === 'outside' && ax.tickson !== 'boundaries') {
-            labelsOverMajorTicks = true;
-        } else if(minorTicksOutside) {
-            labelsOverMinorTicks = true;
-        }
-    }
-    var labelsOverTicks = labelsOverMajorTicks || labelsOverMinorTicks;
+    var labelsOverTicks =
+        (ticklabelposition === 'inside' && ax.ticks === 'inside') ||
+        (!insideTickLabels && ax.ticks === 'outside' && ax.tickson !== 'boundaries');
 
     var labelStandoff = 0;
     var labelShift = 0;
 
-    var tickLen = labelsOverMajorTicks ? ax.ticklen : labelsOverMinorTicks ? ax.minor.ticklen : 0;
+    var tickLen = labelsOverTicks ? ax.ticklen : 0;
     if(insideTickLabels) {
         tickLen *= -1;
     } else if(isAligned) {
