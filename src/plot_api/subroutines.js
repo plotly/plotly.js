@@ -24,6 +24,8 @@ var SVG_TEXT_ANCHOR_START = 'start';
 var SVG_TEXT_ANCHOR_MIDDLE = 'middle';
 var SVG_TEXT_ANCHOR_END = 'end';
 
+var zindexSeparator = require('../plots/cartesian/constants').zindexSeparator;
+
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
 };
@@ -134,7 +136,8 @@ function lsInner(gd) {
             var xDomain = plotinfo.xaxis.domain;
             var yDomain = plotinfo.yaxis.domain;
             var plotgroup = plotinfo.plotgroup[0];
-            if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
+
+            if(overlappingDomain(xDomain, yDomain, lowerDomains) && subplot.indexOf(zindexSeparator) === -1) {
                 var pgNode = plotgroup.node();
                 var plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
                 pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);

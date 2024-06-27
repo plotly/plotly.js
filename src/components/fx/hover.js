@@ -15,6 +15,7 @@ var Drawing = require('../drawing');
 var Color = require('../color');
 var dragElement = require('../dragelement');
 var Axes = require('../../plots/cartesian/axes');
+var zindexSeparator = require('../../plots/cartesian/constants').zindexSeparator;
 var Registry = require('../../registry');
 
 var helpers = require('./helpers');
@@ -260,6 +261,11 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 // The actual implementation is here:
 function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     if(!subplot) subplot = 'xy';
+
+    if(typeof subplot === 'string') {
+        // drop zindex from subplot id
+        subplot = subplot.split(zindexSeparator)[0];
+    }
 
     // if the user passed in an array of subplots,
     // use those instead of finding overlayed plots

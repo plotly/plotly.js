@@ -839,7 +839,7 @@ describe('Test splom interactions:', function() {
             _assert({
                 subplotCnt: 25,
                 innerSubplotNodeCntBelow: 4,
-                innerSubplotNodeCnt: 14,
+                innerSubplotNodeCnt: 13,
                 hasSplomGrid: false,
                 bgCnt: 0
             });
@@ -855,7 +855,7 @@ describe('Test splom interactions:', function() {
                 innerSubplotNodeCntBelow: 4,
                 innerSubplotNodeCnt: function(d) {
                     var p = d.match(SUBPLOT_PATTERN);
-                    return (p[1] > 5 || p[2] > 5) ? 4 : 14;
+                    return (p[1] > 5 || p[2] > 5) ? 4 : 13;
                 },
                 hasSplomGrid: true,
                 bgCnt: 0
