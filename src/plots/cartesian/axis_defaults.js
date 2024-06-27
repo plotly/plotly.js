@@ -59,7 +59,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
-    if(!options.noDrawminorticklabel && axType !== 'category' && axType !== 'multicategory' && axType !== 'log') {
+    if(!options.noDrawminorticklabel && axType === 'date' && containerOut.ticklabelmode === 'period') {
         coerce('drawminorticklabel');
     }
 
