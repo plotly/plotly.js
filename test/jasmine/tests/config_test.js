@@ -385,6 +385,12 @@ describe('config argument', function() {
             .then(done, done.fail);
         });
 
+        it('should make subtitles editable', function(done) {
+            initPlot('titleText')
+            .then(checkIfEditable('gtitle-subtitle', 'Click to enter Plot subtitle'))
+            .then(done, done.fail);
+        });
+
         it('should make x axes labels editable', function(done) {
             initPlot('axisTitleText')
             .then(checkIfEditable('g-xtitle', 'Click to enter X axis title'))
