@@ -14,6 +14,7 @@ var interactConstants = require('../../constants/interactions');
 
 var OPPOSITE_SIDE = require('../../constants/alignment').OPPOSITE_SIDE;
 var numStripRE = / [XY][0-9]* /;
+var MATHJAX_PADDING_BOTTOM = 10;
 
 /**
  * Titles - (re)draw titles on the axes and plot:
@@ -200,13 +201,16 @@ function draw(gd, titleClass, options) {
         // Mathjax is rendered asynchronously, which is why this step needs to be
         // passed as a callback
         function adjustSubtitlePosition(titleElMathGroup) {
-            if(titleElMathGroup && subtitleEl) {
+            if(!titleElMathGroup) return;
+
+            var subtitleElement = d3.select(titleElMathGroup.node().parentNode).select('.' + subtitleClass);
+            if(subtitleElement) {
                 var titleMathHeight = titleElMathGroup.node().getBBox().height;
                 if(titleMathHeight) {
                     // Increase the y position of the subtitle by the height of the title,
-                    // plus a (somewhat arbitrary) 10px of padding
-                    var newSubtitleY = Number(subtitleEl.attr('y')) + titleMathHeight + 10;
-                    subtitleEl.attr('y', newSubtitleY);
+                    // plus a bit of padding
+                    var newSubtitleY = Number(subtitleElement.attr('y')) + titleMathHeight + MATHJAX_PADDING_BOTTOM;
+                    subtitleElement.attr('y', newSubtitleY);
                 }
             }
         }
@@ -227,8 +231,15 @@ function draw(gd, titleClass, options) {
             .call(svgTextUtils.convertToTspans, gd, adjustSubtitlePosition);
 
         if(subtitleEl) {
+            // Increase the subtitle y position so that it is drawn below the subtitle
+            // We need to check the height of the MathJax group as well, in case the MathJax
+            // has already rendered
+            var titleElHeight = titleEl.node().getBBox().height;
+            var titleElMathGroup = group.select('.' + titleClass + '-math-group');
+            var titleElMathHeight = titleElMathGroup.node() ? titleElMathGroup.node().getBBox().height : 0;
+            var subtitleShift = titleElMathHeight ? titleElMathHeight + MATHJAX_PADDING_BOTTOM : titleElHeight;
             var subtitleAttributes = Object.assign({}, attributes);
-            subtitleAttributes.y += Drawing.bBox(titleEl.node()).height;
+            subtitleAttributes.y += subtitleShift;
 
             subtitleEl.attr('transform', transformVal);
             subtitleEl.style('opacity', subtitleOpacity * Color.opacity(subFontColor))
