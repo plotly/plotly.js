@@ -205,7 +205,7 @@ function draw(gd, titleClass, options) {
             if(!titleElMathGroup) return;
 
             var subtitleElement = d3.select(titleElMathGroup.node().parentNode).select('.' + subtitleClass);
-            if(subtitleElement) {
+            if(!subtitleElement.empty()) {
                 var titleMathHeight = titleElMathGroup.node().getBBox().height;
                 if(titleMathHeight) {
                     // Increase the y position of the subtitle by the height of the title,
