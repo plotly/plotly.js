@@ -156,8 +156,9 @@ function draw(gd, titleClass, options) {
     el.exit().remove();
 
     var subtitleEl = null;
+    var subtitleClass = titleClass + '-subtitle';
+
     if(subtitleEnabled && (subtitleTxt || editable)) {
-        var subtitleClass = titleClass + '-subtitle';
         var subtitleElShouldExist = subtitleTxt || editable;
         subtitleEl = group.selectAll('text.' + subtitleClass)
             .data(subtitleElShouldExist ? [0] : []);
