@@ -180,6 +180,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     coerce('entrywidthmode');
     coerce('indentation');
     coerce('itemsizing');
+    coerce('itemsymbol');
     coerce('itemwidth');
 
     coerce('itemclick');
