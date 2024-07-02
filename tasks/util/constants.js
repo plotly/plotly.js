@@ -237,10 +237,6 @@ module.exports = {
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
 
-    // this mapbox access token is 'public', no need to hide it
-    // more info: https://www.mapbox.com/help/define-access-token/
-    mapboxAccessToken: 'pk.eyJ1IjoicGxvdGx5LWRvY3MiLCJhIjoiY2xpMGYyNWgxMGJhdzNzbXhtNGI0Nnk0aSJ9.0oBvi_UUZ0O1N0xk0yfRwg',
-    pathToCredentials: path.join(pathToBuild, 'credentials.json'),
 
     testContainerImage: 'plotly/testbed:latest',
     testContainerName: process.env.PLOTLYJS_TEST_CONTAINER_NAME || 'imagetest',

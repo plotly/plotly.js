@@ -1364,9 +1364,7 @@ describe('filter resulting in empty coordinate arrays', function() {
     describe('mapbox mocks', function() {
         var mockList = require('../assets/mock_lists').mapbox;
 
-        Plotly.setPlotConfig({
-            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
-        });
+        Plotly.setPlotConfig({});
 
         mockList.forEach(function(d) {
             it('@gl' + d[0], function(done) {

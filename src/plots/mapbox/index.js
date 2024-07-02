@@ -1,11 +1,9 @@
 'use strict';
 
-var mapboxgl = require('@plotly/mapbox-gl/dist/mapbox-gl-unminified');
-
 var Lib = require('../../lib');
 var strTranslate = Lib.strTranslate;
 var strScale = Lib.strScale;
-var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
+var getSubplotCalcData = require('../get_data').getSubplotCalcData;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var d3 = require('@plotly/d3');
 var Drawing = require('../../components/drawing');
@@ -14,8 +12,6 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var Mapbox = require('./mapbox');
 
 var MAPBOX = 'mapbox';
-
-var constants = exports.constants = require('./constants');
 
 exports.name = MAPBOX;
 
@@ -48,13 +44,6 @@ exports.plot = function plot(gd) {
     var calcData = gd.calcdata;
     var mapboxIds = fullLayout._subplots[MAPBOX];
 
-    if(mapboxgl.version !== constants.requiredVersion) {
-        throw new Error(constants.wrongVersionErrorMsg);
-    }
-
-    var accessToken = findAccessToken(gd, mapboxIds);
-    mapboxgl.accessToken = accessToken;
-
     for(var i = 0; i < mapboxIds.length; i++) {
         var id = mapboxIds[i];
         var subplotCalcData = getSubplotCalcData(calcData, MAPBOX, id);
@@ -76,18 +65,6 @@ exports.plot = function plot(gd) {
         }
 
         mapbox.plot(subplotCalcData, fullLayout, gd._promises);
-    }
-};
-
-exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldMapboxKeys = oldFullLayout._subplots[MAPBOX] || [];
-
-    for(var i = 0; i < oldMapboxKeys.length; i++) {
-        var oldMapboxKey = oldMapboxKeys[i];
-
-        if(!newFullLayout[oldMapboxKey] && !!oldFullLayout[oldMapboxKey]._subplot) {
-            oldFullLayout[oldMapboxKey]._subplot.destroy();
-        }
     }
 };
 
@@ -116,41 +93,9 @@ exports.toSVG = function(gd) {
 
         var subplotDiv = d3.select(opts._subplot.div);
 
-        // Append logo if visible
-        var hidden = subplotDiv.select('.mapboxgl-ctrl-logo').node().offsetParent === null;
-        if(!hidden) {
-            var logo = fullLayout._glimages.append('g');
-            logo.attr('transform', strTranslate(size.l + size.w * domain.x[0] + 10, size.t + size.h * (1 - domain.y[0]) - 31));
-            logo.append('path')
-              .attr('d', constants.mapboxLogo.path0)
-              .style({
-                  opacity: 0.9,
-                  fill: '#ffffff',
-                  'enable-background': 'new'
-              });
-
-            logo.append('path')
-              .attr('d', constants.mapboxLogo.path1)
-              .style('opacity', 0.35)
-              .style('enable-background', 'new');
-
-            logo.append('path')
-              .attr('d', constants.mapboxLogo.path2)
-              .style('opacity', 0.35)
-              .style('enable-background', 'new');
-
-            logo.append('polygon')
-              .attr('points', constants.mapboxLogo.polygon)
-              .style({
-                  opacity: 0.9,
-                  fill: '#ffffff',
-                  'enable-background': 'new'
-              });
-        }
-
         // Add attributions
         var attributions = subplotDiv
-                              .select('.mapboxgl-ctrl-attrib').text()
+                              .select('.maplibregl-ctrl-attrib').text()
                               .replace('Improve this map', '');
 
         var attributionGroup = fullLayout._glimages.append('g');
@@ -201,75 +146,6 @@ exports.toSVG = function(gd) {
         attributionGroup.attr('transform', strTranslate(offset[0], offset[1]) + strScale(scaleRatio));
     }
 };
-
-// N.B. mapbox-gl only allows one accessToken to be set per page:
-// https://github.com/mapbox/mapbox-gl-js/issues/6331
-function findAccessToken(gd, mapboxIds) {
-    var fullLayout = gd._fullLayout;
-    var context = gd._context;
-
-    // special case for Mapbox Atlas users
-    if(context.mapboxAccessToken === '') return '';
-
-    var tokensUseful = [];
-    var tokensListed = [];
-    var hasOneSetMapboxStyle = false;
-    var wontWork = false;
-
-    // Take the first token we find in a mapbox subplot.
-    // These default to the context value but may be overridden.
-    for(var i = 0; i < mapboxIds.length; i++) {
-        var opts = fullLayout[mapboxIds[i]];
-        var token = opts.accesstoken;
-
-        if(isStyleRequireAccessToken(opts.style)) {
-            if(token) {
-                Lib.pushUnique(tokensUseful, token);
-            } else {
-                if(isStyleRequireAccessToken(opts._input.style)) {
-                    Lib.error('Uses Mapbox map style, but did not set an access token.');
-                    hasOneSetMapboxStyle = true;
-                }
-                wontWork = true;
-            }
-        }
-
-        if(token) {
-            Lib.pushUnique(tokensListed, token);
-        }
-    }
-
-    if(wontWork) {
-        var msg = hasOneSetMapboxStyle ?
-            constants.noAccessTokenErrorMsg :
-            constants.missingStyleErrorMsg;
-        Lib.error(msg);
-        throw new Error(msg);
-    }
-
-    if(tokensUseful.length) {
-        if(tokensUseful.length > 1) {
-            Lib.warn(constants.multipleTokensErrorMsg);
-        }
-        return tokensUseful[0];
-    } else {
-        if(tokensListed.length) {
-            Lib.log([
-                'Listed mapbox access token(s)', tokensListed.join(','),
-                'but did not use a Mapbox map style, ignoring token(s).'
-            ].join(' '));
-        }
-        return '';
-    }
-}
-
-function isStyleRequireAccessToken(s) {
-    return typeof s === 'string' && (
-        constants.styleValuesMapbox.indexOf(s) !== -1 ||
-        s.indexOf('mapbox://') === 0 ||
-        s.indexOf('stamen') === 0
-    );
-}
 
 exports.updateFx = function(gd) {
     var fullLayout = gd._fullLayout;

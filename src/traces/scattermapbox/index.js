@@ -26,7 +26,7 @@ module.exports = {
         hrName: 'scatter_mapbox',
         description: [
             'The data visualized as scatter point, lines or marker symbols',
-            'on a Mapbox GL geographic map',
+            'on a MapLibre GL geographic map',
             'is provided by longitude/latitude pairs in `lon` and `lat`.'
         ].join(' ')
     }

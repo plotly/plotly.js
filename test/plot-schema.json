@@ -244,11 +244,6 @@
    "min": 0,
    "valType": "integer"
   },
-  "mapboxAccessToken": {
-   "description": "Mapbox access token (required to plot mapbox trace types) If using an Mapbox Atlas server, set this option to '' so that plotly.js won't attempt to authenticate to the public Mapbox server.",
-   "dflt": null,
-   "valType": "string"
-  },
   "modeBarButtons": {
    "description": "Define fully custom mode bar buttons as nested array, where the outer arrays represents button groups, and the inner arrays have buttons config objects or names of default buttons See ./components/modebar/buttons.js for more info.",
    "dflt": false,
@@ -3876,13 +3871,6 @@
      {}
     ],
     "_isSubplotObj": true,
-    "accesstoken": {
-     "description": "Sets the mapbox access token to be used for this mapbox map. Alternatively, the mapbox access token can be set in the configuration options under `mapboxAccessToken`. Note that accessToken are only required when `style` (e.g with values : basic, streets, outdoors, light, dark, satellite, satellite-streets ) and/or a layout layer references the Mapbox server.",
-     "editType": "plot",
-     "noBlank": true,
-     "strict": true,
-     "valType": "string"
-    },
     "bearing": {
      "description": "Sets the bearing angle of the map in degrees counter-clockwise from North (mapbox.bearing).",
      "dflt": 0,
@@ -4243,24 +4231,28 @@
     },
     "role": "object",
     "style": {
-     "description": "Defines the map layers that are rendered by default below the trace layers defined in `data`, which are themselves by default rendered below the layers defined in `layout.mapbox.layers`.  These layers can be defined either explicitly as a Mapbox Style object which can contain multiple layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS) or implicitly by using one of the built-in style objects which use WMSes which do not require any access tokens, or by using a default Mapbox style or custom Mapbox style URL, both of which require a Mapbox access token  Note that Mapbox access token can be set in the `accesstoken` attribute or in the `mapboxAccessToken` config option.  Mapbox Style objects are of the form described in the Mapbox GL JS documentation available at https://docs.mapbox.com/mapbox-gl-js/style-spec  The built-in plotly.js styles objects are: carto-darkmatter, carto-positron, open-street-map, stamen-terrain, stamen-toner, stamen-watercolor, white-bg  The built-in Mapbox styles are: basic, streets, outdoors, light, dark, satellite, satellite-streets  Mapbox style URLs are of the form: mapbox://mapbox.mapbox-<name>-<version>",
+     "description": "Defines the map layers that are rendered by default below the trace layers defined in `data`, which are themselves by default rendered below the layers defined in `layout.mapbox.layers`.  These layers can be defined either explicitly as a Mapbox Style object which can contain multiple layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS) or implicitly by using one of the built-in style objects which use WMSes or by using a custom style URL  Mapbox Style objects are of the form described in the MapLibre GL JS documentation available at https://maplibre.org/maplibre-style-spec/  The built-in plotly.js styles objects are: basic, carto-darkmatter, carto-darkmatter-nolabels, carto-positron, carto-positron-nolabels, carto-voyager, carto-voyager-nolabels, dark, light, open-street-map, outdoors, satellite, satellite-streets, stamen-terrain, stamen-toner, stamen-watercolor, streets, white-bg.",
      "dflt": "basic",
      "editType": "plot",
      "valType": "any",
      "values": [
       "basic",
-      "streets",
-      "outdoors",
-      "light",
+      "carto-darkmatter",
+      "carto-darkmatter-nolabels",
+      "carto-positron",
+      "carto-positron-nolabels",
+      "carto-voyager",
+      "carto-voyager-nolabels",
       "dark",
+      "light",
+      "open-street-map",
+      "outdoors",
       "satellite",
       "satellite-streets",
-      "carto-darkmatter",
-      "carto-positron",
-      "open-street-map",
       "stamen-terrain",
       "stamen-toner",
       "stamen-watercolor",
+      "streets",
       "white-bg"
      ]
     },
@@ -75613,7 +75605,7 @@
     "scatter-like"
    ],
    "meta": {
-    "description": "The data visualized as scatter point, lines or marker symbols on a Mapbox GL geographic map is provided by longitude/latitude pairs in `lon` and `lat`.",
+    "description": "The data visualized as scatter point, lines or marker symbols on a MapLibre GL geographic map is provided by longitude/latitude pairs in `lon` and `lat`.",
     "hrName": "scatter_mapbox"
    },
    "type": "scattermapbox"

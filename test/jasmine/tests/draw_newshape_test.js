@@ -769,7 +769,7 @@ describe('Draw new shapes to layout', function() {
                     data: fig.data,
                     layout: fig.layout,
                     config: {
-                        mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
+
                     }
                 })
                     .then(function() {

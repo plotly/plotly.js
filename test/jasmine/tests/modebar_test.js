@@ -1361,7 +1361,7 @@ describe('ModeBar', function() {
         });
 
         describe('mapbox handlers', function() {
-            it('@gl button *resetViewMapbox* should reset the mapbox view attribute to their default', function(done) {
+            it('@gl button *resetViewMapbox* should reset the maplibre view attribute to their default', function(done) {
                 var gd = createGraphDiv();
 
                 function _assert(centerLon, centerLat, zoom) {
@@ -1381,9 +1381,7 @@ describe('ModeBar', function() {
                         center: {lon: 10, lat: 10},
                         zoom: 8
                     }
-                }, {
-                    mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
-                })
+                }, {})
                 .then(function() {
                     _assert(10, 10, 8);
 

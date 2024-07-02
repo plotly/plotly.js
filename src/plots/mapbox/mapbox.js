@@ -1,6 +1,6 @@
 'use strict';
 
-var mapboxgl = require('@plotly/mapbox-gl/dist/mapbox-gl-unminified');
+var maplibregl = require('maplibre-gl/dist/maplibre-gl-unminified');
 
 var Lib = require('../../lib');
 var geoUtils = require('../../lib/geo_location_utils');
@@ -42,7 +42,6 @@ function Mapbox(gd, id) {
 
     // state variables used to infer how and what to update
     this.map = null;
-    this.accessToken = null;
     this.styleObj = null;
     this.traceHash = {};
     this.layerList = [];
@@ -55,16 +54,6 @@ var proto = Mapbox.prototype;
 
 proto.plot = function(calcData, fullLayout, promises) {
     var self = this;
-    var opts = fullLayout[self.id];
-
-    // remove map and create a new map if access token has change
-    if(self.map && (opts.accesstoken !== self.accessToken)) {
-        self.map.remove();
-        self.map = null;
-        self.styleObj = null;
-        self.traceHash = {};
-        self.layerList = [];
-    }
 
     var promise;
 
@@ -86,16 +75,14 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     var opts = fullLayout[self.id];
 
     // store style id and URL or object
-    var styleObj = self.styleObj = getStyleObj(opts.style, fullLayout);
+    var styleObj = self.styleObj = getStyleObj(opts.style);
 
-    // store access token associated with this map
-    self.accessToken = opts.accesstoken;
 
     var bounds = opts.bounds;
     var maxBounds = bounds ? [[bounds.west, bounds.south], [bounds.east, bounds.north]] : null;
 
     // create the map!
-    var map = self.map = new mapboxgl.Map({
+    var map = self.map = new maplibregl.Map({
         container: self.div,
 
         style: styleObj.style,
@@ -113,9 +100,18 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
         attributionControl: false
     })
-    .addControl(new mapboxgl.AttributionControl({
+    .addControl(new maplibregl.AttributionControl({
         compact: true
     }));
+
+    map.setTransformRequest(function(url) {
+        url = url.replace('https://fonts.openmaptiles.org/Open Sans Extrabold', 'https://fonts.openmaptiles.org/Open Sans Extra Bold');
+        url = url.replace('https://tiles.basemaps.cartocdn.com/fonts/Open Sans Extrabold', 'https://fonts.openmaptiles.org/Open Sans Extra Bold');
+        url = url.replace('https://fonts.openmaptiles.org/Open Sans Regular,Arial Unicode MS Regular', 'https://fonts.openmaptiles.org/Klokantech Noto Sans Regular');
+        return {
+            url: url
+        };
+    });
 
 
     // make sure canvas does not inherit left and top css
@@ -152,7 +148,7 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
     self.rejectOnError(reject);
 
     var promises = [];
-    var styleObj = getStyleObj(opts.style, fullLayout);
+    var styleObj = getStyleObj(opts.style);
 
     if(JSON.stringify(self.styleObj) !== JSON.stringify(styleObj)) {
         self.styleObj = styleObj;
@@ -434,7 +430,7 @@ proto.initFx = function(calcData, fullLayout) {
             self.wheeling = false;
         }
 
-        if(fullLayoutNow._rehover) {
+        if(fullLayoutNow && fullLayoutNow._rehover) {
             fullLayoutNow._rehover();
         }
     });
@@ -717,7 +713,7 @@ proto.addLayer = function(opts, below) {
 
 // convenience method to project a [lon, lat] array to pixel coords
 proto.project = function(v) {
-    return this.map.project(new mapboxgl.LngLat(v[0], v[1]));
+    return this.map.project(new maplibregl.LngLat(v[0], v[1]));
 };
 
 // get map's current view values in plotly.js notation
@@ -768,7 +764,7 @@ proto.getViewEditsWithDerived = function(cont) {
     return obj;
 };
 
-function getStyleObj(val, fullLayout) {
+function getStyleObj(val) {
     var styleObj = {};
 
     if(Lib.isPlainObject(val)) {
@@ -777,20 +773,8 @@ function getStyleObj(val, fullLayout) {
     } else if(typeof val === 'string') {
         styleObj.id = val;
 
-        if(constants.styleValuesMapbox.indexOf(val) !== -1) {
-            styleObj.style = convertStyleVal(val);
-        } else if(constants.stylesNonMapbox[val]) {
-            styleObj.style = constants.stylesNonMapbox[val];
-            var spec = styleObj.style.sources['plotly-' + val];
-            var tiles = spec ? spec.tiles : undefined;
-            if(
-                tiles &&
-                tiles[0] &&
-                tiles[0].slice(-9) === '?api_key='
-            ) {
-                // provide api_key for stamen styles
-                tiles[0] += fullLayout._mapboxAccessToken;
-            }
+        if(constants.stylesMapbox[val]) {
+            styleObj.style = constants.stylesMapbox[val];
         } else {
             styleObj.style = val;
         }

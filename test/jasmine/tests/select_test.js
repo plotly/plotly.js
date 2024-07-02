@@ -685,10 +685,8 @@ describe('Click-to-select', function() {
           });
 
         [
-            testCase('scattermapbox', require('../../image/mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN }),
-            testCase('choroplethmapbox', require('../../image/mocks/mapbox_choropleth0.json'), 270, 220, [[0]], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN })
+            testCase('scattermapbox', require('../../image/mocks/mapbox_0.json'), 650, 195, [[2], []], {}),
+            testCase('choroplethmapbox', require('../../image/mocks/mapbox_choropleth0.json'), 270, 220, [[0]], {})
         ]
           .forEach(function(testCase) {
               it('@gl trace type ' + testCase.label, function(done) {
@@ -772,10 +770,8 @@ describe('Click-to-select', function() {
         });
 
         [
-            testCase('mapbox', require('../../image/mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN }),
-            testCase('mapbox', require('../../image/mocks/mapbox_choropleth0.json'), 270, 220, [[0], []], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN })
+            testCase('mapbox', require('../../image/mocks/mapbox_0.json'), 650, 195, [[2], []], {}),
+            testCase('mapbox', require('../../image/mocks/mapbox_choropleth0.json'), 270, 220, [[0], []], {})
         ].forEach(function(testCase) {
             it('@gl for base plot ' + testCase.label, function(done) {
                 _run(testCase, done);
@@ -2055,7 +2051,6 @@ describe('Test select box and lasso per trace:', function() {
             delete fig.layout.mapbox.bounds;
 
             fig.config = {
-                mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
             };
             addInvisible(fig);
 
@@ -2115,7 +2110,6 @@ describe('Test select box and lasso per trace:', function() {
 
             fig.layout.dragmode = 'select';
             fig.config = {
-                mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
             };
             addInvisible(fig);
 
@@ -3232,7 +3226,6 @@ describe('Test select box and lasso per trace:', function() {
 
         fig.layout.dragmode = 'select';
         fig.config = {
-            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
         };
         addInvisible(fig);
 

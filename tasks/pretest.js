@@ -4,19 +4,8 @@ var constants = require('./util/constants');
 var common = require('./util/common');
 
 // main
-makeCredentialsFile();
 makeTestImageFolders();
 
-// Create a credentials json file,
-// to be required in jasmine test suites and test dashboard
-function makeCredentialsFile() {
-    var credentials = JSON.stringify({
-        MAPBOX_ACCESS_TOKEN: constants.mapboxAccessToken
-    }, null, 2);
-
-    common.writeFile(constants.pathToCredentials, credentials);
-    logger('make build/credentials.json');
-}
 
 // Make artifact folders for image tests
 function makeTestImageFolders() {

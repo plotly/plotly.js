@@ -18,8 +18,6 @@ var mouseEvent = require('../assets/mouse_event');
 var drag = require('../assets/drag');
 var delay = require('../assets/delay');
 
-var MAPBOX_ACCESS_TOKEN = require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN;
-
 describe('@noCIdep Plotly.react', function() {
     var mockedMethods = [
         'doTraceStyle',
@@ -884,9 +882,7 @@ describe('@noCIdep Plotly.react', function() {
 
     mockLists.mapbox.forEach(function(mockSpec) {
         it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbpox mocks)', function(done) {
-            Plotly.setPlotConfig({
-                mapboxAccessToken: MAPBOX_ACCESS_TOKEN
-            });
+            Plotly.setPlotConfig({});
             _runReactMock(mockSpec, done);
         });
     });
@@ -1927,9 +1923,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkInitial = checkState([], attrs(true));
         var checkEdited = checkState([], attrs());
 
-        Plotly.setPlotConfig({
-            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
-        });
+        Plotly.setPlotConfig({});
 
         _run(fig, editMap, checkInitial, checkEdited).then(done);
     });
@@ -2283,10 +2277,8 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         .then(done, done.fail);
     });
 
-    it('@gl mapbox subplots should preserve viewport changes after panning', function(done) {
-        Plotly.setPlotConfig({
-            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
-        });
+    it('@gl maplibre subplots should preserve viewport changes after panning', function(done) {
+        Plotly.setPlotConfig({});
 
         function _react() {
             return Plotly.react(gd, [{

@@ -27,22 +27,9 @@ var attrs = module.exports = overrideAll({
 
     domain: domainAttrs({name: 'mapbox'}),
 
-    accesstoken: {
-        valType: 'string',
-        noBlank: true,
-        strict: true,
-        description: [
-            'Sets the mapbox access token to be used for this mapbox map.',
-            'Alternatively, the mapbox access token can be set in the',
-            'configuration options under `mapboxAccessToken`.',
-            'Note that accessToken are only required when `style`',
-            '(e.g with values :', constants.styleValuesMapbox.join(', '), ')',
-            'and/or a layout layer references the Mapbox server.'
-        ].join(' ')
-    },
     style: {
         valType: 'any',
-        values: constants.styleValuesMapbox.concat(constants.styleValuesNonMapbox),
+        values: constants.styleValuesMapbox,
         dflt: constants.styleValueDflt,
         description: [
             'Defines the map layers that are rendered by default below the trace layers defined in `data`,',
@@ -50,21 +37,13 @@ var attrs = module.exports = overrideAll({
             '',
             'These layers can be defined either explicitly as a Mapbox Style object which can contain multiple',
             'layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS)',
-            'or implicitly by using one of the built-in style objects which use WMSes which do not require any',
-            'access tokens, or by using a default Mapbox style or custom Mapbox style URL, both of',
-            'which require a Mapbox access token',
+            'or implicitly by using one of the built-in style objects which use WMSes',
+            'or by using a custom style URL',
             '',
-            'Note that Mapbox access token can be set in the `accesstoken` attribute',
-            'or in the `mapboxAccessToken` config option.',
+            'Mapbox Style objects are of the form described in the MapLibre GL JS documentation available at',
+            'https://maplibre.org/maplibre-style-spec/',
             '',
-            'Mapbox Style objects are of the form described in the Mapbox GL JS documentation available at',
-            'https://docs.mapbox.com/mapbox-gl-js/style-spec',
-            '',
-            'The built-in plotly.js styles objects are:', constants.styleValuesNonMapbox.join(', '),
-            '',
-            'The built-in Mapbox styles are:', constants.styleValuesMapbox.join(', '),
-            '',
-            'Mapbox style URLs are of the form: mapbox://mapbox.mapbox-<name>-<version>'
+            'The built-in plotly.js styles objects are:', constants.styleValuesMapbox.join(', ') + '.'
         ].join(' ')
     },
 

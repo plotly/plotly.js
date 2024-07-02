@@ -886,7 +886,7 @@ describe('Test Plots', function() {
         var subplotSelectors = {
             gl3d: '.gl-container>div[id^="scene"]',
             geo: '.geolayer>g',
-            mapbox: '.mapboxgl-map',
+            mapbox: '.maplibregl-map',
             parcoords: '.parcoords-line-layers',
             pie: '.pielayer .trace',
             sankey: '.sankey',

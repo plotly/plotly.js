@@ -382,16 +382,6 @@ var configAttributes = {
         ].join(' ')
     },
 
-    mapboxAccessToken: {
-        valType: 'string',
-        dflt: null,
-        description: [
-            'Mapbox access token (required to plot mapbox trace types)',
-            'If using an Mapbox Atlas server, set this option to \'\'',
-            'so that plotly.js won\'t attempt to authenticate to the public Mapbox server.'
-        ].join(' ')
-    },
-
     logging: {
         valType: 'integer',
         min: 0,
