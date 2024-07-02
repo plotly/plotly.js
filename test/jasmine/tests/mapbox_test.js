@@ -1226,7 +1226,7 @@ describe('mapbox plots', function() {
                 expect(s.text()).toEqual('© CARTO, © OpenStreetMap contributors');
                 assertLinks(s, [
                     'https://carto.com/about-carto/',
-                    'https://www.openstreetmap.org/copyright'
+                    'http://www.openstreetmap.org/about/'
                 ]);
             })
             .then(done, done.fail);
@@ -1279,15 +1279,15 @@ describe('mapbox plots', function() {
             .then(done, done.fail);
         });
 
-        it('@gl should be displayed for style from MapLibre', function(done) {
+        it('@gl should be displayed for style (basic)', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'basic'}})
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('© CARTO, © OpenStreetMap contributors');
                 assertLinks(s, [
-                    'https://www.openstreetmap.org/about/',
-
+                    'https://carto.com/about-carto/',
+                    'http://www.openstreetmap.org/about/',
                 ]);
             })
             .then(done, done.fail);
@@ -1701,25 +1701,25 @@ describe('test mapbox trace/layout *below* interactions', function() {
         })
         .then(function() {
             _assert('base', {
-                scatter: [23, 24, 25, 26],
-                density: [17],
-                choropleth: [5, 6]
+                scatter: [96, 97, 98, 99],
+                density: [13],
+                choropleth: [72, 73]
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', ''); })
         .then(function() {
             _assert('all traces *below:""', {
-                scatter: [23, 24, 25, 26],
-                density: [22],
-                choropleth: [20, 21]
+                scatter: [96, 97, 98, 99],
+                density: [95],
+                choropleth: [93, 94]
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', null); })
         .then(function() {
             _assert('back to base', {
-                scatter: [23, 24, 25, 26],
-                density: [17],
-                choropleth: [5, 6]
+                scatter: [96, 97, 98, 99],
+                density: [13],
+                choropleth: [72, 73]
             });
         })
         .then(done, done.fail);
