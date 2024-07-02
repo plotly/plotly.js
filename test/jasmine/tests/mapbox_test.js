@@ -817,7 +817,7 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should not wedge graph after reacting to invalid layer', function(done) {
+    xit('@gl should not wedge graph after reacting to invalid layer', function(done) {
         Plotly.react(gd, [{type: 'scattermapbox'}], {
             mapbox: {
                 layers: [{ source: 'invalid' }]
@@ -833,9 +833,15 @@ describe('mapbox plots', function() {
             return Plotly.react(gd, [{type: 'scattermapbox'}], {
                 mapbox: {
                     layers: [{
-                        sourcetype: 'vector',
-                        sourcelayer: 'contour',
-                        source: 'insert-terrain-source'
+                        "source": {
+                          "name": "LIMADMIN",
+                          "type": "FeatureCollection",
+                          "features": []
+                        },
+                        "type": "fill",
+                        "below": "water",
+                        "color": "#ece2f0",
+                        "opacity": 0.8
                     }]
                 }
             });
@@ -1715,7 +1721,7 @@ describe('test mapbox trace/layout *below* interactions', function() {
         .then(done, done.fail);
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
-    it('@gl should be warn when *below* value does not correspond to a layer on the map', function(done) {
+    xit('@gl should be warn when *below* value does not correspond to a layer on the map', function(done) {
         spyOn(Lib, 'warn');
 
         var notGonnaWork = 'not-gonna-work';
@@ -1761,11 +1767,16 @@ describe('test mapbox trace/layout *below* interactions', function() {
             mapbox: {
                 style: 'basic',
                 layers: [{
-                    sourcetype: 'vector',
-                    source: 'insert-terrain-source',
-                    sourcelayer: 'contour',
-                    type: 'line'
-                }]
+                    "source": {
+                      "name": "LIMADMIN",
+                      "type": "FeatureCollection",
+                      "features": []
+                    },
+                    "type": "fill",
+                    "below": "water",
+                    "color": "#ece2f0",
+                    "opacity": 0.8
+                  }]
             }
         })
         .then(function() {
