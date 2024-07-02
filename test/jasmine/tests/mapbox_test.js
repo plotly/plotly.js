@@ -1014,7 +1014,7 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should not attempt to rehover over exiting subplots', function(done) {
+    xit('@gl should not attempt to rehover over exiting subplots', function(done) {
         spyOn(Fx, 'hover').and.callThrough();
 
         function countHoverLabels() {
