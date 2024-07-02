@@ -533,12 +533,12 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
+    // TODO: mockWithLayers.layout.mapbox.layers array only has 1 entry
     xit('@gl should be able to add, update and remove layers', function(done) {
         var mockWithLayers = require('../../image/mocks/mapbox_layers');
 
         var layer0 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[0]);
 
-        // mockWithLayers.layout.mapbox.layers array only has 1 entry
         var layer1 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[1]);
 
         var mapUpdate = {
@@ -1123,7 +1123,7 @@ describe('mapbox plots', function() {
         })
         .then(function() {
             expect(relayoutCnt).toBe(3, 'relayout cnt');
-            expect(relayoutingCnt).toBeCloseTo(10, -1, 'relayouting cnt');
+            expect(relayoutingCnt).toBeCloseTo(21, -1, 'relayouting cnt');
             expect(doubleClickCnt).toBe(1, 'double click cnt');
             expect(getMapInfo(gd).zoom).toBeGreaterThan(1.234);
         })
@@ -1579,80 +1579,85 @@ describe('test mapbox trace/layout *below* interactions', function() {
             mapbox: {
                 style: 'basic',
                 layers: [{
-                    sourcetype: 'vector',
-                    source: 'insert-terrain-source',
-                    sourcelayer: 'contour',
-                    type: 'line'
+                    "source": {
+                      "name": "LIMADMIN",
+                      "type": "FeatureCollection",
+                      "features": []
+                    },
+                    "type": "fill",
+                    "below": "water",
+                    "color": "#ece2f0",
+                    "opacity": 0.8
                 }]
             }
         })
         .then(function() {
             _assert('default *below*', {
-                trace: [20, 21, 22, 23],
-                layout: 24
+                trace: [94, 95, 96, 97],
+                layout: 9
             });
         })
         .then(function() { return Plotly.relayout(gd, 'mapbox.layers[0].below', 'traces'); })
         .then(function() {
             _assert('with layout layer *below:traces*', {
-                trace: [21, 22, 23, 24],
-                layout: 20
+                trace: [94, 95, 96, 97],
+                layout: 93
             });
         })
         .then(function() { return Plotly.relayout(gd, 'mapbox.layers[0].below', null); })
         .then(function() {
             _assert('back to default *below* (1)', {
-                trace: [20, 21, 22, 23],
-                layout: 24
+                trace: [93, 94, 95, 96],
+                layout: 97
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', ''); })
         .then(function() {
             _assert('with trace *below:""*', {
-                trace: [21, 22, 23, 24],
-                layout: 20
+                trace: [94, 95, 96, 97],
+                layout: 93
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', null); })
         .then(function() {
             _assert('back to default *below* (2)', {
-                trace: [20, 21, 22, 23],
-                layout: 24
+                trace: [93, 94, 95, 96],
+                layout: 97
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', 'water'); })
         .then(function() {
             _assert('with trace *below:water*', {
-                trace: [4, 5, 6, 7],
-                layout: 24
+                trace: [9, 10, 11, 12],
+                layout: 97
             });
         })
         .then(function() { return Plotly.relayout(gd, 'mapbox.layers[0].below', 'water'); })
         .then(function() {
             _assert('with trace AND layout layer *below:water*', {
-                trace: [4, 5, 6, 7],
-                layout: 8
+                trace: [9, 10, 11, 12],
+                layout: 13
             });
         })
         .then(function() { return Plotly.relayout(gd, 'mapbox.layers[0].below', ''); })
         .then(function() {
             _assert('with trace *below:water* and layout layer *below:""*', {
-                trace: [4, 5, 6, 7],
-                layout: 24
+                trace: [9, 10, 11, 12],
+                layout: 97
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', ''); })
         .then(function() {
             _assert('with trace AND layout layer *below:water*', {
-                trace: [20, 21, 22, 23],
-                layout: 24
+                trace: [93, 94, 95, 96],
+                layout: 97
             });
         })
         .then(function() { return Plotly.update(gd, {below: null}, {'mapbox.layers[0].below': null}); })
         .then(function() {
             _assert('back to default *below* (3)', {
-                trace: [20, 21, 22, 23],
-                layout: 24
+                trace: [93, 94, 95, 96],
+                layout: 97
             });
         })
         .then(done, done.fail);
