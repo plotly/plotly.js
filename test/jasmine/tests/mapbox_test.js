@@ -1153,7 +1153,7 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    fit('@noCI @gl should respect scrollZoom config option', function(done) {
+    it('@noCI @gl should respect scrollZoom config option', function(done) {
         var mockCopy2 = Lib.extendDeep({}, mock);
         mockCopy2.config = {scrollZoom: false};
         var relayoutCnt = 0;
