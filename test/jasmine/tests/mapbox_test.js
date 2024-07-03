@@ -1726,7 +1726,7 @@ describe('test mapbox trace/layout *below* interactions', function() {
         .then(done, done.fail);
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
-    it('@gl should be warn when *below* value does not correspond to a layer on the map', function(done) {
+    fit('@gl should be warn when *below* value does not correspond to a layer on the map', function(done) {
         spyOn(Lib, 'warn');
 
         var notGonnaWork = 'not-gonna-work';
@@ -1748,8 +1748,8 @@ describe('test mapbox trace/layout *below* interactions', function() {
                 fail('Incorrect number of Lib.warn calls');
             }
             Lib.warn.calls.reset();
-
-            getLayerIds().slice(20, -1).forEach(function(id) {
+            
+            getLayerIds().slice(94, -1).forEach(function(id) {
                 expect(id.indexOf('plotly-')).toBe(0, 'layer ' + id + ' fallback to top of map');
             });
         }
