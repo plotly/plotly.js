@@ -1748,7 +1748,7 @@ describe('test mapbox trace/layout *below* interactions', function() {
                 fail('Incorrect number of Lib.warn calls');
             }
             Lib.warn.calls.reset();
-            
+
             getLayerIds().slice(94, -1).forEach(function(id) {
                 expect(id.indexOf('plotly-')).toBe(0, 'layer ' + id + ' fallback to top of map');
             });
