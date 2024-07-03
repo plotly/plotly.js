@@ -534,7 +534,7 @@ describe('mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     // TODO: mockWithLayers.layout.mapbox.layers array only has 1 entry
-    xit('@gl should be able to add, update and remove layers', function(done) {
+    it('@gl should be able to add, update and remove layers', function(done) {
         var mockWithLayers = require('../../image/mocks/mapbox_layers');
 
         var layer0 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[0]);
@@ -819,7 +819,7 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    xit('@gl should not wedge graph after reacting to invalid layer', function(done) {
+    it('@gl should not wedge graph after reacting to invalid layer', function(done) {
         Plotly.react(gd, [{type: 'scattermapbox'}], {
             mapbox: {
                 layers: [{ source: 'invalid' }]
@@ -1014,7 +1014,7 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    xit('@gl should not attempt to rehover over exiting subplots', function(done) {
+    it('@gl should not attempt to rehover over exiting subplots', function(done) {
         spyOn(Fx, 'hover').and.callThrough();
 
         function countHoverLabels() {
@@ -1726,7 +1726,7 @@ describe('test mapbox trace/layout *below* interactions', function() {
         .then(done, done.fail);
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
-    xit('@gl should be warn when *below* value does not correspond to a layer on the map', function(done) {
+    it('@gl should be warn when *below* value does not correspond to a layer on the map', function(done) {
         spyOn(Lib, 'warn');
 
         var notGonnaWork = 'not-gonna-work';
