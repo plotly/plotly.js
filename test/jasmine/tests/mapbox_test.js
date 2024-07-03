@@ -1726,7 +1726,7 @@ describe('test mapbox trace/layout *below* interactions', function() {
         .then(done, done.fail);
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
-    fit('@gl should be warn when *below* value does not correspond to a layer on the map', function(done) {
+    it('@gl should be warn when *below* value does not correspond to a layer on the map', function(done) {
         spyOn(Lib, 'warn');
 
         var notGonnaWork = 'not-gonna-work';
