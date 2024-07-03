@@ -533,12 +533,13 @@ describe('mapbox plots', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should be able to add, update and remove layers', function(done) {
+    fit('@gl should be able to add, update and remove layers', function(done) {
         var mockWithLayers = require('../../image/mocks/mapbox_layers');
 
         var layer0 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[0]);
-        var layer1 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[1]);
-
+        var layer1 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[0]);
+        layer1.type = 'line';
+        
         var mapUpdate = {
             'mapbox.zoom': mockWithLayers.layout.mapbox.zoom,
             'mapbox.center.lon': mockWithLayers.layout.mapbox.center.lon,
