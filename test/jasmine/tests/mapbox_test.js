@@ -835,15 +835,15 @@ describe('mapbox plots', function() {
             return Plotly.react(gd, [{type: 'scattermapbox'}], {
                 mapbox: {
                     layers: [{
-                        "source": {
-                          "name": "LIMADMIN",
-                          "type": "FeatureCollection",
-                          "features": []
+                        source: {
+                            name: 'LIMADMIN',
+                            type: 'FeatureCollection',
+                            features: []
                         },
-                        "type": "fill",
-                        "below": "water",
-                        "color": "#ece2f0",
-                        "opacity": 0.8
+                        type: 'fill',
+                        below: 'water',
+                        color: '#ece2f0',
+                        opacity: 0.8
                     }]
                 }
             });
@@ -1155,7 +1155,6 @@ describe('mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@noCI @gl should respect scrollZoom config option', function(done) {
-        
         var relayoutCnt = 0;
         var addOnGd = function() {
             gd.on('plotly_relayout', function() { relayoutCnt++; });
@@ -1172,7 +1171,6 @@ describe('mapbox plots', function() {
 
         var zoom = getMapInfo(gd).zoom;
         expect(zoom).toBeCloseTo(1.234);
-        var zoom0 = zoom;
 
         addOnGd();
 
@@ -1579,15 +1577,15 @@ describe('test mapbox trace/layout *below* interactions', function() {
             mapbox: {
                 style: 'basic',
                 layers: [{
-                    "source": {
-                      "name": "LIMADMIN",
-                      "type": "FeatureCollection",
-                      "features": []
+                    source: {
+                        name: 'LIMADMIN',
+                        type: 'FeatureCollection',
+                        features: []
                     },
-                    "type": "fill",
-                    "below": "water",
-                    "color": "#ece2f0",
-                    "opacity": 0.8
+                    type: 'fill',
+                    below: 'water',
+                    color: '#ece2f0',
+                    opacity: 0.8
                 }]
             }
         })
@@ -1774,16 +1772,16 @@ describe('test mapbox trace/layout *below* interactions', function() {
             mapbox: {
                 style: 'basic',
                 layers: [{
-                    "source": {
-                      "name": "LIMADMIN",
-                      "type": "FeatureCollection",
-                      "features": []
+                    source: {
+                        name: 'LIMADMIN',
+                        type: 'FeatureCollection',
+                        features: []
                     },
-                    "type": "fill",
-                    "below": "water",
-                    "color": "#ece2f0",
-                    "opacity": 0.8
-                  }]
+                    type: 'fill',
+                    below: 'water',
+                    color: '#ece2f0',
+                    opacity: 0.8
+                }]
             }
         })
         .then(function() {
