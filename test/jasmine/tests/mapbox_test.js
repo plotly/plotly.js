@@ -539,7 +539,7 @@ describe('mapbox plots', function() {
         var layer0 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[0]);
         var layer1 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[0]);
         layer1.type = 'line';
-        
+
         var mapUpdate = {
             'mapbox.zoom': mockWithLayers.layout.mapbox.zoom,
             'mapbox.center.lon': mockWithLayers.layout.mapbox.center.lon,
