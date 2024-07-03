@@ -68,6 +68,18 @@ exports.plot = function plot(gd) {
     }
 };
 
+exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldMapboxKeys = oldFullLayout._subplots[MAPBOX] || [];
+
+    for(var i = 0; i < oldMapboxKeys.length; i++) {
+        var oldMapboxKey = oldMapboxKeys[i];
+
+        if(!newFullLayout[oldMapboxKey] && !!oldFullLayout[oldMapboxKey]._subplot) {
+            oldFullLayout[oldMapboxKey]._subplot.destroy();
+        }
+    }
+};
+
 exports.toSVG = function(gd) {
     var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots[MAPBOX];
