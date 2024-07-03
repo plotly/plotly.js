@@ -187,7 +187,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     family: dfltFontFamily
                 },
                 noAutotickangles: axName === 'angularaxis',
-                noTicklabelrunoff: true,
+                noTicklabelshift: true,
                 noTicklabelstandoff: true
             });
 

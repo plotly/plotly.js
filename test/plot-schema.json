@@ -15154,7 +15154,7 @@
       "inside bottom"
      ]
     },
-    "ticklabelrunoff": {
+    "ticklabelshift": {
      "description": "Shifts the tick labels by the specified number of pixels in parallel to the axis. Positive values move the labels in the positive direction of the axis.",
      "dflt": 0,
      "editType": "ticks",
@@ -16475,7 +16475,7 @@
       "inside bottom"
      ]
     },
-    "ticklabelrunoff": {
+    "ticklabelshift": {
      "description": "Shifts the tick labels by the specified number of pixels in parallel to the axis. Positive values move the labels in the positive direction of the axis.",
      "dflt": 0,
      "editType": "ticks",

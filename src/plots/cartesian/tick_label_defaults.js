@@ -16,8 +16,8 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
-        if(!options.noTicklabelrunoff) {
-            coerce('ticklabelrunoff');
+        if(!options.noTicklabelshift) {
+            coerce('ticklabelshift');
         }
         if(!options.noTicklabelstandoff) {
             coerce('ticklabelstandoff');

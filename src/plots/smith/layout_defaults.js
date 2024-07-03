@@ -90,7 +90,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
             handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
                 noAutotickangles: true,
-                noTicklabelrunoff: true,
+                noTicklabelshift: true,
                 noTicklabelstandoff: true,
                 noTicklabelstep: true,
                 noAng: !isRealAxis,

@@ -93,7 +93,7 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     handlePrefixSuffixDefaults(containerIn, containerOut, coerce, 'linear');
     handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear', {
         noAutotickangles: true,
-        noTicklabelrunoff: true,
+        noTicklabelshift: true,
         noTicklabelstandoff: true
     });
     handleTickMarkDefaults(containerIn, containerOut, coerce,

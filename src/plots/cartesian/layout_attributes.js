@@ -698,7 +698,7 @@ module.exports = {
             'In other cases the default is *hide past div*.'
         ].join(' ')
     },
-    ticklabelrunoff: {
+    ticklabelshift: {
         valType: 'integer',
         dflt: 0,
         editType: 'ticks',
