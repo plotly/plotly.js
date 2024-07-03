@@ -1520,8 +1520,8 @@ describe('Test shapes', function() {
     function testPathDrag(dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
-        var x2p = helpers.getDataToPixel(gd, xa, layoutShape.xshift);
-        var y2p = helpers.getDataToPixel(gd, ya, layoutShape.yshift, true);
+        var x2p = helpers.getDataToPixel(gd, xa);
+        var y2p = helpers.getDataToPixel(gd, ya, undefined, true);
 
         var initialPath = layoutShape.path;
         var initialCoordinates = getPathCoordinates(initialPath, x2p, y2p);
@@ -1552,8 +1552,14 @@ describe('Test shapes', function() {
     function testShapeResize(direction, dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
-        var x2p = helpers.getDataToPixel(gd, xa, layoutShape.xshift);
-        var y2p = helpers.getDataToPixel(gd, ya, layoutShape.yshift, true);
+        var x2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, xa, shift, false);
+            return dataToPixel(v);
+        };
+        var y2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true);
+            return dataToPixel(v);
+        };
 
         var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
@@ -1596,8 +1602,14 @@ describe('Test shapes', function() {
 
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
-        var x2p = helpers.getDataToPixel(gd, xa, layoutShape.xshift);
-        var y2p = helpers.getDataToPixel(gd, ya, layoutShape.yshift, true);
+        var x2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, xa, shift);
+            return dataToPixel(v);
+        };
+        var y2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true);
+            return dataToPixel(v);
+        };
 
         promise = promise.then(function() {
             var dragHandle = pointToMove === 'start' ?
