@@ -699,6 +699,7 @@ module.exports = {
         ].join(' ')
     },
     drawminorticklabel: {
+        // In the future maybe add `arrayOk: true` for labeling several minor ticks, e.g. [-1, 0, 1]
         valType: 'integer',
         editType: 'calc',
         description: [
