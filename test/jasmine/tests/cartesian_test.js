@@ -609,7 +609,7 @@ describe('subplot creation / deletion:', function() {
         var fig = Lib.extendDeep({}, require('../../image/mocks/overlaying-axis-lines.json'));
 
         function _assert(xyCnt, x2y2Cnt) {
-            expect(d3Select('.subplot.xy').select('.plot').selectAll('.trace').size())
+            expect(d3Select('.subplot.xy').select('.overplot').select('.xy').selectAll('.trace').size())
                 .toBe(xyCnt, 'has correct xy subplot trace count');
             expect(d3Select('.overplot').select('.x2y2').selectAll('.trace').size())
                 .toBe(x2y2Cnt, 'has correct x2y2 oveylaid subplot trace count');
@@ -759,7 +759,7 @@ describe('subplot creation / deletion:', function() {
             _assert('x2/y2 both overlays', {
                 xtickParent: 'xaxislayer-above',
                 x2tickParent: 'x2y2-x',
-                trace0Parent: 'plot',
+                trace0Parent: 'xy',
                 trace1Parent: 'x2y2'
             });
         })
@@ -770,8 +770,8 @@ describe('subplot creation / deletion:', function() {
             _assert('x2 free / y2 overlaid', {
                 xtickParent: 'xaxislayer-above',
                 x2tickParent: 'xaxislayer-above',
-                trace0Parent: 'plot',
-                trace1Parent: 'plot'
+                trace0Parent: 'xy',
+                trace1Parent: 'x2y2'
             });
         })
         .then(function() {
@@ -781,7 +781,7 @@ describe('subplot creation / deletion:', function() {
             _assert('back to x2/y2 both overlays', {
                 xtickParent: 'xaxislayer-above',
                 x2tickParent: 'x2y2-x',
-                trace0Parent: 'plot',
+                trace0Parent: 'xy',
                 trace1Parent: 'x2y2'
             });
         })

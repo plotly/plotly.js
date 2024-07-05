@@ -3021,20 +3021,39 @@ axes.makeTransTickFn = function(ax) {
 
 axes.makeTransTickLabelFn = function(ax) {
     var uv = getTickLabelUV(ax);
+    var shift = ax.ticklabelshift || 0;
+    var standoff = ax.ticklabelstandoff || 0;
+
     var u = uv[0];
     var v = uv[1];
 
+    var isReversed = ax.range[0] > ax.range[1];
+    var labelsInside = ax.ticklabelposition && ax.ticklabelposition.indexOf('inside') !== -1;
+    var labelsOutside = !labelsInside;
+
+    if(shift) {
+        var shiftSign = isReversed ? -1 : 1;
+        shift = shift * shiftSign;
+    }
+    if(standoff) {
+        var side = ax.side;
+        var standoffSign = (
+            (labelsInside && (side === 'top' || side === 'left')) ||
+            (labelsOutside && (side === 'bottom' || side === 'right'))
+        ) ? 1 : -1;
+        standoff = standoff * standoffSign;
+    }
     return ax._id.charAt(0) === 'x' ?
         function(d) {
             return strTranslate(
-                u + ax._offset + ax.l2p(getPosX(d)),
-                v
+                u + ax._offset + ax.l2p(getPosX(d)) + shift,
+                v + standoff
             );
         } :
         function(d) {
             return strTranslate(
-                v,
-                u + ax._offset + ax.l2p(getPosX(d))
+                v + standoff,
+                u + ax._offset + ax.l2p(getPosX(d)) + shift
             );
         };
 };
