@@ -712,10 +712,13 @@ module.exports = {
         dflt: 0,
         editType: 'ticks',
         description: [
-            'Shifts the tick labels by the specified number of pixels orthogonally to the axis.',
-            'A positive `ticklabelstandoff` will move the labels farther away from the plot area',
-            'if `ticklabelposition` is "outside", and deeper into the plotarea if',
-            '`ticklabelposition` is "inside".'
+            'Sets the standoff distance (in px) between the axis tick labels and their default position.',
+            'A positive `ticklabelstandoff` moves the labels farther away from the plot area',
+            'if `ticklabelposition` is *outside*, and deeper into the plot area if',
+            '`ticklabelposition` is *inside*. A negative `ticklabelstandoff` works in the opposite',
+            'direction, moving outside ticks towards the plot area and inside ticks towards',
+            'the outside. If the negative value is large enough, inside ticks can even end up',
+            'outside and vice versa.'
         ].join(' ')
     },
     mirror: {
