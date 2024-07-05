@@ -4584,28 +4584,18 @@ function setShiftVal(ax, axShifts) {
  * @returns {boolean}
  */
 function periodCompatibleWithTickformat(period, tickformat) {
-    if(/%f/.test(tickformat)) {
-        if(period < ONEMICROSEC) return false;
-    } else if(/%L/.test(tickformat)) {
-        if(period < 1) return false;
-    } else if(/%[SX]/.test(tickformat)) {
-        if(period < ONESEC) return false;
-    } else if(/%M/.test(tickformat)) {
-        if(period < ONEMIN) return false;
-    } else if(/%[HI]/.test(tickformat)) {
-        if(period < ONEHOUR) return false;
-    } else if(/%p/.test(tickformat)) {
-        if(period < HALFDAY) return false;
-    } else if(/%[Aadejuwx]/.test(tickformat)) {
-        if(period < ONEDAY) return false;
-    } else if(/%[UVW]/.test(tickformat)) {
-        if(period < ONEWEEK) return false;
-    } else if(/%[Bbm]/.test(tickformat)) {
-        if(period < ONEMINMONTH) return false;
-    } else if(/%[q]/.test(tickformat)) {
-        if(period < ONEMINQUARTER) return false;
-    } else if(/%[Yy]/.test(tickformat)) {
-        if(period < ONEMINYEAR) return false;
-    }
-    return true;
+    return (
+        /%f/.test(tickformat) ? period >= ONEMICROSEC :
+        /%L/.test(tickformat) ? period >= 1 :
+        /%[SX]/.test(tickformat) ? period >= ONESEC :
+        /%M/.test(tickformat) ? period >= ONEMIN :
+        /%[HI]/.test(tickformat) ? period >= ONEHOUR :
+        /%p/.test(tickformat) ? period >= HALFDAY :
+        /%[Aadejuwx]/.test(tickformat) ? period >= ONEDAY :
+        /%[UVW]/.test(tickformat) ? period >= ONEWEEK :
+        /%[Bbm]/.test(tickformat) ? period >= ONEMINMONTH :
+        /%[q]/.test(tickformat) ? period >= ONEMINQUARTER :
+        /%[Yy]/.test(tickformat) ? period >= ONEMINYEAR :
+        true
+    );
 }
