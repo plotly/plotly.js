@@ -1109,7 +1109,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
         var majorTickIndices =
             allTickVals
-            .map(function(item, index) { return item.minor === undefined ? index : null; })
+            .map(function(item, index) {
+                return item.minor === undefined && !item.skipLabel ? index : null;
+            })
             .filter(function(index) { return index !== null; });
 
         majorTickIndices.forEach(function(majorIdx) {
