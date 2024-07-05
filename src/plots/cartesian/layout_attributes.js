@@ -703,6 +703,7 @@ module.exports = {
         valType: 'integer',
         editType: 'calc',
         description: [
+            'Only for date axes with `ticklabelmode` *period*.',
             'Instead of drawing the major tick label, draw the label for the minor tick',
             'that is n positions away from the major tick. E.g. to always draw the label for the',
             'minor tick before each major tick, choose `drawminorticklabel` -1'
