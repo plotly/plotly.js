@@ -2974,8 +2974,6 @@ axes.makeTransTickLabelFn = function(ax) {
     var u = uv[0];
     var v = uv[1];
 
-    var isXaxis = ax._id.charAt(0) === 'x';
-    var isYaxis = !isXaxis;
     var isReversed = ax.range[0] > ax.range[1];
     var labelsInside = ax.ticklabelposition && ax.ticklabelposition.indexOf('inside') !== -1;
     var labelsOutside = !labelsInside;
@@ -2985,14 +2983,14 @@ axes.makeTransTickLabelFn = function(ax) {
         shift = shift * shiftSign;
     }
     if(standoff) {
-        var standoffSign =
-            isXaxis && ax.side === 'bottom' && labelsOutside ||
-            isXaxis && ax.side === 'top' && labelsInside ||
-            isYaxis && ax.side === 'right' && labelsOutside ||
-            isYaxis && ax.side === 'left' && labelsInside ? 1 : -1;
+        var side = ax.side;
+        var standoffSign = (
+            (labelsInside && (side === 'top' || side === 'left')) ||
+            (labelsOutside && (side === 'bottom' || side === 'right'))
+        ) ? 1 : -1;
         standoff = standoff * standoffSign;
     }
-    return isXaxis ?
+    return ax._id.charAt(0) === 'x' ?
         function(d) {
             return strTranslate(
                 u + ax._offset + ax.l2p(getPosX(d)) + shift,
