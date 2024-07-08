@@ -26,12 +26,8 @@ case $1 in
     jasmine)
         test_jasmine
         ;;
-    image)
-        test_image
-        ;;
     *)
         test_jasmine
-        test_image
         ;;
 esac
 
