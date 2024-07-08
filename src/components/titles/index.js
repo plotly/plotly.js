@@ -239,8 +239,9 @@ function draw(gd, titleClass, options) {
             var titleElMathGroup = group.select('.' + titleClass + '-math-group');
             var titleElMathHeight = titleElMathGroup.node() ? titleElMathGroup.node().getBBox().height : 0;
             var subtitleShift = titleElMathHeight ? titleElMathHeight + MATHJAX_PADDING_BOTTOM : titleElHeight;
-            var subtitleAttributes = Object.assign({}, attributes);
-            subtitleAttributes.y += subtitleShift;
+            var subtitleAttributes = Lib.extendFlat({}, attributes, {
+              y: subtitleShift + attributes.y
+            });
 
             subtitleEl.attr('transform', transformVal);
             subtitleEl.style('opacity', subtitleOpacity * Color.opacity(subFontColor))
