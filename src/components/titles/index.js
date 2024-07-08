@@ -77,7 +77,7 @@ function draw(gd, titleClass, options) {
 
     // Get subtitle properties
     var subtitleProp = options.subtitlePropName;
-    var subtitleEnabled = !!(subtitleProp);
+    var subtitleEnabled = !!subtitleProp;
     var subtitlePlaceholder = options.subtitlePlaceholder;
     var subtitle = (cont.title || {}).subtitle;
     var subtitleTxt = (subtitle && subtitle.text ? subtitle.text : '').trim();
