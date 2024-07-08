@@ -20,7 +20,6 @@ globalFont.family.dflt = '"Open Sans", verdana, arial, sans-serif';
 globalFont.size.dflt = 12;
 globalFont.color.dflt = colorAttrs.defaultLine;
 
-
 module.exports = {
     font: globalFont,
     title: {
