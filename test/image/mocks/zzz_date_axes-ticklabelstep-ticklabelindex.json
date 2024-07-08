@@ -158,7 +158,7 @@
       },
       "tickcolor": "red",
       "ticklabelmode": "period",
-      "drawminorticklabel": 4,
+      "ticklabelindex": 4,
       "anchor": "y"
     },
     "xaxis2": {
@@ -170,7 +170,7 @@
       "tickcolor": "red",
       "ticklabelmode": "period",
       "anchor": "y2",
-      "drawminorticklabel": 1
+      "ticklabelindex": 1
     },
     "xaxis3": {
       "ticklabelstep": 2,
@@ -181,7 +181,7 @@
       "tickcolor": "red",
       "ticklabelmode": "period",
       "anchor": "y3",
-      "drawminorticklabel": 1
+      "ticklabelindex": 1
     },
     "xaxis4": {
       "ticklabelstep": 2,
@@ -192,7 +192,7 @@
       "tickcolor": "red",
       "ticklabelmode": "period",
       "anchor": "y4",
-      "drawminorticklabel": 1
+      "ticklabelindex": 1
     },
     "xaxis5": {
       "ticklabelstep": 2,
@@ -203,7 +203,7 @@
       "tickcolor": "red",
       "ticklabelmode": "period",
       "anchor": "y5",
-      "drawminorticklabel": -2
+      "ticklabelindex": -2
     },
     "xaxis6": {
       "ticklabelstep": 2,
@@ -214,7 +214,7 @@
       "tickcolor": "red",
       "ticklabelmode": "period",
       "anchor": "y6",
-      "drawminorticklabel": 2
+      "ticklabelindex": 2
     },
     "xaxis7": {
       "ticklabelstep": 2,
@@ -225,7 +225,7 @@
       "tickcolor": "red",
       "ticklabelmode": "period",
       "anchor": "y7",
-      "drawminorticklabel": -3
+      "ticklabelindex": -3
     }
   }
 }

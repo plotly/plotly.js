@@ -59,8 +59,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
-    if(!options.noDrawminorticklabel && axType === 'date' && containerOut.ticklabelmode === 'period') {
-        coerce('drawminorticklabel');
+    if(!options.noTicklabelindex && axType === 'date' && containerOut.ticklabelmode === 'period') {
+        coerce('ticklabelindex');
     }
 
     var ticklabelposition = '';

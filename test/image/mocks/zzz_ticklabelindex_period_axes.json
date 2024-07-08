@@ -147,7 +147,7 @@
     "bargap": 0.1,
     "xaxis": {
       "title": {
-        "text": "xaxis: `drawminorticklabel` is ignored because tickformat is incompatible with minor ticks"
+        "text": "xaxis: `ticklabelindex` is ignored because tickformat is incompatible with minor ticks"
       },
       "dtick": "M12",
       "minor": {
@@ -158,7 +158,7 @@
       },
       "tickformat": "%Y",
       "ticklabelmode": "period",
-      "drawminorticklabel": -1,
+      "ticklabelindex": -1,
       "ticklen": 18,
       "type": "date"
     },
@@ -174,7 +174,7 @@
         "ticks": "outside"
       },
       "tickformat": "%b %Y",
-      "drawminorticklabel": -1,
+      "ticklabelindex": -1,
       "tickangle": 90,
       "ticklabelmode": "period",
       "ticklen": 18,

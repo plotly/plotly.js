@@ -909,7 +909,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var calendar = ax.calendar;
     var ticklabelstep = ax.ticklabelstep;
     var isPeriod = ax.ticklabelmode === 'period';
-    var drawMinorTickLabel = ax.drawminorticklabel;
+    var ticklabelIndex = ax.ticklabelindex;
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
@@ -923,7 +923,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var tickVals = [];
     var minorTickVals = [];
     // all ticks for which labels are drawn which is not necessarily the major ticks when
-    // `drawminorticklabel` is set.
+    // `ticklabelindex` is set.
     var labelTickVals = [];
 
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
@@ -1079,20 +1079,20 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    // check if drawMinorTickLabel makes sense, otherwise ignore it
+    // check if ticklabelIndex makes sense, otherwise ignore it
     if(!minorTickVals || minorTickVals.length < 2) {
-        drawMinorTickLabel = false;
+        ticklabelIndex = false;
     } else {
         var diff = minorTickVals[1].value - minorTickVals[0].value;
         if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
-            drawMinorTickLabel = false;
+            ticklabelIndex = false;
         }
     }
     // Determine for which ticks to draw labels
-    if(!drawMinorTickLabel) {
+    if (!ticklabelIndex) {
         labelTickVals = tickVals;
     } else {
-        // Collect and sort all major and minor ticks, to find the minor ticks `drawMinorTickLabel`
+        // Collect and sort all major and minor ticks, to find the minor ticks `ticklabelIndex`
         // steps away from each major tick. For those minor ticks we want to draw the label.
 
         var allTickVals = tickVals.concat(minorTickVals);
@@ -1115,7 +1115,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             .filter(function(index) { return index !== null; });
 
         majorTickIndices.forEach(function(majorIdx) {
-            var minorIdx = majorIdx + drawMinorTickLabel;
+            var minorIdx = majorIdx + ticklabelIndex;
             if(minorIdx >= 0 && minorIdx < allTickVals.length) {
                 labelTickVals.push(allTickVals[minorIdx]);
             }
@@ -1239,7 +1239,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         var _value = tickVals[i].value;
 
         if(_minor) {
-            if(drawMinorTickLabel && labelTickVals.indexOf(tickVals[i]) !== -1) {
+            if (ticklabelIndex && labelTickVals.indexOf(tickVals[i]) !== -1) {
                 t = setTickLabel(ax, tickVals[i]);
             } else {
                 t = { x: _value };
@@ -1250,7 +1250,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             lastVisibleHead = ax._prevDateHead;
             t = setTickLabel(ax, tickVals[i]);
             if(tickVals[i].skipLabel ||
-                drawMinorTickLabel && labelTickVals.indexOf(tickVals[i]) === -1) {
+                ticklabelIndex && labelTickVals.indexOf(tickVals[i]) === -1) {
                 hideLabel(t);
             }
 

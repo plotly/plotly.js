@@ -721,7 +721,7 @@ module.exports = {
             'outside and vice versa.'
         ].join(' ')
     },
-    drawminorticklabel: {
+    ticklabelindex: {
         // In the future maybe add `arrayOk: true` for labeling several minor ticks, e.g. [-1, 0, 1]
         valType: 'integer',
         editType: 'calc',
@@ -729,7 +729,7 @@ module.exports = {
             'Only for date axes with `ticklabelmode` *period*.',
             'Instead of drawing the major tick label, draw the label for the minor tick',
             'that is n positions away from the major tick. E.g. to always draw the label for the',
-            'minor tick before each major tick, choose `drawminorticklabel` -1'
+            'minor tick before each major tick, choose `ticklabelindex` -1'
         ].join(' ')
     },
     mirror: {

@@ -139,7 +139,7 @@
             ],
             "ticklabelmode": "period",
             "tickformat": "%b %d, %Y",
-            "drawminorticklabel": 1,
+            "ticklabelindex": 1,
             "tickangle": 30
         },
         "xaxis2": {
@@ -152,7 +152,7 @@
             ],
             "ticklabelmode": "period",
             "anchor": "y2",
-            "drawminorticklabel": -1,
+            "ticklabelindex": -1,
             "tickangle": 20
         },
         "xaxis3": {
@@ -165,7 +165,7 @@
             ],
             "ticklabelmode": "period",
             "anchor": "y3",
-            "drawminorticklabel": 2,
+            "ticklabelindex": 2,
             "tickangle": 20
         },
         "xaxis4": {
@@ -178,7 +178,7 @@
             ],
             "ticklabelmode": "period",
             "anchor": "y4",
-            "drawminorticklabel": 1,
+            "ticklabelindex": 1,
             "tickangle": 20
         },
         "xaxis5": {
@@ -191,7 +191,7 @@
             ],
             "ticklabelmode": "period",
             "anchor": "y5",
-            "drawminorticklabel": -1,
+            "ticklabelindex": -1,
             "tickangle": 20
         },
         "xaxis6": {
@@ -204,7 +204,7 @@
             ],
             "ticklabelmode": "period",
             "anchor": "y6",
-            "drawminorticklabel": 2,
+            "ticklabelindex": 2,
             "tickangle": 20
         },
         "xaxis7": {
@@ -217,7 +217,7 @@
             ],
             "ticklabelmode": "period",
             "anchor": "y7",
-            "drawminorticklabel": -2,
+            "ticklabelindex": -2,
             "tickangle": 20
         }
     }
