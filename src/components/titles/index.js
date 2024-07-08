@@ -171,12 +171,12 @@ function draw(gd, titleClass, options) {
     if(!elShouldExist) return group;
 
     function titleLayout(titleEl, subtitleEl) {
-        Lib.syncOrAsync([drawTitle, scootTitle], { t: titleEl, st: subtitleEl });
+        Lib.syncOrAsync([drawTitle, scootTitle], { title: titleEl, subtitle: subtitleEl });
     }
 
     function drawTitle(titleAndSubtitleEls) {
-        var titleEl = titleAndSubtitleEls.t;
-        var subtitleEl = titleAndSubtitleEls.st;
+        var titleEl = titleAndSubtitleEls.title;
+        var subtitleEl = titleAndSubtitleEls.subtitle;
 
         var transformVal;
 
@@ -240,7 +240,7 @@ function draw(gd, titleClass, options) {
             var titleElMathHeight = titleElMathGroup.node() ? titleElMathGroup.node().getBBox().height : 0;
             var subtitleShift = titleElMathHeight ? titleElMathHeight + MATHJAX_PADDING_BOTTOM : titleElHeight;
             var subtitleAttributes = Lib.extendFlat({}, attributes, {
-              y: subtitleShift + attributes.y
+                y: subtitleShift + attributes.y
             });
 
             subtitleEl.attr('transform', transformVal);
@@ -264,7 +264,7 @@ function draw(gd, titleClass, options) {
     }
 
     function scootTitle(titleAndSubtitleEls) {
-        var titleElIn = titleAndSubtitleEls.t;
+        var titleElIn = titleAndSubtitleEls.title;
         var titleGroup = d3.select(titleElIn.node().parentNode);
 
         if(avoid && avoid.selection && avoid.side && txt) {
