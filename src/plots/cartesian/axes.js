@@ -31,6 +31,7 @@ var HALFDAY = ONEDAY / 2;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
+var ONEMILLI = constants.ONEMILLI;
 var ONEMICROSEC = constants.ONEMICROSEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
@@ -4607,7 +4608,7 @@ function setShiftVal(ax, axShifts) {
 function periodCompatibleWithTickformat(period, tickformat) {
     return (
         /%f/.test(tickformat) ? period >= ONEMICROSEC :
-        /%L/.test(tickformat) ? period >= 1 :
+        /%L/.test(tickformat) ? period >= ONEMILLI :
         /%[SX]/.test(tickformat) ? period >= ONESEC :
         /%M/.test(tickformat) ? period >= ONEMIN :
         /%[HI]/.test(tickformat) ? period >= ONEHOUR :

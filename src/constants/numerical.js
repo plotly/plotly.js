@@ -37,6 +37,7 @@ module.exports = {
     ONEHOUR: 3600000,
     ONEMIN: 60000,
     ONESEC: 1000,
+    ONEMILLI: 1,
     ONEMICROSEC: 0.001,
     /*
      * For fast conversion btwn world calendars and epoch ms, the Julian Day Number
