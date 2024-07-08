@@ -247,7 +247,7 @@ function draw(gd, titleClass, options) {
             subtitleEl.style('opacity', subtitleOpacity * Color.opacity(subFontColor))
             .call(Drawing.font, {
                 color: Color.rgb(subFontColor),
-                size: d3.round(subFontSize * 0.8, 2),
+                size: d3.round(subFontSize, 2),
                 family: subFontFamily,
                 weight: subFontWeight,
                 style: subFontStyle,

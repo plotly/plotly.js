@@ -1498,7 +1498,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('title.subtitle.text', layoutOut._dfltTitle.plotsubtitle);
     Lib.coerceFont(coerce, 'title.subtitle.font', font, {
         overrideDflt: {
-            size: Math.round(fontSize * 1.2)
+            size: Math.round(layoutOut.title.font.size * 0.65)
         }
     });
 
