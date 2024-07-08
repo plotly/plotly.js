@@ -316,7 +316,7 @@ plots.supplyDefaults = function(gd, opts) {
     // When editable=false the two behave the same, no title is drawn.
     newFullLayout._dfltTitle = {
         plot: _(gd, 'Click to enter Plot title'),
-        plotsubtitle: _(gd, 'Click to enter Plot subtitle'),
+        subtitle: _(gd, 'Click to enter Plot subtitle'),
         x: _(gd, 'Click to enter X axis title'),
         y: _(gd, 'Click to enter Y axis title'),
         colorbar: _(gd, 'Click to enter Colorscale title'),
@@ -1495,7 +1495,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('title.y');
     coerce('title.yanchor');
 
-    coerce('title.subtitle.text', layoutOut._dfltTitle.plotsubtitle);
+    coerce('title.subtitle.text', layoutOut._dfltTitle.subtitle);
     Lib.coerceFont(coerce, 'title.subtitle.font', font, {
         overrideDflt: {
             size: Math.round(layoutOut.title.font.size * 0.7)
