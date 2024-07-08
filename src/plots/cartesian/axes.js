@@ -1090,7 +1090,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
     // Determine for which ticks to draw labels
-    if (!ticklabelIndex) {
+    if(!ticklabelIndex) {
         labelTickVals = tickVals;
     } else {
         // Collect and sort all major and minor ticks, to find the minor ticks `ticklabelIndex`
@@ -1240,7 +1240,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         var _value = tickVals[i].value;
 
         if(_minor) {
-            if (ticklabelIndex && labelTickVals.indexOf(tickVals[i]) !== -1) {
+            if(ticklabelIndex && labelTickVals.indexOf(tickVals[i]) !== -1) {
                 t = setTickLabel(ax, tickVals[i]);
             } else {
                 t = { x: _value };
