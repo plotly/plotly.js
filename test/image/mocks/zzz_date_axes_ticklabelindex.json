@@ -102,123 +102,115 @@
     "width": 600,
     "height": 500,
     "yaxis": {
-      "ticklabelstep": 2,
       "domain": [
         0,
         0.04
       ]
     },
     "yaxis2": {
-      "ticklabelstep": 2,
       "domain": [
         0.16,
         0.2
       ]
     },
     "yaxis3": {
-      "ticklabelstep": 2,
       "domain": [
         0.32,
         0.36
       ]
     },
     "yaxis4": {
-      "ticklabelstep": 2,
       "domain": [
         0.48,
         0.52
       ]
     },
     "yaxis5": {
-      "ticklabelstep": 2,
       "domain": [
         0.64,
         0.68
       ]
     },
     "yaxis6": {
-      "ticklabelstep": 2,
       "domain": [
         0.80,
         0.84
       ]
     },
     "yaxis7": {
-      "ticklabelstep": 2,
       "domain": [
         0.96,
         1
       ]
     },
     "xaxis": {
-      "ticklabelstep": 2,
+      "ticks": "outside",
+      "tickcolor": "red",
       "minor": {
         "ticks": "outside",
         "tickcolor": "black"
       },
-      "tickcolor": "red",
-      "ticklabelindex": 4,
-      "anchor": "y"
+      "ticklabelindex": 2
     },
     "xaxis2": {
-      "ticklabelstep": 2,
+      "anchor": "y2",
+      "ticks": "outside",
+      "tickcolor": "red",
       "minor": {
         "ticks": "outside",
         "tickcolor": "black"
       },
-      "tickcolor": "red",
-      "anchor": "y2",
       "ticklabelindex": 1
     },
     "xaxis3": {
-      "ticklabelstep": 2,
+      "anchor": "y3",
+      "ticks": "outside",
+      "tickcolor": "red",
       "minor": {
         "ticks": "outside",
         "tickcolor": "black"
       },
-      "tickcolor": "red",
-      "anchor": "y3",
-      "ticklabelindex": 1
+      "ticklabelindex": -1
     },
     "xaxis4": {
-      "ticklabelstep": 2,
+      "anchor": "y4",
+      "ticks": "outside",
+      "tickcolor": "red",
       "minor": {
         "ticks": "outside",
         "tickcolor": "black"
       },
-      "tickcolor": "red",
-      "anchor": "y4",
       "ticklabelindex": 3
     },
     "xaxis5": {
-      "ticklabelstep": 2,
-      "minor": {
-        "ticks": "outside",
-        "tickcolor": "black"
-      },
-      "tickcolor": "red",
       "anchor": "y5",
-      "ticklabelindex": -2
-    },
-    "xaxis6": {
-      "ticklabelstep": 2,
+      "ticks": "outside",
+      "tickcolor": "red",
       "minor": {
         "ticks": "outside",
         "tickcolor": "black"
       },
-      "tickcolor": "red",
-      "anchor": "y6",
       "ticklabelindex": 2
     },
-    "xaxis7": {
-      "ticklabelstep": 2,
+    "xaxis6": {
+      "anchor": "y6",
+      "ticks": "outside",
+      "tickcolor": "red",
       "minor": {
         "ticks": "outside",
         "tickcolor": "black"
       },
-      "tickcolor": "red",
+      "ticklabelindex": -2
+    },
+    "xaxis7": {
       "anchor": "y7",
-      "ticklabelindex": -3
+      "ticks": "outside",
+      "tickcolor": "red",
+      "minor": {
+        "ticks": "outside",
+        "tickcolor": "black"
+      },
+      "ticklabelindex": 4
     }
   }
 }

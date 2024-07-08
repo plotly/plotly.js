@@ -59,7 +59,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
-    if(!options.noTicklabelindex && axType === 'date' && containerOut.ticklabelmode === 'period') {
+    if(!options.noTicklabelindex && (axType === 'date' || axType === 'linear')) {
         coerce('ticklabelindex');
     }
 
