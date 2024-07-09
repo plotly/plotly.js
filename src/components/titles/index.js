@@ -14,7 +14,7 @@ var interactConstants = require('../../constants/interactions');
 
 var OPPOSITE_SIDE = require('../../constants/alignment').OPPOSITE_SIDE;
 var numStripRE = / [XY][0-9]* /;
-var MATHJAX_PADDING_MULTIPLIER = 0.83;
+var MATHJAX_PADDING_MULTIPLIER = 0.85;
 var EXTRA_SPACING_BETWEEN_TITLE_AND_SUBTITLE = 0;
 
 /**
