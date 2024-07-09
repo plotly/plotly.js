@@ -911,7 +911,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var ticklabelstep = ax.ticklabelstep;
     var isPeriod = ax.ticklabelmode === 'period';
     var isReversed = ax.range[0] > ax.range[1];
-    var ticklabelIndex = (Array.isArray(ax.ticklabelindex) || !ax.ticklabelindex) ?
+    var ticklabelIndex = (Lib.isArrayOrTypedArray(ax.ticklabelindex) || !ax.ticklabelindex) ?
         ax.ticklabelindex : [ax.ticklabelindex];
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
     var axrev = (rng[1] < rng[0]);
