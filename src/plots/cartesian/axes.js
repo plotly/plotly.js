@@ -911,7 +911,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var ticklabelstep = ax.ticklabelstep;
     var isPeriod = ax.ticklabelmode === 'period';
     var isReversed = ax.range[0] > ax.range[1];
-    var ticklabelIndex = ax.ticklabelindex;
+    var ticklabelIndex = (Array.isArray(ax.ticklabelindex) || !ax.ticklabelindex) ?
+        ax.ticklabelindex : [ax.ticklabelindex];
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
@@ -1117,11 +1118,17 @@ axes.calcTicks = function calcTicks(ax, opts) {
             })
             .filter(function(index) { return index !== null; });
 
+        var uniqueIndices = []; // ensure that each label is only drawn once
         majorTickIndices.forEach(function(majorIdx) {
-            var minorIdx = majorIdx + ticklabelIndex;
-            if(minorIdx >= 0 && minorIdx < allTickVals.length) {
-                labelTickVals.push(allTickVals[minorIdx]);
-            }
+            ticklabelIndex.map(function(nextLabelIdx) {
+                var minorIdx = majorIdx + nextLabelIdx;
+                if(uniqueIndices.indexOf(minorIdx) === -1) {
+                    uniqueIndices.push(minorIdx);
+                    if(minorIdx >= 0 && minorIdx < allTickVals.length) {
+                        labelTickVals.push(allTickVals[minorIdx]);
+                    }
+                }
+            });
         });
     }
 

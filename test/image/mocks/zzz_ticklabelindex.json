@@ -164,7 +164,7 @@
     },
     "xaxis2": {
       "title": {
-        "text": "xaxis2: Period before each major tick is labeled"
+        "text": "xaxis2: Period before, after each major tick and in the center between major ticks are labeled"
       },
       "dtick": "M12",
       "minor": {
@@ -175,7 +175,7 @@
       },
       "tickformat": "%b %Y",
       "autorange": "reversed",
-      "ticklabelindex": -1,
+      "ticklabelindex": [-1, 0, 6],
       "tickangle": 90,
       "ticklabelmode": "period",
       "ticklen": 18,

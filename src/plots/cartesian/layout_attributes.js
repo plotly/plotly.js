@@ -722,8 +722,8 @@ module.exports = {
         ].join(' ')
     },
     ticklabelindex: {
-        // In the future maybe add `arrayOk: true` for labeling several minor ticks, e.g. [-1, 0, 1]
         valType: 'integer',
+        arrayOk: true,
         editType: 'calc',
         description: [
             'Only for axes with `type` *date* or *linear*.',
