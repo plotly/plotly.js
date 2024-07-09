@@ -136,7 +136,7 @@ function draw(gd, titleClass, options) {
         txt = Lib.templateString(txt, fullLayout._meta);
     }
 
-    var elShouldExist = txt || editable;
+    var elShouldExist = txt || subtitleTxt || editable;
 
     var hColorbarMoveTitle;
     if(!group) {
@@ -158,9 +158,9 @@ function draw(gd, titleClass, options) {
 
     var subtitleEl = null;
     var subtitleClass = titleClass + '-subtitle';
+    var subtitleElShouldExist = subtitleTxt || editable;
 
-    if(subtitleEnabled && (subtitleTxt || editable)) {
-        var subtitleElShouldExist = subtitleTxt || editable;
+    if(subtitleEnabled && subtitleElShouldExist) {
         subtitleEl = group.selectAll('text.' + subtitleClass)
             .data(subtitleElShouldExist ? [0] : []);
         subtitleEl.enter().append('text');
