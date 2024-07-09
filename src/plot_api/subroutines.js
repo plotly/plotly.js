@@ -410,7 +410,7 @@ exports.drawMainTitle = function(gd) {
         propName: 'title.text',
         subtitlePropName: 'title.subtitle.text',
         placeholder: fullLayout._dfltTitle.plot,
-        subtitlePlaceholder: fullLayout._dfltTitle.plotsubtitle,
+        subtitlePlaceholder: fullLayout._dfltTitle.subtitle,
         attributes: ({
             x: x,
             y: y,
