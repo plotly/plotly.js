@@ -910,6 +910,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var calendar = ax.calendar;
     var ticklabelstep = ax.ticklabelstep;
     var isPeriod = ax.ticklabelmode === 'period';
+    var isReversed = ax.range[0] > ax.range[1];
     var ticklabelIndex = ax.ticklabelindex;
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
     var axrev = (rng[1] < rng[0]);
@@ -1084,7 +1085,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     if(!minorTickVals || minorTickVals.length < 2) {
         ticklabelIndex = false;
     } else {
-        var diff = minorTickVals[1].value - minorTickVals[0].value;
+        var diff = (minorTickVals[1].value - minorTickVals[0].value) * (isReversed ? -1 : 1);
         if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
             ticklabelIndex = false;
         }
@@ -1101,6 +1102,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             // first major tick was just added for period handling
             allTickVals = allTickVals.slice(1);
         }
+
         allTickVals =
             allTickVals
             .sort(function(a, b) { return a.value - b.value; })
