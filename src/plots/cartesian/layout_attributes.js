@@ -729,7 +729,9 @@ module.exports = {
             'Only for axes with `type` *date* or *linear*.',
             'Instead of drawing the major tick label, draw the label for the minor tick',
             'that is n positions away from the major tick. E.g. to always draw the label for the',
-            'minor tick before each major tick, choose `ticklabelindex` -1'
+            'minor tick before each major tick, choose `ticklabelindex` -1. This is useful for date',
+            'axes with `ticklabelmode` *period* if you want to label the period that ends with each',
+            'major tick instead of the period that begins there.'
         ].join(' ')
     },
     mirror: {
