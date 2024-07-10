@@ -722,6 +722,8 @@ module.exports = {
         ].join(' ')
     },
     ticklabelindex: {
+        // in the future maybe add `extras: ['all', 'minor']` to allow showing labels for all ticks
+        // or for all minor ticks.
         valType: 'integer',
         arrayOk: true,
         editType: 'calc',
