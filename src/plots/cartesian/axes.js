@@ -1118,15 +1118,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
             })
             .filter(function(index) { return index !== null; });
 
-        var uniqueIndices = []; // ensure that each label is only drawn once
         majorTickIndices.forEach(function(majorIdx) {
             ticklabelIndex.map(function(nextLabelIdx) {
                 var minorIdx = majorIdx + nextLabelIdx;
-                if(uniqueIndices.indexOf(minorIdx) === -1) {
-                    uniqueIndices.push(minorIdx);
-                    if(minorIdx >= 0 && minorIdx < allTickVals.length) {
-                        allTicklabelVals.push(allTickVals[minorIdx]);
-                    }
+                if(minorIdx >= 0 && minorIdx < allTickVals.length) {
+                    Lib.pushUnique(allTicklabelVals, allTickVals[minorIdx]);
                 }
             });
         });
@@ -1224,7 +1220,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     tickVals = tickVals.concat(minorTickVals);
 
     function setTickLabel(ax, tickVal) {
-        var t = axes.tickText(
+        var text = axes.tickText(
             ax,
             tickVal.value,
             false, // hover
@@ -1232,15 +1228,15 @@ axes.calcTicks = function calcTicks(ax, opts) {
         );
         var p = tickVal.periodX;
         if(p !== undefined) {
-            t.periodX = p;
+            text.periodX = p;
             if(p > maxRange || p < minRange) { // hide label if outside the range
-                if(p > maxRange) t.periodX = maxRange;
-                if(p < minRange) t.periodX = minRange;
+                if(p > maxRange) text.periodX = maxRange;
+                if(p < minRange) text.periodX = minRange;
 
-                hideLabel(t);
+                hideLabel(text);
             }
         }
-        return t;
+        return text;
     }
 
     var t;
