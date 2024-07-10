@@ -62,16 +62,6 @@
                 "x1shift": -0.25,
                 "yref": "paper"
             }
-        ],
-        "selections": [
-            {
-                "x0": 0,
-                "x1": 3,
-                "y0": 1,
-                "y1": 3,
-                "x0shift": -0.5,
-                "x1shift": 0.5
-            }
         ]
     }
 }

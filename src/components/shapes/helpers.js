@@ -287,7 +287,7 @@ function convertPath(options, x2p, y2p) {
 function getPixelShift(axis, shift) {
     shift = shift || 0;
     var shiftPixels = 0;
-    if(axis) {
+    if(axis && shift) {
         var isVertical = axis._id.charAt(0) === 'y';
         if(axis.type === 'category' || axis.type === 'multicategory') {
             if(isVertical) {

@@ -70,11 +70,6 @@ function handleSelectionDefaults(selectionIn, selectionOut, fullLayout) {
 
         // Coerce x0, x1, y0, y1
         if(noPath) {
-            if(ax.type === 'category' || ax.type === 'multicategory') {
-                coerce(axLetter + '0shift');
-                coerce(axLetter + '1shift');
-            }
-
             // hack until V3.0 when log has regular range behavior - make it look like other
             // ranges to send to coerce, then put it back after
             // this is all to give reasonable default position behavior on log axes, which is
