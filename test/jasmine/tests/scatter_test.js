@@ -1,12 +1,12 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-var Scatter = require('@src/traces/scatter');
-var makeBubbleSizeFn = require('@src/traces/scatter/make_bubble_size_func');
-var linePoints = require('@src/traces/scatter/line_points');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
+var Scatter = require('../../../src/traces/scatter');
+var makeBubbleSizeFn = require('../../../src/traces/scatter/make_bubble_size_func');
+var linePoints = require('../../../src/traces/scatter/line_points');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
 
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
@@ -19,7 +19,7 @@ var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
 var checkEventData = require('../assets/check_event_data');
 var checkTextTemplate = require('../assets/check_texttemplate');
-var constants = require('@src/traces/scatter/constants');
+var constants = require('../../../src/traces/scatter/constants');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -1035,6 +1035,27 @@ describe('end-to-end scatter tests', function() {
         .then(done, done.fail);
     });
 
+    it('updates line segments on redraw when having null values', function(done) {
+        function checkSegments(exp, msg) {
+            var lineSelection = d3Select(gd).selectAll('.scatterlayer .js-line');
+            expect(lineSelection.size()).toBe(exp, msg);
+        }
+
+        Plotly.newPlot(gd, [{
+            y: [1, null, 2, 3],
+            mode: 'lines+markers'
+        }])
+        .then(function() {
+            checkSegments(2, 'inital');
+
+            return Plotly.relayout(gd, 'xaxis.range', [0, 10]);
+        })
+        .then(function() {
+            checkSegments(2, 'after redraw');
+        })
+        .then(done, done.fail);
+    });
+
     it('correctly autoranges fill tonext traces across multiple subplots', function(done) {
         Plotly.newPlot(gd, [
             {y: [3, 4, 5], fill: 'tonexty'},
@@ -1275,7 +1296,7 @@ describe('stacked area', function() {
 
     beforeEach(function() { gd = createGraphDiv(); });
     afterEach(destroyGraphDiv);
-    var mock = require('@mocks/stacked_area');
+    var mock = require('../../image/mocks/stacked_area');
 
     it('updates ranges correctly when traces are toggled', function(done) {
         function checkRanges(ranges, msg) {
@@ -1449,7 +1470,7 @@ describe('scatter hoverPoints', function() {
 
     it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
         var gd = createGraphDiv();
-        var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
 
         Plotly.newPlot(gd, mock).then(function() {
             var pts = _hover(gd, 0, 1, 'x');
@@ -1488,6 +1509,176 @@ describe('scatter hoverPoints', function() {
             expect(pts[0].text).toEqual('apple', 'hover text');
             expect(pts[1].text).toEqual('banana', 'hover text');
             expect(pts[2].text).toEqual('orange', 'hover text');
+        })
+        .then(done, done.fail);
+    });
+});
+
+describe('scatter hoverFills', function() {
+    afterEach(destroyGraphDiv);
+
+    function _hover(gd, xval, yval, hovermode, subplotId) {
+        return gd._fullData.map(function(trace, i) {
+            var cd = gd.calcdata[i];
+            var subplot = gd._fullLayout._plots[subplotId];
+
+            var out = Scatter.hoverPoints({
+                index: false,
+                distance: 20,
+                cd: cd,
+                trace: trace,
+                xa: subplot.xaxis,
+                ya: subplot.yaxis
+            }, xval, yval, hovermode);
+
+            return Array.isArray(out) ? out[0] : null;
+        });
+    }
+
+    it('should correctly detect the fill that is hovered over for self and next fills', function(done) {
+        var gd = createGraphDiv();
+        var mock = Lib.extendDeep({}, require('../../image/mocks/scatter_fill_self_next'));
+
+        var testPoints = [
+            [[2, 2.9], [2, 2], [1.1, 2], [5.99, 3.01], [4.6, 3.5]],
+            [[2, 3.1], [-0.2, 1.1], [5, 2.99], [7, 2], [1.2, 5.1]],
+            [[6, 5], [7, 6], [8, 5], [7, 5], [6.7, 5.3]]
+        ];
+
+        Plotly.newPlot(gd, mock).then(function() {
+            return Plotly.restyle(gd, 'hoveron', 'fills');
+        })
+        .then(function() {
+            for(var i = 0; i < testPoints.length; i++) {
+                for(var j = 0; j < testPoints[i].length; j++) {
+                    var testCoords = testPoints[i][j];
+                    var pts = _hover(gd, testCoords[0], testCoords[1], 'x', 'xy');
+                    expect(pts[i]).toBeTruthy(
+                        'correct trace not detected ' + testCoords.join(',') + ', should be ' + i
+                    );
+                    for(var k = 0; k < pts.length; k++) {
+                        var traceId = (i + 1) % pts.length;
+                        expect(pts[traceId]).toBeFalsy(
+                            'wrong trace detected ' + testCoords.join(',') + '; got ' +
+                            traceId + ' but should be ' + i
+                        );
+                    }
+                }
+            }
+        })
+        .then(done, done.fail);
+    });
+
+    it('should correctly detect the fill that is hovered over for tozeroy and tonexty fills', function(done) {
+        var gd = createGraphDiv();
+        var mock = Lib.extendDeep({}, require('../../image/mocks/scatter_fill_corner_cases'));
+
+        var traceOffset = 0;
+
+        var testPoints = [ // all the following points should be in fill region of corresponding tozeroy traces 0-4
+            [], // single point has no "fill" when using SVG element containment tests
+            [[0.1, 0.9], [0.1, 0.8], [1.5, 0.9], [1.5, 1.04], [2, 0.8], [2, 1.09], [3, 0.8]],
+            [[0.1, 0.75], [0.1, 0.61], [1.01, 0.501], [1.5, 0.8], [1.5, 0.55], [2, 0.74], [2, 0.55], [3, 0.74], [3, 0.51]],
+            [[0.1, 0.599], [0.1, 0.5], [0.1, 0.3], [0.99, 0.59], [1, 0.49], [1, 0.36], [1.5, 0.26], [2, 0.49], [2, 0.16], [3, 0.49], [3, 0.26]],
+            [[0.1, 0.25], [0.1, 0.1], [1, 0.34], [1.5, 0.24], [2, 0.14], [3, 0.24], [3, 0.1]],
+        ];
+
+        var outsidePoints = [ // all these should not result in a hover detection, for any trace
+            [1, 1.1], [2, 1.14], [1.5, 1.24], [1.5, 1.06]
+        ];
+
+        Plotly.newPlot(gd, mock).then(function() {
+            return Plotly.restyle(gd, 'hoveron', 'fills');
+        })
+        .then(function() {
+            var testCoords, pts;
+            var i, j, k;
+            for(i = 0; i < testPoints.length; i++) {
+                for(j = 0; j < testPoints[i].length; j++) {
+                    testCoords = testPoints[i][j];
+                    pts = _hover(gd, testCoords[0], testCoords[1], 'x', 'xy');
+                    expect(pts[traceOffset + i]).toBeTruthy(
+                        'correct trace not detected ' + testCoords.join(',') + ', should be ' + (traceOffset + i)
+                    );
+
+                    // since all polygons do extend to the zero axis, many points will be detected by the
+                    // correct trace and previous ones, but a point should not be detected as hover points
+                    // by any trace defined later than the correct trace!
+                    // (in actual hover detection, the real _hover takes care of the overlap with previous traces
+                    // so that is not an issue in practice)
+                    for(k = i + 1; k < testPoints.length; k++) {
+                        var traceId = traceOffset + k;
+                        expect(pts[traceId]).toBeFalsy(
+                            'wrong trace detected ' + testCoords.join(',') + '; got ' +
+                            traceId + ' but should be ' + (traceOffset + i)
+                        );
+                    }
+                }
+            }
+
+            for(j = 0; j < outsidePoints.length; j++) {
+                testCoords = outsidePoints[j];
+                pts = _hover(gd, testCoords[0], testCoords[1], 'x', 'xy');
+                for(k = 0; k < testPoints.length; k++) {
+                    expect(pts[i]).toBeFalsy(
+                        'trace detected for outside point ' + testCoords.join(',') + ', got ' + (traceOffset + k)
+                    );
+                }
+            }
+        })
+        .then(done, done.fail);
+    });
+
+
+    it('should correctly detect the fill that is hovered over for tonexty fills', function(done) {
+        var gd = createGraphDiv();
+        var mock = Lib.extendDeep({}, require('../../image/mocks/scatter_fill_corner_cases'));
+
+        var traceOffset = 10;
+
+        var testPoints = [ // all the following points should be in fill region of corresponding tonexty traces 10-14
+            [],
+            [[1, 1.1], [1.5, 1.24], [1.5, 1.06], [2, 1.14]],
+            [[0.1, 0.9], [0.1, 0.8], [1.5, 0.9], [1.5, 1.04], [2, 0.8], [2, 1.09], [3, 0.8]],
+            [[0.1, 0.75], [0.1, 0.61], [1.01, 0.501], [1.5, 0.8], [1.5, 0.55], [2, 0.74], [2, 0.55], [3, 0.74], [3, 0.51]],
+            [[0.1, 0.599], [0.1, 0.5], [0.1, 0.3], [0.99, 0.59], [1, 0.49], [1, 0.36], [1.5, 0.26], [2, 0.49], [2, 0.16], [3, 0.49], [3, 0.26]],
+        ];
+        var outsidePoints = [ // all these should not result in a hover detection, for any trace
+            [0.1, 0.25], [0.1, 0.1], [1, 0.34], [1.5, 0.24], [2, 0.14], [3, 0.24], [3, 0.1], [0.5, 1.15], [2.5, 1.15],
+        ];
+
+        Plotly.newPlot(gd, mock).then(function() {
+            return Plotly.restyle(gd, 'hoveron', 'fills');
+        })
+        .then(function() {
+            var testCoords, pts;
+            var i, j, k;
+            for(i = 0; i < testPoints.length; i++) {
+                for(j = 0; j < testPoints[i].length; j++) {
+                    testCoords = testPoints[i][j];
+                    pts = _hover(gd, testCoords[0], testCoords[1], 'x', 'xy2');
+                    expect(pts[traceOffset + i]).toBeTruthy(
+                        'correct trace not detected ' + testCoords.join(',') + ', should be ' + (traceOffset + i)
+                    );
+
+                    for(k = 1; k < testPoints.length; k++) {
+                        var traceId = traceOffset + ((i + k) % testPoints.length);
+                        expect(pts[traceId]).toBeFalsy(
+                            'wrong trace detected ' + testCoords.join(',') + '; got ' +
+                            traceId + ' but should be ' + (traceOffset + i)
+                        );
+                    }
+                }
+            }
+            for(j = 0; j < outsidePoints.length; j++) {
+                testCoords = outsidePoints[j];
+                pts = _hover(gd, testCoords[0], testCoords[1], 'x', 'xy2');
+                for(k = 0; k < testPoints.length; k++) {
+                    expect(pts[traceOffset + k]).toBeFalsy(
+                        'trace detected for outside point ' + testCoords.join(',') + ', got ' + (traceOffset + k)
+                    );
+                }
+            }
         })
         .then(done, done.fail);
     });
@@ -1837,7 +2028,7 @@ describe('Test scatter *clipnaxis*:', function() {
 
     it('should show/hide point/text/errorbars in clipped and non-clipped layers', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/cliponaxis_false.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/cliponaxis_false.json'));
         var xRange0 = fig.layout.xaxis.range.slice();
         var yRange0 = fig.layout.yaxis.range.slice();
 
@@ -1862,7 +2053,7 @@ describe('Test scatter *clipnaxis*:', function() {
         }
 
         function _assert(layerClips, nodeDisplays, errorBarClips, lineClips) {
-            var subplotLayer = d3Select('.plot');
+            var subplotLayer = d3Select('.overplot').select('.xy');
             var scatterLayer = subplotLayer.select('.scatterlayer');
 
             _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
@@ -1978,7 +2169,7 @@ describe('Test scatter *clipnaxis*:', function() {
 });
 
 describe('event data', function() {
-    var mock = require('@mocks/scatter-colorscale-colorbar');
+    var mock = require('../../image/mocks/scatter-colorscale-colorbar');
     var mockCopy = Lib.extendDeep({}, mock);
     mockCopy.layout.hovermode = 'x';
 

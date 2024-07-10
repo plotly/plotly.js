@@ -158,6 +158,11 @@
     }
   ],
   "layout": {
+    "font": {
+      "textcase": "word caps",
+      "lineposition": "under",
+      "shadow": "auto"
+    },
     "grid": {"rows": 4, "columns": 2, "pattern": "independent"},
     "width": 600,
     "height": 800,

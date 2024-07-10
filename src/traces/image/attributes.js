@@ -1,6 +1,7 @@
 'use strict';
 
 var baseAttrs = require('../../plots/attributes');
+var zorder = require('../scatter/attributes').zorder;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var extendFlat = require('../../lib/extend').extendFlat;
 var colormodel = require('./constants').colormodel;
@@ -84,13 +85,24 @@ module.exports = extendFlat({
         valType: 'any',
         dflt: 0,
         editType: 'calc+clearAxisTypes',
-        description: 'Set the image\'s x position.'
+        description: [
+            'Set the image\'s x position. The left edge of the image',
+            '(or the right edge if the x axis is reversed or dx is negative)',
+            'will be found at xmin=x0-dx/2'
+        ].join(' ')
     },
     y0: {
         valType: 'any',
         dflt: 0,
         editType: 'calc+clearAxisTypes',
-        description: 'Set the image\'s y position.'
+        description: [
+            'Set the image\'s y position. The top edge of the image',
+            '(or the bottom edge if the y axis is NOT reversed or if dy is negative)',
+            'will be found at ymin=y0-dy/2. By default when an image trace is',
+            'included, the y axis will be reversed so that the image is right-side-up,',
+            'but you can disable this by setting yaxis.autorange=true or by providing',
+            'an explicit y axis range.'
+        ].join(' ')
     },
     dx: {
         valType: 'number',
@@ -122,5 +134,6 @@ module.exports = extendFlat({
         keys: ['z', 'color', 'colormodel']
     }),
 
+    zorder: zorder,
     transforms: undefined
 });

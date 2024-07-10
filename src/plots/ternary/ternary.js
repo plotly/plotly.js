@@ -19,10 +19,10 @@ var dragHelpers = require('../../components/dragelement/helpers');
 var freeMode = dragHelpers.freeMode;
 var rectMode = dragHelpers.rectMode;
 var Titles = require('../../components/titles');
-var prepSelect = require('../cartesian/select').prepSelect;
-var selectOnClick = require('../cartesian/select').selectOnClick;
-var clearSelect = require('../cartesian/select').clearSelect;
-var clearSelectionsCache = require('../cartesian/select').clearSelectionsCache;
+var prepSelect = require('../../components/selections').prepSelect;
+var selectOnClick = require('../../components/selections').selectOnClick;
+var clearOutline = require('../../components/selections').clearOutline;
+var clearSelectionsCache = require('../../components/selections').clearSelectionsCache;
 var constants = require('../cartesian/constants');
 
 function Ternary(options, fullLayout) {
@@ -484,9 +484,9 @@ var STARTMARKER = 'm0.5,0.5h5v-2h-5v-5h-2v5h-5v2h5v5h2Z';
 // I guess this could be shared with cartesian... but for now it's separate.
 var SHOWZOOMOUTTIP = true;
 
-proto.clearSelect = function() {
+proto.clearOutline = function() {
     clearSelectionsCache(this.dragOptions);
-    clearSelect(this.dragOptions.gd);
+    clearOutline(this.dragOptions.gd);
 };
 
 proto.initInteractions = function() {
@@ -532,7 +532,7 @@ proto.initInteractions = function() {
                 _this.dragOptions.clickFn = clickZoomPan;
                 _this.dragOptions.doneFn = dragDone;
                 panPrep();
-                _this.clearSelect(gd);
+                _this.clearOutline(gd);
             } else if(rectMode(dragModeNow) || freeMode(dragModeNow)) {
                 prepSelect(e, startX, startY, _this.dragOptions, dragModeNow);
             }
@@ -594,7 +594,7 @@ proto.initInteractions = function() {
             .attr('class', 'zoombox')
             .attr('transform', strTranslate(_this.x0, _this.y0))
             .style({
-                'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+                fill: lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
             })
             .attr('d', path0);
@@ -610,7 +610,7 @@ proto.initInteractions = function() {
             })
             .attr('d', 'M0,0Z');
 
-        _this.clearSelect(gd);
+        _this.clearOutline(gd);
     }
 
     function getAFrac(x, y) { return 1 - (y / _this.h); }

@@ -8,10 +8,15 @@ var handleLineDefaults = require('../scatter/line_defaults');
 var handleTextDefaults = require('../scatter/text_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var attributes = require('./attributes');
+var isSupportedFont = require('./constants').isSupportedFont;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+    }
+
+    function coerce2(attr, dflt) {
+        return Lib.coerce2(traceIn, traceOut, attributes, attr, dflt);
     }
 
     var len = handleLonLatDefaults(traceIn, traceOut, coerce);
@@ -27,13 +32,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('mode');
     coerce('below');
 
-    if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noDash: true});
-        coerce('connectgaps');
-    }
-
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true});
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true, noAngle: true});
 
         coerce('marker.allowoverlap');
         coerce('marker.angle');
@@ -46,8 +46,44 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    if(subTypes.hasText(traceOut)) {
-        handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
+    if(subTypes.hasLines(traceOut)) {
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noDash: true});
+        coerce('connectgaps');
+    }
+
+    var clusterMaxzoom = coerce2('cluster.maxzoom');
+    var clusterStep = coerce2('cluster.step');
+    var clusterColor = coerce2('cluster.color', (traceOut.marker && traceOut.marker.color) || defaultColor);
+    var clusterSize = coerce2('cluster.size');
+    var clusterOpacity = coerce2('cluster.opacity');
+
+    var clusterEnabledDflt =
+        clusterMaxzoom !== false ||
+        clusterStep !== false ||
+        clusterColor !== false ||
+        clusterSize !== false ||
+        clusterOpacity !== false;
+
+    var clusterEnabled = coerce('cluster.enabled', clusterEnabledDflt);
+
+    if(clusterEnabled || subTypes.hasText(traceOut)) {
+        var layoutFontFamily = layout.font.family;
+
+        handleTextDefaults(traceIn, traceOut, layout, coerce,
+            {
+                noSelect: true,
+                noFontVariant: true,
+                noFontShadow: true,
+                noFontLineposition: true,
+                noFontTextcase: true,
+                font: {
+                    family: isSupportedFont(layoutFontFamily) ? layoutFontFamily : 'Open Sans Regular',
+                    weight: layout.font.weight,
+                    style: layout.font.style,
+                    size: layout.font.size,
+                    color: layout.font.color
+                }
+            });
     }
 
     coerce('fill');

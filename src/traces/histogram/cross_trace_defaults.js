@@ -4,7 +4,8 @@ var Lib = require('../../lib');
 var axisIds = require('../../plots/cartesian/axis_ids');
 
 var traceIs = require('../../registry').traceIs;
-var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
+var handleGroupingDefaults = require('../scatter/grouping_defaults');
+var validateCornerradius = require('../bar/defaults').validateCornerradius;
 
 var nestedProperty = Lib.nestedProperty;
 var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
@@ -100,6 +101,13 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
             // https://github.com/plotly/plotly.js/issues/749
             delete traceOut._xautoBinFinished;
             delete traceOut._yautoBinFinished;
+
+            if(traceOut.type === 'histogram') {
+                var r = coerce('marker.cornerradius', fullLayout.barcornerradius);
+                if(traceOut.marker) {
+                    traceOut.marker.cornerradius = validateCornerradius(r);
+                }
+            }
 
             // N.B. need to coerce *alignmentgroup* before *bingroup*, as traces
             // in same alignmentgroup "have to match"

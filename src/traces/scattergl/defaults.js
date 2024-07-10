@@ -39,20 +39,24 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertemplate');
     coerce('mode', defaultMode);
 
+    if(subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noAngleRef: true, noStandOff: true});
+        coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
+    }
+
     if(subTypes.hasLines(traceOut)) {
         coerce('connectgaps');
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
         coerce('line.shape');
     }
 
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-        coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
-    }
-
     if(subTypes.hasText(traceOut)) {
         coerce('texttemplate');
-        handleTextDefaults(traceIn, traceOut, layout, coerce);
+        handleTextDefaults(traceIn, traceOut, layout, coerce, {
+            noFontShadow: true,
+            noFontLineposition: true,
+            noFontTextcase: true,
+        });
     }
 
     var lineColor = (traceOut.line || {}).color;

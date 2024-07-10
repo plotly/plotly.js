@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-// var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+// var Lib = require('../../../src/lib');
 
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -8,10 +8,10 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var delay = require('../assets/delay');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
-// var calc = require('@src/traces/indicator/calc').calc;
+// var calc = require('../../../src/traces/indicator/calc').calc;
 var customAssertions = require('../assets/custom_assertions.js');
-var indicatorAttrs = require('@src/traces/indicator/attributes.js');
-var cn = require('@src/traces/indicator/constants.js');
+var indicatorAttrs = require('../../../src/traces/indicator/attributes.js');
+var cn = require('../../../src/traces/indicator/constants.js');
 
 describe('Indicator defaults', function() {
     function _supply(trace, layout) {

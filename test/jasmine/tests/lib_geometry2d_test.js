@@ -1,5 +1,5 @@
-var geom2d = require('@src/lib/geometry2d');
-var Drawing = require('@src/components/drawing');
+var geom2d = require('../../../src/lib/geometry2d');
+var Drawing = require('../../../src/components/drawing');
 
 // various reversals of segments and endpoints that should all give identical results
 function permute(_inner, x1, y1, x2, y2, x3, y3, x4, y4, expected) {

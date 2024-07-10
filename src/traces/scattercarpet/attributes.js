@@ -1,5 +1,6 @@
 'use strict';
 
+var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
 var baseAttrs = require('../../plots/attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
@@ -61,6 +62,7 @@ module.exports = {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
         dash: scatterLineAttrs.dash,
+        backoff: scatterLineAttrs.backoff,
         shape: extendFlat({}, scatterLineAttrs.shape,
             {values: ['linear', 'spline']}),
         smoothing: scatterLineAttrs.smoothing,
@@ -82,11 +84,14 @@ module.exports = {
             'used if one trace does not enclose the other.'
         ].join(' ')
     }),
-    fillcolor: scatterAttrs.fillcolor,
+    fillcolor: makeFillcolorAttr(),
     marker: extendFlat({
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
         maxdisplayed: scatterMarkerAttrs.maxdisplayed,
+        angle: scatterMarkerAttrs.angle,
+        angleref: scatterMarkerAttrs.angleref,
+        standoff: scatterMarkerAttrs.standoff,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
@@ -113,5 +118,6 @@ module.exports = {
         flags: ['a', 'b', 'text', 'name']
     }),
     hoveron: scatterAttrs.hoveron,
-    hovertemplate: hovertemplateAttrs()
+    hovertemplate: hovertemplateAttrs(),
+    zorder: scatterAttrs.zorder
 };

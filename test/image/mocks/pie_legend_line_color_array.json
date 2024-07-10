@@ -22,18 +22,26 @@
                     "orange"
                 ],
                 "line": {
-                    "width": 5,
+                    "width": [3, 4, 5, 6],
                     "color": [
                         "red",
                         "green",
                         "blue",
                         "yellow"
                     ]
+                },
+                "pattern": {
+                    "shape": [".", "x", "+", "-"],
+                    "size": [3, 4, 5, 6]
                 }
             }
         }
     ],
     "layout": {
+        "font": {
+            "lineposition": "under",
+            "shadow": "auto"
+        },
         "width": 400,
         "height": 400,
         "title": { "text": "pie-like legend with line.color array of length > 3" }

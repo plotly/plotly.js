@@ -1,6 +1,6 @@
 'use strict';
 
-var mapboxgl = require('mapbox-gl/dist/mapbox-gl-unminified');
+var mapboxgl = require('@plotly/mapbox-gl/dist/mapbox-gl-unminified');
 
 var Lib = require('../../lib');
 var geoUtils = require('../../lib/geo_location_utils');
@@ -10,14 +10,13 @@ var dragElement = require('../../components/dragelement');
 
 var Fx = require('../../components/fx');
 var dragHelpers = require('../../components/dragelement/helpers');
-var rectMode = dragHelpers.rectMode;
 var drawMode = dragHelpers.drawMode;
 var selectMode = dragHelpers.selectMode;
 
-var prepSelect = require('../cartesian/select').prepSelect;
-var clearSelect = require('../cartesian/select').clearSelect;
-var clearSelectionsCache = require('../cartesian/select').clearSelectionsCache;
-var selectOnClick = require('../cartesian/select').selectOnClick;
+var prepSelect = require('../../components/selections').prepSelect;
+var clearOutline = require('../../components/selections').clearOutline;
+var clearSelectionsCache = require('../../components/selections').clearSelectionsCache;
+var selectOnClick = require('../../components/selections').selectOnClick;
 
 var constants = require('./constants');
 var createMapboxLayer = require('./layers');
@@ -87,10 +86,13 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     var opts = fullLayout[self.id];
 
     // store style id and URL or object
-    var styleObj = self.styleObj = getStyleObj(opts.style);
+    var styleObj = self.styleObj = getStyleObj(opts.style, fullLayout);
 
     // store access token associated with this map
     self.accessToken = opts.accesstoken;
+
+    var bounds = opts.bounds;
+    var maxBounds = bounds ? [[bounds.west, bounds.south], [bounds.east, bounds.north]] : null;
 
     // create the map!
     var map = self.map = new mapboxgl.Map({
@@ -101,6 +103,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         zoom: opts.zoom,
         bearing: opts.bearing,
         pitch: opts.pitch,
+        maxBounds: maxBounds,
 
         interactive: !self.isStatic,
         preserveDrawingBuffer: self.isStatic,
@@ -149,7 +152,7 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
     self.rejectOnError(reject);
 
     var promises = [];
-    var styleObj = getStyleObj(opts.style);
+    var styleObj = getStyleObj(opts.style, fullLayout);
 
     if(JSON.stringify(self.styleObj) !== JSON.stringify(styleObj)) {
         self.styleObj = styleObj;
@@ -506,9 +509,9 @@ proto.initFx = function(calcData, fullLayout) {
 
     // define event handlers on map creation, to keep one ref per map,
     // so that map.on / map.off in updateFx works as expected
-    self.clearSelect = function() {
+    self.clearOutline = function() {
         clearSelectionsCache(self.dragOptions);
-        clearSelect(self.dragOptions.gd);
+        clearOutline(self.dragOptions.gd);
     };
 
     /**
@@ -550,20 +553,18 @@ proto.updateFx = function(fullLayout) {
     var dragMode = fullLayout.dragmode;
     var fillRangeItems;
 
-    if(rectMode(dragMode)) {
-        fillRangeItems = function(eventData, poly) {
+    fillRangeItems = function(eventData, poly) {
+        if(poly.isRect) {
             var ranges = eventData.range = {};
             ranges[self.id] = [
                 invert([poly.xmin, poly.ymin]),
                 invert([poly.xmax, poly.ymax])
             ];
-        };
-    } else {
-        fillRangeItems = function(eventData, poly, pts) {
+        } else {
             var dataPts = eventData.lassoPoints = {};
-            dataPts[self.id] = pts.filtered.map(invert);
-        };
-    }
+            dataPts[self.id] = poly.map(invert);
+        }
+    };
 
     // Note: dragOptions is needed to be declared for all dragmodes because
     // it's the object that holds persistent selection state.
@@ -592,7 +593,7 @@ proto.updateFx = function(fullLayout) {
     map.off('click', self.onClickInPanHandler);
     if(selectMode(dragMode) || drawMode(dragMode)) {
         map.dragPan.disable();
-        map.on('zoomstart', self.clearSelect);
+        map.on('zoomstart', self.clearOutline);
 
         self.dragOptions.prepFn = function(e, startX, startY) {
             prepSelect(e, startX, startY, self.dragOptions, dragMode);
@@ -601,9 +602,10 @@ proto.updateFx = function(fullLayout) {
         dragElement.init(self.dragOptions);
     } else {
         map.dragPan.enable();
-        map.off('zoomstart', self.clearSelect);
+        map.off('zoomstart', self.clearOutline);
         self.div.onmousedown = null;
-
+        self.div.ontouchstart = null;
+        self.div.removeEventListener('touchstart', self.div._ontouchstart);
         // TODO: this does not support right-click. If we want to support it, we
         // would likely need to change mapbox to use dragElement instead of straight
         // mapbox event binding. Or perhaps better, make a simple wrapper with the
@@ -766,7 +768,7 @@ proto.getViewEditsWithDerived = function(cont) {
     return obj;
 };
 
-function getStyleObj(val) {
+function getStyleObj(val, fullLayout) {
     var styleObj = {};
 
     if(Lib.isPlainObject(val)) {
@@ -779,6 +781,16 @@ function getStyleObj(val) {
             styleObj.style = convertStyleVal(val);
         } else if(constants.stylesNonMapbox[val]) {
             styleObj.style = constants.stylesNonMapbox[val];
+            var spec = styleObj.style.sources['plotly-' + val];
+            var tiles = spec ? spec.tiles : undefined;
+            if(
+                tiles &&
+                tiles[0] &&
+                tiles[0].slice(-9) === '?api_key='
+            ) {
+                // provide api_key for stamen styles
+                tiles[0] += fullLayout._mapboxAccessToken;
+            }
         } else {
             styleObj.style = val;
         }

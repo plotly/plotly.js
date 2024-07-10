@@ -5,9 +5,10 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
+var coercePattern = require('../../lib').coercePattern;
 
 function handleLabelsAndValues(labels, values) {
-    var hasLabels = Array.isArray(labels);
+    var hasLabels = Lib.isArrayOrTypedArray(labels);
     var hasValues = Lib.isArrayOrTypedArray(values);
     var len = Math.min(
         hasLabels ? labels.length : Infinity,
@@ -33,6 +34,22 @@ function handleLabelsAndValues(labels, values) {
         hasValues: hasValues,
         len: len
     };
+}
+
+function handleMarkerDefaults(traceIn, traceOut, layout, coerce, isPie) {
+    var lineWidth = coerce('marker.line.width');
+    if(lineWidth) {
+        coerce('marker.line.color',
+            isPie ? undefined :
+            layout.paper_bgcolor // case of funnelarea, sunburst, icicle, treemap
+        );
+    }
+
+    var markerColors = coerce('marker.colors');
+    coercePattern(coerce, 'marker.pattern', markerColors);
+    // push the marker colors (with s) to the foreground colors, to work around logic in the drawing pattern code on marker.color (without s, which is okay for a bar trace)
+    if(traceIn.marker && !traceOut.marker.pattern.fgcolor) traceOut.marker.pattern.fgcolor = traceIn.marker.colors;
+    if(!traceOut.marker.pattern.bgcolor) traceOut.marker.pattern.bgcolor = layout.paper_bgcolor;
 }
 
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -61,10 +78,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     }
     traceOut._length = len;
 
-    var lineWidth = coerce('marker.line.width');
-    if(lineWidth) coerce('marker.line.color');
-
-    coerce('marker.colors');
+    handleMarkerDefaults(traceIn, traceOut, layout, coerce, true);
 
     coerce('scalegroup');
     // TODO: hole needs to be coerced to the same value within a scaleegroup
@@ -72,7 +86,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var textData = coerce('text');
     var textTemplate = coerce('texttemplate');
     var textInfo;
-    if(!textTemplate) textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
+    if(!textTemplate) textInfo = coerce('textinfo', Lib.isArrayOrTypedArray(textData) ? 'text+percent' : 'percent');
 
     coerce('hovertext');
     coerce('hovertemplate');
@@ -97,6 +111,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         if(textposition === 'inside' || textposition === 'auto' || Array.isArray(textposition)) {
             coerce('insidetextorientation');
         }
+    } else if(textInfo === 'none') {
+        coerce('textposition', 'none');
     }
 
     handleDomainDefaults(traceOut, layout, coerce);
@@ -117,5 +133,6 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
 module.exports = {
     handleLabelsAndValues: handleLabelsAndValues,
+    handleMarkerDefaults: handleMarkerDefaults,
     supplyDefaults: supplyDefaults
 };

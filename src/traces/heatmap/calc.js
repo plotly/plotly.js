@@ -90,32 +90,31 @@ module.exports = function calc(gd, trace) {
         Lib.warn('cannot use zsmooth: "fast": ' + msg);
     }
 
-    // check whether we really can smooth (ie all boxes are about the same size)
-    if(zsmooth === 'fast') {
-        if(xa.type === 'log' || ya.type === 'log') {
-            noZsmooth('log axis found');
-        } else if(!isHist) {
-            if(x.length) {
-                var avgdx = (x[x.length - 1] - x[0]) / (x.length - 1);
-                var maxErrX = Math.abs(avgdx / 100);
-                for(i = 0; i < x.length - 1; i++) {
-                    if(Math.abs(x[i + 1] - x[i] - avgdx) > maxErrX) {
-                        noZsmooth('x scale is not linear');
-                        break;
-                    }
-                }
-            }
-            if(y.length && zsmooth === 'fast') {
-                var avgdy = (y[y.length - 1] - y[0]) / (y.length - 1);
-                var maxErrY = Math.abs(avgdy / 100);
-                for(i = 0; i < y.length - 1; i++) {
-                    if(Math.abs(y[i + 1] - y[i] - avgdy) > maxErrY) {
-                        noZsmooth('y scale is not linear');
-                        break;
-                    }
+    function scaleIsLinear(s) {
+        if(s.length > 1) {
+            var avgdx = (s[s.length - 1] - s[0]) / (s.length - 1);
+            var maxErrX = Math.abs(avgdx / 100);
+            for(i = 0; i < s.length - 1; i++) {
+                if(Math.abs(s[i + 1] - s[i] - avgdx) > maxErrX) {
+                    return false;
                 }
             }
         }
+        return true;
+    }
+
+    // Check whether all brick are uniform
+    trace._islinear = false;
+    if(xa.type === 'log' || ya.type === 'log') {
+        if(zsmooth === 'fast') {
+            noZsmooth('log axis found');
+        }
+    } else if(!scaleIsLinear(x)) {
+        if(zsmooth === 'fast') noZsmooth('x scale is not linear');
+    } else if(!scaleIsLinear(y)) {
+        if(zsmooth === 'fast') noZsmooth('y scale is not linear');
+    } else {
+        trace._islinear = true;
     }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot

@@ -1,25 +1,25 @@
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 
-var Bar = require('@src/traces/bar');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
-var Drawing = require('@src/components/drawing');
+var Bar = require('../../../src/traces/bar');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
+var Drawing = require('../../../src/components/drawing');
 
-var Axes = require('@src/plots/cartesian/axes');
+var Axes = require('../../../src/plots/cartesian/axes');
 
 var click = require('../assets/click');
-var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
+var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var negateIf = require('../assets/negate_if');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
-var color = require('@src/components/color');
+var color = require('../../../src/components/color');
 var rgb = color.rgb;
 
 var checkEventData = require('../assets/check_event_data');
-var constants = require('@src/traces/bar/constants');
+var constants = require('../../../src/traces/bar/constants');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertClip = customAssertions.assertClip;
@@ -27,7 +27,7 @@ var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
 var checkTransition = require('../assets/check_transitions');
-var Fx = require('@src/components/fx');
+var Fx = require('../../../src/components/fx');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -152,9 +152,28 @@ describe('Bar.supplyDefaults', function() {
             y: [1, 2, 3]
         };
         var layout = {
-            font: {family: 'arial', color: '#AAA', size: 13}
+            font: {
+                family: 'arial',
+                color: '#AAA',
+                size: 13,
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
+            }
         };
-        var layoutFontMinusColor = {family: 'arial', size: 13};
+        var layoutFontMinusColor = {
+            family: 'arial',
+            size: 13,
+            weight: 'bold',
+            style: 'italic',
+            variant: 'small-caps',
+            textcase: 'word caps',
+            lineposition: 'under',
+            shadow: 'auto',
+        };
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -1665,7 +1684,7 @@ describe('A bar plot', function() {
     });
 
     it('@noCI should be able to restyle', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/bar_attrs_relative'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/bar_attrs_relative'));
 
         Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
             var cd = gd.calcdata;
@@ -2047,7 +2066,7 @@ describe('A bar plot', function() {
     });
 
     it('should show/hide text in clipped and non-clipped layers', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/bar_cliponaxis-false.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/bar_cliponaxis-false.json'));
         gd = createGraphDiv();
 
         // only show one bar trace
@@ -2068,7 +2087,7 @@ describe('A bar plot', function() {
         }
 
         function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
-            var subplotLayer = d3Select('.plot');
+            var subplotLayer = d3Select('.overplot').select('.xy');
             var barLayer = subplotLayer.select('.barlayer');
 
             _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
@@ -2165,7 +2184,7 @@ describe('A bar plot', function() {
     }
 
     it('should not show up null and zero bars as thin bars', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/bar_hide_nulls.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/bar_hide_nulls.json'));
 
         Plotly.newPlot(gd, mock)
         .then(function() {
@@ -2216,7 +2235,7 @@ describe('A bar plot', function() {
     describe('show narrow bars', function() {
         ['initial zoom', 'after zoom out'].forEach(function(zoomStr) {
             it(zoomStr, function(done) {
-                var mock = Lib.extendDeep({}, require('@mocks/bar_show_narrow.json'));
+                var mock = Lib.extendDeep({}, require('../../image/mocks/bar_show_narrow.json'));
 
                 if(zoomStr === 'after zoom out') {
                     mock.layout.xaxis.range = [-14.9, 17.9];
@@ -2416,7 +2435,7 @@ describe('bar hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/11.json'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/11.json'));
 
             Plotly.newPlot(gd, mock.data, mock.layout)
             .then(done, done.fail);
@@ -2441,7 +2460,7 @@ describe('bar hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/bar_attrs_group_norm.json'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/bar_attrs_group_norm.json'));
 
             Plotly.newPlot(gd, mock.data, mock.layout)
             .then(done, done.fail);
@@ -2483,7 +2502,7 @@ describe('bar hover', function() {
         it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
             mock.data.forEach(function(t) { t.type = 'bar'; });
 
             Plotly.newPlot(gd, mock).then(function() {
@@ -2514,7 +2533,7 @@ describe('bar hover', function() {
         it('should use hovertemplate if specified', function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
             mock.data.forEach(function(t) {
                 t.type = 'bar';
                 t.hovertemplate = '%{y}<extra></extra>';
@@ -2774,7 +2793,7 @@ describe('bar hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/bar-with-milliseconds.json'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/bar-with-milliseconds.json'));
 
             Plotly.newPlot(gd, mock.data, mock.layout)
             .then(done, done.fail);
@@ -2848,7 +2867,7 @@ describe('Text templates on bar traces:', function() {
 });
 
 describe('event data', function() {
-    var mock = require('@mocks/stacked_bar');
+    var mock = require('../../image/mocks/stacked_bar');
     checkEventData(mock, 216, 309, constants.eventDataKeys);
 });
 
@@ -2904,13 +2923,13 @@ function assertTraceField(calcData, prop, expectation) {
 describe('bar tweening', function() {
     var gd;
     var mock = {
-        'data': [{
-            'type': 'bar',
-            'x': ['A', 'B', 'C'],
-            'text': ['A', 'B', 'C'],
-            'textposition': 'inside',
-            'y': [24, 5, 8],
-            'error_y': {'array': [3, 2, 1]}
+        data: [{
+            type: 'bar',
+            x: ['A', 'B', 'C'],
+            text: ['A', 'B', 'C'],
+            textposition: 'inside',
+            y: [24, 5, 8],
+            error_y: {array: [3, 2, 1]}
         }]
     };
     var transitionOpts = false; // use default
@@ -2931,7 +2950,7 @@ describe('bar tweening', function() {
             [300, '.point path', 'style', 'fill', ['rgb(165, 48, 72)', 'rgb(12, 201, 72)', 'rgb(12, 48, 225)']],
             [500, '.point path', 'style', 'fill', ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']]
         ];
-        var animateOpts = {'data': [{'marker': {'color': ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}]};
+        var animateOpts = {data: [{marker: {color: ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}]};
 
         checkTransition(gd, mock, animateOpts, transitionOpts, tests)
           .then(done, done.fail);
@@ -3005,7 +3024,7 @@ describe('bar tweening', function() {
             [600, '.point path', 'style', 'stroke', ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']],
             [600, '.point path', 'style', 'stroke-width', ['20px', '20px', '20px']]
         ];
-        var animateOpts = {'data': [{'marker': {'line': {'width': 20, 'color': ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}}]};
+        var animateOpts = {data: [{marker: {line: {width: 20, color: ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}}]};
 
         checkTransition(gd, mock, animateOpts, transitionOpts, tests)
           .then(done, done.fail);
@@ -3038,7 +3057,7 @@ describe('bar tweening', function() {
                 text: ['A', 'B', 'C'],
                 textposition: 'inside',
                 y: [24, 5, 8],
-                error_y: {'array': [3, 2, 1]},
+                error_y: {array: [3, 2, 1]},
                 marker: {color: ['red', 'green', 'blue']}
             }]
         };

@@ -28,6 +28,8 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
     var makeUpdateTextInterpolator = opts.makeUpdateTextInterpolator;
     var refRect = {};
 
+    var isStatic = gd._context.staticPlot;
+
     var fullLayout = gd._fullLayout;
     var cd0 = cd[0];
     var trace = cd0.trace;
@@ -101,7 +103,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
         var sliceTop = d3.select(this);
 
         var slicePath = Lib.ensureSingle(sliceTop, 'path', 'surface', function(s) {
-            s.style('pointer-events', 'all');
+            s.style('pointer-events', isStatic ? 'none' : 'all');
         });
 
         if(hasTransition) {
@@ -126,7 +128,7 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
                 isTransitioning: gd._transitioning
             });
 
-        slicePath.call(styleOne, pt, trace, {
+        slicePath.call(styleOne, pt, trace, gd, {
             hovered: false
         });
 

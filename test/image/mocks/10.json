@@ -13,7 +13,7 @@
                 -0.255461150807681,
                 -0.25597595662203515
             ],
-            "name": "Trial 1",
+            "name": "Trial 1 Very Long<br>multiline label",
             "boxpoints": "all",
             "pointpos": -1.5,
             "jitter": 0,
@@ -45,7 +45,7 @@
                 2.2237747316232417,
                 2.0456528234898133
             ],
-            "name": "Trial 2",
+            "name": "Trial 2 Very Long<br>multiline label",
             "boxpoints": "all",
             "pointpos": -1.5,
             "jitter": 0,
@@ -77,7 +77,7 @@
                 1.114484992405051,
                 0.577777449231605
             ],
-            "name": "Trial 3",
+            "name": "Trial 3 Very Long<br>multiline label",
             "boxpoints": "all",
             "pointpos": -1.5,
             "jitter": 0,
@@ -109,7 +109,7 @@
                 3.01289053296517,
                 2.8335761244537614
             ],
-            "name": "Trial 4",
+            "name": "Trial 4 Very Long<br>multiline label",
             "boxpoints": "all",
             "pointpos": -1.5,
             "jitter": 0,
@@ -141,7 +141,7 @@
                 5.687207835036456,
                 5.718713550485276
             ],
-            "name": "Trial 5",
+            "name": "Trial 5 Very Long<br>multiline label",
             "boxpoints": "all",
             "pointpos": -1.5,
             "jitter": 0,
@@ -173,7 +173,7 @@
                 6.146408206163261,
                 6.726224574612897
             ],
-            "name": "Trial 6",
+            "name": "Trial 6 Very Long<br>multiline label",
             "boxpoints": "all",
             "pointpos": -1.5,
             "jitter": 0,
@@ -194,12 +194,12 @@
         },
         {
             "x": [
-                "Trial 1",
-                "Trial 2",
-                "Trial 3",
-                "Trial 4",
-                "Trial 5",
-                "Trial 6"
+                "Trial 1 Very Long<br>multiline label",
+                "Trial 2 Very Long<br>multiline label",
+                "Trial 3 Very Long<br>multiline label",
+                "Trial 4 Very Long<br>multiline label",
+                "Trial 5 Very Long<br>multiline label",
+                "Trial 6 Very Long<br>multiline label"
             ],
             "y": [
                 -0.16783142774745008,
@@ -262,7 +262,8 @@
             "showticklabels": true,
             "tick0": 0,
             "dtick": 1,
-            "tickangle": 0,
+            "tickangle": "auto",
+            "autotickangles": [5, -25],
             "anchor": "y",
             "autorange": true
         },

@@ -40,7 +40,9 @@
                 "Regina"
             ],
             "marker": {
-                "size": 10,
+                "symbol": "arrow",
+                "angleref": "north",
+                "size": 20,
                 "color": [
                     "#bebada",
                     "#fdb462",
@@ -116,10 +118,14 @@
         "title": {
             "text": "Canadian cities",
             "font": {
+                "color": "yellow",
+                "shadow": "2px 2px 4px red",
                 "size": 28
             }
         },
-        "font": {},
+        "font": {
+            "shadow": "auto"
+        },
         "geo": {
             "scope": "north america",
             "lonaxis": {

@@ -17,6 +17,12 @@ module.exports = function arraysToCalcdata(cd, trace) {
         Lib.mergeArrayCastPositive(trace.textfont.size, cd, 'ts');
         Lib.mergeArray(trace.textfont.color, cd, 'tc');
         Lib.mergeArray(trace.textfont.family, cd, 'tf');
+        Lib.mergeArray(trace.textfont.weight, cd, 'tw');
+        Lib.mergeArray(trace.textfont.style, cd, 'ty');
+        Lib.mergeArray(trace.textfont.variant, cd, 'tv');
+        Lib.mergeArray(trace.textfont.textcase, cd, 'tC');
+        Lib.mergeArray(trace.textfont.lineposition, cd, 'tE');
+        Lib.mergeArray(trace.textfont.shadow, cd, 'tS');
     }
 
     var marker = trace.marker;
@@ -24,6 +30,8 @@ module.exports = function arraysToCalcdata(cd, trace) {
         Lib.mergeArrayCastPositive(marker.size, cd, 'ms');
         Lib.mergeArrayCastPositive(marker.opacity, cd, 'mo');
         Lib.mergeArray(marker.symbol, cd, 'mx');
+        Lib.mergeArray(marker.angle, cd, 'ma');
+        Lib.mergeArray(marker.standoff, cd, 'mf');
         Lib.mergeArray(marker.color, cd, 'mc');
 
         var markerLine = marker.line;

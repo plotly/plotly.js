@@ -58,7 +58,7 @@ proto.handlePick = function(selection) {
 
         selection.textLabel = '';
         if(this.textLabels) {
-            if(Array.isArray(this.textLabels)) {
+            if(Lib.isArrayOrTypedArray(this.textLabels)) {
                 if(this.textLabels[ind] || this.textLabels[ind] === 0) {
                     selection.textLabel = this.textLabels[ind];
                 }
@@ -227,8 +227,11 @@ function convertPlotlyOptions(scene, data) {
     }
 
     // convert text
-    if(Array.isArray(data.text)) text = data.text;
-    else if(data.text !== undefined) {
+    if(Array.isArray(data.text)) {
+        text = data.text;
+    } else if(Lib.isTypedArray(data.text)) {
+        text = Array.from(data.text);
+    } else if(data.text !== undefined) {
         text = new Array(len);
         for(i = 0; i < len; i++) text[i] = data.text;
     }
@@ -293,7 +296,10 @@ function convertPlotlyOptions(scene, data) {
         params.textOffset = calculateTextOffset(data.textposition);
         params.textColor = formatColor(data.textfont, 1, len);
         params.textSize = formatParam(data.textfont.size, len, Lib.identity, 12);
-        params.textFont = data.textfont.family;  // arrayOk === false
+        params.textFontFamily = data.textfont.family;
+        params.textFontWeight = data.textfont.weight;
+        params.textFontStyle = data.textfont.style;
+        params.textFontVariant = data.textfont.variant;
         params.textAngle = 0;
     }
 
@@ -403,7 +409,7 @@ proto.update = function(data) {
 
     // N.B. marker.opacity must be a scalar for performance
     var scatterOpacity = data.opacity;
-    if(data.marker && data.marker.opacity) scatterOpacity *= data.marker.opacity;
+    if(data.marker && data.marker.opacity !== undefined) scatterOpacity *= data.marker.opacity;
 
     scatterOptions = {
         gl: this.scene.glplot.gl,
@@ -442,7 +448,10 @@ proto.update = function(data) {
         size: options.textSize,
         angle: options.textAngle,
         alignment: options.textOffset,
-        font: options.textFont,
+        font: options.textFontFamily,
+        fontWeight: options.textFontWeight,
+        fontStyle: options.textFontStyle,
+        fontVariant: options.textFontVariant,
         orthographic: true,
         lineWidth: 0,
         project: false,

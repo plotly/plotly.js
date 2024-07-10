@@ -1,17 +1,17 @@
-var Plotly = require('@lib/index');
-var attributes = require('@src/traces/sankey/attributes');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var attributes = require('../../../src/traces/sankey/attributes');
+var Lib = require('../../../src/lib');
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var d3sankey = require('@plotly/d3-sankey');
 var d3SankeyCircular = require('@plotly/d3-sankey-circular');
-var mock = require('@mocks/sankey_energy.json');
-var mockDark = require('@mocks/sankey_energy_dark.json');
-var mockCircular = require('@mocks/sankey_circular.json');
-var mockCircularLarge = require('@mocks/sankey_circular_large.json');
-var mockXY = require('@mocks/sankey_x_y.json');
-var Sankey = require('@src/traces/sankey');
-var Registry = require('@src/registry');
+var mock = require('../../image/mocks/sankey_energy.json');
+var mockDark = require('../../image/mocks/sankey_energy_dark.json');
+var mockCircular = require('../../image/mocks/sankey_circular.json');
+var mockCircularLarge = require('../../image/mocks/sankey_circular_large.json');
+var mockXY = require('../../image/mocks/sankey_x_y.json');
+var Sankey = require('../../../src/traces/sankey');
+var Registry = require('../../../src/registry');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -21,7 +21,7 @@ var getNodeCoords = require('../assets/get_node_coords');
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
 var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
 var supplyAllDefaults = require('../assets/supply_defaults');
-var defaultColors = require('@src/components/color/attributes').defaults;
+var defaultColors = require('../../../src/components/color/attributes').defaults;
 
 var drag = require('../assets/drag');
 var checkOverlap = require('../assets/check_overlap');
@@ -154,9 +154,25 @@ describe('sankey tests', function() {
 
         it('\'Sankey\' layout dependent specification should have proper types',
             function() {
-                var fullTrace = _supplyWithLayout({}, {font: {family: 'Arial'}});
+                var fullTrace = _supplyWithLayout({}, {font: {
+                    family: 'Arial',
+                    weight: 'bold',
+                    style: 'italic',
+                    variant: 'small-caps',
+                    textcase: 'word caps',
+                    lineposition: 'under',
+                    shadow: '1px 1px 2px green',
+                }});
                 expect(fullTrace.textfont)
-                    .toEqual({family: 'Arial'}, 'textfont is defined');
+                    .toEqual({
+                        family: 'Arial',
+                        weight: 'bold',
+                        style: 'italic',
+                        variant: 'small-caps',
+                        textcase: 'word caps',
+                        lineposition: 'under',
+                        shadow: '1px 1px 2px green',
+                    }, 'textfont is defined');
             });
 
         it('\'line\' specifications should yield the default values',
@@ -563,7 +579,7 @@ describe('sankey tests', function() {
         });
 
         it('resets each subplot to its initial view (ie. x, y groups) via modebar button', function(done) {
-            var mockCopy = Lib.extendDeep({}, require('@mocks/sankey_subplots_circular'));
+            var mockCopy = Lib.extendDeep({}, require('../../image/mocks/sankey_subplots_circular'));
 
             // Set initial view
             mockCopy.data[0].node.x = [0.25];
@@ -608,7 +624,7 @@ describe('sankey tests', function() {
         });
 
         it('works as a subplot in the presence of other trace types', function(done) {
-            var mockCopy = Lib.extendDeep({}, require('@mocks/sankey_subplots_circular'));
+            var mockCopy = Lib.extendDeep({}, require('../../image/mocks/sankey_subplots_circular'));
 
             mockCopy.data[0] = {
                 y: [5, 1, 4, 3, 2]
@@ -771,7 +787,7 @@ describe('sankey tests', function() {
             .then(done, done.fail);
         });
 
-        it('should position hover labels correctly', function(done) {
+        it('@noCI should position hover labels correctly', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
@@ -1073,6 +1089,34 @@ describe('sankey tests', function() {
             })
             .then(done, done.fail);
         });
+
+        it('should (un-)highlight all traces ending in a (un-)hovered node', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.newPlot(gd, mockCopy)
+                .then(function() {
+                    _hover(200, 250);
+                })
+                .then(function() {
+                    d3SelectAll('.sankey-link')
+                        .filter(function(obj) {
+                            return obj.link.label === 'stream 1';
+                        })[0].forEach(function(l) {
+                            expect(l.style.fillOpacity).toEqual('0.4');
+                        });
+                }).then(function() {
+                    mouseEvent('mouseout', 200, 250);
+                }).then(function() {
+                    d3SelectAll('.sankey-link')
+                        .filter(function(obj) {
+                            return obj.link.label === 'stream 1';
+                        })[0].forEach(function(l) {
+                            expect(l.style.fillOpacity).toEqual('0.2');
+                        });
+                })
+                .then(done, done.fail);
+        });
     });
 
     describe('Test hover/click event data:', function() {
@@ -1318,7 +1362,7 @@ describe('sankey tests', function() {
                       .then(done, done.fail);
                 });
 
-                it('@flaky should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
+                it('should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
                     mockCopy.data[0].arrangement = arrangement;
                     var move = [50, -50];
                     var nodes;
@@ -1346,7 +1390,7 @@ describe('sankey tests', function() {
 
                           nodes = document.getElementsByClassName('sankey-node');
                           node = nodes.item(nodes.length - 1); // Dragged node is now the last one
-                          return drag({node: node, dpos: move});
+                          return drag({node: node, dpos: move, timeDelay: arrangement === 'snap' ? 200 : 0}); // Wait for animation to finish
                       })
                       .then(function() {
                           x1 = gd._fullData[0].node.x.slice();

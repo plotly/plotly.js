@@ -30,18 +30,23 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('mode');
 
+    if(subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noSelect: true, noAngle: true});
+    }
+
     if(subTypes.hasLines(traceOut)) {
         coerce('connectgaps');
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noSelect: true});
-    }
-
     if(subTypes.hasText(traceOut)) {
         coerce('texttemplate');
-        handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
+        handleTextDefaults(traceIn, traceOut, layout, coerce, {
+            noSelect: true,
+            noFontShadow: true,
+            noFontLineposition: true,
+            noFontTextcase: true,
+        });
     }
 
     var lineColor = (traceOut.line || {}).color;

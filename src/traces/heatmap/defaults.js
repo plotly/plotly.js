@@ -36,4 +36,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('connectgaps', Lib.isArray1D(traceOut.z) && (traceOut.zsmooth !== false));
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
+    coerce('zorder');
 };

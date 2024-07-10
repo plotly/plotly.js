@@ -1,17 +1,17 @@
-var Plotly = require('@lib/index');
-var plotApi = require('@src/plot_api/plot_api');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Queue = require('@src/lib/queue');
-var Scatter = require('@src/traces/scatter');
-var Bar = require('@src/traces/bar');
-var Legend = require('@src/components/legend');
-var Axes = require('@src/plots/cartesian/axes');
+var Plotly = require('../../../lib/index');
+var plotApi = require('../../../src/plot_api/plot_api');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Queue = require('../../../src/lib/queue');
+var Scatter = require('../../../src/traces/scatter');
+var Bar = require('../../../src/traces/bar');
+var Legend = require('../../../src/components/legend');
+var Axes = require('../../../src/plots/cartesian/axes');
 var pkg = require('../../../package.json');
-var subroutines = require('@src/plot_api/subroutines');
-var manageArrays = require('@src/plot_api/manage_arrays');
-var helpers = require('@src/plot_api/helpers');
-var editTypes = require('@src/plot_api/edit_types');
+var subroutines = require('../../../src/plot_api/subroutines');
+var manageArrays = require('../../../src/plot_api/manage_arrays');
+var helpers = require('../../../src/plot_api/helpers');
+var editTypes = require('../../../src/plot_api/edit_types');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -533,7 +533,7 @@ describe('Test plot api', function() {
             .then(function() {
                 gd.on('plotly_relayout', function(eventData) {
                     expect(eventData).toEqual({
-                        'title': 'Plotly chart',
+                        title: 'Plotly chart',
                         'xaxis.title': 'X',
                         'xaxis.titlefont': {color: 'green'},
                         'yaxis.title': 'Y',
@@ -543,7 +543,7 @@ describe('Test plot api', function() {
                 });
 
                 return Plotly.relayout(gd, {
-                    'title': 'Plotly chart',
+                    title: 'Plotly chart',
                     'xaxis.title': 'X',
                     'xaxis.titlefont': {color: 'green'},
                     'yaxis.title': 'Y',
@@ -918,11 +918,11 @@ describe('Test plot api', function() {
             };
 
             mockDefaultsAndCalc(gd);
-            Plotly.restyle(gd, {'xgap': 2})
+            Plotly.restyle(gd, {xgap: 2})
             .then(function() {
                 expect(plotApi._doPlot).toHaveBeenCalled();
 
-                return Plotly.restyle(gd, {'ygap': 2});
+                return Plotly.restyle(gd, {ygap: 2});
             })
             .then(function() {
                 expect(plotApi._doPlot.calls.count()).toEqual(2);
@@ -1035,7 +1035,7 @@ describe('Test plot api', function() {
             mockDefaultsAndCalc(gd);
 
             // Call restyle on an invalid trace indice
-            Plotly.restyle(gd, {'type': 'scatter', 'marker.color': 'red'}, [1])
+            Plotly.restyle(gd, {type: 'scatter', 'marker.color': 'red'}, [1])
             .then(done, done.fail);
         });
 
@@ -1199,7 +1199,7 @@ describe('Test plot api', function() {
         });
 
         it('turns off cauto (autocolorscale) when you edit cmin or cmax (colorscale)', function(done) {
-            var scales = require('@src/components/colorscale/scales').scales;
+            var scales = require('../../../src/components/colorscale/scales').scales;
 
             var autocscale = scales.Reds;
             var mcscl0 = 'Rainbow';
@@ -1493,7 +1493,7 @@ describe('Test plot api', function() {
         });
 
         it('updates colorbars when editing bar charts', function(done) {
-            var mock = require('@mocks/bar-colorscale-colorbar.json');
+            var mock = require('../../image/mocks/bar-colorscale-colorbar.json');
 
             Plotly.newPlot(gd, mock.data, mock.layout)
             .then(function() {
@@ -1522,7 +1522,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(d3Select('.cbaxis text').node().style.fill).toBe('rgb(255, 0, 0)');
 
-                return Plotly.restyle(gd, {'showscale': false});
+                return Plotly.restyle(gd, {showscale: false});
             })
             .then(function() {
                 expect(d3Select('.cbaxis').size()).toBe(0);
@@ -1587,10 +1587,10 @@ describe('Test plot api', function() {
         beforeEach(function() {
             gd = {
                 data: [
-                    {'name': 'a'},
-                    {'name': 'b'},
-                    {'name': 'c'},
-                    {'name': 'd'}
+                    {name: 'a'},
+                    {name: 'b'},
+                    {name: 'c'},
+                    {name: 'd'}
                 ]
             };
             spyOn(plotApi, 'redraw');
@@ -1616,9 +1616,9 @@ describe('Test plot api', function() {
 
         it('should work when indices are negative', function() {
             var expectedData = [
-                {'name': 'a'},
-                {'name': 'b'},
-                {'name': 'c'}
+                {name: 'a'},
+                {name: 'b'},
+                {name: 'c'}
             ];
 
             Plotly.deleteTraces(gd, -1);
@@ -1628,8 +1628,8 @@ describe('Test plot api', function() {
 
         it('should work when multiple traces are deleted', function() {
             var expectedData = [
-                {'name': 'b'},
-                {'name': 'c'}
+                {name: 'b'},
+                {name: 'c'}
             ];
 
             Plotly.deleteTraces(gd, [0, 3]);
@@ -1639,8 +1639,8 @@ describe('Test plot api', function() {
 
         it('should work when indices are not sorted', function() {
             var expectedData = [
-                {'name': 'b'},
-                {'name': 'c'}
+                {name: 'b'},
+                {name: 'c'}
             ];
 
             Plotly.deleteTraces(gd, [3, 0]);
@@ -1678,7 +1678,7 @@ describe('Test plot api', function() {
         var gd;
 
         beforeEach(function() {
-            gd = { data: [{'name': 'a'}, {'name': 'b'}] };
+            gd = { data: [{name: 'a'}, {name: 'b'}] };
             spyOn(plotApi, 'redraw');
             spyOn(plotApi, 'moveTraces');
         });
@@ -1719,7 +1719,7 @@ describe('Test plot api', function() {
         });
 
         it('should work when newIndices is undefined', function() {
-            Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}]);
+            Plotly.addTraces(gd, [{name: 'c'}, {name: 'd'}]);
             expect(gd.data[2].name).toBeDefined();
             expect(gd.data[3].name).toBeDefined();
             expect(plotApi.redraw).toHaveBeenCalled();
@@ -1727,7 +1727,7 @@ describe('Test plot api', function() {
         });
 
         it('should work when newIndices is defined', function() {
-            Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}], [1, 3]);
+            Plotly.addTraces(gd, [{name: 'c'}, {name: 'd'}], [1, 3]);
             expect(gd.data[2].name).toBeDefined();
             expect(gd.data[3].name).toBeDefined();
             expect(plotApi.redraw).not.toHaveBeenCalled();
@@ -1735,7 +1735,7 @@ describe('Test plot api', function() {
         });
 
         it('should work when newIndices has negative indices', function() {
-            Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}], [-3, -1]);
+            Plotly.addTraces(gd, [{name: 'c'}, {name: 'd'}], [-3, -1]);
             expect(gd.data[2].name).toBeDefined();
             expect(gd.data[3].name).toBeDefined();
             expect(plotApi.redraw).not.toHaveBeenCalled();
@@ -1743,7 +1743,7 @@ describe('Test plot api', function() {
         });
 
         it('should work when newIndices is an integer', function() {
-            Plotly.addTraces(gd, {'name': 'c'}, 0);
+            Plotly.addTraces(gd, {name: 'c'}, 0);
             expect(gd.data[2].name).toBeDefined();
             expect(plotApi.redraw).not.toHaveBeenCalled();
             expect(plotApi.moveTraces).toHaveBeenCalledWith(gd, [-1], [0]);
@@ -1770,10 +1770,10 @@ describe('Test plot api', function() {
         beforeEach(function() {
             gd = {
                 data: [
-                    {'name': 'a'},
-                    {'name': 'b'},
-                    {'name': 'c'},
-                    {'name': 'd'}
+                    {name: 'a'},
+                    {name: 'b'},
+                    {name: 'c'},
+                    {name: 'd'}
                 ]
             };
             spyOn(plotApi, 'redraw');
@@ -1836,10 +1836,10 @@ describe('Test plot api', function() {
 
         it('accept integers in place of arrays', function() {
             var expectedData = [
-                {'name': 'b'},
-                {'name': 'a'},
-                {'name': 'c'},
-                {'name': 'd'}
+                {name: 'b'},
+                {name: 'a'},
+                {name: 'c'},
+                {name: 'd'}
             ];
 
             Plotly.moveTraces(gd, 0, 1);
@@ -1849,10 +1849,10 @@ describe('Test plot api', function() {
 
         it('handle unsorted currentIndices', function() {
             var expectedData = [
-                {'name': 'd'},
-                {'name': 'a'},
-                {'name': 'c'},
-                {'name': 'b'}
+                {name: 'd'},
+                {name: 'a'},
+                {name: 'c'},
+                {name: 'b'}
             ];
 
             Plotly.moveTraces(gd, [3, 1], [0, 3]);
@@ -1862,10 +1862,10 @@ describe('Test plot api', function() {
 
         it('work when newIndices are undefined.', function() {
             var expectedData = [
-                {'name': 'b'},
-                {'name': 'c'},
-                {'name': 'd'},
-                {'name': 'a'}
+                {name: 'b'},
+                {name: 'c'},
+                {name: 'd'},
+                {name: 'a'}
             ];
 
             Plotly.moveTraces(gd, [3, 0]);
@@ -1875,10 +1875,10 @@ describe('Test plot api', function() {
 
         it('accept negative indices.', function() {
             var expectedData = [
-                {'name': 'a'},
-                {'name': 'c'},
-                {'name': 'b'},
-                {'name': 'd'}
+                {name: 'a'},
+                {name: 'c'},
+                {name: 'b'},
+                {name: 'd'}
             ];
 
             Plotly.moveTraces(gd, 1, -2);
@@ -2771,7 +2771,7 @@ describe('Test plot api', function() {
         });
 
         it('call doLegend on legend updates', function(done) {
-            Plotly.update(gd, {}, { 'showlegend': true }).then(function() {
+            Plotly.update(gd, {}, { showlegend: true }).then(function() {
                 expect(subroutines.doLegend).toHaveBeenCalledTimes(1);
                 expect(calcdata).toBe(gd.calcdata);
             })
@@ -2799,7 +2799,7 @@ describe('Test plot api', function() {
         });
 
         it('call doModeBar when updating \'dragmode\'', function(done) {
-            Plotly.update(gd, {}, { 'dragmode': 'pan' }).then(function() {
+            Plotly.update(gd, {}, { dragmode: 'pan' }).then(function() {
                 expect(subroutines.doModeBar).toHaveBeenCalledTimes(1);
                 expect(calcdata).toBe(gd.calcdata);
             })
@@ -2808,7 +2808,7 @@ describe('Test plot api', function() {
 
         it('ignores invalid trace indices', function() {
             // Call update on an invalid trace indice
-            Plotly.update(gd, {'type': 'scatter', 'marker.color': 'red'}, {}, [1]);
+            Plotly.update(gd, {type: 'scatter', 'marker.color': 'red'}, {}, [1]);
         });
     });
 });
@@ -2824,7 +2824,7 @@ describe('plot_api helpers', function() {
                 // just in case this would count as a parent.
                 '': true,
                 'annotations[1]': {}, // parent structure, just a different array element
-                'xref': 1, // another substring
+                xref: 1, // another substring
                 'annotations[2].x': 0.5, // substring of the attribute, but not a parent
                 'annotations[2].xref': 'x2' // the attribute we're testing - not its own parent
             };
@@ -2835,7 +2835,7 @@ describe('plot_api helpers', function() {
                 'marker.line.color': 'red',
                 'marker.line.width': 2,
                 'marker.color': 'blue',
-                'line': {}
+                line: {}
             };
 
             expect(helpers.hasParent(aobj2, attr2)).toBe(false);
@@ -2844,17 +2844,17 @@ describe('plot_api helpers', function() {
         it('is false when called on a top-level attribute', function() {
             var aobj = {
                 '': true,
-                'width': 100
+                width: 100
             };
 
             expect(helpers.hasParent(aobj, 'width')).toBe(false);
         });
 
         it('matches any kind of parent', function() {
-            expect(helpers.hasParent({'annotations': []}, attr)).toBe(true);
+            expect(helpers.hasParent({annotations: []}, attr)).toBe(true);
             expect(helpers.hasParent({'annotations[2]': {}}, attr)).toBe(true);
 
-            expect(helpers.hasParent({'marker': {}}, attr2)).toBe(true);
+            expect(helpers.hasParent({marker: {}}, attr2)).toBe(true);
             // this one wouldn't actually make sense: marker.line needs to be an object...
             // but hasParent doesn't look at the values in aobj, just its keys.
             expect(helpers.hasParent({'marker.line': 1}, attr2)).toBe(true);

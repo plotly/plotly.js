@@ -1,10 +1,10 @@
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 
-var BADNUM = require('@src/constants/numerical').BADNUM;
+var BADNUM = require('../../../src/constants/numerical').BADNUM;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-var Lib = require('@src/lib');
+var Lib = require('../../../src/lib');
 
 describe('calculated data and points', function() {
     var gd;
@@ -941,9 +941,9 @@ describe('calculated data and points', function() {
             .then(function() {
                 expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'b', '1']);
                 expect(gd._fullLayout.xaxis._categoriesMap).toEqual({
-                    '1': 2,
-                    'a': 0,
-                    'b': 1
+                    1: 2,
+                    a: 0,
+                    b: 1
                 });
             })
             .then(done, done.fail);
@@ -1074,8 +1074,14 @@ describe('calculated data and points', function() {
                             if(categoryorder === 'total descending') finalOrder.reverse();
                             var expectedAgg = [['a', 7], ['b', 2], ['c', 3]];
 
-                            if(trace.type === 'ohlc' || trace.type === 'candlestick') expectedAgg = [['a', 14], ['b', 4], ['c', 6]];
-                            if(trace.type.match(/histogram/)) expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
+                            if(trace.type === 'ohlc' || trace.type === 'candlestick') {
+                                expectedAgg = [['a', 14], ['b', 4], ['c', 6]];
+                                if(categoryorder === 'total descending') finalOrder = ['a', 'c', 'b'];
+                            }
+                            if(trace.type.match(/histogram/)) {
+                                expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
+                                if(categoryorder === 'total descending') finalOrder = ['a', 'b', 'c'];
+                            }
 
                             checkAggregatedValue(baseMock, expectedAgg, finalOrder, done);
                         });
@@ -1189,7 +1195,7 @@ describe('calculated data and points', function() {
             });
 
             it('works on asymmetric splom', function(done) {
-                var mock = require('@mocks/splom_multi-axis-type');
+                var mock = require('../../image/mocks/splom_multi-axis-type');
                 var mockCopy = Lib.extendDeep(mock, {});
 
                 var order = ['donald', 'georgeW', 'bill', 'ronald', 'richard', 'jimmy', 'george', 'barack', 'gerald', 'lyndon'];

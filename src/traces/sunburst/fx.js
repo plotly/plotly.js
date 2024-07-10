@@ -143,6 +143,9 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 fontFamily: _cast('hoverlabel.font.family'),
                 fontSize: _cast('hoverlabel.font.size'),
                 fontColor: _cast('hoverlabel.font.color'),
+                fontWeight: _cast('hoverlabel.font.weight'),
+                fontStyle: _cast('hoverlabel.font.style'),
+                fontVariant: _cast('hoverlabel.font.variant'),
                 nameLength: _cast('hoverlabel.namelength'),
                 textAlign: _cast('hoverlabel.align'),
                 hovertemplate: hovertemplate,
@@ -174,7 +177,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
         if(isTreemapOrIcicle) {
             var slice = sliceTop.select('path.surface');
-            opts.styleOne(slice, pt, traceNow, {
+            opts.styleOne(slice, pt, traceNow, gd, {
                 hovered: true
             });
         }
@@ -207,7 +210,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
         if(isTreemapOrIcicle) {
             var slice = sliceTop.select('path.surface');
-            opts.styleOne(slice, pt, traceNow, {
+            opts.styleOne(slice, pt, traceNow, gd, {
                 hovered: false
             });
         }

@@ -1,7 +1,7 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Registry = require('@src/registry');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Registry = require('../../../src/registry');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -209,7 +209,7 @@ describe('Test Plots', function() {
             layoutOut,
             expected;
 
-        var formatObj = require('@src/locale-en').format;
+        var formatObj = require('../../../src/locale-en').format;
 
         function supplyLayoutDefaults(layoutIn, layoutOut) {
             layoutOut._dfltTitle = {
@@ -645,7 +645,7 @@ describe('Test Plots', function() {
     });
 
     describe('getSubplotCalcData', function() {
-        var getSubplotCalcData = require('@src/plots/get_data').getSubplotCalcData;
+        var getSubplotCalcData = require('../../../src/plots/get_data').getSubplotCalcData;
 
         var trace0 = { geo: 'geo2' };
         var trace1 = { subplot: 'ternary10' };
@@ -817,7 +817,7 @@ describe('Test Plots', function() {
         afterEach(destroyGraphDiv);
 
         it('should call reused style modules only once per graph', function(done) {
-            var Drawing = require('@src/components/drawing');
+            var Drawing = require('../../../src/components/drawing');
 
             Plotly.newPlot(gd, [{
                 mode: 'markers',
@@ -1322,6 +1322,52 @@ describe('grids', function() {
             // change row OR column, the other keeps its previous default
             checkDomain(gd._fullData[0], 1, 0, [0.6, 1], [0.6, 1]);
             checkDomain(gd._fullLayout.geo, 0, 1, [0, 0.4], [0, 0.4]);
+        })
+        .then(done, done.fail);
+    });
+});
+
+describe('Test Plots with automargin and minreducedwidth/height', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should resize the plot area when tweaking min-reduced width & height', function(done) {
+        function assert(attr, exp) {
+            var xy = d3Select('rect.nsewdrag')[0][0];
+            expect(xy.getAttribute(attr)).toEqual(exp);
+        }
+
+        function assertClose(attr, exp) {
+            var xy = d3Select('rect.nsewdrag')[0][0];
+            expect(xy.getAttribute(attr)).toBeCloseTo(exp, -1);
+        }
+
+        var fig = require('../../image/mocks/automargin-minreducedheight.json');
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            assertClose('height', '55');
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'minreducedheight', 100);
+        })
+        .then(function() {
+            assert('height', '100');
+        })
+        .then(function() {
+            // force tickangle to 90 so when we increase the width the x axis labels
+            // don't revert to 30 degrees, giving us a larger height
+            // this is a cool effect, but not what we're testing here!
+            return Plotly.relayout(gd, {minreducedwidth: 100, 'xaxis.tickangle': 90});
+        })
+        .then(function() {
+            assert('width', '100');
+            assert('height', '100');
         })
         .then(done, done.fail);
     });

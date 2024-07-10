@@ -30,7 +30,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('xhoverformat');
     coerce('yhoverformat');
 
+    coerce('zorder');
+
     var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
+    if(
+        layout.scattermode === 'group' &&
+        traceOut.orientation === undefined
+    ) {
+        coerce('orientation', 'v');
+    }
 
     var defaultMode = !stackGroupOpts && (len < constants.PTS_LINESONLY) ?
         'lines+markers' : 'lines';
@@ -38,15 +46,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     coerce('mode', defaultMode);
 
+    if(subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
+    }
+
     if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {backoff: true});
         handleLineShapeDefaults(traceIn, traceOut, coerce);
         coerce('connectgaps');
         coerce('line.simplify');
-    }
-
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
     }
 
     if(subTypes.hasText(traceOut)) {
@@ -66,7 +74,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // We handle that case in some hacky code inside handleStackDefaults.
     coerce('fill', stackGroupOpts ? stackGroupOpts.fillDflt : 'none');
     if(traceOut.fill !== 'none') {
-        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce, {
+            moduleHasFillgradient: true
+        });
         if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
         coercePattern(coerce, 'fillpattern', traceOut.fillcolor, false);
     }

@@ -68,6 +68,12 @@ function draw(gd, titleClass, options) {
     var fontFamily = font.family;
     var fontSize = font.size;
     var fontColor = font.color;
+    var fontWeight = font.weight;
+    var fontStyle = font.style;
+    var fontVariant = font.variant;
+    var fontTextcase = font.textcase;
+    var fontLineposition = font.lineposition;
+    var fontShadow = font.shadow;
 
     // only make this title editable if we positively identify its property
     // as one that has editing enabled.
@@ -141,12 +147,17 @@ function draw(gd, titleClass, options) {
 
         titleEl.attr('transform', transformVal);
 
-        titleEl.style({
-            'font-family': fontFamily,
-            'font-size': d3.round(fontSize, 2) + 'px',
-            fill: Color.rgb(fontColor),
-            opacity: opacity * Color.opacity(fontColor),
-            'font-weight': Plots.fontWeight
+        titleEl.style('opacity', opacity * Color.opacity(fontColor))
+        .call(Drawing.font, {
+            color: Color.rgb(fontColor),
+            size: d3.round(fontSize, 2),
+            family: fontFamily,
+            weight: fontWeight,
+            style: fontStyle,
+            variant: fontVariant,
+            textcase: fontTextcase,
+            shadow: fontShadow,
+            lineposition: fontLineposition,
         })
         .attr(attributes)
         .call(svgTextUtils.convertToTspans, gd);
@@ -167,11 +178,21 @@ function draw(gd, titleClass, options) {
             var pad = isNumeric(avoid.pad) ? avoid.pad : 2;
 
             var titlebb = Drawing.bBox(titleGroup.node());
+
+            // Account for reservedMargins
+            var reservedMargins = {t: 0, b: 0, l: 0, r: 0};
+            var margins = gd._fullLayout._reservedMargin;
+            for(var key in margins) {
+                for(var side in margins[key]) {
+                    var val = margins[key][side];
+                    reservedMargins[side] = Math.max(reservedMargins[side], val);
+                }
+            }
             var paperbb = {
-                left: 0,
-                top: 0,
-                right: fullLayout.width,
-                bottom: fullLayout.height
+                left: reservedMargins.l,
+                top: reservedMargins.t,
+                right: fullLayout.width - reservedMargins.r,
+                bottom: fullLayout.height - reservedMargins.b
             };
 
             var maxshift = avoid.maxShift ||
@@ -202,6 +223,8 @@ function draw(gd, titleClass, options) {
                     }
                 });
                 shift = Math.min(maxshift, shift);
+                // Keeping track of this for calculation of full axis size if needed
+                cont._titleScoot = Math.abs(shift);
             }
 
             if(shift > 0 || maxshift < 0) {

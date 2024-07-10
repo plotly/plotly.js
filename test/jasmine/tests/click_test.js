@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
-var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Drawing = require('../../../src/components/drawing');
+var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -31,7 +31,7 @@ function move(fromX, fromY, toX, toY, delay) {
 }
 
 describe('Test click interactions:', function() {
-    var mock = require('@mocks/14.json');
+    var mock = require('../../image/mocks/14.json');
 
     var mockCopy, gd;
 
@@ -958,9 +958,14 @@ describe('Test click interactions:', function() {
                 var ya = fullLayout.yaxis;
                 var ya2 = fullLayout.yaxis2;
 
-                expect(xa._rangeInitial).toBe(undefined);
-                expect(ya._rangeInitial).toBe(undefined);
-                expect(ya2._rangeInitial).toBe(undefined);
+                expect(xa._rangeInitial0).toBe(undefined);
+                expect(xa._rangeInitial1).toBe(undefined);
+
+                expect(ya._rangeInitial0).toBe(undefined);
+                expect(ya._rangeInitial1).toBe(undefined);
+
+                expect(ya2._rangeInitial0).toBe(undefined);
+                expect(ya2._rangeInitial1).toBe(undefined);
 
                 expect(xa.range).toBeCloseToArray(exp.xRng, 1, msg);
                 expect(ya.range).toBeCloseToArray(exp.yRng, 1, msg);
@@ -969,8 +974,12 @@ describe('Test click interactions:', function() {
 
             Plotly.newPlot(gd, [], {})
             .then(function() {
-                expect(gd._fullLayout.xaxis._rangeInitial).toBe(undefined);
-                expect(gd._fullLayout.yaxis._rangeInitial).toBe(undefined);
+                expect(gd._fullLayout.xaxis._rangeInitial0).toBe(undefined);
+                expect(gd._fullLayout.xaxis._rangeInitial1).toBe(undefined);
+
+                expect(gd._fullLayout.yaxis._rangeInitial0).toBe(undefined);
+                expect(gd._fullLayout.yaxis._rangeInitial1).toBe(undefined);
+
                 expect(gd._fullLayout.yaxis2).toBe(undefined);
             })
             .then(function() { return Plotly.react(gd, fig); })
@@ -1005,6 +1014,62 @@ describe('Test click interactions:', function() {
                     yRng: [0.788, 4.211],
                     y2Rng: [-1, 1]
                 });
+            })
+            .then(done, done.fail);
+        });
+
+        it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (case of partial ranges)', function(done) {
+            mockCopy = setRanges(mockCopy);
+
+            Plotly.newPlot(gd, [{
+                y: [1, 2, 3, 4]}
+            ], {
+                xaxis: {range: [1, null]},
+                yaxis: {range: [null, 3]},
+                width: 600,
+                height: 600
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 3.2]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.8, 3]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.2, 3.2]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.8, 4.2]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 3.2]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.8, 3]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (insiderange and inside tick lables)', function(done) {
+            mockCopy = setRanges(mockCopy);
+
+            Plotly.newPlot(gd, [{
+                y: [0, 1, 2, 3]}
+            ], {
+                xaxis: {insiderange: [1, 2]},
+                yaxis: {ticks: 'inside', ticklabelposition: 'inside', side: 'right'},
+                plot_bgcolor: 'lightgray',
+                width: 600,
+                height: 600
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.2019, 3.249]);
+
+                return doubleClick(300, 300);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068]);
             })
             .then(done, done.fail);
         });
@@ -1104,7 +1169,7 @@ describe('dragbox', function() {
     afterEach(destroyGraphDiv);
 
     it('should scale subplot and inverse scale scatter points', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/bar_line.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/bar_line.json'));
 
         function assertScale(node, x, y) {
             var scale = Drawing.getScale(node);
@@ -1117,14 +1182,14 @@ describe('dragbox', function() {
             var pos = getRectCenter(node);
             var fns = drag.makeFns({pos0: pos, dpos: [50, 0]});
 
-            assertScale(d3Select('.plot').node(), 1, 1);
+            assertScale(d3Select('.overplot').select('.xy').node(), 1, 1);
 
             d3SelectAll('.point').each(function() {
                 assertScale(this, 1, 1);
             });
 
             fns.start().then(function() {
-                assertScale(d3Select('.plot').node(), 1.14, 1);
+                assertScale(d3Select('.overplot').select('.xy').node(), 1.14, 1);
 
                 d3Select('.scatterlayer').selectAll('.point').each(function() {
                     assertScale(this, 0.87, 1);

@@ -185,6 +185,7 @@ module.exports = {
             'the high side, both, or neither side of the axis.'
         ].join(' ')
     },
+    labelalias: extendFlat({}, axesAttrs.labelalias, {editType: 'calc'}),
     tickfont: fontAttrs({
         editType: 'calc',
         description: 'Sets the tick font.'

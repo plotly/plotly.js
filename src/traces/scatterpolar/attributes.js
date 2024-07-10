@@ -3,6 +3,7 @@
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var extendFlat = require('../../lib/extend').extendFlat;
+var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
 var baseAttrs = require('../../plots/attributes');
 var lineAttrs = scatterAttrs.line;
@@ -82,6 +83,7 @@ module.exports = {
         color: lineAttrs.color,
         width: lineAttrs.width,
         dash: lineAttrs.dash,
+        backoff: lineAttrs.backoff,
         shape: extendFlat({}, lineAttrs.shape, {
             values: ['linear', 'spline']
         }),
@@ -111,7 +113,7 @@ module.exports = {
             'used if one trace does not enclose the other.'
         ].join(' ')
     }),
-    fillcolor: scatterAttrs.fillcolor,
+    fillcolor: makeFillcolorAttr(),
 
     // TODO error bars
     // https://stackoverflow.com/a/26597487/4068492

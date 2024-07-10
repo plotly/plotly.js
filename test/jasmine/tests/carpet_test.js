@@ -1,10 +1,10 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
 
-var Carpet = require('@src/traces/carpet');
-var smoothFill2D = require('@src/traces/carpet/smooth_fill_2d_array');
-var smoothFill = require('@src/traces/carpet/smooth_fill_array');
+var Carpet = require('../../../src/traces/carpet');
+var smoothFill2D = require('../../../src/traces/carpet/smooth_fill_2d_array');
+var smoothFill = require('../../../src/traces/carpet/smooth_fill_array');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -509,7 +509,7 @@ describe('Test carpet interactions:', function() {
     }
 
     it('should restyle visible attribute properly', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/cheater.json'));
 
         Plotly.newPlot(gd, mock)
         .then(function() {
@@ -538,7 +538,7 @@ describe('Test carpet interactions:', function() {
     });
 
     it('should add/delete trace properly', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/cheater.json'));
         var trace1 = Lib.extendDeep({}, mock.data[1]);
 
         Plotly.newPlot(gd, mock)
@@ -568,7 +568,7 @@ describe('Test carpet interactions:', function() {
     });
 
     it('should respond to relayout properly', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/cheater.json'));
 
         Plotly.newPlot(gd, mock)
         .then(function() {
@@ -581,7 +581,7 @@ describe('Test carpet interactions:', function() {
     });
 
     it('scattercarpet should be able to coexist with scatter traces', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/scattercarpet.json'));
 
         function _assert(exp) {
             expect(d3SelectAll('.point').size())
@@ -648,7 +648,7 @@ describe('scattercarpet array attributes', function() {
     afterEach(destroyGraphDiv);
 
     it('works in both initial draws and restyles', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/scattercarpet.json'));
 
         var mc = ['#000', '#00f', '#0ff', '#ff0'];
         var ms = [10, 20, 30, 40];
@@ -713,7 +713,7 @@ describe('scattercarpet hover labels', function() {
     }
 
     it('should generate hover label (base)', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/scattercarpet.json'));
 
         run(
             [200, 200], fig,
@@ -723,7 +723,7 @@ describe('scattercarpet hover labels', function() {
     });
 
     it('should generate hover label (with hovertext array)', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/scattercarpet.json'));
         fig.data[5].hovertext = ['A', 'B', 'C', 'D'];
         fig.data[5].text = ['N', 'O', 'P', '!'];
 
@@ -735,7 +735,7 @@ describe('scattercarpet hover labels', function() {
     });
 
     it('should generate hover label with \'hoverinfo\' set', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/scattercarpet.json'));
         fig.data[5].hoverinfo = 'a+y';
 
         run(
@@ -746,7 +746,7 @@ describe('scattercarpet hover labels', function() {
     });
 
     it('should generate hover label with arrayOk \'hoverinfo\' settings', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/scattercarpet.json'));
         fig.data[5].hoverinfo = ['a+b', 'a+b', 'a+b', 'b+y'];
 
         run(
@@ -757,7 +757,7 @@ describe('scattercarpet hover labels', function() {
     });
 
     it('should generate hover label with *hovertemplate*', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/scattercarpet.json'));
         fig.data[5].hovertemplate = 'f(%{a}, %{b}) = %{y}<extra>scattercarpet #%{curveNumber}</extra>';
 
         run(
@@ -768,7 +768,7 @@ describe('scattercarpet hover labels', function() {
     });
 
     it('should generate hover label with arrayOk *hovertemplate*', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/scattercarpet.json'));
         fig.data[5].hovertemplate = ['', '', '', 'f(%{a}, %{b}) = %{y:.1f}<extra>pt #%{pointNumber}</extra>'];
 
         run(
@@ -781,18 +781,18 @@ describe('scattercarpet hover labels', function() {
 
 describe('scattercarpet texttemplates', function() {
     checkTextTemplate([{
-        'type': 'scattercarpet',
-        'carpet': 'carpet1',
-        'mode': 'markers+text',
-        'a': [0.1, 0.15, 0.25],
-        'b': [1.5, 1.5, 1.5],
-        'text': ['A', 'B', 'C']
+        type: 'scattercarpet',
+        carpet: 'carpet1',
+        mode: 'markers+text',
+        a: [0.1, 0.15, 0.25],
+        b: [1.5, 1.5, 1.5],
+        text: ['A', 'B', 'C']
     }, {
-        'type': 'carpet',
-        'carpet': 'carpet1',
-        'a': [0.1, 0.2, 0.3],
-        'b': [1, 2, 3],
-        'y': [[1, 2.2, 3], [1.5, 2.7, 3.5], [1.7, 2.9, 3.7]]
+        type: 'carpet',
+        carpet: 'carpet1',
+        a: [0.1, 0.2, 0.3],
+        b: [1, 2, 3],
+        y: [[1, 2.2, 3], [1.5, 2.7, 3.5], [1.7, 2.9, 3.7]]
     }], 'g.textpoint', [
         ['%{text}: %{a:0.1f}, %{b:0.1f}', ['A: 0.1, 1.5', 'B: 0.1, 1.5', 'C: 0.3, 1.5']],
         ['%{y}', ['1.000', '1.000', '2.200']]

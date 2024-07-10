@@ -10,15 +10,15 @@
 // promise is followed by .then(done, done.fail)
 'use strict';
 
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var pixelCalc = require('../assets/pixel_calc');
 var getSVGElemScreenBBox = require('../assets/get_svg_elem_screen_bbox');
 // var SVGTools = require('../assets/svg_tools');
-var Lib = require('@src/lib');
-var Axes = require('@src/plots/cartesian/axes');
-var axisIds = require('@src/plots/cartesian/axis_ids');
+var Lib = require('../../../src/lib');
+var Axes = require('../../../src/plots/cartesian/axes');
+var axisIds = require('../../../src/plots/cartesian/axis_ids');
 var testImage = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
 var iterable = require('extra-iterable');
 

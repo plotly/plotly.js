@@ -1,11 +1,11 @@
-var Lib = require('@src/lib');
+var Lib = require('../../../src/lib');
 var _ = Lib._;
-var Registry = require('@src/registry');
+var Registry = require('../../../src/registry');
 
 var d3Select = require('../../strict-d3').select;
 var utcFormat = require('d3-time-format').utcFormat;
 
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -131,7 +131,7 @@ describe('localization', function() {
                 '01/01/2000~23:00:00', '02/01/2000~00:00:00', '02/01/2000~01:00:00'
             ]);
 
-            Plotly.register(require('@src/locale-en-us'));
+            Plotly.register(require('../../../src/locale-en-us'));
             return Plotly.redraw(gd);
         })
         .then(function() {

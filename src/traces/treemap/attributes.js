@@ -9,6 +9,7 @@ var pieAttrs = require('../pie/attributes');
 var sunburstAttrs = require('../sunburst/attributes');
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
+var pattern = require('../../components/drawing/attributes').pattern;
 
 module.exports = {
     labels: sunburstAttrs.labels,
@@ -123,6 +124,8 @@ module.exports = {
 
         colors: sunburstAttrs.marker.colors,
 
+        pattern: pattern,
+
         depthfade: {
             valType: 'enumerated',
             values: [true, false, 'reversed'],
@@ -141,7 +144,17 @@ module.exports = {
 
         line: sunburstAttrs.marker.line,
 
-        editType: 'calc'
+        cornerradius: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            editType: 'plot',
+            description: [
+                'Sets the maximum rounding of corners (in px).'
+            ].join(' ')
+        },
+
+        editType: 'calc',
     },
         colorScaleAttrs('marker', {
             colorAttr: 'colors',

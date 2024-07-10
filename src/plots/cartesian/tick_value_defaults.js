@@ -2,6 +2,8 @@
 
 var cleanTicks = require('./clean_ticks');
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
+var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
+var decodeTypedArraySpec = require('../../lib/array').decodeTypedArraySpec;
 
 module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType, opts) {
     if(!opts) opts = {};
@@ -12,6 +14,8 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
 
     function readInput(attr) {
         var v = cIn[attr];
+        if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
+
         return (
             v !== undefined
         ) ? v : (cOut._template || {})[attr];
@@ -26,7 +30,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
         'auto';
     var tickmode = coerce(prefix + 'tickmode', tickmodeDefault);
 
-    if(tickmode === 'auto') {
+    if(tickmode === 'auto' || tickmode === 'sync') {
         coerce(prefix + 'nticks');
     } else if(tickmode === 'linear') {
         // dtick is usually a positive number, but there are some

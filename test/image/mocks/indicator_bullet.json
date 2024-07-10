@@ -14,6 +14,9 @@
     "gauge": {
       "shape": "bullet",
       "axis": {
+        "labelalias": {
+          "0": "ZERO<sup>2</sup>"
+        },
         "range": [null, 300]
       },
       "threshold": {
@@ -119,6 +122,11 @@
     "value": 220
   }],
   "layout": {
+    "font": {
+      "weight": "bold",
+      "style": "italic",
+      "variant": "small-caps"
+    },
     "width": 600,
     "height": 250,
     "margin": {

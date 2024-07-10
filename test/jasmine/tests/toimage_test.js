@@ -1,12 +1,17 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var b64 = require('base64-arraybuffer');
+function b64encodeTypedArray(typedArray) {
+    return b64.encode(typedArray.buffer);
+}
+
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-var subplotMock = require('@mocks/multiple_subplots.json');
-var pieAutoMargin = require('@mocks/pie_automargin');
+var subplotMock = require('../../image/mocks/multiple_subplots.json');
+var pieAutoMargin = require('../../image/mocks/pie_automargin');
 
 var FORMATS = ['png', 'jpeg', 'webp', 'svg'];
 
@@ -235,7 +240,10 @@ describe('Plotly.toImage', function() {
         })
         .then(function(svg) {
             var svgDOM = parser.parseFromString(svg, 'image/svg+xml');
-            var gSubplot = svgDOM.getElementsByClassName('plot')[0];
+            var gSubplot = svgDOM
+                .getElementsByClassName('overplot')[0]
+                .getElementsByClassName('xy')[0];
+
             var clipPath = gSubplot.getAttribute('clip-path');
             var len = clipPath.length;
 
@@ -289,6 +297,218 @@ describe('Plotly.toImage', function() {
                 expect(fig.version).toBe(Plotly.version, 'contains Plotly version');
             })
             .then(done, done.fail);
+        });
+
+        it('export typed arrays as regular arrays', function(done) {
+            var x = new Float64Array([-1 / 3, 1 / 3]);
+            var y = new Float32Array([-1 / 3, 1 / 3]);
+            var z = [
+                new Int16Array([-32768, 32767]),
+                new Uint16Array([65535, 0])
+            ];
+
+            Plotly.newPlot(gd, [{
+                type: 'surface',
+                x: x,
+                y: y,
+                z: z
+            }])
+            .then(function(gd) {
+                var trace = gd._fullData[0];
+
+                expect(trace.visible).toEqual(true);
+
+                expect(trace.x.slice()).toEqual(x);
+                expect(trace.y.slice()).toEqual(y);
+                expect(trace.z.slice()).toEqual(z);
+
+                return Plotly.toImage(gd, imgOpts);
+            })
+            .then(function(fig) {
+                var trace = JSON.parse(fig).data[0];
+
+                expect(trace.visible).toEqual(true);
+
+                expect(trace.x).toEqual([-0.3333333333333333, 0.3333333333333333]);
+                expect(trace.y).toEqual([-0.3333333432674408, 0.3333333432674408]);
+                expect(trace.z).toEqual([[-32768, 32767], [65535, 0]]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('import & export 1d and 2d typed arrays', function(done) {
+            var allX = new Float64Array([-1 / 3, 0, 1 / 3]);
+            var allY = new Float32Array([1 / 3, -1 / 3]);
+            var allZ = new Uint16Array([0, 100, 200, 300, 400, 500]);
+            var x = b64encodeTypedArray(allX);
+            var y = b64encodeTypedArray(allY);
+            var z = b64encodeTypedArray(allZ);
+
+            Plotly.newPlot(gd, [{
+                type: 'surface',
+                x: {bdata: x, dtype: 'f8'},
+                y: {bdata: y, dtype: 'f4'},
+                z: {bdata: z, dtype: 'u2', shape: '2,3'}
+            }])
+            .then(function(gd) {
+                var trace = gd._fullData[0];
+
+                expect(trace.visible).toEqual(true);
+
+                expect(trace.x.slice()).toEqual(allX);
+                expect(trace.y.slice()).toEqual(allY);
+                expect(trace.z.slice()).toEqual([
+                    new Uint16Array([0, 100, 200]),
+                    new Uint16Array([300, 400, 500])
+                ]);
+
+                return Plotly.toImage(gd, imgOpts);
+            })
+            .then(function(fig) {
+                var trace = JSON.parse(fig).data[0];
+
+                expect(trace.visible).toEqual(true);
+
+                expect(trace.x.bdata).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
+                expect(trace.y.bdata).toEqual('q6qqPquqqr4=');
+                expect(trace.z.bdata).toEqual('AABkAMgALAGQAfQB');
+
+                expect(trace.x.dtype).toEqual('f8');
+                expect(trace.x.shape).toEqual('3');
+
+                expect(trace.y.dtype).toEqual('f4');
+                expect(trace.y.shape).toEqual('2');
+
+                expect(trace.z.dtype).toEqual('u2');
+                expect(trace.z.shape).toEqual('2,3');
+            })
+            .then(done, done.fail);
+        });
+
+        it('import buffer and export b64', function(done) {
+            var allX = new Float64Array([-1 / 3, 0, 1 / 3]);
+            var allY = new Float32Array([1 / 3, -1 / 3]);
+            var allZ = new Uint16Array([0, 100, 200, 300, 400, 500]);
+            var x = allX.buffer;
+            var y = allY.buffer;
+            var z = allZ.buffer;
+
+            Plotly.newPlot(gd, [{
+                type: 'surface',
+                x: {bdata: x, dtype: 'f8', shape: '3'},
+                y: {bdata: y, dtype: 'f4', shape: '2'},
+                z: {bdata: z, dtype: 'u2', shape: '2,3'}
+            }])
+            .then(function(gd) {
+                var trace = gd._fullData[0];
+
+                expect(trace.visible).toEqual(true);
+
+                expect(trace.x.slice()).toEqual(allX);
+                expect(trace.y.slice()).toEqual(allY);
+                expect(trace.z.slice()).toEqual([
+                    new Uint16Array([0, 100, 200]),
+                    new Uint16Array([300, 400, 500])
+                ]);
+
+                return Plotly.toImage(gd, imgOpts);
+            })
+            .then(function(fig) {
+                var trace = JSON.parse(fig).data[0];
+
+                expect(trace.visible).toEqual(true);
+
+                expect(trace.x.bdata).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
+                expect(trace.y.bdata).toEqual('q6qqPquqqr4=');
+                expect(trace.z.bdata).toEqual('AABkAMgALAGQAfQB');
+
+                expect(trace.x.dtype).toEqual('f8');
+                expect(trace.x.shape).toEqual('3');
+
+                expect(trace.y.dtype).toEqual('f4');
+                expect(trace.y.shape).toEqual('2');
+
+                expect(trace.z.dtype).toEqual('u2');
+                expect(trace.z.shape).toEqual('2,3');
+            })
+            .then(done, done.fail);
+        });
+
+        [
+            'scatter3d',
+            'scattergl',
+            'scatter'
+        ].forEach(function(type) {
+            it('import & export arrayOk marker.color and marker.size for ' + type, function(done) {
+                var is3D = type === 'scatter3d';
+
+                var allX = new Int16Array([-100, 200, -300, 400]);
+                var allY = new Uint16Array([100, 200, 300, 400]);
+                var allZ = new Int8Array([-120, -60, 0, 60]);
+                var allS = new Uint8ClampedArray([0, 60, 120, 240]);
+                var allC = new Uint8Array([0, 60, 120, 240]);
+
+                var x = b64encodeTypedArray(allX);
+                var y = b64encodeTypedArray(allY);
+                var z = b64encodeTypedArray(allZ);
+                var s = b64encodeTypedArray(allS);
+                var c = b64encodeTypedArray(allC);
+
+                Plotly.newPlot(gd, [{
+                    type: type,
+                    x: {bdata: x, dtype: 'i2'},
+                    y: {bdata: y, dtype: 'u2'},
+                    z: {bdata: z, dtype: 'i1'},
+                    marker: {
+                        color: {bdata: c, dtype: 'u1'},
+                        size: {bdata: s, dtype: 'u1c'}
+                    }
+                }])
+                .then(function(gd) {
+                    var trace = gd._fullData[0];
+
+                    expect(trace.visible).toEqual(true);
+
+                    expect(trace.x.slice()).toEqual(allX);
+                    expect(trace.y.slice()).toEqual(allY);
+                    if(is3D) expect(trace.z.slice()).toEqual(allZ);
+                    expect(trace.marker.size.slice()).toEqual(allS);
+                    expect(trace.marker.color.slice()).toEqual(allC);
+                    expect(trace.line.color).toEqual('#1f77b4');
+
+                    return Plotly.toImage(gd, imgOpts);
+                })
+                .then(function(fig) {
+                    var trace = JSON.parse(fig).data[0];
+
+                    expect(trace.visible).toEqual(true);
+
+                    expect(trace.x.bdata).toEqual('nP/IANT+kAE=');
+                    expect(trace.x.dtype).toEqual('i2');
+                    expect(trace.x.shape).toEqual('4');
+
+                    expect(trace.y.bdata).toEqual('ZADIACwBkAE=');
+                    expect(trace.y.dtype).toEqual('u2');
+                    expect(trace.y.shape).toEqual('4');
+
+                    if(is3D) {
+                        expect(trace.z.bdata).toEqual('iMQAPA==');
+                        expect(trace.z.dtype).toEqual('i1');
+                        expect(trace.z.shape).toEqual('4');
+                    }
+
+                    expect(trace.marker.size.bdata).toEqual('ADx48A==');
+                    expect(trace.marker.size.dtype).toEqual('u1c');
+                    expect(trace.marker.size.shape).toEqual('4');
+
+                    expect(trace.marker.color.bdata).toEqual('ADx48A==');
+                    expect(trace.marker.color.dtype).toEqual('u1');
+                    expect(trace.marker.color.shape).toEqual('4');
+
+                    expect(trace.marker.colorscale).toBeDefined();
+                })
+                .then(done, done.fail);
+            });
         });
 
         it('export computed margins', function(done) {

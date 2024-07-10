@@ -4,7 +4,7 @@ var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
 var handlePeriodDefaults = require('../scatter/period_defaults');
-var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
+var handleGroupingDefaults = require('../scatter/grouping_defaults');
 var autoType = require('../../plots/cartesian/axis_autotype');
 var attributes = require('./attributes');
 
@@ -40,9 +40,17 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
             if(sd && sd.length) boxmeanDflt = 'sd';
         }
     }
-    coerce('boxmean', boxmeanDflt);
 
     coerce('whiskerwidth');
+    var sizemode = coerce('sizemode');
+    var boxmean;
+    if(sizemode === 'quartiles') {
+        boxmean = coerce('boxmean', boxmeanDflt);
+    }
+    coerce('showwhiskers', sizemode === 'quartiles');
+    if((sizemode === 'sd') || (boxmean === 'sd')) {
+        coerce('sdmultiple');
+    }
     coerce('width');
     coerce('quartilemethod');
 
@@ -59,6 +67,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     if(notched) coerce('notchwidth');
 
     handlePointsDefaults(traceIn, traceOut, coerce, {prefix: 'box'});
+    coerce('zorder');
 }
 
 function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
@@ -251,6 +260,8 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
         coerce('marker.symbol');
         coerce('marker.opacity');
         coerce('marker.size');
+        coerce('marker.angle');
+
         coerce('marker.color', traceOut.line.color);
         coerce('marker.line.color');
         coerce('marker.line.width');

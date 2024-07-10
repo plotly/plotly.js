@@ -1,7 +1,7 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Registry = require('@src/registry');
-var Plots = require('@src/plots/plots');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Registry = require('../../../src/registry');
+var Plots = require('../../../src/plots/plots');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -10,7 +10,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
 
-var mock = require('@mocks/animation');
+var mock = require('../../image/mocks/animation');
 
 describe('Plots.supplyAnimationDefaults', function() {
     'use strict';
@@ -708,6 +708,52 @@ describe('Animate API details', function() {
     });
 });
 
+describe('Animate expandObjectPaths do not pollute prototype', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('should not pollute prototype - layout object', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{y: [1, 3, 2]}]
+        }).then(function() {
+            return Plotly.animate(gd, {
+                transition: {duration: 10},
+                data: [{y: [2, 3, 1]}],
+                traces: [0],
+                layout: {'__proto__.polluted': true, 'x.__proto__.polluted': true}
+            });
+        }).then(delay(100)).then(function() {
+            var a = {};
+            expect(a.polluted).toBeUndefined();
+        }).then(done, done.fail);
+    });
+
+    it('should not pollute prototype - data object', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{y: [1, 3, 2]}]
+        }).then(function() {
+            return Plotly.animate(gd, {
+                transition: {duration: 10},
+                data: [{y: [2, 3, 1], '__proto__.polluted': true}],
+                traces: [0]
+            });
+        }).then(delay(100)).then(function() {
+            var a = {};
+            expect(a.polluted).toBeUndefined();
+        }).then(done, done.fail);
+    });
+});
+
 describe('Animating multiple axes', function() {
     var gd;
 
@@ -962,7 +1008,7 @@ describe('animating scatter traces', function() {
 
         // assert what Cartesian.transitionAxes does
         function getSubplotTranslate() {
-            var sp = d3Select(gd).select('.subplot.xy > .plot');
+            var sp = d3Select(gd).select('.subplot.xy > .overplot').select('.xy');
             return sp.attr('transform')
                 .split('translate(')[1].split(')')[0]
                 .split(',')

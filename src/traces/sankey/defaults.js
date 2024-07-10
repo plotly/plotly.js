@@ -34,6 +34,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceNode('hoverinfo', traceIn.hoverinfo);
     handleHoverLabelDefaults(nodeIn, nodeOut, coerceNode, hoverlabelDefault);
     coerceNode('hovertemplate');
+    coerceNode('align');
 
     var colors = layout.colorway;
 
@@ -52,6 +53,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(linkIn, linkOut, attributes.link, attr, dflt);
     }
     coerceLink('label');
+    coerceLink('arrowlen');
     coerceLink('source');
     coerceLink('target');
     coerceLink('value');
@@ -61,11 +63,30 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleHoverLabelDefaults(linkIn, linkOut, coerceLink, hoverlabelDefault);
     coerceLink('hovertemplate');
 
-    var defaultLinkColor = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
-                'rgba(255, 255, 255, 0.6)' :
-                'rgba(0, 0, 0, 0.2)';
+    var darkBG = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333;
+    var defaultLinkColor = darkBG ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
+    var linkColor = coerceLink('color', defaultLinkColor);
 
-    coerceLink('color', Lib.repeat(defaultLinkColor, linkOut.value.length));
+    function makeDefaultHoverColor(_linkColor) {
+        var tc = tinycolor(_linkColor);
+        if(!tc.isValid()) {
+            // hopefully the user-specified color is valid, but if not that can be caught elsewhere
+            return _linkColor;
+        }
+        var alpha = tc.getAlpha();
+        if(alpha <= 0.8) {
+            tc.setAlpha(alpha + 0.2);
+        } else {
+            tc = darkBG ? tc.brighten() : tc.darken();
+        }
+        return tc.toRgbString();
+    }
+
+    coerceLink('hovercolor', Array.isArray(linkColor) ?
+        linkColor.map(makeDefaultHoverColor) :
+        makeDefaultHoverColor(linkColor)
+    );
+
     coerceLink('customdata');
 
     handleArrayContainerDefaults(linkIn, linkOut, {
@@ -85,7 +106,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
     coerce('arrangement', dfltArrangement);
 
-    Lib.coerceFont(coerce, 'textfont', Lib.extendFlat({}, layout.font));
+    Lib.coerceFont(coerce, 'textfont', layout.font, { autoShadowDflt: true });
 
     // disable 1D transforms - arrays here are 1D but their lengths/meanings
     // don't match, between nodes and links

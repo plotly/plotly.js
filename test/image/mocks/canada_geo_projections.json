@@ -1291,6 +1291,52 @@
       "hoverinfo": "skip"
     },
     {
+      "name": "equal earth",
+      "geo": "geo84",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "equal earth"
+    },
+    {
+      "geo": "geo84",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo84",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "equal earth"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
       "name": "equirectangular",
       "geo": "geo28",
       "type": "choropleth",
@@ -3822,6 +3868,11 @@
     }
   ],
   "layout": {
+    "font": {
+      "textcase": "word caps",
+      "lineposition": "under",
+      "shadow": "auto"
+    },
     "grid": {
       "rows": 8,
       "columns": 11
@@ -3918,7 +3969,7 @@
     },
     "geo83": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 10
       },
       "fitbounds": "locations",
@@ -4464,9 +4515,31 @@
       "showcoastlines": false,
       "showocean": true
     },
-    "geo28": {
+    "geo84": {
       "domain": {
         "row": 3,
+        "column": 3
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "equal earth"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo28": {
+      "domain": {
+        "row": 4,
         "column": 3
       },
       "fitbounds": "locations",
@@ -4488,7 +4561,7 @@
     },
     "geo29": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 3
       },
       "fitbounds": "locations",
@@ -4510,7 +4583,7 @@
     },
     "geo30": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 3
       },
       "fitbounds": "locations",
@@ -4532,7 +4605,7 @@
     },
     "geo31": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 3
       },
       "fitbounds": "locations",
@@ -4554,8 +4627,8 @@
     },
     "geo32": {
       "domain": {
-        "row": 7,
-        "column": 3
+        "row": 0,
+        "column": 4
       },
       "fitbounds": "locations",
       "projection": {
@@ -4576,7 +4649,7 @@
     },
     "geo33": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 4
       },
       "fitbounds": "locations",
@@ -4598,7 +4671,7 @@
     },
     "geo34": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 4
       },
       "fitbounds": "locations",
@@ -4620,7 +4693,7 @@
     },
     "geo35": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 4
       },
       "fitbounds": "locations",
@@ -4642,7 +4715,7 @@
     },
     "geo36": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 4
       },
       "fitbounds": "locations",
@@ -4664,7 +4737,7 @@
     },
     "geo37": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 4
       },
       "fitbounds": "locations",
@@ -4686,7 +4759,7 @@
     },
     "geo38": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 4
       },
       "fitbounds": "locations",
@@ -4708,7 +4781,7 @@
     },
     "geo39": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 4
       },
       "fitbounds": "locations",
@@ -4730,8 +4803,8 @@
     },
     "geo40": {
       "domain": {
-        "row": 7,
-        "column": 4
+        "row": 0,
+        "column": 5
       },
       "fitbounds": "locations",
       "projection": {
@@ -4752,7 +4825,7 @@
     },
     "geo41": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 5
       },
       "fitbounds": "locations",
@@ -4774,7 +4847,7 @@
     },
     "geo42": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 5
       },
       "fitbounds": "locations",
@@ -4796,7 +4869,7 @@
     },
     "geo43": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 5
       },
       "fitbounds": "locations",
@@ -4818,7 +4891,7 @@
     },
     "geo44": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 5
       },
       "fitbounds": "locations",
@@ -4840,7 +4913,7 @@
     },
     "geo45": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 5
       },
       "fitbounds": "locations",
@@ -4862,7 +4935,7 @@
     },
     "geo46": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 5
       },
       "fitbounds": "locations",
@@ -4884,7 +4957,7 @@
     },
     "geo47": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 5
       },
       "fitbounds": "locations",
@@ -4906,8 +4979,8 @@
     },
     "geo48": {
       "domain": {
-        "row": 7,
-        "column": 5
+        "row": 0,
+        "column": 6
       },
       "fitbounds": "locations",
       "projection": {
@@ -4928,7 +5001,7 @@
     },
     "geo49": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 6
       },
       "fitbounds": "locations",
@@ -4950,7 +5023,7 @@
     },
     "geo50": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 6
       },
       "fitbounds": "locations",
@@ -4972,7 +5045,7 @@
     },
     "geo51": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 6
       },
       "fitbounds": "locations",
@@ -4994,7 +5067,7 @@
     },
     "geo52": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 6
       },
       "fitbounds": "locations",
@@ -5016,7 +5089,7 @@
     },
     "geo53": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 6
       },
       "fitbounds": "locations",
@@ -5038,7 +5111,7 @@
     },
     "geo54": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 6
       },
       "fitbounds": "locations",
@@ -5060,7 +5133,7 @@
     },
     "geo55": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 6
       },
       "fitbounds": "locations",
@@ -5082,8 +5155,8 @@
     },
     "geo56": {
       "domain": {
-        "row": 7,
-        "column": 6
+        "row": 0,
+        "column": 7
       },
       "fitbounds": "locations",
       "projection": {
@@ -5104,7 +5177,7 @@
     },
     "geo57": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 7
       },
       "fitbounds": "locations",
@@ -5126,7 +5199,7 @@
     },
     "geo58": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 7
       },
       "fitbounds": "locations",
@@ -5148,7 +5221,7 @@
     },
     "geo59": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 7
       },
       "fitbounds": "locations",
@@ -5170,7 +5243,7 @@
     },
     "geo60": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 7
       },
       "fitbounds": "locations",
@@ -5192,7 +5265,7 @@
     },
     "geo61": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 7
       },
       "fitbounds": "locations",
@@ -5214,7 +5287,7 @@
     },
     "geo62": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 7
       },
       "fitbounds": "locations",
@@ -5236,7 +5309,7 @@
     },
     "geo63": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 7
       },
       "fitbounds": "locations",
@@ -5258,8 +5331,8 @@
     },
     "geo64": {
       "domain": {
-        "row": 7,
-        "column": 7
+        "row": 0,
+        "column": 8
       },
       "fitbounds": "locations",
       "projection": {
@@ -5280,7 +5353,7 @@
     },
     "geo65": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 8
       },
       "fitbounds": "locations",
@@ -5302,7 +5375,7 @@
     },
     "geo66": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 8
       },
       "fitbounds": "locations",
@@ -5324,7 +5397,7 @@
     },
     "geo67": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 8
       },
       "fitbounds": "locations",
@@ -5346,7 +5419,7 @@
     },
     "geo68": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 8
       },
       "fitbounds": "locations",
@@ -5368,7 +5441,7 @@
     },
     "geo69": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 8
       },
       "fitbounds": "locations",
@@ -5390,7 +5463,7 @@
     },
     "geo70": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 8
       },
       "fitbounds": "locations",
@@ -5412,7 +5485,7 @@
     },
     "geo71": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 8
       },
       "fitbounds": "locations",
@@ -5434,8 +5507,8 @@
     },
     "geo72": {
       "domain": {
-        "row": 7,
-        "column": 8
+        "row": 0,
+        "column": 9
       },
       "fitbounds": "locations",
       "projection": {
@@ -5456,7 +5529,7 @@
     },
     "geo73": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 9
       },
       "fitbounds": "locations",
@@ -5478,7 +5551,7 @@
     },
     "geo74": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 9
       },
       "fitbounds": "locations",
@@ -5500,7 +5573,7 @@
     },
     "geo75": {
       "domain": {
-        "row": 2,
+        "row": 3,
         "column": 9
       },
       "fitbounds": "locations",
@@ -5522,7 +5595,7 @@
     },
     "geo76": {
       "domain": {
-        "row": 3,
+        "row": 4,
         "column": 9
       },
       "fitbounds": "locations",
@@ -5544,7 +5617,7 @@
     },
     "geo77": {
       "domain": {
-        "row": 4,
+        "row": 5,
         "column": 9
       },
       "fitbounds": "locations",
@@ -5566,7 +5639,7 @@
     },
     "geo78": {
       "domain": {
-        "row": 5,
+        "row": 6,
         "column": 9
       },
       "fitbounds": "locations",
@@ -5588,7 +5661,7 @@
     },
     "geo79": {
       "domain": {
-        "row": 6,
+        "row": 7,
         "column": 9
       },
       "fitbounds": "locations",
@@ -5610,8 +5683,8 @@
     },
     "geo80": {
       "domain": {
-        "row": 7,
-        "column": 9
+        "row": 0,
+        "column": 10
       },
       "fitbounds": "locations",
       "projection": {
@@ -5632,7 +5705,7 @@
     },
     "geo81": {
       "domain": {
-        "row": 0,
+        "row": 1,
         "column": 10
       },
       "fitbounds": "locations",
@@ -5654,7 +5727,7 @@
     },
     "geo82": {
       "domain": {
-        "row": 1,
+        "row": 2,
         "column": 10
       },
       "fitbounds": "locations",

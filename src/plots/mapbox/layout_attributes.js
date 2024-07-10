@@ -11,6 +11,10 @@ var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var constants = require('./constants');
 
 var fontAttr = fontAttrs({
+    noFontVariant: true,
+    noFontShadow: true,
+    noFontLineposition: true,
+    noFontTextcase: true,
     description: [
         'Sets the icon text font (color=mapbox.layer.paint.text-color, size=mapbox.layer.layout.text-size).',
         'Has an effect only when `type` is set to *symbol*.'
@@ -93,6 +97,37 @@ var attrs = module.exports = overrideAll({
             'Sets the pitch angle of the map',
             '(in degrees, where *0* means perpendicular to the surface of the map) (mapbox.pitch).'
         ].join(' ')
+    },
+
+    bounds: {
+        west: {
+            valType: 'number',
+            description: [
+                'Sets the minimum longitude of the map (in degrees East)',
+                'if `east`, `south` and `north` are declared.'
+            ].join(' ')
+        },
+        east: {
+            valType: 'number',
+            description: [
+                'Sets the maximum longitude of the map (in degrees East)',
+                'if `west`, `south` and `north` are declared.'
+            ].join(' ')
+        },
+        south: {
+            valType: 'number',
+            description: [
+                'Sets the minimum latitude of the map (in degrees North)',
+                'if `east`, `west` and `north` are declared.'
+            ].join(' ')
+        },
+        north: {
+            valType: 'number',
+            description: [
+                'Sets the maximum latitude of the map (in degrees North)',
+                'if `east`, `west` and `south` are declared.'
+            ].join(' ')
+        }
     },
 
     layers: templatedArray('layer', {

@@ -8,14 +8,18 @@
         1, 1, 1, 1, 1, 1, 1, 1, 1,
         2, 2, 2, 2, 2, 2, 2, 2, 2,
         3, 3, 3, 3, 3, 3, 3, 3, 3,
-        4, 4, 4, 4, 4, 4, 4, 4, 4
+        4, 4, 4, 4, 4, 4, 4, 4, 4,
+        5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5,
+        7
       ],
       "y": [
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
-        0, 1, 2, 3, 4, 5, 6, 7, 8
+        0, 1, 2, 3, 4, 5, 6, 7, 8,
+        0, 1, 2, 3, 4, 5, 6, 7, 8,
+        0
       ],
       "marker": {
         "symbol": [
@@ -63,7 +67,17 @@
           "line-ew",
           "line-ns",
           "line-ne",
-          "line-nw"
+          "line-nw",
+          "arrow-up",
+          "arrow-down",
+          "arrow-left",
+          "arrow-right",
+          "arrow-bar-up",
+          "arrow-bar-down",
+          "arrow-bar-left",
+          "arrow-bar-right",
+          "arrow",
+          "arrow-wide"
         ],
         "color": "blue",
         "size": 20,
@@ -117,7 +131,17 @@
         "marker symbol: line-ew<br>number: 41",
         "marker symbol: line-ns<br>number: 42",
         "marker symbol: line-ne<br>number: 43",
-        "marker symbol: line-nw<br>number: 44"
+        "marker symbol: line-nw<br>number: 44",
+        "marker symbol: arrow-up<br>number: 45",
+        "marker symbol: arrow-down<br>number: 46",
+        "marker symbol: arrow-left<br>number: 47",
+        "marker symbol: arrow-right<br>number: 48",
+        "marker symbol: arrow-bar-up<br>number: 49",
+        "marker symbol: arrow-bar-down<br>number: 50",
+        "marker symbol: arrow-bar-left<br>number: 51",
+        "marker symbol: arrow-bar-right<br>number: 52",
+        "marker symbol: arrow<br>number: 53",
+        "marker symbol: arrow-wide<br>number: 54"
       ],
       "hoverinfo": "text"
     },
@@ -125,18 +149,22 @@
       "type": "scattergl",
       "mode": "markers",
       "x": [
-        5, 5, 5, 5, 5, 5, 5, 5, 5,
-        6, 6, 6, 6, 6, 6, 6, 6, 6,
-        7, 7, 7, 7, 7, 7, 7, 7, 7,
-        8, 8, 8, 8, 8, 8, 8, 8, 8,
-        9, 9, 9, 9, 9, 9, 9, 9, 9
+        9, 9, 9, 9, 9, 9, 9, 9, 9,
+        10, 10, 10, 10, 10, 10, 10, 10, 10,
+        11, 11, 11, 11, 11, 11, 11, 11, 11,
+        12, 12, 12, 12, 12, 12, 12, 12, 12,
+        13, 13, 13, 13, 13, 13, 13, 13, 13,
+        14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5,
+        16
       ],
       "y": [
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
-        0, 1, 2, 3, 4, 5, 6, 7, 8
+        0, 1, 2, 3, 4, 5, 6, 7, 8,
+        0, 1, 2, 3, 4, 5, 6, 7, 8,
+        0
       ],
       "marker": {
         "symbol": [
@@ -184,7 +212,17 @@
           "line-ew-open",
           "line-ns-open",
           "line-ne-open",
-          "line-nw-open"
+          "line-nw-open",
+          "arrow-up-open",
+          "arrow-down-open",
+          "arrow-left-open",
+          "arrow-right-open",
+          "arrow-bar-up-open",
+          "arrow-bar-down-open",
+          "arrow-bar-left-open",
+          "arrow-bar-right-open",
+          "arrow-open",
+          "arrow-wide-open"
         ],
         "color": "blue",
         "size": 20,
@@ -238,7 +276,17 @@
         "marker symbol: line-ew-open<br>number: 141",
         "marker symbol: line-ns-open<br>number: 142",
         "marker symbol: line-ne-open<br>number: 143",
-        "marker symbol: line-nw-open<br>number: 144"
+        "marker symbol: line-nw-open<br>number: 144",
+        "marker symbol: arrow-up-open<br>number: 145",
+        "marker symbol: arrow-down-open<br>number: 146",
+        "marker symbol: arrow-left-open<br>number: 147",
+        "marker symbol: arrow-right-open<br>number: 148",
+        "marker symbol: arrow-bar-up-open<br>number: 149",
+        "marker symbol: arrow-bar-down-open<br>number: 150",
+        "marker symbol: arrow-bar-left-open<br>number: 151",
+        "marker symbol: arrow-bar-right-open<br>number: 152",
+        "marker symbol: arrow-open<br>number: 153",
+        "marker symbol: arrow-wide-open<br>number: 154"
       ],
       "hoverinfo": "text"
     },
@@ -246,18 +294,22 @@
       "type": "scattergl",
       "mode": "markers",
       "x": [
-        10, 10, 10, 10, 10, 10, 10, 10, 10,
-        11, 11, 11, 11, 11, 11, 11, 11, 11,
-        12, 12, 12, 12, 12, 12, 12, 12, 12,
-        13, 13, 13, 13, 13, 13, 13, 13, 13,
-        14, 14, 14, 14, 14, 14, 14, 14, 14
+        18, 18, 18, 18, 18, 18, 18, 18, 18,
+        19, 19, 19, 19, 19, 19, 19, 19, 19,
+        20, 20, 20, 20, 20, 20, 20, 20, 20,
+        21, 21, 21, 21, 21, 21, 21, 21, 21,
+        22, 22, 22, 22, 22, 22, 22, 22, 22,
+        23.5, 23.5, 23.5, 23.5, 23.5, 23.5, 23.5, 23.5, 23.5,
+        25
       ],
       "y": [
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
-        0, 1, 2, 3, 4, 5, 6, 7, 8
+        0, 1, 2, 3, 4, 5, 6, 7, 8,
+        0, 1, 2, 3, 4, 5, 6, 7, 8,
+        0
       ],
       "marker": {
         "symbol": [
@@ -305,7 +357,17 @@
           "line-ew-dot",
           "line-ns-dot",
           "line-ne-dot",
-          "line-nw-dot"
+          "line-nw-dot",
+          "arrow-up-dot",
+          "arrow-down-dot",
+          "arrow-left-dot",
+          "arrow-right-dot",
+          "arrow-bar-up-dot",
+          "arrow-bar-down-dot",
+          "arrow-bar-left-dot",
+          "arrow-bar-right-dot",
+          "arrow-dot",
+          "arrow-wide-dot"
         ],
         "color": "blue",
         "size": 20,
@@ -359,7 +421,17 @@
         "marker symbol: line-ew-dot<br>number: 241",
         "marker symbol: line-ns-dot<br>number: 242",
         "marker symbol: line-ne-dot<br>number: 243",
-        "marker symbol: line-nw-dot<br>number: 244"
+        "marker symbol: line-nw-dot<br>number: 244",
+        "marker symbol: arrow-up-dot<br>number: 245",
+        "marker symbol: arrow-down-dot<br>number: 246",
+        "marker symbol: arrow-left-dot<br>number: 247",
+        "marker symbol: arrow-right-dot<br>number: 248",
+        "marker symbol: arrow-bar-up-dot<br>number: 249",
+        "marker symbol: arrow-bar-down-dot<br>number: 250",
+        "marker symbol: arrow-bar-left-dot<br>number: 251",
+        "marker symbol: arrow-bar-right-dot<br>number: 252",
+        "marker symbol: arrow-dot<br>number: 253",
+        "marker symbol: arrow-wide-dot<br>number: 254"
       ],
       "hoverinfo": "text"
     },
@@ -367,18 +439,22 @@
       "type": "scattergl",
       "mode": "markers",
       "x": [
-        15, 15, 15, 15, 15, 15, 15, 15, 15,
-        16, 16, 16, 16, 16, 16, 16, 16, 16,
-        17, 17, 17, 17, 17, 17, 17, 17, 17,
-        18, 18, 18, 18, 18, 18, 18, 18, 18,
-        19, 19, 19, 19, 19, 19, 19, 19, 19
+        27, 27, 27, 27, 27, 27, 27, 27, 27,
+        28, 28, 28, 28, 28, 28, 28, 28, 28,
+        29, 29, 29, 29, 29, 29, 29, 29, 29,
+        30, 30, 30, 30, 30, 30, 30, 30, 30,
+        31, 31, 31, 31, 31, 31, 31, 31, 31,
+        32.5, 32.5, 32.5, 32.5, 32.5, 32.5, 32.5, 32.5, 32.5,
+        34
       ],
       "y": [
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
         0, 1, 2, 3, 4, 5, 6, 7, 8,
-        0, 1, 2, 3, 4, 5, 6, 7, 8
+        0, 1, 2, 3, 4, 5, 6, 7, 8,
+        0, 1, 2, 3, 4, 5, 6, 7, 8,
+        0
       ],
       "marker": {
         "symbol": [
@@ -426,7 +502,17 @@
           "line-ew-open-dot",
           "line-ns-open-dot",
           "line-ne-open-dot",
-          "line-nw-open-dot"
+          "line-nw-open-dot",
+          "arrow-up-open-dot",
+          "arrow-down-open-dot",
+          "arrow-left-open-dot",
+          "arrow-right-open-dot",
+          "arrow-bar-up-open-dot",
+          "arrow-bar-down-open-dot",
+          "arrow-bar-left-open-dot",
+          "arrow-bar-right-open-dot",
+          "arrow-open-dot",
+          "arrow-wide-open-dot"
         ],
         "color": "blue",
         "size": 20,
@@ -480,7 +566,18 @@
         "marker symbol: line-ew-open-dot<br>number: 341",
         "marker symbol: line-ns-open-dot<br>number: 342",
         "marker symbol: line-ne-open-dot<br>number: 343",
-        "marker symbol: line-nw-open-dot<br>number: 344"
+        "marker symbol: line-nw-open-dot<br>number: 344",
+        "marker symbol: line-nw-open-dot<br>number: 344",
+        "marker symbol: arrow-up-open-dot<br>number: 345",
+        "marker symbol: arrow-down-open-dot<br>number: 346",
+        "marker symbol: arrow-left-open-dot<br>number: 347",
+        "marker symbol: arrow-right-open-dot<br>number: 348",
+        "marker symbol: arrow-bar-up-open-dot<br>number: 349",
+        "marker symbol: arrow-bar-down-open-dot<br>number: 350",
+        "marker symbol: arrow-bar-left-open-dot<br>number: 351",
+        "marker symbol: arrow-bar-right-open-dot<br>number: 352",
+        "marker symbol: arrow-open-dot<br>number: 353",
+        "marker symbol: arrow-wide-open-dot<br>number: 354"
       ],
       "hoverinfo": "text"
     }
@@ -492,7 +589,7 @@
       "b": 0,
       "t": 0
     },
-    "width": 800,
+    "width": 1500,
     "height": 500,
     "xaxis": {
       "showgrid": false,

@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Registry = require('@src/registry');
-var Loggers = require('@src/lib/loggers');
+var Plotly = require('../../../lib/index');
+var Registry = require('../../../src/registry');
+var Loggers = require('../../../src/lib/loggers');
 
 describe('Test Register:', function() {
     beforeAll(function() {

@@ -22,6 +22,7 @@
         }
     ],
     "layout": {
+        "barcornerradius": "50%",
         "height": 500,
         "width": 700
     }

@@ -111,6 +111,10 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
                 else excluded.push(calcTrace);
             }
 
+            // If any trace in `included` has a cornerradius, set cornerradius of all bars
+            // in `included` to match the first trace which has a cornerradius
+            standardizeCornerradius(included);
+
             if(included.length) {
                 setGroupPositionsInStackOrRelativeMode(gd, pa, sa, included, opts);
             }
@@ -119,8 +123,55 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
             }
             break;
     }
-
+    setCornerradius(calcTraces);
     collectExtents(calcTraces, pa);
+}
+
+// Set cornerradiusvalue and cornerradiusform in calcTraces[0].t
+function setCornerradius(calcTraces) {
+    var i, calcTrace, fullTrace, t, cr, crValue, crForm;
+
+    for(i = 0; i < calcTraces.length; i++) {
+        calcTrace = calcTraces[i];
+        fullTrace = calcTrace[0].trace;
+        t = calcTrace[0].t;
+
+        if(t.cornerradiusvalue === undefined) {
+            cr = fullTrace.marker ? fullTrace.marker.cornerradius : undefined;
+            if(cr !== undefined) {
+                crValue = isNumeric(cr) ? +cr : +cr.slice(0, -1);
+                crForm = isNumeric(cr) ? 'px' : '%';
+                t.cornerradiusvalue = crValue;
+                t.cornerradiusform = crForm;
+            }
+        }
+    }
+}
+
+// Make sure all traces in a stack use the same cornerradius
+function standardizeCornerradius(calcTraces) {
+    if(calcTraces.length < 2) return;
+    var i, calcTrace, fullTrace, t;
+    var cr, crValue, crForm;
+    for(i = 0; i < calcTraces.length; i++) {
+        calcTrace = calcTraces[i];
+        fullTrace = calcTrace[0].trace;
+        cr = fullTrace.marker ? fullTrace.marker.cornerradius : undefined;
+        if(cr !== undefined) break;
+    }
+    // If any trace has cornerradius, store first cornerradius
+    // in calcTrace[0].t so that all traces in stack use same cornerradius
+    if(cr !== undefined) {
+        crValue = isNumeric(cr) ? +cr : +cr.slice(0, -1);
+        crForm = isNumeric(cr) ? 'px' : '%';
+        for(i = 0; i < calcTraces.length; i++) {
+            calcTrace = calcTraces[i];
+            t = calcTrace[0].t;
+
+            t.cornerradiusvalue = crValue;
+            t.cornerradiusform = crForm;
+        }
+    }
 }
 
 function initBase(sa, calcTraces) {
@@ -432,16 +483,23 @@ function setBarCenterAndWidth(pa, sieve) {
         var calcTrace = calcTraces[i];
         var t = calcTrace[0].t;
         var poffset = t.poffset;
-        var poffsetIsArray = Array.isArray(poffset);
+        var poffsetIsArray = isArrayOrTypedArray(poffset);
         var barwidth = t.barwidth;
-        var barwidthIsArray = Array.isArray(barwidth);
+        var barwidthIsArray = isArrayOrTypedArray(barwidth);
 
         for(var j = 0; j < calcTrace.length; j++) {
             var calcBar = calcTrace[j];
 
             // store the actual bar width and position, for use by hover
             var width = calcBar.w = barwidthIsArray ? barwidth[j] : barwidth;
-            calcBar[pLetter] = calcBar.p + (poffsetIsArray ? poffset[j] : poffset) + width / 2;
+
+            if(calcBar.p === undefined) {
+                calcBar.p = calcBar[pLetter];
+                calcBar['orig_' + pLetter] = calcBar[pLetter];
+            }
+
+            var delta = (poffsetIsArray ? poffset[j] : poffset) + width / 2;
+            calcBar[pLetter] = calcBar.p + delta;
         }
     }
 }
@@ -471,8 +529,8 @@ function updatePositionAxis(pa, sieve, allowMinDtick) {
             var t = calcTrace0.t;
             var poffset = t.poffset;
             var barwidth = t.barwidth;
-            var poffsetIsArray = Array.isArray(poffset);
-            var barwidthIsArray = Array.isArray(barwidth);
+            var poffsetIsArray = isArrayOrTypedArray(poffset);
+            var barwidthIsArray = isArrayOrTypedArray(barwidth);
 
             for(j = 0; j < calcTrace.length; j++) {
                 bar = calcTrace[j];
@@ -498,13 +556,17 @@ function setBaseAndTop(sa, sieve) {
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
         var fullTrace = calcTrace[0].trace;
+        var isScatter = fullTrace.type === 'scatter';
+        var isVertical = fullTrace.orientation === 'v';
         var pts = [];
         var tozero = false;
 
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
-            var base = bar.b;
-            var top = base + bar.s;
+            var base = isScatter ? 0 : bar.b;
+            var top = isScatter ? (
+                isVertical ? bar.y : bar.x
+            ) : base + bar.s;
 
             bar[sLetter] = top;
             pts.push(top);
@@ -702,6 +764,23 @@ function normalizeBars(sa, sieve, opts) {
     }
 }
 
+// Add an `_sMin` and `_sMax` value for each bar representing the min and max size value
+// across all bars sharing the same position as that bar. These values are used for rounded
+// bar corners, to carry rounding down to lower bars in the stack as needed.
+function setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos, pa) {
+    var pLetter = getAxisLetter(pa);
+    // Set `_sMin` and `_sMax` value for each bar
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+        for(var j = 0; j < calcTrace.length; j++) {
+            var bar = calcTrace[j];
+            var pos = bar[pLetter];
+            bar._sMin = sMinByPos[pos];
+            bar._sMax = sMaxByPos[pos];
+        }
+    }
+}
+
 // find the full position span of bars at each position
 // for use by hover, to ensure labels move in if bars are
 // narrower than the space they're in.
@@ -734,12 +813,24 @@ function collectExtents(calcTraces, pa) {
         return String(Math.round(roundFactor * (p - pMin)));
     };
 
+    // Find min and max size axis extent for each position
+    // This is used for rounded bar corners, to carry rounding
+    // down to lower bars in the case of stacked bars
+    var sMinByPos = {};
+    var sMaxByPos = {};
+
+    // Check whether any trace has rounded corners
+    var anyTraceHasCornerradius = calcTraces.some(function(x) {
+        var trace = x[0].trace;
+        return 'marker' in trace && trace.marker.cornerradius;
+    });
+
     for(i = 0; i < calcTraces.length; i++) {
         cd = calcTraces[i];
         cd[0].t.extents = extents;
 
         var poffset = cd[0].t.poffset;
-        var poffsetIsArray = Array.isArray(poffset);
+        var poffsetIsArray = isArrayOrTypedArray(poffset);
 
         for(j = 0; j < cd.length; j++) {
             var di = cd[j];
@@ -759,7 +850,18 @@ function collectExtents(calcTraces, pa) {
             di.p1 = di.p0 + di.w;
             di.s0 = di.b;
             di.s1 = di.s0 + di.s;
+
+            if(anyTraceHasCornerradius) {
+                var sMin = Math.min(di.s0, di.s1) || 0;
+                var sMax = Math.max(di.s0, di.s1) || 0;
+                var pos = di[pLetter];
+                sMinByPos[pos] = (pos in sMinByPos) ? Math.min(sMinByPos[pos], sMin) : sMin;
+                sMaxByPos[pos] = (pos in sMaxByPos) ? Math.max(sMaxByPos[pos], sMax) : sMax;
+            }
         }
+    }
+    if(anyTraceHasCornerradius) {
+        setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos, pa);
     }
 }
 

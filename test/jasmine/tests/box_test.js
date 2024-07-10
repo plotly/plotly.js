@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
 
-var Box = require('@src/traces/box');
+var Box = require('../../../src/traces/box');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -722,7 +722,7 @@ describe('Test box hover:', function() {
 
         var fig = Lib.extendDeep(
             {width: 700, height: 500},
-            specs.mock || require('@mocks/box_grouped.json')
+            specs.mock || require('../../image/mocks/box_grouped.json')
         );
 
         if(specs.patch) {
@@ -775,7 +775,7 @@ describe('Test box hover:', function() {
         axis: 'day 1'
     }, {
         desc: 'with boxpoints fences',
-        mock: require('@mocks/boxplots_outliercolordflt.json'),
+        mock: require('../../image/mocks/boxplots_outliercolordflt.json'),
         patch: function(fig) {
             fig.layout.hovermode = 'x';
             return fig;
@@ -913,7 +913,7 @@ describe('Test box hover:', function() {
         name: ''
     }, {
         desc: 'orientation:h | hovermode:y',
-        mock: require('@mocks/box_grouped_horz.json'),
+        mock: require('../../image/mocks/box_grouped_horz.json'),
         patch: function(fig) {
             fig.layout.hovermode = 'y';
             return fig;
@@ -933,7 +933,7 @@ describe('Test box hover:', function() {
         axis: 'day 2'
     }, {
         desc: 'orientation:h | hovermode:closest',
-        mock: require('@mocks/box_grouped_horz.json'),
+        mock: require('../../image/mocks/box_grouped_horz.json'),
         pos: [430, 130],
         nums: [
             '(median: 0.7, day 2)',
@@ -1109,7 +1109,7 @@ describe('Test box restyle:', function() {
     afterEach(destroyGraphDiv);
 
     it('should be able to add/remove innner parts', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/box_plot_jitter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/box_plot_jitter.json'));
         // start with just 1 box
         delete fig.data[0].boxpoints;
 

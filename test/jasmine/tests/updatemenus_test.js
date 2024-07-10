@@ -1,12 +1,12 @@
-var UpdateMenus = require('@src/components/updatemenus');
-var constants = require('@src/components/updatemenus/constants');
+var UpdateMenus = require('../../../src/components/updatemenus');
+var constants = require('../../../src/components/updatemenus/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Events = require('@src/lib/events');
-var Drawing = require('@src/components/drawing');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Events = require('../../../src/lib/events');
+var Drawing = require('../../../src/components/drawing');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var TRANSITION_DELAY = 100;
@@ -261,7 +261,7 @@ describe('update menus defaults', function() {
 });
 
 describe('update menus buttons', function() {
-    var mock = require('@mocks/updatemenus_positioning.json');
+    var mock = require('../../image/mocks/updatemenus_positioning.json');
     var gd;
     var allMenus, buttonMenus, dropdownMenus;
 
@@ -338,7 +338,7 @@ describe('update menus initialization', function() {
 describe('update menus interactions', function() {
     'use strict';
 
-    var mock = require('@mocks/updatemenus.json');
+    var mock = require('../../image/mocks/updatemenus.json');
     var bgColor = 'rgb(255, 255, 255)';
     var activeColor = 'rgb(244, 250, 255)';
 
@@ -760,7 +760,7 @@ describe('update menus interactions', function() {
 
             return Plotly.relayout(gd, {
                 'updatemenus[0].bgcolor': null,
-                'paper_bgcolor': 'black'
+                paper_bgcolor: 'black'
             });
         }).then(function() {
             assertItemColor(selectHeader(0), 'rgb(0, 0, 0)');
@@ -944,15 +944,15 @@ describe('update menus interaction with other components:', function() {
                 buttons: [{
                     label: 'markers and lines',
                     method: 'restyle',
-                    args: [{ 'mode': 'markers+lines' }]
+                    args: [{ mode: 'markers+lines' }]
                 }, {
                     label: 'markers',
                     method: 'restyle',
-                    args: [{ 'mode': 'markers' }]
+                    args: [{ mode: 'markers' }]
                 }, {
                     label: 'lines',
                     method: 'restyle',
-                    args: [{ 'mode': 'lines' }]
+                    args: [{ mode: 'lines' }]
                 }]
             }]
         })

@@ -16,7 +16,7 @@ module.exports = {
             'With *group*, the bars are plotted next to one another',
             'centered around the shared location.',
             'With *overlay*, the bars are plotted over one another,',
-            'you might need to an *opacity* to see multiple bars.'
+            'you might need to reduce *opacity* to see multiple bars.'
         ].join(' ')
     },
     barnorm: {
@@ -51,5 +51,13 @@ module.exports = {
             'Sets the gap (in plot fraction) between bars of',
             'the same location coordinate.'
         ].join(' ')
-    }
+    },
+    barcornerradius: {
+        valType: 'any',
+        editType: 'calc',
+        description: [
+            'Sets the rounding of bar corners. May be an integer number of pixels,',
+            'or a percentage of bar width (as a string ending in %).'
+        ].join(' ')
+    },
 };

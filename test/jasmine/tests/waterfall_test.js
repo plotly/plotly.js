@@ -1,24 +1,24 @@
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 
-var Waterfall = require('@src/traces/waterfall');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
-var Drawing = require('@src/components/drawing');
+var Waterfall = require('../../../src/traces/waterfall');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
+var Drawing = require('../../../src/components/drawing');
 
-var Axes = require('@src/plots/cartesian/axes');
+var Axes = require('../../../src/plots/cartesian/axes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
-var color = require('@src/components/color');
+var color = require('../../../src/components/color');
 var rgb = color.rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
 var checkTransition = require('../assets/check_transitions');
-var Fx = require('@src/components/fx');
+var Fx = require('../../../src/components/fx');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -162,9 +162,28 @@ describe('Waterfall.supplyDefaults', function() {
             y: [1, 2, 3]
         };
         var layout = {
-            font: {family: 'arial', color: '#AAA', size: 13}
+            font: {
+                family: 'arial',
+                color: '#AAA',
+                size: 13,
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
+            }
         };
-        var layoutFontMinusColor = {family: 'arial', size: 13};
+        var layoutFontMinusColor = {
+            family: 'arial',
+            size: 13,
+            weight: 'bold',
+            style: 'italic',
+            variant: 'small-caps',
+            textcase: 'word caps',
+            lineposition: 'under',
+            shadow: 'auto',
+        };
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -1372,7 +1391,7 @@ describe('waterfall hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/waterfall_11.json'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/waterfall_11.json'));
 
             Plotly.newPlot(gd, mock.data, mock.layout)
             .then(done, done.fail);
@@ -1411,7 +1430,7 @@ describe('waterfall hover', function() {
         it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
             mock.data.forEach(function(t) { t.type = 'waterfall'; });
 
             Plotly.newPlot(gd, mock).then(function() {
@@ -1442,7 +1461,7 @@ describe('waterfall hover', function() {
         it('should turn off hoverinfo flags with hoveinfo none or skip', function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
             mock.data.forEach(function(t, i) {
                 t.type = 'waterfall';
                 if(i === 0) {
@@ -1468,7 +1487,7 @@ describe('waterfall hover', function() {
         it('should turn on hoverinfo flags with hoveinfo all', function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
             mock.data.forEach(function(t) {
                 t.type = 'waterfall';
                 t.base = 1000;
@@ -1500,7 +1519,7 @@ describe('waterfall hover', function() {
         it('should use hovertemplate if specified', function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
             mock.data.forEach(function(t) {
                 t.type = 'waterfall';
                 t.hovertemplate = 'Value: %{y}<br>SUM: %{final}<br>START: %{initial}<br>DIFF: %{delta}<extra></extra>';
@@ -1523,6 +1542,37 @@ describe('waterfall hover', function() {
                     ],
                     name: ['', '', ''],
                     axis: '0'
+                });
+            })
+            .then(done, done.fail);
+        });
+
+        it('should provide delta hovertemplate on totals similar to hovertext', function(done) {
+            gd = createGraphDiv();
+
+            function _hover() {
+                var evt = { xpx: 400, ypx: 100 };
+                Fx.hover('graph', evt, 'xy');
+            }
+
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'waterfall',
+                    y: [ 10, -4, null ],
+                    measure: [ '', '', 'total' ],
+                    texttemplate: '%{delta}',
+                    hovertemplate: '%{delta}',
+                }],
+                layout: {
+                    width: 600,
+                    height: 400
+                }
+            })
+            .then(_hover)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '6',
+                    name: 'trace 0'
                 });
             })
             .then(done, done.fail);
