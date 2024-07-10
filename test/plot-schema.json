@@ -15148,6 +15148,17 @@
      },
      "role": "object"
     },
+    "ticklabelindex": {
+     "arrayOk": true,
+     "description": "Only for axes with `type` *date* or *linear*. Instead of drawing the major tick label, draw the label for the minor tick that is n positions away from the major tick. E.g. to always draw the label for the minor tick before each major tick, choose `ticklabelindex` -1. This is useful for date axes with `ticklabelmode` *period* if you want to label the period that ends with each major tick instead of the period that begins there.",
+     "editType": "calc",
+     "valType": "integer"
+    },
+    "ticklabelindexsrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `ticklabelindex`.",
+     "editType": "none",
+     "valType": "string"
+    },
     "ticklabelmode": {
      "description": "Determines where tick labels are drawn with respect to their corresponding ticks and grid lines. Only has an effect for axes of `type` *date* When set to *period*, tick labels are drawn in the middle of the period between ticks.",
      "dflt": "instant",
@@ -15185,6 +15196,18 @@
       "outside bottom",
       "inside bottom"
      ]
+    },
+    "ticklabelshift": {
+     "description": "Shifts the tick labels by the specified number of pixels in parallel to the axis. Positive values move the labels in the positive direction of the axis.",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "integer"
+    },
+    "ticklabelstandoff": {
+     "description": "Sets the standoff distance (in px) between the axis tick labels and their default position. A positive `ticklabelstandoff` moves the labels farther away from the plot area if `ticklabelposition` is *outside*, and deeper into the plot area if `ticklabelposition` is *inside*. A negative `ticklabelstandoff` works in the opposite direction, moving outside ticks towards the plot area and inside ticks towards the outside. If the negative value is large enough, inside ticks can even end up outside and vice versa.",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "integer"
     },
     "ticklabelstep": {
      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 1 (default) means each tick gets a label. A value of 2 means shows every 2nd label. A larger value n means only every nth tick is labeled. `tick0` determines which labels are shown. Not implemented for axes with `type` *log* or *multicategory*, or when `tickmode` is *array*.",
@@ -16457,6 +16480,17 @@
      },
      "role": "object"
     },
+    "ticklabelindex": {
+     "arrayOk": true,
+     "description": "Only for axes with `type` *date* or *linear*. Instead of drawing the major tick label, draw the label for the minor tick that is n positions away from the major tick. E.g. to always draw the label for the minor tick before each major tick, choose `ticklabelindex` -1. This is useful for date axes with `ticklabelmode` *period* if you want to label the period that ends with each major tick instead of the period that begins there.",
+     "editType": "calc",
+     "valType": "integer"
+    },
+    "ticklabelindexsrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `ticklabelindex`.",
+     "editType": "none",
+     "valType": "string"
+    },
     "ticklabelmode": {
      "description": "Determines where tick labels are drawn with respect to their corresponding ticks and grid lines. Only has an effect for axes of `type` *date* When set to *period*, tick labels are drawn in the middle of the period between ticks.",
      "dflt": "instant",
@@ -16494,6 +16528,18 @@
       "outside bottom",
       "inside bottom"
      ]
+    },
+    "ticklabelshift": {
+     "description": "Shifts the tick labels by the specified number of pixels in parallel to the axis. Positive values move the labels in the positive direction of the axis.",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "integer"
+    },
+    "ticklabelstandoff": {
+     "description": "Sets the standoff distance (in px) between the axis tick labels and their default position. A positive `ticklabelstandoff` moves the labels farther away from the plot area if `ticklabelposition` is *outside*, and deeper into the plot area if `ticklabelposition` is *inside*. A negative `ticklabelstandoff` works in the opposite direction, moving outside ticks towards the plot area and inside ticks towards the outside. If the negative value is large enough, inside ticks can even end up outside and vice versa.",
+     "dflt": 0,
+     "editType": "ticks",
+     "valType": "integer"
     },
     "ticklabelstep": {
      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 1 (default) means each tick gets a label. A value of 2 means shows every 2nd label. A larger value n means only every nth tick is labeled. `tick0` determines which labels are shown. Not implemented for axes with `type` *log* or *multicategory*, or when `tickmode` is *array*.",
