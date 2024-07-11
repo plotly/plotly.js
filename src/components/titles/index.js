@@ -380,7 +380,7 @@ function draw(gd, titleClass, options) {
             // Adjust subtitle position now that title placeholder has been added
             // Only adjust if subtitle is enabled and title text was originally empty
             if(subtitleEnabled && !txt) {
-                var titleElBbox = Drawing.bBox(el.node());
+                var titleElBbox = el.node().getBBox();
                 var subtitleY = titleElBbox.y + titleElBbox.height + (SUBTITLE_PADDING_EM * subFontSize);
                 subtitleEl.attr('y', subtitleY);
             }
