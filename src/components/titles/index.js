@@ -14,8 +14,8 @@ var interactConstants = require('../../constants/interactions');
 
 var OPPOSITE_SIDE = require('../../constants/alignment').OPPOSITE_SIDE;
 var numStripRE = / [XY][0-9]* /;
-var MATHJAX_PADDING_MULTIPLIER = 0.85;
-var EXTRA_SPACING_BETWEEN_TITLE_AND_SUBTITLE = 0;
+var SUBTITLE_PADDING_MATHJAX_EM = 1.6;
+var SUBTITLE_PADDING_EM = 1.6;
 
 /**
  * Titles - (re)draw titles on the axes and plot:
@@ -207,12 +207,11 @@ function draw(gd, titleClass, options) {
 
             var subtitleElement = d3.select(titleElMathGroup.node().parentNode).select('.' + subtitleClass);
             if(!subtitleElement.empty()) {
-                var titleMathHeight = titleElMathGroup.node().getBBox().height;
-                if(titleMathHeight) {
-                    // Increase the y position of the subtitle by the height of the title,
-                    // plus a bit of padding
-                    var newSubtitleY = Number(subtitleElement.attr('y')) + titleMathHeight + MATHJAX_PADDING_MULTIPLIER * subFontSize + EXTRA_SPACING_BETWEEN_TITLE_AND_SUBTITLE;
-                    subtitleElement.attr('y', newSubtitleY);
+                var titleElMathBbox = titleElMathGroup.node().getBBox();
+                if(titleElMathBbox.height) {
+                    // Position subtitle based on bottom of Mathjax title
+                    var subtitleY = titleElMathBbox.y + titleElMathBbox.height + (SUBTITLE_PADDING_MATHJAX_EM * subFontSize);
+                    subtitleElement.attr('y', subtitleY);
                 }
             }
         }
@@ -233,15 +232,16 @@ function draw(gd, titleClass, options) {
             .call(svgTextUtils.convertToTspans, gd, adjustSubtitlePosition);
 
         if(subtitleEl) {
-            // Increase the subtitle y position so that it is drawn below the subtitle
-            // We need to check the height of the MathJax group as well, in case the MathJax
+            // Set subtitle y position based on bottom of title
+            // We need to check the Mathjax group as well, in case the Mathjax
             // has already rendered
-            var titleElHeight = titleEl.node().getBBox().height;
             var titleElMathGroup = group.select('.' + titleClass + '-math-group');
-            var titleElMathHeight = titleElMathGroup.node() ? titleElMathGroup.node().getBBox().height : 0;
-            var subtitleShift = titleElMathHeight ? titleElMathHeight + (MATHJAX_PADDING_MULTIPLIER * subFontSize) : titleElHeight;
+            var titleElBbox = titleEl.node().getBBox();
+            var titleElMathBbox = titleElMathGroup.node() ? titleElMathGroup.node().getBBox() : undefined;
+            var subtitleY = titleElMathBbox ? titleElMathBbox.y + titleElMathBbox.height + (SUBTITLE_PADDING_MATHJAX_EM * subFontSize) : titleElBbox.y + titleElBbox.height + (SUBTITLE_PADDING_EM * subFontSize);
+
             var subtitleAttributes = Lib.extendFlat({}, attributes, {
-                y: subtitleShift + EXTRA_SPACING_BETWEEN_TITLE_AND_SUBTITLE + attributes.y
+                y: subtitleY
             });
 
             subtitleEl.attr('transform', transformVal);
@@ -380,9 +380,9 @@ function draw(gd, titleClass, options) {
             // Adjust subtitle position now that title placeholder has been added
             // Only adjust if subtitle is enabled and title text was originally empty
             if(subtitleEnabled && !txt) {
-                var ht = Drawing.bBox(el.node()).height;
-                var newSubtitleY = Number(subtitleEl.attr('y')) + ht + EXTRA_SPACING_BETWEEN_TITLE_AND_SUBTITLE;
-                subtitleEl.attr('y', newSubtitleY);
+                var titleElBbox = Drawing.bBox(el.node());
+                var subtitleY = titleElBbox.y + titleElBbox.height + (SUBTITLE_PADDING_EM * subFontSize);
+                subtitleEl.attr('y', subtitleY);
             }
 
             if(!subtitleTxt) {
