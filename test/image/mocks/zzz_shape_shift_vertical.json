@@ -21,12 +21,15 @@
     ],
     "layout": {
         "width": 600,
+        "xaxis": {
+            "autorange": "reversed"
+        },
         "shapes": [
             {
                 "layer": "above",
                 "type": "line",
                 "label": {
-                    "text": "right from A",
+                    "text": "after A",
                     "textposition": "end",
                     "textangle": 0
                 },
@@ -46,7 +49,7 @@
                 "layer": "above",
                 "type": "line",
                 "label": {
-                    "text": "slightly left from D",
+                    "text": "slightly before D",
                     "textposition": "end",
                     "textangle": 0
                 },
