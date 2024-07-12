@@ -3223,7 +3223,7 @@ function sortAxisCategoriesByValue(axList, gd) {
         sum: function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
         total: function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
         mean: function(values) {return Lib.mean(values);},
-        geometric_mean: function(values) {return Lib.geometricMean(values);},
+        'geometric mean': function(values) {return Lib.geometricMean(values);},
         median: function(values) {return Lib.median(values);}
     };
 
