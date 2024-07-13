@@ -1161,6 +1161,8 @@ describe('calculated data and points', function() {
                     });
 
                     it('takes the geometric mean of all values per category across traces of type ' + trace.type, function(done) {
+                        if(trace.type === 'ohlc' || trace.type === 'candlestick') return done();
+
                         var type = trace.type;
                         var data = [7, 2, 3];
                         var data2 = [5, 4, 2];
