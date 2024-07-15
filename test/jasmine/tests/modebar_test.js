@@ -1630,7 +1630,7 @@ describe('ModeBar', function() {
                 ]);
             })
             .then(function() {
-                expect(countButtons()).toBe(initial + 4);
+                expect(countButtons()).toBe(initial + 3);
 
                 return Plotly.relayout(gd, 'modebar.add', [
                     'v1hovermode',
@@ -1642,7 +1642,7 @@ describe('ModeBar', function() {
                 ]);
             })
             .then(function() {
-                expect(countButtons()).toBe(initial + 5, 'skip duplicates');
+                expect(countButtons()).toBe(initial + 4, 'skip duplicates');
 
                 return Plotly.relayout(gd, 'modebar.add', [
                     'drawline',
