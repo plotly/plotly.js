@@ -5,7 +5,7 @@
                 "A", "B", "C", "D"
             ],
             "y": [
-                1, 2, 3, 4
+                1, 2, 2.5, 4
             ],
             "type": "bar"
         },
@@ -14,7 +14,7 @@
                 "A", "B", "C", "D"
             ],
             "y": [
-                3, 2, 4, 1
+                3, 2, 1.5, 1
             ],
             "type": "scatter"
         }
@@ -23,6 +23,9 @@
         "width": 600,
         "xaxis": {
             "autorange": "reversed"
+        },
+        "yaxis": {
+            "range": [0, 5]
         },
         "shapes": [
             {
@@ -64,6 +67,25 @@
                 "x0shift": -0.25,
                 "x1shift": -0.25,
                 "yref": "paper"
+            },
+            {
+                "label": {
+                    "texttemplate": "dy/dx = -1.5 / 1 = %{slope}. xcenter: %{xcenter}"
+
+                },
+                "layer": "above",
+                "x0": "A",
+                "x1": "C",
+                "x0shift": 0.5,
+                "x1shift": -0.5,
+                "y0": 4.5,
+                "y1": 3,
+                "type": "line",
+                "line": {
+                    "width": 3,
+                    "color": "pink"
+                },
+                "editable": true
             }
         ]
     }
