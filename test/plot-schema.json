@@ -10006,7 +10006,7 @@
        "valType": "any"
       },
       "x0shift": {
-       "description": "Only relevant if `xref` is a (multi-)category axes. Shifts `x0` by a fraction of the reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.",
+       "description": "Shifts `x0` away from the center of the category when `xref` is a *category* or *multicategory* axis. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.",
        "dflt": 0,
        "editType": "calc",
        "max": 1,
@@ -10019,7 +10019,7 @@
        "valType": "any"
       },
       "x1shift": {
-       "description": "Only relevant if `xref` is a (multi-)category axes. Shifts `x1` by a fraction of the reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.",
+       "description": "Shifts `x1` away from the center of the category when `xref` is a *category* or *multicategory* axis. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.",
        "dflt": 0,
        "editType": "calc",
        "max": 1,
@@ -10056,7 +10056,7 @@
        "valType": "any"
       },
       "y0shift": {
-       "description": "Only relevant if `yref` is a (multi-)category axes. Shifts `y0` by a fraction of the reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.",
+       "description": "Shifts `y0` away from the center of the category when `yref` is a *category* or *multicategory* axis. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.",
        "dflt": 0,
        "editType": "calc",
        "max": 1,
@@ -10069,7 +10069,7 @@
        "valType": "any"
       },
       "y1shift": {
-       "description": "Only relevant if `yref` is a (multi-)category axes. Shifts `y1` by a fraction of the reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.",
+       "description": "Shifts `y1` away from the center of the category when `yref` is a *category* or *multicategory* axis. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.",
        "dflt": 0,
        "editType": "calc",
        "max": 1,

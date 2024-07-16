@@ -176,8 +176,9 @@ module.exports = templatedArray('shape', {
         max: 1,
         editType: 'calc',
         description: [
-            'Only relevant if `xref` is a (multi-)category axes. Shifts `x0` by a fraction of the',
-            'reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.'
+            'Shifts `x0` away from the center of the category when `xref` is a *category* or',
+            '*multicategory* axis. -0.5 corresponds to the start of the category and 0.5',
+            'corresponds to the end of the category.'
         ].join(' ')
     },
     x1shift: {
@@ -187,8 +188,9 @@ module.exports = templatedArray('shape', {
         max: 1,
         editType: 'calc',
         description: [
-            'Only relevant if `xref` is a (multi-)category axes. Shifts `x1` by a fraction of the',
-            'reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.'
+            'Shifts `x1` away from the center of the category when `xref` is a *category* or',
+            '*multicategory* axis. -0.5 corresponds to the start of the category and 0.5',
+            'corresponds to the end of the category.'
         ].join(' ')
     },
     yref: extendFlat({}, annAttrs.yref, {
@@ -248,8 +250,9 @@ module.exports = templatedArray('shape', {
         max: 1,
         editType: 'calc',
         description: [
-            'Only relevant if `yref` is a (multi-)category axes. Shifts `y0` by a fraction of the',
-            'reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.'
+            'Shifts `y0` away from the center of the category when `yref` is a *category* or',
+            '*multicategory* axis. -0.5 corresponds to the start of the category and 0.5',
+            'corresponds to the end of the category.'
         ].join(' ')
     },
     y1shift: {
@@ -259,8 +262,9 @@ module.exports = templatedArray('shape', {
         max: 1,
         editType: 'calc',
         description: [
-            'Only relevant if `yref` is a (multi-)category axes. Shifts `y1` by a fraction of the',
-            'reference unit. E.g. -0.5 corresponds to the start of the category and 0.5 corresponds to the end of the category.'
+            'Shifts `y1` away from the center of the category when `yref` is a *category* or',
+            '*multicategory* axis. -0.5 corresponds to the start of the category and 0.5',
+            'corresponds to the end of the category.'
         ].join(' ')
     },
     path: {
