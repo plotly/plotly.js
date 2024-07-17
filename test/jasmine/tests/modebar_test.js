@@ -1642,7 +1642,7 @@ describe('ModeBar', function() {
                 ]);
             })
             .then(function() {
-                expect(countButtons()).toBe(initial + 4, 'skip duplicates');
+                expect(countButtons()).toBe(initial + 5, 'skip duplicates');
 
                 return Plotly.relayout(gd, 'modebar.add', [
                     'drawline',
@@ -1656,6 +1656,13 @@ describe('ModeBar', function() {
             })
             .then(function() {
                 expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'modebar.add', [
+                    'togglehover'
+                ]);
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 1, 'add togglehover');
             })
             .then(done, done.fail);
         });
