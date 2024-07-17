@@ -411,5 +411,7 @@ function draw(gd, titleClass, options) {
 }
 
 module.exports = {
-    draw: draw
+    draw: draw,
+    SUBTITLE_PADDING_EM: SUBTITLE_PADDING_EM,
+    SUBTITLE_PADDING_MATHJAX_EM: SUBTITLE_PADDING_MATHJAX_EM,
 };

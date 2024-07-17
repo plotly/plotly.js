@@ -445,6 +445,21 @@ exports.drawMainTitle = function(gd) {
                     this.setAttribute('dy', newDy);
                 });
             }
+
+            // If there is a subtitle
+            var subtitleObj = d3.selectAll('.gtitle-subtitle');
+            if(subtitleObj.node()) {
+                // Get bottom edge of title bounding box
+                var titleBB = titleObj.node().getBBox();
+                var titleBottom = titleBB.y + titleBB.height;
+                var subtitleY = titleBottom + Titles.SUBTITLE_PADDING_EM * title.subtitle.font.size;
+                subtitleObj.attr({
+                    x: x,
+                    y: subtitleY,
+                    'text-anchor': textAnchor,
+                    dy: getMainTitleDyAdj(title.yanchor)
+                }).call(svgTextUtils.positionText, x, subtitleY);
+            }
         }
     }
 };
