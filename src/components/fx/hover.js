@@ -2273,7 +2273,7 @@ function spikesChanged(gd, oldspikepoints) {
 function plainText(s, len) {
     return svgTextUtils.plainText(s || '', {
         len: len,
-        allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
+        allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em', 's', 'u']
     });
 }
 
