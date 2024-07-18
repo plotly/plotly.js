@@ -85,7 +85,7 @@ if(mathjax3) {
         'table_plain_birds',
         'table_wrapped_birds',
         'ternary-mathjax',
-        'zz-ternary-mathjax-title-place-subtitle',
+        'ternary-mathjax-title-place-subtitle',
     ];
 }
 
