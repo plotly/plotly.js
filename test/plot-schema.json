@@ -13315,6 +13315,104 @@
      }
     },
     "role": "object",
+    "subtitle": {
+     "editType": "layoutstyle",
+     "font": {
+      "color": {
+       "editType": "layoutstyle",
+       "valType": "color"
+      },
+      "description": "Sets the subtitle font.",
+      "editType": "layoutstyle",
+      "family": {
+       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+       "editType": "layoutstyle",
+       "noBlank": true,
+       "strict": true,
+       "valType": "string"
+      },
+      "lineposition": {
+       "description": "Sets the kind of decoration line(s) with text, such as an *under*, *over* or *through* as well as combinations e.g. *under+over*, etc.",
+       "dflt": "none",
+       "editType": "layoutstyle",
+       "extras": [
+        "none"
+       ],
+       "flags": [
+        "under",
+        "over",
+        "through"
+       ],
+       "valType": "flaglist"
+      },
+      "role": "object",
+      "shadow": {
+       "description": "Sets the shape and color of the shadow behind text. *auto* places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.",
+       "dflt": "none",
+       "editType": "layoutstyle",
+       "valType": "string"
+      },
+      "size": {
+       "editType": "layoutstyle",
+       "min": 1,
+       "valType": "number"
+      },
+      "style": {
+       "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+       "dflt": "normal",
+       "editType": "layoutstyle",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "italic"
+       ]
+      },
+      "textcase": {
+       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
+       "dflt": "normal",
+       "editType": "layoutstyle",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "word caps",
+        "upper",
+        "lower"
+       ]
+      },
+      "variant": {
+       "description": "Sets the variant of the font.",
+       "dflt": "normal",
+       "editType": "layoutstyle",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "small-caps",
+        "all-small-caps",
+        "all-petite-caps",
+        "petite-caps",
+        "unicase"
+       ]
+      },
+      "weight": {
+       "description": "Sets the weight (or boldness) of the font.",
+       "dflt": "normal",
+       "editType": "layoutstyle",
+       "extras": [
+        "normal",
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
+      }
+     },
+     "role": "object",
+     "text": {
+      "description": "Sets the plot's subtitle.",
+      "editType": "layoutstyle",
+      "valType": "string"
+     }
+    },
     "text": {
      "description": "Sets the plot's title. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
      "editType": "layoutstyle",

@@ -51,10 +51,10 @@
     "width": 600,
     "height": 600,
     "title": {
-      "text": "Simple Ternary Plot with Markers",
       "subtitle": {
-        "text": "$y = ax^2 + bx + c$"
-      }
+        "text": "Simple Ternary Plot with Markers"
+      },
+      "text": "$y = ax^2 + bx + c$"
     }
   }
 }
