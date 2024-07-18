@@ -50,7 +50,7 @@ module.exports = templatedArray('annotation', {
             'Sets the text associated with this annotation.',
             'Plotly uses a subset of HTML tags to do things like',
             'newline (<br>), bold (<b></b>), italics (<i></i>),',
-            'hyperlinks (<a href=\'...\'></a>). Tags <em>, <sup>, <sub>',
+            'hyperlinks (<a href=\'...\'></a>). Tags <em>, <sup>, <sub>, <s>, <u>',
             '<span> are also supported.'
         ].join(' ')
     },

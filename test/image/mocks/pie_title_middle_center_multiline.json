@@ -2,7 +2,7 @@
   "data": [
     {
       "values": [955, 405, 360, 310, 295],
-      "labels": ["Mandarin", "Spanish", "English", "Hindi", "Arabic"],
+      "labels": ["Mandarin", "Spanish", "<u>English</u>", "Hindi", "Arabic"],
       "textinfo": "label+percent",
       "hole": 0.4,
       "title":{
@@ -14,7 +14,7 @@
   ],
   "layout": {
     "title": {
-      "text": "Top 5 languages by number of native speakers (2010, est.)"
+      "text": "Top <s>10</s> 5 languages by number of <u>native</u> speakers (<s>2009</s> 2010, est.)"
     },
     "height": 600,
     "width": 600

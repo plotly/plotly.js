@@ -3106,7 +3106,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertSelectedPoints = makeAssertSelectedPoints();
 
             function assertFillOpacity(exp, msg) {
-                var txtPts = d3Select(gd).select('g.plot').selectAll('text');
+                var txtPts = d3Select(gd).select('g.overplot').select('.xy').selectAll('text');
 
                 expect(txtPts.size()).toBe(exp.length, '# of text nodes: ' + msg);
 

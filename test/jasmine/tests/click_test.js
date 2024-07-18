@@ -1182,14 +1182,14 @@ describe('dragbox', function() {
             var pos = getRectCenter(node);
             var fns = drag.makeFns({pos0: pos, dpos: [50, 0]});
 
-            assertScale(d3Select('.plot').node(), 1, 1);
+            assertScale(d3Select('.overplot').select('.xy').node(), 1, 1);
 
             d3SelectAll('.point').each(function() {
                 assertScale(this, 1, 1);
             });
 
             fns.start().then(function() {
-                assertScale(d3Select('.plot').node(), 1.14, 1);
+                assertScale(d3Select('.overplot').select('.xy').node(), 1.14, 1);
 
                 d3Select('.scatterlayer').selectAll('.point').each(function() {
                     assertScale(this, 0.87, 1);

@@ -415,6 +415,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             expect(d3SelectAll('.drag').size()).toBe(11);
             expect(d3SelectAll('.gtitle').text()).toBe('Click to enter Plot title');
+            expect(d3SelectAll('.gtitle-subtitle').text()).toBe('Click to enter Plot subtitle');
             countCalls({plot: 1});
 
             return Plotly.react(gd, data, layout, {staticPlot: true});
@@ -1982,7 +1983,7 @@ describe('Plotly.react and uirevision attributes', function() {
         function editEditable() {
             return Registry.call('_guiUpdate', gd,
                 {'colorbar.x': 0.8, 'colorbar.y': 0.6},
-                {'title.text': 'yep', 'legend.x': 1.1, 'legend.y': 0.9},
+                {'title.text': 'yep', 'title.subtitle.text': 'hey', 'legend.x': 1.1, 'legend.y': 0.9},
                 [2]
             );
         }
@@ -1993,6 +1994,7 @@ describe('Plotly.react and uirevision attributes', function() {
                 'colorbar.y': original ? [undefined, 0.5] : 0.6
             }], {
                 'title.text': original ? [undefined, 'Click to enter Plot title'] : 'yep',
+                'title.subtitle.text': original ? [undefined, 'Click to enter Plot subtitle'] : 'hey',
                 'legend.x': original ? [undefined, 1.02] : 1.1,
                 'legend.y': original ? [undefined, 1] : 0.9
             });
