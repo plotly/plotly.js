@@ -13,7 +13,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 
 ### Added
  - Add `subtitle` attribute to `layout.title` to enable adding subtitles to plots [[#7012](https://github.com/plotly/plotly.js/pull/7012)]
- - Introduce "<u>" and "<s>" pseudo html tags to add partial underline and strike-through styles to SVG text elements [[#7043](https://github.com/plotly/plotly.js/pull/7043)]
+ - Introduce "u" and "s" pseudo html tags to add partial underline and strike-through styles to SVG text elements [[#7043](https://github.com/plotly/plotly.js/pull/7043)]
  - Add geometric mean functionality and 'geometric mean ascending' + 'geometric mean descending' to `category_order` on cartesian axes [[#6223](https://github.com/plotly/plotly.js/pull/6223)],
    with thanks to @acxz and @prabhathc for the contribution!
  - Add axis property `ticklabelindex` for drawing the label for each minor tick n positions away from a major tick,
@@ -26,7 +26,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ### Fixed
  - Fix displaying scattergl traces while zooming or panning (regression introduced in 2.26.0) [[#7018](https://github.com/plotly/plotly.js/pull/7018)],
    with thanks to @eiriklv for the contribution!
- - Fix for excessive hoverlabel removal and overlap for plots with both `scatter` and `bar` traces which reported in [[#6954](https://github.com/plotly/plotly.js/pull/6954)],
+ - Fix for excessive hoverlabel removal and overlap for plots with both scatter and bar traces [[#6954](https://github.com/plotly/plotly.js/pull/6954)],
    with thanks to @mbant for the contribution!
  - Fix adding cartesian "togglehover" when included in `modebar.add` [[#5879](https://github.com/plotly/plotly.js/pull/5879)],
    with thanks to @Sizurka for the contribution!
