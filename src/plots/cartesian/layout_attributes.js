@@ -698,6 +698,44 @@ module.exports = {
             'In other cases the default is *hide past div*.'
         ].join(' ')
     },
+    ticklabelshift: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'ticks',
+        description: [
+            'Shifts the tick labels by the specified number of pixels in parallel to the axis.',
+            'Positive values move the labels in the positive direction of the axis.'
+        ].join(' ')
+    },
+    ticklabelstandoff: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'ticks',
+        description: [
+            'Sets the standoff distance (in px) between the axis tick labels and their default position.',
+            'A positive `ticklabelstandoff` moves the labels farther away from the plot area',
+            'if `ticklabelposition` is *outside*, and deeper into the plot area if',
+            '`ticklabelposition` is *inside*. A negative `ticklabelstandoff` works in the opposite',
+            'direction, moving outside ticks towards the plot area and inside ticks towards',
+            'the outside. If the negative value is large enough, inside ticks can even end up',
+            'outside and vice versa.'
+        ].join(' ')
+    },
+    ticklabelindex: {
+        // in the future maybe add `extras: ['all', 'minor']` to allow showing labels for all ticks
+        // or for all minor ticks.
+        valType: 'integer',
+        arrayOk: true,
+        editType: 'calc',
+        description: [
+            'Only for axes with `type` *date* or *linear*.',
+            'Instead of drawing the major tick label, draw the label for the minor tick',
+            'that is n positions away from the major tick. E.g. to always draw the label for the',
+            'minor tick before each major tick, choose `ticklabelindex` -1. This is useful for date',
+            'axes with `ticklabelmode` *period* if you want to label the period that ends with each',
+            'major tick instead of the period that begins there.'
+        ].join(' ')
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
@@ -1164,6 +1202,7 @@ module.exports = {
             'max ascending', 'max descending',
             'sum ascending', 'sum descending',
             'mean ascending', 'mean descending',
+            'geometric mean ascending', 'geometric mean descending',
             'median ascending', 'median descending'
         ],
         dflt: 'trace',
@@ -1178,7 +1217,7 @@ module.exports = {
             'the *trace* mode. The unspecified categories will follow the categories in `categoryarray`.',
             'Set `categoryorder` to *total ascending* or *total descending* if order should be determined by the',
             'numerical order of the values.',
-            'Similarly, the order can be determined by the min, max, sum, mean or median of all the values.'
+            'Similarly, the order can be determined by the min, max, sum, mean, geometric mean or median of all the values.'
         ].join(' ')
     },
     categoryarray: {

@@ -1487,8 +1487,14 @@ describe('Test shapes', function() {
     function testShapeDrag(dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
-        var x2p = helpers.getDataToPixel(gd, xa);
-        var y2p = helpers.getDataToPixel(gd, ya, true);
+        var x2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, xa, shift);
+            return dataToPixel(v);
+        };
+        var y2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true);
+            return dataToPixel(v);
+        };
 
         var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
@@ -1504,10 +1510,10 @@ describe('Test shapes', function() {
 
     function getShapeCoordinates(layoutShape, x2p, y2p) {
         return {
-            x0: x2p(layoutShape.x0),
-            x1: x2p(layoutShape.x1),
-            y0: y2p(layoutShape.y0),
-            y1: y2p(layoutShape.y1)
+            x0: x2p(layoutShape.x0, layoutShape.x0shift),
+            x1: x2p(layoutShape.x1, layoutShape.x1shift),
+            y0: y2p(layoutShape.y0, layoutShape.y0shift),
+            y1: y2p(layoutShape.y1, layoutShape.y1shift)
         };
     }
 
@@ -1515,7 +1521,7 @@ describe('Test shapes', function() {
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
         var x2p = helpers.getDataToPixel(gd, xa);
-        var y2p = helpers.getDataToPixel(gd, ya, true);
+        var y2p = helpers.getDataToPixel(gd, ya, undefined, true);
 
         var initialPath = layoutShape.path;
         var initialCoordinates = getPathCoordinates(initialPath, x2p, y2p);
@@ -1546,8 +1552,14 @@ describe('Test shapes', function() {
     function testShapeResize(direction, dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
-        var x2p = helpers.getDataToPixel(gd, xa);
-        var y2p = helpers.getDataToPixel(gd, ya, true);
+        var x2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, xa, shift, false);
+            return dataToPixel(v);
+        };
+        var y2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true);
+            return dataToPixel(v);
+        };
 
         var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
@@ -1590,9 +1602,14 @@ describe('Test shapes', function() {
 
         var xa = Axes.getFromId(gd, layoutShape.xref);
         var ya = Axes.getFromId(gd, layoutShape.yref);
-        var x2p = helpers.getDataToPixel(gd, xa);
-        var y2p = helpers.getDataToPixel(gd, ya, true);
-
+        var x2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, xa, shift);
+            return dataToPixel(v);
+        };
+        var y2p = function(v, shift) {
+            var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true);
+            return dataToPixel(v);
+        };
 
         promise = promise.then(function() {
             var dragHandle = pointToMove === 'start' ?

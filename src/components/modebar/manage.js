@@ -246,7 +246,6 @@ function getButtonGroups(gd) {
                     enableHover('hoverClosestGl2d');
                     enableHover('hoverClosestPie');
                 } else if(b === 'v1hovermode') {
-                    enableHover('toggleHover');
                     enableHover('hoverClosestCartesian');
                     enableHover('hoverCompareCartesian');
                     enableHover('hoverClosestGeo');

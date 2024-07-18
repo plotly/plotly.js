@@ -59,6 +59,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
+    if(!options.noTicklabelindex && (axType === 'date' || axType === 'linear')) {
+        coerce('ticklabelindex');
+    }
+
     var ticklabelposition = '';
     if(!options.noTicklabelposition || axType === 'multicategory') {
         ticklabelposition = Lib.coerce(containerIn, containerOut, {
