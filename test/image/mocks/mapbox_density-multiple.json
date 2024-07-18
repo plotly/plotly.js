@@ -1,6 +1,6 @@
 {
   "data": [{
-    "type": "densitymapbox",
+    "type": "densitymapnew",
     "name": "w/ reversescale:true",
     "lon": [10, 20, 30],
     "lat": [15, 25, 35],
@@ -15,7 +15,7 @@
       "len": 0.45
     }
   }, {
-    "type": "densitymapbox",
+    "type": "densitymapnew",
     "name": "w/0 z data",
     "lon": [-10, -20, -30],
     "lat": [15, 25, 35],
@@ -29,7 +29,7 @@
     }
   }],
   "layout": {
-    "mapbox": {
+    "mapnew": {
       "style": "light",
       "center": {"lat": 20}
     },

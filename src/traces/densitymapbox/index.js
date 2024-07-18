@@ -4,7 +4,7 @@ module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
     colorbar: require('../heatmap/colorbar'),
-    formatLabels: require('../scattermapbox/format_labels'),
+    formatLabels: require('../scattermapnew/format_labels'),
     calc: require('./calc'),
     plot: require('./plot'),
     hoverPoints: require('./hover'),
@@ -27,11 +27,11 @@ module.exports = {
     },
 
     moduleType: 'trace',
-    name: 'densitymapbox',
-    basePlotModule: require('../../plots/mapbox'),
-    categories: ['mapbox', 'gl', 'showLegend'],
+    name: 'densitymapnew',
+    basePlotModule: require('../../plots/mapnew'),
+    categories: ['mapnew', 'gl', 'showLegend'],
     meta: {
-        hr_name: 'density_mapbox',
+        hr_name: 'density_mapnew',
         description: [
             'Draws a bivariate kernel density estimation with a Gaussian kernel',
             'from `lon` and `lat` coordinates and optional `z` values using a colorscale.'

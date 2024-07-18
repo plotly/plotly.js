@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "mode": "markers+lines",
       "lon": [
         10,
@@ -18,7 +18,7 @@
       }
     },
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "mode": "markers+lines",
       "lon": [
         -75,
@@ -36,7 +36,7 @@
     }
   ],
   "layout": {
-    "mapbox": {
+    "mapnew": {
       "style": "dark",
       "center": {
         "lon": -4.71092760419225,

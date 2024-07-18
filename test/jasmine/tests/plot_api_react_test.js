@@ -881,14 +881,14 @@ describe('@noCIdep Plotly.react', function() {
         });
     });
 
-    mockLists.mapbox.forEach(function(mockSpec) {
+    mockLists.mapnew.forEach(function(mockSpec) {
         it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbpox mocks)', function(done) {
             Plotly.setPlotConfig({});
             _runReactMock(mockSpec, done);
         });
     });
 
-    // since CI breaks up gl/svg types, and drops scattermapbox, this test won't work there
+    // since CI breaks up gl/svg types, and drops scattermapnew, this test won't work there
     // but I should hope that if someone is doing something as major as adding a new type,
     // they'll run the full test suite locally!
     it('@noCI tested every trace & transform type at least once', function() {
@@ -1896,24 +1896,24 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(done);
     });
 
-    it('@gl preserves mapbox view changes using mapbox.uirevision', function(done) {
-        function fig(mainRev, mapboxRev) {
+    it('@gl preserves mapnew view changes using mapnew.uirevision', function(done) {
+        function fig(mainRev, mapnewRev) {
             return {
-                data: [{lat: [1, 2], lon: [1, 2], type: 'scattermapbox'}],
+                data: [{lat: [1, 2], lon: [1, 2], type: 'scattermapnew'}],
                 layout: {
                     uirevision: mainRev,
-                    mapbox: {uirevision: mapboxRev}
+                    mapnew: {uirevision: mapnewRev}
                 }
             };
         }
 
         function attrs(original) {
             return {
-                'mapbox.center.lat': original ? [undefined, 0] : 1,
-                'mapbox.center.lon': original ? [undefined, 0] : 2,
-                'mapbox.zoom': original ? [undefined, 1] : 3,
-                'mapbox.bearing': original ? [undefined, 0] : 4,
-                'mapbox.pitch': original ? [undefined, 0] : 5
+                'mapnew.center.lat': original ? [undefined, 0] : 1,
+                'mapnew.center.lon': original ? [undefined, 0] : 2,
+                'mapnew.zoom': original ? [undefined, 1] : 3,
+                'mapnew.bearing': original ? [undefined, 0] : 4,
+                'mapnew.pitch': original ? [undefined, 0] : 5
             };
         }
 
@@ -2284,7 +2284,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
 
         function _react() {
             return Plotly.react(gd, [{
-                type: 'scattermapbox',
+                type: 'scattermapnew',
                 lon: [3, 1, 2],
                 lat: [2, 3, 1]
             }], {
@@ -2294,7 +2294,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             });
         }
 
-        // see mapbox_test.js for rationale
+        // see mapnew_test.js for rationale
         function _mouseEvent(type, pos) {
             return new Promise(function(resolve) {
                 mouseEvent(type, pos[0], pos[1], {
@@ -2304,7 +2304,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             });
         }
 
-        // see mapbox_test.js for rationale
+        // see mapnew_test.js for rationale
         function _drag(p0, p1) {
             return _mouseEvent('mousemove', p0)
                 .then(function() { return _mouseEvent('mousedown', p0); })
@@ -2318,30 +2318,30 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         function _assertGUI(msg) {
             var TOL = 2;
 
-            var mapbox = gd.layout.mapbox || {};
-            expect((mapbox.center || {}).lon).toBeCloseTo(-17.578, TOL, msg);
-            expect((mapbox.center || {}).lat).toBeCloseTo(17.308, TOL, msg);
-            expect(mapbox.zoom).toBe(1);
+            var mapnew = gd.layout.mapnew || {};
+            expect((mapnew.center || {}).lon).toBeCloseTo(-17.578, TOL, msg);
+            expect((mapnew.center || {}).lat).toBeCloseTo(17.308, TOL, msg);
+            expect(mapnew.zoom).toBe(1);
 
-            var fullMapbox = gd._fullLayout.mapbox || {};
-            expect(fullMapbox.center.lon).toBeCloseTo(-17.578, TOL, msg);
-            expect(fullMapbox.center.lat).toBeCloseTo(17.308, TOL, msg);
-            expect(fullMapbox.zoom).toBe(1);
+            var fullMapnew = gd._fullLayout.mapnew || {};
+            expect(fullMapnew.center.lon).toBeCloseTo(-17.578, TOL, msg);
+            expect(fullMapnew.center.lat).toBeCloseTo(17.308, TOL, msg);
+            expect(fullMapnew.zoom).toBe(1);
 
             var preGUI = gd._fullLayout._preGUI;
-            expect(preGUI['mapbox.center.lon']).toBe(null, msg);
-            expect(preGUI['mapbox.center.lat']).toBe(null, msg);
-            expect(preGUI['mapbox.zoom']).toBe(null, msg);
+            expect(preGUI['mapnew.center.lon']).toBe(null, msg);
+            expect(preGUI['mapnew.center.lat']).toBe(null, msg);
+            expect(preGUI['mapnew.zoom']).toBe(null, msg);
         }
 
         _react()
         .then(function() {
-            expect(gd.layout.mapbox).toEqual({});
+            expect(gd.layout.mapnew).toEqual({});
 
-            var fullMapbox = gd._fullLayout.mapbox;
-            expect(fullMapbox.center.lon).toBe(0);
-            expect(fullMapbox.center.lat).toBe(0);
-            expect(fullMapbox.zoom).toBe(1);
+            var fullMapnew = gd._fullLayout.mapnew;
+            expect(fullMapnew.center.lon).toBe(0);
+            expect(fullMapnew.center.lat).toBe(0);
+            expect(fullMapnew.zoom).toBe(1);
 
             expect(gd._fullLayout._preGUI).toEqual({});
         })

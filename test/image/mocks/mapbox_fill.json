@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "mode": "lines",
       "fill": "toself",
       "lon": [
@@ -67,7 +67,7 @@
       "fillcolor": "#d3d3d3"
     },
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "fill": "toself",
       "lon": [
         -75,
@@ -87,7 +87,7 @@
     }
   ],
   "layout": {
-    "mapbox": {
+    "mapnew": {
       "center": {
         "lon": -67,
         "lat": 45.5

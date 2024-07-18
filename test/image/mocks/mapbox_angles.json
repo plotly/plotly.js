@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "mode": "markers",
       "lon": [
         -73.6,
@@ -23,7 +23,7 @@
       }
     },
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "mode": "markers",
       "lon": [
         -73.6,
@@ -45,11 +45,11 @@
         "angle": [-45, 45, 0],
         "allowoverlap":true
       },
-      "subplot": "mapbox2"
+      "subplot": "mapnew2"
     }
   ],
   "layout": {
-    "mapbox": {
+    "mapnew": {
       "domain": {
         "x": [
           0,
@@ -68,7 +68,7 @@
       "pitch": 60,
       "bearing": -60
     },
-    "mapbox2": {
+    "mapnew2": {
       "domain": {
         "x": [
           0.6,

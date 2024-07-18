@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "densitymapbox",
+      "type": "densitymapnew",
       "lon": [
         -151.5129,
         -150.4048,
@@ -18332,7 +18332,7 @@
       "coloraxis": "coloraxis"
     },
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "lon": [
         -151.5129,
         -150.4048,
@@ -36667,7 +36667,7 @@
     }
   ],
   "layout": {
-    "mapbox": {
+    "mapnew": {
       "center": {
         "lon": -120,
         "lat": 50

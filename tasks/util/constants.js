@@ -46,7 +46,7 @@ try {
 }
 
 var partialBundleNames = [
-    'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance', 'strict'
+    'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapnew', 'finance', 'strict'
 ];
 
 var partialBundleTraces = {
@@ -104,11 +104,11 @@ var partialBundleTraces = {
         'surface',
         'volume'
     ],
-    mapbox: [
-        'choroplethmapbox',
-        'densitymapbox',
+    mapnew: [
+        'choroplethmapnew',
+        'densitymapnew',
         'scatter',
-        'scattermapbox'
+        'scattermapnew'
     ],
     strict: [
         'bar',
@@ -117,11 +117,11 @@ var partialBundleTraces = {
         'candlestick',
         'carpet',
         'choropleth',
-        'choroplethmapbox',
+        'choroplethmapnew',
         'cone',
         'contour',
         'contourcarpet',
-        'densitymapbox',
+        'densitymapnew',
         'funnel',
         'funnelarea',
         'heatmap',
@@ -145,7 +145,7 @@ var partialBundleTraces = {
         'scatter3d',
         'scattercarpet',
         'scattergeo',
-        'scattermapbox',
+        'scattermapnew',
         'scatterpolar',
         'scatterpolargl',
         'scattersmith',

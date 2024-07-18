@@ -1,6 +1,6 @@
 {
   "data": [{
-    "type": "densitymapbox",
+    "type": "densitymapnew",
     "name": "Montreal",
     "lon": [-73.5],
     "lat": [45.5],
@@ -9,7 +9,7 @@
     "showscale": false,
     "showlegend": true
   }, {
-    "type": "densitymapbox",
+    "type": "densitymapnew",
     "name": "Boston",
     "lon": [-71.0],
     "lat": [42.3],
@@ -19,7 +19,7 @@
     "showlegend": true
   }],
   "layout": {
-    "mapbox": {
+    "mapnew": {
       "style": "open-street-map",
       "center": {
         "lon": -72.25,
@@ -28,7 +28,7 @@
       "zoom": 4
     },
     "title": {
-      "text": "densitymapbox with legends"
+      "text": "densitymap with legends"
     },
     "width": 500,
     "height": 250,

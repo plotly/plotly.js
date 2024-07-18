@@ -19,9 +19,9 @@ var clearSelectionsCache = require('../../components/selections').clearSelection
 var selectOnClick = require('../../components/selections').selectOnClick;
 
 var constants = require('./constants');
-var createMapboxLayer = require('./layers');
+var createMapnewLayer = require('./layers');
 
-function Mapbox(gd, id) {
+function Mapnew(gd, id) {
     this.id = id;
     this.gd = gd;
 
@@ -31,7 +31,7 @@ function Mapbox(gd, id) {
     this.container = fullLayout._glcontainer.node();
     this.isStatic = context.staticPlot;
 
-    // unique id for this Mapbox instance
+    // unique id for this Mapnew instance
     this.uid = fullLayout._uid + '-' + this.id;
 
     // create framework on instantiation for a smoother first plot call
@@ -50,7 +50,7 @@ function Mapbox(gd, id) {
     this.wheeling = false;
 }
 
-var proto = Mapbox.prototype;
+var proto = Mapnew.prototype;
 
 proto.plot = function(calcData, fullLayout, promises) {
     var self = this;
@@ -255,9 +255,9 @@ proto.fillBelowLookup = function(calcData, fullLayout) {
 };
 
 var traceType2orderIndex = {
-    choroplethmapbox: 0,
-    densitymapbox: 1,
-    scattermapbox: 2
+    choroplethmapnew: 0,
+    densitymapnew: 1,
+    scattermapnew: 2
 };
 
 proto.updateData = function(calcData) {
@@ -267,7 +267,7 @@ proto.updateData = function(calcData) {
     // Need to sort here by trace type here,
     // in case traces with different `type` have the same
     // below value, but sorting we ensure that
-    // e.g. choroplethmapbox traces will be below scattermapbox traces
+    // e.g. choroplethmapnew traces will be below scattermapnew traces
     var calcDataSorted = calcData.slice().sort(function(a, b) {
         return (
             traceType2orderIndex[a[0].trace.type] -
@@ -329,7 +329,7 @@ proto.updateLayout = function(fullLayout) {
     this.updateFx(fullLayout);
     this.map.resize();
 
-    if(this.gd._context._scrollZoom.mapbox) {
+    if(this.gd._context._scrollZoom.mapnew) {
         map.scrollZoom.enable();
     } else {
         map.scrollZoom.disable();
@@ -345,7 +345,7 @@ proto.resolveOnRender = function(resolve) {
             // resolve at end of render loop
             //
             // Need a 10ms delay (0ms should suffice to skip a thread in the
-            // render loop) to workaround mapbox-gl bug introduced in v1.3.0
+            // render loop) to workaround mapnew-gl bug introduced in v1.3.0
             setTimeout(resolve, 10);
         }
     });
@@ -524,8 +524,8 @@ proto.initFx = function(calcData, fullLayout) {
 
             if(clickMode.indexOf('event') > -1) {
                 // TODO: this does not support right-click. If we want to support it, we
-                // would likely need to change mapbox to use dragElement instead of straight
-                // mapbox event binding. Or perhaps better, make a simple wrapper with the
+                // would likely need to change mapnew to use dragElement instead of straight
+                // mapnew event binding. Or perhaps better, make a simple wrapper with the
                 // right mousedown, mousemove, and mouseup handlers just for a left/right click
                 // pie would use this too.
                 Fx.click(gd, evt.originalEvent);
@@ -603,8 +603,8 @@ proto.updateFx = function(fullLayout) {
         self.div.ontouchstart = null;
         self.div.removeEventListener('touchstart', self.div._ontouchstart);
         // TODO: this does not support right-click. If we want to support it, we
-        // would likely need to change mapbox to use dragElement instead of straight
-        // mapbox event binding. Or perhaps better, make a simple wrapper with the
+        // would likely need to change mapnew to use dragElement instead of straight
+        // mapnew event binding. Or perhaps better, make a simple wrapper with the
         // right mousedown, mousemove, and mouseup handlers just for a left/right click
         // pie would use this too.
         self.onClickInPanHandler = self.onClickInPanFn(self.dragOptions);
@@ -647,7 +647,7 @@ proto.updateLayers = function(fullLayout) {
         layerList = this.layerList = [];
 
         for(i = 0; i < layers.length; i++) {
-            layerList.push(createMapboxLayer(this, i, layers[i]));
+            layerList.push(createMapnewLayer(this, i, layers[i]));
         }
     } else {
         for(i = 0; i < layers.length; i++) {
@@ -773,8 +773,8 @@ function getStyleObj(val) {
     } else if(typeof val === 'string') {
         styleObj.id = val;
 
-        if(constants.stylesMapbox[val]) {
-            styleObj.style = constants.stylesMapbox[val];
+        if(constants.stylesMapnew[val]) {
+            styleObj.style = constants.stylesMapnew[val];
         } else {
             styleObj.style = val;
         }
@@ -788,7 +788,7 @@ function getStyleObj(val) {
     return styleObj;
 }
 
-// if style is part of the 'official' mapbox values, add URL prefix and suffix
+// if style is part of the 'official' mapnew values, add URL prefix and suffix
 function convertStyleVal(val) {
     return constants.styleUrlPrefix + val + '-' + constants.styleUrlSuffix;
 }
@@ -797,4 +797,4 @@ function convertCenter(center) {
     return [center.lon, center.lat];
 }
 
-module.exports = Mapbox;
+module.exports = Mapnew;

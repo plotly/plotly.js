@@ -11,7 +11,7 @@ var Drawing = require('../../components/drawing');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var subTypes = require('../scatter/subtypes');
 var isSupportedFont = require('./constants').isSupportedFont;
-var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
+var convertTextOpts = require('../../plots/mapnew/convert_text_opts');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
 var NEWLINES = require('../../lib/svg_text_utils').NEWLINES;

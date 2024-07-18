@@ -94,7 +94,7 @@ blacklist = [
   'gl2d_pointcloud-basic',
   'gl2d_heatmapgl',
   'gl2d_heatmapgl_discrete',
-  'mapbox_stamen-style',
+  'mapnew_stamen-style',
   'plot_types', 
   'trace_metatext', 
   'zz-gl3d_surface_small_timerange',

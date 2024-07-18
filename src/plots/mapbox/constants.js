@@ -126,7 +126,7 @@ var arcgisSat = {
 
 };
 
-var stylesMapbox = {
+var stylesMapnew = {
     basic: cartoVoyager,
     streets: cartoVoyager,
     outdoors: cartoVoyager,
@@ -237,28 +237,28 @@ var stylesMapbox = {
     }
 };
 
-var styleValuesMapbox = sortObjectKeys(stylesMapbox);
+var styleValuesMapnew = sortObjectKeys(stylesMapnew);
 
 module.exports = {
     requiredVersion: requiredVersion,
 
 
     styleValueDflt: 'basic',
-    stylesMapbox: stylesMapbox,
-    styleValuesMapbox: styleValuesMapbox,
+    stylesMapnew: stylesMapnew,
+    styleValuesMapnew: styleValuesMapnew,
 
     traceLayerPrefix: 'plotly-trace-layer-',
     layoutLayerPrefix: 'plotly-layout-layer-',
 
 
     missingStyleErrorMsg: [
-        'No valid maplibre style found, please set `mapbox.style` to one of:',
-        styleValuesMapbox.join(', '),
+        'No valid maplibre style found, please set `mapnew.style` to one of:',
+        styleValuesMapnew.join(', '),
         'or use a tile service.'
     ].join('\n'),
 
 
-    mapOnErrorMsg: 'Mapbox error.',
+    mapOnErrorMsg: 'Mapnew error.',
 
 
 };

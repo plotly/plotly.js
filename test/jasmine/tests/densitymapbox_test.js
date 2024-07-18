@@ -2,7 +2,7 @@ var Plotly = require('../../../lib/index');
 var Plots = require('../../../src/plots/plots');
 var Lib = require('../../../src/lib');
 
-var convert = require('../../../src/traces/densitymapbox/convert');
+var convert = require('../../../src/traces/densitymapnew/convert');
 
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -13,7 +13,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
 
-describe('Test densitymapbox defaults:', function() {
+describe('Test densitymapnew defaults:', function() {
     var gd;
     var fullData;
 
@@ -22,7 +22,7 @@ describe('Test densitymapbox defaults:', function() {
         opts = Array.isArray(opts) ? opts : [opts];
 
         gd.data = opts.map(function(o) {
-            return Lib.extendFlat({type: 'densitymapbox'}, o || {});
+            return Lib.extendFlat({type: 'densitymapnew'}, o || {});
         });
         gd.layout = layout || {};
 
@@ -47,7 +47,7 @@ describe('Test densitymapbox defaults:', function() {
     });
 });
 
-describe('Test densitymapbox convert:', function() {
+describe('Test densitymapnew convert:', function() {
     var base = function() {
         return {
             lon: [10, 20, 30],
@@ -57,7 +57,7 @@ describe('Test densitymapbox convert:', function() {
     };
 
     function pre(trace, layout) {
-        var gd = {data: [Lib.extendFlat({type: 'densitymapbox'}, trace)]};
+        var gd = {data: [Lib.extendFlat({type: 'densitymapnew'}, trace)]};
         if(layout) gd.layout = layout;
 
         supplyAllDefaults(gd);
@@ -270,7 +270,7 @@ describe('Test densitymapbox convert:', function() {
     });
 });
 
-describe('Test densitymapbox hover:', function() {
+describe('Test densitymapnew hover:', function() {
     var gd;
 
     afterEach(function(done) {
@@ -283,7 +283,7 @@ describe('Test densitymapbox hover:', function() {
         gd = createGraphDiv();
 
         var fig = Lib.extendDeep({},
-            s.mock || require('../../image/mocks/mapbox_density0.json')
+            s.mock || require('../../image/mocks/mapnew_density0.json')
         );
 
         if(s.patch) {
@@ -291,7 +291,7 @@ describe('Test densitymapbox hover:', function() {
         }
 
         if(!fig.layout) fig.layout = {};
-        if(!fig.layout.mapbox) fig.layout.mapbox = {};
+        if(!fig.layout.mapnew) fig.layout.mapnew = {};
 
 
         var pos = s.pos || [353, 143];
@@ -375,7 +375,7 @@ describe('Test densitymapbox hover:', function() {
     });
 });
 
-describe('Test densitymapbox interactions:', function() {
+describe('Test densitymapnew interactions:', function() {
     var gd;
 
     beforeEach(function() {
@@ -390,21 +390,21 @@ describe('Test densitymapbox interactions:', function() {
 
     it('@gl should be able to add and remove traces', function(done) {
         function _assert(msg, exp) {
-            var map = gd._fullLayout.mapbox._subplot.map;
+            var map = gd._fullLayout.mapnew._subplot.map;
             var layers = map.getStyle().layers;
 
             expect(layers.length).toBe(exp.layerCnt, 'total # of layers |' + msg);
         }
 
         var trace0 = {
-            type: 'densitymapbox',
+            type: 'densitymapnew',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
             z: [1, 20, 5],
         };
 
         var trace1 = {
-            type: 'densitymapbox',
+            type: 'densitymapnew',
             lon: [-10, -20, -30],
             lat: [15, 25, 35],
             z: [1, 20, 5],
@@ -412,7 +412,7 @@ describe('Test densitymapbox interactions:', function() {
 
         Plotly.newPlot(gd,
             [trace0, trace1],
-            {mapbox: {style: 'basic'}},
+            {mapnew: {style: 'basic'}},
             {}
         )
         .then(function() {
@@ -431,14 +431,14 @@ describe('Test densitymapbox interactions:', function() {
 
     it('@gl should be able to restyle *below*', function(done) {
         function getLayerIds() {
-            var subplot = gd._fullLayout.mapbox._subplot;
+            var subplot = gd._fullLayout.mapnew._subplot;
             var layers = subplot.map.getStyle().layers;
             var layerIds = layers.map(function(l) { return l.id; });
             return layerIds;
         }
 
         Plotly.newPlot(gd, [{
-            type: 'densitymapbox',
+            type: 'densitymapnew',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
             z: [1, 20, 5],
@@ -470,9 +470,9 @@ describe('Test densitymapbox interactions:', function() {
         .then(done, done.fail);
     }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
-    it('@gl should be able to restyle from and to *scattermapbox*', function(done) {
+    it('@gl should be able to restyle from and to *scattermapnew*', function(done) {
         function _assert(msg, exp) {
-            var traceHash = gd._fullLayout.mapbox._subplot.traceHash;
+            var traceHash = gd._fullLayout.mapnew._subplot.traceHash;
             expect(Object.keys(traceHash).length).toBe(1, 'one visible trace| ' + msg);
             for(var k in traceHash) {
                 expect(traceHash[k].type).toBe(exp, 'trace type| ' + msg);
@@ -480,18 +480,18 @@ describe('Test densitymapbox interactions:', function() {
         }
 
         Plotly.newPlot(gd, [{
-            type: 'densitymapbox',
+            type: 'densitymapnew',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
             z: [1, 20, 5]
         }], {}, {
 
         })
-        .then(function() { _assert('after first', 'densitymapbox'); })
-        .then(function() { return Plotly.restyle(gd, 'type', 'scattermapbox'); })
-        .then(function() { _assert('after restyle to scattermapbox', 'scattermapbox'); })
-        .then(function() { return Plotly.restyle(gd, 'type', 'densitymapbox'); })
-        .then(function() { _assert('back to densitymapbox', 'densitymapbox'); })
+        .then(function() { _assert('after first', 'densitymapnew'); })
+        .then(function() { return Plotly.restyle(gd, 'type', 'scattermapnew'); })
+        .then(function() { _assert('after restyle to scattermapnew', 'scattermapnew'); })
+        .then(function() { return Plotly.restyle(gd, 'type', 'densitymapnew'); })
+        .then(function() { _assert('back to densitymapnew', 'densitymapnew'); })
         .then(done, done.fail);
     }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });

@@ -52,10 +52,10 @@ module.exports = extendFlat({
 
     // TODO agree on name / behaviour
     //
-    // 'below' is used currently for layout.mapbox.layers,
+    // 'below' is used currently for layout.mapnew.layers,
     // even though it's not very plotly-esque.
     //
-    // Note also, that the mapbox-gl style don't all have the same layers,
+    // Note also, that the mapnew-gl style don't all have the same layers,
     // see https://codepen.io/etpinard/pen/ydVMwM for full list
     below: {
         valType: 'string',
@@ -63,7 +63,7 @@ module.exports = extendFlat({
         description: [
             'Determines if the choropleth polygons will be inserted',
             'before the layer with the specified ID.',
-            'By default, choroplethmapbox traces are placed above the water layers.',
+            'By default, choroplethmapnew traces are placed above the water layers.',
             'If set to \'\',',
             'the layer will be inserted above every existing layer.'
         ].join(' ')

@@ -5,7 +5,7 @@ var sanitizeHTML = require('../../lib/svg_text_utils').sanitizeHTML;
 var convertTextOpts = require('./convert_text_opts');
 var constants = require('./constants');
 
-function MapboxLayer(subplot, index) {
+function MapnewLayer(subplot, index) {
     this.subplot = subplot;
 
     this.uid = subplot.uid + '-' + index;
@@ -24,7 +24,7 @@ function MapboxLayer(subplot, index) {
     this.visible = false;
 }
 
-var proto = MapboxLayer.prototype;
+var proto = MapnewLayer.prototype;
 
 proto.update = function update(opts) {
     if(!this.visible) {
@@ -61,7 +61,7 @@ proto.needsNewImage = function(opts) {
 
 proto.needsNewSource = function(opts) {
     // for some reason changing layer to 'fill' or 'symbol'
-    // w/o changing the source throws an exception in mapbox-gl 0.18 ;
+    // w/o changing the source throws an exception in mapnew-gl 0.18 ;
     // stay safe and make new source on type changes
     return (
         this.sourceType !== opts.sourcetype ||
@@ -90,7 +90,7 @@ proto.updateImage = function(opts) {
     // Since the `updateImage` control flow doesn't call updateLayer,
     // We need to take care of moving the image layer to match the location
     // where updateLayer would have placed it.
-    var _below = this.findFollowingMapboxLayerId(this.lookupBelow());
+    var _below = this.findFollowingMapnewLayerId(this.lookupBelow());
     if(_below !== null) {
         this.subplot.map.moveLayer(this.idLayer, _below);
     }
@@ -111,7 +111,7 @@ proto.updateSource = function(opts) {
     map.addSource(this.idSource, sourceOpts);
 };
 
-proto.findFollowingMapboxLayerId = function(below) {
+proto.findFollowingMapnewLayerId = function(below) {
     if(below === 'traces') {
         var mapLayers = this.subplot.getMapLayers();
 
@@ -133,7 +133,7 @@ proto.updateLayer = function(opts) {
     var subplot = this.subplot;
     var convertedOpts = convertOpts(opts);
     var below = this.lookupBelow();
-    var _below = this.findFollowingMapboxLayerId(below);
+    var _below = this.findFollowingMapnewLayerId(below);
 
     this.removeLayer();
 
@@ -290,10 +290,10 @@ function convertSourceOpts(opts) {
     return sourceOpts;
 }
 
-module.exports = function createMapboxLayer(subplot, index, opts) {
-    var mapboxLayer = new MapboxLayer(subplot, index);
+module.exports = function createMapnewLayer(subplot, index, opts) {
+    var mapnewLayer = new MapnewLayer(subplot, index);
 
-    mapboxLayer.update(opts);
+    mapnewLayer.update(opts);
 
-    return mapboxLayer;
+    return mapnewLayer;
 };

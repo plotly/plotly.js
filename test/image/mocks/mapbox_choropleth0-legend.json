@@ -1,7 +1,7 @@
 {
     "data": [
         {
-            "type": "choroplethmapbox",
+            "type": "choroplethmapnew",
             "name": "NY",
             "locations": ["NY"],
             "z": [1],
@@ -11,7 +11,7 @@
             "geojson": "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json"
         },
         {
-            "type": "choroplethmapbox",
+            "type": "choroplethmapnew",
             "name": "MA",
             "locations": ["MA"],
             "z": [1],
@@ -21,7 +21,7 @@
             "geojson": "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json"
         },
         {
-            "type": "choroplethmapbox",
+            "type": "choroplethmapnew",
             "name": "VT",
             "locations": ["VT"],
             "z": [1],
@@ -32,7 +32,7 @@
         }
     ],
     "layout": {
-        "mapbox": {
+        "mapnew": {
             "center": {
                 "lon": -74.22,
                 "lat": 42.35
@@ -40,7 +40,7 @@
             "zoom": 3.5
         },
         "title": {
-            "text": "choroplethmapbox with legends"
+            "text": "choroplethmap with legends"
         },
         "width": 500,
         "height": 250,

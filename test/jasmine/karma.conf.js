@@ -323,7 +323,7 @@ func.defaultConfig = {
         showSpecTiming: true
     },
 
-    // set to `true` e.g. for mapbox suites where:
+    // set to `true` e.g. for mapnew suites where:
     //   --tags=gl --skip-tags=noCI result in empty test run
     failOnEmptyTestSuite: !argv.doNotFailOnEmptyTestSuite
 };

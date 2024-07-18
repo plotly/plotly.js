@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "mode": "markers",
       "lon": [
         -73.6,
@@ -23,7 +23,7 @@
       }
     },
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "mode": "markers",
       "lon": [
         -73.6,
@@ -43,11 +43,11 @@
         ],
         "color": "#1b9e77"
       },
-      "subplot": "mapbox2"
+      "subplot": "mapnew2"
     }
   ],
   "layout": {
-    "mapbox": {
+    "mapnew": {
       "style": "carto-positron",
       "center": {
         "lon": -73.60287319770295,
@@ -55,7 +55,7 @@
       },
       "zoom": 11.4
     },
-    "mapbox2": {
+    "mapnew2": {
       "style": "satellite",
       "center": {
         "lon": -73.60287319770295,

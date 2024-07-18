@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "mode": "markers+lines+text",
       "lon": [
         10,
@@ -42,7 +42,7 @@
       "weight": "bold",
       "style": "italic"
     },
-    "mapbox": {
+    "mapnew": {
       "bounds": {
         "west": -60,
         "east": 60,

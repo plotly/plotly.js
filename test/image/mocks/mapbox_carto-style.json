@@ -1,17 +1,17 @@
 {
   "data": [
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "name": "carto-positron",
       "lon": [ 10, 20 ],
       "lat": [ 20, 10 ]
     },
     {
-      "type": "scattermapbox",
+      "type": "scattermapnew",
       "name": "carto-darkmatter",
       "lon": [ 10, 20 ],
       "lat": [ 20, 10 ],
-      "subplot": "mapbox2"
+      "subplot": "mapnew2"
     }
   ],
   "layout": {
@@ -22,11 +22,11 @@
       "y": 1, "yanchor": "bottom"
     },
 
-    "mapbox": {
+    "mapnew": {
       "domain": {"row": 0, "column": 0},
       "style": "carto-positron"
     },
-    "mapbox2": {
+    "mapnew2": {
       "domain": {"row": 0, "column": 1},
       "style": "carto-darkmatter"
     }

@@ -2,10 +2,10 @@
 
 var convert = require('./convert').convert;
 var convertOnSelect = require('./convert').convertOnSelect;
-var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
+var LAYER_PREFIX = require('../../plots/mapnew/constants').traceLayerPrefix;
 
-function ChoroplethMapbox(subplot, uid) {
-    this.type = 'choroplethmapbox';
+function ChoroplethMapnew(subplot, uid) {
+    this.type = 'choroplethmapnew';
     this.subplot = subplot;
     this.uid = uid;
 
@@ -22,7 +22,7 @@ function ChoroplethMapbox(subplot, uid) {
     this.below = null;
 }
 
-var proto = ChoroplethMapbox.prototype;
+var proto = ChoroplethMapnew.prototype;
 
 proto.update = function(calcTrace) {
     this._update(convert(calcTrace));
@@ -99,22 +99,22 @@ proto.dispose = function() {
     map.removeSource(this.sourceId);
 };
 
-module.exports = function createChoroplethMapbox(subplot, calcTrace) {
+module.exports = function createChoroplethMapnew(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
-    var choroplethMapbox = new ChoroplethMapbox(subplot, trace.uid);
-    var sourceId = choroplethMapbox.sourceId;
+    var choroplethMapnew = new ChoroplethMapnew(subplot, trace.uid);
+    var sourceId = choroplethMapnew.sourceId;
     var optsAll = convert(calcTrace);
-    var below = choroplethMapbox.below = subplot.belowLookup['trace-' + trace.uid];
+    var below = choroplethMapnew.below = subplot.belowLookup['trace-' + trace.uid];
 
     subplot.map.addSource(sourceId, {
         type: 'geojson',
         data: optsAll.geojson
     });
 
-    choroplethMapbox._addLayers(optsAll, below);
+    choroplethMapnew._addLayers(optsAll, below);
 
     // link ref for quick update during selections
-    calcTrace[0].trace._glTrace = choroplethMapbox;
+    calcTrace[0].trace._glTrace = choroplethMapnew;
 
-    return choroplethMapbox;
+    return choroplethMapnew;
 };

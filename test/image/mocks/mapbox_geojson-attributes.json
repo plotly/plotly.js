@@ -1,11 +1,11 @@
 {
     "data": [
       {
-        "type": "scattermapbox"
+        "type": "scattermapnew"
       }
     ],
     "layout": {
-      "mapbox": {
+      "mapnew": {
         "style": "outdoors",
         "layers": [
           {

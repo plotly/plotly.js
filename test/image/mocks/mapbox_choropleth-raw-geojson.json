@@ -1,12 +1,12 @@
 {
   "data": [{
-    "type": "scattermapbox",
+    "type": "scattermapnew",
     "lon": [-86],
     "lat": [34],
     "marker": {"size": 20},
-    "hovertext": "should be above choroplehtmapbox trace"
+    "hovertext": "should be above choroplehtmapnew trace"
   }, {
-    "type": "choroplethmapbox",
+    "type": "choroplethmapnew",
     "locations": ["AL"],
     "z": [10],
     "coloraxis": "coloraxis",
@@ -29,7 +29,7 @@
      }
     }
   }, {
-    "type": "choroplethmapbox",
+    "type": "choroplethmapnew",
     "locations": ["Georgia"],
     "z": [5],
 	"featureidkey": "properties.name",
@@ -46,14 +46,14 @@
   "layout": {
     "width": 600,
     "height": 400,
-    "mapbox": {
+    "mapnew": {
       "style": "dark",
       "center": {"lon": -86, "lat": 33},
       "zoom": 5
     },
     "template": {
       "data": {
-        "choroplethmapbox": {
+        "choroplethmapnew": {
           "marker": {
             "line": {
               "width": 5,

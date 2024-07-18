@@ -1,6 +1,6 @@
 {
   "data": [{
-    "type": "scattermapbox",
+    "type": "scattermapnew",
     "mode": "markers+text",
     "lon": [
       -73.57,
@@ -25,9 +25,9 @@
   "layout": {
     "width": 500,
     "height": 500,
-    "title": {"text": "Mapbox with texttemplate"},
+    "title": {"text": "Map with texttemplate"},
     "margin": {"t": 30, "b": 0, "l": 0, "r": 0},
-    "mapbox": {
+    "mapnew": {
       "center": {
         "lon": -90,
         "lat": 45

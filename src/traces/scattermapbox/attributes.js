@@ -5,13 +5,13 @@ var texttemplateAttrs = require('../../plots/template_attributes').texttemplateA
 var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
-var mapboxAttrs = require('../../plots/mapbox/layout_attributes');
+var mapnewAttrs = require('../../plots/mapnew/layout_attributes');
 var baseAttrs = require('../../plots/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-var mapboxLayoutAtributes = require('../../plots/mapbox/layout_attributes');
+var mapnewLayoutAtributes = require('../../plots/mapnew/layout_attributes');
 
 var lineAttrs = scatterGeoAttrs.line;
 var markerAttrs = scatterGeoAttrs.marker;
@@ -25,7 +25,7 @@ module.exports = overrideAll({
             valType: 'boolean',
             description: 'Determines whether clustering is enabled or disabled.'
         },
-        maxzoom: extendFlat({}, mapboxLayoutAtributes.layers.maxzoom, {
+        maxzoom: extendFlat({}, mapnewLayoutAtributes.layers.maxzoom, {
             description: [
                 'Sets the maximum zoom level.',
                 'At zoom levels equal to or greater than this, points will never be clustered.'
@@ -119,7 +119,7 @@ module.exports = overrideAll({
             arrayOk: true,
             description: [
                 'Sets the marker symbol.',
-                'Full list: https://www.mapbox.com/maki-icons/',
+                'Full list: https://www.mapnew.com/maki-icons/',
                 'Note that the array `marker.color` and `marker.size`',
                 'are only available for *circle* symbols.'
             ].join(' ')
@@ -154,17 +154,17 @@ module.exports = overrideAll({
     fill: scatterGeoAttrs.fill,
     fillcolor: makeFillcolorAttr(),
 
-    textfont: mapboxAttrs.layers.symbol.textfont,
-    textposition: mapboxAttrs.layers.symbol.textposition,
+    textfont: mapnewAttrs.layers.symbol.textfont,
+    textposition: mapnewAttrs.layers.symbol.textposition,
 
     below: {
         valType: 'string',
         description: [
-            'Determines if this scattermapbox trace\'s layers are to be inserted',
+            'Determines if this scattermapnew trace\'s layers are to be inserted',
             'before the layer with the specified ID.',
-            'By default, scattermapbox layers are inserted',
+            'By default, scattermapnew layers are inserted',
             'above all the base layers.',
-            'To place the scattermapbox layers above every other layer, set `below` to *\'\'*.'
+            'To place the scattermapnew layers above every other layer, set `below` to *\'\'*.'
         ].join(' ')
     },
 

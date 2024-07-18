@@ -19,11 +19,11 @@ module.exports = {
     },
 
     moduleType: 'trace',
-    name: 'scattermapbox',
-    basePlotModule: require('../../plots/mapbox'),
-    categories: ['mapbox', 'gl', 'symbols', 'showLegend', 'scatter-like'],
+    name: 'scattermapnew',
+    basePlotModule: require('../../plots/mapnew'),
+    categories: ['mapnew', 'gl', 'symbols', 'showLegend', 'scatter-like'],
     meta: {
-        hrName: 'scatter_mapbox',
+        hrName: 'scatter_mapnew',
         description: [
             'The data visualized as scatter point, lines or marker symbols',
             'on a MapLibre GL geographic map',

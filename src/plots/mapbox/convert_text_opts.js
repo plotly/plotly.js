@@ -3,7 +3,7 @@
 var Lib = require('../../lib');
 
 /**
- * Convert plotly.js 'textposition' to mapbox-gl 'anchor' and 'offset'
+ * Convert plotly.js 'textposition' to mapnew-gl 'anchor' and 'offset'
  * (with the help of the icon size).
  *
  * @param {string} textpostion : plotly.js textposition value
@@ -48,7 +48,7 @@ module.exports = function convertTextOpts(textposition, iconSize) {
             break;
     }
 
-    // Mapbox text-anchor must be one of:
+    // Mapnew text-anchor must be one of:
     //  center, left, right, top, bottom,
     //  top-left, top-right, bottom-left, bottom-right
 

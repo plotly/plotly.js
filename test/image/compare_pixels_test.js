@@ -64,7 +64,7 @@ var blacklist = [
     'gl2d_pointcloud-basic',
     'gl2d_heatmapgl',
     'gl2d_heatmapgl_discrete',
-    'mapbox_stamen-style',
+    'mapnew_stamen-style',
     'plot_types',
     'trace_metatext',
     'zz-gl3d_surface_small_timerange',
@@ -72,7 +72,7 @@ var blacklist = [
 
 if(virtualWebgl) {
     allMockList = allMockList.filter(function(a) {
-        return a.slice(0, 2) === 'gl' || a.slice(0, 6) === 'mapbox';
+        return a.slice(0, 2) === 'gl' || a.slice(0, 6) === 'mapnew';
     });
 }
 
@@ -109,9 +109,9 @@ for(var i = 0; i < allMockList.length; i++) {
     // skip blacklist
     if(blacklist.indexOf(mockName) !== -1) continue;
 
-    var isMapbox = mockName.substr(0, 7) === 'mapbox_';
+    var isMapnew = mockName.substr(0, 7) === 'mapnew_';
     var isOtherFlaky = [
-        // list flaky mocks other than mapbox:
+        // list flaky mocks other than mapnew:
         'gl3d_bunny-hull'
     ].indexOf(mockName) !== -1;
 
@@ -156,7 +156,7 @@ for(var i = 0; i < allMockList.length; i++) {
         height: height
     });
 
-    var shouldBePixelPerfect = !(isMapbox || isOtherFlaky);
+    var shouldBePixelPerfect = !(isMapnew || isOtherFlaky);
 
     var threshold = shouldBePixelPerfect ? 0 : [
         // more flaky

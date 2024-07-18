@@ -2,14 +2,14 @@
 
 var Lib = require('../../lib');
 var convert = require('./convert');
-var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
+var LAYER_PREFIX = require('../../plots/mapnew/constants').traceLayerPrefix;
 var ORDER = {
     cluster: ['cluster', 'clusterCount', 'circle'],
     nonCluster: ['fill', 'line', 'circle', 'symbol'],
 };
 
-function ScatterMapbox(subplot, uid, clusterEnabled, isHidden) {
-    this.type = 'scattermapbox';
+function ScatterMapnew(subplot, uid, clusterEnabled, isHidden) {
+    this.type = 'scattermapnew';
     this.subplot = subplot;
     this.uid = uid;
     this.clusterEnabled = clusterEnabled;
@@ -35,14 +35,14 @@ function ScatterMapbox(subplot, uid, clusterEnabled, isHidden) {
 
     // We could merge the 'fill' source with the 'line' source and
     // the 'circle' source with the 'symbol' source if ever having
-    // for up-to 4 sources per 'scattermapbox' traces becomes a problem.
+    // for up-to 4 sources per 'scattermapnew' traces becomes a problem.
 
     // previous 'below' value,
     // need this to update it properly
     this.below = null;
 }
 
-var proto = ScatterMapbox.prototype;
+var proto = ScatterMapnew.prototype;
 
 proto.addSource = function(k, opts, cluster) {
     var sourceOpts = {
@@ -211,12 +211,12 @@ proto.dispose = function dispose() {
     }
 };
 
-module.exports = function createScatterMapbox(subplot, calcTrace) {
+module.exports = function createScatterMapnew(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
     var hasCluster = trace.cluster && trace.cluster.enabled;
     var isHidden = trace.visible !== true;
 
-    var scatterMapbox = new ScatterMapbox(
+    var scatterMapnew = new ScatterMapnew(
         subplot,
         trace.uid,
         hasCluster,
@@ -224,27 +224,27 @@ module.exports = function createScatterMapbox(subplot, calcTrace) {
     );
 
     var optsAll = convert(subplot.gd, calcTrace);
-    var below = scatterMapbox.below = subplot.belowLookup['trace-' + trace.uid];
+    var below = scatterMapnew.below = subplot.belowLookup['trace-' + trace.uid];
     var i, k, opts;
 
     if(hasCluster) {
-        scatterMapbox.addSource('circle', optsAll.circle, trace.cluster);
+        scatterMapnew.addSource('circle', optsAll.circle, trace.cluster);
         for(i = 0; i < ORDER.cluster.length; i++) {
             k = ORDER.cluster[i];
             opts = optsAll[k];
-            scatterMapbox.addLayer(k, opts, below);
+            scatterMapnew.addLayer(k, opts, below);
         }
     } else {
         for(i = 0; i < ORDER.nonCluster.length; i++) {
             k = ORDER.nonCluster[i];
             opts = optsAll[k];
-            scatterMapbox.addSource(k, opts, trace.cluster);
-            scatterMapbox.addLayer(k, opts, below);
+            scatterMapnew.addSource(k, opts, trace.cluster);
+            scatterMapnew.addLayer(k, opts, below);
         }
     }
 
     // link ref for quick update during selections
-    calcTrace[0].trace._glTrace = scatterMapbox;
+    calcTrace[0].trace._glTrace = scatterMapnew;
 
-    return scatterMapbox;
+    return scatterMapnew;
 };
