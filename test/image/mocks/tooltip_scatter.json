@@ -1,0 +1,67 @@
+{
+    "data": [
+        {
+            "name": "Scatter Trace 1",
+            "x": [
+                "2025-04-01T12:00:00.000Z",
+                "2025-04-01T19:00:00.000Z",
+                "2025-04-02T02:00:00.000Z",
+                "2025-04-02T09:00:00.000Z",
+                "2025-04-02T16:00:00.000Z"
+            ],
+            "y": [
+                18.653706196862725,
+                4.688822683080214,
+                14.917280752096753,
+                4.600558128027796,
+                9.333771080586484
+            ],
+            "type": "scatter",
+            "tooltiptemplate": "(with tooltiptemplate)<br>%{fullData.name}<br>%{x|%H:%M:%S}<br>y: %{y:.2e}",
+            "tooltip": {
+                "align": "left",
+                "arrowcolor": "blue",
+                "arrowhead": 2,
+                "arrowsize": 1.2,
+                "arrowwidth": 1,
+                "font": {
+                    "color": "red",
+                    "family": "Arial",
+                    "size": 16
+                },
+                "showarrow": true,
+                "xanchor": "left"
+            }
+        },
+        {
+            "name": "Scatter Trace 2",
+            "x": [
+                "2025-04-01T12:00:00.000Z",
+                "2025-04-01T19:00:00.000Z",
+                "2025-04-02T02:00:00.000Z",
+                "2025-04-02T09:00:00.000Z",
+                "2025-04-02T16:00:00.000Z"
+            ],
+            "y": [
+                3.3719225986580192,
+                2.9853095383720873,
+                18.9892710479482,
+                17.60752687975191,
+                2.5038703600044876
+            ],
+            "type": "scatter",
+            "tooltiptemplate": "%{fullData.name}<br>%{x|%H:%M:%S}<br>y: %{y:.2e}"
+        }
+    ],
+    "config": {
+        "editable": true,
+        "modeBarButtonsToAdd": [
+            "tooltip",
+            "hoverclosest",
+            "hovercompare",
+            "togglespikelines"
+        ],
+        "displaylogo": false,
+        "displayModeBar": true
+    }
+}
