@@ -1,0 +1,51 @@
+{
+  "data": [
+    {
+      "type": "scattermapbox",
+      "mode": "markers+lines",
+      "lon": [
+        10,
+        20,
+        30
+      ],
+      "lat": [
+        10,
+        20,
+        30
+      ],
+      "marker": {
+        "size": 20
+      }
+    },
+    {
+      "type": "scattermapbox",
+      "mode": "markers+lines",
+      "lon": [
+        -75,
+        -120,
+        170
+      ],
+      "lat": [
+        45,
+        20,
+        -40
+      ],
+      "marker": {
+        "size": 20
+      }
+    }
+  ],
+  "layout": {
+    "mapbox": {
+      "style": "dark",
+      "center": {
+        "lon": -4.71092760419225,
+        "lat": 19.475789009298566
+      },
+      "zoom": 1.2345714569517612
+    },
+    "height": 450,
+    "width": 1100,
+    "autosize": true
+  }
+}
