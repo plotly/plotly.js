@@ -95,13 +95,7 @@ allNames += [item for item, had_item in zip(LAST, HAD) if had_item]
 
 # unable to generate baselines for the following mocks
 blacklist = [
-    'gl2d_pointcloud-basic',
-    'gl2d_heatmapgl',
-    'gl2d_heatmapgl_discrete',
     'mapnew_stamen-style',
-    'plot_types',
-    'trace_metatext',
-    'zz-gl3d_surface_small_timerange',
     'mapbox_density0-legend',
     'mapbox_osm-style',
     'mapbox_stamen-style', # Could pass by setting mapboxAccessToken to a stadiamaps.com token
