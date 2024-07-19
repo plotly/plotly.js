@@ -95,6 +95,7 @@ case $1 in
     make-baselines-virtual-webgl)
         SUITE=$({\
                   find $ROOT/test/image/mocks/gl*     -type f -printf "%f\n"; \
+                  find $ROOT/test/image/mocks/mapbox* -type f -printf "%f\n"; \
                   find $ROOT/test/image/mocks/mapnew* -type f -printf "%f\n"; \
                 } | sed 's/\.json$//1' | circleci tests split)
         python3 test/image/make_baseline.py virtual-webgl $SUITE || EXIT_STATE=$?

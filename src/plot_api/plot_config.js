@@ -157,12 +157,12 @@ var configAttributes = {
 
     scrollZoom: {
         valType: 'flaglist',
-        flags: ['cartesian', 'gl3d', 'geo', 'mapnew'],
+        flags: ['cartesian', 'gl3d', 'geo', 'mapbox', 'mapnew'],
         extras: [true, false],
         dflt: 'gl3d+geo+mapnew',
         description: [
             'Determines whether mouse wheel or two-finger scroll zooms is enable.',
-            'Turned on by default for gl3d, geo and mapnew subplots',
+            'Turned on by default for gl3d, geo, mapbox and mapnew subplots',
             '(as these subplot types do not have zoombox via pan),',
             'but turned off by default for cartesian subplots.',
             'Set `scrollZoom` to *false* to disable scrolling for all subplots.'
@@ -192,7 +192,7 @@ var configAttributes = {
             'This is the time interval (in ms) between first mousedown and',
             '2nd mouseup to constitute a double-click.',
             'This setting propagates to all on-subplot double clicks',
-            '(except for geo and mapnew) and on-legend double clicks.'
+            '(except for geo, mapbox and mapnew) and on-legend double clicks.'
         ].join(' ')
     },
 
@@ -379,6 +379,16 @@ var configAttributes = {
             '<path-to-plotly.js>/dist/topojson/',
             'to render geographical feature using the topojson files',
             'that ship with the plotly.js module.'
+        ].join(' ')
+    },
+
+    mapboxAccessToken: {
+        valType: 'string',
+        dflt: null,
+        description: [
+            'Mapbox access token (required to plot mapbox trace types)',
+            'If using an Mapbox Atlas server, set this option to \'\'',
+            'so that plotly.js won\'t attempt to authenticate to the public Mapbox server.'
         ].join(' ')
     },
 

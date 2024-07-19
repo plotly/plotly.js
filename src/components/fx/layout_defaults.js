@@ -19,16 +19,16 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     var dragMode = coerce('dragmode');
     if(dragMode === 'select') coerce('selectdirection');
 
-    // if only mapnew or geo subplots is present on graph,
+    // if only mapbox, mapnew or geo subplots is present on graph,
     // reset 'zoom' dragmode to 'pan' until 'zoom' is implemented,
     // so that the correct modebar button is active
-    var hasMapnew = layoutOut._has('mapnew');
+    var hasMap = layoutOut._has('mapbox') || layoutOut._has('mapnew');
     var hasGeo = layoutOut._has('geo');
     var len = layoutOut._basePlotModules.length;
 
     if(layoutOut.dragmode === 'zoom' && (
-        ((hasMapnew || hasGeo) && len === 1) ||
-        (hasMapnew && hasGeo && len === 2)
+        ((hasMap || hasGeo) && len === 1) ||
+        (hasMap && hasGeo && len === 2)
     )) {
         layoutOut.dragmode = 'pan';
     }

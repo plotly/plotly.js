@@ -326,6 +326,8 @@ plots.supplyDefaults = function(gd, opts) {
 
     var formatObj = getFormatObj(gd, d3FormatKeys);
 
+    // stash the token from context so mapbox subplots can use it as default
+    newFullLayout._mapboxAccessToken = context.mapboxAccessToken;
 
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout

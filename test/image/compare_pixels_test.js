@@ -61,18 +61,16 @@ argv._.forEach(function(pattern) {
 });
 
 var blacklist = [
-    'gl2d_pointcloud-basic',
-    'gl2d_heatmapgl',
-    'gl2d_heatmapgl_discrete',
     'mapnew_stamen-style',
-    'plot_types',
-    'trace_metatext',
-    'zz-gl3d_surface_small_timerange',
+    'mapbox_stamen-style',
+    'mapbox_custom-style',
+    'mapbox_density0-legend',
+    'mapbox_osm-style',
 ];
 
 if(virtualWebgl) {
     allMockList = allMockList.filter(function(a) {
-        return a.slice(0, 2) === 'gl' || a.slice(0, 6) === 'mapnew';
+        return a.slice(0, 2) === 'gl' || a.slice(0, 6) === 'mapbox';
     });
 }
 
@@ -109,9 +107,9 @@ for(var i = 0; i < allMockList.length; i++) {
     // skip blacklist
     if(blacklist.indexOf(mockName) !== -1) continue;
 
-    var isMapnew = mockName.substr(0, 7) === 'mapnew_';
+    var isMapbox = mockName.substr(0, 7) === 'mapbox_';
     var isOtherFlaky = [
-        // list flaky mocks other than mapnew:
+        // list flaky mocks other than mapbox:
         'gl3d_bunny-hull'
     ].indexOf(mockName) !== -1;
 
@@ -156,10 +154,14 @@ for(var i = 0; i < allMockList.length; i++) {
         height: height
     });
 
-    var shouldBePixelPerfect = !(isMapnew || isOtherFlaky);
+    var shouldBePixelPerfect = !(isMapbox || isOtherFlaky);
 
     var threshold = shouldBePixelPerfect ? 0 : [
         // more flaky
+        'mapbox_angles',
+        'mapbox_layers',
+        'mapbox_custom-style',
+        'mapbox_geojson-attributes'
     ].indexOf(mockName) !== -1 ? 1 : 0.15;
 
     if(virtualWebgl) {

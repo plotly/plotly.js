@@ -4,6 +4,7 @@
 
 var Fuse = require('fuse.js/dist/fuse.common.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
+var credentials = require('../../build/credentials.json');
 var Lib = require('../../src/lib');
 
 require('./perf');
@@ -17,6 +18,10 @@ var Tabs = {
 
             // use local topojson files
             topojsonURL: '../../node_modules/sane-topojson/dist/',
+
+            // register mapbox access token
+            // run `npm run preset` if you haven't yet
+            mapboxAccessToken: credentials.MAPBOX_ACCESS_TOKEN,
 
             // show all logs in console
             logging: 2
