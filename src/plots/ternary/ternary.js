@@ -101,7 +101,6 @@ proto.makeFramework = function(fullLayout) {
 proto.updateFx = function(dragmode) {
     var toplevel = this.plotContainer.selectAll('g.toplevel');
 
-    // set proper cursor
     if(dragmode === 'pan') {
         toplevel.style('cursor', 'move');
     } else {

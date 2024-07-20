@@ -83,7 +83,6 @@ exports.updateFx = function(gd) {
     var dragmode = fullLayout.dragmode;
     var toplevel = d3.select(gd).selectAll('g.toplevel');
 
-    // set proper cursor
     if(dragmode === 'pan') {
         toplevel.style('cursor', 'move');
     } else {
