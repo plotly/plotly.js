@@ -1,5 +1,7 @@
 'use strict';
 
+var d3 = require('@plotly/d3');
+
 var Ternary = require('./ternary');
 
 var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
@@ -73,5 +75,18 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             oldTernary.layers['b-title'].remove();
             oldTernary.layers['c-title'].remove();
         }
+    }
+};
+
+exports.updateFx = function(gd) {
+    var fullLayout = gd._fullLayout;
+    var dragmode = fullLayout.dragmode;
+    var toplevel = d3.select(gd).selectAll('g.toplevel');
+
+    // set proper cursor
+    if(dragmode === 'pan') {
+        toplevel.style('cursor', 'move');
+    } else {
+        toplevel.style('cursor', 'crosshair');
     }
 };

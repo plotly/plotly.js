@@ -67,6 +67,7 @@ proto.plot = function(ternaryCalcData, fullLayout) {
 
     _this.updateLayers(ternaryLayout);
     _this.adjustLayout(ternaryLayout, graphSize);
+    _this.updateFx(fullLayout.dragmode);
     Plots.generalUpdatePerTraceModule(_this.graphDiv, _this, ternaryCalcData, ternaryLayout);
     _this.layers.plotbg.select('path').call(Color.fill, ternaryLayout.bgcolor);
 };
@@ -95,6 +96,17 @@ proto.makeFramework = function(fullLayout) {
 
     Drawing.setClipUrl(_this.layers.backplot, clipId, gd);
     Drawing.setClipUrl(_this.layers.grids, clipId, gd);
+};
+
+proto.updateFx = function(dragmode) {
+    var toplevel = this.plotContainer.selectAll('g.toplevel');
+
+    // set proper cursor
+    if(dragmode === 'pan') {
+        toplevel.style('cursor', 'move');
+    } else {
+        toplevel.style('cursor', 'crosshair');
+    }
 };
 
 proto.updateLayers = function(ternaryLayout) {
