@@ -730,9 +730,9 @@ describe('map plots', function() {
             'Nk+M/wHwAEBgIApD5fRAAAAABJRU5ErkJggg==';
 
         Plotly.react(gd, makeFigure(redImage)).then(function() {
-            var map = gd._fullLayout.map._subplot;
-            map = map.map;
-            layerSource = map.getSource(map.layerList[1].idSource);
+            var _map = gd._fullLayout.map._subplot;
+            map = _map.map;
+            layerSource = map.getSource(_map.layerList[1].idSource);
 
             spyOn(layerSource, 'updateImage').and.callThrough();
             spyOn(map, 'removeSource').and.callThrough();
@@ -745,9 +745,9 @@ describe('map plots', function() {
             expect(map.removeSource).not.toHaveBeenCalled();
 
             // Check order of layers
-            var map = gd._fullLayout.map._subplot;
-            var mapLayers = map.getMapLayers();
-            var plotlyjsLayers = map.layerList;
+            var _map = gd._fullLayout.map._subplot;
+            var mapLayers = _map.getMapLayers();
+            var plotlyjsLayers = _map.layerList;
 
             var indexLower = mapLayers.findIndex(function(layer) {
                 return layer.id === 'plotly-layout-layer-' + plotlyjsLayers[0].uid;
