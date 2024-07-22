@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "lon": [10, 20, 30],
       "lat": [10, 20, 30],
       "marker": {
@@ -12,7 +12,7 @@
       "opacity": 0.7
     },
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "lon": [-75, -120, 100],
       "lat": [45, 20, -40],
       "marker": {
@@ -30,7 +30,7 @@
       }
     },
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "selectedpoints": [1],
       "mode": "markers",
       "lon": [-10, -20, -30],
@@ -48,7 +48,7 @@
       }
     },
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "selectedpoints": [0, 2],
       "mode": "markers",
       "lon": [-10, -20, -30],
@@ -72,7 +72,7 @@
     }
   ],
   "layout": {
-    "mapnew": {
+    "map": {
       "style": "light",
       "zoom": 0.5
     },

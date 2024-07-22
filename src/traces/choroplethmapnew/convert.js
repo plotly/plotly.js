@@ -12,10 +12,10 @@ var geoUtils = require('../../lib/geo_location_utils');
 /* N.B.
  *
  * We fetch the GeoJSON files "ourselves" (during
- * mapnew.prototype.fetchMapData) where they are stored in a global object
+ * map.prototype.fetchMapData) where they are stored in a global object
  * named `PlotlyGeoAssets` (same as for topojson files in `geo` subplots).
  *
- * Mapnew does allow using URLs as geojson sources, but does NOT allow filtering
+ * Map does allow using URLs as geojson sources, but does NOT allow filtering
  * features by feature `id` that are not numbers (more info in:
  * https://github.com/mapbox/mapbox-gl-js/issues/8088).
  */

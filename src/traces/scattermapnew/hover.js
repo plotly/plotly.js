@@ -5,7 +5,7 @@ var Lib = require('../../lib');
 var getTraceColor = require('../scatter/get_trace_color');
 var fillText = Lib.fillText;
 var BADNUM = require('../../constants/numerical').BADNUM;
-var LAYER_PREFIX = require('../../plots/mapnew/constants').traceLayerPrefix;
+var LAYER_PREFIX = require('../../plots/map/constants').traceLayerPrefix;
 
 function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;

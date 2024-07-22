@@ -2,14 +2,14 @@
 
 var Lib = require('../../lib');
 var convert = require('./convert');
-var LAYER_PREFIX = require('../../plots/mapnew/constants').traceLayerPrefix;
+var LAYER_PREFIX = require('../../plots/map/constants').traceLayerPrefix;
 var ORDER = {
     cluster: ['cluster', 'clusterCount', 'circle'],
     nonCluster: ['fill', 'line', 'circle', 'symbol'],
 };
 
-function ScatterMapnew(subplot, uid, clusterEnabled, isHidden) {
-    this.type = 'scattermapnew';
+function ScatterMap(subplot, uid, clusterEnabled, isHidden) {
+    this.type = 'scattermap';
     this.subplot = subplot;
     this.uid = uid;
     this.clusterEnabled = clusterEnabled;
@@ -35,14 +35,14 @@ function ScatterMapnew(subplot, uid, clusterEnabled, isHidden) {
 
     // We could merge the 'fill' source with the 'line' source and
     // the 'circle' source with the 'symbol' source if ever having
-    // for up-to 4 sources per 'scattermapnew' traces becomes a problem.
+    // for up-to 4 sources per 'scattermap' traces becomes a problem.
 
     // previous 'below' value,
     // need this to update it properly
     this.below = null;
 }
 
-var proto = ScatterMapnew.prototype;
+var proto = ScatterMap.prototype;
 
 proto.addSource = function(k, opts, cluster) {
     var sourceOpts = {
@@ -211,12 +211,12 @@ proto.dispose = function dispose() {
     }
 };
 
-module.exports = function createScatterMapnew(subplot, calcTrace) {
+module.exports = function createScatterMap(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
     var hasCluster = trace.cluster && trace.cluster.enabled;
     var isHidden = trace.visible !== true;
 
-    var scatterMapnew = new ScatterMapnew(
+    var scatterMap = new ScatterMap(
         subplot,
         trace.uid,
         hasCluster,
@@ -224,27 +224,27 @@ module.exports = function createScatterMapnew(subplot, calcTrace) {
     );
 
     var optsAll = convert(subplot.gd, calcTrace);
-    var below = scatterMapnew.below = subplot.belowLookup['trace-' + trace.uid];
+    var below = scatterMap.below = subplot.belowLookup['trace-' + trace.uid];
     var i, k, opts;
 
     if(hasCluster) {
-        scatterMapnew.addSource('circle', optsAll.circle, trace.cluster);
+        scatterMap.addSource('circle', optsAll.circle, trace.cluster);
         for(i = 0; i < ORDER.cluster.length; i++) {
             k = ORDER.cluster[i];
             opts = optsAll[k];
-            scatterMapnew.addLayer(k, opts, below);
+            scatterMap.addLayer(k, opts, below);
         }
     } else {
         for(i = 0; i < ORDER.nonCluster.length; i++) {
             k = ORDER.nonCluster[i];
             opts = optsAll[k];
-            scatterMapnew.addSource(k, opts, trace.cluster);
-            scatterMapnew.addLayer(k, opts, below);
+            scatterMap.addSource(k, opts, trace.cluster);
+            scatterMap.addLayer(k, opts, below);
         }
     }
 
     // link ref for quick update during selections
-    calcTrace[0].trace._glTrace = scatterMapnew;
+    calcTrace[0].trace._glTrace = scatterMap;
 
-    return scatterMapnew;
+    return scatterMap;
 };

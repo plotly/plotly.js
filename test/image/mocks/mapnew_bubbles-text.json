@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers+lines+text",
       "lon": [
         10,
@@ -42,7 +42,7 @@
       "weight": "bold",
       "style": "italic"
     },
-    "mapnew": {
+    "map": {
       "bounds": {
         "west": -60,
         "east": 60,

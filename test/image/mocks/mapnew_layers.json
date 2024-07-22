@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers",
       "lon": [
         -73.6,
@@ -23,12 +23,12 @@
       }
     },
     {
-      "type": "scattermapnew",
-      "subplot": "mapnew2"
+      "type": "scattermap",
+      "subplot": "map2"
     }
   ],
   "layout": {
-    "mapnew": {
+    "map": {
       "domain": {"x": [0, 0.48], "y": [0, 1]},
       "style": "light",
       "center": {
@@ -543,7 +543,7 @@
       ]
     },
 
-    "mapnew2": {
+    "map2": {
       "domain": {"x": [0.52, 1], "y": [0, 1]},
       "style": "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
       "zoom": 4.5,

@@ -2,8 +2,8 @@
   "data": [
     {
       "textfont": { "weight": 200 },
-      "type": "scattermapnew",
-      "subplot": "mapnew",
+      "type": "scattermap",
+      "subplot": "map",
       "name": "20 (20)",
       "mode": "markers",
       "marker": {
@@ -54,8 +54,8 @@
     },
     {
       "textfont": { "weight": 400 },
-      "type": "scattermapnew",
-      "subplot": "mapnew2",
+      "type": "scattermap",
+      "subplot": "map2",
       "name": "20 (10)",
       "mode": "markers",
       "marker": {
@@ -103,8 +103,8 @@
     },
     {
       "textfont": { "weight": 600 },
-      "type": "scattermapnew",
-      "subplot": "mapnew3",
+      "type": "scattermap",
+      "subplot": "map3",
       "name": "10 (20)",
       "mode": "markers",
       "marker": {
@@ -152,8 +152,8 @@
     },
     {
       "textfont": { "weight": 800 },
-      "type": "scattermapnew",
-      "subplot": "mapnew4",
+      "type": "scattermap",
+      "subplot": "map4",
       "name": "10 (10)",
       "mode": "markers",
       "marker": {
@@ -207,7 +207,7 @@
     "title": {
       "text": "Clustering points over Canadian cities"
     },
-    "mapnew": {
+    "map": {
       "zoom": 2,
       "style": "dark",
       "center": {
@@ -219,7 +219,7 @@
         "y": [0.55, 1]
       }
     },
-    "mapnew2": {
+    "map2": {
       "zoom": 2,
       "style": "light",
       "center": {
@@ -231,7 +231,7 @@
         "y": [0, 0.45]
       }
     },
-    "mapnew3": {
+    "map3": {
       "zoom": 2,
       "style": "light",
       "center": {
@@ -243,7 +243,7 @@
         "y": [0.55, 1]
       }
     },
-    "mapnew4": {
+    "map4": {
       "zoom": 2,
       "style": "dark",
       "center": {

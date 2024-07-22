@@ -16,34 +16,34 @@ var fontAttr = fontAttrs({
     noFontLineposition: true,
     noFontTextcase: true,
     description: [
-        'Sets the icon text font (color=mapnew.layer.paint.text-color, size=mapnew.layer.layout.text-size).',
+        'Sets the icon text font (color=map.layer.paint.text-color, size=map.layer.layout.text-size).',
         'Has an effect only when `type` is set to *symbol*.'
     ].join(' ')
 });
 fontAttr.family.dflt = 'Open Sans Regular, Arial Unicode MS Regular';
 
 var attrs = module.exports = overrideAll({
-    _arrayAttrRegexps: [Lib.counterRegex('mapnew', '.layers', true)],
+    _arrayAttrRegexps: [Lib.counterRegex('map', '.layers', true)],
 
-    domain: domainAttrs({name: 'mapnew'}),
+    domain: domainAttrs({name: 'map'}),
 
     style: {
         valType: 'any',
-        values: constants.styleValuesMapnew,
+        values: constants.styleValuesMap,
         dflt: constants.styleValueDflt,
         description: [
             'Defines the map layers that are rendered by default below the trace layers defined in `data`,',
-            'which are themselves by default rendered below the layers defined in `layout.mapnew.layers`.',
+            'which are themselves by default rendered below the layers defined in `layout.map.layers`.',
             '',
-            'These layers can be defined either explicitly as a Mapnew Style object which can contain multiple',
+            'These layers can be defined either explicitly as a Map Style object which can contain multiple',
             'layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS)',
             'or implicitly by using one of the built-in style objects which use WMSes',
             'or by using a custom style URL',
             '',
-            'Mapnew Style objects are of the form described in the MapLibre GL JS documentation available at',
+            'Map Style objects are of the form described in the MapLibre GL JS documentation available at',
             'https://maplibre.org/maplibre-style-spec/',
             '',
-            'The built-in plotly.js styles objects are:', constants.styleValuesMapnew.join(', ') + '.'
+            'The built-in plotly.js styles objects are:', constants.styleValuesMap.join(', ') + '.'
         ].join(' ')
     },
 
@@ -62,19 +62,19 @@ var attrs = module.exports = overrideAll({
     zoom: {
         valType: 'number',
         dflt: 1,
-        description: 'Sets the zoom level of the map (mapnew.zoom).'
+        description: 'Sets the zoom level of the map (map.zoom).'
     },
     bearing: {
         valType: 'number',
         dflt: 0,
-        description: 'Sets the bearing angle of the map in degrees counter-clockwise from North (mapnew.bearing).'
+        description: 'Sets the bearing angle of the map in degrees counter-clockwise from North (map.bearing).'
     },
     pitch: {
         valType: 'number',
         dflt: 0,
         description: [
             'Sets the pitch angle of the map',
-            '(in degrees, where *0* means perpendicular to the surface of the map) (mapnew.pitch).'
+            '(in degrees, where *0* means perpendicular to the surface of the map) (map.pitch).'
         ].join(' ')
     },
 
@@ -130,7 +130,7 @@ var attrs = module.exports = overrideAll({
         source: {
             valType: 'any',
             description: [
-                'Sets the source data for this layer (mapnew.layer.source).',
+                'Sets the source data for this layer (map.layer.source).',
                 'When `sourcetype` is set to *geojson*, `source` can be a URL to a GeoJSON',
                 'or a GeoJSON object.',
                 'When `sourcetype` is set to *vector* or *raster*, `source` can be a URL or',
@@ -143,7 +143,7 @@ var attrs = module.exports = overrideAll({
             valType: 'string',
             dflt: '',
             description: [
-                'Specifies the layer to use from a vector tile source (mapnew.layer.source-layer).',
+                'Specifies the layer to use from a vector tile source (map.layer.source-layer).',
                 'Required for *vector* source type that supports multiple layers.'
             ].join(' ')
         },
@@ -197,10 +197,10 @@ var attrs = module.exports = overrideAll({
             dflt: defaultLine,
             description: [
                 'Sets the primary layer color.',
-                'If `type` is *circle*, color corresponds to the circle color (mapnew.layer.paint.circle-color)',
-                'If `type` is *line*, color corresponds to the line color (mapnew.layer.paint.line-color)',
-                'If `type` is *fill*, color corresponds to the fill color (mapnew.layer.paint.fill-color)',
-                'If `type` is *symbol*, color corresponds to the icon color (mapnew.layer.paint.icon-color)'
+                'If `type` is *circle*, color corresponds to the circle color (map.layer.paint.circle-color)',
+                'If `type` is *line*, color corresponds to the line color (map.layer.paint.line-color)',
+                'If `type` is *fill*, color corresponds to the fill color (map.layer.paint.fill-color)',
+                'If `type` is *symbol*, color corresponds to the icon color (map.layer.paint.icon-color)'
             ].join(' ')
         },
         opacity: {
@@ -210,10 +210,10 @@ var attrs = module.exports = overrideAll({
             dflt: 1,
             description: [
                 'Sets the opacity of the layer.',
-                'If `type` is *circle*, opacity corresponds to the circle opacity (mapnew.layer.paint.circle-opacity)',
-                'If `type` is *line*, opacity corresponds to the line opacity (mapnew.layer.paint.line-opacity)',
-                'If `type` is *fill*, opacity corresponds to the fill opacity (mapnew.layer.paint.fill-opacity)',
-                'If `type` is *symbol*, opacity corresponds to the icon/text opacity (mapnew.layer.paint.text-opacity)'
+                'If `type` is *circle*, opacity corresponds to the circle opacity (map.layer.paint.circle-opacity)',
+                'If `type` is *line*, opacity corresponds to the line opacity (map.layer.paint.line-opacity)',
+                'If `type` is *fill*, opacity corresponds to the fill opacity (map.layer.paint.fill-opacity)',
+                'If `type` is *symbol*, opacity corresponds to the icon/text opacity (map.layer.paint.text-opacity)'
             ].join(' ')
         },
         minzoom: {
@@ -222,7 +222,7 @@ var attrs = module.exports = overrideAll({
             max: 24,
             dflt: 0,
             description: [
-                'Sets the minimum zoom level (mapnew.layer.minzoom).',
+                'Sets the minimum zoom level (map.layer.minzoom).',
                 'At zoom levels less than the minzoom, the layer will be hidden.',
             ].join(' ')
         },
@@ -232,7 +232,7 @@ var attrs = module.exports = overrideAll({
             max: 24,
             dflt: 24,
             description: [
-                'Sets the maximum zoom level (mapnew.layer.maxzoom).',
+                'Sets the maximum zoom level (map.layer.maxzoom).',
                 'At zoom levels equal to or greater than the maxzoom, the layer will be hidden.'
             ].join(' ')
         },
@@ -243,7 +243,7 @@ var attrs = module.exports = overrideAll({
                 valType: 'number',
                 dflt: 15,
                 description: [
-                    'Sets the circle radius (mapnew.layer.paint.circle-radius).',
+                    'Sets the circle radius (map.layer.paint.circle-radius).',
                     'Has an effect only when `type` is set to *circle*.'
                 ].join(' ')
             }
@@ -254,14 +254,14 @@ var attrs = module.exports = overrideAll({
                 valType: 'number',
                 dflt: 2,
                 description: [
-                    'Sets the line width (mapnew.layer.paint.line-width).',
+                    'Sets the line width (map.layer.paint.line-width).',
                     'Has an effect only when `type` is set to *line*.'
                 ].join(' ')
             },
             dash: {
                 valType: 'data_array',
                 description: [
-                    'Sets the length of dashes and gaps (mapnew.layer.paint.line-dasharray).',
+                    'Sets the length of dashes and gaps (map.layer.paint.line-dasharray).',
                     'Has an effect only when `type` is set to *line*.'
                 ].join(' ')
             }
@@ -272,7 +272,7 @@ var attrs = module.exports = overrideAll({
                 valType: 'color',
                 dflt: defaultLine,
                 description: [
-                    'Sets the fill outline color (mapnew.layer.paint.fill-outline-color).',
+                    'Sets the fill outline color (map.layer.paint.fill-outline-color).',
                     'Has an effect only when `type` is set to *fill*.'
                 ].join(' ')
             }
@@ -283,15 +283,15 @@ var attrs = module.exports = overrideAll({
                 valType: 'string',
                 dflt: 'marker',
                 description: [
-                    'Sets the symbol icon image (mapnew.layer.layout.icon-image).',
-                    'Full list: https://www.mapnew.com/maki-icons/'
+                    'Sets the symbol icon image (map.layer.layout.icon-image).',
+                    'Full list: https://www.map.com/maki-icons/'
                 ].join(' ')
             },
             iconsize: {
                 valType: 'number',
                 dflt: 10,
                 description: [
-                    'Sets the symbol icon size (mapnew.layer.layout.icon-size).',
+                    'Sets the symbol icon size (map.layer.layout.icon-size).',
                     'Has an effect only when `type` is set to *symbol*.'
                 ].join(' ')
             },
@@ -299,7 +299,7 @@ var attrs = module.exports = overrideAll({
                 valType: 'string',
                 dflt: '',
                 description: [
-                    'Sets the symbol text (mapnew.layer.layout.text-field).'
+                    'Sets the symbol text (map.layer.layout.text-field).'
                 ].join(' ')
             },
             placement: {
@@ -307,7 +307,7 @@ var attrs = module.exports = overrideAll({
                 values: ['point', 'line', 'line-center'],
                 dflt: 'point',
                 description: [
-                    'Sets the symbol and/or text placement (mapnew.layer.layout.symbol-placement).',
+                    'Sets the symbol and/or text placement (map.layer.layout.symbol-placement).',
                     'If `placement` is *point*, the label is placed where the geometry is located',
                     'If `placement` is *line*, the label is placed along the line of the geometry',
                     'If `placement` is *line-center*, the label is placed on the center of the geometry',

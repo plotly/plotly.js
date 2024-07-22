@@ -61,7 +61,7 @@ argv._.forEach(function(pattern) {
 });
 
 var blacklist = [
-    'mapnew_stamen-style',
+    'map_stamen-style',
     'mapbox_stamen-style',
     'mapbox_custom-style',
     'mapbox_density0-legend',

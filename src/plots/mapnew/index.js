@@ -9,28 +9,28 @@ var d3 = require('@plotly/d3');
 var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
-var Mapnew = require('./mapnew');
+var Map = require('./map');
 
-var MAPNEW = 'mapnew';
+var MAP = 'map';
 
-exports.name = MAPNEW;
+exports.name = MAP;
 
 exports.attr = 'subplot';
 
-exports.idRoot = MAPNEW;
+exports.idRoot = MAP;
 
-exports.idRegex = exports.attrRegex = Lib.counterRegex(MAPNEW);
+exports.idRegex = exports.attrRegex = Lib.counterRegex(MAP);
 
 exports.attributes = {
     subplot: {
         valType: 'subplotid',
-        dflt: 'mapnew',
+        dflt: 'map',
         editType: 'calc',
         description: [
             'Sets a reference between this trace\'s data coordinates and',
-            'a mapnew subplot.',
-            'If *mapnew* (the default value), the data refer to `layout.mapnew`.',
-            'If *mapnew2*, the data refer to `layout.mapnew2`, and so on.'
+            'a map subplot.',
+            'If *map* (the default value), the data refer to `layout.map`.',
+            'If *map2*, the data refer to `layout.map2`, and so on.'
         ].join(' ')
     }
 };
@@ -42,21 +42,21 @@ exports.supplyLayoutDefaults = require('./layout_defaults');
 exports.plot = function plot(gd) {
     var fullLayout = gd._fullLayout;
     var calcData = gd.calcdata;
-    var mapnewIds = fullLayout._subplots[MAPNEW];
+    var mapIds = fullLayout._subplots[MAP];
 
-    for(var i = 0; i < mapnewIds.length; i++) {
-        var id = mapnewIds[i];
-        var subplotCalcData = getSubplotCalcData(calcData, MAPNEW, id);
+    for(var i = 0; i < mapIds.length; i++) {
+        var id = mapIds[i];
+        var subplotCalcData = getSubplotCalcData(calcData, MAP, id);
         var opts = fullLayout[id];
-        var mapnew = opts._subplot;
+        var map = opts._subplot;
 
-        if(!mapnew) {
-            mapnew = new Mapnew(gd, id);
-            fullLayout[id]._subplot = mapnew;
+        if(!map) {
+            map = new Map(gd, id);
+            fullLayout[id]._subplot = map;
         }
 
-        if(!mapnew.viewInitial) {
-            mapnew.viewInitial = {
+        if(!map.viewInitial) {
+            map.viewInitial = {
                 center: Lib.extendFlat({}, opts.center),
                 zoom: opts.zoom,
                 bearing: opts.bearing,
@@ -64,33 +64,33 @@ exports.plot = function plot(gd) {
             };
         }
 
-        mapnew.plot(subplotCalcData, fullLayout, gd._promises);
+        map.plot(subplotCalcData, fullLayout, gd._promises);
     }
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldMapnewKeys = oldFullLayout._subplots[MAPNEW] || [];
+    var oldMapKeys = oldFullLayout._subplots[MAP] || [];
 
-    for(var i = 0; i < oldMapnewKeys.length; i++) {
-        var oldMapnewKey = oldMapnewKeys[i];
+    for(var i = 0; i < oldMapKeys.length; i++) {
+        var oldMapKey = oldMapKeys[i];
 
-        if(!newFullLayout[oldMapnewKey] && !!oldFullLayout[oldMapnewKey]._subplot) {
-            oldFullLayout[oldMapnewKey]._subplot.destroy();
+        if(!newFullLayout[oldMapKey] && !!oldFullLayout[oldMapKey]._subplot) {
+            oldFullLayout[oldMapKey]._subplot.destroy();
         }
     }
 };
 
 exports.toSVG = function(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotIds = fullLayout._subplots[MAPNEW];
+    var subplotIds = fullLayout._subplots[MAP];
     var size = fullLayout._size;
 
     for(var i = 0; i < subplotIds.length; i++) {
         var opts = fullLayout[subplotIds[i]];
         var domain = opts.domain;
-        var mapnew = opts._subplot;
+        var map = opts._subplot;
 
-        var imageData = mapnew.toImage('png');
+        var imageData = map.toImage('png');
         var image = fullLayout._glimages.append('svg:image');
 
         image.attr({
@@ -161,7 +161,7 @@ exports.toSVG = function(gd) {
 
 exports.updateFx = function(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotIds = fullLayout._subplots[MAPNEW];
+    var subplotIds = fullLayout._subplots[MAP];
 
     for(var i = 0; i < subplotIds.length; i++) {
         var subplotObj = fullLayout[subplotIds[i]]._subplot;

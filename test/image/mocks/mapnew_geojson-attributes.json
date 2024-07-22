@@ -1,11 +1,11 @@
 {
     "data": [
       {
-        "type": "scattermapnew"
+        "type": "scattermap"
       }
     ],
     "layout": {
-      "mapnew": {
+      "map": {
         "style": "outdoors",
         "layers": [
           {

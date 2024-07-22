@@ -744,8 +744,8 @@ describe('Draw new shapes to layout', function() {
             ]
         },
         {
-            name: 'mapnew',
-            json: require('../../image/mocks/mapnew_angles'),
+            name: 'map',
+            json: require('../../image/mocks/map_angles'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,

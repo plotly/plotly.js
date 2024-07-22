@@ -3,8 +3,8 @@ var Plots = require('../../../src/plots/plots');
 var Lib = require('../../../src/lib');
 var Axes = require('../../../src/plots/cartesian/axes');
 
-var ScatterMapnew = require('../../../src/traces/scattermapnew');
-var convert = require('../../../src/traces/scattermapnew/convert');
+var ScatterMap = require('../../../src/traces/scattermap');
+var convert = require('../../../src/traces/scattermap/convert');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -27,7 +27,7 @@ function move(fromX, fromY, toX, toY, delay) {
     });
 }
 
-describe('scattermapnew defaults', function() {
+describe('scattermap defaults', function() {
     'use strict';
 
     function _supply(traceIn) {
@@ -35,7 +35,7 @@ describe('scattermapnew defaults', function() {
         var defaultColor = '#444';
         var layout = { _dataLength: 1 };
 
-        ScatterMapnew.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        ScatterMap.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
         return traceOut;
     }
@@ -125,9 +125,9 @@ describe('scattermapnew defaults', function() {
     });
 });
 
-describe('scattermapnew convert', function() {
+describe('scattermap convert', function() {
     var base = {
-        type: 'scattermapnew',
+        type: 'scattermap',
         lon: [10, '20', 30, 20, null, 20, 10],
         lat: [20, 20, '10', null, 10, 10, 20]
     };
@@ -144,7 +144,7 @@ describe('scattermapnew convert', function() {
         var mockAxis = {type: 'linear'};
         Axes.setConvert(mockAxis, gd._fullLayout);
 
-        gd._fullLayout.mapnew._subplot = {
+        gd._fullLayout.map._subplot = {
             mockAxis: mockAxis
         };
 
@@ -235,7 +235,7 @@ describe('scattermapnew convert', function() {
 
     it('should fill circle props correctly during selections', function() {
         var _base = {
-            type: 'scattermapnew',
+            type: 'scattermap',
             mode: 'markers',
             lon: [-10, 30, 20],
             lat: [45, 90, 180],
@@ -554,7 +554,7 @@ describe('scattermapnew convert', function() {
 
     it('should generate correct output for texttemplate', function() {
         var mock = {
-            type: 'scattermapnew',
+            type: 'scattermap',
             mode: 'markers+text',
             lon: [-73.57, -79.24, -123.06],
             lat: [45.5, 43.4, 49.13],
@@ -649,7 +649,7 @@ describe('scattermapnew convert', function() {
             fill: 'toself'
         }));
 
-        // not optimal, but doesn't break anything as mapnew-gl accepts empty
+        // not optimal, but doesn't break anything as map-gl accepts empty
         // coordinate arrays
         assertVisibility(opts, ['visible', 'visible', 'none', 'none']);
 
@@ -705,8 +705,8 @@ describe('scattermapnew convert', function() {
     });
 });
 
-describe('scattermapnew hover', function() {
-    var hoverPoints = ScatterMapnew.hoverPoints;
+describe('scattermap hover', function() {
+    var hoverPoints = ScatterMap.hoverPoints;
     var gd;
 
     beforeAll(function(done) {
@@ -715,7 +715,7 @@ describe('scattermapnew hover', function() {
         gd = createGraphDiv();
 
         var data = [{
-            type: 'scattermapnew',
+            type: 'scattermap',
             lon: [10, 20, 30, 300],
             lat: [10, 20, 30, 10],
             text: ['A', 'B', 'C', 'D']
@@ -731,7 +731,7 @@ describe('scattermapnew hover', function() {
 
     function getPointData(gd) {
         var cd = gd.calcdata;
-        var subplot = gd._fullLayout.mapnew._subplot;
+        var subplot = gd._fullLayout.map._subplot;
 
         return {
             index: false,
@@ -952,8 +952,8 @@ describe('scattermapnew hover', function() {
     });
 });
 
-describe('Test plotly events on a scattermapnew plot:', function() {
-    var mock = require('../../image/mocks/mapnew_0.json');
+describe('Test plotly events on a scattermap plot:', function() {
+    var mock = require('../../image/mocks/map_0.json');
     var pointPos = [440, 290];
     var nearPos = [460, 290];
     var blankPos = [10, 10];
@@ -1120,8 +1120,8 @@ describe('Test plotly events on a scattermapnew plot:', function() {
     });
 });
 
-describe('Test plotly events on a scattermapnew plot when css transform is present:', function() {
-    var mock = require('../../image/mocks/mapnew_0.json');
+describe('Test plotly events on a scattermap plot when css transform is present:', function() {
+    var mock = require('../../image/mocks/map_0.json');
     var pointPos = [440 / 2, 290 / 2];
     var nearPos = [460 / 2, 290 / 2];
     var blankPos = [10 / 2, 10 / 2];
@@ -1248,7 +1248,7 @@ describe('Test plotly events on a scattermapnew plot when css transform is prese
     });
 });
 
-describe('scattermapnew restyle', function() {
+describe('scattermap restyle', function() {
     var gd;
 
     beforeAll(function() {
@@ -1266,18 +1266,18 @@ describe('scattermapnew restyle', function() {
         Plotly.newPlot(gd, {
             data: [{
                 lat: [0, 2], lon: [0, 2],
-                type: 'scattermapnew',
+                type: 'scattermap',
                 mode: 'lines',
                 visible: 'legendonly'
             },
             {
                 lat: [0, 2], lon: [2, 0],
-                type: 'scattermapnew',
+                type: 'scattermap',
                 mode: 'lines',
                 visible: true
             }
             ], layout: {
-                mapnew: {
+                map: {
                     style: 'open-street-map',
                     zoom: 6,
                     center: { lat: 1, lon: 1 }

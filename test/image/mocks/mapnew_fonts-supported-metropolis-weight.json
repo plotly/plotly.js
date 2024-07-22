@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "subplot": "mapnew",
+      "subplot": "map",
       "textfont": {
         "size": 20,
         "color": "red",
@@ -26,12 +26,12 @@
         "opacity": 0.5,
         "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
       },
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers+text",
       "lon": [-90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13, -104.61],
       "lat": [55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44]
     }, {
-        "subplot": "mapnew2",
+        "subplot": "map2",
         "textfont": {
           "size": 20,
           "color": "red",
@@ -57,12 +57,12 @@
           "opacity": 0.5,
           "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
         },
-        "type": "scattermapnew",
+        "type": "scattermap",
         "mode": "markers+text",
         "lon": [-90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13, -104.61],
         "lat": [55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44]
     }, {
-      "subplot": "mapnew3",
+      "subplot": "map3",
       "textfont": {
         "size": 20,
         "color": "red",
@@ -88,12 +88,12 @@
         "opacity": 0.5,
         "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
       },
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers+text",
       "lon": [-90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13, -104.61],
       "lat": [55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44]
     }, {
-      "subplot": "mapnew4",
+      "subplot": "map4",
       "textfont": {
         "size": 20,
         "color": "red",
@@ -119,12 +119,12 @@
         "opacity": 0.5,
         "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
       },
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers+text",
       "lon": [-90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13, -104.61],
       "lat": [55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44]
     }, {
-      "subplot": "mapnew5",
+      "subplot": "map5",
       "textfont": {
         "size": 20,
         "color": "red",
@@ -150,12 +150,12 @@
         "opacity": 0.5,
         "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
       },
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers+text",
       "lon": [-90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13, -104.61],
       "lat": [55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44]
     }, {
-      "subplot": "mapnew6",
+      "subplot": "map6",
       "textfont": {
         "size": 20,
         "color": "red",
@@ -181,12 +181,12 @@
         "opacity": 0.5,
         "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
       },
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers+text",
       "lon": [-90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13, -104.61],
       "lat": [55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44]
     }, {
-      "subplot": "mapnew7",
+      "subplot": "map7",
       "textfont": {
         "size": 20,
         "color": "red",
@@ -212,12 +212,12 @@
         "opacity": 0.5,
         "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
       },
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers+text",
       "lon": [-90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13, -104.61],
       "lat": [55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44]
     }, {
-      "subplot": "mapnew8",
+      "subplot": "map8",
       "textfont": {
         "size": 20,
         "color": "red",
@@ -243,12 +243,12 @@
         "opacity": 0.5,
         "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
       },
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers+text",
       "lon": [-90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13, -104.61],
       "lat": [55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44]
     }, {
-      "subplot": "mapnew9",
+      "subplot": "map9",
       "textfont": {
         "size": 20,
         "color": "red",
@@ -274,7 +274,7 @@
         "opacity": 0.5,
         "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
       },
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers+text",
       "lon": [-90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13, -104.61],
       "lat": [55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44]
@@ -295,7 +295,7 @@
         "style": "italic"
       }
     },
-    "mapnew": {
+    "map": {
       "zoom": 3,
       "style": "carto-positron",
       "center": {
@@ -307,7 +307,7 @@
         "y": [0.89, 0.99]
       }
     },
-    "mapnew2": {
+    "map2": {
       "zoom": 3,
       "style": "carto-positron",
       "center": {
@@ -319,7 +319,7 @@
         "y": [0.78, 0.88]
       }
     },
-    "mapnew3": {
+    "map3": {
       "zoom": 3,
       "style": "carto-positron",
       "center": {
@@ -331,7 +331,7 @@
         "y": [0.67, 0.77]
       }
     },
-    "mapnew4": {
+    "map4": {
       "zoom": 3,
       "style": "carto-positron",
       "center": {
@@ -343,7 +343,7 @@
         "y": [0.56, 0.66]
       }
     },
-    "mapnew5": {
+    "map5": {
       "zoom": 3,
       "style": "carto-positron",
       "center": {
@@ -355,7 +355,7 @@
         "y": [0.45, 0.55]
       }
     },
-    "mapnew6": {
+    "map6": {
       "zoom": 3,
       "style": "carto-positron",
       "center": {
@@ -367,7 +367,7 @@
         "y": [0.34, 0.44]
       }
     },
-    "mapnew7": {
+    "map7": {
       "zoom": 3,
       "style": "carto-positron",
       "center": {
@@ -379,7 +379,7 @@
         "y": [0.23, 0.33]
       }
     },
-    "mapnew8": {
+    "map8": {
       "zoom": 3,
       "style": "carto-positron",
       "center": {
@@ -391,7 +391,7 @@
         "y": [0.12, 0.22]
       }
     },
-    "mapnew9": {
+    "map9": {
       "zoom": 3,
       "style": "carto-positron",
       "center": {

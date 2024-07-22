@@ -285,14 +285,14 @@ function registerTraceModule(_module) {
     }
 
     // add maplibre-gl CSS here to avoid console warning on instantiation
-    if(bpmName === 'mapnew') {
+    if(bpmName === 'map') {
         addCss('https://unpkg.com/maplibre-gl@^4.3.2/dist/maplibre-gl.css');
     }
 
     // if `plotly-geo-assets.js` is not included,
     // add `PlotlyGeoAssets` global to stash references to all fetched
     // topojson / geojson data
-    if((bpmName === 'geo' || bpmName === 'mapbox' || bpmName === 'mapnew') &&
+    if((bpmName === 'geo' || bpmName === 'mapbox' || bpmName === 'map') &&
         (window.PlotlyGeoAssets === undefined)
     ) {
         window.PlotlyGeoAssets = {topojson: {}};

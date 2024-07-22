@@ -1,14 +1,14 @@
 {
   "data": [
     {
-      "type": "choroplethmapnew",
+      "type": "choroplethmap",
       "locations": ["NY", "MA", "VT"],
       "z": [10, 20, 30],
       "geojson": "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json"
     }
   ],
   "layout": {
-    "mapnew": {
+    "map": {
       "center": { "lon": -74.22, "lat": 42.35 },
       "zoom": 3.5
     },

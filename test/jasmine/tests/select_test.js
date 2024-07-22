@@ -697,8 +697,8 @@ describe('Click-to-select', function() {
           });
 
         [
-            testCase('scattermapnew', require('../../image/mocks/mapnew_0.json'), 650, 195, [[2], []], {}),
-            testCase('choroplethmapnew', require('../../image/mocks/mapnew_choropleth0.json'), 270, 220, [[0]], {})
+            testCase('scattermap', require('../../image/mocks/map_0.json'), 650, 195, [[2], []], {}),
+            testCase('choroplethmap', require('../../image/mocks/map_choropleth0.json'), 270, 220, [[0]], {})
         ]
           .forEach(function(testCase) {
               it('@gl trace type ' + testCase.label, function(done) {
@@ -793,8 +793,8 @@ describe('Click-to-select', function() {
         });
 
         [
-            testCase('mapnew', require('../../image/mocks/mapnew_0.json'), 650, 195, [[2], []], {}),
-            testCase('mapnew', require('../../image/mocks/mapnew_choropleth0.json'), 270, 220, [[0], []], {})
+            testCase('map', require('../../image/mocks/map_0.json'), 650, 195, [[2], []], {}),
+            testCase('map', require('../../image/mocks/map_choropleth0.json'), 270, 220, [[0], []], {})
         ].forEach(function(testCase) {
             it('@gl for base plot ' + testCase.label, function(done) {
                 _run(testCase, done);
@@ -2122,20 +2122,20 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@gl should work on scattermapnew traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@gl should work on scattermap traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['lon', 'lat']);
-            var assertRanges = makeAssertRanges('mapnew');
-            var assertLassoPoints = makeAssertLassoPoints('mapnew');
+            var assertRanges = makeAssertRanges('map');
+            var assertLassoPoints = makeAssertLassoPoints('map');
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('../../image/mocks/mapnew_bubbles-text'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/map_bubbles-text'));
 
             fig.data[0].lon.push(null);
             fig.data[0].lat.push(null);
 
             fig.layout.dragmode = 'select';
 
-            delete fig.layout.mapnew.bounds;
+            delete fig.layout.map.bounds;
 
             fig.config = {};
             addInvisible(fig);
@@ -2151,7 +2151,7 @@ describe('Test select box and lasso per trace:', function() {
                         assertRanges([[21.99, 34.55], [38.14, 25.98]]);
                         assertSelectedPoints({0: [2]});
                     },
-                    null, BOXEVENTS, 'scattermapnew select'
+                    null, BOXEVENTS, 'scattermap select'
                 );
             })
             .then(function() {
@@ -2167,7 +2167,7 @@ describe('Test select box and lasso per trace:', function() {
                             [13.28, 25.97], [13.28, 14.33], [25.71, 14.33], [25.71, 25.97], [13.28, 25.97]
                         ]);
                     },
-                    null, LASSOEVENTS, 'scattermapnew lasso'
+                    null, LASSOEVENTS, 'scattermap lasso'
                 );
             })
             .then(function() {
@@ -2176,7 +2176,7 @@ describe('Test select box and lasso per trace:', function() {
             })
             .then(function() {
                 return _run(hasCssTransform,
-                    [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermapnew pan'
+                    [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermap pan'
                 );
             })
             .then(done, done.fail);
@@ -2184,20 +2184,20 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@gl should work on scattermapnew traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@gl should work on scattermap traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['lon', 'lat']);
-            var assertRanges = makeAssertRanges('mapnew');
-            var assertLassoPoints = makeAssertLassoPoints('mapnew');
+            var assertRanges = makeAssertRanges('map');
+            var assertLassoPoints = makeAssertLassoPoints('map');
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('../../image/mocks/mapnew_bubbles-text'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/map_bubbles-text'));
 
             fig.data[0].lon.push(null);
             fig.data[0].lat.push(null);
 
             fig.layout.dragmode = 'select';
 
-            delete fig.layout.mapnew.bounds;
+            delete fig.layout.map.bounds;
 
             fig.config = {};
             addInvisible(fig);
@@ -2213,7 +2213,7 @@ describe('Test select box and lasso per trace:', function() {
                         assertRanges([[21.99, 34.55], [38.14, 25.98]]);
                         assertSelectedPoints({0: [2]});
                     },
-                    null, BOXEVENTS, 'scattermapnew select'
+                    null, BOXEVENTS, 'scattermap select'
                 );
             })
             .then(function() {
@@ -2229,7 +2229,7 @@ describe('Test select box and lasso per trace:', function() {
                             [13.28, 25.97], [13.28, 14.33], [25.71, 14.33], [25.71, 25.97], [13.28, 25.97]
                         ]);
                     },
-                    null, LASSOEVENTS, 'scattermapnew lasso'
+                    null, LASSOEVENTS, 'scattermap lasso'
                 );
             })
             .then(function() {
@@ -2238,7 +2238,7 @@ describe('Test select box and lasso per trace:', function() {
             })
             .then(function() {
                 return _run(hasCssTransform,
-                    [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermapnew pan'
+                    [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermap pan'
                 );
             })
             .then(done, done.fail);
@@ -2298,13 +2298,13 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@gl should work on choroplethmapnew traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@gl should work on choroplethmap traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['location', 'z']);
-            var assertRanges = makeAssertRanges('mapnew');
-            var assertLassoPoints = makeAssertLassoPoints('mapnew');
+            var assertRanges = makeAssertRanges('map');
+            var assertLassoPoints = makeAssertLassoPoints('map');
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('../../image/mocks/mapnew_choropleth0.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/map_choropleth0.json'));
 
             fig.data[0].locations.push(null);
 
@@ -2323,7 +2323,7 @@ describe('Test select box and lasso per trace:', function() {
                         assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
                         assertSelectedPoints({0: [0]});
                     },
-                    null, BOXEVENTS, 'choroplethmapnew select'
+                    null, BOXEVENTS, 'choroplethmap select'
                 );
             })
             .then(function() {
@@ -2340,7 +2340,7 @@ describe('Test select box and lasso per trace:', function() {
                             [-67.84, 43.936], [-74.06, 43.936]
                         ]);
                     },
-                    null, LASSOEVENTS, 'choroplethmapnew lasso'
+                    null, LASSOEVENTS, 'choroplethmap lasso'
                 );
             })
             .then(done, done.fail);
@@ -3474,13 +3474,13 @@ describe('Test select box and lasso per trace:', function() {
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should work on choroplethmapnew traces after adding a new trace on top:', function(done) {
+    it('@gl should work on choroplethmap traces after adding a new trace on top:', function(done) {
         var assertPoints = makeAssertPoints(['location', 'z']);
-        var assertRanges = makeAssertRanges('mapnew');
-        var assertLassoPoints = makeAssertLassoPoints('mapnew');
+        var assertRanges = makeAssertRanges('map');
+        var assertLassoPoints = makeAssertLassoPoints('map');
         var assertSelectedPoints = makeAssertSelectedPoints();
 
-        var fig = Lib.extendDeep({}, require('../../image/mocks/mapnew_choropleth0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/map_choropleth0.json'));
 
         fig.data[0].locations.push(null);
 
@@ -3494,7 +3494,7 @@ describe('Test select box and lasso per trace:', function() {
         .then(function() {
             // add a scatter points on top
             fig.data[3] = {
-                type: 'scattermapnew',
+                type: 'scattermap',
                 marker: { size: 40 },
                 lon: [-70],
                 lat: [40]
@@ -3510,7 +3510,7 @@ describe('Test select box and lasso per trace:', function() {
                     assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
                     assertSelectedPoints({0: [0], 3: []});
                 },
-                null, BOXEVENTS, 'choroplethmapnew select'
+                null, BOXEVENTS, 'choroplethmap select'
             );
         })
         .then(function() {
@@ -3527,7 +3527,7 @@ describe('Test select box and lasso per trace:', function() {
                         [-67.84, 43.936], [-74.06, 43.936]
                     ]);
                 },
-                null, LASSOEVENTS, 'choroplethmapnew lasso'
+                null, LASSOEVENTS, 'choroplethmap lasso'
             );
         })
         .then(done, done.fail);

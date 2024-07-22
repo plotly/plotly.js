@@ -1564,7 +1564,7 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
         if(
             d.trace.type !== 'choropleth' &&
             d.trace.type !== 'choroplethmapbox' &&
-            d.trace.type !== 'choroplethmapnew'
+            d.trace.type !== 'choroplethmap'
         ) {
             text += (text ? 'z: ' : '') + d.zLabel;
         }

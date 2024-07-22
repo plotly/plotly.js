@@ -1,7 +1,7 @@
 {
     "data": [
       {
-        "type": "scattermapnew",
+        "type": "scattermap",
         "name": "carto-positron",
         "lon": [ 10, 5 ],
         "lat": [ 20, 10 ],
@@ -10,11 +10,11 @@
 
       },
       {
-        "type": "scattermapnew",
+        "type": "scattermap",
         "name": "carto-darkmatter",
         "lon": [ 10, 5 ],
         "lat": [ 20, 10 ],
-        "subplot": "mapnew2",
+        "subplot": "map2",
         "mode":"text",
         "text":["pt1","pt2"],
         "textfont":{"family":"Metropolis Extra Bold Italic","color":"#fff"}
@@ -28,11 +28,11 @@
         "y": 1, "yanchor": "bottom"
       },
 
-      "mapnew": {
+      "map": {
         "domain": {"row": 0, "column": 0},
         "style": "carto-positron"
       },
-      "mapnew2": {
+      "map2": {
         "domain": {"row": 0, "column": 1},
         "style": "carto-darkmatter"
       }

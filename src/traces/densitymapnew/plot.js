@@ -1,10 +1,10 @@
 'use strict';
 
 var convert = require('./convert');
-var LAYER_PREFIX = require('../../plots/mapnew/constants').traceLayerPrefix;
+var LAYER_PREFIX = require('../../plots/map/constants').traceLayerPrefix;
 
-function DensityMapnew(subplot, uid) {
-    this.type = 'densitymapnew';
+function DensityMap(subplot, uid) {
+    this.type = 'densitymap';
     this.subplot = subplot;
     this.uid = uid;
 
@@ -19,7 +19,7 @@ function DensityMapnew(subplot, uid) {
     this.below = null;
 }
 
-var proto = DensityMapnew.prototype;
+var proto = DensityMap.prototype;
 
 proto.update = function(calcTrace) {
     var subplot = this.subplot;
@@ -86,19 +86,19 @@ proto.dispose = function() {
     map.removeSource(this.sourceId);
 };
 
-module.exports = function createDensityMapnew(subplot, calcTrace) {
+module.exports = function createDensityMap(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
-    var densityMapnew = new DensityMapnew(subplot, trace.uid);
-    var sourceId = densityMapnew.sourceId;
+    var densityMap = new DensityMap(subplot, trace.uid);
+    var sourceId = densityMap.sourceId;
     var optsAll = convert(calcTrace);
-    var below = densityMapnew.below = subplot.belowLookup['trace-' + trace.uid];
+    var below = densityMap.below = subplot.belowLookup['trace-' + trace.uid];
 
     subplot.map.addSource(sourceId, {
         type: 'geojson',
         data: optsAll.geojson
     });
 
-    densityMapnew._addLayers(optsAll, below);
+    densityMap._addLayers(optsAll, below);
 
-    return densityMapnew;
+    return densityMap;
 };

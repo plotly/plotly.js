@@ -5,7 +5,7 @@ var sanitizeHTML = require('../../lib/svg_text_utils').sanitizeHTML;
 var convertTextOpts = require('./convert_text_opts');
 var constants = require('./constants');
 
-function MapnewLayer(subplot, index) {
+function MapLayer(subplot, index) {
     this.subplot = subplot;
 
     this.uid = subplot.uid + '-' + index;
@@ -24,7 +24,7 @@ function MapnewLayer(subplot, index) {
     this.visible = false;
 }
 
-var proto = MapnewLayer.prototype;
+var proto = MapLayer.prototype;
 
 proto.update = function update(opts) {
     if(!this.visible) {
@@ -61,7 +61,7 @@ proto.needsNewImage = function(opts) {
 
 proto.needsNewSource = function(opts) {
     // for some reason changing layer to 'fill' or 'symbol'
-    // w/o changing the source throws an exception in mapnew-gl 0.18 ;
+    // w/o changing the source throws an exception in map-gl 0.18 ;
     // stay safe and make new source on type changes
     return (
         this.sourceType !== opts.sourcetype ||
@@ -90,7 +90,7 @@ proto.updateImage = function(opts) {
     // Since the `updateImage` control flow doesn't call updateLayer,
     // We need to take care of moving the image layer to match the location
     // where updateLayer would have placed it.
-    var _below = this.findFollowingMapnewLayerId(this.lookupBelow());
+    var _below = this.findFollowingMapLayerId(this.lookupBelow());
     if(_below !== null) {
         this.subplot.map.moveLayer(this.idLayer, _below);
     }
@@ -111,7 +111,7 @@ proto.updateSource = function(opts) {
     map.addSource(this.idSource, sourceOpts);
 };
 
-proto.findFollowingMapnewLayerId = function(below) {
+proto.findFollowingMapLayerId = function(below) {
     if(below === 'traces') {
         var mapLayers = this.subplot.getMapLayers();
 
@@ -133,7 +133,7 @@ proto.updateLayer = function(opts) {
     var subplot = this.subplot;
     var convertedOpts = convertOpts(opts);
     var below = this.lookupBelow();
-    var _below = this.findFollowingMapnewLayerId(below);
+    var _below = this.findFollowingMapLayerId(below);
 
     this.removeLayer();
 
@@ -290,10 +290,10 @@ function convertSourceOpts(opts) {
     return sourceOpts;
 }
 
-module.exports = function createMapnewLayer(subplot, index, opts) {
-    var mapnewLayer = new MapnewLayer(subplot, index);
+module.exports = function createMapLayer(subplot, index, opts) {
+    var mapLayer = new MapLayer(subplot, index);
 
-    mapnewLayer.update(opts);
+    mapLayer.update(opts);
 
-    return mapnewLayer;
+    return mapLayer;
 };

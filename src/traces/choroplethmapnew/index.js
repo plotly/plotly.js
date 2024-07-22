@@ -42,11 +42,11 @@ module.exports = {
     },
 
     moduleType: 'trace',
-    name: 'choroplethmapnew',
-    basePlotModule: require('../../plots/mapnew'),
-    categories: ['mapnew', 'gl', 'noOpacity', 'showLegend'],
+    name: 'choroplethmap',
+    basePlotModule: require('../../plots/map'),
+    categories: ['map', 'gl', 'noOpacity', 'showLegend'],
     meta: {
-        hr_name: 'choropleth_mapnew',
+        hr_name: 'choropleth_map',
         description: [
             'GeoJSON features to be filled are set in `geojson`',
             'The data that describes the choropleth value-to-color mapping',

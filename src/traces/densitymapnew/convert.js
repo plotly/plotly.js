@@ -78,7 +78,7 @@ module.exports = function convert(calcTrace) {
     }
 
     // Those "weights" have to be in [0, 1], we can do this either:
-    // - as here using a mapnew-gl expression
+    // - as here using a map-gl expression
     // - or, scale the 'z' property in the feature loop
     var zExp = [
         'interpolate', ['linear'],

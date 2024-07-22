@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "lines",
       "lon": [
         10,
@@ -27,7 +27,7 @@
       "name": "connectgaps false"
     },
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "lines",
       "lon": [
         10,
@@ -55,7 +55,7 @@
     }
   ],
   "layout": {
-    "mapnew": {
+    "map": {
       "style": "streets",
       "zoom": 1.5,
       "center": {

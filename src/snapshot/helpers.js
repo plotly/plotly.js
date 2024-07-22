@@ -9,7 +9,7 @@ exports.getDelay = function(fullLayout) {
         fullLayout._has('gl3d') ||
         fullLayout._has('gl2d') ||
         fullLayout._has('mapbox') ||
-        fullLayout._has('mapnew')
+        fullLayout._has('map')
     ) ? 500 : 0;
 };
 

@@ -1,17 +1,17 @@
 {
   "data": [
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "name": "on custom style pointing to OSM",
       "lon": [ 10, 20 ],
       "lat": [ 20, 10 ]
     },
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "name": "using style:open-street-map",
       "lon": [ 10, 20 ],
       "lat": [ 20, 10 ],
-      "subplot": "mapnew2"
+      "subplot": "map2"
     }
   ],
   "layout": {
@@ -22,7 +22,7 @@
       "y": 1, "yanchor": "bottom"
     },
 
-    "mapnew": {
+    "map": {
       "domain": {"row": 0, "column": 0},
 
       "style": {
@@ -49,7 +49,7 @@
         ]
       }
     },
-    "mapnew2": {
+    "map2": {
       "domain": {"row": 1, "column": 0},
 
       "style": "open-street-map"

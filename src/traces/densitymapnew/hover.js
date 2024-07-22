@@ -1,11 +1,11 @@
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
-var scatterMapnewHoverPoints = require('../scattermapnew/hover').hoverPoints;
-var getExtraText = require('../scattermapnew/hover').getExtraText;
+var scatterMapHoverPoints = require('../scattermap/hover').hoverPoints;
+var getExtraText = require('../scattermap/hover').getExtraText;
 
 module.exports = function hoverPoints(pointData, xval, yval) {
-    var pts = scatterMapnewHoverPoints(pointData, xval, yval);
+    var pts = scatterMapHoverPoints(pointData, xval, yval);
     if(!pts) return;
 
     var newPointData = pts[0];

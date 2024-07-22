@@ -9,7 +9,7 @@ var layoutAttributes = require('./layout_attributes');
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     handleSubplotDefaults(layoutIn, layoutOut, fullData, {
-        type: 'mapnew',
+        type: 'map',
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,
         partition: 'y'

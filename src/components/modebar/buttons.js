@@ -652,7 +652,7 @@ modeBarButtons.resetViews = {
 
         resetView(gd, 'geo');
         resetView(gd, 'mapbox');
-        resetView(gd, 'mapnew');
+        resetView(gd, 'map');
     }
 };
 
@@ -696,14 +696,14 @@ modeBarButtons.resetViewMapbox = {
     }
 };
 
-modeBarButtons.resetViewMapnew = {
-    name: 'resetViewMapnew',
+modeBarButtons.resetViewMap = {
+    name: 'resetViewMap',
     _cat: 'resetView',
     title: function(gd) { return _(gd, 'Reset view'); },
     attr: 'reset',
     icon: Icons.home,
     click: function(gd) {
-        resetView(gd, 'mapnew');
+        resetView(gd, 'map');
     }
 };
 
@@ -717,14 +717,14 @@ modeBarButtons.zoomInMapbox = {
     click: handleMapboxZoom
 };
 
-modeBarButtons.zoomInMapnew = {
-    name: 'zoomInMapnew',
+modeBarButtons.zoomInMap = {
+    name: 'zoomInMap',
     _cat: 'zoomin',
     title: function(gd) { return _(gd, 'Zoom in'); },
     attr: 'zoom',
     val: 'in',
     icon: Icons.zoom_plus,
-    click: handleMapnewZoom
+    click: handleMapZoom
 };
 
 modeBarButtons.zoomOutMapbox = {
@@ -737,22 +737,22 @@ modeBarButtons.zoomOutMapbox = {
     click: handleMapboxZoom
 };
 
-modeBarButtons.zoomOutMapnew = {
-    name: 'zoomOutMapnew',
+modeBarButtons.zoomOutMap = {
+    name: 'zoomOutMap',
     _cat: 'zoomout',
     title: function(gd) { return _(gd, 'Zoom out'); },
     attr: 'zoom',
     val: 'out',
     icon: Icons.zoom_minus,
-    click: handleMapnewZoom
+    click: handleMapZoom
 };
 
 function handleMapboxZoom(gd, ev) {
     _handleMapZoom(gd, ev, 'mapbox');
 }
 
-function handleMapnewZoom(gd, ev) {
-    _handleMapZoom(gd, ev, 'mapnew');
+function handleMapZoom(gd, ev) {
+    _handleMapZoom(gd, ev, 'map');
 }
 
 function _handleMapZoom(gd, ev, mapType) {

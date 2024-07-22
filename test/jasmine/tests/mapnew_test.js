@@ -2,7 +2,7 @@ var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
 var Fx = require('../../../src/components/fx');
 
-var supplyLayoutDefaults = require('../../../src/plots/mapnew/layout_defaults');
+var supplyLayoutDefaults = require('../../../src/plots/map/layout_defaults');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -34,72 +34,72 @@ Plotly.setPlotConfig({
 
 });
 
-describe('mapnew defaults', function() {
+describe('map defaults', function() {
     var layoutIn, layoutOut, fullData;
 
     beforeEach(function() {
-        layoutOut = { font: { color: 'red' }, _subplots: {mapnew: ['mapnew']} };
+        layoutOut = { font: { color: 'red' }, _subplots: {map: ['map']} };
 
-        // needs a mapnew-ref in a trace in order to be detected
-        fullData = [{ type: 'scattermapnew', subplot: 'mapnew' }];
+        // needs a map-ref in a trace in order to be detected
+        fullData = [{ type: 'scattermap', subplot: 'map' }];
     });
 
     it('should fill empty containers', function() {
         layoutIn = {};
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        expect(layoutIn).toEqual({ mapnew: {} });
+        expect(layoutIn).toEqual({ map: {} });
     });
 
     it('should copy ref to input container in full (for updating on map move)', function() {
-        var mapnew = { style: 'light '};
+        var map = { style: 'light '};
 
-        layoutIn = { mapnew: mapnew };
+        layoutIn = { map: map };
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        expect(layoutOut.mapnew._input).toBe(mapnew);
+        expect(layoutOut.map._input).toBe(map);
     });
 
     it('should accept both string and object style', function() {
-        var mapnewStyleJSON = {
+        var mapStyleJSON = {
             id: 'cdsa213wqdsa',
             owner: 'johnny'
         };
 
         layoutIn = {
-            mapnew: { style: 'light' },
-            mapnew2: { style: mapnewStyleJSON }
+            map: { style: 'light' },
+            map2: { style: mapStyleJSON }
         };
 
-        fullData.push({ type: 'scattermapnew', subplot: 'mapnew2' });
-        layoutOut._subplots.mapnew.push('mapnew2');
+        fullData.push({ type: 'scattermap', subplot: 'map2' });
+        layoutOut._subplots.map.push('map2');
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        expect(layoutOut.mapnew.style).toEqual('light');
-        expect(layoutOut.mapnew2.style).toBe(mapnewStyleJSON);
+        expect(layoutOut.map.style).toEqual('light');
+        expect(layoutOut.map2.style).toBe(mapStyleJSON);
     });
 
     it('should fill layer containers', function() {
         layoutIn = {
-            mapnew: {
+            map: {
                 layers: [{}, {}]
             }
         };
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        expect(layoutOut.mapnew.layers[0].sourcetype).toEqual('geojson');
-        expect(layoutOut.mapnew.layers[1].sourcetype).toEqual('geojson');
+        expect(layoutOut.map.layers[0].sourcetype).toEqual('geojson');
+        expect(layoutOut.map.layers[1].sourcetype).toEqual('geojson');
     });
 
     it('should skip over non-object layer containers', function() {
         layoutIn = {
-            mapnew: {
+            map: {
                 layers: [{}, null, 'remove', {}]
             }
         };
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        expect(layoutOut.mapnew.layers).toEqual([jasmine.objectContaining({
+        expect(layoutOut.map.layers).toEqual([jasmine.objectContaining({
             sourcetype: 'geojson',
             _index: 0
         }), jasmine.objectContaining({
@@ -114,7 +114,7 @@ describe('mapnew defaults', function() {
 
     it('should coerce \'sourcelayer\' only for *vector* \'sourcetype\'', function() {
         layoutIn = {
-            mapnew: {
+            map: {
                 layers: [{
                     sourcetype: 'vector',
                     sourcelayer: 'layer0'
@@ -126,8 +126,8 @@ describe('mapnew defaults', function() {
         };
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        expect(layoutOut.mapnew.layers[0].sourcelayer).toEqual('layer0');
-        expect(layoutOut.mapnew.layers[1].sourcelayer).toBeUndefined();
+        expect(layoutOut.map.layers[0].sourcelayer).toEqual('layer0');
+        expect(layoutOut.map.layers[1].sourcelayer).toBeUndefined();
     });
 
     it('should only coerce relevant layer style attributes', function() {
@@ -139,7 +139,7 @@ describe('mapnew defaults', function() {
         };
 
         layoutIn = {
-            mapnew: {
+            map: {
                 layers: [
                     Lib.extendFlat({}, base, {
                         type: 'line',
@@ -163,36 +163,36 @@ describe('mapnew defaults', function() {
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
-        expect(layoutOut.mapnew.layers[0].color).toEqual('red');
-        expect(layoutOut.mapnew.layers[0].line.width).toEqual(3);
-        expect(layoutOut.mapnew.layers[0].fill).toBeUndefined();
-        expect(layoutOut.mapnew.layers[0].circle).toBeUndefined();
-        expect(layoutOut.mapnew.layers[0].symbol).toBeUndefined();
+        expect(layoutOut.map.layers[0].color).toEqual('red');
+        expect(layoutOut.map.layers[0].line.width).toEqual(3);
+        expect(layoutOut.map.layers[0].fill).toBeUndefined();
+        expect(layoutOut.map.layers[0].circle).toBeUndefined();
+        expect(layoutOut.map.layers[0].symbol).toBeUndefined();
 
-        expect(layoutOut.mapnew.layers[1].color).toEqual('blue');
-        expect(layoutOut.mapnew.layers[1].fill.outlinecolor).toEqual('#d3d3d3');
-        expect(layoutOut.mapnew.layers[1].line).toBeUndefined();
-        expect(layoutOut.mapnew.layers[1].circle).toBeUndefined();
-        expect(layoutOut.mapnew.layers[1].symbol).toBeUndefined();
+        expect(layoutOut.map.layers[1].color).toEqual('blue');
+        expect(layoutOut.map.layers[1].fill.outlinecolor).toEqual('#d3d3d3');
+        expect(layoutOut.map.layers[1].line).toBeUndefined();
+        expect(layoutOut.map.layers[1].circle).toBeUndefined();
+        expect(layoutOut.map.layers[1].symbol).toBeUndefined();
 
-        expect(layoutOut.mapnew.layers[2].color).toEqual('green');
-        expect(layoutOut.mapnew.layers[2].circle.radius).toEqual(20);
-        expect(layoutOut.mapnew.layers[2].line).toBeUndefined();
-        expect(layoutOut.mapnew.layers[2].fill).toBeUndefined();
-        expect(layoutOut.mapnew.layers[2].symbol).toBeUndefined();
+        expect(layoutOut.map.layers[2].color).toEqual('green');
+        expect(layoutOut.map.layers[2].circle.radius).toEqual(20);
+        expect(layoutOut.map.layers[2].line).toBeUndefined();
+        expect(layoutOut.map.layers[2].fill).toBeUndefined();
+        expect(layoutOut.map.layers[2].symbol).toBeUndefined();
 
-        expect(layoutOut.mapnew.layers[3].color).toEqual('yellow');
-        expect(layoutOut.mapnew.layers[3].symbol.icon).toEqual('monument');
-        expect(layoutOut.mapnew.layers[3].line).toBeUndefined();
-        expect(layoutOut.mapnew.layers[3].fill).toBeUndefined();
-        expect(layoutOut.mapnew.layers[3].circle).toBeUndefined();
+        expect(layoutOut.map.layers[3].color).toEqual('yellow');
+        expect(layoutOut.map.layers[3].symbol.icon).toEqual('monument');
+        expect(layoutOut.map.layers[3].line).toBeUndefined();
+        expect(layoutOut.map.layers[3].fill).toBeUndefined();
+        expect(layoutOut.map.layers[3].circle).toBeUndefined();
     });
 
     it('should not allow to set layer type other than *raster* for sourcetype value *raster* and *image*', function() {
         spyOn(Lib, 'log');
 
         layoutIn = {
-            mapnew: {
+            map: {
                 layers: [{
                     sourcetype: 'raster',
                     source: 'url',
@@ -209,15 +209,15 @@ describe('mapnew defaults', function() {
         expect(Lib.log).toHaveBeenCalledTimes(2);
         expect(Lib.log).toHaveBeenCalledWith('Source types *raster* and *image* must drawn *raster* layer type.');
 
-        expect(layoutOut.mapnew.layers[0].type).toBe('raster');
-        expect(layoutOut.mapnew.layers[1].type).toBe('raster');
+        expect(layoutOut.map.layers[0].type).toBe('raster');
+        expect(layoutOut.map.layers[1].type).toBe('raster');
     });
 
     it('should default layer with sourcetype *raster* and *image* to type *raster', function() {
         spyOn(Lib, 'log');
 
         layoutIn = {
-            mapnew: {
+            map: {
                 layers: [{
                     sourcetype: 'raster',
                     source: 'url'
@@ -230,8 +230,8 @@ describe('mapnew defaults', function() {
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
         expect(Lib.log).toHaveBeenCalledTimes(0);
-        expect(layoutOut.mapnew.layers[0].type).toBe('raster');
-        expect(layoutOut.mapnew.layers[1].type).toBe('raster');
+        expect(layoutOut.map.layers[0].type).toBe('raster');
+        expect(layoutOut.map.layers[1].type).toBe('raster');
     });
 
     it('should set *layout.dragmode* to pan while zoom is not available', function() {
@@ -245,8 +245,8 @@ describe('mapnew defaults', function() {
     });
 });
 
-describe('mapnew plots', function() {
-    var mock = require('../../image/mocks/mapnew_0.json');
+describe('map plots', function() {
+    var mock = require('../../image/mocks/map_0.json');
     var gd;
 
     var pointPos = [579, 276];
@@ -271,7 +271,7 @@ describe('mapnew plots', function() {
         expect(countVisibleTraces(gd, modes)).toEqual(2);
 
         Plotly.restyle(gd, 'visible', false).then(function() {
-            expect(gd._fullLayout.mapnew === undefined).toBe(false);
+            expect(gd._fullLayout.map === undefined).toBe(false);
 
             expect(countVisibleTraces(gd, modes)).toEqual(0);
 
@@ -310,7 +310,7 @@ describe('mapnew plots', function() {
             expect(countVisibleTraces(gd, modes)).toEqual(1);
 
             var trace = {
-                type: 'scattermapnew',
+                type: 'scattermap',
                 mode: 'markers+lines',
                 lon: [-10, -20, -10],
                 lat: [-10, 20, -10]
@@ -322,7 +322,7 @@ describe('mapnew plots', function() {
             expect(countVisibleTraces(gd, modes)).toEqual(2);
 
             var trace = {
-                type: 'scattermapnew',
+                type: 'scattermap',
                 mode: 'markers+lines',
                 lon: [10, 20, 10],
                 lat: [10, -20, 10]
@@ -336,19 +336,19 @@ describe('mapnew plots', function() {
             return Plotly.deleteTraces(gd, [0, 1, 2]);
         })
         .then(function() {
-            expect(gd._fullLayout.mapnew === undefined).toBe(true);
+            expect(gd._fullLayout.map === undefined).toBe(true);
         })
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should not update center while dragging', function(done) {
-        var map = gd._fullLayout.mapnew._subplot.map;
+        var map = gd._fullLayout.map._subplot.map;
         spyOn(map, 'setCenter').and.callThrough();
 
         var p1 = [pointPos[0] + 50, pointPos[1] - 20];
 
         _mouseEvent('mousemove', pointPos, noop).then(function() {
-            return Plotly.relayout(gd, {'mapnew.center': {lon: 13.5, lat: -19.5}});
+            return Plotly.relayout(gd, {'map.center': {lon: 13.5, lat: -19.5}});
         }).then(function() {
             // First relayout on maplibre.center results in setCenter call
             expect(map.setCenter).toHaveBeenCalledWith([13.5, -19.5]);
@@ -358,7 +358,7 @@ describe('mapnew plots', function() {
         }).then(function() {
             return _mouseEvent('mousemove', p1, noop);
         }).then(function() {
-            return Plotly.relayout(gd, {'mapnew.center': {lat: 0, lon: 0}});
+            return Plotly.relayout(gd, {'map.center': {lat: 0, lon: 0}});
         }).then(function() {
             return _mouseEvent('mouseup', p1, noop);
         }).then(function() {
@@ -369,19 +369,19 @@ describe('mapnew plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should not update zoom while scroll wheeling', function(done) {
-        var map = gd._fullLayout.mapnew._subplot.map;
+        var map = gd._fullLayout.map._subplot.map;
         spyOn(map, 'setZoom').and.callThrough();
 
         _mouseEvent('mousemove', pointPos, noop).then(function() {
-            return Plotly.relayout(gd, {'mapnew.zoom': 5});
+            return Plotly.relayout(gd, {'map.zoom': 5});
         }).then(function() {
-            // First relayout on mapnew.zoom results in setZoom call
+            // First relayout on map.zoom results in setZoom call
             expect(map.setZoom).toHaveBeenCalledWith(5);
             expect(map.setZoom).toHaveBeenCalledTimes(1);
         }).then(function() {
             mouseEvent('scroll', pointPos[0], pointPos[1], {deltaY: -400});
-            return Plotly.relayout(gd, {'mapnew.zoom': 2}).then(function() {
-                // Second relayout on mapnew.zoom does not result in setZoom
+            return Plotly.relayout(gd, {'map.zoom': 2}).then(function() {
+                // Second relayout on map.zoom does not result in setZoom
                 // call since a scroll wheel zoom is underway
                 expect(map.setZoom).toHaveBeenCalledTimes(1);
             });
@@ -474,14 +474,14 @@ describe('mapnew plots', function() {
 
         assertLayout([-4.710, 19.475], 1.234, [80, 100, 908, 270]);
 
-        Plotly.relayout(gd, 'mapnew.center', { lon: 0, lat: 0 })
+        Plotly.relayout(gd, 'map.center', { lon: 0, lat: 0 })
         .then(function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(1);
 
             assertLayout([0, 0], 1.234, [80, 100, 908, 270]);
 
-            return Plotly.relayout(gd, 'mapnew.zoom', '6');
+            return Plotly.relayout(gd, 'map.zoom', '6');
         })
         .then(function() {
             expect(restyleCnt).toEqual(0);
@@ -489,7 +489,7 @@ describe('mapnew plots', function() {
 
             assertLayout([0, 0], 6, [80, 100, 908, 270]);
 
-            return Plotly.relayout(gd, 'mapnew.domain.x', [0, 0.5]);
+            return Plotly.relayout(gd, 'map.domain.x', [0, 0.5]);
         })
         .then(function() {
             expect(restyleCnt).toEqual(0);
@@ -497,7 +497,7 @@ describe('mapnew plots', function() {
 
             assertLayout([0, 0], 6, [80, 100, 454, 270]);
 
-            return Plotly.relayout(gd, 'mapnew.domain.y[0]', 0.5);
+            return Plotly.relayout(gd, 'map.domain.y[0]', 0.5);
         })
         .then(function() {
             expect(restyleCnt).toEqual(0);
@@ -521,11 +521,11 @@ describe('mapnew plots', function() {
 
         assertLayout('Dark Matter without labels');
 
-        Plotly.relayout(gd, 'mapnew.style', 'carto-positron')
+        Plotly.relayout(gd, 'map.style', 'carto-positron')
         .then(function() {
             assertLayout('Positron');
 
-            return Plotly.relayout(gd, 'mapnew.style', 'carto-darkmatter');
+            return Plotly.relayout(gd, 'map.style', 'carto-darkmatter');
         })
         .then(function() {
             assertLayout('Dark Matter');
@@ -534,28 +534,28 @@ describe('mapnew plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to add, update and remove layers', function(done) {
-        var mockWithLayers = require('../../image/mocks/mapnew_layers');
+        var mockWithLayers = require('../../image/mocks/map_layers');
 
-        var layer0 = Lib.extendDeep({}, mockWithLayers.layout.mapnew.layers[0]);
-        var layer1 = Lib.extendDeep({}, mockWithLayers.layout.mapnew.layers[0]);
+        var layer0 = Lib.extendDeep({}, mockWithLayers.layout.map.layers[0]);
+        var layer1 = Lib.extendDeep({}, mockWithLayers.layout.map.layers[0]);
         layer1.type = 'line';
 
         var mapUpdate = {
-            'mapnew.zoom': mockWithLayers.layout.mapnew.zoom,
-            'mapnew.center.lon': mockWithLayers.layout.mapnew.center.lon,
-            'mapnew.center.lat': mockWithLayers.layout.mapnew.center.lat
+            'map.zoom': mockWithLayers.layout.map.zoom,
+            'map.center.lon': mockWithLayers.layout.map.center.lon,
+            'map.center.lat': mockWithLayers.layout.map.center.lat
         };
 
         var styleUpdate0 = {
-            'mapnew.layers[0].color': 'red',
-            'mapnew.layers[0].fill.outlinecolor': 'blue',
-            'mapnew.layers[0].opacity': 0.3
+            'map.layers[0].color': 'red',
+            'map.layers[0].fill.outlinecolor': 'blue',
+            'map.layers[0].opacity': 0.3
         };
 
         var styleUpdate1 = {
-            'mapnew.layers[1].color': 'blue',
-            'mapnew.layers[1].line.width': 3,
-            'mapnew.layers[1].opacity': 0.6
+            'map.layers[1].color': 'blue',
+            'map.layers[1].line.width': 3,
+            'map.layers[1].opacity': 0.6
         };
 
         function countVisibleLayers(gd) {
@@ -570,7 +570,7 @@ describe('mapnew plots', function() {
         }
 
         function getLayerLength(gd) {
-            return Lib.filterVisible(gd._fullLayout.mapnew.layers || []).length;
+            return Lib.filterVisible(gd._fullLayout.map.layers || []).length;
         }
 
         function assertLayerStyle(gd, expectations, index) {
@@ -598,27 +598,27 @@ describe('mapnew plots', function() {
 
         expect(countVisibleLayers(gd)).toEqual(0);
 
-        Plotly.relayout(gd, 'mapnew.layers[0]', layer0)
+        Plotly.relayout(gd, 'map.layers[0]', layer0)
         .then(function() {
             expect(getLayerLength(gd)).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
 
             // add a new layer at the beginning
-            return Plotly.relayout(gd, 'mapnew.layers[1]', layer1);
+            return Plotly.relayout(gd, 'map.layers[1]', layer1);
         })
         .then(function() {
             expect(getLayerLength(gd)).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             // hide a layer
-            return Plotly.relayout(gd, 'mapnew.layers[0].visible', false);
+            return Plotly.relayout(gd, 'map.layers[0].visible', false);
         })
         .then(function() {
             expect(getLayerLength(gd)).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
 
             // re-show it
-            return Plotly.relayout(gd, 'mapnew.layers[0].visible', true);
+            return Plotly.relayout(gd, 'map.layers[0].visible', true);
         })
         .then(function() {
             expect(getLayerLength(gd)).toEqual(2);
@@ -663,27 +663,27 @@ describe('mapnew plots', function() {
             expect(countVisibleLayers(gd)).toEqual(2);
 
             // delete the first layer
-            return Plotly.relayout(gd, 'mapnew.layers[0]', null);
+            return Plotly.relayout(gd, 'map.layers[0]', null);
         })
         .then(function() {
             expect(getLayerLength(gd)).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
 
-            return Plotly.relayout(gd, 'mapnew.layers[0]', null);
+            return Plotly.relayout(gd, 'map.layers[0]', null);
         })
         .then(function() {
             expect(getLayerLength(gd)).toEqual(0);
             expect(countVisibleLayers(gd)).toEqual(0);
 
-            return Plotly.relayout(gd, 'mapnew.layers[0]', {});
+            return Plotly.relayout(gd, 'map.layers[0]', {});
         })
         .then(function() {
-            expect(gd.layout.mapnew.layers).toEqual([{}]);
+            expect(gd.layout.map.layers).toEqual([{}]);
             expect(countVisibleLayers(gd)).toEqual(0);
 
             // layer with no source are not drawn
 
-            return Plotly.relayout(gd, 'mapnew.layers[0].source', layer0.source);
+            return Plotly.relayout(gd, 'map.layers[0].source', layer0.source);
         })
         .then(function() {
             expect(getLayerLength(gd)).toEqual(1);
@@ -701,9 +701,9 @@ describe('mapnew plots', function() {
         ];
         function makeFigure(source) {
             return {
-                data: [{type: 'scattermapnew'}],
+                data: [{type: 'scattermap'}],
                 layout: {
-                    mapnew: {
+                    map: {
                         layers: [{
                             sourcetype: 'raster',
                             source: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
@@ -730,9 +730,9 @@ describe('mapnew plots', function() {
             'Nk+M/wHwAEBgIApD5fRAAAAABJRU5ErkJggg==';
 
         Plotly.react(gd, makeFigure(redImage)).then(function() {
-            var mapnew = gd._fullLayout.mapnew._subplot;
-            map = mapnew.map;
-            layerSource = map.getSource(mapnew.layerList[1].idSource);
+            var map = gd._fullLayout.map._subplot;
+            map = map.map;
+            layerSource = map.getSource(map.layerList[1].idSource);
 
             spyOn(layerSource, 'updateImage').and.callThrough();
             spyOn(map, 'removeSource').and.callThrough();
@@ -745,15 +745,15 @@ describe('mapnew plots', function() {
             expect(map.removeSource).not.toHaveBeenCalled();
 
             // Check order of layers
-            var mapnew = gd._fullLayout.mapnew._subplot;
-            var mapnewLayers = mapnew.getMapLayers();
-            var plotlyjsLayers = mapnew.layerList;
+            var map = gd._fullLayout.map._subplot;
+            var mapLayers = map.getMapLayers();
+            var plotlyjsLayers = map.layerList;
 
-            var indexLower = mapnewLayers.findIndex(function(layer) {
+            var indexLower = mapLayers.findIndex(function(layer) {
                 return layer.id === 'plotly-layout-layer-' + plotlyjsLayers[0].uid;
             });
 
-            var indexUpper = mapnewLayers.findIndex(function(layer) {
+            var indexUpper = mapLayers.findIndex(function(layer) {
                 return layer.id === 'plotly-layout-layer-' + plotlyjsLayers[1].uid;
             });
 
@@ -767,9 +767,9 @@ describe('mapnew plots', function() {
     it('@gl should be able to react to layer changes', function(done) {
         function makeFigure(color) {
             return {
-                data: [{type: 'scattermapnew'}],
+                data: [{type: 'scattermap'}],
                 layout: {
-                    mapnew: {
+                    map: {
                         layers: [{
                             color: color,
                             sourcetype: 'geojson',
@@ -819,8 +819,8 @@ describe('mapnew plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should not wedge graph after reacting to invalid layer', function(done) {
-        Plotly.react(gd, [{type: 'scattermapnew'}], {
-            mapnew: {
+        Plotly.react(gd, [{type: 'scattermap'}], {
+            map: {
                 layers: [{ source: 'invalid' }]
             }
         })
@@ -831,8 +831,8 @@ describe('mapnew plots', function() {
             expect(gd._promises.length).toBe(1, 'has 1 rejected promise in queue');
         })
         .then(function() {
-            return Plotly.react(gd, [{type: 'scattermapnew'}], {
-                mapnew: {
+            return Plotly.react(gd, [{type: 'scattermap'}], {
+                map: {
                     layers: [{
                         source: {
                             name: 'LIMADMIN',
@@ -860,18 +860,18 @@ describe('mapnew plots', function() {
     it('@gl should not attempt to remove non-existing layer sources', function(done) {
         function _assert(msg, exp) {
             return function() {
-                var layerList = gd._fullLayout.mapnew._subplot.layerList;
+                var layerList = gd._fullLayout.map._subplot.layerList;
                 expect(layerList.length).toBe(exp, msg);
             };
         }
 
-        Plotly.react(gd, [{type: 'scattermapnew'}], {
-            mapnew: { layers: [{}] }
+        Plotly.react(gd, [{type: 'scattermap'}], {
+            map: { layers: [{}] }
         })
         .then(_assert('1 visible:false layer', 1))
         .then(function() {
-            return Plotly.react(gd, [{type: 'scattermapnew'}], {
-                mapnew: { layers: [] }
+            return Plotly.react(gd, [{type: 'scattermap'}], {
+                map: { layers: [] }
             });
         })
         .then(_assert('no layers', 0))
@@ -879,8 +879,8 @@ describe('mapnew plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should validate layout layer input', function(done) {
-        Plotly.newPlot(gd, [{type: 'scattermapnew'}], {
-            mapnew: {
+        Plotly.newPlot(gd, [{type: 'scattermap'}], {
+            map: {
                 layers: [{
                     sourcetype: 'raster',
                     source: ['']
@@ -1025,7 +1025,7 @@ describe('mapnew plots', function() {
             return _mouseEvent('mousemove', pointPos, function() {
                 expect(countHoverLabels()).toEqual(1);
                 expect(Fx.hover).toHaveBeenCalledTimes(1);
-                expect(Fx.hover.calls.argsFor(0)[2]).toBe('mapnew');
+                expect(Fx.hover.calls.argsFor(0)[2]).toBe('map');
                 Fx.hover.calls.reset();
             });
         })
@@ -1035,7 +1035,7 @@ describe('mapnew plots', function() {
             return _mouseEvent('mousemove', pointPos, function() {
                 expect(countHoverLabels()).toEqual(0);
                 // N.B. no additional calls from Plots.rehover()
-                // (as 'mapnew' subplot is gone),
+                // (as 'map' subplot is gone),
                 // just one on the fallback xy subplot
                 expect(Fx.hover).toHaveBeenCalledTimes(1);
                 expect(Fx.hover.calls.argsFor(0)[2]).toBe('xy');
@@ -1073,7 +1073,7 @@ describe('mapnew plots', function() {
 
         function _assertLayout(center, zoom) {
             var mapInfo = getMapInfo(gd);
-            var layout = gd.layout.mapnew;
+            var layout = gd.layout.map;
 
             expect([mapInfo.center.lng, mapInfo.center.lat]).toBeCloseToArray(center);
             expect(mapInfo.zoom).toBeCloseTo(zoom);
@@ -1085,10 +1085,10 @@ describe('mapnew plots', function() {
         function _assert(center, zoom, lon0, lat0, lon1, lat1) {
             _assertLayout(center, zoom);
 
-            expect([evtData['mapnew.center'].lon, evtData['mapnew.center'].lat]).toBeCloseToArray(center);
-            expect(evtData['mapnew.zoom']).toBeCloseTo(zoom);
-            expect(Object.keys(evtData['mapnew._derived'])).toEqual(['coordinates']);
-            expect(evtData['mapnew._derived'].coordinates).toBeCloseTo2DArray([
+            expect([evtData['map.center'].lon, evtData['map.center'].lat]).toBeCloseToArray(center);
+            expect(evtData['map.zoom']).toBeCloseTo(zoom);
+            expect(Object.keys(evtData['map._derived'])).toEqual(['coordinates']);
+            expect(evtData['map._derived'].coordinates).toBeCloseTo2DArray([
                 [lon0, lat1],
                 [lon1, lat1],
                 [lon1, lat0],
@@ -1225,7 +1225,7 @@ describe('mapnew plots', function() {
         }
 
         it('@gl should be displayed for style "Carto"', function(done) {
-            Plotly.newPlot(gd, [{type: 'scattermapnew'}], {mapnew: {style: 'carto-darkmatter'}})
+            Plotly.newPlot(gd, [{type: 'scattermap'}], {map: {style: 'carto-darkmatter'}})
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
@@ -1240,7 +1240,7 @@ describe('mapnew plots', function() {
 
         ['stamen-terrain', 'stamen-toner'].forEach(function(style) {
             it('@noCI @gl should be displayed for style "' + style + '"', function(done) {
-                Plotly.newPlot(gd, [{type: 'scattermapnew'}], {mapnew: {style: style}})
+                Plotly.newPlot(gd, [{type: 'scattermap'}], {map: {style: style}})
                 .then(function() {
                     var s = d3SelectAll('.maplibregl-ctrl-attrib');
                     expect(s.size()).toBe(1);
@@ -1257,7 +1257,7 @@ describe('mapnew plots', function() {
         });
 
         it('@noCI @gl should be displayed for style "stamen-watercolor"', function(done) {
-            Plotly.newPlot(gd, [{type: 'scattermapnew'}], {mapnew: {style: 'stamen-watercolor'}})
+            Plotly.newPlot(gd, [{type: 'scattermap'}], {map: {style: 'stamen-watercolor'}})
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
@@ -1273,7 +1273,7 @@ describe('mapnew plots', function() {
         });
 
         it('@gl should be displayed for style "open-street-map"', function(done) {
-            Plotly.newPlot(gd, [{type: 'scattermapnew'}], {mapnew: {style: 'open-street-map'}})
+            Plotly.newPlot(gd, [{type: 'scattermap'}], {map: {style: 'open-street-map'}})
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
@@ -1286,7 +1286,7 @@ describe('mapnew plots', function() {
         });
 
         it('@gl should be displayed for style (basic)', function(done) {
-            Plotly.newPlot(gd, [{type: 'scattermapnew'}], {mapnew: {style: 'basic'}})
+            Plotly.newPlot(gd, [{type: 'scattermap'}], {map: {style: 'basic'}})
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
@@ -1301,7 +1301,7 @@ describe('mapnew plots', function() {
 
         function mockLayoutCustomStyle() {
             return {
-                mapnew: {
+                map: {
                     style: {
                         id: 'osm',
                         version: 8,
@@ -1330,7 +1330,7 @@ describe('mapnew plots', function() {
         }
 
         it('@gl should not be displayed for custom style without attribution', function(done) {
-            Plotly.newPlot(gd, [{type: 'scattermapnew'}], mockLayoutCustomStyle())
+            Plotly.newPlot(gd, [{type: 'scattermap'}], mockLayoutCustomStyle())
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
@@ -1342,8 +1342,8 @@ describe('mapnew plots', function() {
         it('@gl should be displayed for custom style with attribution', function(done) {
             var attr = 'custom attribution';
             var layout = mockLayoutCustomStyle();
-            layout.mapnew.style.sources['simple-tiles'].attribution = attr;
-            Plotly.newPlot(gd, [{type: 'scattermapnew'}], layout)
+            layout.map.style.sources['simple-tiles'].attribution = attr;
+            Plotly.newPlot(gd, [{type: 'scattermap'}], layout)
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
@@ -1353,13 +1353,13 @@ describe('mapnew plots', function() {
         });
 
         it('@gl should be displayed for attributions defined in layers\' sourceattribution', function(done) {
-            var mock = require('../../image/mocks/mapnew_layers.json');
+            var mock = require('../../image/mocks/map_layers.json');
             var customMock = Lib.extendDeep(mock);
 
             var attr = 'custom attribution';
             var XSS = '<img src=x onerror=\"alert(XSS);\">';
             customMock.data.pop();
-            customMock.layout.mapnew.layers[0].sourceattribution = XSS + attr;
+            customMock.layout.map.layers[0].sourceattribution = XSS + attr;
 
             Plotly.newPlot(gd, customMock)
             .then(function() {
@@ -1377,7 +1377,7 @@ describe('mapnew plots', function() {
         var mapInfo = getMapInfo(gd);
         var cnts = [];
 
-        // 'modes' are the ScatterMapnew layers names
+        // 'modes' are the ScatterMap layers names
         // e.g. 'fill', 'line', 'circle', 'symbol'
 
         modes.forEach(function(mode) {
@@ -1468,7 +1468,7 @@ describe('mapnew plots', function() {
     }
 });
 
-describe('mapnew react', function() {
+describe('map react', function() {
     var gd;
 
     beforeEach(function() {
@@ -1492,13 +1492,13 @@ describe('mapnew react', function() {
         var fig = {
             data: [
                 {
-                    type: 'scattermapnew',
+                    type: 'scattermap',
                     lon: [10, 20],
                     lat: [20, 10]
                 }
             ],
             layout: {
-                mapnew: {
+                map: {
                     style: {
                         version: 8,
                         sources: {
@@ -1526,7 +1526,7 @@ describe('mapnew react', function() {
             var newFig = JSON.parse(JSON.stringify(fig));
 
             // new figure
-            newFig.layout.mapnew.style.sources = {
+            newFig.layout.map.style.sources = {
                 REF: {
                     type: 'raster',
                     tileSize: 256,
@@ -1544,7 +1544,7 @@ describe('mapnew react', function() {
     }, LONG_TIMEOUT_INTERVAL);
 });
 
-describe('test mapnew trace/layout *below* interactions', function() {
+describe('test map trace/layout *below* interactions', function() {
     var gd;
 
     beforeEach(function() {
@@ -1558,13 +1558,13 @@ describe('test mapnew trace/layout *below* interactions', function() {
     });
 
     function getLayerIds() {
-        var subplot = gd._fullLayout.mapnew._subplot;
+        var subplot = gd._fullLayout.map._subplot;
         var layers = subplot.map.getStyle().layers;
         var layerIds = layers.map(function(l) { return l.id; });
         return layerIds;
     }
 
-    it('@gl should be able to update *below* - scattermapnew + layout layer case', function(done) {
+    it('@gl should be able to update *below* - scattermap + layout layer case', function(done) {
         function _assert(msg, exp) {
             var layersIds = getLayerIds();
             var tracePrefix = 'plotly-trace-layer-' + gd._fullData[0].uid;
@@ -1574,17 +1574,17 @@ describe('test mapnew trace/layout *below* interactions', function() {
             expect(layersIds.indexOf(tracePrefix + '-circle')).toBe(exp.trace[2], msg + '| circle');
             expect(layersIds.indexOf(tracePrefix + '-symbol')).toBe(exp.trace[3], msg + '| symbol');
 
-            var layoutLayerId = ['plotly-layout-layer', gd._fullLayout._uid, 'mapnew-0'].join('-');
+            var layoutLayerId = ['plotly-layout-layer', gd._fullLayout._uid, 'map-0'].join('-');
             expect(layersIds.indexOf(layoutLayerId)).toBe(exp.layout, msg + '| layout layer');
         }
 
         Plotly.newPlot(gd, [{
-            type: 'scattermapnew',
+            type: 'scattermap',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
             uid: 'a'
         }], {
-            mapnew: {
+            map: {
                 style: 'basic',
                 layers: [{
                     source: {
@@ -1605,14 +1605,14 @@ describe('test mapnew trace/layout *below* interactions', function() {
                 layout: 9
             });
         })
-        .then(function() { return Plotly.relayout(gd, 'mapnew.layers[0].below', 'traces'); })
+        .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', 'traces'); })
         .then(function() {
             _assert('with layout layer *below:traces*', {
                 trace: [94, 95, 96, 97],
                 layout: 93
             });
         })
-        .then(function() { return Plotly.relayout(gd, 'mapnew.layers[0].below', null); })
+        .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', null); })
         .then(function() {
             _assert('back to default *below* (1)', {
                 trace: [93, 94, 95, 96],
@@ -1640,14 +1640,14 @@ describe('test mapnew trace/layout *below* interactions', function() {
                 layout: 97
             });
         })
-        .then(function() { return Plotly.relayout(gd, 'mapnew.layers[0].below', 'water'); })
+        .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', 'water'); })
         .then(function() {
             _assert('with trace AND layout layer *below:water*', {
                 trace: [9, 10, 11, 12],
                 layout: 13
             });
         })
-        .then(function() { return Plotly.relayout(gd, 'mapnew.layers[0].below', ''); })
+        .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', ''); })
         .then(function() {
             _assert('with trace *below:water* and layout layer *below:""*', {
                 trace: [9, 10, 11, 12],
@@ -1661,7 +1661,7 @@ describe('test mapnew trace/layout *below* interactions', function() {
                 layout: 97
             });
         })
-        .then(function() { return Plotly.update(gd, {below: null}, {'mapnew.layers[0].below': null}); })
+        .then(function() { return Plotly.update(gd, {below: null}, {'map.layers[0].below': null}); })
         .then(function() {
             _assert('back to default *below* (3)', {
                 trace: [93, 94, 95, 96],
@@ -1671,7 +1671,7 @@ describe('test mapnew trace/layout *below* interactions', function() {
         .then(done, done.fail);
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
-    it('@gl should be able to update *below* - scattermapnew + choroplethmapnew + densitymapnew case', function(done) {
+    it('@gl should be able to update *below* - scattermap + choroplethmap + densitymap case', function(done) {
         function _assert(msg, exp) {
             var layersIds = getLayerIds();
             var tracePrefix = 'plotly-trace-layer-';
@@ -1691,24 +1691,24 @@ describe('test mapnew trace/layout *below* interactions', function() {
         }
 
         Plotly.newPlot(gd, [{
-            type: 'scattermapnew',
+            type: 'scattermap',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
             uid: 'scatter'
         }, {
-            type: 'densitymapnew',
+            type: 'densitymap',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
             z: [1, 20, 5],
             uid: 'density'
         }, {
-            type: 'choroplethmapnew',
+            type: 'choroplethmap',
             geojson: 'https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json',
             locations: ['AL'],
             z: [10],
             uid: 'choropleth'
         }], {
-            mapnew: {style: 'basic'}
+            map: {style: 'basic'}
         })
         .then(function() {
             _assert('base', {
@@ -1765,21 +1765,21 @@ describe('test mapnew trace/layout *below* interactions', function() {
         }
 
         Plotly.newPlot(gd, [{
-            type: 'scattermapnew',
+            type: 'scattermap',
             lon: [10, 20, 30],
             lat: [15, 25, 35]
         }, {
-            type: 'densitymapnew',
+            type: 'densitymap',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
             z: [1, 20, 5]
         }, {
-            type: 'choroplethmapnew',
+            type: 'choroplethmap',
             geojson: 'https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json',
             locations: ['AL'],
             z: [10]
         }], {
-            mapnew: {
+            map: {
                 style: 'basic',
                 layers: [{
                     source: {
@@ -1799,15 +1799,15 @@ describe('test mapnew trace/layout *below* interactions', function() {
         })
         .then(function() { return Plotly.restyle(gd, 'below', notGonnaWork); })
         .then(function() {
-            // 7 for 4 scattermapnew + 2 choroplethmapnew + 1 densitymapnew layer
+            // 7 for 4 scattermap + 2 choroplethmap + 1 densitymap layer
             _assertFallback('not-gonna-work for traces', {warnCnt: 7});
         })
-        .then(function() { return Plotly.relayout(gd, 'mapnew.layers[0].below', 'not-gonna-work'); })
+        .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', 'not-gonna-work'); })
         .then(function() {
             // same as last but + layout layer
             _assertFallback('not-gonna-work for traces', {warnCnt: 8});
         })
-        .then(function() { return Plotly.update(gd, {below: null}, {'mapnew.layers[0].below': null}); })
+        .then(function() { return Plotly.update(gd, {below: null}, {'map.layers[0].below': null}); })
         .then(function() {
             expect(Lib.warn).toHaveBeenCalledTimes(0);
         })
@@ -1815,7 +1815,7 @@ describe('test mapnew trace/layout *below* interactions', function() {
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });
 
-describe('Test mapnew GeoJSON fetching:', function() {
+describe('Test map GeoJSON fetching:', function() {
     var gd;
 
     beforeEach(function() {
@@ -1834,12 +1834,12 @@ describe('Test mapnew GeoJSON fetching:', function() {
         var cnt = 0;
 
         Plotly.newPlot(gd, [{
-            type: 'choroplethmapnew',
+            type: 'choroplethmap',
             locations: ['a'],
             z: [1],
             geojson: url
         }, {
-            type: 'choroplethmapnew',
+            type: 'choroplethmap',
             locations: ['a'],
             z: [1],
             geojson: url2
@@ -1859,12 +1859,12 @@ describe('Test mapnew GeoJSON fetching:', function() {
         var actual = '';
 
         Plotly.newPlot(gd, [{
-            type: 'choroplethmapnew',
+            type: 'choroplethmap',
             locations: ['a'],
             z: [1],
             geojson: 'invalidUrl'
         }, {
-            type: 'choroplethmapnew',
+            type: 'choroplethmap',
             locations: ['a'],
             z: [1],
             geojson: 'invalidUrl-two'
@@ -1881,7 +1881,7 @@ describe('Test mapnew GeoJSON fetching:', function() {
     }, LONG_TIMEOUT_INTERVAL);
 });
 
-describe('mapnew toImage', function() {
+describe('map toImage', function() {
     // decreased from 1e5 - perhaps chrome got better at encoding these
     // because I get 99330 and the image still looks correct
     var MINIMUM_LENGTH = 7e4;
@@ -1902,7 +1902,7 @@ describe('mapnew toImage', function() {
         Plotly.setPlotConfig({});
 
         Plotly.newPlot(gd, [{
-            type: 'scattermapnew',
+            type: 'scattermap',
             lon: [0, 10, 20],
             lat: [-10, 10, -10]
         }])
@@ -1917,7 +1917,7 @@ describe('mapnew toImage', function() {
 });
 
 function getMapInfo(gd) {
-    var subplot = gd._fullLayout.mapnew._subplot;
+    var subplot = gd._fullLayout.map._subplot;
     var map = subplot.map;
 
     var sources = map.style.sourceCaches;

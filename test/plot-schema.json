@@ -136,7 +136,7 @@
    ]
   },
   "doubleClickDelay": {
-   "description": "Sets the delay for registering a double-click in ms. This is the time interval (in ms) between first mousedown and 2nd mouseup to constitute a double-click. This setting propagates to all on-subplot double clicks (except for geo, mapbox and mapnew) and on-legend double clicks.",
+   "description": "Sets the delay for registering a double-click in ms. This is the time interval (in ms) between first mousedown and 2nd mouseup to constitute a double-click. This setting propagates to all on-subplot double clicks (except for geo, mapbox and map) and on-legend double clicks.",
    "dflt": 300,
    "min": 0,
    "valType": "number"
@@ -295,8 +295,8 @@
    "valType": "boolean"
   },
   "scrollZoom": {
-   "description": "Determines whether mouse wheel or two-finger scroll zooms is enable. Turned on by default for gl3d, geo, mapbox and mapnew subplots (as these subplot types do not have zoombox via pan), but turned off by default for cartesian subplots. Set `scrollZoom` to *false* to disable scrolling for all subplots.",
-   "dflt": "gl3d+geo+mapnew",
+   "description": "Determines whether mouse wheel or two-finger scroll zooms is enable. Turned on by default for gl3d, geo, mapbox and map subplots (as these subplot types do not have zoombox via pan), but turned off by default for cartesian subplots. Set `scrollZoom` to *false* to disable scrolling for all subplots.",
+   "dflt": "gl3d+geo+map",
    "extras": [
     true,
     false
@@ -306,7 +306,7 @@
     "gl3d",
     "geo",
     "mapbox",
-    "mapnew"
+    "map"
    ],
    "valType": "flaglist"
   },
@@ -4277,13 +4277,13 @@
      "valType": "number"
     }
    },
-   "mapnew": {
+   "map": {
     "_arrayAttrRegexps": [
      {}
     ],
     "_isSubplotObj": true,
     "bearing": {
-     "description": "Sets the bearing angle of the map in degrees counter-clockwise from North (mapnew.bearing).",
+     "description": "Sets the bearing angle of the map in degrees counter-clockwise from North (map.bearing).",
      "dflt": 0,
      "editType": "plot",
      "valType": "number"
@@ -4330,7 +4330,7 @@
     },
     "domain": {
      "column": {
-      "description": "If there is a layout grid, use the domain for this column in the grid for this mapnew subplot .",
+      "description": "If there is a layout grid, use the domain for this column in the grid for this map subplot .",
       "dflt": 0,
       "editType": "plot",
       "min": 0,
@@ -4339,14 +4339,14 @@
      "editType": "plot",
      "role": "object",
      "row": {
-      "description": "If there is a layout grid, use the domain for this row in the grid for this mapnew subplot .",
+      "description": "If there is a layout grid, use the domain for this row in the grid for this map subplot .",
       "dflt": 0,
       "editType": "plot",
       "min": 0,
       "valType": "integer"
      },
      "x": {
-      "description": "Sets the horizontal domain of this mapnew subplot (in plot fraction).",
+      "description": "Sets the horizontal domain of this map subplot (in plot fraction).",
       "dflt": [
        0,
        1
@@ -4369,7 +4369,7 @@
       "valType": "info_array"
      },
      "y": {
-      "description": "Sets the vertical domain of this mapnew subplot (in plot fraction).",
+      "description": "Sets the vertical domain of this map subplot (in plot fraction).",
       "dflt": [
        0,
        1
@@ -4404,7 +4404,7 @@
        "circle": {
         "editType": "plot",
         "radius": {
-         "description": "Sets the circle radius (mapnew.layer.paint.circle-radius). Has an effect only when `type` is set to *circle*.",
+         "description": "Sets the circle radius (map.layer.paint.circle-radius). Has an effect only when `type` is set to *circle*.",
          "dflt": 15,
          "editType": "plot",
          "valType": "number"
@@ -4412,7 +4412,7 @@
         "role": "object"
        },
        "color": {
-        "description": "Sets the primary layer color. If `type` is *circle*, color corresponds to the circle color (mapnew.layer.paint.circle-color) If `type` is *line*, color corresponds to the line color (mapnew.layer.paint.line-color) If `type` is *fill*, color corresponds to the fill color (mapnew.layer.paint.fill-color) If `type` is *symbol*, color corresponds to the icon color (mapnew.layer.paint.icon-color)",
+        "description": "Sets the primary layer color. If `type` is *circle*, color corresponds to the circle color (map.layer.paint.circle-color) If `type` is *line*, color corresponds to the line color (map.layer.paint.line-color) If `type` is *fill*, color corresponds to the fill color (map.layer.paint.fill-color) If `type` is *symbol*, color corresponds to the icon color (map.layer.paint.icon-color)",
         "dflt": "#444",
         "editType": "plot",
         "valType": "color"
@@ -4426,7 +4426,7 @@
        "fill": {
         "editType": "plot",
         "outlinecolor": {
-         "description": "Sets the fill outline color (mapnew.layer.paint.fill-outline-color). Has an effect only when `type` is set to *fill*.",
+         "description": "Sets the fill outline color (map.layer.paint.fill-outline-color). Has an effect only when `type` is set to *fill*.",
          "dflt": "#444",
          "editType": "plot",
          "valType": "color"
@@ -4435,7 +4435,7 @@
        },
        "line": {
         "dash": {
-         "description": "Sets the length of dashes and gaps (mapnew.layer.paint.line-dasharray). Has an effect only when `type` is set to *line*.",
+         "description": "Sets the length of dashes and gaps (map.layer.paint.line-dasharray). Has an effect only when `type` is set to *line*.",
          "editType": "plot",
          "valType": "data_array"
         },
@@ -4447,14 +4447,14 @@
         "editType": "plot",
         "role": "object",
         "width": {
-         "description": "Sets the line width (mapnew.layer.paint.line-width). Has an effect only when `type` is set to *line*.",
+         "description": "Sets the line width (map.layer.paint.line-width). Has an effect only when `type` is set to *line*.",
          "dflt": 2,
          "editType": "plot",
          "valType": "number"
         }
        },
        "maxzoom": {
-        "description": "Sets the maximum zoom level (mapnew.layer.maxzoom). At zoom levels equal to or greater than the maxzoom, the layer will be hidden.",
+        "description": "Sets the maximum zoom level (map.layer.maxzoom). At zoom levels equal to or greater than the maxzoom, the layer will be hidden.",
         "dflt": 24,
         "editType": "plot",
         "max": 24,
@@ -4462,7 +4462,7 @@
         "valType": "number"
        },
        "minzoom": {
-        "description": "Sets the minimum zoom level (mapnew.layer.minzoom). At zoom levels less than the minzoom, the layer will be hidden.",
+        "description": "Sets the minimum zoom level (map.layer.minzoom). At zoom levels less than the minzoom, the layer will be hidden.",
         "dflt": 0,
         "editType": "plot",
         "max": 24,
@@ -4475,7 +4475,7 @@
         "valType": "string"
        },
        "opacity": {
-        "description": "Sets the opacity of the layer. If `type` is *circle*, opacity corresponds to the circle opacity (mapnew.layer.paint.circle-opacity) If `type` is *line*, opacity corresponds to the line opacity (mapnew.layer.paint.line-opacity) If `type` is *fill*, opacity corresponds to the fill opacity (mapnew.layer.paint.fill-opacity) If `type` is *symbol*, opacity corresponds to the icon/text opacity (mapnew.layer.paint.text-opacity)",
+        "description": "Sets the opacity of the layer. If `type` is *circle*, opacity corresponds to the circle opacity (map.layer.paint.circle-opacity) If `type` is *line*, opacity corresponds to the line opacity (map.layer.paint.line-opacity) If `type` is *fill*, opacity corresponds to the fill opacity (map.layer.paint.fill-opacity) If `type` is *symbol*, opacity corresponds to the icon/text opacity (map.layer.paint.text-opacity)",
         "dflt": 1,
         "editType": "plot",
         "max": 1,
@@ -4484,7 +4484,7 @@
        },
        "role": "object",
        "source": {
-        "description": "Sets the source data for this layer (mapnew.layer.source). When `sourcetype` is set to *geojson*, `source` can be a URL to a GeoJSON or a GeoJSON object. When `sourcetype` is set to *vector* or *raster*, `source` can be a URL or an array of tile URLs. When `sourcetype` is set to *image*, `source` can be a URL to an image.",
+        "description": "Sets the source data for this layer (map.layer.source). When `sourcetype` is set to *geojson*, `source` can be a URL to a GeoJSON or a GeoJSON object. When `sourcetype` is set to *vector* or *raster*, `source` can be a URL or an array of tile URLs. When `sourcetype` is set to *image*, `source` can be a URL to an image.",
         "editType": "plot",
         "valType": "any"
        },
@@ -4494,7 +4494,7 @@
         "valType": "string"
        },
        "sourcelayer": {
-        "description": "Specifies the layer to use from a vector tile source (mapnew.layer.source-layer). Required for *vector* source type that supports multiple layers.",
+        "description": "Specifies the layer to use from a vector tile source (map.layer.source-layer). Required for *vector* source type that supports multiple layers.",
         "dflt": "",
         "editType": "plot",
         "valType": "string"
@@ -4514,19 +4514,19 @@
        "symbol": {
         "editType": "plot",
         "icon": {
-         "description": "Sets the symbol icon image (mapnew.layer.layout.icon-image). Full list: https://www.mapnew.com/maki-icons/",
+         "description": "Sets the symbol icon image (map.layer.layout.icon-image). Full list: https://www.map.com/maki-icons/",
          "dflt": "marker",
          "editType": "plot",
          "valType": "string"
         },
         "iconsize": {
-         "description": "Sets the symbol icon size (mapnew.layer.layout.icon-size). Has an effect only when `type` is set to *symbol*.",
+         "description": "Sets the symbol icon size (map.layer.layout.icon-size). Has an effect only when `type` is set to *symbol*.",
          "dflt": 10,
          "editType": "plot",
          "valType": "number"
         },
         "placement": {
-         "description": "Sets the symbol and/or text placement (mapnew.layer.layout.symbol-placement). If `placement` is *point*, the label is placed where the geometry is located If `placement` is *line*, the label is placed along the line of the geometry If `placement` is *line-center*, the label is placed on the center of the geometry",
+         "description": "Sets the symbol and/or text placement (map.layer.layout.symbol-placement). If `placement` is *point*, the label is placed where the geometry is located If `placement` is *line*, the label is placed along the line of the geometry If `placement` is *line-center*, the label is placed on the center of the geometry",
          "dflt": "point",
          "editType": "plot",
          "valType": "enumerated",
@@ -4538,7 +4538,7 @@
         },
         "role": "object",
         "text": {
-         "description": "Sets the symbol text (mapnew.layer.layout.text-field).",
+         "description": "Sets the symbol text (map.layer.layout.text-field).",
          "dflt": "",
          "editType": "plot",
          "valType": "string"
@@ -4548,7 +4548,7 @@
           "editType": "plot",
           "valType": "color"
          },
-         "description": "Sets the icon text font (color=mapnew.layer.paint.text-color, size=mapnew.layer.layout.text-size). Has an effect only when `type` is set to *symbol*.",
+         "description": "Sets the icon text font (color=map.layer.paint.text-color, size=map.layer.layout.text-size). Has an effect only when `type` is set to *symbol*.",
          "editType": "plot",
          "family": {
           "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
@@ -4635,14 +4635,14 @@
      "role": "object"
     },
     "pitch": {
-     "description": "Sets the pitch angle of the map (in degrees, where *0* means perpendicular to the surface of the map) (mapnew.pitch).",
+     "description": "Sets the pitch angle of the map (in degrees, where *0* means perpendicular to the surface of the map) (map.pitch).",
      "dflt": 0,
      "editType": "plot",
      "valType": "number"
     },
     "role": "object",
     "style": {
-     "description": "Defines the map layers that are rendered by default below the trace layers defined in `data`, which are themselves by default rendered below the layers defined in `layout.mapnew.layers`.  These layers can be defined either explicitly as a Mapnew Style object which can contain multiple layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS) or implicitly by using one of the built-in style objects which use WMSes or by using a custom style URL  Mapnew Style objects are of the form described in the MapLibre GL JS documentation available at https://maplibre.org/maplibre-style-spec/  The built-in plotly.js styles objects are: basic, carto-darkmatter, carto-darkmatter-nolabels, carto-positron, carto-positron-nolabels, carto-voyager, carto-voyager-nolabels, dark, light, open-street-map, outdoors, satellite, satellite-streets, stamen-terrain, stamen-toner, stamen-watercolor, streets, white-bg.",
+     "description": "Defines the map layers that are rendered by default below the trace layers defined in `data`, which are themselves by default rendered below the layers defined in `layout.map.layers`.  These layers can be defined either explicitly as a Map Style object which can contain multiple layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS) or implicitly by using one of the built-in style objects which use WMSes or by using a custom style URL  Map Style objects are of the form described in the MapLibre GL JS documentation available at https://maplibre.org/maplibre-style-spec/  The built-in plotly.js styles objects are: basic, carto-darkmatter, carto-darkmatter-nolabels, carto-positron, carto-positron-nolabels, carto-voyager, carto-voyager-nolabels, dark, light, open-street-map, outdoors, satellite, satellite-streets, stamen-terrain, stamen-toner, stamen-watercolor, streets, white-bg.",
      "dflt": "basic",
      "editType": "plot",
      "valType": "any",
@@ -4673,7 +4673,7 @@
      "valType": "any"
     },
     "zoom": {
-     "description": "Sets the zoom level of the map (mapnew.zoom).",
+     "description": "Sets the zoom level of the map (map.zoom).",
      "dflt": 1,
      "editType": "plot",
      "valType": "number"
@@ -4790,7 +4790,7 @@
     },
     "remove": {
      "arrayOk": true,
-     "description": "Determines which predefined modebar buttons to remove. Similar to `config.modeBarButtonsToRemove` option. This may include *autoScale2d*, *autoscale*, *editInChartStudio*, *editinchartstudio*, *hoverCompareCartesian*, *hovercompare*, *lasso*, *lasso2d*, *orbitRotation*, *orbitrotation*, *pan*, *pan2d*, *pan3d*, *reset*, *resetCameraDefault3d*, *resetCameraLastSave3d*, *resetGeo*, *resetSankeyGroup*, *resetScale2d*, *resetViewMapbox*, *resetViewMapnew*, *resetViews*, *resetcameradefault*, *resetcameralastsave*, *resetsankeygroup*, *resetscale*, *resetview*, *resetviews*, *select*, *select2d*, *sendDataToCloud*, *senddatatocloud*, *tableRotation*, *tablerotation*, *toImage*, *toggleHover*, *toggleSpikelines*, *togglehover*, *togglespikelines*, *toimage*, *zoom*, *zoom2d*, *zoom3d*, *zoomIn2d*, *zoomInGeo*, *zoomInMapbox*, *zoomInMapnew*, *zoomOut2d*, *zoomOutGeo*, *zoomOutMapbox*, *zoomOutMapnew*, *zoomin*, *zoomout*.",
+     "description": "Determines which predefined modebar buttons to remove. Similar to `config.modeBarButtonsToRemove` option. This may include *autoScale2d*, *autoscale*, *editInChartStudio*, *editinchartstudio*, *hoverCompareCartesian*, *hovercompare*, *lasso*, *lasso2d*, *orbitRotation*, *orbitrotation*, *pan*, *pan2d*, *pan3d*, *reset*, *resetCameraDefault3d*, *resetCameraLastSave3d*, *resetGeo*, *resetSankeyGroup*, *resetScale2d*, *resetViewMapbox*, *resetViewMap*, *resetViews*, *resetcameradefault*, *resetcameralastsave*, *resetsankeygroup*, *resetscale*, *resetview*, *resetviews*, *select*, *select2d*, *sendDataToCloud*, *senddatatocloud*, *tableRotation*, *tablerotation*, *toImage*, *toggleHover*, *toggleSpikelines*, *togglehover*, *togglespikelines*, *toimage*, *zoom*, *zoom2d*, *zoom3d*, *zoomIn2d*, *zoomInGeo*, *zoomInMapbox*, *zoomInMap*, *zoomOut2d*, *zoomOutGeo*, *zoomOutMapbox*, *zoomOutMap*, *zoomin*, *zoomout*.",
      "dflt": "",
      "editType": "modebar",
      "valType": "string"
@@ -28480,7 +28480,7 @@
    },
    "type": "choroplethmapbox"
   },
-  "choroplethmapnew": {
+  "choroplethmap": {
    "animatable": false,
    "attributes": {
     "autocolorscale": {
@@ -28491,7 +28491,7 @@
      "valType": "boolean"
     },
     "below": {
-     "description": "Determines if the choropleth polygons will be inserted before the layer with the specified ID. By default, choroplethmapnew traces are placed above the water layers. If set to '', the layer will be inserted above every existing layer.",
+     "description": "Determines if the choropleth polygons will be inserted before the layer with the specified ID. By default, choroplethmap traces are placed above the water layers. If set to '', the layer will be inserted above every existing layer.",
      "editType": "plot",
      "valType": "string"
     },
@@ -29754,8 +29754,8 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a mapnew subplot. If *mapnew* (the default value), the data refer to `layout.mapnew`. If *mapnew2*, the data refer to `layout.mapnew2`, and so on.",
-     "dflt": "mapnew",
+     "description": "Sets a reference between this trace's data coordinates and a map subplot. If *map* (the default value), the data refer to `layout.map`. If *map2*, the data refer to `layout.map2`, and so on.",
+     "dflt": "map",
      "editType": "calc",
      "valType": "subplotid"
     },
@@ -29781,7 +29781,7 @@
      },
      "role": "object"
     },
-    "type": "choroplethmapnew",
+    "type": "choroplethmap",
     "uid": {
      "description": "Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.",
      "editType": "plot",
@@ -29862,16 +29862,16 @@
     }
    },
    "categories": [
-    "mapnew",
+    "map",
     "gl",
     "noOpacity",
     "showLegend"
    ],
    "meta": {
     "description": "GeoJSON features to be filled are set in `geojson` The data that describes the choropleth value-to-color mapping is set in `locations` and `z`.",
-    "hr_name": "choropleth_mapnew"
+    "hr_name": "choropleth_map"
    },
-   "type": "choroplethmapnew"
+   "type": "choroplethmap"
   },
   "cone": {
    "animatable": false,
@@ -35959,7 +35959,7 @@
    },
    "type": "densitymapbox"
   },
-  "densitymapnew": {
+  "densitymap": {
    "animatable": false,
    "attributes": {
     "autocolorscale": {
@@ -35970,7 +35970,7 @@
      "valType": "boolean"
     },
     "below": {
-     "description": "Determines if the densitymapnew trace will be inserted before the layer with the specified ID. By default, densitymapnew traces are placed below the first layer of type symbol If set to '', the layer will be inserted above every existing layer.",
+     "description": "Determines if the densitymap trace will be inserted before the layer with the specified ID. By default, densitymap traces are placed below the first layer of type symbol If set to '', the layer will be inserted above every existing layer.",
      "editType": "plot",
      "valType": "string"
     },
@@ -37138,7 +37138,7 @@
     },
     "radius": {
      "arrayOk": true,
-     "description": "Sets the radius of influence of one `lon` / `lat` point in pixels. Increasing the value makes the densitymapnew trace smoother, but less detailed.",
+     "description": "Sets the radius of influence of one `lon` / `lat` point in pixels. Increasing the value makes the densitymap trace smoother, but less detailed.",
      "dflt": 30,
      "editType": "plot",
      "min": 1,
@@ -37187,8 +37187,8 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a mapnew subplot. If *mapnew* (the default value), the data refer to `layout.mapnew`. If *mapnew2*, the data refer to `layout.mapnew2`, and so on.",
-     "dflt": "mapnew",
+     "description": "Sets a reference between this trace's data coordinates and a map subplot. If *map* (the default value), the data refer to `layout.map`. If *map2*, the data refer to `layout.map2`, and so on.",
+     "dflt": "map",
      "editType": "calc",
      "valType": "subplotid"
     },
@@ -37214,7 +37214,7 @@
      },
      "role": "object"
     },
-    "type": "densitymapnew",
+    "type": "densitymap",
     "uid": {
      "description": "Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.",
      "editType": "plot",
@@ -37280,15 +37280,15 @@
     }
    },
    "categories": [
-    "mapnew",
+    "map",
     "gl",
     "showLegend"
    ],
    "meta": {
     "description": "Draws a bivariate kernel density estimation with a Gaussian kernel from `lon` and `lat` coordinates and optional `z` values using a colorscale.",
-    "hr_name": "density_mapnew"
+    "hr_name": "density_map"
    },
-   "type": "densitymapnew"
+   "type": "densitymap"
   },
   "funnel": {
    "animatable": false,
@@ -78935,11 +78935,11 @@
    },
    "type": "scattermapbox"
   },
-  "scattermapnew": {
+  "scattermap": {
    "animatable": false,
    "attributes": {
     "below": {
-     "description": "Determines if this scattermapnew trace's layers are to be inserted before the layer with the specified ID. By default, scattermapnew layers are inserted above all the base layers. To place the scattermapnew layers above every other layer, set `below` to *''*.",
+     "description": "Determines if this scattermap trace's layers are to be inserted before the layer with the specified ID. By default, scattermap layers are inserted above all the base layers. To place the scattermap layers above every other layer, set `below` to *''*.",
      "editType": "calc",
      "valType": "string"
     },
@@ -80319,7 +80319,7 @@
      },
      "symbol": {
       "arrayOk": true,
-      "description": "Sets the marker symbol. Full list: https://www.mapnew.com/maki-icons/ Note that the array `marker.color` and `marker.size` are only available for *circle* symbols.",
+      "description": "Sets the marker symbol. Full list: https://www.map.com/maki-icons/ Note that the array `marker.color` and `marker.size` are only available for *circle* symbols.",
       "dflt": "circle",
       "editType": "calc",
       "valType": "string"
@@ -80425,8 +80425,8 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a mapnew subplot. If *mapnew* (the default value), the data refer to `layout.mapnew`. If *mapnew2*, the data refer to `layout.mapnew2`, and so on.",
-     "dflt": "mapnew",
+     "description": "Sets a reference between this trace's data coordinates and a map subplot. If *map* (the default value), the data refer to `layout.map`. If *map2*, the data refer to `layout.map2`, and so on.",
+     "dflt": "map",
      "editType": "calc",
      "valType": "subplotid"
     },
@@ -80442,7 +80442,7 @@
       "editType": "calc",
       "valType": "color"
      },
-     "description": "Sets the icon text font (color=mapnew.layer.paint.text-color, size=mapnew.layer.layout.text-size). Has an effect only when `type` is set to *symbol*.",
+     "description": "Sets the icon text font (color=map.layer.paint.text-color, size=map.layer.layout.text-size). Has an effect only when `type` is set to *symbol*.",
      "editType": "calc",
      "family": {
       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
@@ -80526,7 +80526,7 @@
      },
      "role": "object"
     },
-    "type": "scattermapnew",
+    "type": "scattermap",
     "uid": {
      "description": "Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.",
      "editType": "plot",
@@ -80576,7 +80576,7 @@
     }
    },
    "categories": [
-    "mapnew",
+    "map",
     "gl",
     "symbols",
     "showLegend",
@@ -80584,9 +80584,9 @@
    ],
    "meta": {
     "description": "The data visualized as scatter point, lines or marker symbols on a MapLibre GL geographic map is provided by longitude/latitude pairs in `lon` and `lat`.",
-    "hrName": "scatter_mapnew"
+    "hrName": "scatter_map"
    },
-   "type": "scattermapnew"
+   "type": "scattermap"
   },
   "scatterpolar": {
    "animatable": false,

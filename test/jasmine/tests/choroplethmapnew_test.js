@@ -3,7 +3,7 @@ var Plots = require('../../../src/plots/plots');
 var Lib = require('../../../src/lib');
 var loggers = require('../../../src/lib/loggers');
 
-var convertModule = require('../../../src/traces/choroplethmapnew/convert');
+var convertModule = require('../../../src/traces/choroplethmap/convert');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -13,7 +13,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
 
-describe('Test choroplethmapnew defaults:', function() {
+describe('Test choroplethmap defaults:', function() {
     var gd;
     var fullData;
 
@@ -22,7 +22,7 @@ describe('Test choroplethmapnew defaults:', function() {
         opts = Array.isArray(opts) ? opts : [opts];
 
         gd.data = opts.map(function(o) {
-            return Lib.extendFlat({type: 'choroplethmapnew'}, o || {});
+            return Lib.extendFlat({type: 'choroplethmap'}, o || {});
         });
         gd.layout = layout || {};
 
@@ -91,7 +91,7 @@ describe('Test choroplethmapnew defaults:', function() {
     });
 });
 
-describe('Test choroplethmapnew convert:', function() {
+describe('Test choroplethmap convert:', function() {
     var geojson0 = function() {
         return {
             type: 'FeatureCollection',
@@ -112,7 +112,7 @@ describe('Test choroplethmapnew convert:', function() {
     };
 
     function pre(trace, layout) {
-        var gd = {data: [Lib.extendFlat({type: 'choroplethmapnew'}, trace)]};
+        var gd = {data: [Lib.extendFlat({type: 'choroplethmap'}, trace)]};
         if(layout) gd.layout = layout;
 
         supplyAllDefaults(gd);
@@ -515,7 +515,7 @@ describe('Test choroplethmapnew convert:', function() {
     });
 });
 
-describe('Test choroplethmapnew hover:', function() {
+describe('Test choroplethmap hover:', function() {
     var gd;
 
     afterEach(function(done) {
@@ -540,7 +540,7 @@ describe('Test choroplethmapnew hover:', function() {
         }
 
         var fig = Lib.extendDeep({},
-            s.mock || require('../../image/mocks/mapnew_choropleth0.json')
+            s.mock || require('../../image/mocks/map_choropleth0.json')
         );
 
         if(s.patch) {
@@ -548,7 +548,7 @@ describe('Test choroplethmapnew hover:', function() {
         }
 
         if(!fig.layout) fig.layout = {};
-        if(!fig.layout.mapnew) fig.layout.mapnew = {};
+        if(!fig.layout.map) fig.layout.map = {};
 
 
         var pos = s.pos || [270, 220];
@@ -606,7 +606,7 @@ describe('Test choroplethmapnew hover:', function() {
     }, {
         desc: 'with "typeof number" locations[i] and feature id (in *name* label case)',
         patch: function() {
-            var fig = Lib.extendDeep({}, require('../../image/mocks/mapnew_choropleth-raw-geojson.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/map_choropleth-raw-geojson.json'));
             fig.data = [fig.data[1]];
             fig.data[0].locations = [100];
             fig.data[0].geojson.id = 100;
@@ -618,7 +618,7 @@ describe('Test choroplethmapnew hover:', function() {
     }, {
         desc: 'with "typeof number" locations[i] and feature id (in *nums* label case)',
         patch: function() {
-            var fig = Lib.extendDeep({}, require('../../image/mocks/mapnew_choropleth-raw-geojson.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/map_choropleth-raw-geojson.json'));
             fig.data = [fig.data[1]];
             fig.data[0].locations = [100];
             fig.data[0].geojson.id = 100;
@@ -631,7 +631,7 @@ describe('Test choroplethmapnew hover:', function() {
     }, {
         desc: 'with "typeof number" locations[i] and feature id (hovertemplate case)',
         patch: function() {
-            var fig = Lib.extendDeep({}, require('../../image/mocks/mapnew_choropleth-raw-geojson.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/map_choropleth-raw-geojson.json'));
             fig.data = [fig.data[1]];
             fig.data[0].locations = [100];
             fig.data[0].geojson.id = 100;
@@ -652,7 +652,7 @@ describe('Test choroplethmapnew hover:', function() {
     });
 });
 
-describe('Test choroplethmapnew interactions:', function() {
+describe('Test choroplethmap interactions:', function() {
     var gd;
 
     var geojson = {
@@ -686,21 +686,21 @@ describe('Test choroplethmapnew interactions:', function() {
 
     it('@gl should be able to add and remove traces', function(done) {
         function _assert(msg, exp) {
-            var map = gd._fullLayout.mapnew._subplot.map;
+            var map = gd._fullLayout.map._subplot.map;
             var layers = map.getStyle().layers;
 
             expect(layers.length).toBe(exp.layerCnt, 'total # of layers |' + msg);
         }
 
         var trace0 = {
-            type: 'choroplethmapnew',
+            type: 'choroplethmap',
             locations: ['AL'],
             z: [10],
             geojson: geojson
         };
 
         var trace1 = {
-            type: 'choroplethmapnew',
+            type: 'choroplethmap',
             locations: ['AL'],
             z: [1],
             geojson: geojson,
@@ -709,7 +709,7 @@ describe('Test choroplethmapnew interactions:', function() {
 
         Plotly.newPlot(gd,
             [trace0, trace1],
-            {mapnew: {style: 'carto-positron'}},
+            {map: {style: 'carto-positron'}},
             {}
         )
         .then(function() {
@@ -728,14 +728,14 @@ describe('Test choroplethmapnew interactions:', function() {
 
     it('@gl should be able to restyle *below*', function(done) {
         function getLayerIds() {
-            var subplot = gd._fullLayout.mapnew._subplot;
+            var subplot = gd._fullLayout.map._subplot;
             var layers = subplot.map.getStyle().layers;
             var layerIds = layers.map(function(l) { return l.id; });
             return layerIds;
         }
 
         Plotly.newPlot(gd, [{
-            type: 'choroplethmapnew',
+            type: 'choroplethmap',
             locations: ['AL'],
             z: [10],
             geojson: geojson,

@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers+lines+text",
       "lon": [
         -10,
@@ -25,7 +25,7 @@
       "textposition": "top center"
     },
     {
-      "type": "scattermapnew",
+      "type": "scattermap",
       "mode": "markers+text",
       "lon": [
         -75,
@@ -54,7 +54,7 @@
     }
   ],
   "layout": {
-    "mapnew": {
+    "map": {
       "style": "outdoors",
       "zoom": 0.5,
       "center": {
