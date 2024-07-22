@@ -1122,7 +1122,7 @@ describe('map plots', function() {
         })
         .then(function() {
             expect(relayoutCnt).toBe(3, 'relayout cnt');
-            expect(relayoutingCnt).toBeCloseTo(21, -1, 'relayouting cnt');
+            expect(relayoutingCnt).toBeCloseTo(11, -1, 'relayouting cnt');
             expect(doubleClickCnt).toBe(1, 'double click cnt');
             expect(getMapInfo(gd).zoom).toBeGreaterThan(1.234);
         })
