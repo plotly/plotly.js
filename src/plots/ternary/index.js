@@ -78,7 +78,6 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
 exports.updateFx = function(gd) {
     var fullLayout = gd._fullLayout;
-    
     fullLayout._ternarylayer
         .selectAll('g.toplevel')
         .style('cursor', fullLayout.dragmode === 'pan' ? 'move' : 'crosshair');
