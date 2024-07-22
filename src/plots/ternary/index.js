@@ -1,7 +1,5 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
-
 var Ternary = require('./ternary');
 
 var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
@@ -80,8 +78,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
 exports.updateFx = function(gd) {
     var fullLayout = gd._fullLayout;
-    var dragmode = fullLayout.dragmode;
-    var toplevel = d3.select(gd).selectAll('g.toplevel');
-
-    toplevel.style('cursor', dragmode === 'pan' ? 'move' : 'crosshair');
+    
+    fullLayout._ternarylayer
+        .selectAll('g.toplevel')
+        .style('cursor', fullLayout.dragmode === 'pan' ? 'move' : 'crosshair');
 };
