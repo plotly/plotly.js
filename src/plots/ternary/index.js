@@ -83,9 +83,5 @@ exports.updateFx = function(gd) {
     var dragmode = fullLayout.dragmode;
     var toplevel = d3.select(gd).selectAll('g.toplevel');
 
-    if(dragmode === 'pan') {
-        toplevel.style('cursor', 'move');
-    } else {
-        toplevel.style('cursor', 'crosshair');
-    }
+    toplevel.style('cursor', dragmode === 'pan' ? 'move' : 'crosshair');
 };
