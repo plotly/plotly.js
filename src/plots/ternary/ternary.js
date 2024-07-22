@@ -30,6 +30,7 @@ function Ternary(options, fullLayout) {
     this.graphDiv = options.graphDiv;
     this.init(fullLayout);
     this.makeFramework(fullLayout);
+    this.updateFx(fullLayout);
 
     // unfortunately, we have to keep track of some axis tick settings
     // as ternary subplots do not implement the 'ticks' editType
@@ -67,7 +68,6 @@ proto.plot = function(ternaryCalcData, fullLayout) {
 
     _this.updateLayers(ternaryLayout);
     _this.adjustLayout(ternaryLayout, graphSize);
-    _this.updateFx(fullLayout.dragmode);
     Plots.generalUpdatePerTraceModule(_this.graphDiv, _this, ternaryCalcData, ternaryLayout);
     _this.layers.plotbg.select('path').call(Color.fill, ternaryLayout.bgcolor);
 };
@@ -98,10 +98,10 @@ proto.makeFramework = function(fullLayout) {
     Drawing.setClipUrl(_this.layers.grids, clipId, gd);
 };
 
-proto.updateFx = function(dragmode) {
-    var toplevel = this.plotContainer.selectAll('g.toplevel');
-
-    toplevel.style('cursor', dragmode === 'pan' ? 'move' : 'crosshair'); 
+proto.updateFx = function(fullLayout) {
+    fullLayout._ternarylayer
+        .selectAll('g.toplevel')
+        .style('cursor', fullLayout.dragmode === 'pan' ? 'move' : 'crosshair');
 };
 
 proto.updateLayers = function(ternaryLayout) {
