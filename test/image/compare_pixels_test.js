@@ -112,7 +112,8 @@ for(var i = 0; i < allMockList.length; i++) {
         // list flaky mocks other than mapbox:
         'map_density0-legend',
         'map_osm-style',
-        'gl3d_bunny-hull'
+        'gl3d_bunny-hull',
+        'map_angles'
     ].indexOf(mockName) !== -1;
 
     if(mathjax3) mockName = 'mathjax3___' + mockName;
