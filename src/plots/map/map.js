@@ -104,11 +104,11 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         compact: true
     }));
 
-    var replacedIcons = {}
+    var requestedIcons = {}
     map.on('styleimagemissing', (e) => {
         var id = e.id;
-        if (!replacedIcons[id] && id.includes('-15')) {
-            replacedIcons[id] = true
+        if (!requestedIcons[id] && id.includes('-15')) {
+            requestedIcons[id] = true
             var img = new Image(15, 15);
             img.onload = () => {
                 console.log(`${id}`)
