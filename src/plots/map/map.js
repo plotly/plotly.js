@@ -104,6 +104,21 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         compact: true
     }));
 
+    var replacedIcons = {}
+    map.on('styleimagemissing', (e) => {
+        var id = e.id;
+        if (!replacedIcons[id] && id.includes('-15')) {
+            replacedIcons[id] = true
+            var img = new Image(15, 15);
+            img.onload = () => {
+                console.log(`${id}`)
+                map.addImage(`${id}`, img);
+            }
+            img.crossOrigin = "Anonymous";
+            img.src = `https://unpkg.com/maki@2.1.0/icons/${id}.svg`;
+        }
+    });
+
     map.setTransformRequest(function(url) {
         url = url.replace('https://fonts.openmaptiles.org/Open Sans Extrabold', 'https://fonts.openmaptiles.org/Open Sans Extra Bold');
         url = url.replace('https://tiles.basemaps.cartocdn.com/fonts/Open Sans Extrabold', 'https://fonts.openmaptiles.org/Open Sans Extra Bold');
