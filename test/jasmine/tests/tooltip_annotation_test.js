@@ -14,8 +14,8 @@ var modeBarButtons = require('../../../src/components/modebar/buttons');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var mouseEvent = require('../assets/mouse_event');
-var click = require('../assets/click');
+// var mouseEvent = require('../assets/mouse_event');
+// var click = require('../assets/click');
 // var delay = require('../assets/delay');
 // var doubleClick = require('../assets/double_click');
 
@@ -42,10 +42,10 @@ describe('Tooltip interactions', function() {
         console.log('Creating graph div and initializing plot...');
         gd = createGraphDiv();
         Plotly.newPlot(gd, tooltipHeatmapMock.data, tooltipHeatmapMock.layout, tooltipHeatmapMock.config)
-        .then(() => {
+        .then(function() {
             console.log('Plot initialized.');
             done();
-        }).catch(error => {
+        }).catch(function(error) {
             console.error('Error initializing plot:', error);
         });
     });
@@ -58,7 +58,7 @@ describe('Tooltip interactions', function() {
     it('should enable tooltip on button click', function(done) {
         console.log('Enabling tooltip...');
         modeBarButtons.tooltip.click(gd);
-        setTimeout(() => {
+        setTimeout(function() {
             console.log('Checking if tooltip has been enabled...');
             expect(gd._fullLayout._tooltipEnabled).toBe('on');
             expect(gd._tooltipClickHandler).toBeDefined();
@@ -71,8 +71,8 @@ describe('Tooltip interactions', function() {
         console.log('Simulating plot click for tooltip...');
         gd.emit('plotly_click', {
             points: [{
-                x: 3,  
-                y: 4.5, 
+                x: 3,
+                y: 4.5,
                 z: 0.9677474816893965,
                 curveNumber: 0,
                 pointNumber: [9, 6],
@@ -81,7 +81,7 @@ describe('Tooltip interactions', function() {
             }]
         });
 
-        setTimeout(() => {
+        setTimeout(function() {
             console.log('Checking if annotation has been created...');
             expect(gd._fullLayout.annotations.length).toBe(1);
             var expectedText = 'x: 3.00,<br>y: 4.50,<br>z: 0.968';
@@ -95,9 +95,9 @@ describe('Tooltip interactions', function() {
         console.log('Simulating user clearing annotation text...');
         // Find the specific DOM element or use Plotly's API to simulate the text being cleared
         gd._fullLayout.annotations[0].text = '';  // Directly setting it for simulation purposes
-        Plotly.relayout(gd, { 'annotations[0].text': '' })  // Simulate relayout command that might be triggered by UI interaction
+        Plotly.relayout(gd, { 'annotations[0].text': '' }); // Simulate relayout command that might be triggered by UI interaction
 
-        setTimeout(() => {
+        setTimeout(function() {
             console.log('Checking if annotation has been removed...');
             expect(gd._fullLayout.annotations.length).toBe(0);
             console.log('Annotation successfully removed.');
@@ -108,7 +108,7 @@ describe('Tooltip interactions', function() {
     it('should deactivate tooltip on button click and stop creating tooltips', function(done) {
         console.log('Deactivating tooltip...');
         modeBarButtons.tooltip.click(gd);
-        setTimeout(() => {
+        setTimeout(function() {
             expect(gd._fullLayout._tooltipEnabled).toBe('off');
             console.log('Tooltip is deactivated:', gd._fullLayout._tooltipEnabled);
 
@@ -125,7 +125,7 @@ describe('Tooltip interactions', function() {
                 }]
             });
 
-            setTimeout(() => {
+            setTimeout(function() {
                 // Check that no new annotations were added
                 expect(gd._fullLayout.annotations.length).toBe(0);
                 console.log('No new annotations created.');
@@ -134,5 +134,3 @@ describe('Tooltip interactions', function() {
         }, 100);
     });
 });
-
-
