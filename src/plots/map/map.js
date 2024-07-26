@@ -104,18 +104,17 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         compact: true
     }));
 
-    var requestedIcons = {}
-    map.on('styleimagemissing', (e) => {
+    var requestedIcons = {};
+    map.on('styleimagemissing', function(e) {
         var id = e.id;
-        if (!requestedIcons[id] && id.includes('-15')) {
-            requestedIcons[id] = true
+        if(!requestedIcons[id] && id.includes('-15')) {
+            requestedIcons[id] = true;
             var img = new Image(15, 15);
-            img.onload = () => {
-                console.log(`${id}`)
-                map.addImage(`${id}`, img);
-            }
-            img.crossOrigin = "Anonymous";
-            img.src = `https://unpkg.com/maki@2.1.0/icons/${id}.svg`;
+            img.onload = function() {
+                map.addImage(id, img);
+            };
+            img.crossOrigin = 'Anonymous';
+            img.src = 'https://unpkg.com/maki@2.1.0/icons/' + id + '.svg';
         }
     });
 
