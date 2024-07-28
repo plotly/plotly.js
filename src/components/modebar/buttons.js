@@ -764,12 +764,16 @@ function addTooltip(gd, data, userTemplate, customStyle) {
             }
         }
 
+        // Retrieve the proper axis ids for xref and yref
+        var xAxisName = 'x' + (pts.xaxis._id !== 'x' ? pts.xaxis._id.replace('x', '') : '');
+        var yAxisName = 'y' + (pts.yaxis._id !== 'y' ? pts.yaxis._id.replace('y', '') : '');
+
         var newAnnotation = {
             // handle log axis https://plotly.com/javascript/text-and-annotations/#annotations-with-log-axes
             x: pts.xaxis.type === 'log' ? Math.log10(x) : x,
             y: pts.yaxis.type === 'log' ? Math.log10(y) : y,
-            xref: 'x',
-            yref: 'y',
+            xref: xAxisName,
+            yref: yAxisName,
             text: text,
             showarrow: true,
             ax: 5,
