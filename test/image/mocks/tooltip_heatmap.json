@@ -5,8 +5,8 @@
 		"y":[0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5],
 		"type":"heatmap",
 		"colorscale":"Viridis",
-		"tooltip":{"bgcolor":"rgba(255, 255, 255, 0.2)"},
-		"tooltiptemplate":"x: %{x:.2f},<br>y: %{y:.2f},<br>z: %{z:.3f}"}
+		"tooltip":{"bgcolor":"rgba(255, 255, 255, 0.2)"}
+		}
 	],
     "config": {
         "editable": true,

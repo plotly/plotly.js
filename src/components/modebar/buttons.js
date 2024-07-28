@@ -705,7 +705,13 @@ modeBarButtons.tooltip = {
             gd._tooltipClickHandler = function(data) {
                 var traceIndex = data.points[0].curveNumber;
                 var trace = gd.data[traceIndex];
-                var userTemplate = trace.tooltiptemplate || DEFAULT_TEMPLATE;
+
+                // Define default tooltip template based on trace type
+                var defaultTemplate = trace.type === 'heatmap' ?
+                DEFAULT_TEMPLATE + ',<br>z: %{z:.7~g}' :  // Add z value for heatmap
+                DEFAULT_TEMPLATE;
+
+                var userTemplate = trace.tooltiptemplate || defaultTemplate; // Use user defined tooltiptemplate if availabe
                 var customStyle = lodash.defaults({}, trace.tooltip, DEFAULT_STYLE);  // Merge custom style with default
                 tooltipClickHandler(gd, data, userTemplate, customStyle);
             };
