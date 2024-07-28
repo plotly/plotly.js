@@ -1,38 +1,8 @@
-// var d3Select = require('../../strict-d3').select;
-// var d3SelectAll = require('../../strict-d3').selectAll;
-
 console.log('Testing Tooltip Feature');
-
 var Plotly = require('../../../lib/index');
 var modeBarButtons = require('../../../src/components/modebar/buttons');
-// var Fx = require('../../../src/components/fx');
-// var Lib = require('../../../src/lib');
-// var Drawing = require('../../../src/components/drawing');
-
-// var HOVERMINTIME = require('../../../src/components/fx').constants.HOVERMINTIME;
-// var MINUS_SIGN = require('../../../src/constants/numerical').MINUS_SIGN;
-
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-// var mouseEvent = require('../assets/mouse_event');
-// var click = require('../assets/click');
-// var delay = require('../assets/delay');
-// var doubleClick = require('../assets/double_click');
-
-// var touchEvent = require('../assets/touch_event');
-// var negateIf = require('../assets/negate_if');
-
-// var customAssertions = require('../assets/custom_assertions');
-// var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
-// var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
-// var assertElemRightTo = customAssertions.assertElemRightTo;
-// var assertElemTopsAligned = customAssertions.assertElemTopsAligned;
-// var assertElemInside = customAssertions.assertElemInside;
-
-// var groupTitlesMock = require('../../image/mocks/legendgroup-titles');
-
-// var splomLogMock = require('../../image/mocks/splom_log');
-
 var tooltipHeatmapMock = require('../../image/mocks/tooltip_heatmap.json');
 
 describe('Tooltip interactions', function() {
