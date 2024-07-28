@@ -727,6 +727,21 @@ function tooltipClickHandler(gd, data, userTemplate, customStyle) {
     addTooltip(gd, data, userTemplate, customStyle);
 }
 
+function clickPointToCoord(gd, data) {
+    var xaxis = gd._fullLayout.xaxis;
+    var yaxis = gd._fullLayout.yaxis;
+    var l = gd._fullLayout.margin.l;
+    var t = gd._fullLayout.margin.t;
+
+    var pixelToXData = function(pixelX) {
+        return xaxis.p2c(pixelX - l);
+    };
+    var pixelToYData = function(pixelY) {
+        return yaxis.p2c(pixelY - t);
+    };
+    return {x: pixelToXData(data.event.pointerX), y: pixelToYData(data.event.pointerY)};
+}
+
 function addTooltip(gd, data, userTemplate, customStyle) {
     var pts = data.points[0];
     var fullLayout = gd._fullLayout;
@@ -735,11 +750,23 @@ function addTooltip(gd, data, userTemplate, customStyle) {
         // Convert template to text using Plotly hovertemplate formatting method
         var text = Lib.hovertemplateString(userTemplate, {}, fullLayout._d3locale, pts, {});
 
+        var x = pts.x;
         var y = (pts.y !== undefined && pts.y !== null) ? pts.y : pts.high; // fallback value for candlestick etc
+
+        // handle histogram with more than one curve
+        if(pts.fullData.type === 'histogram' && fullLayout._dataLength) {
+            var clickCoord = clickPointToCoord(gd, data);
+            if(pts.fullData.orientation === 'v') {
+                x = clickCoord.x;
+            }
+            if(pts.fullData.orientation === 'h') {
+                y = clickCoord.y;
+            }
+        }
 
         var newAnnotation = {
             // handle log axis https://plotly.com/javascript/text-and-annotations/#annotations-with-log-axes
-            x: pts.xaxis.type === 'log' ? Math.log10(pts.x) : pts.x,
+            x: pts.xaxis.type === 'log' ? Math.log10(x) : x,
             y: pts.yaxis.type === 'log' ? Math.log10(y) : y,
             xref: 'x',
             yref: 'y',
