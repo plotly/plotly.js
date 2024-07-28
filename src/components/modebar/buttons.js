@@ -735,7 +735,7 @@ function addTooltip(gd, data, userTemplate, customStyle) {
         // Convert template to text using Plotly hovertemplate formatting method
         var text = Lib.hovertemplateString(userTemplate, {}, fullLayout._d3locale, pts, {});
 
-        var y = pts.y || pts.high; // fallback value for candlestick etc
+        var y = (pts.y !== undefined && pts.y !== null) ? pts.y : pts.high; // fallback value for candlestick etc
 
         var newAnnotation = {
             // handle log axis https://plotly.com/javascript/text-and-annotations/#annotations-with-log-axes
