@@ -673,7 +673,7 @@ modeBarButtons.toggleSpikelines = {
 };
 
 // Define default template and style
-var DEFAULT_TEMPLATE = 'x: %{x},<br>y: %{y}';
+var DEFAULT_TEMPLATE = 'x: %{x:.7~g},<br>y: %{y:.7~g}';
 var DEFAULT_STYLE = {
     align: 'left',
     arrowcolor: 'black',
@@ -753,7 +753,7 @@ function addTooltip(gd, data, userTemplate, customStyle) {
         var x = pts.x;
         var y = (pts.y !== undefined && pts.y !== null) ? pts.y : pts.high; // fallback value for candlestick etc
 
-        // handle histogram with more than one curve
+        // Handle histogram with more than one curve
         if(pts.fullData.type === 'histogram' && fullLayout._dataLength) {
             var clickCoord = clickPointToCoord(gd, data);
             if(pts.fullData.orientation === 'v') {
@@ -769,7 +769,7 @@ function addTooltip(gd, data, userTemplate, customStyle) {
         var yAxisName = 'y' + (pts.yaxis._id !== 'y' ? pts.yaxis._id.replace('y', '') : '');
 
         var newAnnotation = {
-            // handle log axis https://plotly.com/javascript/text-and-annotations/#annotations-with-log-axes
+            // Handle log axis https://plotly.com/javascript/text-and-annotations/#annotations-with-log-axes
             x: pts.xaxis.type === 'log' ? Math.log10(x) : x,
             y: pts.yaxis.type === 'log' ? Math.log10(y) : y,
             xref: xAxisName,
