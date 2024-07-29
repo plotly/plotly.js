@@ -756,7 +756,7 @@ function addTooltip(gd, data, userTemplate, customStyle) {
         var y = (pts.y !== undefined && pts.y !== null) ? pts.y : pts.high; // fallback value for candlestick etc
 
         // Handle histogram with more than one curve
-        if(pts.fullData.type === 'histogram' && fullLayout._dataLength) {
+        if(pts.fullData && pts.fullData.type === 'histogram' && fullLayout._dataLength) {
             var clickCoord = clickPointToCoord(gd, data);
             if(pts.fullData.orientation === 'v') {
                 x = clickCoord.x;

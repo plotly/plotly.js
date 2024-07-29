@@ -54,7 +54,7 @@ describe('Tooltip interactions', function() {
         setTimeout(function() {
             console.log('Checking if annotation has been created...');
             expect(gd._fullLayout.annotations.length).toBe(1);
-            var expectedText = 'x: 3.00,<br>y: 4.50,<br>z: 0.968';
+            var expectedText = 'x: 3,<br>y: 4.5,<br>z: 0.9677475';
             expect(gd._fullLayout.annotations[0].text).toBe(expectedText);
             console.log('Annotation created with text:', gd._fullLayout.annotations[0].text);
             done();

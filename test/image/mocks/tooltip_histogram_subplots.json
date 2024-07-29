@@ -26,7 +26,8 @@
     "grid": {
       "rows": 2,
       "columns": 2,
-      "pattern": "independent"
+      "pattern": "independent",
+      "ygap": 0.35
     },
     "xaxis1": {
       "title": "X1 Axis"
