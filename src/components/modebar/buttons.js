@@ -734,18 +734,14 @@ function tooltipClickHandler(gd, data, userTemplate, customStyle) {
 }
 
 function clickPointToCoord(gd, data) {
-    var xaxis = gd._fullLayout.xaxis;
-    var yaxis = gd._fullLayout.yaxis;
-    var l = gd._fullLayout.margin.l;
-    var t = gd._fullLayout.margin.t;
+    var pts = data.points[0];
+    var xaxis = pts.xaxis;
+    var yaxis = pts.yaxis;
+    var bb = data.event.target.getBoundingClientRect();
+    var x = xaxis.p2d(data.event.clientX - bb.left);
+    var y = yaxis.p2d(data.event.clientY - bb.top);
 
-    var pixelToXData = function(pixelX) {
-        return xaxis.p2c(pixelX - l);
-    };
-    var pixelToYData = function(pixelY) {
-        return yaxis.p2c(pixelY - t);
-    };
-    return {x: pixelToXData(data.event.pointerX), y: pixelToYData(data.event.pointerY)};
+    return {x: x, y: y};
 }
 
 function addTooltip(gd, data, userTemplate, customStyle) {
