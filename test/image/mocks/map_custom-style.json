@@ -48,7 +48,7 @@
   ],
   "layout": {
     "map": {
-      "style": "carto-positron",
+      "style": "https://demotiles.maplibre.org/style.json",
       "center": {
         "lon": -73.60287319770295,
         "lat": 45.50110152988742
