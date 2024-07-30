@@ -1446,7 +1446,7 @@ describe('ModeBar', function() {
         });
 
         describe('map handlers', function() {
-            it('@gl button *resetViewMapbox* should reset the map view attribute to their default', function(done) {
+            it('@gl button *resetViewMap* should reset the map view attribute to their default', function(done) {
                 var gd = createGraphDiv();
 
                 function _assert(centerLon, centerLat, zoom) {
@@ -1478,7 +1478,7 @@ describe('ModeBar', function() {
                 .then(function() {
                     _assert(30, 10, 10);
 
-                    var button = selectButton(gd._fullLayout._modeBar, 'resetViewMapbox');
+                    var button = selectButton(gd._fullLayout._modeBar, 'resetViewMap');
 
                     button.isActive(false);
                     button.click(false);
