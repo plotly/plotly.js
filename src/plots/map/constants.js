@@ -130,8 +130,8 @@ var stylesMap = {
     basic: cartoVoyager,
     streets: cartoVoyager,
     outdoors: cartoVoyager,
-    light: cartoPositronNoLabels,
-    dark: cartoDarkmatterNoLabels,
+    light: cartoPositron,
+    dark: cartoDarkmatter,
     satellite: arcgisSat,
     'satellite-streets': arcgisSatHybrid,
     'open-street-map': {

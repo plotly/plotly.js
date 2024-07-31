@@ -514,12 +514,7 @@ describe('map plots', function() {
             expect(mapInfo.style.name).toEqual(style);
         }
 
-        // TODO
-        // this one now logs:
-        // 'Unable to perform style diff: Unimplemented: setSprite..  Rebuilding the style from scratch.'
-        // https://github.com/mapbox/mapbox-gl-js/issues/6933
-
-        assertLayout('Dark Matter without labels');
+        assertLayout('Dark Matter');
 
         Plotly.relayout(gd, 'map.style', 'carto-positron')
         .then(function() {
