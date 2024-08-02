@@ -4,6 +4,7 @@ var modeBarButtons = require('../../../src/components/modebar/buttons');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var tooltipHeatmapMock = require('../../image/mocks/tooltip_heatmap.json');
+var tooltipHistogramSubplotsMock = require('../../image/mocks/tooltip_histogram_subplots.json');
 
 describe('Tooltip interactions', function() {
     var gd;
@@ -102,5 +103,63 @@ describe('Tooltip interactions', function() {
                 done();
             }, 100);
         }, 100);
+    });
+});
+
+describe('Histogram Tooltip interactions', function() {
+    var gd;
+
+    beforeAll(function(done) {
+        console.log('Creating Histogram graph div and initializing plot...');
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, tooltipHistogramSubplotsMock.data, tooltipHistogramSubplotsMock.layout, tooltipHistogramSubplotsMock.config)
+        .then(function() {
+            console.log('Plot initialized.');
+            done();
+        }).catch(function(error) {
+            console.error('Error initializing plot:', error);
+        });
+    });
+
+    afterAll(function() {
+        console.log('Destroying graph div...');
+        // destroyGraphDiv();
+    });
+
+    it('should enable tooltip on button click', function(done) {
+        console.log('Enabling tooltip...');
+        modeBarButtons.tooltip.click(gd);
+        setTimeout(function() {
+            console.log('Checking if tooltip has been enabled...');
+            expect(gd._fullLayout._tooltipEnabled).toBe('on');
+            expect(gd._tooltipClickHandler).toBeDefined();
+            console.log('Tooltip is enabled:', gd._fullLayout._tooltipEnabled);
+            done();
+        }, 100);
+    });
+
+    it('should create a tooltip annotation on plot click', function(done) {
+        console.log('Simulating plot click for tooltip...');
+        gd.emit('plotly_click', {
+            points: [{
+                x: 6,
+                y: 7.5,
+                z: undefined,
+                binNumber: 1,
+                curveNumber: 2,
+                pointNumber: [9, 6],
+                xaxis: gd._fullLayout.xaxis3,
+                yaxis: gd._fullLayout.yaxis3
+            }]
+        });
+
+        setTimeout(function() {
+            console.log('Checking if annotation has been created...');
+            expect(gd._fullLayout.annotations.length).toBe(1);
+            var expectedText = 'x: 6,<br>y: 7.5';
+            expect(gd._fullLayout.annotations[0].text).toBe(expectedText);
+            console.log('Annotation created with text:', gd._fullLayout.annotations[0].text);
+            done();
+        }, 500);
     });
 });
