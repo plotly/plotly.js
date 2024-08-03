@@ -673,7 +673,17 @@ modeBarButtons.toggleSpikelines = {
 };
 
 // Define default template and style
-var DEFAULT_TEMPLATE = 'x: %{x:.7~g},<br>y: %{y:.7~g}';
+var DEFAULT_TEMPLATES = {
+    date: '%{x|%Y-%m-%d}', // xaxis.type == "date"
+    x: 'x: %{x:.4~g}',
+    y: 'y: %{y:.4~g}',
+    z: 'z: %{z:.4~g}',
+    open: 'open: %{open:.2f}',
+    high: 'high: %{high:.2f}',
+    low: 'low: %{low:.2f}',
+    close: 'close: %{close:.2f}'
+};
+
 var DEFAULT_STYLE = {
     align: 'left',
     arrowcolor: 'black',
@@ -705,15 +715,24 @@ modeBarButtons.tooltip = {
             gd._tooltipClickHandler = function(data) {
                 var traceIndex = data.points[0].curveNumber;
                 var trace = gd.data[traceIndex];
+                var pts = data.points[0];
 
-                // Define default tooltip template based on trace type
-                var defaultTemplate = trace.type === 'heatmap' ?
-                DEFAULT_TEMPLATE + ',<br>z: %{z:.7~g}' :  // Add z value for heatmap
-                DEFAULT_TEMPLATE;
+                // Build the default tooltip template dynamically based on available data fields
+                var defaultTemplateParts = [];
+                var xAxisType = pts.xaxis.type;
+                if(pts.x !== undefined) defaultTemplateParts.push(xAxisType === 'date' ? DEFAULT_TEMPLATES.date : DEFAULT_TEMPLATES.x);
+                if(pts.y !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.y);
+                if(pts.z !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.z);
+                if(pts.open !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.open);
+                if(pts.high !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.high);
+                if(pts.low !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.low);
+                if(pts.close !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.close);
+
+                var defaultTemplate = defaultTemplateParts.join('<br>');
 
                 var userTemplate = trace.tooltiptemplate || defaultTemplate; // Use user defined tooltiptemplate if availabe
                 var customStyle = lodash.defaults({}, trace.tooltip, DEFAULT_STYLE);  // Merge custom style with default
-                tooltipClickHandler(gd, data, userTemplate, customStyle);
+                addTooltip(gd, data, userTemplate, customStyle);
             };
             gd.on('plotly_click', gd._tooltipClickHandler);
         } else {
@@ -728,10 +747,6 @@ modeBarButtons.tooltip = {
         }
     }
 };
-
-function tooltipClickHandler(gd, data, userTemplate, customStyle) {
-    addTooltip(gd, data, userTemplate, customStyle);
-}
 
 function clickPointToCoord(gd, data) {
     var pts = data.points[0];

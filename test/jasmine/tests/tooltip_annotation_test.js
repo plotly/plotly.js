@@ -49,7 +49,7 @@ describe('Tooltip interactions', function() {
         setTimeout(function() {
             console.log('Checking if annotation has been created...');
             expect(gd._fullLayout.annotations.length).toBe(1);
-            var expectedText = 'x: 3,<br>y: 4.5,<br>z: 0.9677475';
+            var expectedText = 'x: 3<br>y: 4.5<br>z: 0.9677';
             expect(gd._fullLayout.annotations[0].text).toBe(expectedText);
             console.log('Annotation created with text:', gd._fullLayout.annotations[0].text);
             done();
@@ -143,7 +143,7 @@ describe('Histogram Tooltip interactions', function() {
         setTimeout(function() {
             console.log('Checking if annotation has been created...');
             expect(gd._fullLayout.annotations.length).toBe(1);
-            var expectedText = 'x: 6,<br>y: 7.5';
+            var expectedText = 'x: 6<br>y: 7.5';
             expect(gd._fullLayout.annotations[0].text).toBe(expectedText);
             console.log('Annotation created with text:', gd._fullLayout.annotations[0].text);
             done();
@@ -157,7 +157,7 @@ describe('Histogram Tooltip interactions', function() {
         setTimeout(function() {
             console.log('Checking if annotation has been created...');
             expect(gd._fullLayout.annotations.length).toBe(2);
-            var expectedText = 'x: 7.5,<br>y: 5';
+            var expectedText = 'x: 7.5<br>y: 5';
             expect(gd._fullLayout.annotations[1].text).toBe(expectedText);
             console.log('Annotation created with text:', gd._fullLayout.annotations[1].text);
             done();
@@ -204,7 +204,7 @@ describe('Log Tooltip interactions', function() {
         setTimeout(function() {
             console.log('Checking if annotation has been created...');
             expect(gd._fullLayout.annotations.length).toBe(1);
-            var expectedText = 'x: 1000,<br>y: 10';
+            var expectedText = 'x: 1000<br>y: 10';
             expect(gd._fullLayout.annotations[0].text).toBe(expectedText);
             console.log('Annotation created with text:', gd._fullLayout.annotations[0].text);
             done();
@@ -218,7 +218,7 @@ describe('Log Tooltip interactions', function() {
         setTimeout(function() {
             console.log('Checking if another annotation has been created...');
             expect(gd._fullLayout.annotations.length).toBe(2);
-            var expectedText = 'x: 25,<br>y: 10000';
+            var expectedText = 'x: 25<br>y: 1e+4';
             expect(gd._fullLayout.annotations[1].text).toBe(expectedText);
             console.log('Annotation created with text:', gd._fullLayout.annotations[1].text);
             done();
