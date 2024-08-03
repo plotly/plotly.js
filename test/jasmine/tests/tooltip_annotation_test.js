@@ -5,12 +5,15 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var tooltipHeatmapMock = require('../../image/mocks/tooltip_heatmap.json');
 var tooltipHistogramSubplotsMock = require('../../image/mocks/tooltip_histogram_subplots.json');
+var click = require('../assets/click');
 
 describe('Tooltip interactions', function() {
     var gd;
 
     beforeAll(function(done) {
         console.log('Creating graph div and initializing plot...');
+        Object.defineProperty(document, 'visibilityState', {value: 'visible', writable: true});
+        Object.defineProperty(document, 'hidden', {value: false, writable: true});
         gd = createGraphDiv();
         Plotly.newPlot(gd, tooltipHeatmapMock.data, tooltipHeatmapMock.layout, tooltipHeatmapMock.config)
         .then(function() {
@@ -40,17 +43,7 @@ describe('Tooltip interactions', function() {
 
     it('should create a tooltip annotation on plot click', function(done) {
         console.log('Simulating plot click for tooltip...');
-        gd.emit('plotly_click', {
-            points: [{
-                x: 3,
-                y: 4.5,
-                z: 0.9677474816893965,
-                curveNumber: 0,
-                pointNumber: [9, 6],
-                xaxis: gd._fullLayout.xaxis,
-                yaxis: gd._fullLayout.yaxis
-            }]
-        });
+        click(249, 242);
 
         setTimeout(function() {
             console.log('Checking if annotation has been created...');
@@ -59,7 +52,7 @@ describe('Tooltip interactions', function() {
             expect(gd._fullLayout.annotations[0].text).toBe(expectedText);
             console.log('Annotation created with text:', gd._fullLayout.annotations[0].text);
             done();
-        }, 500);
+        }, 20);
     });
 
     it('should simulate user clearing annotation text and remove annotation', function(done) {
@@ -73,7 +66,7 @@ describe('Tooltip interactions', function() {
             expect(gd._fullLayout.annotations.length).toBe(0);
             console.log('Annotation successfully removed.');
             done();
-        }, 100);
+        }, 20);
     });
 
     it('should deactivate tooltip on button click and stop creating tooltips', function(done) {
@@ -85,24 +78,15 @@ describe('Tooltip interactions', function() {
 
             // Attempt to trigger a tooltip creation event
             console.log('Attempting to create tooltip when feature is deactivated...');
-            gd.emit('plotly_click', {
-                points: [{
-                    x: 5,
-                    y: 5,
-                    curveNumber: 0,
-                    pointNumber: [10, 7],
-                    xaxis: gd._fullLayout.xaxis,
-                    yaxis: gd._fullLayout.yaxis
-                }]
-            });
+            click(250, 250);
 
             setTimeout(function() {
                 // Check that no new annotations were added
                 expect(gd._fullLayout.annotations.length).toBe(0);
                 console.log('No new annotations created.');
                 done();
-            }, 100);
-        }, 100);
+            }, 20);
+        }, 20);
     });
 });
 
@@ -111,6 +95,8 @@ describe('Histogram Tooltip interactions', function() {
 
     beforeAll(function(done) {
         console.log('Creating Histogram graph div and initializing plot...');
+        Object.defineProperty(document, 'visibilityState', {value: 'visible', writable: true});
+        Object.defineProperty(document, 'hidden', {value: false, writable: true});
         gd = createGraphDiv();
         Plotly.newPlot(gd, tooltipHistogramSubplotsMock.data, tooltipHistogramSubplotsMock.layout, tooltipHistogramSubplotsMock.config)
         .then(function() {
@@ -123,7 +109,7 @@ describe('Histogram Tooltip interactions', function() {
 
     afterAll(function() {
         console.log('Destroying graph div...');
-        // destroyGraphDiv();
+        destroyGraphDiv();
     });
 
     it('should enable tooltip on button click', function(done) {
@@ -138,20 +124,9 @@ describe('Histogram Tooltip interactions', function() {
         }, 100);
     });
 
-    it('should create a tooltip annotation on plot click', function(done) {
+    it('should create a tooltip annotation on H plot click', function(done) {
         console.log('Simulating plot click for tooltip...');
-        gd.emit('plotly_click', {
-            points: [{
-                x: 6,
-                y: 7.5,
-                z: undefined,
-                binNumber: 1,
-                curveNumber: 2,
-                pointNumber: [9, 6],
-                xaxis: gd._fullLayout.xaxis3,
-                yaxis: gd._fullLayout.yaxis3
-            }]
-        });
+        click(134, 332);
 
         setTimeout(function() {
             console.log('Checking if annotation has been created...');
@@ -160,6 +135,80 @@ describe('Histogram Tooltip interactions', function() {
             expect(gd._fullLayout.annotations[0].text).toBe(expectedText);
             console.log('Annotation created with text:', gd._fullLayout.annotations[0].text);
             done();
-        }, 500);
+        }, 20);
+    });
+
+    it('should create a tooltip annotation on second V plot click', function(done) {
+        console.log('Simulating plot click for tooltip...');
+        click(456, 149);
+
+        setTimeout(function() {
+            console.log('Checking if annotation has been created...');
+            expect(gd._fullLayout.annotations.length).toBe(2);
+            var expectedText = 'x: 7.5,<br>y: 5';
+            expect(gd._fullLayout.annotations[1].text).toBe(expectedText);
+            console.log('Annotation created with text:', gd._fullLayout.annotations[1].text);
+            done();
+        }, 20);
     });
 });
+// describe('Log Tooltip interactions', function() {
+//     var gd;
+
+//     beforeAll(function(done) {
+//         console.log('Creating Histogram graph div and initializing plot...');
+//         gd = createGraphDiv();
+//         Plotly.newPlot(gd, tooltipHistogramSubplotsMock.data, tooltipHistogramSubplotsMock.layout, tooltipHistogramSubplotsMock.config)
+//         .then(function() {
+//             console.log('Plot initialized.');
+//             done();
+//         }).catch(function(error) {
+//             console.error('Error initializing plot:', error);
+//         });
+//     });
+
+//     afterAll(function() {
+//         console.log('Destroying graph div...');
+//         destroyGraphDiv();
+//     });
+
+//     it('should enable tooltip on button click', function(done) {
+//         console.log('Enabling tooltip...');
+//         modeBarButtons.tooltip.click(gd);
+//         setTimeout(function() {
+//             console.log('Checking if tooltip has been enabled...');
+//             expect(gd._fullLayout._tooltipEnabled).toBe('on');
+//             expect(gd._tooltipClickHandler).toBeDefined();
+//             console.log('Tooltip is enabled:', gd._fullLayout._tooltipEnabled);
+//             done();
+//         }, 100);
+//     });
+
+//     it('should create a tooltip annotation on H plot click', function(done) {
+//         console.log('Simulating plot click for tooltip...');
+//         click(134, 332);
+
+//         setTimeout(function() {
+//             console.log('Checking if annotation has been created...');
+//             expect(gd._fullLayout.annotations.length).toBe(1);
+//             var expectedText = 'x: 6,<br>y: 7.5';
+//             expect(gd._fullLayout.annotations[0].text).toBe(expectedText);
+//             console.log('Annotation created with text:', gd._fullLayout.annotations[0].text);
+//             done();
+//         }, 20);
+//     });
+
+//     it('should create a tooltip annotation on second V plot click', function(done) {
+//         console.log('Simulating plot click for tooltip...');
+//         click(456, 149);
+
+//         setTimeout(function() {
+//             console.log('Checking if annotation has been created...');
+//             expect(gd._fullLayout.annotations.length).toBe(2);
+//             var expectedText = 'x: 7.5,<br>y: 5';
+//             expect(gd._fullLayout.annotations[1].text).toBe(expectedText);
+//             console.log('Annotation created with text:', gd._fullLayout.annotations[1].text);
+//             done();
+//         }, 20);
+//     });
+// });
