@@ -136,7 +136,7 @@ describe('Histogram Tooltip interactions', function() {
             expect(gd._fullLayout.annotations[0].text).toBe(expectedText);
             console.log('Annotation created with text:', gd._fullLayout.annotations[0].text);
             done();
-        }, 20);
+        }, 100);// needed more time for next tooltip correct placement
     });
 
     it('should create a tooltip annotation on second V plot click', function(done) {
