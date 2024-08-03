@@ -56,6 +56,17 @@ describe('Tooltip interactions', function() {
         }, 20);
     });
 
+    it('should not add a second tooltip on same point', function(done) {
+        console.log('Simulating second tooltip on same point...');
+        click(237, 242);// click on same data point but out of the drag cursor zone of the tooltip arrow
+
+        setTimeout(function() {
+            console.log('Checking if annotation has NOT been created...');
+            expect(gd._fullLayout.annotations.length).toBe(1);// No extra tooltip annotation
+            done();
+        }, 20);
+    });
+
     it('should simulate user clearing annotation text and remove annotation', function(done) {
         console.log('Simulating user clearing annotation text...');
         // Find the specific DOM element or use Plotly's API to simulate the text being cleared

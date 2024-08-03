@@ -755,7 +755,8 @@ function addTooltip(gd, data, userTemplate, customStyle) {
         var x = pts.x;
         var y = (pts.y !== undefined && pts.y !== null) ? pts.y : pts.high; // fallback value for candlestick etc
 
-        // Handle histogram with more than one curve
+        // Handle histogram with more than one curve (bars displayed side to side)
+        // This ensures the tooltip is on the clicked bar and not always on the middle bar
         if(pts.fullData && pts.fullData.type === 'histogram' && fullLayout._dataLength) {
             var clickCoord = clickPointToCoord(gd, data);
             if(pts.fullData.orientation === 'v') {
@@ -784,8 +785,10 @@ function addTooltip(gd, data, userTemplate, customStyle) {
 
         lodash.defaults(newAnnotation, customStyle);
 
+        // Prevent having multiple tooltip annotations on the same point (useful when user wants to annotate nearby points)
+        // Does not prevent multiple tooltips on histogram (would not be useful on bars)
         var existingIndex = fullLayout.annotations.findIndex(function(ann) {
-            return ann.x === pts.x && ann.y === pts.y;
+            return ann.x === x && ann.y === y;
         });
 
         if(existingIndex === -1) {
