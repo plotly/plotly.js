@@ -3,6 +3,8 @@
 var barAttrs = require('../bar/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
+var annotationAttrs = require('../../components/annotations/attributes');
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var fontAttrs = require('../../plots/font_attributes');
 var makeBinAttrs = require('./bin_attributes');
@@ -249,6 +251,11 @@ module.exports = {
     _deprecated: {
         bardir: barAttrs._deprecated.bardir
     },
+
+    tooltip: annotationAttrs,
+    tooltiptemplate: tooltiptemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
 
     zorder: barAttrs.zorder
 };

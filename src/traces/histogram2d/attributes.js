@@ -6,6 +6,8 @@ var heatmapAttrs = require('../heatmap/attributes');
 var baseAttrs = require('../../plots/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
+var annotationAttrs = require('../../components/annotations/attributes');
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
@@ -77,6 +79,8 @@ module.exports = extendFlat(
             keys: 'z'
         }),
         textfont: heatmapAttrs.textfont,
+        tooltip: annotationAttrs,
+        tooltiptemplate: tooltiptemplateAttrs({}, {keys: 'z'}),
         showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
     },
     colorScaleAttrs('', {cLetter: 'z', autoColorDflt: false})

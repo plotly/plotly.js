@@ -5,6 +5,8 @@ var baseAttrs = require('../../plots/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
+var annotationAttrs = require('../../components/annotations/attributes');
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
@@ -133,6 +135,10 @@ module.exports = extendFlat({
     }),
 
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false}),
+
+    tooltip: annotationAttrs,
+    tooltiptemplate: tooltiptemplateAttrs(),
+
     zorder: scatterAttrs.zorder
 }, {
     transforms: undefined
