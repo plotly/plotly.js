@@ -674,7 +674,10 @@ modeBarButtons.toggleSpikelines = {
 
 // Define default template and style
 var DEFAULT_TEMPLATES = {
-    date: '%{x|%Y-%m-%d}', // xaxis.type == "date"
+    date_x: '%{x|%Y-%m-%d}', // xaxis.type == "date"
+    date_y: '%{y|%Y-%m-%d}',
+    multicategory_x: '%{x}', // xaxis.type == "multicategory"
+    multicategory_y: '%{y}',
     x: 'x: %{x:.4~g}',
     y: 'y: %{y:.4~g}',
     z: 'z: %{z:.4~g}',
@@ -720,13 +723,17 @@ modeBarButtons.tooltip = {
                 // Build the default tooltip template dynamically based on available data fields
                 var defaultTemplateParts = [];
                 var xAxisType = pts.xaxis.type;
-                if(pts.x !== undefined) defaultTemplateParts.push(xAxisType === 'date' ? DEFAULT_TEMPLATES.date : DEFAULT_TEMPLATES.x);
-                if(pts.y !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.y);
+                var yAxisType = pts.yaxis.type;
+                if(pts.x !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.hasOwnProperty(xAxisType + '_x') ? DEFAULT_TEMPLATES[xAxisType + '_x'] : DEFAULT_TEMPLATES.x);
+                if(pts.y !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.hasOwnProperty(yAxisType + '_y') ? DEFAULT_TEMPLATES[yAxisType + '_y'] : DEFAULT_TEMPLATES.y);
                 if(pts.z !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.z);
+                // ohlc
                 if(pts.open !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.open);
                 if(pts.high !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.high);
                 if(pts.low !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.low);
                 if(pts.close !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.close);
+                // not consistent:
+                // box: missing max, upper fence...
 
                 var defaultTemplate = defaultTemplateParts.join('<br>');
 
@@ -753,8 +760,10 @@ function clickPointToCoord(gd, data) {
     var xaxis = pts.xaxis;
     var yaxis = pts.yaxis;
     var bb = data.event.target.getBoundingClientRect();
-    var x = xaxis.p2d(data.event.clientX - bb.left);
-    var y = yaxis.p2d(data.event.clientY - bb.top);
+
+    // pixel to Cartesian coordinates
+    var x = xaxis.p2c(data.event.clientX - bb.left);
+    var y = yaxis.p2c(data.event.clientY - bb.top);
 
     return {x: x, y: y};
 }
@@ -772,7 +781,7 @@ function addTooltip(gd, data, userTemplate, customStyle) {
 
         // Handle histogram with more than one curve (bars displayed side to side)
         // This ensures the tooltip is on the clicked bar and not always on the middle bar
-        if(pts.fullData && pts.fullData.type === 'histogram' && fullLayout._dataLength) {
+        if(pts.fullData && ['histogram', 'box'].includes(pts.fullData.type) && fullLayout._dataLength) {
             var clickCoord = clickPointToCoord(gd, data);
             if(pts.fullData.orientation === 'v') {
                 x = clickCoord.x;
