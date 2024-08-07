@@ -2,8 +2,6 @@
 
 var sortObjectKeys = require('../../lib/sort_object_keys');
 
-var requiredVersion = '1.13.4';
-
 var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 var stamenTerrainOrToner = [
@@ -240,9 +238,6 @@ var stylesMap = {
 var styleValuesMap = sortObjectKeys(stylesMap);
 
 module.exports = {
-    requiredVersion: requiredVersion,
-
-
     styleValueDflt: 'basic',
     stylesMap: stylesMap,
     styleValuesMap: styleValuesMap,
