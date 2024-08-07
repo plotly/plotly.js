@@ -112,7 +112,6 @@ for(var i = 0; i < allMockList.length; i++) {
         // list flaky mocks other than mapbox:
         'map_density0-legend',
         'map_osm-style',
-        'map_angles',
         'gl3d_bunny-hull'
     ].indexOf(mockName) !== -1;
 
@@ -161,6 +160,7 @@ for(var i = 0; i < allMockList.length; i++) {
 
     var threshold = shouldBePixelPerfect ? 0 : [
         // more flaky
+        'map_angles',
         'mapbox_angles',
         'mapbox_layers',
         'mapbox_custom-style',
