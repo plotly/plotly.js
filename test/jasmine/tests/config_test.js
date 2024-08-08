@@ -854,9 +854,10 @@ describe('config argument', function() {
 
         it('should fill in scrollZoom default', function(done) {
             plot(undefined).then(function() {
-                expect(gd._context.scrollZoom).toBe('gl3d+geo+mapbox');
-                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context.scrollZoom).toBe('gl3d+geo+map');
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, map: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
+                expect(gd._context._scrollZoom.mapbox).toBe(undefined, 'no mapbox!');
             })
             .then(done, done.fail);
         });
@@ -864,7 +865,7 @@ describe('config argument', function() {
         it('should fill in blank scrollZoom value', function(done) {
             plot({scrollZoom: null}).then(function() {
                 expect(gd._context.scrollZoom).toBe(null);
-                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1, map: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
             .then(done, done.fail);
@@ -873,7 +874,7 @@ describe('config argument', function() {
         it('should honor scrollZoom:true', function(done) {
             plot({scrollZoom: true}).then(function() {
                 expect(gd._context.scrollZoom).toBe(true);
-                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1});
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1, map: 1});
             })
             .then(done, done.fail);
         });
@@ -886,10 +887,18 @@ describe('config argument', function() {
             .then(done, done.fail);
         });
 
-        it('should honor scrollZoom flaglist', function(done) {
+        it('should honor scrollZoom flaglist (mapbox and cartesian)', function(done) {
             plot({scrollZoom: 'mapbox+cartesian'}).then(function() {
                 expect(gd._context.scrollZoom).toBe('mapbox+cartesian');
                 expect(gd._context._scrollZoom).toEqual({mapbox: 1, cartesian: 1});
+            })
+            .then(done, done.fail);
+        });
+
+        it('should honor scrollZoom flaglist (map and cartesian)', function(done) {
+            plot({scrollZoom: 'map+cartesian'}).then(function() {
+                expect(gd._context.scrollZoom).toBe('map+cartesian');
+                expect(gd._context._scrollZoom).toEqual({map: 1, cartesian: 1});
             })
             .then(done, done.fail);
         });

@@ -514,6 +514,45 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
+        it('creates mode bar (map version)', function() {
+            var buttons = getButtons([
+                ['toImage'],
+                ['pan2d'],
+                ['zoomInMap', 'zoomOutMap', 'resetViewMap']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'map' }];
+            gd._fullData = [{type: 'scattermap'}];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (map + selected version)', function() {
+            var buttons = getButtons([
+                ['toImage'],
+                ['pan2d', 'select2d', 'lasso2d'],
+                ['zoomInMap', 'zoomOutMap', 'resetViewMap']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'map' }];
+            gd._fullData = [{
+                type: 'scatter',
+                visible: true,
+                mode: 'markers',
+                _module: {selectPoints: true}
+            }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
         it('creates mode bar (gl2d version)', function() {
             var buttons = getButtons([
                 ['toImage'],
@@ -1406,6 +1445,50 @@ describe('ModeBar', function() {
             });
         });
 
+        describe('map handlers', function() {
+            it('@gl button *resetViewMap* should reset the map view attribute to their default', function(done) {
+                var gd = createGraphDiv();
+
+                function _assert(centerLon, centerLat, zoom) {
+                    var mapLayout = gd._fullLayout.map;
+
+                    expect(mapLayout.center.lon).toBe(centerLon, 'center.lon');
+                    expect(mapLayout.center.lat).toBe(centerLat, 'center.lat');
+                    expect(mapLayout.zoom).toBe(zoom, 'zoom');
+                }
+
+                Plotly.newPlot(gd, [{
+                    type: 'scattermap',
+                    lon: [10, 20, 30],
+                    lat: [10, 20, 30]
+                }], {
+                    map: {
+                        center: {lon: 10, lat: 10},
+                        zoom: 8
+                    }
+                }, {})
+                .then(function() {
+                    _assert(10, 10, 8);
+
+                    return Plotly.relayout(gd, {
+                        'map.zoom': 10,
+                        'map.center.lon': 30
+                    });
+                })
+                .then(function() {
+                    _assert(30, 10, 10);
+
+                    var button = selectButton(gd._fullLayout._modeBar, 'resetViewMap');
+
+                    button.isActive(false);
+                    button.click(false);
+                    _assert(10, 10, 8);
+                    button.isActive(false);
+                })
+                .then(done, done.fail);
+            });
+        });
+
         describe('button toggleHover', function() {
             it('ternary case', function(done) {
                 var gd = createGraphDiv();
@@ -1449,6 +1532,7 @@ describe('ModeBar', function() {
                     // mock for custom geo + ternary bundle
                     delete gd._fullLayout._subplots.gl3d;
                     delete gd._fullLayout._subplots.mapbox;
+                    delete gd._fullLayout._subplots.map;
 
                     selectButton(gd._fullLayout._modeBar, 'resetViews').click();
                 })
