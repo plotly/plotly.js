@@ -61,6 +61,7 @@ argv._.forEach(function(pattern) {
 });
 
 var blacklist = [
+    'map_angles',
     'map_stamen-style',
     'mapbox_stamen-style',
     'mapbox_custom-style',
@@ -165,7 +166,6 @@ for(var i = 0; i < allMockList.length; i++) {
 
     var threshold = shouldBePixelPerfect ? 0 : [
         // more flaky
-        'map_angles',
         'mapbox_angles',
         'mapbox_layers',
         'mapbox_custom-style',
