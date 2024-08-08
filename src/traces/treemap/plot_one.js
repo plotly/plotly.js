@@ -2,6 +2,7 @@
 
 var d3 = require('@plotly/d3');
 var interpolate = require('d3-interpolate').interpolate;
+var roundPolygon = require('round-polygon');
 
 var helpers = require('../sunburst/helpers');
 
@@ -26,6 +27,7 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
     var trace = cd0.trace;
     var type = trace.type;
     var isIcicle = type === 'icicle';
+    var isVoronoi = type === 'voronoi';
 
     var hierarchy = cd0.hierarchy;
     var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
@@ -41,7 +43,10 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
     }
 
     var isRoot = helpers.isHierarchyRoot(entry);
-    var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
+    var hasTransition =
+        !isVoronoi && // TODO: Could we handle transitions for voronoi?
+        !fullLayout.uniformtext.mode &&
+        helpers.hasTransition(transitionOpts);
 
     var maxDepth = helpers.getMaxDepth(trace);
     var hasVisibleDepth = function(pt) {
@@ -210,7 +215,11 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
     // `pad` is a hashmap for treemap: pad.t, pad.b, pad.l, and pad.r
     var pad = trace[isIcicle ? 'tiling' : 'marker'].pad;
 
-    var hasFlag = function(f) { return trace.textposition.indexOf(f) !== -1; };
+    var textposition =
+        trace.textposition ||
+        'middle center'; // case of voronoi
+
+    var hasFlag = function(f) { return textposition.indexOf(f) !== -1; };
 
     var hasTop = hasFlag('top');
     var hasLeft = hasFlag('left');
@@ -229,17 +238,54 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
         if(!dx || !dy) return '';
 
         var cornerradius = trace.marker.cornerradius || 0;
-        var r = Math.min(cornerradius, dx / 2, dy / 2);
-        if(
-            r &&
-            d.data &&
-            d.data.data &&
-            d.data.data.label
-        ) {
-            if(hasTop) r = Math.min(r, pad.t);
-            if(hasLeft) r = Math.min(r, pad.l);
-            if(hasRight) r = Math.min(r, pad.r);
-            if(hasBottom) r = Math.min(r, pad.b);
+        var r = cornerradius;
+        if(!isVoronoi) {
+            r = Math.min(r, dx / 2, dy / 2);
+            if(
+                r &&
+                d.data &&
+                d.data.data &&
+                d.data.data.label
+            ) {
+                if(hasTop) r = Math.min(r, pad.t);
+                if(hasLeft) r = Math.min(r, pad.l);
+                if(hasRight) r = Math.min(r, pad.r);
+                if(hasBottom) r = Math.min(r, pad.b);
+            }
+        }
+
+        if(isVoronoi) {
+            var path = '';
+            if(d.polygon) {
+                var polygonToRound = [];
+                for(var i = 0; i < d.polygon.length; i++) {
+                    var x = viewMapX(d.polygon[i][0]);
+                    var y = viewMapY(d.polygon[i][1]);
+                    if(r) {
+                        polygonToRound.push({x: x, y: y});
+                    } else {
+                        path += i ? 'L' : 'M';
+                        path += pos(x, y);
+                    }
+                }
+
+                if(r) {
+                    var roundedPolygon = roundPolygon.default(polygonToRound, r);
+                    path = '';
+
+                    var segments = roundPolygon.getSegments(roundedPolygon, 'LENGTH', 3);
+
+                    for(var k = 0; k < segments.length; k++) {
+                        var p = segments[k];
+                        path += k ? 'L' : 'M';
+                        path += pos(p.x, p.y);
+                    }
+                }
+
+                path += 'Z';
+            }
+
+            return path;
         }
 
         var arc = function(rx, ry) { return r ? 'a' + pos(r, r) + ' 0 0 1 ' + pos(rx, ry) : ''; };
@@ -277,8 +323,8 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
             _hasRight ? 1 : 0;
 
         if(opts.isHeader) {
-            x0 += (isIcicle ? pad : pad.l) - TEXTPAD;
-            x1 -= (isIcicle ? pad : pad.r) - TEXTPAD;
+            x0 += (isVoronoi ? 0 : isIcicle ? pad : pad.l) - TEXTPAD;
+            x1 -= (isVoronoi ? 0 : isIcicle ? pad : pad.r) - TEXTPAD;
             if(x0 >= x1) {
                 var mid = (x0 + x1) / 2;
                 x0 = mid;
@@ -288,10 +334,10 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
             // limit the drawing area for headers
             var limY;
             if(hasBottom) {
-                limY = y1 - (isIcicle ? pad : pad.b);
+                limY = y1 - (isVoronoi ? 0 : isIcicle ? pad : pad.b);
                 if(y0 < limY && limY < y1) y0 = limY;
             } else {
-                limY = y0 + (isIcicle ? pad : pad.t);
+                limY = y0 + (isVoronoi ? 0 : isIcicle ? pad : pad.t);
                 if(y0 < limY && limY < y1) y1 = limY;
             }
         }

@@ -3043,10 +3043,11 @@ plots.doCalcdata = function(gd, traces) {
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;
 
-    // for sharing colors across pies / sunbursts / treemap / icicle / funnelarea (and for legend)
+    // for sharing colors across pies / sunbursts / treemap / voronoi / icicle / funnelarea (and for legend)
     fullLayout._piecolormap = {};
     fullLayout._sunburstcolormap = {};
     fullLayout._treemapcolormap = {};
+    fullLayout._voronoicolormap = {};
     fullLayout._iciclecolormap = {};
     fullLayout._funnelareacolormap = {};
 

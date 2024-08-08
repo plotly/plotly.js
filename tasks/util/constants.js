@@ -158,6 +158,7 @@ var partialBundleTraces = {
         'treemap',
         'violin',
         'volume',
+        'voronoi',
         'waterfall'
     ]
 };
