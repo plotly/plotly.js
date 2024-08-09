@@ -55,7 +55,7 @@ jobs:
       - image: cimg/node:16.20.2-browsers
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools:
+      - browser-tools/install-browser-tools: &browser-versions
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -91,7 +91,7 @@ jobs:
     parallelism: 12
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools:
+      - browser-tools/install-browser-tools: &browser-versions
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -110,7 +110,7 @@ jobs:
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools:
+      - browser-tools/install-browser-tools: &browser-versions
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -129,7 +129,7 @@ jobs:
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools:
+      - browser-tools/install-browser-tools: &browser-versions
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -147,7 +147,7 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools:
+      - browser-tools/install-browser-tools: &browser-versions
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -165,7 +165,7 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools:
+      - browser-tools/install-browser-tools: &browser-versions
           install-firefox: false
           install-geckodriver: false
       - attach_workspace:
@@ -183,7 +183,7 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools:
+      - browser-tools/install-browser-tools: &browser-versions
           firefox-version: '81.0'
           install-chrome: false
           install-chromedriver: false
@@ -202,7 +202,7 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools:
+      - browser-tools/install-browser-tools: &browser-versions
           firefox-version: '82.0'
           install-chrome: false
           install-chromedriver: false
@@ -221,7 +221,7 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools:
+      - browser-tools/install-browser-tools: &browser-versions
           install-chrome: false
           install-chromedriver: false
       - attach_workspace:
