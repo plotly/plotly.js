@@ -307,7 +307,7 @@ jobs:
 
   test-baselines:
     docker:
-      - image: circleci/node:16.9.0
+      - image: cimg/node:16.17.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -321,7 +321,7 @@ jobs:
 
   test-baselines-virtual-webgl:
     docker:
-      - image: circleci/node:16.9.0
+      - image: cimg/node:16.17.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -335,7 +335,7 @@ jobs:
 
   test-baselines-b64:
     docker:
-      - image: circleci/node:16.9.0
+      - image: cimg/node:16.17.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -349,7 +349,7 @@ jobs:
 
   test-baselines-mathjax3:
     docker:
-      - image: circleci/node:16.9.0
+      - image: cimg/node:16.17.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -386,7 +386,7 @@ jobs:
 
   test-exports:
     docker:
-      - image: circleci/node:16.9.0
+      - image: cimg/node:16.17.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
