@@ -19,6 +19,7 @@ module.exports = function(layoutIn, layoutOut, fullData) {
     var usedSubplots = {};
 
     var mode = coerce('barmode');
+    var isGroup = mode === 'group';
 
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
@@ -27,9 +28,16 @@ module.exports = function(layoutIn, layoutOut, fullData) {
 
         // if we have at least 2 grouped bar traces on the same subplot,
         // we should default to a gap anyway, even if the data is histograms
-        if(mode === 'group') {
-            var subploti = trace.xaxis + trace.yaxis;
+        var subploti = trace.xaxis + trace.yaxis;
+        if(isGroup) {
+            // with barmode group, bars are grouped next to each other when sharing the same axes
             if(usedSubplots[subploti]) gappedAnyway = true;
+            usedSubplots[subploti] = true;
+        } else {
+            // with other barmodes bars are grouped next to each other when sharing the same axes
+            // and using different offsetgroups
+            subploti += trace._input.offsetgroup;
+            if(usedSubplots.length > 0 && !usedSubplots[subploti]) gappedAnyway = true;
             usedSubplots[subploti] = true;
         }
 
