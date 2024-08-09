@@ -61,6 +61,7 @@ argv._.forEach(function(pattern) {
 });
 
 var blacklist = [
+    'map_angles',
     'map_stamen-style',
     'mapbox_stamen-style',
     'mapbox_custom-style',
@@ -108,6 +109,11 @@ for(var i = 0; i < allMockList.length; i++) {
     if(blacklist.indexOf(mockName) !== -1) continue;
 
     var isMapbox = mockName.substr(0, 7) === 'mapbox_';
+
+    // We have to skip mapbox since Aug 2024
+    // See https://github.com/plotly/plotly.js/issues/7075
+    if(isMapbox) continue;
+
     var isOtherFlaky = [
         // list flaky mocks other than mapbox:
         'map_density0-legend',
@@ -160,7 +166,6 @@ for(var i = 0; i < allMockList.length; i++) {
 
     var threshold = shouldBePixelPerfect ? 0 : [
         // more flaky
-        'map_angles',
         'mapbox_angles',
         'mapbox_layers',
         'mapbox_custom-style',
