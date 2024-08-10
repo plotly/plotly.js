@@ -1561,7 +1561,11 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
     if(d.zLabel !== undefined) {
         if(d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
         if(d.yLabel !== undefined) text += 'y: ' + d.yLabel + '<br>';
-        if(d.trace.type !== 'choropleth' && d.trace.type !== 'choroplethmapbox') {
+        if(
+            d.trace.type !== 'choropleth' &&
+            d.trace.type !== 'choroplethmapbox' &&
+            d.trace.type !== 'choroplethmap'
+        ) {
             text += (text ? 'z: ' : '') + d.zLabel;
         }
     } else if(showCommonLabel && d[h0 + 'Label'] === t0) {
