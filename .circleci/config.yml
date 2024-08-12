@@ -174,7 +174,7 @@ jobs:
           name: Run jasmine tests (part D)
           command: .circleci/test.sh bundle-jasmine
 
-  mathjax-firefox81:
+  mathjax-firefox101:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: cimg/node:16.20.2-browsers
@@ -193,7 +193,7 @@ jobs:
           name: Test MathJax on firefox-101
           command: .circleci/test.sh mathjax-firefox
 
-  mathjax-firefox82:
+  mathjax-firefox102:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: cimg/node:16.20.2-browsers
@@ -525,10 +525,10 @@ workflows:
       - bundle-jasmine:
           requires:
             - install-and-cibuild
-      - mathjax-firefox81:
+      - mathjax-firefox101:
           requires:
             - install-and-cibuild
-      - mathjax-firefox82:
+      - mathjax-firefox102:
           requires:
             - install-and-cibuild
       - mathjax-firefoxLatest:
