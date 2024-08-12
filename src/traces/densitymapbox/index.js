@@ -1,5 +1,10 @@
 'use strict';
 
+var deprecationWarning = [
+    '*densitymapbox* trace is deprecated!',
+    'Please consider switching to the *scattermap* trace type and `map` subplots.'
+].join(' ');
+
 module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
@@ -33,6 +38,7 @@ module.exports = {
     meta: {
         hr_name: 'density_mapbox',
         description: [
+            deprecationWarning,
             'Draws a bivariate kernel density estimation with a Gaussian kernel',
             'from `lon` and `lat` coordinates and optional `z` values using a colorscale.'
         ].join(' ')

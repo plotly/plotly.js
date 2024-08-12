@@ -25,12 +25,18 @@ exports.idRoot = MAPBOX;
 
 exports.idRegex = exports.attrRegex = Lib.counterRegex(MAPBOX);
 
+var deprecationWarning = [
+    'mapbox subplots and traces are deprecated!',
+    'Please consider switching to `map` subplots and traces.'
+].join(' ');
+
 exports.attributes = {
     subplot: {
         valType: 'subplotid',
         dflt: 'mapbox',
         editType: 'calc',
         description: [
+            deprecationWarning,
             'Sets a reference between this trace\'s data coordinates and',
             'a mapbox subplot.',
             'If *mapbox* (the default value), the data refer to `layout.mapbox`.',
