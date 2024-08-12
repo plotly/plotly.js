@@ -95,7 +95,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             .then(done, done.fail);
         });
 
-        it('@noFF82 should scoot x-axis title (with MathJax) below x-axis ticks', function(done) {
+        it('@noFF102 should scoot x-axis title (with MathJax) below x-axis ticks', function(done) {
             expect(window.MathJax).toBeDefined();
 
             testTitleScoot({
