@@ -1,5 +1,5 @@
 /**
-* plotly.js v2.33.0
+* plotly.js v2.34.0
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -24,7 +24,7 @@ return /******/ (function() { // webpackBootstrap
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.33.0';
+exports.version = '2.34.0';
 
 /***/ }),
 

@@ -31,7 +31,7 @@ assertCircularDeps();
 // check for for focus and exclude jasmine blocks
 function assertJasmineSuites() {
     var BLACK_LIST = ['fdescribe', 'fit', 'xdescribe', 'xit'];
-    var TAGS = ['noCI', 'noCIdep', 'noFF82', 'gl', 'flaky'];
+    var TAGS = ['noCI', 'noCIdep', 'gl', 'flaky'];
     var IT_ONLY_TAGS = ['gl', 'flaky'];
     var logs = [];
 

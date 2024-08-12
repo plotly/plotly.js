@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "2.33.0",
+  "version": "2.34.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -99,6 +99,7 @@
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
     "is-mobile": "^4.0.0",
+    "maplibre-gl": "^4.5.0",
     "mouse-change": "^1.4.0",
     "mouse-event-offset": "^3.0.2",
     "mouse-wheel": "^1.2.0",

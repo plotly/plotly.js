@@ -84,9 +84,9 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    mathjax-firefox82+)
-        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --skip-tags=noFF82 --nowatch &&
-        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --mathjax3 --skip-tags=noFF82 --nowatch &&
+    mathjax-firefox)
+        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --nowatch &&
+        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --mathjax3 --nowatch &&
         ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax_config --mathjax3 --nowatch &&
         ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax_config --nowatch || EXIT_STATE=$?
         exit $EXIT_STATE
@@ -95,14 +95,14 @@ case $1 in
     make-baselines-virtual-webgl)
         SUITE=$({\
                   find $ROOT/test/image/mocks/gl*     -type f -printf "%f\n"; \
-                  find $ROOT/test/image/mocks/mapbox* -type f -printf "%f\n"; \
+                  find $ROOT/test/image/mocks/map* -type f -printf "%f\n"; \
                 } | sed 's/\.json$//1' | circleci tests split)
         python3 test/image/make_baseline.py virtual-webgl $SUITE || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
     make-baselines-mathjax3)
-        python3 test/image/make_baseline.py mathjax3    legend_mathjax_title_and_items mathjax parcats_grid_subplots table_latex_multitrace_scatter table_plain_birds table_wrapped_birds ternary-mathjax || EXIT_STATE=$?
+        python3 test/image/make_baseline.py mathjax3    legend_mathjax_title_and_items mathjax parcats_grid_subplots table_latex_multitrace_scatter table_plain_birds table_wrapped_birds ternary-mathjax ternary-mathjax-title-place-subtitle || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
