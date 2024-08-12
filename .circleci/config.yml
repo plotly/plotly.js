@@ -28,7 +28,7 @@ jobs:
 
   install-and-cibuild: # main cibuild using node 16 & npm 7
     docker:
-      - image: cimg/node:16.20.2
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -52,7 +52,7 @@ jobs:
   timezone-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.20.2-browsers
+      - image: cimg/node:18.20.4-browsers
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
@@ -84,7 +84,7 @@ jobs:
   no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.20.2-browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -103,7 +103,7 @@ jobs:
   webgl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.20.2-browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -122,7 +122,7 @@ jobs:
   virtual-webgl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.20.2-browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -141,7 +141,7 @@ jobs:
   flaky-no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.20.2-browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -159,7 +159,7 @@ jobs:
   bundle-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.20.2-browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -177,7 +177,7 @@ jobs:
   mathjax-firefoxLatest:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.20.2-browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -269,7 +269,7 @@ jobs:
 
   test-baselines:
     docker:
-      - image: cimg/node:16.20.2
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -283,7 +283,7 @@ jobs:
 
   test-baselines-virtual-webgl:
     docker:
-      - image: cimg/node:16.20.2
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -297,7 +297,7 @@ jobs:
 
   test-baselines-b64:
     docker:
-      - image: cimg/node:16.20.2
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -311,7 +311,7 @@ jobs:
 
   test-baselines-mathjax3:
     docker:
-      - image: cimg/node:16.20.2
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -348,7 +348,7 @@ jobs:
 
   test-exports:
     docker:
-      - image: cimg/node:16.20.2
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -362,7 +362,7 @@ jobs:
 
   mock-validation:
     docker:
-      - image: cimg/node:16.20.2
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -376,7 +376,7 @@ jobs:
 
   source-syntax:
     docker:
-      - image: cimg/node:16.20.2
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -387,7 +387,7 @@ jobs:
 
   publish-dist:
     docker:
-      - image: cimg/node:16.20.2
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -457,7 +457,7 @@ jobs:
 
   test-stackgl-bundle:
     docker:
-      - image: cimg/node:16.20.2
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - checkout
