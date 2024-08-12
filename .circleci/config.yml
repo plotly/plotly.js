@@ -184,13 +184,13 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          firefox-version: "81.0"
+          firefox-version: "101.0"
           install-chrome: false
           install-chromedriver: false
       - attach_workspace:
           at: ~/
       - run:
-          name: Test MathJax on firefox-81
+          name: Test MathJax on firefox-101
           command: .circleci/test.sh mathjax-firefox
 
   mathjax-firefox82:
@@ -203,14 +203,14 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          firefox-version: "82.0"
+          firefox-version: "102.0"
           install-chrome: false
           install-chromedriver: false
       - attach_workspace:
           at: ~/
       - run:
-          name: Test MathJax on firefox-82
-          command: .circleci/test.sh mathjax-firefox82+
+          name: Test MathJax on firefox-102
+          command: .circleci/test.sh mathjax-firefox102+
 
   mathjax-firefoxLatest:
     docker:
@@ -228,7 +228,7 @@ jobs:
           at: ~/
       - run:
           name: Test MathJax on firefox-latest
-          command: .circleci/test.sh mathjax-firefox82+
+          command: .circleci/test.sh mathjax-firefox102+
 
   make-baselines-virtual-webgl:
     parallelism: 8
