@@ -174,44 +174,6 @@ jobs:
           name: Run jasmine tests (part D)
           command: .circleci/test.sh bundle-jasmine
 
-  mathjax-firefox101:
-    docker:
-      # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.20.2-browsers
-    environment:
-      # Alaska time (arbitrary timezone to test date logic)
-      TZ: "America/Anchorage"
-    working_directory: ~/plotly.js
-    steps:
-      - browser-tools/install-browser-tools: &browser-versions
-          firefox-version: "101.0"
-          install-chrome: false
-          install-chromedriver: false
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Test MathJax on firefox-101
-          command: .circleci/test.sh mathjax-firefox
-
-  mathjax-firefox102:
-    docker:
-      # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.20.2-browsers
-    environment:
-      # Alaska time (arbitrary timezone to test date logic)
-      TZ: "America/Anchorage"
-    working_directory: ~/plotly.js
-    steps:
-      - browser-tools/install-browser-tools: &browser-versions
-          firefox-version: "102.0"
-          install-chrome: false
-          install-chromedriver: false
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Test MathJax on firefox-102
-          command: .circleci/test.sh mathjax-firefox102+
-
   mathjax-firefoxLatest:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
@@ -228,7 +190,7 @@ jobs:
           at: ~/
       - run:
           name: Test MathJax on firefox-latest
-          command: .circleci/test.sh mathjax-firefox102+
+          command: .circleci/test.sh mathjax-firefox
 
   make-baselines-virtual-webgl:
     parallelism: 8
@@ -523,12 +485,6 @@ workflows:
           requires:
             - install-and-cibuild
       - bundle-jasmine:
-          requires:
-            - install-and-cibuild
-      - mathjax-firefox101:
-          requires:
-            - install-and-cibuild
-      - mathjax-firefox102:
           requires:
             - install-and-cibuild
       - mathjax-firefoxLatest:
