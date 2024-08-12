@@ -184,7 +184,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          firefox-version: 81.0
+          firefox-version: "81.0"
           install-chrome: false
           install-chromedriver: false
       - attach_workspace:
@@ -203,7 +203,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
-          firefox-version: 82.0
+          firefox-version: "82.0"
           install-chrome: false
           install-chromedriver: false
       - attach_workspace:
