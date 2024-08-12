@@ -10,7 +10,7 @@ var cartoVoyager = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json
 var cartoPositronNoLabels = 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json';
 var cartoDarkmatterNoLabels = 'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json';
 var cartoVoyagerNoLabels = 'https://basemaps.cartocdn.com/gl/voyager-nolabels-gl-style/style.json';
-var arcgisSatHybrid = 'https://raw.githubusercontent.com/go2garret/maps/main/src/assets/json/arcgis_hybrid.json';
+var arcgisSatHybrid = 'https://raw.githubusercontent.com/go2garret/maps/v1.0.0/src/assets/json/arcgis_hybrid.json';
 var arcgisSat = {
     version: 8,
     name: 'orto',
