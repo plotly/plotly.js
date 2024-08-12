@@ -85,8 +85,8 @@ case $1 in
         ;;
 
     mathjax-firefox102+)
-        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --skip-tags=noFF102 --nowatch &&
-        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --mathjax3 --skip-tags=noFF102 --nowatch &&
+        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --nowatch &&
+        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --mathjax3 --nowatch &&
         ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax_config --mathjax3 --nowatch &&
         ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax_config --nowatch || EXIT_STATE=$?
         exit $EXIT_STATE
