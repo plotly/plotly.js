@@ -26,7 +26,7 @@ jobs:
           name: CI-Build
           command: npm run cibuild
 
-  install-and-cibuild: 
+  install-and-cibuild:
     docker:
       - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
@@ -336,8 +336,8 @@ jobs:
       - run:
           name: Install poppler-utils to have pdftops for exporting eps
           command: |
-              sudo apt-get update --allow-releaseinfo-change
-              sudo apt-get install poppler-utils
+            sudo apt-get update --allow-releaseinfo-change
+            sudo apt-get install poppler-utils
       - run:
           name: Create svg, jpg, jpeg, webp, pdf and eps files
           command: python3 test/image/make_exports.py
