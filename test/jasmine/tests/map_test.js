@@ -1233,40 +1233,6 @@ describe('map plots', function() {
             .then(done, done.fail);
         });
 
-        ['stamen-terrain', 'stamen-toner'].forEach(function(style) {
-            it('@noCI @gl should be displayed for style "' + style + '"', function(done) {
-                Plotly.newPlot(gd, [{type: 'scattermap'}], {map: {style: style}})
-                .then(function() {
-                    var s = d3SelectAll('.maplibregl-ctrl-attrib');
-                    expect(s.size()).toBe(1);
-                    expect(s.text()).toEqual('Map tiles by Stamen Design under CC BY 3.0 | Data by OpenStreetMap contributors under ODbL');
-                    assertLinks(s, [
-                        'https://stamen.com/',
-                        'https://creativecommons.org/licenses/by/3.0',
-                        'https://openstreetmap.org/',
-                        'https://www.openstreetmap.org/copyright'
-                    ]);
-                })
-                .then(done, done.fail);
-            });
-        });
-
-        it('@noCI @gl should be displayed for style "stamen-watercolor"', function(done) {
-            Plotly.newPlot(gd, [{type: 'scattermap'}], {map: {style: 'stamen-watercolor'}})
-            .then(function() {
-                var s = d3SelectAll('.maplibregl-ctrl-attrib');
-                expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('Map tiles by Stamen Design under CC BY 3.0 | Data by OpenStreetMap contributors under CC BY SA');
-                assertLinks(s, [
-                    'https://stamen.com/',
-                    'https://creativecommons.org/licenses/by/3.0',
-                    'https://openstreetmap.org/',
-                    'https://creativecommons.org/licenses/by-sa/3.0'
-                ]);
-            })
-            .then(done, done.fail);
-        });
-
         it('@gl should be displayed for style "open-street-map"', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermap'}], {map: {style: 'open-street-map'}})
             .then(function() {
@@ -1482,7 +1448,7 @@ describe('map react', function() {
         }
 
         var firstLink = 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png';
-        var secondLink = 'https://a.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg';
+        var secondLink = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}.png';
 
         var fig = {
             data: [
