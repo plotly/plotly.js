@@ -95,6 +95,25 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             .then(done, done.fail);
         });
 
+        it('should scoot x-axis title (with MathJax) below x-axis ticks', function(done) {
+            expect(window.MathJax).toBeDefined();
+
+            testTitleScoot({
+                data: [{
+                    y: [1, 2, 1]
+                }],
+                layout: {
+                    xaxis: {title: texTitle},
+                    width: 500,
+                    height: 500,
+                    margin: {t: 100, b: 100, l: 100, r: 100}
+                }
+            }, {
+                xCategories: longCats
+            })
+            .then(done, done.fail);
+        });
+
         it('should scoot x-axis title below x-axis ticks (with MathJax)', function(done) {
             expect(window.MathJax).toBeDefined();
 
