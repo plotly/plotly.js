@@ -6,7 +6,7 @@ Clone plotly.js, where the <version> is one of [these](https://github.com/plotly
 git clone --branch <version> https://github.com/plotly/plotly.js.git
 ```
 
-Note: For CI, it's faster to do `git clone --depth 1` flag to only get one commit.
+Note: For CI, it's faster to do `git clone --depth 1` to only get one commit.
 
 Move to plotly.js folder then install plotly.js dependencies:
 ```sh
