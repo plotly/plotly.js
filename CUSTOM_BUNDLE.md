@@ -12,7 +12,7 @@ cd plotly.js
 npm i
 ```
 
-Note: You can always switch to a new version with:
+Note: You can always switch to another version with:
 ```sh
 git fetch
 git checkout <version>
