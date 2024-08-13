@@ -54,7 +54,7 @@ var firstPlot = true;
 exports.plot = function plot(gd) {
     if(firstPlot) {
         firstPlot = false;
-        console.warn(deprecationWarning);
+        Lib.warn(deprecationWarning);
     }
 
     var fullLayout = gd._fullLayout;
