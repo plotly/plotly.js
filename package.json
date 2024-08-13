@@ -106,7 +106,7 @@
     "native-promise-only": "^0.8.1",
     "parse-svg-path": "^0.1.2",
     "point-in-polygon": "^1.1.0",
-    "polybooljs": "^1.2.0",
+    "polybooljs": "^1.2.2",
     "probe-image-size": "^7.2.3",
     "regl": "npm:@plotly/regl@^2.1.2",
     "regl-error2d": "^2.0.12",
