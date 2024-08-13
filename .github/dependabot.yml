@@ -6,14 +6,14 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/"
+  directory: "/"
     schedule:
       interval: "daily"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     versioning-strategy: increase
   - package-ecosystem: "npm"
     directory: "/stackgl_modules"
     schedule:
       interval: "daily"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     versioning-strategy: increase
