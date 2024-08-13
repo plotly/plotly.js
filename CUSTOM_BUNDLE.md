@@ -12,6 +12,12 @@ cd plotly.js
 npm i
 ```
 
+Note: You can always switch to a new version with:
+```sh
+git fetch
+git checkout <version>
+```
+
 By default all traces and transforms are included in the bundle if you simply run:
 ```sh
 npm run custom-bundle
