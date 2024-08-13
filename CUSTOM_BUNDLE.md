@@ -24,10 +24,6 @@ git checkout <version>
 Move to plotly.js folder then install plotly.js dependencies:
 ```sh
 cd plotly.js
-```
-
-Install the dependencies
-```sh
 npm i
 ```
 
