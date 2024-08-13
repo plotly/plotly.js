@@ -9,6 +9,12 @@ git clone --depth 1 --branch <version> https://github.com/plotly/plotly.js.git
 Move to plotly.js folder then install plotly.js dependencies:
 ```sh
 cd plotly.js
+```
+
+Make sure you have the version of node installed that's mentioned in the CONTRIBUTING.md
+
+Install the dependencies
+```sh
 npm i
 ```
 
