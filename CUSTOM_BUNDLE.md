@@ -3,7 +3,7 @@ You can simply make custom bundles yourself, if none of the [distributed package
 
 Clone plotly.js, move to plotly.js folder then install plotly.js dependencies:
 ```sh
-git clone https://github.com/plotly/plotly.js.git
+git clone --depth 1 https://github.com/plotly/plotly.js.git
 cd plotly.js
 npm i
 ```
