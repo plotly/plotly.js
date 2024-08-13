@@ -8,12 +8,12 @@ Make sure you have the versions of node/npm that's recommended:
 
 To download a specific node version look [here](https://nodejs.org/en/download/package-manager).
 
+Note: For CI, it's faster to do `git clone --depth 1` to only get one commit.
+
 Clone plotly.js, where the <version> is one of [these](https://github.com/plotly/plotly.js/tags):
 ```sh
 git clone --branch <version> https://github.com/plotly/plotly.js.git
 ```
-
-Note: For CI, it's faster to do `git clone --depth 1` to only get one commit.
 
 Note: If you've already cloned plotly.js, then could switch to another version with:
 ```sh
