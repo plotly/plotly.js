@@ -13,7 +13,9 @@ Move to plotly.js folder then install plotly.js dependencies:
 cd plotly.js
 ```
 
-Make sure you have the versions of node/npm that's recommended in the [./CONTRIBUTING.md](./CONTRIBUTING.md#prerequisites) list of Prerequisites.
+Make sure you have the versions of node/npm that's recommended:
+- plotly.js until and incl. 2.34.0: Node 16/npm 8
+- plotly.js from 2.35.0: Node 18/npm 10
 
 To download a specific node version look [here](https://nodejs.org/en/download/package-manager).
 
