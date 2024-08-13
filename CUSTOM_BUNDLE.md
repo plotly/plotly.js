@@ -15,7 +15,7 @@ cd plotly.js
 
 Make sure you have the versions of node/npm that's recommended:
 - plotly.js before 2.5: Node 12/npm 6
-- plotly.js from 2.5: Node 16/npm 7
+- plotly.js from 2.5: Node 16/npm 8
 - plotly.js from 2.35: Node 18/npm 10
 
 To download a specific node version look [here](https://nodejs.org/en/download/package-manager).
