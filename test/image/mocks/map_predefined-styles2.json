@@ -62,7 +62,7 @@
     },
     {
       "subplot": "map6",
-      "text": ["white-bg"],
+      "text": ["satellite-streets"],
       "textposition": "top center",
       "marker": {
         "size": [0]
@@ -148,7 +148,7 @@
     },
     "map6": {
       "zoom": 10,
-      "style": "white-bg",
+      "style": "satellite-streets",
       "center": {
         "lon": -75,
         "lat": 45
