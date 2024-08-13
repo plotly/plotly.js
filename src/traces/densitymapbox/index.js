@@ -2,7 +2,7 @@
 
 var deprecationWarning = [
     '*densitymapbox* trace is deprecated!',
-    'Please consider switching to the *scattermap* trace type and `map` subplots.'
+    'Please consider switching to the *densitymap* trace type and `map` subplots.'
 ].join(' ');
 
 module.exports = {
