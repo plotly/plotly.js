@@ -15,7 +15,7 @@ git clone --branch <version> https://github.com/plotly/plotly.js.git
 
 Note: For CI, it's faster to do `git clone --depth 1` to only get one commit.
 
-Note: You can always switch to another version with:
+Note: If you've already cloned plotly.js, then could switch to another version with:
 ```sh
 git fetch
 git checkout <version>
