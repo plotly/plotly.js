@@ -15,6 +15,12 @@ git clone --branch <version> https://github.com/plotly/plotly.js.git
 
 Note: For CI, it's faster to do `git clone --depth 1` to only get one commit.
 
+Note: You can always switch to another version with:
+```sh
+git fetch
+git checkout <version>
+```
+
 Move to plotly.js folder then install plotly.js dependencies:
 ```sh
 cd plotly.js
@@ -23,12 +29,6 @@ cd plotly.js
 Install the dependencies
 ```sh
 npm i
-```
-
-Note: You can always switch to another version with:
-```sh
-git fetch
-git checkout <version>
 ```
 
 By default all traces and transforms are included in the bundle if you simply run:
