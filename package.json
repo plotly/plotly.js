@@ -163,7 +163,7 @@
     "mathjax-v3": "npm:mathjax@^3.2.2",
     "minify-stream": "^2.1.0",
     "node-polyfill-webpack-plugin": "^2.0.1",
-    "npm-link-check": "^5.0.0",
+    "npm-link-check": "^5.0.1",
     "open": "^8.4.2",
     "pixelmatch": "^5.3.0",
     "prepend-file": "^2.0.1",
