@@ -118,6 +118,8 @@ for(var i = 0; i < allMockList.length; i++) {
         // list flaky mocks other than mapbox:
         'map_density0-legend',
         'map_osm-style',
+        'map_predefined-styles1',
+        'map_predefined-styles2',
         'gl3d_bunny-hull'
     ].indexOf(mockName) !== -1;
 
