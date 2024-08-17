@@ -2,10 +2,16 @@
 	"$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
 	"organizeImports": { "enabled": true },
 	"files": {
-		"include": ["src", "lib", "test", "tasks", "build", "devtools"],
+		"maxSize": 10000000,
+		"include": [
+			"src",
+			"lib",
+			"test",
+			"tasks",
+			"devtools"
+		],
 		"ignore": [
 			"test/plot-schema.json",
-			"test/image/mocks",
 			"dist",
 			"stackgl_modules",
 			"node_modules",
@@ -110,5 +116,17 @@
 			"Int8Array",
 			"Uint32Array"
 		]
+	},
+	"json": {
+		"linter": {
+			"enabled": true
+		},
+		"formatter": {
+			"enabled": true,
+			"indentStyle": "space",
+			"indentWidth": 1,
+			"lineEnding": "lf",
+			"lineWidth": 80
+		}
 	}
 }
