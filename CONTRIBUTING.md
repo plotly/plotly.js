@@ -391,7 +391,3 @@ Other methods used by some trace modules:
 
 Check if ok, with `npm run lint`
 
-- See [eslintrc](https://github.com/plotly/plotly.js/blob/master/.eslintrc) and
-  the eslint [list of rules](http://eslint.org/docs/rules/) for more details.
-- Rules listed in the eslintrc file with the ignore flag `0` are the recommended
-  rules for new code added.
