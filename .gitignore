@@ -15,5 +15,3 @@ tags
 !.circleci
 !.gitignore
 !.npmignore
-!.eslintrc
-!.eslintignore
