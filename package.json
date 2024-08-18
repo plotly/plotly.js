@@ -36,7 +36,7 @@
     "regl-codegen": "node devtools/regl_codegen/server.js",
     "cibuild": "npm run empty-dist && npm run preprocess && node tasks/cibundle.js",
     "lint": "npx @biomejs/biome lint",
-    "lint-fix": "npx @biomejs/biome format ./test/image/mocks --write || true",
+    "lint-fix": "npx @biomejs/biome format ./test/image/mocks --write; npx @biomejs/biome lint --write || true",
     "pretest": "node tasks/pretest.js",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
     "test-mock": "node tasks/test_mock.js",
