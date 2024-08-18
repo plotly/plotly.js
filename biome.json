@@ -115,7 +115,15 @@
 			"Uint8Array",
 			"Int8Array",
 			"Uint32Array"
-		]
+		],
+		"formatter": {
+			"quoteStyle": "single",
+			"trailingCommas": "none",
+			"indentStyle": "space",
+			"indentWidth": 4,
+			"lineEnding": "lf",
+			"lineWidth": 120
+		}
 	},
 	"json": {
 		"linter": {
