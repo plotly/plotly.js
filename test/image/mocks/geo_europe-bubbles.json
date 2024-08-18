@@ -1,40 +1,25 @@
 {
-    "data": [
-        {
-            "type": "scattergeo",
-            "mode": "markers",
-            "locations": [
-                "FRA",
-                "DEU",
-                "RUS",
-                "ESP"
-            ],
-            "marker": {
-                "size": [
-                    20,
-                    30,
-                    15,
-                    10
-                ],
-                "color": [
-                    10,
-                    20,
-                    40,
-                    50
-                ],
-                "colorbar": {
-                    "title": {"text": "wow"}
-                }
-            }
-        }
-    ],
-    "layout": {
-        "geo": {
-            "scope": "europe",
-            "resolution": 50
-        },
-        "width": 500,
-        "height": 500,
-        "showlegend": false
+ "data": [
+  {
+   "type": "scattergeo",
+   "mode": "markers",
+   "locations": ["FRA", "DEU", "RUS", "ESP"],
+   "marker": {
+    "size": [20, 30, 15, 10],
+    "color": [10, 20, 40, 50],
+    "colorbar": {
+     "title": { "text": "wow" }
     }
+   }
+  }
+ ],
+ "layout": {
+  "geo": {
+   "scope": "europe",
+   "resolution": 50
+  },
+  "width": 500,
+  "height": 500,
+  "showlegend": false
+ }
 }
