@@ -662,11 +662,16 @@ proto.updateLayers = function(fullLayout) {
 
 proto.destroy = function() {
     if(this.map) {
-        this.map.remove();
+        try {
+            this.map.remove();
+        } catch (error) {
+            console.error('Error removing map:', error);
+        }
         this.map = null;
         this.container.removeChild(this.div);
     }
 };
+
 
 proto.toImage = function() {
     this.map.stop();
