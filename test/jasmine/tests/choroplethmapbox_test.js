@@ -640,7 +640,7 @@ describe('Test choroplethmapbox hover:', function() {
             return fig;
         },
         nums: '### 100',
-        name: '-86.7 | 32.0 ###',
+        name: '-86.7 | 31.9 ###',
         evtPts: [{location: 100, z: 10, pointNumber: 0, curveNumber: 0}]
     }];
 
