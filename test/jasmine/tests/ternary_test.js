@@ -42,7 +42,7 @@ describe('ternary plots', function() {
 
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('should be able to toggle trace visibility', function(done) {
@@ -253,7 +253,7 @@ describe('ternary plots', function() {
             var mockCopy = Lib.extendDeep({}, mock);
             var config = { staticPlot: true };
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, config).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, config).then(()=>{done()});
         });
 
         it('should not respond to drag', function(done) {
@@ -575,7 +575,7 @@ describe('ternary plots when css transform is present', function() {
 
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(function() { transformPlot(gd, cssTransform); })
-            .then(done);
+            .then(()=>{done()});
     });
 
     it('should respond zoom drag interactions', function(done) {
@@ -817,7 +817,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should not be trigged when not on data points', function() {
@@ -860,7 +860,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         var modClickOpts = {
@@ -932,7 +932,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should contain the correct fields', function() {
@@ -980,7 +980,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should contain the correct fields', function() {

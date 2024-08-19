@@ -2729,7 +2729,7 @@ describe('Test plot api', function() {
                 layout = gd.layout;
                 calcdata = gd.calcdata;
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         afterEach(destroyGraphDiv);

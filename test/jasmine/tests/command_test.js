@@ -516,7 +516,7 @@ describe('component bindings', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         gd = createGraphDiv();
 
-        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
     });
 
     afterEach(function() {
@@ -598,7 +598,7 @@ describe('attaching component bindings', function() {
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, 2, 3]}]).then(done);
+        Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, 2, 3]}]).then(()=>{done()});
     });
 
     afterEach(function() {

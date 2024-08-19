@@ -224,7 +224,7 @@ describe('Test shapes:', function() {
         var mockData = Lib.extendDeep([], mock.data);
         var mockLayout = Lib.extendDeep({}, mock.layout);
 
-        Plotly.newPlot(gd, mockData, mockLayout).then(done);
+        Plotly.newPlot(gd, mockData, mockLayout).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);
@@ -482,7 +482,7 @@ describe('shapes axis reference changes', function() {
                 x0: 0.8, x1: 1.2, y0: 0, y1: 1,
                 fillcolor: '#eee', layer: 'below'
             }]
-        }).then(done);
+        }).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);
@@ -1442,7 +1442,7 @@ describe('Test shapes', function() {
             });
         });
 
-        return promise.then(done);
+        return promise.then(()=>{done()});
     }
 
     function testResizeEachShape(direction, done) {
@@ -1475,7 +1475,7 @@ describe('Test shapes', function() {
             });
         });
 
-        return promise.then(done);
+        return promise.then(()=>{done()});
     }
 
     function getShapeNode(index) {
@@ -1630,7 +1630,7 @@ describe('Test shapes', function() {
             });
         });
 
-        return promise.then(done);
+        return promise.then(()=>{done()});
     }
 
     function getPathCoordinates(pathString, x2p, y2p) {

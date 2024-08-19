@@ -19,7 +19,7 @@ describe('Test frame api', function() {
             h = gd._transitionData._frameHash;
         }).then(function() {
             Plotly.setPlotConfig({ queueLength: 10 });
-        }).then(done);
+        }).then(()=>{done()});
     });
 
     afterEach(function() {

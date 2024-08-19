@@ -122,7 +122,7 @@ describe('Test selections:', function() {
         var mockData = Lib.extendDeep([], mock.data);
         var mockLayout = Lib.extendDeep({}, mock.layout);
 
-        Plotly.newPlot(gd, mockData, mockLayout).then(done);
+        Plotly.newPlot(gd, mockData, mockLayout).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);

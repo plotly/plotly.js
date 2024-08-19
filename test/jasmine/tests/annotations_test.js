@@ -194,7 +194,7 @@ describe('annotations relayout', function() {
 
             return Plotly.setPlotConfig({queueLength: 3});
         })
-        .then(done);
+        .then(()=>{done()});
     });
 
     afterEach(function() {
@@ -507,7 +507,7 @@ describe('annotations log/linear axis changes', function() {
         var mockData = Lib.extendDeep([], mock.data);
         var mockLayout = Lib.extendDeep({}, mock.layout);
 
-        Plotly.newPlot(gd, mockData, mockLayout).then(done);
+        Plotly.newPlot(gd, mockData, mockLayout).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);

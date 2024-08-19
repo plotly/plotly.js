@@ -1503,7 +1503,7 @@ describe('sankey tests', function() {
         })
         .catch(failTest)
         .finally(destroyGraphDiv)
-        .then(done);
+        .then(()=>{done()});
     });
 });
 

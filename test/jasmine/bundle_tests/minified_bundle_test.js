@@ -22,7 +22,7 @@ describe('Test plotly.min.js', function() {
 
     mockLists.all.forEach(function(mockSpec) {
         it('can plot "' + mockSpec[0] + '"', function(done) {
-            Plotly.newPlot(gd, mockSpec[1]).catch(fail).then(done);
+            Plotly.newPlot(gd, mockSpec[1]).catch(fail).then(()=>{done()});
         }, LONG_TIMEOUT_INTERVAL);
     });
 

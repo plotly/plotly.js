@@ -409,7 +409,7 @@ describe('Plotly.___ methods', function() {
 
             initialDiv = createGraphDiv();
 
-            Plotly.newPlot(initialDiv, data, {}).then(done);
+            Plotly.newPlot(initialDiv, data, {}).then(()=>{done()});
         });
 
         afterEach(destroyGraphDiv);

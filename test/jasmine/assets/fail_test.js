@@ -13,7 +13,7 @@
  *               assert(...);
  *            })
  *            .catch(failTest)
- *            .then(done);
+ *            .then(()=>{done()});
  *
  *    See ./with_setup_teardown.js for a different example.
  */

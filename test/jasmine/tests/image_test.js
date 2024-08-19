@@ -456,7 +456,7 @@ describe('image hover:', function() {
             var mock = require('../../image/mocks/image_cat.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         afterAll(destroyGraphDiv);

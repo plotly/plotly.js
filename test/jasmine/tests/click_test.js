@@ -76,7 +76,7 @@ describe('Test click interactions:', function() {
                     contextPassthroughs++;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         // Later we want to emit plotly events for clicking in the graph but not on data
@@ -257,7 +257,7 @@ describe('Test click interactions:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should not register the click', function() {
@@ -280,7 +280,7 @@ describe('Test click interactions:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should not register the hover', function() {
@@ -303,7 +303,7 @@ describe('Test click interactions:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should contain the correct fields despite hoverinfo: "none"', function() {
@@ -337,7 +337,7 @@ describe('Test click interactions:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should contain the correct fields despite hoverinfo: "none"', function() {
@@ -375,7 +375,7 @@ describe('Test click interactions:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should contain the correct fields despite hoverinfo: "none"', function(done) {
@@ -413,7 +413,7 @@ describe('Test click interactions:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should return null', function(done) {
@@ -1077,7 +1077,7 @@ describe('Test click interactions:', function() {
 
     describe('zoom interactions', function() {
         beforeEach(function(done) {
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('on main dragbox should update the axis ranges', function(done) {
@@ -1099,7 +1099,7 @@ describe('Test click interactions:', function() {
 
     describe('scroll zoom interactions', function() {
         beforeEach(function(done) {
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { scrollZoom: true }).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { scrollZoom: true }).then(()=>{done()});
         });
 
         it('zooms in on scroll up', function() {
@@ -1128,7 +1128,7 @@ describe('Test click interactions:', function() {
         beforeEach(function(done) {
             mockCopy.layout.dragmode = 'pan';
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('on main dragbox should update the axis ranges', function(done) {

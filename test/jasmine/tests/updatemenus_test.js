@@ -281,7 +281,7 @@ describe('update menus buttons', function() {
         dropdownMenus = allMenus.filter(function(opts) { return opts.type !== 'buttons'; });
 
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
-        .then(done);
+        .then(()=>{done()});
     });
 
     afterEach(function() {
@@ -322,7 +322,7 @@ describe('update menus initialization', function() {
                 ]
             }]
         })
-        .then(done);
+        .then(()=>{done()});
     });
 
     afterEach(function() {
@@ -352,7 +352,7 @@ describe('update menus interactions', function() {
         mockCopy.layout.updatemenus[1].x = 1;
 
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
-        .then(done);
+        .then(()=>{done()});
     });
 
     afterEach(function() {
@@ -1075,7 +1075,7 @@ describe('update menus interaction with scrollbox:', function() {
             menuRight = menus[3];
             menuUp = menus[4];
         })
-        .then(done);
+        .then(()=>{done()});
     });
 
     afterEach(function() {

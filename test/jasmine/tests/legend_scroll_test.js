@@ -71,7 +71,7 @@ describe('The legend', function() {
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
-            .then(done);
+            .then(()=>{done()});
         });
 
         afterEach(destroyGraph);

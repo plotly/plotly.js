@@ -244,7 +244,7 @@ describe('sliders initialization', function() {
                     {method: 'restyle', args: [], label: 'second'},
                 ]
             }]
-        }).then(done);
+        }).then(()=>{done()});
     });
 
     afterEach(function() {
@@ -272,7 +272,7 @@ describe('ugly internal manipulation of steps', function() {
                     {method: 'restyle', args: [], label: 'second'},
                 ]
             }]
-        }).then(done);
+        }).then(()=>{done()});
     });
 
     afterEach(function() {
@@ -324,7 +324,7 @@ describe('sliders interactions', function() {
 
         mockCopy = Lib.extendDeep({}, mock, {layout: {sliders: [{x: 0.25}, {}]}});
 
-        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
     });
 
     afterEach(function() {

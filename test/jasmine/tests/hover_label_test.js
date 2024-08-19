@@ -90,7 +90,7 @@ describe('hover info', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover', function() {
@@ -117,7 +117,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'x';
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover x', function() {
@@ -141,7 +141,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'y';
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover y', function() {
@@ -169,7 +169,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'text';
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover text', function() {
@@ -200,7 +200,7 @@ describe('hover info', function() {
         mockCopy.data[0].mode = 'lines+markers+text';
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover text', function() {
@@ -237,7 +237,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'all';
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover all', function() {
@@ -274,7 +274,7 @@ describe('hover info', function() {
         });
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('cleans the name', function() {
@@ -309,7 +309,7 @@ describe('hover info', function() {
                 mockCopy.data[0].y[i] *= 1e9;
             }
 
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover y', function() {
@@ -327,7 +327,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'y+text';
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover y+text', function() {
@@ -355,7 +355,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'x+text';
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover x+text', function() {
@@ -383,7 +383,7 @@ describe('hover info', function() {
         mockCopy.data[0].error_x.array[17] = 1;
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover x+text', function() {
@@ -403,7 +403,7 @@ describe('hover info', function() {
         mockCopy.data[0].error_x.array[17] = 0;
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover x+text', function() {
@@ -423,7 +423,7 @@ describe('hover info', function() {
         mockCopy.data[0].error_x.array[17] = -1;
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover x+text', function() {
@@ -444,7 +444,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'text';
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('responds to hover text with html', function() {
@@ -470,7 +470,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'skip';
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('does not hover if hover info is set to skip', function() {
@@ -488,7 +488,7 @@ describe('hover info', function() {
         mockCopy.data[0].hoverinfo = 'none';
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('does not render if hover is set to none', function() {
@@ -517,7 +517,7 @@ describe('hover info', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('render hover labels of the above trace', function() {
@@ -1432,7 +1432,7 @@ describe('hover info', function() {
         };
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), data, layout).then(done);
+            Plotly.newPlot(createGraphDiv(), data, layout).then(()=>{done()});
         });
 
         it('should show text labels', function() {
@@ -1467,7 +1467,7 @@ describe('hover info', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.newPlot(gd, data, layout).then(done);
+            Plotly.newPlot(gd, data, layout).then(()=>{done()});
         });
 
         it('should skip the hover event if explicitly instructed', function(done) {
@@ -1526,7 +1526,7 @@ describe('hover info', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.newPlot(gd, data, layout).then(done);
+            Plotly.newPlot(gd, data, layout).then(()=>{done()});
         });
 
         function labelCount() {
@@ -1562,7 +1562,7 @@ describe('hover info', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.newPlot(gd, data, layout).then(done);
+            Plotly.newPlot(gd, data, layout).then(()=>{done()});
         });
 
         function labelCount() {
@@ -1596,7 +1596,7 @@ describe('hover info', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.newPlot(gd, data, layout).then(done);
+            Plotly.newPlot(gd, data, layout).then(()=>{done()});
         });
 
         function labelCount() {
@@ -1967,7 +1967,7 @@ describe('hover info', function() {
 
         beforeEach(function(done) {
             mockCopy = Lib.extendDeep({}, mock);
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         afterEach(function() {
@@ -2329,7 +2329,7 @@ describe('hover info on stacked subplots', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.newPlot(gd, mock.data, mock.layout).then(done);
+            Plotly.newPlot(gd, mock.data, mock.layout).then(()=>{done()});
         });
 
         function _check(xval, ptSpec1, ptSpec2) {
@@ -2391,7 +2391,7 @@ describe('hover info on stacked subplots', function() {
         mock.layout.hoverlabel = {namelength: 10};
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(()=>{done()});
         });
 
         it('responds to hover', function() {
@@ -2465,7 +2465,7 @@ describe('hover on subplots when hoversubplots is set to *single* and x hovermod
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        Plotly.newPlot(gd, mock).then(done);
+        Plotly.newPlot(gd, mock).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);
@@ -2546,7 +2546,7 @@ describe('hover on subplots when hoversubplots is set to *axis* and x hovermodes
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        Plotly.newPlot(gd, mock).then(done);
+        Plotly.newPlot(gd, mock).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);
@@ -2643,7 +2643,7 @@ describe('hover on subplots when hoversubplots is set to *axis* and y hovermodes
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        Plotly.newPlot(gd, mock).then(done);
+        Plotly.newPlot(gd, mock).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);
@@ -2715,7 +2715,7 @@ describe('splom hover on subplots when hoversubplots is set to *axis* and (x|y) 
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        Plotly.newPlot(gd, mock).then(done);
+        Plotly.newPlot(gd, mock).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);
@@ -2773,7 +2773,7 @@ describe('splom hover *axis* hoversubplots splom points on same position should 
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        Plotly.newPlot(gd, mock).then(done);
+        Plotly.newPlot(gd, mock).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);
@@ -4132,7 +4132,7 @@ describe('hover updates', function() {
             expect(hoverCnt).toEqual(2);
             expect(unHoverCnt).toEqual(2);
         })
-        .then(done);
+        .then(()=>{done()});
     });
 
     it('should not attempt to rehover over exiting subplots', function(done) {
@@ -4573,7 +4573,7 @@ describe('hover distance', function() {
         delete mockCopy.data[1].marker;
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('does not render if distance to the point is larger than default (>20)', function() {
@@ -4653,7 +4653,7 @@ describe('hover distance', function() {
         mockCopy.layout.hovermode = 'x';
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('does not render if distance to the point is larger than default (>20)', function() {
@@ -4897,7 +4897,7 @@ describe('hover working with zorder', function() {
     afterEach(destroyGraphDiv);
 
     beforeEach(function(done) {
-        Plotly.newPlot(createGraphDiv(), mock).then(done);
+        Plotly.newPlot(createGraphDiv(), mock).then(()=>{done()});
     });
 
     it('pick the trace on top', function() {
@@ -5064,7 +5064,7 @@ describe('touch devices', function() {
 
             beforeEach(function(done) {
                 gd = createGraphDiv();
-                Plotly.newPlot(gd, data, layout).then(done);
+                Plotly.newPlot(gd, data, layout).then(()=>{done()});
             });
 
             it('emits click events', function(done) {
@@ -5098,7 +5098,7 @@ describe('dragmode: false', function() {
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        Plotly.newPlot(gd, data, layout).then(done);
+        Plotly.newPlot(gd, data, layout).then(()=>{done()});
     });
     afterEach(destroyGraphDiv);
 

@@ -107,7 +107,7 @@ describe('Test animate API', function() {
 
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
             return Plotly.addFrames(gd, mockCopy.frames);
-        }).then(done);
+        }).then(()=>{done()});
     });
 
     afterEach(function() {
@@ -599,7 +599,7 @@ describe('Animate API details', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
-        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
     });
 
     afterEach(function() {

@@ -870,7 +870,7 @@ describe('Title fonts can be updated', function() {
             expectXAxisTitleFont('red', 'serif', 20);
             expectYAxisTitleFont('green', 'monospace', 16);
         })
-        .then(done);
+        .then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);

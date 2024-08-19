@@ -902,7 +902,7 @@ describe('Test select box and lasso in general:', function() {
             gd = createGraphDiv();
 
             _newPlot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
+                .then(()=>{done()});
         });
 
         it('should trigger selecting/selected/deselect events', function(done) {
@@ -1046,7 +1046,7 @@ describe('Test select box and lasso in general:', function() {
             gd = createGraphDiv();
 
             _newPlot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
+                .then(()=>{done()});
         });
 
         it('should trigger selecting/selected/deselect events', function(done) {

@@ -1022,7 +1022,7 @@ describe('pie hovering', function() {
             gd = createGraphDiv();
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
+                .then(()=>{done()});
         });
 
         afterEach(destroyGraphDiv);
@@ -1076,7 +1076,7 @@ describe('pie hovering', function() {
             gd = createGraphDiv();
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
+                .then(()=>{done()});
         });
 
         afterEach(destroyGraphDiv);
@@ -1557,7 +1557,7 @@ describe('Test event data of interactions on a pie plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should not be trigged when not on data points', function() {
@@ -1610,7 +1610,7 @@ describe('Test event data of interactions on a pie plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should not be trigged when not on data points', function() {
@@ -1649,7 +1649,7 @@ describe('Test event data of interactions on a pie plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should contain the correct fields', function() {
@@ -1686,7 +1686,7 @@ describe('Test event data of interactions on a pie plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should contain the correct fields', function() {

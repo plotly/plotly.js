@@ -55,7 +55,7 @@ describe('Test plot structure', function() {
                 var mockData = Lib.extendDeep([], mock.data);
                 var mockLayout = Lib.extendDeep({}, mock.layout);
 
-                Plotly.newPlot(gd, mockData, mockLayout).then(done);
+                Plotly.newPlot(gd, mockData, mockLayout).then(()=>{done()});
             });
 
             it('has one *subplot xy* node', function() {
@@ -199,7 +199,7 @@ describe('Test plot structure', function() {
                     var gd = createGraphDiv();
 
                     Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
-                        .then(done);
+                        .then(()=>{done()});
                 });
 
                 it('has four *subplot* nodes', function() {
@@ -242,7 +242,7 @@ describe('Test plot structure', function() {
                     .then(function() {
                         return Plotly.restyle(gd, 'type', 'heatmap', 2);
                     })
-                    .then(done);
+                    .then(()=>{done()});
                 });
 
                 it('has four *subplot* nodes', function() {
@@ -274,7 +274,7 @@ describe('Test plot structure', function() {
 
                     var mockCopy = extendMock();
                     Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
-                        .then(done);
+                        .then(()=>{done()});
                 });
 
                 function assertClassCount(container3, msg, classes) {
@@ -406,7 +406,7 @@ describe('Test plot structure', function() {
                 var mockData = Lib.extendDeep([], mock.data);
                 var mockLayout = Lib.extendDeep({}, mock.layout);
 
-                Plotly.newPlot(gd, mockData, mockLayout).then(done);
+                Plotly.newPlot(gd, mockData, mockLayout).then(()=>{done()});
             });
 
             it('has as many *slice* nodes as there are pie items', function() {
@@ -468,7 +468,7 @@ describe('Test plot structure', function() {
         var mock = require('../../image/mocks/geo_first.json');
 
         beforeEach(function(done) {
-            Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);
+            Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(()=>{done()});
         });
 
         it('has as many *choroplethlocation* nodes as there are choropleth locations', function() {

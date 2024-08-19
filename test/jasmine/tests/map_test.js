@@ -257,7 +257,7 @@ describe('map plots', function() {
 
         var mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
     });
 
     afterEach(function() {

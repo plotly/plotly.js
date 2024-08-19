@@ -1531,7 +1531,7 @@ describe('Plotly.react and uirevision attributes', function() {
         // [layout, fullLayout]
         var checkSomeHidden = checkVisible([false, true], [['b', 'c']]);
 
-        _run(fig, hideSome, checkAllVisible, checkSomeHidden).then(done);
+        _run(fig, hideSome, checkAllVisible, checkSomeHidden).then(()=>{done()});
     });
 
     it('preserves groupby group visibility', function(done) {
@@ -1904,7 +1904,7 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(function() {
             return _run(fig2, editTernary, checkInitial, checkEdited);
         })
-        .then(done);
+        .then(()=>{done()});
     });
 
     it('@gl preserves mapbox view changes using mapbox.uirevision', function(done) {
@@ -1939,7 +1939,7 @@ describe('Plotly.react and uirevision attributes', function() {
             mapboxAccessToken: MAPBOX_ACCESS_TOKEN
         });
 
-        _run(fig, editMap, checkInitial, checkEdited).then(done);
+        _run(fig, editMap, checkInitial, checkEdited).then(()=>{done()});
     });
 
     it('@gl preserves map view changes using map.uirevision', function(done) {
@@ -1972,7 +1972,7 @@ describe('Plotly.react and uirevision attributes', function() {
 
         Plotly.setPlotConfig({});
 
-        _run(fig, editMap, checkInitial, checkEdited).then(done);
+        _run(fig, editMap, checkInitial, checkEdited).then(()=>{done()});
     });
 
     it('preserves editable: true shape & annotation edits using editrevision', function(done) {
@@ -2011,7 +2011,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkInitial = checkState([], attrs(true));
         var checkEdited = checkState([], attrs());
 
-        _run(fig, editComponents, checkInitial, checkEdited).then(done);
+        _run(fig, editComponents, checkInitial, checkEdited).then(()=>{done()});
     });
 
     it('preserves editable: true plot title and legend & colorbar positions using editrevision', function(done) {
@@ -2046,7 +2046,7 @@ describe('Plotly.react and uirevision attributes', function() {
             });
         }
 
-        _run(fig, editEditable, checkAttrs(true), checkAttrs).then(done);
+        _run(fig, editEditable, checkAttrs(true), checkAttrs).then(()=>{done()});
     });
 
     it('@gl preserves editable: true name, colorbar title and parcoords constraint range via trace.uirevision', function(done) {
@@ -2102,7 +2102,7 @@ describe('Plotly.react and uirevision attributes', function() {
             });
         }
 
-        _run(fig, editTrace, checkState([attrs(true)]), checkState([attrs()])).then(done);
+        _run(fig, editTrace, checkState([attrs(true)]), checkState([attrs()])).then(()=>{done()});
     }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
     it('preserves editable: true axis titles using the axis uirevisions', function(done) {
@@ -2146,7 +2146,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkInitial = checkState([], attrs(true));
         var checkEdited = checkState([], attrs());
 
-        _run(fig, editComponents, checkInitial, checkEdited).then(done);
+        _run(fig, editComponents, checkInitial, checkEdited).then(()=>{done()});
     });
 
     ['sunburst', 'icicle', 'treemap'].forEach(function(type) {

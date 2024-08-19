@@ -721,7 +721,7 @@ describe('scattermap hover', function() {
             text: ['A', 'B', 'C', 'D']
         }];
 
-        Plotly.newPlot(gd, data, { autosize: true }).then(done);
+        Plotly.newPlot(gd, data, { autosize: true }).then(()=>{done()});
     });
 
     afterAll(function() {
@@ -969,7 +969,7 @@ describe('Test plotly events on a scattermap plot:', function() {
         mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.width = 800;
         mockCopy.layout.height = 500;
-        Plotly.newPlot(gd, mockCopy).then(done);
+        Plotly.newPlot(gd, mockCopy).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);
@@ -1148,7 +1148,7 @@ describe('Test plotly events on a scattermap plot when css transform is present:
 
         Plotly.newPlot(gd, mockCopy)
             .then(function() { transformPlot(gd, 'translate(-25%, -25%) scale(0.5)'); })
-            .then(done);
+            .then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);

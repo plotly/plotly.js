@@ -169,7 +169,7 @@ describe('makeTemplate', function() {
         })
       .catch(failTest)
       .then(destroyGraphDiv)
-      .then(done);
+      .then(()=>{done()});
     });
 
     it('works with div id', function(done) {
@@ -215,7 +215,7 @@ describe('template interactions', function() {
         var mock = Lib.extendDeep({}, templateMock);
         gd = createGraphDiv();
         Plotly.newPlot(gd, mock)
-        .then(done);
+        .then(()=>{done()});
     });
     afterEach(destroyGraphDiv);
 
@@ -334,7 +334,7 @@ describe('validateTemplate', function() {
     cleanMock.layout.template.data.bar.pop();
 
     it('returns undefined when the template matches precisely', function(done) {
-        checkValidate(cleanMock).then(done);
+        checkValidate(cleanMock).then(()=>{done()});
     });
 
     it('catches all classes of regular issue', function(done) {

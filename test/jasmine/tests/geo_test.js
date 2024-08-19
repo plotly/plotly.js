@@ -864,7 +864,7 @@ describe('Test geo interactions', function() {
 
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         describe('scattergeo hover events', function() {
@@ -1170,7 +1170,7 @@ describe('Test geo interactions', function() {
                     'marker.size': 10
                 };
 
-                Plotly.restyle(gd, update, [0]).then(done);
+                Plotly.restyle(gd, update, [0]).then(()=>{done()});
             });
 
             function countScatterGeoLines() {
@@ -1775,7 +1775,7 @@ describe('Test event property of interactions on a geo plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should not be trigged when not on data points', function() {
@@ -1828,7 +1828,7 @@ describe('Test event property of interactions on a geo plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should not be trigged when not on data points', function() {
@@ -1883,7 +1883,7 @@ describe('Test event property of interactions on a geo plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should contain the correct fields', function() {
@@ -1926,7 +1926,7 @@ describe('Test event property of interactions on a geo plot:', function() {
                     futureData = data;
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         it('should contain the correct fields', function(done) {
@@ -1952,7 +1952,7 @@ describe('Test event property of interactions on a geo plot:', function() {
 
                 expect(evt.clientX).toEqual(nearPos[0], 'event.clientX');
                 expect(evt.clientY).toEqual(nearPos[1], 'event.clientY');
-            }).then(done);
+            }).then(()=>{done()});
         });
     });
 });

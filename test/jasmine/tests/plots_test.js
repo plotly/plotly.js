@@ -338,7 +338,7 @@ describe('Test Plots', function() {
 
                         return Plotly.Plots.resize(gd);
                     })
-                    .then(done);
+                    .then(()=>{done()});
             });
 
             afterAll(destroyGraphDiv);
@@ -448,7 +448,7 @@ describe('Test Plots', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {}).then(done);
+            Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {}).then(()=>{done()});
 
             // hacky: simulate getting stuck with these flags due to an error
             // see #2055 and commit 6a44a9a - before fixing that error, we would

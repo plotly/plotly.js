@@ -331,7 +331,7 @@ describe('Layout images', function() {
                 }],
                 width: 500,
                 height: 400
-            }).then(done);
+            }).then(()=>{done()});
         });
 
         afterEach(destroyGraphDiv);
@@ -514,7 +514,7 @@ describe('images log/linear axis changes', function() {
         var mockData = Lib.extendDeep([], mock.data);
         var mockLayout = Lib.extendDeep({}, mock.layout);
 
-        Plotly.newPlot(gd, mockData, mockLayout).then(done);
+        Plotly.newPlot(gd, mockData, mockLayout).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);

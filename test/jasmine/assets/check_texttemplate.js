@@ -118,7 +118,7 @@ module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
                         Plotly.purge(gd);
                         destroyGraphDiv();
                     })
-                    .then(done);
+                    .then(()=>{done()});
             });
         });
     } else {
@@ -140,7 +140,7 @@ module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
                         Plotly.purge(gd);
                         destroyGraphDiv();
                     })
-                    .then(done);
+                    .then(()=>{done()});
             });
         });
     }

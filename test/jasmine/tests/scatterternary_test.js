@@ -311,7 +311,7 @@ describe('scatterternary plot and hover', function() {
         var gd = createGraphDiv();
         var mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
     });
 
     it('should put scatterternary trace in \'frontplot\' node', function() {
@@ -356,7 +356,7 @@ describe('scatterternary hover', function() {
             c: [0.1, 0.4, 0.5],
             text: ['A', 'B', 'C']
         }];
-        Plotly.newPlot(gd, data).then(done);
+        Plotly.newPlot(gd, data).then(()=>{done()});
     });
 
     afterAll(destroyGraphDiv);

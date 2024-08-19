@@ -982,7 +982,7 @@ describe('heatmap hover', function() {
             var mock = require('../../image/mocks/heatmap_multi-trace.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         afterAll(destroyGraphDiv);
@@ -1009,7 +1009,7 @@ describe('heatmap hover', function() {
             var mock = require('../../image/mocks/heatmap_categoryorder.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
         afterAll(destroyGraphDiv);
 
@@ -1032,7 +1032,7 @@ describe('heatmap hover', function() {
                 text: ['a', 'b', 'c'],
                 hoverinfo: 'text'
             }])
-            .then(done);
+            .then(()=>{done()});
         });
 
         afterAll(destroyGraphDiv);
@@ -1049,7 +1049,7 @@ describe('heatmap hover', function() {
                 expect(pt2.index).toBe(1, 'have correct index');
                 assertLabels(pt2, 2, 1, 4, 'b');
             })
-            .then(done);
+            .then(()=>{done()});
         });
     });
 
@@ -1060,7 +1060,7 @@ describe('heatmap hover', function() {
             var mock = require('../../image/mocks/heatmap_contour_irregular_bricks.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         afterAll(destroyGraphDiv);
@@ -1098,7 +1098,7 @@ describe('heatmap hover', function() {
                     connectgaps: false,
                     hoverongaps: false
                 }]
-            }).then(done);
+            }).then(()=>{done()});
         });
         afterAll(destroyGraphDiv);
 

@@ -338,7 +338,7 @@ describe('table', function() {
                 y: [0.05, 0.85]
             };
             gd = createGraphDiv();
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('`Plotly.newPlot` should have proper fields on `gd.data` on initial rendering', function() {
@@ -422,7 +422,7 @@ describe('table', function() {
         beforeEach(function(done) {
             mockCopy = Lib.extendDeep({}, mock2);
             gd = createGraphDiv();
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(()=>{done()});
         });
 
         it('Calling `Plotly.restyle` for a `header.values` change should amend the preexisting one', function(done) {
@@ -451,7 +451,7 @@ describe('table', function() {
                 .then(restyleValues('header.line.color', function(gd) {return gd.data[0].header.line.color;}, [['green', 'red']]))
                 .then(restyleValues('header.line.width', function(gd) {return gd.data[0].header.line.width;}, [[2, 6]]))
                 .then(restyleValues('header.format', function(gd) {return gd.data[0].header.format;}, [['', '']]))
-                .then(done);
+                .then(()=>{done()});
         });
     });
 
@@ -472,7 +472,7 @@ describe('table', function() {
                     evt.preventDefault();
                 });
             })
-            .then(done);
+            .then(()=>{done()});
         });
 
         function assertBubbledEvents(cnt) {

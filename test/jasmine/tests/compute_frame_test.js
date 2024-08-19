@@ -17,7 +17,7 @@ describe('Test mergeFrames', function() {
     beforeEach(function(done) {
         mock = [{x: [1, 2, 3], y: [2, 1, 3]}, {x: [1, 2, 3], y: [6, 4, 5]}];
         gd = createGraphDiv();
-        Plotly.newPlot(gd, mock).then(done);
+        Plotly.newPlot(gd, mock).then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);
@@ -36,7 +36,7 @@ describe('Test mergeFrames', function() {
             };
 
             input = clone(frame1);
-            Plotly.addFrames(gd, [input]).then(done);
+            Plotly.addFrames(gd, [input]).then(()=>{done()});
         });
 
         it('returns false if the frame does not exist', function() {
@@ -87,7 +87,7 @@ describe('Test mergeFrames', function() {
                 {traces: [0], data: [{marker: {size: 2}}]}
             ];
 
-            Plotly.addFrames(gd, frames).then(done);
+            Plotly.addFrames(gd, frames).then(()=>{done()});
         });
 
         function doTest(i) {
@@ -216,7 +216,7 @@ describe('Test mergeFrames', function() {
 
             frameCopies = frames.map(clone);
 
-            Plotly.addFrames(gd, frames).then(done);
+            Plotly.addFrames(gd, frames).then(()=>{done()});
         });
 
         it('merges layouts', function() {

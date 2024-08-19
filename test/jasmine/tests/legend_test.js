@@ -1623,7 +1623,7 @@ describe('legend interaction', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.newPlot(gd, Lib.extendDeep({}, mock)).then(done);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock)).then(()=>{done()});
         });
 
         afterEach(destroyGraphDiv);
@@ -1723,7 +1723,7 @@ describe('legend interaction', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.newPlot(gd, Lib.extendDeep({}, mock)).then(done);
+            Plotly.newPlot(gd, Lib.extendDeep({}, mock)).then(()=>{done()});
         });
 
         afterEach(destroyGraphDiv);
@@ -1925,7 +1925,7 @@ describe('legend interaction', function() {
                     {x: [1, 2], y: [0, 1], visible: false},
                     {x: [1, 2], y: [1, 2], visible: 'legendonly'},
                     {x: [1, 2], y: [2, 3]}
-                ]).then(done);
+                ]).then(()=>{done()});
             });
 
             it('clicking once toggles legendonly -> true', function(done) {
@@ -1981,7 +1981,7 @@ describe('legend interaction', function() {
                     legend2: {
                         y: 0.5
                     }
-                }).then(done);
+                }).then(()=>{done()});
             });
 
             it('clicking once toggles legendonly -> true', function(done) {
@@ -2033,7 +2033,7 @@ describe('legend interaction', function() {
                         {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.3, y0: 0.4, x1: 0.4, y1: 0.3, visible: 'legendonly'},
                         {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.5, y0: 0.6, x1: 0.6, y1: 0.5}
                     ]
-                }).then(done);
+                }).then(()=>{done()});
             });
 
             it('clicking once toggles legendonly -> true', function(done) {
@@ -2086,7 +2086,7 @@ describe('legend interaction', function() {
                     x: [1, 2, 3, 4],
                     y: [1, 3, 2, 4],
                     legendgroup: 'foo'
-                }]).then(done);
+                }]).then(()=>{done()});
             });
 
             it('toggles the visibility of legendgroups as a whole', function(done) {
@@ -2129,7 +2129,7 @@ describe('legend interaction', function() {
                     legend: {
                         groupclick: 'toggleitem'
                     }
-                }).then(done);
+                }).then(()=>{done()});
             });
 
             it('toggles visibilities', function(done) {
@@ -2174,7 +2174,7 @@ describe('legend interaction', function() {
                         type: 'groupby',
                         groups: ['a', 'b', 'c', 'c']
                     }]
-                }]).then(done);
+                }]).then(()=>{done()});
             });
 
             it('computes the initial visibility correctly', function(done) {
@@ -2236,7 +2236,7 @@ describe('legend interaction', function() {
                     {y: [2, 3, 1]},
                     {type: 'heatmap', z: [[1, 2], [3, 4]], showscale: false}
                 ])
-                .then(done);
+                .then(()=>{done()});
             });
 
             it('isolate trace in legend, ignore trace that is not in legend', function(done) {
@@ -2772,7 +2772,7 @@ describe('legend with custom doubleClickDelay', function() {
         .then(delay(tShort))
         .then(click(0))
         .then(_assert('Double click increases count', 1))
-        .then(done);
+        .then(()=>{done()});
     }, 3 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });
 
@@ -2818,7 +2818,7 @@ describe('legend with custom legendwidth', function() {
 
         Plotly.newPlot(gd, {data: extendedData, layout: layout}).then(function() {
             assertLegendTextWidth([50 + textGap, 100 + textGap, 150 + textGap]);
-        }).then(done);
+        }).then(()=>{done()});
     });
 
     it('should change width when legend has entrywidth', function(done) {
@@ -2830,7 +2830,7 @@ describe('legend with custom legendwidth', function() {
 
         Plotly.newPlot(gd, {data: data, layout: extendedLayout}).then(function() {
             assertLegendTextWidth([width + textGap, width + textGap, width + textGap]);
-        }).then(done);
+        }).then(()=>{done()});
     });
 
     it('should change group width when trace has legendwidth', function(done) {
@@ -2846,7 +2846,7 @@ describe('legend with custom legendwidth', function() {
 
         Plotly.newPlot(gd, {data: extendedData, layout: extendedLayout}).then(function() {
             assertLegendTextWidth([100 + textGap, 100 + textGap, undefined]);
-        }).then(done);
+        }).then(()=>{done()});
     });
 
     it('should change width when legend has entrywidth and entrywidthmode is fraction', function(done) {
@@ -2856,6 +2856,6 @@ describe('legend with custom legendwidth', function() {
 
         Plotly.newPlot(gd, {data: data, layout: extendedLayout}).then(function() {
             assertLegendTextWidth([162, 162, 162]);
-        }).then(done);
+        }).then(()=>{done()});
     });
 });

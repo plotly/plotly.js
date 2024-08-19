@@ -1932,7 +1932,7 @@ describe('ModeBar', function() {
                         expect(getModebarDiv()).toBeTruthy();
                         expect(getModebarDiv().innerHTML).toBeTruthy();
                     })
-                    .then(done)
+                    .then(()=>{done()})
                     .catch(failTest);
                 });
             });

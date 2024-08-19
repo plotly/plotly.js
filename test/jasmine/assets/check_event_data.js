@@ -15,7 +15,7 @@ module.exports = function checkEventData(mock, x, y, additionalFields) {
         gd = createGraphDiv();
 
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
+                .then(()=>{done()});
     });
 
     afterEach(destroyGraphDiv);

@@ -699,7 +699,7 @@ describe('contour hover', function() {
                     connectgaps: false,
                     hoverongaps: false
                 }]
-            }).then(done);
+            }).then(()=>{done()});
         });
         afterAll(destroyGraphDiv);
 
@@ -728,7 +728,7 @@ describe('contour hover', function() {
                 text: ['a', 'b', 'c'],
                 hoverinfo: 'text'
             }])
-            .then(done);
+            .then(()=>{done()});
         });
 
         afterAll(destroyGraphDiv);
