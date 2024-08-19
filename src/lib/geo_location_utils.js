@@ -2,9 +2,9 @@
 
 var d3 = require('@plotly/d3');
 var countryRegex = require('country-regex');
-var turfArea = require('@turf/area');
-var turfCentroid = require('@turf/centroid');
-var turfBbox = require('@turf/bbox');
+var { area: turfArea } = require('@turf/area');
+var { centroid: turfCentroid } = require('@turf/centroid');
+var { bbox: turfBbox } = require('@turf/bbox');
 
 var identity = require('./identity');
 var loggers = require('./loggers');
