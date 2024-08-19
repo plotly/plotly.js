@@ -1,6 +1,6 @@
 var path = require('path');
 var exec = require('child_process').exec;
-var glob = require('glob');
+var { glob } = require('glob');
 var runSeries = require('run-series');
 
 var constants = require('./util/constants');
@@ -13,7 +13,7 @@ var pathToJasmineBundleTests = constants.pathToJasmineBundleTests;
  *
  * $ npm run test-jasmine -- --bundleTest=<name-of-suite>
  */
-glob(pathToJasmineBundleTests + '/*.js', function(err, files) {
+glob(pathToJasmineBundleTests + '/*.js').then(function(files) {
     var tasks = files.map(function(file) {
         return function(cb) {
             var cmd = [
