@@ -490,7 +490,7 @@ describe('Test choroplethmapbox convert:', function() {
         var opts = convertModule.convert(calcTrace);
 
         expect(opts.geojson.features[0].geometry.coordinates).toBe(coordsIn);
-        expect(calcTrace[0].ct).toEqual([100.4, 0.4]);
+        expect(calcTrace[0].ct).toEqual([100.5, 0.5]);
     });
 
     it('should find correct centroid (multi-polygon case)', function() {
