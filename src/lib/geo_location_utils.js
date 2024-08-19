@@ -362,7 +362,7 @@ function fetchTraceGeoData(calcData) {
 // TODO `turf/bbox` gives wrong result when the input feature/geometry
 // crosses the anti-meridian. We should try to implement our own bbox logic.
 function computeBbox(d) {
-    return turfBbox.default(d);
+    return turfBbox(d);
 }
 
 module.exports = {
