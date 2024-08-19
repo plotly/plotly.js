@@ -226,7 +226,11 @@ function extractTraceFeature(calcTrace) {
                 };
 
                 // Compute centroid, add it to the properties
-                fOut.properties.ct = findCentroid(fOut);
+                if (fOut.geometry.coordinates.length > 0) {
+                    fOut.properties.ct = findCentroid(fOut);
+                } else {
+                    fOut.properties.ct = [NaN, NaN];
+                }
 
                 // Mutate in in/out features into calcdata
                 cdi.fIn = fIn;
