@@ -499,7 +499,7 @@ describe('Test choroplethmapbox convert:', function() {
         var coordsIn = [
             [
                 // this one has the bigger area
-                [[30, 20], [45, 40], [10, 40], [30, 20]]
+                [[30, 20], [47, 40], [10, 33], [30, 20]]
             ],
             [
                 [[15, 5], [40, 10], [10, 20], [5, 10], [15, 5]]
@@ -512,7 +512,7 @@ describe('Test choroplethmapbox convert:', function() {
         var opts = convertModule.convert(calcTrace);
 
         expect(opts.geojson.features[0].geometry.coordinates).toBe(coordsIn);
-        expect(calcTrace[0].ct).toEqual([28.75, 30]);
+        expect(calcTrace[0].ct).toEqual([29, 31]);
     });
 });
 
