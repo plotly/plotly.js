@@ -291,7 +291,7 @@ function findCentroid(feature) {
 
         for(var i = 0; i < coords.length; i++) {
             var polyi = {type: 'Polygon', coordinates: coords[i]};
-            var area = turfArea.default(polyi);
+            var area = turfArea(polyi);
             if(area > maxArea) {
                 maxArea = area;
                 poly = polyi;
@@ -301,7 +301,7 @@ function findCentroid(feature) {
         poly = geometry;
     }
 
-    return turfCentroid.default(poly).geometry.coordinates;
+    return turfCentroid(poly).geometry.coordinates;
 }
 
 function fetchTraceGeoData(calcData) {
