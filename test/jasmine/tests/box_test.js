@@ -1064,7 +1064,7 @@ describe('Test box hover:', function() {
         axis: 'A'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).then(done, done.fail);
+            run(specs).then(()=>done(), done.fail);
         });
     });
 });
@@ -1095,7 +1095,7 @@ describe('Box edge cases', function() {
             expect(outliers.length).toBe(1);
             expect(outliers[0].x).toBe(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1145,7 +1145,7 @@ describe('Test box restyle:', function() {
         .then(function() {
             _assert('with pts', {boxCnt: 1, ptsCnt: 9});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should update axis range accordingly on calc edits', function(done) {
@@ -1180,7 +1180,7 @@ describe('Test box restyle:', function() {
         .then(function() {
             _assert('auto rng / no boxpoints', [-0.5, 0.5], [-0.555, 10.555]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to change axis range when the number of distinct positions changes', function(done) {
@@ -1211,7 +1211,7 @@ describe('Test box restyle:', function() {
         .then(function() {
             _assert('only trace1 visible', [-0.5, 0.5], [-0.444, 8.444]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 

@@ -63,7 +63,7 @@ describe('ternary plots', function() {
             }).then(function() {
                 expect(countTraces('scatter')).toEqual(1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should be able to delete and add traces', function(done) {
@@ -104,7 +104,7 @@ describe('ternary plots', function() {
                 expect(countTraces('scatter')).toEqual(1);
                 checkTitles(1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should be able to restyle', function(done) {
@@ -121,7 +121,7 @@ describe('ternary plots', function() {
                     'translate(248.76,117.69)'
                 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should display to hover labels', function(done) {
@@ -176,7 +176,7 @@ describe('ternary plots', function() {
                     fontFamily: 'Gravitas'
                 }, 'after hoverlabel styling restyle call');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should respond to hover interactions by', function() {
@@ -239,7 +239,7 @@ describe('ternary plots', function() {
             .then(function() { assertRange(gd, [0.4435, 0.2462, 0.1523]); })
             .then(function() { return doubleClick(pointPos[0], pointPos[1]); })
             .then(function() { assertRange(gd, [0, 0, 0]); })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -265,7 +265,7 @@ describe('ternary plots', function() {
             .then(function() { assertRange(gd, range); })
             .then(function() { return doubleClick(390, 220); })
             .then(function() { assertRange(gd, range); })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -337,7 +337,7 @@ describe('ternary plots', function() {
         .then(function() {
             _assert(dflt);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to relayout axis tickfont attributes', function(done) {
@@ -369,7 +369,7 @@ describe('ternary plots', function() {
         .then(function() {
             _assert('Roboto', 'rgb(255, 0, 0)', 20);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to relayout axis title attributes', function(done) {
@@ -417,7 +417,7 @@ describe('ternary plots', function() {
               _assert('b', 'white chocolate', 'sans-serif', rgb('blue'), 10);
               _assert('c', 'candy', 'serif', rgb('pink'), 30);
           })
-          .then(done, done.fail);
+          .then(()=>done(), done.fail);
     });
 
     it('should be able to hide/show ticks and tick labels', function(done) {
@@ -470,7 +470,7 @@ describe('ternary plots', function() {
             '.caxis > path.ytick', 'ternary.caxis.ticks',
             ['outside', ''], [4, 0]
         ))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should render a-axis and c-axis with negative offsets', function(done) {
@@ -497,7 +497,7 @@ describe('ternary plots', function() {
             expect(subplot.aaxis._offset < 0).toBe(true);
             expect(subplot.caxis._offset < 0).toBe(true);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     describe('plotly_relayouting', function() {
@@ -523,7 +523,7 @@ describe('ternary plots', function() {
                     expect(events.length).toEqual(path.length - 1);
                     expect(relayoutCallback).toHaveBeenCalledTimes(1);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -595,7 +595,7 @@ describe('ternary plots when css transform is present', function() {
         .then(function() { assertRange(gd, [0.4486, 0.2480, 0.1453]); })
         .then(function() { return doubleClick(pointPos[0], pointPos[1]); })
         .then(function() { assertRange(gd, [0, 0, 0]); })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should display to hover labels', function(done) {
@@ -650,7 +650,7 @@ describe('ternary plots when css transform is present', function() {
                 fontFamily: 'Gravitas'
             }, 'after hoverlabel styling restyle call');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should respond to hover interactions by', function() {

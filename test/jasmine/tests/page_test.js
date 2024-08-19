@@ -81,6 +81,6 @@ describe('page rendering', function() {
                 expect(bBox.height).toBe(0);
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

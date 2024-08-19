@@ -416,7 +416,7 @@ describe('Drawing', function() {
                     bottom: 4
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('works with dummy nodes created in Drawing.tester', function() {
@@ -542,7 +542,7 @@ describe('gradients', function() {
             // full replot and no resulting markers at all -> no gradients
             checkGradientIds([], [], [], []);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should append window URL to gradient ref if <base> is present', function(done) {

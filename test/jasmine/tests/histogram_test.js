@@ -875,7 +875,7 @@ describe('Test histogram', function() {
                         expect(cd0[i].ph1).toBe(cd1[i].ph1);
                     }
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
         });
 
         it('autobins all data as one', function() {
@@ -1168,7 +1168,7 @@ describe('Test histogram', function() {
                 expect(gd._fullData[0].xbins).toEqual({start: 9, end: 51, size: 2});
                 expect(gd._fullData[0].nbinsx).toBeUndefined();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('respects explicit autobin: false as a one-time autobin', function(done) {
@@ -1188,7 +1188,7 @@ describe('Test histogram', function() {
             .then(function() {
                 expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('allows changing axis type with new x data', function(done) {
@@ -1206,7 +1206,7 @@ describe('Test histogram', function() {
                 expect(gd._fullLayout.xaxis.type).toBe('date');
                 expect(gd._fullLayout.xaxis.range).toEqual(['2016-12-31 12:00', '2017-01-03 12:00']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can resize a plot with several histograms', function(done) {
@@ -1238,7 +1238,7 @@ describe('Test histogram', function() {
                     expect(trace._xautoBinFinished).toBeUndefined(i);
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('gives the right bar width for single-value histograms', function(done) {
@@ -1250,7 +1250,7 @@ describe('Test histogram', function() {
             .then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([2, 4], 3);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can recalc after the first trace is hidden', function(done) {
@@ -1286,7 +1286,7 @@ describe('Test histogram', function() {
             .then(function() {
                 assertTraceCount(3);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('autobins all histograms (on the same subplot) together except `visible: false`', function(done) {
@@ -1333,7 +1333,7 @@ describe('Test histogram', function() {
                 // legendonly traces still flip us back to gapped
                 expect(gd._fullLayout.bargap).toBe(0.2);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

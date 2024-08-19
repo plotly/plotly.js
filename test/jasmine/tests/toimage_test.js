@@ -62,7 +62,7 @@ describe('Plotly.toImage', function() {
 
         expect(isPromise(returnValue)).toBe(true);
 
-        returnValue.then(done, done.fail);
+        returnValue.then(()=>done(), done.fail);
     });
 
     it('should throw error with unsupported file type', function(done) {
@@ -73,7 +73,7 @@ describe('Plotly.toImage', function() {
             expect(function() { Plotly.toImage(gd, {format: 'x'}); })
                 .toThrow(new Error('Export format is not png, jpeg, webp, svg or full-json.'));
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should throw error with height and/or width < 1', function(done) {
@@ -88,7 +88,7 @@ describe('Plotly.toImage', function() {
             expect(function() { Plotly.toImage(gd, {width: 0.5}); })
                 .toThrow(new Error('Height and width should be pixel values.'));
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should create img with proper height and width', function(done) {
@@ -115,7 +115,7 @@ describe('Plotly.toImage', function() {
             expect(img.height).toBe(400);
             expect(img.width).toBe(400);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should use width/height of graph div when width/height are set to *null*', function(done) {
@@ -132,7 +132,7 @@ describe('Plotly.toImage', function() {
         })
         .then(function() { return Plotly.toImage(gd, {width: null, height: null}); })
         .then(function(url) { return assertSize(url, 832, 502); })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should create proper file type', function(done) {
@@ -159,7 +159,7 @@ describe('Plotly.toImage', function() {
         .then(function(url) {
             expect(url.split('webp')[0]).toBe('data:image/');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should strip *data:image* prefix when *imageDataOnly* is turned on', function(done) {
@@ -186,7 +186,7 @@ describe('Plotly.toImage', function() {
             expect(d.indexOf('data:image/')).toBe(-1);
             expect(d.length).toBeWithin(15831, 1e3, 'webp image length');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     FORMATS.forEach(function(f) {
@@ -198,7 +198,7 @@ describe('Plotly.toImage', function() {
             .then(function(url) { return assertSize(url, 1400, 900); })
             .then(function() { return Plotly.toImage(gd, {format: f, scale: 0.5}); })
             .then(function(url) { return assertSize(url, 350, 225); })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -211,7 +211,7 @@ describe('Plotly.toImage', function() {
             expect(img.width).toBe(700);
             expect(img.height).toBe(450);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should accept graph div id as input', function(done) {
@@ -224,7 +224,7 @@ describe('Plotly.toImage', function() {
             expect(img.width).toBe(700);
             expect(img.height).toBe(450);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work on pages with <base>', function(done) {
@@ -283,7 +283,7 @@ describe('Plotly.toImage', function() {
                 expect(fig.data[0].mode).toBe('lines+markers', 'contain default mode');
                 expect(fig.version).toBe(Plotly.version, 'contains Plotly version');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('export an object with data/layout/config', function(done) {
@@ -296,7 +296,7 @@ describe('Plotly.toImage', function() {
                 expect(fig.data[0].mode).toBe('lines+markers', 'contain default mode');
                 expect(fig.version).toBe(Plotly.version, 'contains Plotly version');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('export typed arrays as regular arrays', function(done) {
@@ -333,7 +333,7 @@ describe('Plotly.toImage', function() {
                 expect(trace.y).toEqual([-0.3333333432674408, 0.3333333432674408]);
                 expect(trace.z).toEqual([[-32768, 32767], [65535, 0]]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('import & export 1d and 2d typed arrays', function(done) {
@@ -382,7 +382,7 @@ describe('Plotly.toImage', function() {
                 expect(trace.z.dtype).toEqual('u2');
                 expect(trace.z.shape).toEqual('2,3');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('import buffer and export b64', function(done) {
@@ -431,7 +431,7 @@ describe('Plotly.toImage', function() {
                 expect(trace.z.dtype).toEqual('u2');
                 expect(trace.z.shape).toEqual('2,3');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         [
@@ -507,7 +507,7 @@ describe('Plotly.toImage', function() {
 
                     expect(trace.marker.colorscale).toBeDefined();
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -523,7 +523,7 @@ describe('Plotly.toImage', function() {
                 expect(computed.margin.r).toBeDefined('no right');
                 expect(computed.margin.b).toBeDefined('no bottom');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('record and export computed margins with "Too many auto-margin redraws"', function(done) {
@@ -554,7 +554,7 @@ describe('Plotly.toImage', function() {
                 expect(computed.margin.b).toBeGreaterThan(80);
                 expect(computed.margin.r).toBeGreaterThan(80);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

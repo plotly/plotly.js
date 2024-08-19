@@ -115,7 +115,7 @@ describe('Test scattersmith hover:', function() {
         nums: 'real: (0)\nimag: [1]'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).then(done, done.fail);
+            run(specs).then(()=>done(), done.fail);
         });
     });
 });

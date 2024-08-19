@@ -276,7 +276,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert(dflt);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to relayout axis types', function(done) {
@@ -305,7 +305,7 @@ describe('Test relayout on polar subplots:', function() {
             expect(gd._fullLayout.polar.radialaxis.range)
                 .toBeCloseToArray([0, 11.225]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be propagate angular settings down to tick labels', function(done) {
@@ -330,7 +330,7 @@ describe('Test relayout on polar subplots:', function() {
             // if they're the same, the tick label position did not update
             expect(pos1).not.toBeCloseTo2DArray(pos0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to relayout angular ticks layout', function(done) {
@@ -365,7 +365,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             check(8, 'M-1.5,0h-5');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to toggle axis features', function(done) {
@@ -444,7 +444,7 @@ describe('Test relayout on polar subplots:', function() {
             ['outside', ''], [8, 0],
             '.angular-axis > path.angularaxistick', assertCnt
         ))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@noCI should be able to restyle radial axis title', function(done) {
@@ -499,7 +499,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             assertTitle('yo2', false);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should clean up its framework, clip paths and info layers when getting deleted', function(done) {
@@ -532,7 +532,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert({subplot: 1, clip: 1, rtitle: 1});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should update axis ranges when extending traces', function(done) {
@@ -590,7 +590,7 @@ describe('Test relayout on polar subplots:', function() {
                 sampleXY: [-25, 43]
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to relayout *gridshape*', function(done) {
@@ -628,7 +628,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert('relayout -> circular', {letter: 'A', cnt: 2});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not attempt to draw radial axis when *polar.hole* is set to 1', function(done) {
@@ -656,7 +656,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() { _assert('hole=1', false); })
         .then(function() { return Plotly.relayout(gd, 'polar.hole', 0.2); })
         .then(function() { _assert('hole=0.2', true); })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -850,7 +850,7 @@ describe('Test polar interactions:', function() {
                 plotly_relayout: 1
             }, 'after right click');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should respond to drag interactions on plot area', function(done) {
@@ -958,7 +958,7 @@ describe('Test polar interactions:', function() {
         .then(function() {
             _assertDrag([1.15, 7.70], 'with polar.hole>0, from quadrant #1 move top-right');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should respond to drag interactions on radial drag area', function(done) {
@@ -1041,7 +1041,7 @@ describe('Test polar interactions:', function() {
         .then(function() {
             expect(eventCnts.plotly_relayout).toBe(8, 'total # of relayout events');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should respond to drag interactions on inner radial drag area', function(done) {
@@ -1079,7 +1079,7 @@ describe('Test polar interactions:', function() {
         .then(function() {
             _assert([-3.55, 11.36], 'move outward');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should respond to drag interactions on angular drag area', function(done) {
@@ -1143,7 +1143,7 @@ describe('Test polar interactions:', function() {
         .then(function() {
             expect(eventCnts.plotly_relayout).toBe(4, 'total # of relayout events');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     describe('dragmode === false', function() {
@@ -1234,7 +1234,7 @@ describe('Test polar interactions:', function() {
             .then(function() {
                 _assertRange([0, 11.4], 'with polar.hole>0, from quadrant #1 move top-right');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should not respond to drag interactions on radial drag area when dragmode === false', function(done) {
@@ -1314,7 +1314,7 @@ describe('Test polar interactions:', function() {
             .then(function() {
                 expect(eventCnts.plotly_relayout).toBe(1, 'total # of relayout events');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should not respond to drag interactions on inner radial drag area when dragmode === false', function(done) {
@@ -1357,7 +1357,7 @@ describe('Test polar interactions:', function() {
             .then(function() {
                 _assertBase('move outward');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should not respond to drag interactions on angular drag area when dragmode === false', function(done) {
@@ -1418,7 +1418,7 @@ describe('Test polar interactions:', function() {
             .then(function() {
                 expect(eventCnts.plotly_relayout).toBe(1, 'total # of relayout events');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1511,7 +1511,7 @@ describe('Test polar interactions:', function() {
                 .then(_assert)
                 .then(function() { return _dragAngular(); })
                 .then(_assert)
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -1557,7 +1557,7 @@ describe('Test polar interactions:', function() {
                     expect(Object.keys(events[len - 1])).toContain(key);
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should emit events on inner radial drag area', function(done) {
@@ -1589,7 +1589,7 @@ describe('Test polar interactions:', function() {
                     expect(Object.keys(events[0])).toContain(key);
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should emit events on angular drag area', function(done) {
@@ -1622,7 +1622,7 @@ describe('Test polar interactions:', function() {
                     expect(Object.keys(events[0])).toContain(key);
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -1682,7 +1682,7 @@ describe('Test polar *gridshape linear* interactions', function() {
         .then(function() { return _drag(dragPos1, [-100, -50]); })
         .then(function() { _assert('rotate left', 90); })
         .then(function() { expect(evtCnt).toBe(3); })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should rotate all non-symmetrical layers on angular drag', function(done) {
@@ -1760,7 +1760,7 @@ describe('Test polar *gridshape linear* interactions', function() {
             expect(evtData['polar.radialaxis.angle'])
                 .toBeCloseTo(82.8, 1, 'polar.radialaxis.angle event data');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should place zoombox handles at correct place on main drag', function(done) {
@@ -1853,7 +1853,7 @@ describe('Test polar *gridshape linear* interactions', function() {
                 ]
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1971,7 +1971,7 @@ describe('Polar plots with css transforms', function() {
             .then(function() {
                 expect(Object.keys(hoverEvents).length).toBe(t.hovered);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('drag-zoom behaves correctly after css transform: ' + transform, function(done) {
@@ -1986,7 +1986,7 @@ describe('Polar plots with css transforms', function() {
                 var points = _getVisiblePointsData();
                 expect(points.map(function(e) { return e.i; })).toEqual(t.zoomed);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('select behaves correctly after css transform: ' + transform, function(done) {
@@ -2009,7 +2009,7 @@ describe('Polar plots with css transforms', function() {
             .then(function() {
                 _assertSelected(t.selected);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

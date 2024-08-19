@@ -686,7 +686,7 @@ describe('Test icicle hover:', function() {
     }]
     .forEach(function(spec) {
         it('should generate correct hover labels and event data - ' + spec.desc, function(done) {
-            run(spec).then(done, done.fail);
+            run(spec).then(()=>done(), done.fail);
         });
     });
 });
@@ -718,7 +718,7 @@ describe('Test icicle restyle:', function() {
         .then(_assert('both visible:false', 0))
         .then(_restyle({visible: true}))
         .then(_assert('back to visible:true', 2))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to restyle *maxdepth* and *level* w/o recomputing the hierarchy', function(done) {
@@ -748,7 +748,7 @@ describe('Test icicle restyle:', function() {
         .then(_assert('with non-root level', 67))
         .then(_restyle({maxdepth: null, level: null}))
         .then(_assert('back to first view', 97))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to restyle *leaf.opacity*', function(done) {
@@ -791,7 +791,7 @@ describe('Test icicle restyle:', function() {
         .then(_assert('raise leaf.opacity', ['', '1', '', '1']))
         .then(_restyle({'leaf.opacity': null}))
         .then(_assert('back to dflt', ['', '0.7', '', '0.7']))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -923,6 +923,6 @@ describe('icicle pathbar react', function() {
             return Plotly.react(gd, fig);
         })
         .then(_assert('enable pathbar', 4))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

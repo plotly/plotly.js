@@ -282,7 +282,7 @@ describe('image plot', function() {
         }).then(function() {
             assertImageCnt(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     function getImageURL() {
@@ -331,7 +331,7 @@ describe('image plot', function() {
 
                 expect(imageURLs[1]).toEqual(imageURLs[3], 'image should restyle step 1');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -361,7 +361,7 @@ describe('image plot', function() {
             expect(x[2]).toEqual(x[0]);
             expect(y[2]).toEqual(y[0]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should handle restyling x0/y0 to category', function(done) {
@@ -382,7 +382,7 @@ describe('image plot', function() {
             expect(x[1]).toEqual(x[0], 'image element should have same x position');
             expect(y[1]).toEqual(y[0], 'image element should have same y position');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('keeps the correct ordering after hide and show', function(done) {
@@ -411,7 +411,7 @@ describe('image plot', function() {
         .then(function() {
             expect(getIndices()).toEqual([0, 1]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('renders pixelated image when source is defined', function(done) {
@@ -421,7 +421,7 @@ describe('image plot', function() {
         .then(function(gd) {
             expect(gd.calcdata[0][0].trace._realImage).toBeTruthy();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     [
@@ -439,7 +439,7 @@ describe('image plot', function() {
             .then(function(gd) {
                 expect(gd.calcdata[0][0].trace._realImage).toBe(false, 'when ' + attr[0] + ' is ' + attr[1]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -519,7 +519,7 @@ describe('image hover:', function() {
                     name: ''
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should display RGB channel values', function(done) {
@@ -533,7 +533,7 @@ describe('image hover:', function() {
                     name: ''
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should display RGBA channel values', function(done) {
@@ -546,7 +546,7 @@ describe('image hover:', function() {
                     name: ''
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should display HSL channel values', function(done) {
@@ -560,7 +560,7 @@ describe('image hover:', function() {
                     name: ''
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should display HSLA channel values', function(done) {
@@ -574,7 +574,7 @@ describe('image hover:', function() {
                     name: ''
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         [
@@ -600,7 +600,7 @@ describe('image hover:', function() {
                         name: ''
                     }, 'variable `' + test[0] + '` should be available!');
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -621,7 +621,7 @@ describe('image hover:', function() {
                     name: ''
                 }, 'variable text should be available!');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -658,7 +658,7 @@ describe('image hover:', function() {
                         name: ''
                     }, 'variable `' + test[0] + '` should be available!');
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -690,7 +690,7 @@ describe('image hover:', function() {
                         name: ''
                     }, 'positions should be correct!');
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });

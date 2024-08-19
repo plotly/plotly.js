@@ -60,7 +60,7 @@ describe('errorbar plotting', function() {
         .then(function() {
             check([-0.6667, 2.6667], [-0.2629, 4.9949], 3, 3);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('shows half errorbars and removes individual bars that disappear', function(done) {
@@ -95,6 +95,6 @@ describe('errorbar plotting', function() {
                 {xs: 10, xh: 18}
             ]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

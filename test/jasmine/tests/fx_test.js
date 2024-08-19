@@ -293,6 +293,6 @@ describe('relayout', function() {
             return Plotly.relayout(gd, 'xaxis.fixedrange', false);
         }).then(function() {
             assertMainDrag('ew-resize', true);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 });

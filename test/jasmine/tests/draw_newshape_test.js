@@ -1011,7 +1011,7 @@ describe('Draw new shapes to layout', function() {
                         });
                     })
 
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
             });
         });
     });
@@ -1291,7 +1291,7 @@ describe('Activate and edit editable shapes', function() {
                 expect(id).toEqual(undefined, 'deactivate shape by clicking inside');
             })
 
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('circle using ' + device, function(done) {
@@ -1347,7 +1347,7 @@ describe('Activate and edit editable shapes', function() {
                 });
             })
 
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('closed-path using ' + device, function(done) {
@@ -1391,7 +1391,7 @@ describe('Activate and edit editable shapes', function() {
                 assertPos(obj.path, 'M250,25L225,75L275,75Z');
             })
 
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('bezier curves using ' + device, function(done) {
@@ -1435,7 +1435,7 @@ describe('Activate and edit editable shapes', function() {
                 assertPos(obj.path, 'M0,100.00237388724034L0,199.99762611275966L50.00310077519379,199.99762611275966L0,300Q100,300,100,199.9976261127597T150.0031007751938,199.99762611275966C100,300,200,300,200,199.99762611275966S150.0031007751938,199.99762611275966,150.0031007751938,100.00237388724034Z');
             })
 
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('multi-cell path using ' + device, function(done) {
@@ -1488,7 +1488,7 @@ describe('Activate and edit editable shapes', function() {
                 expect(gd._fullLayout._activeShapeIndex).toEqual(undefined, 'clear active shape index');
             })
 
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -1590,7 +1590,7 @@ describe('Activate and edit editable shapes', function() {
             expect(el.style['stroke-width']).toBe('3px'); // custom pixel
         })
 
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should provide invisible border & set pointer-events (depending on fill transparency) for editable shapes i.e. to allow shape activation', function(done) {
@@ -1680,7 +1680,7 @@ describe('Activate and edit editable shapes', function() {
             expect(el.style['stroke-width']).toBe('3px'); // custom pixel
         })
 
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not provide invisible border & set pointer-events to "stroke" for shapes made editable via config', function(done) {
@@ -1719,6 +1719,6 @@ describe('Activate and edit editable shapes', function() {
             expect(el.style['stroke-width']).toBe('0px'); // no extra pixels
         })
 
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

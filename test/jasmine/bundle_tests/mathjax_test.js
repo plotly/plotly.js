@@ -92,7 +92,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             }, {
                 xCategories: longCats
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
 
@@ -113,7 +113,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
         //     }, {
         //         xCategories: longCats
         //     })
-        //     .then(done, done.fail);
+        //     .then(()=>done(), done.fail);
         // });
 
         it('should scoot x-axis title below x-axis ticks (with MathJax)', function(done) {
@@ -133,7 +133,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             }, {
                 xCategories: longTexCats
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should scoot x-axis title (with MathJax) below x-axis ticks (with MathJax)', function(done) {
@@ -153,7 +153,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             }, {
                 xCategories: longTexCats
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

@@ -117,7 +117,7 @@ describe('Test plot structure', function() {
                     expect(countClipPaths()).toEqual(4);
                     expect(countDraggers()).toEqual(1);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should restore layout axes when they get deleted', function(done) {
@@ -159,7 +159,7 @@ describe('Test plot structure', function() {
                     expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
                     expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -383,7 +383,7 @@ describe('Test plot structure', function() {
                             'g-y2title': 0
                         });
                     })
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
                 });
             });
         });
@@ -440,7 +440,7 @@ describe('Test plot structure', function() {
                     expect(countPieTraces()).toEqual(0);
                     expect(countSubplots()).toEqual(1);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should be able to be restyled to a bar chart and back', function(done) {
@@ -459,7 +459,7 @@ describe('Test plot structure', function() {
                     expect(countBarTraces()).toEqual(0);
                     expect(countSubplots()).toEqual(0);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -549,7 +549,7 @@ describe('plot svg clip paths', function() {
                 expect(cp.substring(cp.length - 1)).toEqual(')');
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should set clip path url to ids appended to window url', function(done) {
@@ -574,6 +574,6 @@ describe('plot svg clip paths', function() {
 
             base.remove();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

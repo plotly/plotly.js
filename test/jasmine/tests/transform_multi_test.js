@@ -461,7 +461,7 @@ describe('multiple transforms:', function() {
             expect(gd._fullData[0].transforms[1]._indexToPoints).toEqual({0: [1, 3], 1: [4]});
             expect(gd._fullData[0].transforms[2]._indexToPoints).toEqual({0: [4]});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
 
@@ -481,7 +481,7 @@ describe('multiple transforms:', function() {
 
             assertDims([2, 2]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.newPlot should plot the transform traces (reverse case)', function(done) {
@@ -502,7 +502,7 @@ describe('multiple transforms:', function() {
 
             assertDims([2, 2]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.restyle should work', function(done) {
@@ -553,7 +553,7 @@ describe('multiple transforms:', function() {
                 [0.4, 0.4]
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.extendTraces should work', function(done) {
@@ -578,7 +578,7 @@ describe('multiple transforms:', function() {
 
             assertDims([3, 3]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.deleteTraces should work', function(done) {
@@ -595,7 +595,7 @@ describe('multiple transforms:', function() {
         }).then(function() {
             assertDims([]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('toggling trace visibility should work', function(done) {
@@ -616,7 +616,7 @@ describe('multiple transforms:', function() {
         }).then(function() {
             assertDims([2, 2, 2, 2]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('executes filter and aggregate in the order given', function(done) {
@@ -652,7 +652,7 @@ describe('multiple transforms:', function() {
             expect(trace2Out.x).toEqual([4, -5]);
             expect(trace2Out.y).toEqual([5, 4]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('always executes groupby before aggregate', function(done) {
@@ -701,7 +701,7 @@ describe('multiple transforms:', function() {
             expect(t2g2.x).toEqual(t1g2.x);
             expect(t2g2.y).toEqual(t1g2.y);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -721,7 +721,7 @@ describe('invalid transforms', function() {
         }]).then(function() {
             expect(gd._fullData[0].transforms.length).toEqual(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -783,7 +783,7 @@ describe('multiple traces with transforms:', function() {
 
             assertDims([2, 3, 3]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.restyle should work', function(done) {
@@ -837,7 +837,7 @@ describe('multiple traces with transforms:', function() {
                 [0.4, 0.6, 0.6]
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.extendTraces should work', function(done) {
@@ -863,7 +863,7 @@ describe('multiple traces with transforms:', function() {
         }).then(function() {
             assertDims([5, 4, 4]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.deleteTraces should work', function(done) {
@@ -882,7 +882,7 @@ describe('multiple traces with transforms:', function() {
         }).then(function() {
             assertDims([]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('toggling trace visibility should work', function(done) {
@@ -909,7 +909,7 @@ describe('multiple traces with transforms:', function() {
         }).then(function() {
             assertDims([3, 3]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -975,7 +975,7 @@ describe('restyle applied on transforms:', function() {
             expect(gd.data[0].transforms).toBeUndefined(msg);
             expect(gd._fullData[0].y).toEqual([2, 1, 2], msg);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 

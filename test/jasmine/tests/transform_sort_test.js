@@ -298,7 +298,7 @@ describe('Test sort transform interactions:', function() {
         .then(function() {
             _assertFirst('M10,0A10,10 0 1');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('does not preserve event data `pointNumber` value', function(done) {
@@ -389,7 +389,7 @@ describe('Test sort transform interactions:', function() {
         .then(function(eventData) {
             assertPt(eventData, 1, 1, 5, 'G');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should honor *categoryarray* when set', function(done) {
@@ -425,6 +425,6 @@ describe('Test sort transform interactions:', function() {
         .then(function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['A', 'B', 'C']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

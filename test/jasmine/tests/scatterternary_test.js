@@ -409,7 +409,7 @@ describe('scatterternary hover', function() {
             expect(scatterPointData[0].yLabelVal).toBeUndefined();
             expect(scatterPointData[0].text).toEqual('orange');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should pass along hovertemplate on hover', function(done) {
@@ -427,7 +427,7 @@ describe('scatterternary hover', function() {
             expect(scatterPointData[0].bLabel).toBe('0.1111111');
             expect(scatterPointData[0].cLabel).toBe('0.5555556');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should always display hoverlabel when hovertemplate is defined', function(done) {
@@ -445,7 +445,7 @@ describe('scatterternary hover', function() {
         .then(function() {
             check([380, 210], ['0.5, 0.25, 0.25']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -551,7 +551,7 @@ describe('Test scatterternary *cliponaxis*', function() {
                 [true, 1]
            );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 

@@ -92,7 +92,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('works the same for scattergl', function(done) {
@@ -113,7 +113,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('draws lines and markers on enabled axes w/o tick labels', function(done) {
@@ -135,7 +135,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('draws lines and markers on enabled axes in the x hovermode', function(done) {
@@ -154,7 +154,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('draws lines up to x-axis position', function(done) {
@@ -180,7 +180,7 @@ describe('spikeline hover', function() {
             // from "y" of xy subplot top, down to "y" xy2 subplot bottom
             _assert([[189, 100, 189, 320]], []);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('draws lines up to y-axis position - anchor free case', function(done) {
@@ -208,7 +208,7 @@ describe('spikeline hover', function() {
             // from "y" of pt, down to "y" of x axis (which is further down)
             _assert([[95.75, 100, 95.75, 210]], []);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('draws lines up to y-axis position', function(done) {
@@ -236,7 +236,7 @@ describe('spikeline hover', function() {
             // from "x" at xy2 subplot left, to "x" at xy subplot right
             _assert([[80, 114.75, 320, 114.75]], []);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('draws lines up to y-axis position - anchor free case', function(done) {
@@ -264,7 +264,7 @@ describe('spikeline hover', function() {
             // from "x" of y axis (which is further left) to "x" of pt
             _assert([[200, 114.75, 320, 114.75]], []);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('draws lines and markers on enabled axes in the spikesnap "cursor" mode', function(done) {
@@ -291,7 +291,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('does not show spikes if no points are hovered in the spikesnap "hovered data" mode', function(done) {
@@ -314,7 +314,7 @@ describe('spikeline hover', function() {
             _hover({xval: 1.5});
             _assert([], []);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('doesn\'t switch between toaxis and across spikemodes on switching the hovermodes', function(done) {
@@ -348,7 +348,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('increase the range of search for points to draw the spikelines on spikedistance change', function(done) {
@@ -383,7 +383,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('correctly responds to setting the spikedistance to -1 by increasing ' +
@@ -418,7 +418,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('correctly select the closest bar even when setting spikedistance to -1 (case of x hovermode)', function(done) {
@@ -441,7 +441,7 @@ describe('spikeline hover', function() {
             expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('correctly select the closest bar even when setting spikedistance to -1 (case of closest hovermode)', function(done) {
@@ -466,7 +466,7 @@ describe('spikeline hover', function() {
             expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('could select the closest scatter point inside bar', function(done) {
@@ -535,7 +535,7 @@ describe('spikeline hover', function() {
             expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('blue');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('correctly responds to setting the spikedistance to 0 by disabling ' +
@@ -570,7 +570,7 @@ describe('spikeline hover', function() {
                 []
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     function spikeLayout() {
@@ -615,7 +615,7 @@ describe('spikeline hover', function() {
         .then(_assertBarSpikes)
         .then(function() { _setHovermode('closest'); })
         .then(_assertBarSpikes)
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('positions spikes at the data value on grouped boxes', function(done) {
@@ -639,7 +639,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('positions spikes correctly on grouped violins', function(done) {
@@ -667,7 +667,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('positions spikes correctly on heatmaps', function(done) {
@@ -682,7 +682,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('positions spikes correctly on contour maps', function(done) {
@@ -700,7 +700,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('does not show spikes on scatter fills', function(done) {
@@ -719,7 +719,7 @@ describe('spikeline hover', function() {
                 [[200, 500], [100, 400]]
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('correctly draws lines up to the winning point', function(done) {
@@ -743,7 +743,7 @@ describe('spikeline hover', function() {
             expect(lines[0][1].getAttribute('stroke')).toBe('green');
             expect(lines[0][3].getAttribute('stroke')).toBe('green');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     describe('works across all cartesian traces', function() {
@@ -851,7 +851,7 @@ describe('spikeline hover', function() {
                         var lines = d3SelectAll('line.spikeline');
                         expect(lines.size()).toBe(4);
                     })
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
             });
         });
     });

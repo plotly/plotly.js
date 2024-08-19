@@ -210,7 +210,7 @@ describe('Plotly.Snapshot', function() {
                 var svgElements = svgDOM.getElementsByTagName('svg');
 
                 expect(svgElements.length).toBe(1);
-            }).then(done, done.fail);
+            }).then(()=>done(), done.fail);
         });
 
         it('should not return any nested svg tags of annotations', function(done) {
@@ -221,7 +221,7 @@ describe('Plotly.Snapshot', function() {
                 var svgElements = svgDOM.getElementsByTagName('svg');
 
                 expect(svgElements.length).toBe(1);
-            }).then(done, done.fail);
+            }).then(()=>done(), done.fail);
         });
 
         it('should force *visibility: visible* for text elements with *visibility: inherit*', function(done) {
@@ -246,7 +246,7 @@ describe('Plotly.Snapshot', function() {
                     expect(textElements[i].style.display).toEqual('');
                 }
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         describe('should handle quoted style properties', function() {
@@ -302,7 +302,7 @@ describe('Plotly.Snapshot', function() {
                     expect(legendPointElements.length).toEqual(1);
                     checkURL(legendPointElements[0].style.fill);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('- legend with contour items case', function(done) {
@@ -322,7 +322,7 @@ describe('Plotly.Snapshot', function() {
                     var lineItems = svgDOM.getElementsByClassName('legendlines');
                     checkURL(lineItems[1].firstChild.style.stroke, 'stroke gradient');
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('- colorbar case', function(done) {
@@ -339,7 +339,7 @@ describe('Plotly.Snapshot', function() {
                         checkURL(fillItems[i].style.fill, 'fill gradient ' + i);
                     }
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('- legend3dandfriends case', function(done) {
@@ -356,7 +356,7 @@ describe('Plotly.Snapshot', function() {
                         checkURL(fillItems[i].style.fill, 'fill gradient ' + i);
                     }
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -376,7 +376,7 @@ describe('Plotly.Snapshot', function() {
                 expect(el.getAttribute('height')).toBe('1000', 'height');
                 expect(el.getAttribute('viewBox')).toBe('0 0 300 400', 'viewbox');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

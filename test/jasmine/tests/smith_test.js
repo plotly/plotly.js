@@ -120,7 +120,7 @@ describe('Test relayout on smith subplots:', function() {
         .then(function() {
             check(26, 'M-0.5,0h-5');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to relayout real axis ticks', function(done) {
@@ -155,7 +155,7 @@ describe('Test relayout on smith subplots:', function() {
         .then(function() {
             check(5, 'M0,-0.5v-5');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should clean up its framework, clip paths and info layers when getting deleted', function(done) {
@@ -187,7 +187,7 @@ describe('Test relayout on smith subplots:', function() {
         .then(function() {
             _assert({subplot: 1, clip: 1});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -372,6 +372,6 @@ describe('Test smith interactions:', function() {
                 plotly_relayout: 1
             }, 'after right click');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

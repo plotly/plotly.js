@@ -34,7 +34,7 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('gl2d subplots', function(done) {
@@ -46,7 +46,7 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('scattergl subplots', function(done) {
@@ -75,7 +75,7 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('scatterpolargl subplots', function(done) {
@@ -87,7 +87,7 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('splom subplots', function(done) {
@@ -99,7 +99,7 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('parcoords subplots', function(done) {
@@ -111,6 +111,6 @@ describe('Plotly w/o WebGL support:', function() {
         .then(function() {
             checkNoWebGLMsg(false);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

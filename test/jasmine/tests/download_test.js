@@ -40,24 +40,24 @@ describe('Plotly.downloadImage', function() {
 
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'jpeg')
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'png')
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'full-json')
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
         checkWebp(function(supported) {
             if(supported) {
                 downloadTest(gd, 'webp')
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             } else {
                 done();
             }
@@ -66,12 +66,12 @@ describe('Plotly.downloadImage', function() {
 
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'svg')
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should work when passing graph div id', function(done) {
         downloadTest('graph', 'svg')
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should work when passing a figure object', function(done) {
@@ -84,7 +84,7 @@ describe('Plotly.downloadImage', function() {
             expect(gd._snapshotInProgress)
                 .toBe(undefined, 'should not attach _snapshotInProgress to figure objects');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should produce the right SVG output in IE', function(done) {
@@ -132,7 +132,7 @@ describe('Plotly.downloadImage', function() {
                 reader.readAsText(savedBlob);
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 });
 

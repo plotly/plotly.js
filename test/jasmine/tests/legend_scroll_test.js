@@ -250,7 +250,7 @@ describe('The legend', function() {
                 expect(hasScrollBar()).toBe(true);
                 expect(getScroll(gd)).not.toBe(0);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('updates scrollBar size/existence on deleteTraces', function(done) {
@@ -284,7 +284,7 @@ describe('The legend', function() {
                 expect(hasScrollBar()).toBe(false);
                 expect(getScroll(gd)).toBeUndefined();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should keep the scrollbar position after a toggle event', function(done) {
@@ -385,7 +385,7 @@ describe('The legend', function() {
                 expect(countLegendGroups(gd)).toBe(0);
                 expect(countLegendClipPaths(gd)).toBe(0);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should resize when relayout\'ed with new height', function(done) {
@@ -403,7 +403,7 @@ describe('The legend', function() {
                 expect(+legendHeight).toBe(getPlotHeight(gd));
                 expect(+legendHeight).toBeLessThan(+origLegendHeight);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -437,7 +437,7 @@ describe('The legend', function() {
                 expect(countLegendGroups(gd)).toBe(0);
                 expect(countLegendClipPaths(gd)).toBe(0);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should resize when traces added', function(done) {
@@ -448,7 +448,7 @@ describe('The legend', function() {
 
                 expect(+legendHeight).toBeCloseTo(+origLegendHeight + 19, 0);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

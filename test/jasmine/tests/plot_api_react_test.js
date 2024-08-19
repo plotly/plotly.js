@@ -115,7 +115,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             expect(d3SelectAll('.point').size()).toBe(3);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should notice new data by ===, without layout.datarevision', function(done) {
@@ -143,7 +143,7 @@ describe('@noCIdep Plotly.react', function() {
             expect(d3SelectAll('.point').size()).toBe(5);
             countCalls({plot: 1});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should notice new layout.datarevision', function(done) {
@@ -173,7 +173,7 @@ describe('@noCIdep Plotly.react', function() {
 
             countCalls({plot: 1});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('picks up partial redraws', function(done) {
@@ -238,7 +238,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             countCalls({doColorBars: 1, plot: 1});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('picks up special dtick geo case', function(done) {
@@ -268,7 +268,7 @@ describe('@noCIdep Plotly.react', function() {
             countCalls({plot: 1});
             expect(countLines()).toBe(6);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('picks up minimal sequence for cartesian axis range updates', function(done) {
@@ -286,7 +286,7 @@ describe('@noCIdep Plotly.react', function() {
             expect(Axes.draw).toHaveBeenCalledWith(gd, 'redraw');
             expect(subroutines.layoutStyles).not.toHaveBeenCalled();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('redraws annotations one at a time', function(done) {
@@ -345,7 +345,7 @@ describe('@noCIdep Plotly.react', function() {
             countCalls({plot: 1});
             expect(layout.yaxis.range[1]).toBeCloseTo(ymax, 0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('redraws images all at once', function(done) {
@@ -399,7 +399,7 @@ describe('@noCIdep Plotly.react', function() {
             expect(n.attributes.y.value).not.toBe(y);
             expect(n.attributes.height.value).not.toBe(height);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can change config, and always redraws', function(done) {
@@ -434,7 +434,7 @@ describe('@noCIdep Plotly.react', function() {
             expect(d3SelectAll('.gtitle').size()).toBe(0);
             countCalls({plot: 1});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can put polar plots into staticPlot mode', function(done) {
@@ -459,7 +459,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             expect(d3Select(gd).selectAll('.drag').size()).toBe(4);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can put smith plots into staticPlot mode', function(done) {
@@ -481,7 +481,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             expect(d3Select(gd).selectAll('.drag').size()).toBe(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can change from scatter to category scatterpolar and back', function(done) {
@@ -525,7 +525,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             countTraces(1, 0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can change data in candlesticks multiple times', function(done) {
@@ -571,7 +571,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             assertCalc(2, 4, -1, 1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     function aggregatedPie(i) {
@@ -696,7 +696,7 @@ describe('@noCIdep Plotly.react', function() {
 
         .then(reactTo(aggregatedPie(1)))
         .then(checkCalcData(aggPie1CD))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can change scatter aggregations', function(done) {
@@ -708,7 +708,7 @@ describe('@noCIdep Plotly.react', function() {
 
         .then(reactTo(aggregatedScatter(1)))
         .then(checkCalcData(aggScatter1CD))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl can change parcoords aggregations', function(done) {
@@ -724,7 +724,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(reactTo(aggregatedParcoords(0)))
         .then(checkValues(aggParcoords0Vals))
 
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl can change type with aggregations', function(done) {
@@ -751,7 +751,7 @@ describe('@noCIdep Plotly.react', function() {
 
         .then(reactTo(aggregatedParcoords(0)))
         .then(checkValues(aggParcoords0Vals))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can change frames without redrawing', function(done) {
@@ -775,7 +775,7 @@ describe('@noCIdep Plotly.react', function() {
             expect(frameData.length).toBe(1);
             expect(frameData[0].name).toBe('frame2');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     // make sure we've included every trace type in this suite
@@ -868,7 +868,7 @@ describe('@noCIdep Plotly.react', function() {
             expect(fullJson()).toEqual(initialJson);
             countCalls({});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }
 
     mockLists.svg.forEach(function(mockSpec) {
@@ -941,7 +941,7 @@ describe('resizing with Plotly.relayout and Plotly.react', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([-0.53448, 1.53448], 3);
             expect(gd.layout.yaxis.range).toBeCloseToArray([0.46552, 2.53448], 3);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -987,7 +987,7 @@ describe('clear bglayer react', function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('green');
             expect(hasBgRect()).toBe(true);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('clear plot background when react from gl2d to gl3d & back', function(done) {
@@ -1014,7 +1014,7 @@ describe('clear bglayer react', function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('green');
             expect(hasBgRect()).toBe(true);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('create plot background when react from gl3d to gl2d & back', function(done) {
@@ -1041,7 +1041,7 @@ describe('clear bglayer react', function() {
             expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
             expect(hasBgRect()).toBe(false);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('create plot background when react from gl3d to cartesian & back', function(done) {
@@ -1068,7 +1068,7 @@ describe('clear bglayer react', function() {
             expect(gd._fullLayout.plot_bgcolor).toBe(undefined);
             expect(hasBgRect()).toBe(false);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('change plot background when react from cartesian to gl2d & back', function(done) {
@@ -1095,7 +1095,7 @@ describe('clear bglayer react', function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('yellow');
             expect(hasBgRect()).toBe(true);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('change plot background when react from gl2d to cartesian & back', function(done) {
@@ -1122,7 +1122,7 @@ describe('clear bglayer react', function() {
             expect(gd._fullLayout.plot_bgcolor).toBe('yellow');
             expect(hasBgRect()).toBe(true);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1244,7 +1244,7 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(checkHasEdits)
         .then(_react(fig(false)))
         .then(checkNoEdits)
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('moves trace visibility with uid', function(done) {
@@ -1263,7 +1263,7 @@ describe('Plotly.react and uirevision attributes', function() {
         }))
         // now the first trace is hidden, because it has uid b now!
         .then(checkState([{visible: 'legendonly'}, {visible: [undefined, true]}]))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     describe('should handle case where traces are removed', function() {
@@ -1289,7 +1289,7 @@ describe('Plotly.react and uirevision attributes', function() {
             .then(mockLegendClick)
             .then(_react([{y: [1, 2, 1]}]))
             .then(_assert('after react', [true]))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('- case no uirevision with uid', function(done) {
@@ -1298,7 +1298,7 @@ describe('Plotly.react and uirevision attributes', function() {
             .then(mockLegendClick)
             .then(_react([{y: [1, 2, 1], uid: 'a'}]))
             .then(_assert('after react', [true]))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('- case with uirevision no uid', function(done) {
@@ -1307,7 +1307,7 @@ describe('Plotly.react and uirevision attributes', function() {
             .then(mockLegendClick)
             .then(_react({data: [{y: [1, 2, 1]}], layout: {uirevision: true}}))
             .then(_assert('after react', ['legendonly']))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('- case with uirevision with uid', function(done) {
@@ -1316,7 +1316,7 @@ describe('Plotly.react and uirevision attributes', function() {
             .then(mockLegendClick)
             .then(_react({data: [{y: [1, 2, 1], uid: 'a'}], layout: {uirevision: true}}))
             .then(_assert('after react', ['legendonly']))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1371,7 +1371,7 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(checkAutoRange(false, false, true, true))
         .then(_react(fig('b', undefined, undefined, false, '')))
         .then(checkAutoRange(true, true, true, true))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     function setCartesianRanges(xRange, yRange) {
@@ -1424,7 +1424,7 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(checkCartesianRanges([4, 6], [7, 9], 'react to STAY implicit'))
         .then(_react(fig(true, 'b')))
         .then(checkCartesianRanges([4, 6], [7, 9], 'back to explicit'))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('respects reverting an explicit cartesian axis range to auto', function(done) {
@@ -1445,7 +1445,7 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(checkCartesianRanges([2, 4], [5, 7], 'zoomed to different explicit'))
         .then(_react(fig(undefined, undefined)))
         .then(checkCartesianRanges([0, 2], [3, 5], 'react to autorange'))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('respects reverting an explicit polar axis range to auto', function(done) {
@@ -1477,7 +1477,7 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(checkRange([2, 4]))
         .then(_react(fig(undefined)))
         .then(checkRange([0, 1.05263]))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     function _run(figFn, editFn, checkInitial, checkEdited) {
@@ -1580,7 +1580,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkAllVisible = checkVisible([true, true, true], true);
         var checkSomeHidden = checkVisible([false, true, false], false);
 
-        _run(fig, hideSome, checkAllVisible, checkSomeHidden).then(done, done.fail);
+        _run(fig, hideSome, checkAllVisible, checkSomeHidden).then(()=>done(), done.fail);
     });
 
     it('@gl preserves modebar interactions using modebar.uirevision', function(done) {
@@ -1631,7 +1631,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalModes = checkState([], attrs(true));
         var checkEditedModes = checkState([], attrs());
 
-        _run(fig, editModes, checkOriginalModes, checkEditedModes).then(done, done.fail);
+        _run(fig, editModes, checkOriginalModes, checkEditedModes).then(()=>done(), done.fail);
     });
 
     it('preserves geo viewport changes using geo.uirevision', function(done) {
@@ -1663,7 +1663,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalView = checkState([], attrs(true));
         var checkEditedView = checkState([], attrs());
 
-        _run(fig, editView, checkOriginalView, checkEditedView).then(done, done.fail);
+        _run(fig, editView, checkOriginalView, checkEditedView).then(()=>done(), done.fail);
     });
 
     it('preserves geo viewport changes using geo.uirevision (fitbounds case)', function(done) {
@@ -1696,7 +1696,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalView = checkState([], attrs(true));
         var checkEditedView = checkState([], attrs());
 
-        _run(fig, editView, checkOriginalView, checkEditedView).then(done, done.fail);
+        _run(fig, editView, checkOriginalView, checkEditedView).then(()=>done(), done.fail);
     });
 
     it('@gl preserves 3d camera changes using scene.uirevision', function(done) {
@@ -1736,7 +1736,7 @@ describe('Plotly.react and uirevision attributes', function() {
         var checkOriginalCamera = _checkCamera(true);
         var checkEditedCamera = _checkCamera(false);
 
-        _run(fig, editCamera, checkOriginalCamera, checkEditedCamera).then(done, done.fail);
+        _run(fig, editCamera, checkOriginalCamera, checkEditedCamera).then(()=>done(), done.fail);
     });
 
     it('preserves selectedpoints using selectionrevision', function(done) {
@@ -1769,7 +1769,7 @@ describe('Plotly.react and uirevision attributes', function() {
             {selectedpoints: [[2]]}
         ]);
 
-        _run(fig, editSelection, checkNoSelection, checkSelection).then(done, done.fail);
+        _run(fig, editSelection, checkNoSelection, checkSelection).then(()=>done(), done.fail);
     });
 
     it('preserves selectedpoints using selectedrevision (groupby case)', function(done) {
@@ -1809,7 +1809,7 @@ describe('Plotly.react and uirevision attributes', function() {
         // point 4 is last, in group 3
         var checkSelection = checkState([{selectedpoints: [[5, 7, 8, 4]]}]);
 
-        _run(fig, editSelection, checkNoSelection, checkSelection).then(done, done.fail);
+        _run(fig, editSelection, checkNoSelection, checkSelection).then(()=>done(), done.fail);
     });
 
     it('preserves polar view changes using polar.uirevision', function(done) {
@@ -1857,7 +1857,7 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(function() {
             return _run(fig2, editPolar, checkInitial, checkEdited);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('preserves ternary view changes using ternary.uirevision', function(done) {
@@ -2182,7 +2182,7 @@ describe('Plotly.react and uirevision attributes', function() {
             .then(function() {
                 assertLevel('after reacting with new data, but with same uirevision', 'Seth');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -2270,7 +2270,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         .then(function() { _assertGUI('before'); })
         .then(_react)
         .then(function() { _assertGUI('after'); })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('geo subplots should preserve viewport changes after panning', function(done) {
@@ -2322,7 +2322,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         .then(function() { _assertGUI('before'); })
         .then(_react)
         .then(function() { _assertGUI('after'); })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl mapbox subplots should preserve viewport changes after panning', function(done) {
@@ -2397,7 +2397,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         .then(function() { _assertGUI('before'); })
         .then(_react)
         .then(function() { _assertGUI('after'); })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl map subplots should preserve viewport changes after panning', function(done) {
@@ -2470,6 +2470,6 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
         .then(function() { _assertGUI('before'); })
         .then(_react)
         .then(function() { _assertGUI('after'); })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

@@ -73,14 +73,14 @@ describe('Test frame api', function() {
                     // Five (`var numericNameWarningCountLimit = 5`) warnings and one warning saying that there won't be more warnings
                     expect(Lib.warn.calls.count()).toEqual(5 + 1);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
         });
 
         it('treats an undefined list as a noop', function(done) {
             Plotly.addFrames(gd, undefined).then(function() {
                 expect(Object.keys(h)).toEqual([]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('compresses garbage when adding frames', function(done) {
@@ -88,42 +88,42 @@ describe('Test frame api', function() {
                 expect(Object.keys(h)).toEqual(['test']);
                 expect(f).toEqual([{name: 'test'}]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('treats a null list as a noop', function(done) {
             Plotly.addFrames(gd, null).then(function() {
                 expect(Object.keys(h)).toEqual([]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('treats an empty list as a noop', function(done) {
             Plotly.addFrames(gd, []).then(function() {
                 expect(Object.keys(h)).toEqual([]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('names an unnamed frame', function(done) {
             Plotly.addFrames(gd, [{}]).then(function() {
                 expect(Object.keys(h)).toEqual(['frame 0']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('casts names to strings', function(done) {
             Plotly.addFrames(gd, [{name: 5}]).then(function() {
                 expect(Object.keys(h)).toEqual(['5']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('creates multiple unnamed frames at the same time', function(done) {
             Plotly.addFrames(gd, [{}, {}]).then(function() {
                 expect(f).toEqual([{name: 'frame 0'}, {name: 'frame 1'}]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('creates multiple unnamed frames in series', function(done) {
@@ -132,14 +132,14 @@ describe('Test frame api', function() {
             }).then(function() {
                 expect(f).toEqual([{name: 'frame 0'}, {name: 'frame 1'}]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('casts number names to strings on insertion', function(done) {
             Plotly.addFrames(gd, [{name: 2}]).then(function() {
                 expect(f).toEqual([{name: '2'}]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('updates frames referenced by number', function(done) {
@@ -148,7 +148,7 @@ describe('Test frame api', function() {
             }).then(function() {
                 expect(f).toEqual([{name: '2', layout: {foo: 'bar'}}]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('avoids name collisions', function(done) {
@@ -159,7 +159,7 @@ describe('Test frame api', function() {
             }).then(function() {
                 expect(f).toEqual([{name: 'frame 0'}, {name: 'frame 2'}, {name: 'frame 1'}, {name: 'foobar'}, {name: 'frame 3'}]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('inserts frames at specific indices', function(done) {
@@ -185,7 +185,7 @@ describe('Test frame api', function() {
                 return Queue.undo(gd);
             })
             .then(validate)
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('inserts frames at specific indices (reversed)', function(done) {
@@ -211,7 +211,7 @@ describe('Test frame api', function() {
                 return Queue.undo(gd);
             })
             .then(validate)
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('implements undo/redo', function(done) {
@@ -229,7 +229,7 @@ describe('Test frame api', function() {
                 return Queue.redo(gd);
             })
             .then(validate)
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('overwrites frames', function(done) {
@@ -253,7 +253,7 @@ describe('Test frame api', function() {
                 expect(f).toEqual([{name: 'test1'}, {name: 'test2'}, {name: 'test3'}]);
                 expect(Object.keys(h)).toEqual(['test1', 'test2', 'test3']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -277,7 +277,7 @@ describe('Test frame api', function() {
                 expect(f).toEqual([]);
                 expect(Object.keys(h)).toEqual([]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('deletes multiple frames', function(done) {
@@ -307,7 +307,7 @@ describe('Test frame api', function() {
                 return Queue.redo(gd);
             })
             .then(validate)
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('deletes all frames if frameList is falsey', function(done) {
@@ -341,7 +341,7 @@ describe('Test frame api', function() {
                 return Plotly.deleteFrames(gd, undefined);
             })
             .then(validateCount(0))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('deleteFrames is a no-op with empty array', function(done) {
@@ -363,7 +363,7 @@ describe('Test frame api', function() {
                 return Plotly.deleteFrames(gd, []);
             })
             .then(validateCount(n))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

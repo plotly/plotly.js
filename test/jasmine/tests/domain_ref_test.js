@@ -30,7 +30,7 @@ function makeTests(component, filter) {
                 tests[i](function(v) {
                     expect(v).toBe(true);
                 }, gd)
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
             });
         });
     };

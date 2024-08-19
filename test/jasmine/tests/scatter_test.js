@@ -684,7 +684,7 @@ describe('end-to-end scatter tests', function() {
             points.each(function() {
                 expect(d3Select(this).classed('plotly-customdata')).toBe(false);
             });
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 
     it('adds "textpoint" class to scatter text points', function(done) {
@@ -695,7 +695,7 @@ describe('end-to-end scatter tests', function() {
             text: ['a', 'b', 'c']
         }]).then(function() {
             expect(d3SelectAll('.textpoint').size()).toBe(3);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 
     it('should remove all point and text nodes on blank data', function(done) {
@@ -748,7 +748,7 @@ describe('end-to-end scatter tests', function() {
             assertNodeCnt(3, 3);
             assertText(['A', 'B', 'C']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should keep layering correct as mode & fill change', function(done) {
@@ -833,7 +833,7 @@ describe('end-to-end scatter tests', function() {
             p = p.then(setMode(i)).then(testOrdering(i));
         }
 
-        p.then(done, done.fail);
+        p.then(()=>done(), done.fail);
     });
 
     function _assertNodes(ptStyle, txContent) {
@@ -890,7 +890,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'clementine']
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should reorder point and text nodes even when linked to ids (add/remove case)', function(done) {
@@ -933,7 +933,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'clementine']
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should smoothly add/remove nodes tags with *ids* during animations', function(done) {
@@ -968,7 +968,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'dragon fruit']
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('animates fillcolor', function(done) {
@@ -989,7 +989,7 @@ describe('end-to-end scatter tests', function() {
             );
         }).then(function() {
             expect(fill()).toEqual('rgb(0, 0, 255)');
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 
     it('clears fills tonext when either trace is emptied out', function(done) {
@@ -1032,7 +1032,7 @@ describe('end-to-end scatter tests', function() {
         .then(function() {
             checkFill(false, 'null out both traces');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('updates line segments on redraw when having null values', function(done) {
@@ -1053,7 +1053,7 @@ describe('end-to-end scatter tests', function() {
         .then(function() {
             checkSegments(2, 'after redraw');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('correctly autoranges fill tonext traces across multiple subplots', function(done) {
@@ -1069,7 +1069,7 @@ describe('end-to-end scatter tests', function() {
             // even though the fill was correctly drawn down to zero
             expect(gd._fullLayout.yaxis2.range[0]).toBe(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('correctly autoranges fill tonext traces with only one point', function(done) {
@@ -1077,7 +1077,7 @@ describe('end-to-end scatter tests', function() {
         .then(function() {
             expect(gd._fullLayout.yaxis.range[0]).toBe(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work with typed arrays', function(done) {
@@ -1136,7 +1136,7 @@ describe('end-to-end scatter tests', function() {
             expect(getColor(legendPts.node())).toBe('rgb(0, 255, 0)', 'legend pt color');
             expect(getMarkerSize(legendPts.node())).toBe(16, 'legend pt size');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     function assertAxisRanges(msg, xrng, yrng) {
@@ -1180,7 +1180,7 @@ describe('end-to-end scatter tests', function() {
         .then(function() {
             assertAxisRanges('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should update axis range according to visible edits', function(done) {
@@ -1207,7 +1207,7 @@ describe('end-to-end scatter tests', function() {
         .then(function() {
             assertAxisRanges('back to both visible', [0.676, 6.323], [-2.29, 2.29]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to start from visible:false', function(done) {
@@ -1231,7 +1231,7 @@ describe('end-to-end scatter tests', function() {
         .then(function() {
             _assert('back to visible:false', 0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not error out when segment-less marker-less fill traces', function(done) {
@@ -1244,7 +1244,7 @@ describe('end-to-end scatter tests', function() {
             expect(d3SelectAll('.js-fill').size()).toBe(1, 'js-fill is there');
             expect(d3Select('.js-fill').attr('d')).toBe('M0,0Z', 'js-fill has an empty path');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1384,7 +1384,7 @@ describe('stacked area', function() {
                 y3: [0, 4.32], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 5.26]
             }, 'middle trace *implicit* visible: false');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can add/delete stack groups', function(done) {
@@ -1416,7 +1416,7 @@ describe('stacked area', function() {
         .then(function() {
             _assert([0, 3.205], 1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('does not stack on date axes', function(done) {
@@ -1430,7 +1430,7 @@ describe('stacked area', function() {
                 // adding milliseconds since 1970
                 .toEqual(['2015', '2017']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('does not stack on category axes', function(done) {
@@ -1443,7 +1443,7 @@ describe('stacked area', function() {
             // and autorange to ~[-0.2, 3.2]
             expect(gd.layout.yaxis.range).toBeCloseToArray([-0.1, 2.1], 1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1510,7 +1510,7 @@ describe('scatter hoverPoints', function() {
             expect(pts[1].text).toEqual('banana', 'hover text');
             expect(pts[2].text).toEqual('orange', 'hover text');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1566,7 +1566,7 @@ describe('scatter hoverFills', function() {
                 }
             }
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should correctly detect the fill that is hovered over for tozeroy and tonexty fills', function(done) {
@@ -1626,7 +1626,7 @@ describe('scatter hoverFills', function() {
                 }
             }
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
 
@@ -1680,7 +1680,7 @@ describe('scatter hoverFills', function() {
                 }
             }
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1808,7 +1808,7 @@ describe('Test Scatter.style', function() {
                 'selected pt 1 w/ set unselected.marker.opacity'
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should style selected point marker color correctly', function(done) {
@@ -1894,7 +1894,7 @@ describe('Test Scatter.style', function() {
                 'selected pts 0-2 w/ set selected.marker.color'
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should style selected point marker size correctly', function(done) {
@@ -1937,7 +1937,7 @@ describe('Test Scatter.style', function() {
                 'selected pt 0 w/ set unselected.marker.size'
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should style selected point textfont correctly', function(done) {
@@ -2019,7 +2019,7 @@ describe('Test Scatter.style', function() {
                 'selected pts 0-2 w/ set selected.textfont.color'
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -2164,7 +2164,7 @@ describe('Test scatter *clipnaxis*:', function() {
                 [true, 1]
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 

@@ -307,7 +307,7 @@ describe('ugly internal manipulation of steps', function() {
             // The selected option no longer exists, so confirm it's
             // been fixed during the process of updating/drawing it:
             expect(gd._fullLayout.sliders[0].active).toEqual(0);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 });
 
@@ -359,7 +359,7 @@ describe('sliders interactions', function() {
         .then(function() {
             checkPositions('back to original');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should draw only visible sliders', function(done) {
@@ -414,7 +414,7 @@ describe('sliders interactions', function() {
             expect(gd._fullLayout._pushmargin['slider-0']).toBeDefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('only draws visible steps', function(done) {
@@ -465,7 +465,7 @@ describe('sliders interactions', function() {
         .then(function() {
             assertSlider(10, 5, 0, 2);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should respond to mouse clicks', function(done) {
@@ -505,7 +505,7 @@ describe('sliders interactions', function() {
             expect(mouseupFill).toEqual(originalFill);
             expect(mockCopy.layout.sliders[0].active).toEqual(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should respond to touch interactions', function(done) {
@@ -543,7 +543,7 @@ describe('sliders interactions', function() {
             expect(touchupFill).toEqual(originalFill);
             expect(mockCopy.layout.sliders[0].active).toEqual(5);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should issue events on interaction', function(done) {
@@ -606,7 +606,7 @@ describe('sliders interactions', function() {
             // Now an end:
             assertEventCounts(1, 2, 2, 1, 'mouseup');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     function assertNodeCount(query, cnt) {

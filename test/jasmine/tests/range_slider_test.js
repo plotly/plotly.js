@@ -61,7 +61,7 @@ describe('Visible rangesliders', function() {
         plotMock().then(function() {
             expect(getRangeSlider()).toBeDefined();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should have the correct style and size and be able to update these', function(done) {
@@ -95,7 +95,7 @@ describe('Visible rangesliders', function() {
             expect(bg.style.stroke).toBe('rgb(64, 64, 64)');
             expect(+bg.getAttribute('stroke-width')).toBe(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should react to resizing the minimum handle', function(done) {
@@ -116,7 +116,7 @@ describe('Visible rangesliders', function() {
             expect(maskMin.getAttribute('width')).toEqual(String(diff));
             expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 2.5) + ',0.5)');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should react to resizing the maximum handle', function(done) {
@@ -142,7 +142,7 @@ describe('Visible rangesliders', function() {
 
             testTranslate1D(handleMax, dataMaxStart + diff);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should react to moving the slidebox left to right', function(done) {
@@ -167,7 +167,7 @@ describe('Visible rangesliders', function() {
             expect(+maskMin.getAttribute('width')).toBeCloseTo(String(diff));
             testTranslate1D(handleMin, dataMinStart + diff - 3);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should react to moving the slidebox right to left', function(done) {
@@ -192,7 +192,7 @@ describe('Visible rangesliders', function() {
             expect(+maskMin.getAttribute('width')).toBeCloseTo(-diff);
             testTranslate1D(handleMin, dataMaxStart + diff);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not exceed slider bounds left to right', function(done) {
@@ -209,7 +209,7 @@ describe('Visible rangesliders', function() {
         .then(function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49], -0.5);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not exceed slider bounds right to left', function(done) {
@@ -226,7 +226,7 @@ describe('Visible rangesliders', function() {
         .then(function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49], -0.5);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not react to any interactions when staticPlot is set', function(done) {
@@ -259,7 +259,7 @@ describe('Visible rangesliders', function() {
             .then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should update correctly when moving slider on an axis with rangebreaks', function(done) {
@@ -312,7 +312,7 @@ describe('Visible rangesliders', function() {
                 '1970-01-01 00:00:00.2'
             ]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should resize the main plot when rangeslider has moved', function(done) {
@@ -341,7 +341,7 @@ describe('Visible rangesliders', function() {
             rangeDiff3 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
             expect(rangeDiff3).toBeLessThan(rangeDiff2);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should relayout with relayout "array syntax"', function(done) {
@@ -359,7 +359,7 @@ describe('Visible rangesliders', function() {
             testTranslate1D(handleMin, 123.32);
             testTranslate1D(handleMax, 252.65);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should relayout with relayout "element syntax"', function(done) {
@@ -377,7 +377,7 @@ describe('Visible rangesliders', function() {
             testTranslate1D(handleMin, 123.32);
             testTranslate1D(handleMax, 617);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should relayout with style options', function(done) {
@@ -424,7 +424,7 @@ describe('Visible rangesliders', function() {
             expect(bg.style.stroke).toBe('rgb(0, 0, 255)');
             expect(bg.getAttribute('stroke-width')).toBe('3');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should relayout on size / domain udpate', function(done) {
@@ -458,7 +458,7 @@ describe('Visible rangesliders', function() {
             expect(+maskMin.getAttribute('width')).toBeWithin(9.22, TOL);
             expect(+maskMax.getAttribute('width')).toBeWithin(71.95, TOL);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should automargin correctly with a top or bottom x axis', function(done) {
@@ -502,7 +502,7 @@ describe('Visible rangesliders', function() {
         .then(function() {
             assertBottom(210);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -529,7 +529,7 @@ describe('Rangeslider visibility property', function() {
             expect(rangeSlider).not.toBeDefined();
             assertPlotSize({height: 400});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should add the slider if rangeslider is set to anything', function(done) {
@@ -542,7 +542,7 @@ describe('Rangeslider visibility property', function() {
             expect(rangeSlider).toBeDefined();
             assertPlotSize({heightLessThan: 400});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should add the slider if visible changed to `true`', function(done) {
@@ -556,7 +556,7 @@ describe('Rangeslider visibility property', function() {
             expect(countRangeSliderClipPaths()).toEqual(1);
             assertPlotSize({heightLessThan: 400});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should remove the slider if changed to `false` or `undefined`', function(done) {
@@ -577,7 +577,7 @@ describe('Rangeslider visibility property', function() {
             expect(countRangeSliderClipPaths()).toEqual(0);
             assertPlotSize({height: 400});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should clear traces in range plot when needed', function(done) {
@@ -659,7 +659,7 @@ describe('Rangeslider visibility property', function() {
             expect(count('g.heatmaplayer > g.hm')).toEqual(0);
             expect(count('g.contourlayer > g.contour')).toEqual(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -943,7 +943,7 @@ describe('rangesliders in general', function() {
 
             expect(rangeSlider).toBeDefined();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should plot when only y data is provided', function(done) {
@@ -953,7 +953,7 @@ describe('rangesliders in general', function() {
 
             expect(rangeSlider).toBeDefined();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should expand its range in accordance with new data arrays', function(done) {
@@ -985,7 +985,7 @@ describe('rangesliders in general', function() {
         .then(function() {
             assertRange([-0.31, 5.31], [-0.31, 5.31]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not expand its range when range slider range is set', function(done) {
@@ -1038,7 +1038,7 @@ describe('rangesliders in general', function() {
         .then(function() {
             assertRange([-0.26, 4.26], [-2, 12]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should configure yaxis opts on relayout', function(done) {
@@ -1064,7 +1064,7 @@ describe('rangesliders in general', function() {
         .then(function() {
             expect(gd.layout.xaxis.rangeslider.yaxis).toEqual(jasmine.objectContaining({ rangemode: 'match' }));
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should update rangeslider x/y ranges when data changes even if main axes are not autoranged', function(done) {
@@ -1091,7 +1091,7 @@ describe('rangesliders in general', function() {
             expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([-1, 5], 3);
             expect(gd._fullLayout.xaxis.rangeslider.yaxis.range).toBeCloseToArray([-1, 11], 3);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to turn on rangeslider x/y autorange if initially specified', function(done) {
@@ -1124,7 +1124,7 @@ describe('rangesliders in general', function() {
             expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([-0.5, 2.5], 3);
             expect(gd._fullLayout.xaxis.rangeslider.yaxis.range).toBeCloseToArray([0.5, 3.5], 3);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to turn on rangeslider x/y autorange implicitly by deleting x range', function(done) {
@@ -1150,7 +1150,7 @@ describe('rangesliders in general', function() {
         .then(function() {
             expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([-0.5, 2.5], 3);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should give correct rangeslider range on reversed axes', function(done) {
@@ -1219,7 +1219,7 @@ describe('rangesliders in general', function() {
                 rangesliderRng: [0, 3]
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 

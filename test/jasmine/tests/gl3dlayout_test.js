@@ -563,6 +563,6 @@ describe('Gl3d layout edge cases', function() {
             expect(aspect.y).toBeCloseTo(0.6437);
             expect(aspect.z).toBeCloseTo(0.9655);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

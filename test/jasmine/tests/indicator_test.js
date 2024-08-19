@@ -176,7 +176,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 checkNumbersScale(1, 'should scale up');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('scale down but never back up if domain size is constant', function(done) {
@@ -196,7 +196,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 checkNumbersScale(0.8, 'should not scale up');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         ['number', 'delta'].forEach(function(numberType) {
@@ -220,7 +220,7 @@ describe('Indicator plot', function() {
                 .then(function() {
                     checkNumbersScale(1, 'should not rescale');
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -248,7 +248,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 assertContent('$220');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('supports suffix', function(done) {
@@ -261,7 +261,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 assertContent('220 potatoes');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('supports prefix', function(done) {
@@ -274,7 +274,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 assertContent('Speed: 220');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -302,7 +302,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 assertContent(gd._fullData[0].delta.increasing.symbol + '0.100');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -324,7 +324,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 customAssertions.assertMultiNodeOrder(['g.bg-arc', 'g.value-arc', 'g.threshold-arc', 'g.gauge-outline']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -346,7 +346,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 customAssertions.assertMultiNodeOrder(['g.bg-bullet', 'g.value-bullet', 'g.threshold-bullet', 'g.gauge-outline']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -376,7 +376,7 @@ describe('Indicator plot', function() {
 
                 expect(titleBBox.bottom).toBeCloseTo(numbersBBox.top - cn.titlePadding, 0);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('position it above angular axes', function(done) {
@@ -396,7 +396,7 @@ describe('Indicator plot', function() {
                 var axBBox = ax.getBoundingClientRect();
                 expect(titleBBox.bottom).toBeCloseTo(axBBox.top - cn.titlePadding, 0);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('position it left of bullet', function(done) {
@@ -416,7 +416,7 @@ describe('Indicator plot', function() {
                 var axBBox = ax.getBoundingClientRect();
                 expect(titleBBox.right < axBBox.left).toBe(true);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -471,7 +471,7 @@ describe('Indicator plot', function() {
         .then(function() {
             assert([1, 1, 0, 1]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should draw blank path when value is NaN', function(done) {
@@ -503,7 +503,7 @@ describe('Indicator plot', function() {
         .then(function() {
             expect(getBulletRect()).toBe('0', 'width-less bullet of value:null');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -536,7 +536,7 @@ describe('Indicator animations', function() {
             .then(function() {
                 expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -617,6 +617,6 @@ describe('Indicator attributes', function() {
             // expect(gd._fullData[0].gauge.steps[0].range).toEqual([0, 250], 'wrong gauge.steps[0].range');
             // expect(gd._fullData[0].gauge.steps[0].color).toEqual('rgba(255, 255, 0, 0.5)');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

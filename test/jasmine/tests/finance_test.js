@@ -668,7 +668,7 @@ describe('finance charts auto-range', function() {
             Plotly.newPlot(gd, [trace]).then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('- candlestick case', function(done) {
@@ -677,7 +677,7 @@ describe('finance charts auto-range', function() {
             Plotly.newPlot(gd, [trace]).then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -741,7 +741,7 @@ describe('finance charts updates:', function() {
         .then(function() {
             expect(d3Select('path.box').attr('d')).not.toEqual(path0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to toggle visibility', function(done) {
@@ -790,7 +790,7 @@ describe('finance charts updates:', function() {
             expect(countOHLCTraces()).toEqual(1);
             expect(countBoxTraces()).toEqual(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.relayout should work', function(done) {
@@ -804,7 +804,7 @@ describe('finance charts updates:', function() {
         .then(function() {
             expect(countRangeSliders()).toEqual(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.extendTraces should work', function(done) {
@@ -839,7 +839,7 @@ describe('finance charts updates:', function() {
             expect(gd.calcdata[0].length).toEqual(10);
             expect(gd.calcdata[1].length).toEqual(10);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.deleteTraces / addTraces should work', function(done) {
@@ -880,7 +880,7 @@ describe('finance charts updates:', function() {
             expect(countOHLCTraces()).toEqual(1);
             expect(countBoxTraces()).toEqual(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.addTraces + Plotly.relayout should update candlestick box position values', function(done) {
@@ -924,7 +924,7 @@ describe('finance charts updates:', function() {
         .then(function() {
             assertBoxPosFields([-30240000, 30240000]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('Plotly.newPlot with data-less trace and adding with Plotly.restyle', function(done) {
@@ -963,7 +963,7 @@ describe('finance charts updates:', function() {
             expect(countBoxTraces()).toEqual(1);
             expect(countRangeSliders()).toEqual(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to update ohlc tickwidth', function(done) {
@@ -1014,7 +1014,7 @@ describe('finance charts updates:', function() {
                 pathd: 'M0,134.55H0M0,81V193.5M0,85.5H0'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work with typed array', function(done) {
@@ -1045,7 +1045,7 @@ describe('finance charts updates:', function() {
             expect(countOHLCTraces()).toBe(1, '# of ohlc traces');
             expect(countBoxTraces()).toBe(1, '# of candlestick traces');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should clear empty candlestick boxes using react', function(done) {
@@ -1087,7 +1087,7 @@ describe('finance charts updates:', function() {
                 .getAttribute('d')
             ).toEqual('M0,0Z');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1148,7 +1148,7 @@ describe('finance charts *special* handlers:', function() {
                 editText(1, '1');
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1282,7 +1282,7 @@ describe('finance trace hover:', function() {
         }]
         .forEach(function(specs) {
             it('should generate correct hover labels ' + type + ' - ' + specs.desc, function(done) {
-                run(specs).then(done, done.fail);
+                run(specs).then(()=>done(), done.fail);
             });
         });
     });
@@ -1344,7 +1344,7 @@ describe('finance trace hover via Fx.hover():', function() {
                     name: ''
                 }, 'after removing 2nd trace');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should ignore empty ' + type + ' item', function(done) {
@@ -1383,7 +1383,7 @@ describe('finance trace hover via Fx.hover():', function() {
                     name: 'trace 1'
                 }, 'hover over 3rd items');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

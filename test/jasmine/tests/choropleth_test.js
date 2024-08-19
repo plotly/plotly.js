@@ -206,7 +206,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['RUS\n10', 'trace 1']
             )
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -221,7 +221,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['tpl 10', 'x']
             )
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -237,7 +237,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['tExT', null]
             )
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -253,7 +253,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['-text-', null]
             )
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -270,7 +270,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['-text-', null]
             )
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -296,7 +296,7 @@ describe('Test choropleth hover:', function() {
                     fontFamily: 'Roboto'
                 }
             )
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -311,7 +311,7 @@ describe('Test choropleth hover:', function() {
                 fig,
                 ['RUS', 'trace 1']
             )
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -332,7 +332,7 @@ describe('Test choropleth hover:', function() {
         [false, true].forEach(function(hasCssTransform) {
             it('- base case (truncate z decimals), hasCssTransform: ' + hasCssTransform, function(done) {
                 run(hasCssTransform, pos, base(), exp)
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -341,7 +341,7 @@ describe('Test choropleth hover:', function() {
                 var fig = base();
                 fig.hovertemplate = '%{z}<extra>%{location}</extra>';
                 run(hasCssTransform, pos, fig, exp)
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -354,7 +354,7 @@ describe('Test choropleth hover:', function() {
             fig.layout.geo.projection = {scale: 20};
 
             run(hasCssTransform, [300, 200], fig, ['New York', '-75.2 | 42.6'])
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -380,7 +380,7 @@ describe('choropleth drawing', function() {
             // only utopia logs - others are silently ignored
             expect(loggers.log).toHaveBeenCalledTimes(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('preserves order after hide/show', function(done) {
@@ -410,6 +410,6 @@ describe('choropleth drawing', function() {
         .then(function() {
             expect(getIndices()).toEqual([0, 1]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

@@ -51,7 +51,7 @@ describe('Test plot api', function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd._context.editable).toBe(true);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('accepts gd and an object as args', function(done) {
@@ -67,7 +67,7 @@ describe('Test plot api', function() {
                 expect(gd._transitionData._frames.length).toEqual(1);
                 expect(gd._context.editable).toBe(true);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('allows adding more frames to the initial set', function(done) {
@@ -93,7 +93,7 @@ describe('Test plot api', function() {
                 expect(gd._transitionData._frames[1].name).toEqual('frame2');
                 expect(gd._transitionData._frames[2].name).toEqual('frame3');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should emit afterplot event after plotting is done', function(done) {
@@ -108,7 +108,7 @@ describe('Test plot api', function() {
             promise.then(function() {
                 expect(afterPlot).toBe(true);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -146,7 +146,7 @@ describe('Test plot api', function() {
                 expect(clipWidth).toBe(240);
                 expect(clipHeight).toBe(220);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('sets null values to their default', function(done) {
@@ -163,7 +163,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(gd._fullLayout.width).toBe(defaultWidth);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('ignores undefined values', function(done) {
@@ -180,7 +180,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(gd._fullLayout.width).toBe(defaultWidth - 25);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can set items in array objects', function(done) {
@@ -195,7 +195,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(gd.layout.rando).toEqual([1, 45, 3]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('errors if child and parent are edited together', function(done) {
@@ -230,7 +230,7 @@ describe('Test plot api', function() {
                     }).toThrow();
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can set empty text nodes', function(done) {
@@ -252,7 +252,7 @@ describe('Test plot api', function() {
                 var newHeight = scatter.getBoundingClientRect().height;
                 expect(newHeight).toEqual(oldHeight);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should skip empty axis objects', function(done) {
@@ -266,7 +266,7 @@ describe('Test plot api', function() {
             .then(function() {
                 return Plotly.relayout(gd, { zaxis: {} });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('annotations, shapes and images linked to category axes should update properly on zoom/pan', function(done) {
@@ -338,7 +338,7 @@ describe('Test plot api', function() {
                 expect(getShapePos()).toBeCloseToArray([350, 369]);
                 expect(getImagePos()).toBeCloseToArray([170, 272.52]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('clears autorange when you modify a range or part of a range', function(done) {
@@ -376,7 +376,7 @@ describe('Test plot api', function() {
                 expect(gd.layout.yaxis.autorange).toBe(false);
                 expect(gd.layout.yaxis.range[1]).toBe(3);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('sets aspectmode to manual when you provide any aspectratio', function(done) {
@@ -394,7 +394,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(gd.layout.scene.aspectmode).toBe('auto');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('sets tickmode to linear when you edit tick0 or dtick', function(done) {
@@ -418,7 +418,7 @@ describe('Test plot api', function() {
                 expect(gd.layout.xaxis.tick0).toBeUndefined();
                 expect(gd.layout.yaxis.dtick).toBeUndefined();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('updates non-auto ranges for linear/log changes', function(done) {
@@ -439,7 +439,7 @@ describe('Test plot api', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([1, 10], 5);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([0, 1], 5);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('respects reversed autorange when switching linear to log', function(done) {
@@ -464,7 +464,7 @@ describe('Test plot api', function() {
                 // make sure it's a real loggy range
                 expect(xRange[0]).toBeLessThan(1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('autoranges automatically when switching to/from any other axis type than linear <-> log', function(done) {
@@ -488,7 +488,7 @@ describe('Test plot api', function() {
                 expect(gd._fullLayout.xaxis.type).toBe('linear');
                 expect(gd.layout.xaxis.range).toEqual([0.6, 1.7]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('updates autosize/width/height correctly', function(done) {
@@ -524,7 +524,7 @@ describe('Test plot api', function() {
             .then(assertSizeAndThen(700, 500, false, 'explicit height and width',
                 {autosize: true}))
             .then(assertSizeAndThen(543, 432, true, 'final back to autosize'))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('passes update data back to plotly_relayout unmodified ' +
@@ -550,7 +550,7 @@ describe('Test plot api', function() {
                     'polar.radialaxis.title': 'Radial'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -644,7 +644,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expectReplot('select 2');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should trigger replot (but not recalc) when changing attributes that affect axis length/range', function() {
@@ -754,7 +754,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -791,7 +791,7 @@ describe('Test plot api', function() {
                 // "docalc" deletes gd.calcdata - make sure this didn't happen
                 expect(gd.calcdata).toBeDefined();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('calls Bar.arraysToCalcdata and Plots.style on bar styling', function(done) {
@@ -808,7 +808,7 @@ describe('Test plot api', function() {
                 expect(plotApi._doPlot).not.toHaveBeenCalled();
                 expect(gd.calcdata).toBeDefined();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should do full replot when arrayOk attributes are updated', function(done) {
@@ -847,7 +847,7 @@ describe('Test plot api', function() {
                 expect(gd.calcdata).toBeUndefined();
                 expect(plotApi._doPlot).toHaveBeenCalled();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should do full replot when arrayOk base attributes are updated', function(done) {
@@ -886,7 +886,7 @@ describe('Test plot api', function() {
                 expect(gd.calcdata).toBeUndefined();
                 expect(plotApi._doPlot).toHaveBeenCalled();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should do full replot when attribute container are updated', function(done) {
@@ -908,7 +908,7 @@ describe('Test plot api', function() {
                 expect(gd.calcdata).toBeUndefined();
                 expect(plotApi._doPlot).toHaveBeenCalled();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('calls plot on xgap and ygap styling', function(done) {
@@ -927,7 +927,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(plotApi._doPlot.calls.count()).toEqual(2);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         [
@@ -961,7 +961,7 @@ describe('Test plot api', function() {
                     expect(gd.calcdata).toBeUndefined();
                     expect(plotApi._doPlot).toHaveBeenCalled();
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -1000,7 +1000,7 @@ describe('Test plot api', function() {
                     plotApi._doPlot.calls.reset();
                     return Plotly.restyle(gd, 'zmin', 0);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -1023,7 +1023,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(gd._fullData[0].marker.color).toBe('blue');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('ignores invalid trace indices', function(done) {
@@ -1036,7 +1036,7 @@ describe('Test plot api', function() {
 
             // Call restyle on an invalid trace indice
             Plotly.restyle(gd, {type: 'scatter', 'marker.color': 'red'}, [1])
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('restores null values to defaults', function(done) {
@@ -1059,7 +1059,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(gd._fullData[0].marker.color).toBe(colorDflt);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can target specific traces by leaving properties undefined', function(done) {
@@ -1087,7 +1087,7 @@ describe('Test plot api', function() {
                 expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
                 expect(gd._fullData[1].marker.color).toBe(colorDflt[1]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1124,7 +1124,7 @@ describe('Test plot api', function() {
                 expect(gd._fullData[0].zmax).toBe(10);
                 expect(gd.data[0].contours).toEqual({start: 3, end: 9, size: 1});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('errors if child and parent are edited together', function(done) {
@@ -1159,7 +1159,7 @@ describe('Test plot api', function() {
                     }).toThrow();
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('turns off zauto when you edit zmin or zmax', function(done) {
@@ -1195,7 +1195,7 @@ describe('Test plot api', function() {
             .then(function() {
                 check(false, 'undo');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('turns off cauto (autocolorscale) when you edit cmin or cmax (colorscale)', function(done) {
@@ -1247,7 +1247,7 @@ describe('Test plot api', function() {
             .then(function() {
                 check(false, false, 'undo');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('turns on cauto when cmid is edited', function(done) {
@@ -1317,7 +1317,7 @@ describe('Test plot api', function() {
                 cmin: -1,
                 cmax: 4
             }))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('turns off autobin when you edit bin specs', function(done) {
@@ -1366,7 +1366,7 @@ describe('Test plot api', function() {
             .then(function() {
                 check(false, 'undo');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('turns off autocontour when you edit contour specs', function(done) {
@@ -1402,7 +1402,7 @@ describe('Test plot api', function() {
             .then(function() {
                 check(false, 'undo');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         function checkScaling(xyType, xyTypeIn, iIn, iOut) {
@@ -1426,7 +1426,7 @@ describe('Test plot api', function() {
             .then(function() {
                 checkScaling('scaled', 'scaled', 0, 0);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('sets heatmap xtype/ytype even when data/fullData indices mismatch', function(done) {
@@ -1451,7 +1451,7 @@ describe('Test plot api', function() {
             .then(function() {
                 checkScaling('scaled', 'scaled', 1, 2);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('sets colorbar.tickmode to linear when editing colorbar.tick0/dtick', function(done) {
@@ -1489,7 +1489,7 @@ describe('Test plot api', function() {
             .then(function() {
                 check(false, 'undo');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('updates colorbars when editing bar charts', function(done) {
@@ -1509,7 +1509,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(d3Select('.cbaxis').size()).toBe(0);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('updates colorbars when editing gl3d plots', function(done) {
@@ -1527,7 +1527,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(d3Select('.cbaxis').size()).toBe(0);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('updates box position and axis type when it falls back to name', function(done) {
@@ -1550,7 +1550,7 @@ describe('Test plot api', function() {
                 checkTicks('x', ['12', '12.5'], 'switched to numeric');
                 expect(gd._fullLayout.xaxis.type).toBe('linear');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('updates scene axis types automatically', function(done) {
@@ -1563,7 +1563,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(gd._fullLayout.scene.zaxis.type).toBe('category');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can drop Cartesian while constraints are active', function(done) {
@@ -1577,7 +1577,7 @@ describe('Test plot api', function() {
                 expect(gd._fullLayout._axisConstraintGroups).toBeUndefined();
                 expect(gd._fullLayout.scene !== undefined).toBe(true);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -2273,7 +2273,7 @@ describe('Test plot api', function() {
                 expect(Object.keys(gd)).toEqual(initialKeys);
                 expect(gd.innerHTML).toEqual(intialHTML);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -2311,7 +2311,7 @@ describe('Test plot api', function() {
             .then(function() {
                 expect(d3SelectAll('g.trace.scatter').size()).toEqual(3);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -2676,7 +2676,7 @@ describe('Test plot api', function() {
                 expect(fullLayout.height).toBe(height);
                 expect(+svg.getAttribute('height')).toBe(height);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should only have one modebar-container', function(done) {
@@ -2705,7 +2705,7 @@ describe('Test plot api', function() {
                 });
             })
             .then(_assert('after update()'))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -2739,7 +2739,7 @@ describe('Test plot api', function() {
                 expect(subroutines.doTraceStyle).toHaveBeenCalledTimes(1);
                 expect(calcdata).toBe(gd.calcdata);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('clear calcdata on data updates', function(done) {
@@ -2748,7 +2748,7 @@ describe('Test plot api', function() {
                 expect(layout).toBe(gd.layout);
                 expect(calcdata).not.toBe(gd.calcdata);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('clear calcdata on data + axis updates w/o extending current gd.data', function(done) {
@@ -2767,7 +2767,7 @@ describe('Test plot api', function() {
                 expect(gd.data.length).toEqual(1);
                 expect(subroutines.layoutReplot).toHaveBeenCalledTimes(1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('call doLegend on legend updates', function(done) {
@@ -2775,7 +2775,7 @@ describe('Test plot api', function() {
                 expect(subroutines.doLegend).toHaveBeenCalledTimes(1);
                 expect(calcdata).toBe(gd.calcdata);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('call array manager when adding update menu', function(done) {
@@ -2795,7 +2795,7 @@ describe('Test plot api', function() {
                 expect(subroutines.layoutReplot).toHaveBeenCalledTimes(0);
                 expect(calcdata).toBe(gd.calcdata);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('call doModeBar when updating \'dragmode\'', function(done) {
@@ -2803,7 +2803,7 @@ describe('Test plot api', function() {
                 expect(subroutines.doModeBar).toHaveBeenCalledTimes(1);
                 expect(calcdata).toBe(gd.calcdata);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('ignores invalid trace indices', function() {

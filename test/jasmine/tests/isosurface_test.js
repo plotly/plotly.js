@@ -226,7 +226,7 @@ describe('Test isosurface', function() {
             .then(function() {
                 assertPositions(0, 'to be OK positions');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl isosurface should create no iso-surface and set `gl-positions: []` for traces when all the data is outside isomin and isomax', function(done) {
@@ -246,7 +246,7 @@ describe('Test isosurface', function() {
             .then(function() {
                 assertPositions(0, 'to be OK positions');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -300,7 +300,7 @@ describe('Test isosurface', function() {
 
                 return Plotly.purge(gd);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -409,7 +409,7 @@ describe('Test isosurface', function() {
             .then(function() {
                 return Plotly.restyle(gd, 'hovertemplate', '%{value}<br>(%{x},%{y},%{z})<extra>!!</extra>');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -505,7 +505,7 @@ describe('Test isosurface grid', function() {
                         cellsLength: 104
                     });
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -553,6 +553,6 @@ describe('Test isosurface grid', function() {
         }).then(function() {
             expect(Lib.warn).toHaveBeenCalledWith('Encountered arbitrary coordinates! Unable to input data grid.');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

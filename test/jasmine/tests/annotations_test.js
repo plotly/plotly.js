@@ -288,7 +288,7 @@ describe('annotations relayout', function() {
             expect(countAnnotations()).toEqual(0);
             expect(Loggers.warn).not.toHaveBeenCalled();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should sort correctly when index>10', function(done) {
@@ -314,7 +314,7 @@ describe('annotations relayout', function() {
                 expect(annotations[i].text).toBe(i);
             }
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able update annotations', function(done) {
@@ -354,7 +354,7 @@ describe('annotations relayout', function() {
             assertText(0, 'hello');
             assertUpdateObj();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can update several annotations and add and delete in one call', function(done) {
@@ -413,7 +413,7 @@ describe('annotations relayout', function() {
 
             expect(Loggers.warn).not.toHaveBeenCalled();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     [
@@ -434,7 +434,7 @@ describe('annotations relayout', function() {
                 // we could test the results here, but they're ambiguous and/or undefined so why bother?
                 // the important thing is the developer is warned that something went wrong.
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -478,7 +478,7 @@ describe('annotations relayout', function() {
             expect(annos[2].yref).toBe('paper');
             expect(Loggers.warn).not.toHaveBeenCalled();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -556,7 +556,7 @@ describe('annotations log/linear axis changes', function() {
         .then(function() {
             expect(gd.layout.annotations[0].y).toBe(2);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('keeps the same data value if the axis type is changed without position', function(done) {
@@ -599,7 +599,7 @@ describe('annotations log/linear axis changes', function() {
             expect(gd.layout.annotations[1].y).toBe(1);
             expect(gd.layout.annotations[1].ay).toBe(2.5);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -744,7 +744,7 @@ describe('annotations autorange', function() {
             // are visible after zooming in
             assertVisible([3, 7, 9, 15, 16, 17]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('catches bad xref/yref', function(done) {
@@ -768,7 +768,7 @@ describe('annotations autorange', function() {
                 [-1.38, 8.29], [-0.85, 5.14]
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should propagate axis autorange changes when axis ranges are set', function(done) {
@@ -804,7 +804,7 @@ describe('annotations autorange', function() {
         .then(function() {
             _assert('auto rng / small tx', [-0.18, 3.035], [0.84, 3.365]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not error out on subplots w/o visible traces', function(done) {
@@ -825,7 +825,7 @@ describe('annotations autorange', function() {
             expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0.091, 0.335], 1, 'y rng');
             assertVisible([0, 1]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -952,7 +952,7 @@ describe('annotation clicktoshow', function() {
         // finally click each one off
         .then(clickAndCheck({newPts: [[1, 2]], newCTS: true, on: [2], step: 15}))
         .then(clickAndCheck({newPts: [[2, 3]], newCTS: true, on: [], step: 16}))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('works on date and log axes', function(done) {
@@ -975,7 +975,7 @@ describe('annotation clicktoshow', function() {
             expect(gd._fullLayout.yaxis.type).toBe('log');
         })
         .then(clickAndCheck({newPts: [['2016-01-02', 1]], newCTS: true, on: [0]}))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('works on category axes', function(done) {
@@ -1006,7 +1006,7 @@ describe('annotation clicktoshow', function() {
         })
         .then(clickAndCheck({newPts: [['b', 2]], newCTS: true, on: [0], step: 1}))
         .then(clickAndCheck({newPts: [['c', 3]], newCTS: true, on: [1], step: 2}))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1160,7 +1160,7 @@ describe('annotation effects', function() {
 
             return checkDragging(textDrag, bbox.width / 2, bbox.height / 2, 1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('also works paper-referenced with explicit anchors and no arrow', function(done) {
@@ -1179,7 +1179,7 @@ describe('annotation effects', function() {
             // with offsets 0, 0 because the anchor doesn't change now
             return checkDragging(textDrag, 0, 0, 1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('works paper-referenced with arrows', function(done) {
@@ -1197,7 +1197,7 @@ describe('annotation effects', function() {
             return checkDragging(arrowDrag, 0, 0, 1);
         })
         .then(checkTextDrag)
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('works data-referenced with no arrow', function(done) {
@@ -1211,7 +1211,7 @@ describe('annotation effects', function() {
         .then(function() {
             return checkDragging(textDrag, 0, 0, 100);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('works data-referenced with arrow', function(done) {
@@ -1227,7 +1227,7 @@ describe('annotation effects', function() {
             return checkDragging(arrowDrag, 0, 0, 100);
         })
         .then(checkTextDrag)
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('works date string data-referenced with no arrow', function(done) {
@@ -1258,7 +1258,7 @@ describe('annotation effects', function() {
             expect(gd._fullLayout.annotations[0].x).toBe('2018-01-29 13:29:41.4857');
             expect(gd._fullLayout.annotations[0].y).toBe('2017-02-02 13:28:35.6572');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('works date sting data-referenced with arrow', function(done) {
@@ -1291,7 +1291,7 @@ describe('annotation effects', function() {
             // must be different fonts altering autoranging
             expect(gd._fullLayout.annotations[0].y.substr(0, 10)).toBe('2017-02-02');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should only make the clippaths it needs and delete others', function(done) {
@@ -1322,7 +1322,7 @@ describe('annotation effects', function() {
         .then(function() {
             expect(d3Select(gd).selectAll('.annclip').size()).toBe(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     function _click(pos, opts) {
@@ -1508,7 +1508,7 @@ describe('annotation effects', function() {
             return assertHoverLabels([[pos0, 'bananas'], [pos1, 'chicken'], [pos2, '']],
                 '0 and 1');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     // Currently annotations do *not* support right-click.
@@ -1544,7 +1544,7 @@ describe('annotation effects', function() {
                 eventType: 'click'
             }]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should register clicks even in editable:true mode', function(done) {
@@ -1593,7 +1593,7 @@ describe('annotation effects', function() {
                 eventType: 'mousedown'
             }]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('makes the whole text box a link if the link is the whole text', function(done) {
@@ -1626,7 +1626,7 @@ describe('annotation effects', function() {
             checkBoxLink(2, true);
             checkBoxLink(3, false);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should remove annotations if offscreen during axis drag', function(done) {
@@ -1675,7 +1675,7 @@ describe('annotation effects', function() {
                 }))
                 .then(fns.end);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1753,6 +1753,6 @@ describe('animating annotations', function() {
                 'rgb(172, 172, 172)'
             ]);
             assertImages([img2]);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 });

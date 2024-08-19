@@ -32,6 +32,6 @@ describe('Bundle with choropleth', function() {
 
             expect(nodes.size()).toEqual(4);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 });

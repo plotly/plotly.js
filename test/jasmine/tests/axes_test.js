@@ -1577,7 +1577,7 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis.autorange).toBe(true);
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.07, 1.07]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can relayout one partial range without affecting other subplots', function(done) {
@@ -1674,7 +1674,7 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis3.autorange).toEqual(autorangeX3);
                 expect(gd._fullLayout.xaxis4.autorange).toEqual(autorangeX4);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should make room for the inside labels of the counter axes', function(done) {
@@ -1698,7 +1698,7 @@ describe('Test axes', function() {
             }).then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.37, 3.22], 1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1728,7 +1728,7 @@ describe('Test axes', function() {
                 });
             }).then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.889, 3]);
-            }).then(done, done.fail);
+            }).then(()=>done(), done.fail);
         });
     });
 
@@ -1769,7 +1769,7 @@ describe('Test axes', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         function assertRangeDomain(axName, range, domainIn, domainOut, msg) {
@@ -1888,7 +1888,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis', [0, 1], [0, 1], [0, 0.25]);
                 assertRangeDomain('yaxis', [-0.5, 1.5], [0, 1], [0, 1]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('autoranges consistently with padding', function(done) {
@@ -1933,7 +1933,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis2', xAutorange, [0.5, 1], [0.5, 1]);
                 assertRangeDomain('yaxis2', yAutorange, [0, 1], [0.225, 0.775]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can constrain date axes', function(done) {
@@ -1964,7 +1964,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis', ['2000-11-05 12:17:08.5714', '2002-02-26 11:42:51.4286'], [0, 1], [0.225, 0.775]);
                 assertRangeDomain('yaxis', ['2000-11-27 05:42:51.4286', '2002-02-04 18:17:08.5714'], [0, 1], [0, 1]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can constrain category axes', function(done) {
@@ -1992,7 +1992,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis', [-0.095238095, 1.095238095], [0, 1], [0, 1]);
                 assertRangeDomain('yaxis', [-0.1547619, 1.1547619], [0, 1], [0.225, 0.775]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can constrain log axes', function(done) {
@@ -2021,7 +2021,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis', [-0.095238095, 1.095238095], [0, 1], [0, 1]);
                 assertRangeDomain('yaxis', [-0.1547619, 1.1547619], [0, 1], [0.225, 0.775]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can react from different layout *grid* settings', function(done) {
@@ -2083,7 +2083,7 @@ describe('Test axes', function() {
                 assertRangeDomain('xaxis2', rng, [0.256410, 0.487179], [0.256410, 0.487179], msg);
                 assertRangeDomain('xaxis3', rng, [0.512820, 0.743589], [0.512820, 0.743589], msg);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -2142,7 +2142,7 @@ describe('Test axes', function() {
                     [['yaxis'], [-0.211, 3.211], true]
                 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -2162,7 +2162,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should set categoryorder to default even if type is not set to category explicitly', function(done) {
@@ -2171,7 +2171,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should NOT set categoryorder to default if type is not category', function(done) {
@@ -2180,7 +2180,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.yaxis.categoryorder).toBe(undefined);
                     expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should set categoryorder to default if type is overridden to be category', function(done) {
@@ -2191,7 +2191,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.yaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.yaxis.categorarray).toBe(undefined);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -2204,7 +2204,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
                     expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should switch categoryorder on "array" if it is not supplied but categoryarray is supplied', function(done) {
@@ -2215,7 +2215,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
                     expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should revert categoryorder to "trace" if "array" is supplied but there is no list', function(done) {
@@ -2226,7 +2226,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -2239,7 +2239,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categoryarray).toEqual([]);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should not switch categoryorder on "array" if categoryarray is supplied but empty', function(done) {
@@ -2250,7 +2250,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categoryarray).toEqual(undefined);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -2263,7 +2263,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should use specified categoryorder if it is supplied even if categoryarray exists', function(done) {
@@ -2274,7 +2274,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('category ascending');
                     expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should use specified categoryorder if it is supplied even if categoryarray exists', function(done) {
@@ -2285,7 +2285,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('category descending');
                     expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -2298,7 +2298,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
                     expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should switch categoryorder to "array" if mode is supplied but invalid and list is supplied', function(done) {
@@ -2309,7 +2309,7 @@ describe('Test axes', function() {
                     expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
                     expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b', 'a', 'd', 'e', 'c']);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -2331,7 +2331,7 @@ describe('Test axes', function() {
                 .then(function() {
                     expect(gd._fullLayout.xaxis._rl).toEqual([-0.5, 3.5]);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -2379,7 +2379,7 @@ describe('Test axes', function() {
                 });
                 expect(yaxis.tickangle).toBe('auto');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should use valid inputs', function(done) {
@@ -2425,7 +2425,7 @@ describe('Test axes', function() {
                 });
                 expect(yaxis.tickangle).toBe(-20);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should conditionally coerce based on showticklabels', function(done) {
@@ -2441,7 +2441,7 @@ describe('Test axes', function() {
                 var yaxis = gd._fullLayout.yaxis;
                 expect(yaxis.tickangle).toBeUndefined();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -4430,7 +4430,7 @@ describe('Test axes', function() {
                 t: 'initial', l: 'initial',
                 b: 'initial', r: 'initial'
             }))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should not lead to negative plot area heights', function(done) {
@@ -4469,7 +4469,7 @@ describe('Test axes', function() {
                     totalHeight: 800
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should not lead to negative plot area widths', function(done) {
@@ -4508,7 +4508,7 @@ describe('Test axes', function() {
                     totalWidth: 1000
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should handle partial automargin', function(done) {
@@ -4643,7 +4643,7 @@ describe('Test axes', function() {
                 t: '=', l: '=',
                 b: '=', r: '='
             }))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should handle cases with free+mirror axes', function(done) {
@@ -4669,7 +4669,7 @@ describe('Test axes', function() {
                 expect(Object.keys(gd._fullLayout._pushmargin))
                     .toEqual(['x.automargin', 'y.automargin', 'base']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
         it('should respect axis title placement on relayout', function(done) {
             function getPos(gd, sel) {
@@ -4694,7 +4694,7 @@ describe('Test axes', function() {
             .then(function() {
                 assertLayout();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -4770,7 +4770,7 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis._gridVals.length).toBe(0, '# of grid lines');
                 assertZeroLines(['x', 'y']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('works with multiple coupled subplots', function(done) {
@@ -4804,7 +4804,7 @@ describe('Test axes', function() {
                 // allticks works the same as all
                 assertZeroLines(['x', 'y']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('works with multiple overlaid subplots', function(done) {
@@ -4844,7 +4844,7 @@ describe('Test axes', function() {
             .then(function() {
                 assertZeroLines([]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -4919,7 +4919,7 @@ describe('Test axes', function() {
                     tickLabels: [106.421, 197.121, 292.821, 388.521, 484.221, 584.921]
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should rotate labels to avoid overlaps', function(done) {
@@ -4967,7 +4967,7 @@ describe('Test axes', function() {
                     angle: [30, 30]
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -5415,7 +5415,7 @@ describe('Test axes', function() {
                         lBreaks: 0
                     });
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -5565,7 +5565,7 @@ describe('Test axes', function() {
                         B: [-4554.339622641512, -4584.9056603773615]
                     });
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should locate rangebreaks & compute l <-> p parameters - y-axis case', function(done) {
@@ -5626,7 +5626,7 @@ describe('Test axes', function() {
                         B: [2160, 252.857]
                     });
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should locate rangebreaks & compute l <-> p parameters - date axis case', function(done) {
@@ -5795,7 +5795,7 @@ describe('Test axes', function() {
                         B: [-1972296, -1972404, -1972620]
                     });
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -5860,7 +5860,7 @@ describe('Test axes', function() {
                         tickVals: ['1970-01-01', '1970-01-01 00:00:00.089', '1970-01-01 00:00:00.1', '1970-01-01 00:00:00.189', '1970-01-01 00:00:00.2']
                     });
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             [true, 'reversed'].forEach(function(autorange) {
@@ -5982,7 +5982,7 @@ describe('Test axes', function() {
                             ]
                         }, autorange);
                     })
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
                 });
             });
         });
@@ -6073,7 +6073,7 @@ describe('Test axes', function() {
                         ['', '20', '21', '22', '23', '24', '25', '']
                     ][i]);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -6105,7 +6105,7 @@ describe('Test axes', function() {
                     '2022-02-16'
                 ], ['', '2020-Q1', '2020-Q2', '2020-Q3', '2020-Q4', '2021-Q1', '2021-Q2', '2021-Q3', '2021-Q4', '']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should position quarters - case of dtick set to M6', function(done) {
@@ -6133,7 +6133,7 @@ describe('Test axes', function() {
                     '2022-02-15 15:45'
                 ], ['', '2020-Q1', '2020-Q3', '2021-Q1', '2021-Q3', '']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         ['%B', '%b', '%m'].forEach(function(formatter, i) {
@@ -6167,7 +6167,7 @@ describe('Test axes', function() {
                         ['', 'Q1-01', 'Q1-02', 'Q1-03', 'Q2-04', 'Q2-05', 'Q2-06', '']
                     ][i]);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -6199,7 +6199,7 @@ describe('Test axes', function() {
                     '2020-04-01 12:00'
                 ], ['Jan-W04', 'Feb-W05', 'Feb-W06', 'Feb-W07', 'Feb-W08', 'Mar-W09', 'Mar-W10', 'Mar-W11', 'Mar-W12', 'Mar-W13']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         ['%V', '%W'].forEach(function(formatter, i) {
@@ -6234,7 +6234,7 @@ describe('Test axes', function() {
                         ['Jan-W04', 'Feb-W05', 'Feb-W06', 'Feb-W07', 'Feb-W08', 'Mar-W09', 'Mar-W10', 'Mar-W11', 'Mar-W12', 'Mar-W13']
                     ][i]);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -6297,7 +6297,7 @@ describe('Test axes', function() {
                         ['Jan-W01', 'Jan-W02', 'Jan-W03', 'Jan-W04']
                     ][i]);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -6338,7 +6338,7 @@ describe('Test axes', function() {
                         ['', 'Jan-01/01/2020', 'Jan-01/02/2020', 'Jan-01/03/2020', 'Jan-01/04/2020', 'Jan-01/05/2020', 'Jan-01/06/2020', 'Jan-01/07/2020', '']
                     ][i]);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -6375,7 +6375,7 @@ describe('Test axes', function() {
                         ['', 'Wed-00:00:00', 'Wed-03:00:00', 'Wed-06:00:00', 'Wed-09:00:00', 'Wed-12:00:00', 'Wed-15:00:00', 'Wed-18:00:00', 'Wed-21:00:00', 'Thu-00:00:00']
                     ][i]);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -6433,7 +6433,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('', t.positions, t.labels);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -6479,7 +6479,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('', t.positions, t.labels);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -6599,7 +6599,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('', t.positions, t.labels);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -6719,7 +6719,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('', t.positions, t.labels);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -6823,7 +6823,7 @@ describe('Test axes', function() {
                 .then(function() {
                     _assert('', t.positions, t.labels);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -6858,7 +6858,7 @@ describe('Test axes', function() {
                 .then(function() {
                     expect(gd._fullLayout.xaxis.tick0).toBe('2000-01-02');
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -6902,7 +6902,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 12, 34, 56, 78 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('linear auto', function(done) {
@@ -6922,7 +6922,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 5, 10, 15, 25, 30, 35, 45, 50, 55, 65, 70, 75, 85, 90, 95, 105 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('linear auto with defined minor nticks: 2', function(done) {
@@ -6943,7 +6943,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 10, 30, 50, 70, 90 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('linear auto with defined minor nticks: 7', function(done) {
@@ -6964,7 +6964,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 5, 10, 15, 25, 30, 35, 45, 50, 55, 65, 70, 75, 85, 90, 95, 105 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('linear auto with defined minor nticks: 10', function(done) {
@@ -6985,7 +6985,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 6, 8, 10, 12, 14, 16, 18, 22, 24, 26, 28, 30, 32, 34, 36, 38, 42, 44, 46, 48, 50, 52, 54, 56, 58, 62, 64, 66, 68, 70, 72, 74, 76, 78, 82, 84, 86, 88, 90, 92, 94, 96, 98, 102, 104 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('linear auto with defined minor dtick: 2.5', function(done) {
@@ -7006,7 +7006,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 5, 7.5, 10, 12.5, 15, 17.5, 22.5, 25, 27.5, 30, 32.5, 35, 37.5, 42.5, 45, 47.5, 50, 52.5, 55, 57.5, 62.5, 65, 67.5, 70, 72.5, 75, 77.5, 82.5, 85, 87.5, 90, 92.5, 95, 97.5, 102.5, 105 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('linear auto with defined major dtick: 10', function(done) {
@@ -7027,7 +7027,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 6, 8, 12, 14, 16, 18, 22, 24, 26, 28, 32, 34, 36, 38, 42, 44, 46, 48, 52, 54, 56, 58, 62, 64, 66, 68, 72, 74, 76, 78, 82, 84, 86, 88, 92, 94, 96, 98, 102, 104 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('linear with defined major & minor dtick', function(done) {
@@ -7049,7 +7049,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('log auto - case 1', function(done) {
@@ -7070,7 +7070,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ -1, 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('log auto - case 2', function(done) {
@@ -7091,7 +7091,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 1, 3, 5, 7, 9, 11 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('log auto - case 3', function(done) {
@@ -7112,7 +7112,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ -0.22184874961635648, -0.1549019599857433, -0.09691001300805657, -0.04575749056067513, 0.4771212547196623, 0.6020599913279623, 0.7781512503836435, 0.8450980400142567, 0.9030899869919434, 0.9542425094393249, 1.4771212547196624, 1.6020599913279623, 1.7781512503836434, 1.8450980400142567, 1.9030899869919433, 1.9542425094393248, 2.477121254719662, 2.6020599913279625, 2.7781512503836434, 2.845098040014257, 2.9030899869919433, 2.9542425094393248, 3.477121254719662, 3.6020599913279625, 3.7781512503836434, 3.845098040014257, 3.9030899869919433, 3.9542425094393248 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('log auto - case 4', function(done) {
@@ -7133,7 +7133,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('log auto - case 5', function(done) {
@@ -7154,7 +7154,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ -0.017728766960431602, -0.00877392430750515, 0.008600171761917567, 0.017033339298780367, 0.025305865264770258, 0.03342375548694973, 0.049218022670181646, 0.056904851336472634, 0.06445798922691853, 0.07188200730612543, 0.08635983067474828, 0.09342168516223513, 0.10037054511756296, 0.10720996964786844, 0.12057393120584996, 0.1271047983648077, 0.13353890837021762, 0.13987908640123659, 0.15228834438305658, 0.15836249209524975, 0.1643528557844372, 0.17026171539495752, 0.18184358794477265, 0.18752072083646318, 0.1931245983544617, 0.1986570869544227, 0.20951501454263102, 0.21484384804769796, 0.22010808804005513, 0.22530928172586287, 0.23552844690754896, 0.24054924828259974, 0.24551266781414988, 0.250420002308894, 0.2600713879850748, 0.2648178230095364, 0.26951294421791616, 0.2741578492636797, 0.28330122870354935, 0.2878017299302258, 0.29225607135647574, 0.29666519026153076, 0.30535136944662333, 0.3096301674258983, 0.31386722036915293, 0.31806333496276107 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('log with defined minor dtick: D2', function(done) {
@@ -7176,7 +7176,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ -0.30102999566398125, 0.30102999566398114, 0.6989700043360187, 1.3010299956639813, 1.6989700043360187, 2.3010299956639813, 2.6989700043360187, 3.3010299956639813, 3.6989700043360187, 4.301029995663981, 4.698970004336019, 5.301029995663981, 5.698970004336019, 6.301029995663981, 6.698970004336019, 7.301029995663981 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('log with defined minor dtick: L0.5', function(done) {
@@ -7198,7 +7198,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 0.17609125905568124, 0.3979400086720376, 0.5440680443502756, 0.6532125137753436, 0.7403626894942437, 0.8129133566428552, 0.8750612633916998, 0.9294189257142923, 0.9777236052888472, 1.0211892990699374, 1.0413926851582243, 1.0606978403536107 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 10 years major dtick', function(done) {
@@ -7218,7 +7218,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 883612800000, 1009843200000, 1072915200000, 1136073600000, 1199145600000, 1325376000000, 1388534400000, 1451606400000, 1514764800000, 1640995200000, 1704067200000, 1767225600000, 1830297600000, 1956528000000, 2019686400000, 2082758400000, 2145916800000, 2272147200000, 2335219200000, 2398377600000, 2461449600000, 2587680000000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 5 years major dtick', function(done) {
@@ -7238,7 +7238,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 915148800000, 978307200000, 1009843200000, 1041379200000, 1072915200000, 1136073600000, 1167609600000, 1199145600000, 1230768000000, 1293840000000, 1325376000000, 1356998400000, 1388534400000, 1451606400000, 1483228800000, 1514764800000, 1546300800000, 1609459200000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 2 years major dtick', function(done) {
@@ -7258,7 +7258,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 930787200000, 962409600000, 978307200000, 993945600000, 1025481600000, 1041379200000, 1057017600000, 1088640000000, 1104537600000, 1120176000000, 1151712000000, 1167609600000, 1183248000000, 1214870400000, 1230768000000, 1246406400000, 1277942400000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 1 year major dtick', function(done) {
@@ -7278,7 +7278,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 938736000000, 954547200000, 962409600000, 970358400000, 986083200000, 993945600000, 1001894400000, 1017619200000, 1025481600000, 1033430400000, 1049155200000, 1057017600000, 1064966400000, 1080777600000, 1088640000000, 1096588800000, 1112313600000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of M6 major dtick', function(done) {
@@ -7298,7 +7298,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 941414400000, 951868800000, 957139200000, 967766400000, 973036800000, 983404800000, 988675200000, 999302400000, 1004572800000, 1014940800000, 1020211200000, 1030838400000, 1036108800000, 1046476800000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of M3 major dtick', function(done) {
@@ -7318,7 +7318,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 944006400000, 949363200000, 951868800000, 957139200000, 959817600000, 965088000000, 967766400000, 973036800000, 975628800000, 980985600000, 983404800000, 988675200000, 991353600000, 996624000000, 999302400000, 1004572800000, 1007164800000, 1012521600000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of M2 major dtick', function(done) {
@@ -7338,7 +7338,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 949363200000, 954547200000, 959817600000, 965088000000, 970358400000, 975628800000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of M1 major dtick', function(done) {
@@ -7358,7 +7358,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 2 weeks major dtick', function(done) {
@@ -7378,7 +7378,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 947376000000, 948585600000, 949795200000, 951004800000, 952214400000, 953424000000, 954633600000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 1 week major dtick', function(done) {
@@ -7398,7 +7398,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 946598400000, 946684800000, 946857600000, 946944000000, 947030400000, 947116800000, 947203200000, 947289600000, 947462400000, 947548800000, 947635200000, 947721600000, 947808000000, 947894400000, 948067200000, 948153600000, 948240000000, 948326400000, 948412800000, 948499200000, 948672000000, 948758400000, 948844800000, 948931200000, 949017600000, 949104000000, 949276800000, 949363200000, 949449600000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 3 days major dtick', function(done) {
@@ -7418,7 +7418,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 946598400000, 946684800000, 946857600000, 946944000000, 947116800000, 947203200000, 947376000000, 947462400000, 947635200000, 947721600000, 947894400000, 947980800000, 948153600000, 948240000000, 948412800000, 948499200000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 2 days major dtick', function(done) {
@@ -7438,7 +7438,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 946641600000, 946684800000, 946728000000, 946814400000, 946857600000, 946900800000, 946987200000, 947030400000, 947073600000, 947160000000, 947203200000, 947246400000, 947332800000, 947376000000, 947419200000, 947505600000, 947548800000, 947592000000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 1 day major dtick', function(done) {
@@ -7458,7 +7458,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 946663200000, 946706400000, 946728000000, 946749600000, 946792800000, 946814400000, 946836000000, 946879200000, 946900800000, 946922400000, 946965600000, 946987200000, 947008800000, 947052000000, 947073600000, 947095200000, 947138400000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 12 hours major dtick', function(done) {
@@ -7478,7 +7478,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 946677600000, 946692000000, 946699200000, 946713600000, 946720800000, 946735200000, 946742400000, 946756800000, 946764000000, 946778400000, 946785600000, 946800000000, 946807200000, 946821600000, 946828800000, 946843200000, 946850400000, 946864800000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 6 hours major dtick', function(done) {
@@ -7498,7 +7498,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 946677600000, 946692000000, 946699200000, 946713600000, 946720800000, 946735200000, 946742400000, 946756800000, 946764000000, 946778400000, 946785600000, 946800000000, 946807200000, 946821600000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 3 hours major dtick', function(done) {
@@ -7518,7 +7518,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 946681200000, 946688400000, 946692000000, 946699200000, 946702800000, 946710000000, 946713600000, 946720800000, 946724400000, 946731600000, 946735200000, 946742400000, 946746000000, 946753200000, 946756800000, 946764000000, 946767600000, 946774800000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of 2 hours major dtick', function(done) {
@@ -7538,7 +7538,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 946683000000, 946686600000, 946688400000, 946690200000, 946693800000, 946695600000, 946697400000, 946701000000, 946702800000, 946704600000, 946708200000, 946710000000, 946711800000, 946715400000, 946717200000, 946719000000, 946722600000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of M1 major dtick with weekly minor', function(done) {
@@ -7559,7 +7559,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 946166400000, 946771200000, 947376000000, 947980800000, 948585600000, 949190400000, 949795200000, 950400000000, 951004800000, 951609600000, 952214400000, 952819200000, 953424000000, 954028800000, 954633600000, 955238400000, 955843200000, 956448000000, 957052800000, 957657600000, 958262400000, 958867200000, 959472000000, 960076800000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('date auto - case of M1 major dtick with weekly minor start on Sunday', function(done) {
@@ -7581,7 +7581,7 @@ describe('Test axes', function() {
             .then(function() {
                 _assert([ 946339200000, 946944000000, 947548800000, 948153600000, 948758400000, 949968000000, 950572800000, 951177600000, 951782400000, 952387200000, 952992000000, 953596800000, 954201600000, 954806400000, 955411200000, 956016000000, 956620800000, 957225600000, 957830400000, 958435200000, 959040000000, 959644800000, 960249600000 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -7892,7 +7892,7 @@ describe('Test tickformatstops:', function() {
             expect(d3SelectAll('g.axistext').select('text').html()).toEqual(formatter(new Date(hoverTrace.x)));
             expect(d3SelectAll('g.hovertext').select('text').html()).toEqual('0');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('doesn\'t fail on bad input', function(done) {
@@ -7907,7 +7907,7 @@ describe('Test tickformatstops:', function() {
         });
 
         promise
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -7954,7 +7954,7 @@ describe('Test template:', function() {
             expect(xaxis.tickformatstops).not.toBe(undefined, 'tickformatstops');
             expect(xaxis.tickformatstops.length).toBe(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -8093,7 +8093,7 @@ describe('more react tests', function() {
             expect(gd._fullLayout.xaxis._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
             expect(gd._fullLayout.xaxis2._categoriesMap).toEqual({Z: 0, 0: 1, A: 2});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('insiderange react to new data', function(done) {
@@ -8127,7 +8127,7 @@ describe('more react tests', function() {
             return Plotly.react(gd, fig2);
         }).then(function() {
             expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.164, 2]);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 });
 
@@ -8185,7 +8185,7 @@ describe('category preservation tests on gd passed to Plotly.react()', function(
             expect(d3SelectAll('g.axistext').select('text').html()).toEqual('d');
         })
 
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -8222,7 +8222,7 @@ describe('more matching axes tests', function() {
                 }
             }
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -8324,7 +8324,7 @@ describe('test tickmode calculator', function() {
                 }
             }).then(function() {
                 _assert(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
-            }).then(done, done.fail);
+            }).then(()=>done(), done.fail);
         });
     });
 });

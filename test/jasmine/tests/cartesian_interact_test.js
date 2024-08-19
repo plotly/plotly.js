@@ -183,7 +183,7 @@ describe('main plot pan', function() {
             // X and back; XY and back
             expect(relayoutCallback).toHaveBeenCalledTimes(6);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should emit plotly_relayouting events during pan interactions', function(done) {
@@ -212,7 +212,7 @@ describe('main plot pan', function() {
 
             expect(first['xaxis.range[1]'] - last['xaxis.range[1]']).toBeCloseTo(1, 0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should show/hide `cliponaxis: false` pts according to range', function(done) {
@@ -300,7 +300,7 @@ describe('main plot pan', function() {
                 [null, null, null]
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -488,7 +488,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             // reset all from the modebar
             .then(function() { selectButton(gd._fullLayout._modeBar, 'resetScale2d').click(); })
             .then(checkRanges({}, 'final reset'))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('updates with correlated subplots & no constraints - middles, corners, and scrollwheel', function(done) {
@@ -516,7 +516,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             .then(checkRanges({xaxis: [-0.1578, 1.8422], yaxis: [0, 2.2103]}, 'x scroll'))
             .then(doScroll('xy', 'ns', -20, {dy: -50}))
             .then(checkRanges({xaxis: [-0.1578, 1.8422], yaxis: [0.1578, 2.1578]}, 'y scroll'))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('updates linked axes when there are constraints', function(done) {
@@ -551,7 +551,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             .then(checkRanges({xaxis: [-0.2103, 2], yaxis: [0, 2.2103], xaxis2: [-0.1052, 2.1052], yaxis2: [-0.1052, 2.1052]}, 'scroll xy'))
             .then(doScroll('xy', 'ew', -20, {dx: -50}))
             .then(checkRanges({xaxis: [-0.1578, 1.8422], yaxis: [0.1052, 2.1052]}, 'scroll x'))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -575,7 +575,7 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(function() {
             _assert([0.41, 1.23], [1.18, 2]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('updates axis layout when the constraints require it', function(done) {
@@ -607,7 +607,7 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(function() {
             _assert(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should draw correct zoomboxes corners', function(done) {
@@ -652,7 +652,7 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(function() {
             return _run('full-y w/ fixed yaxis', [5, 30], {cornerCnt: 0});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should emit plotly_relayouting events when drawing zoom selection', function(done) {
@@ -670,7 +670,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             expect(events.length).toEqual(nsteps);
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should emit plotly_relayouting events when zooming via mouse wheel', function(done) {
@@ -688,7 +688,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             expect(events.length).toEqual(nsteps);
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('handles xy, x-only and y-only zoombox updates', function(done) {
@@ -706,7 +706,7 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(doDblClick('xy', 'nsew'))
         .then(doDrag('xy', 'nsew', 0, 50))
         .then(function() { _assert('after y-only drag', [-0.128, 2.128], [1.287, 1.5]); })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('handles y-only to xy back to y-only in single zoombox drag motion', function(done) {
@@ -771,7 +771,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 fail('did not emit correct number of plotly_relayout events');
             }
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should compute correct multicategory tick label span during drag', function(done) {
@@ -823,7 +823,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 y: [406, 406]
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     describe('updates matching axes', function() {
@@ -1114,7 +1114,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                         [['xaxis', 'xaxis2', 'xaxis3'], xr0, {autorange: true}],
                         [['yaxis'], yr0, {autorange: true}]
                     ]))
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
                 });
             });
         });
@@ -1209,7 +1209,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                        .then(drag.end);
                     })
                     .then(_assert(msg, s.exp))
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
                 });
             });
         });
@@ -1347,7 +1347,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                        .then(drag.end);
                     })
                     .then(_assert(msg, s.exp))
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
                 });
             });
         });
@@ -1444,7 +1444,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                         rng0[s.dblclickSubplot],
                         {autorange: true}
                     ]]))
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
                 });
             });
         });
@@ -1516,7 +1516,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 [['yaxis'], [1.5, 1.609]],
                 [['xaxis2'], [-0.225, 3.222], {noChange: true}]
             ]))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('panning a matching axes with references to *missing* axes', function(done) {
@@ -1568,7 +1568,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 [['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'], [0.8206, 3.179], {autorange: true}],
                 [['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'], [0.9103, 2.0896], {autorange: true}]
             ]))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('matching and constrained subplots play nice together', function(done) {
@@ -1631,7 +1631,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 expect(gd._fullLayout.xaxis._m).toBe(mx);
                 expect(gd._fullLayout.yaxis._m).toBe(my);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('handles matching & scaleanchor chained together', function(done) {
@@ -1690,7 +1690,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 [['xaxis', 'yaxis'], [-0.732, 2.732], {dragged: true}],
                 [['xaxis2', 'yaxis2'], [-1.232, 2.232], {dragged: true}]
             ]))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1977,7 +1977,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 zoombox: false,
                 clipTranslate: [0, 0]
             }))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should handle react calls in plotly_selecting callback', function(done) {
@@ -2069,7 +2069,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                 selectedCnt: 1,
                 selectOutline: false
             }))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -2129,7 +2129,7 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(_run('dy > MINDRAG', [0, MINDRAG + 2], 'y-zoom'))
         .then(_run('(dx,dy) < MINDRAG', [MINDRAG - 2, MINDRAG - 2], 'nozoom'))
         .then(_run('(dx,dy) > MINDRAG', [MINDRAG + 2, MINDRAG + 2], 'xy-zoom'))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     describe('with axis rangebreaks', function() {
@@ -2195,7 +2195,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                     '1970-01-01 00:00:00.1969'
                 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should compute correct range updates - y-axis case', function(done) {
@@ -2260,7 +2260,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                     '1970-01-01 00:00:00.2089'
                 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -2313,7 +2313,7 @@ describe('Event data:', function() {
             expect('marker.colorbar.tickvals' in pt).toBe(false, 'marker.colorbar.tickvals');
             expect('marker.colorbar.ticktext' in pt).toBe(false, 'marker.colorbar.ticktext');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should have correct content for *heatmap* traces', function(done) {
@@ -2340,7 +2340,7 @@ describe('Event data:', function() {
             expect('marker.colorbar.tickvals' in pt).toBe(false, 'marker.colorbar.tickvals');
             expect('marker.colorbar.ticktext' in pt).toBe(false, 'marker.colorbar.ticktext');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -2468,7 +2468,7 @@ describe('Cartesian plots with css transforms', function() {
             .then(function() {_hoverAndAssertEventOccurred(points[0], xLabels[0]);})
             .then(function() {_hoverAndAssertEventOccurred(points[1], xLabels[1]);})
             .then(function() {_hoverAndAssertEventOccurred(points[2], xLabels[2]);})
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('drag-zoom behaves correctly after css transform: ' + transform, function(done) {
@@ -2511,7 +2511,7 @@ describe('Cartesian plots with css transforms', function() {
                 _assertTransformedZoombox(start, end);
             })
             .then(function() { mouseEvent('mouseup', 0, 0); })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('select behaves correctly after css transform: ' + transform, function(done) {
@@ -2543,7 +2543,7 @@ describe('Cartesian plots with css transforms', function() {
             .then(function() {
                 _assertSelected(t.selected);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -2637,7 +2637,7 @@ describe('Cartesian taces with zorder', function() {
             var barTraces = d3SelectAll('g[class^="barlayer"]')[0];
             expect(barTraces.length).toBe(2);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should display traces in ascending order', function(done) {
@@ -2653,7 +2653,7 @@ describe('Cartesian taces with zorder', function() {
             var tracesData = d3SelectAll('g[class^="scatterlayer"]');
             assertZIndicesSorted(tracesData[0]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should display traces in ascending zorder order after restyle', function(done) {
@@ -2691,7 +2691,7 @@ describe('Cartesian taces with zorder', function() {
             assertZIndices(data, data1);
             assertZIndicesSorted(tracesData[0]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     ['bar', 'waterfall', 'funnel'].forEach(function(traceType) {
@@ -2722,7 +2722,7 @@ describe('Cartesian taces with zorder', function() {
                 var tracesData = d3SelectAll(_Class);
                 assertZIndicesSorted(tracesData[0]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

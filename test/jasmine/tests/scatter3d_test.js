@@ -158,7 +158,7 @@ describe('Test scatter3d interactions:', function() {
             expect(gd._fullLayout._has('gl3d')).toBe(true);
             expect(gd._fullLayout.scene._scene).toBeDefined();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should be able to delete the last trace', function(done) {
@@ -174,7 +174,7 @@ describe('Test scatter3d interactions:', function() {
             expect(gd._fullLayout._has('gl3d')).toBe(false);
             expect(gd._fullLayout.scene === undefined).toBe(true);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should be able to toggle visibility', function(done) {
@@ -238,7 +238,7 @@ describe('Test scatter3d interactions:', function() {
         .then(function() {
             assertObjects(order0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should avoid passing blank texts to webgl', function(done) {
@@ -256,7 +256,7 @@ describe('Test scatter3d interactions:', function() {
         .then(function() {
             assertIsFilled('not to be empty text');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should avoid passing empty lines to webgl', function(done) {
@@ -283,7 +283,7 @@ describe('Test scatter3d interactions:', function() {
             // see https://github.com/plotly/plotly.js/issues/1976
             expect(obj.vao.draw).toHaveBeenCalledTimes(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should only accept texts for textposition otherwise textposition is set to middle center before passing to webgl', function(done) {
@@ -307,7 +307,7 @@ describe('Test scatter3d interactions:', function() {
                 expect(AllTextpositions[i]).toBe('middle center', 'is not middle center');
             }
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should change marker opacity when restyle is called', function(done) {
@@ -327,7 +327,7 @@ describe('Test scatter3d interactions:', function() {
                 expect(gd._fullLayout.scene._scene.glplot.objects[0].hasAlpha).toEqual(true);
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl markers should be transparent when marker.opacity is 0', function(done) {
@@ -344,6 +344,6 @@ describe('Test scatter3d interactions:', function() {
         .then(function() {
             expect(gd._fullLayout.scene._scene.glplot.objects[0].opacity).toEqual(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

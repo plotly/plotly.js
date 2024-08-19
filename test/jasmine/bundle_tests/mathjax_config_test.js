@@ -83,6 +83,6 @@ describe('Test MathJax v' + mathjaxVersion + ' config test:', function() {
                 expect(window.MathJax.Hub.config.tex2jax.inlineMath).toEqual([['|', '|']]);
             }
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

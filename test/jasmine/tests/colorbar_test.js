@@ -92,7 +92,7 @@ describe('Test colorbar:', function() {
                 [9607345622458650.0, 9607345622458652.0, 9607345622458650.0, 9607345622458652.0, 9607345622458650.0, 9607345622458654.0, 9607345622458654.0, 9607345622458638.0]
             ];
             Plotly.newPlot(gd, [{type: 'heatmap', z: z}])
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         function assertCB(msg, present, opts) {
@@ -191,7 +191,7 @@ describe('Test colorbar:', function() {
 
                 assertCB('changed size modes', true, {expandedMarginR: true, expandedMarginT: false, top: 150, height: 200});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         // scatter has trace.marker.{showscale, colorbar}
@@ -222,7 +222,7 @@ describe('Test colorbar:', function() {
             .then(function() {
                 assertCB('far right', true, {expandedMarginR: true});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can show and hide colorbars of shared color axes', function(done) {
@@ -256,7 +256,7 @@ describe('Test colorbar:', function() {
             .then(function() {
                 assertCB('far right', true, {expandedMarginR: true});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         // histogram colorbars could not be edited before
@@ -289,7 +289,7 @@ describe('Test colorbar:', function() {
             .then(function() {
                 assertCB('far right', true, {expandedMarginR: true});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('creates multiple fills for contour colorbars', function(done) {
@@ -319,7 +319,7 @@ describe('Test colorbar:', function() {
             .then(function() {
                 assertCB('up high', true, {expandedMarginR: true, expandedMarginT: true, top: 12, multiFill: false});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         // parcoords has trace.marker.{showscale, colorbar}
@@ -383,7 +383,7 @@ describe('Test colorbar:', function() {
 
                 assertParcoordsCB(true, true);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         function getCBNode() {
@@ -406,7 +406,7 @@ describe('Test colorbar:', function() {
                 expect(gd.data[0].colorbar.x).toBeWithin(0.591, 0.01);
                 expect(gd.data[0].colorbar.y).toBeWithin(0.045, 0.01);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@flaky can drag marker-level colorbars in editable mode', function(done) {
@@ -425,7 +425,7 @@ describe('Test colorbar:', function() {
                 expect(gd.data[0].marker.colorbar.x).toBeWithin(0.591, 0.01);
                 expect(gd.data[0].marker.colorbar.y).toBeWithin(0.045, 0.01);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@flaky can drag colorbars linked to color axes in editable mode', function(done) {
@@ -446,7 +446,7 @@ describe('Test colorbar:', function() {
                 expect(gd._fullLayout.coloraxis.colorbar.x).toBeWithin(0.591, 0.01);
                 expect(gd._fullLayout.coloraxis.colorbar.y).toBeWithin(0.045, 0.01);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can edit colorbar visuals in optimized edit pathway', function(done) {
@@ -511,7 +511,7 @@ describe('Test colorbar:', function() {
                 return Plotly.react(gd, gd.data, gd.layout);
             })
             .then(function() { _assert('after layout trace', {outline: [10, 10]}); })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('creates the same colorbars attributes in newPlot and react', function(done) {
@@ -547,7 +547,7 @@ describe('Test colorbar:', function() {
                 actualAttrs = getCBFillAttributes();
                 expect(actualAttrs).toEqual(expectedAttrs);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

@@ -724,7 +724,7 @@ describe('Test choroplethmapbox interactions:', function() {
         .then(function() {
             _assert('after adding trace0', { layerCnt: 24 });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should be able to restyle *below*', function(done) {
@@ -789,6 +789,6 @@ describe('Test choroplethmapbox interactions:', function() {
                 'place_label_other', 'place_label_city', 'country_label'
             ]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });

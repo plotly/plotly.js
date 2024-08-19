@@ -74,7 +74,7 @@ describe('Fx.hover:', function() {
             expect(gd._hoverdata).toBe(undefined, 'did not generate hoverdata');
             expect(Lib.warn).toHaveBeenCalledWith('Unrecognized subplot: x2y2');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -557,7 +557,7 @@ describe('hover info', function() {
                     nums: 'PV learning ...'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -618,7 +618,7 @@ describe('hover info', function() {
                     axis: '1'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('puts the right trace on the right', function(done) {
@@ -657,7 +657,7 @@ describe('hover info', function() {
                     axis: '1'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -708,7 +708,7 @@ describe('hover info', function() {
                     name: 'two'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should display correct label content with specified format - heatmap', function(done) {
@@ -743,7 +743,7 @@ describe('hover info', function() {
                     name: 'one'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('provides exponents correctly for z data', function(done) {
@@ -781,7 +781,7 @@ describe('hover info', function() {
                     });
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should display correct label content with specified format - contour', function(done) {
@@ -893,7 +893,7 @@ describe('hover info', function() {
                     name: ''
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should get the right content and color for contour constraints', function(done) {
@@ -964,7 +964,7 @@ describe('hover info', function() {
                     assertHoverLabelStyle(d3Select(this), styles[i]);
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should display correct label content with specified format - histogram2dcontour', function(done) {
@@ -1024,7 +1024,7 @@ describe('hover info', function() {
                     name: ['', '']
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should display correct label - x/y/z heatmap|contour', function(done) {
@@ -1068,7 +1068,7 @@ describe('hover info', function() {
                     name: 'contour: 2'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1090,7 +1090,7 @@ describe('hover info', function() {
                     axis: '2'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1154,7 +1154,7 @@ describe('hover info', function() {
                 expect(pt.xaxis).toBe(gd._fullLayout.xaxis);
                 expect(pt.yaxis).toBe(gd._fullLayout.yaxis);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('shows the exact data when bins have single values', function(done) {
@@ -1187,7 +1187,7 @@ describe('hover info', function() {
                     axis: '3.3'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('will show a category range if you ask nicely', function(done) {
@@ -1215,7 +1215,7 @@ describe('hover info', function() {
                     axis: 'soup - nuts'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1286,7 +1286,7 @@ describe('hover info', function() {
                         nums: 'Jan 2, 2011\nopen: 2\nhigh: 4\nlow: 1\nclose: 3  ▲'
                     });
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('shows correct labels in split mode', function(done) {
@@ -1339,7 +1339,7 @@ describe('hover info', function() {
                         axis: 'Jan 3, 2011'
                     });
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('shows text if text is in hoverinfo', function(done) {
@@ -1369,7 +1369,7 @@ describe('hover info', function() {
                         axis: 'Jan 2, 2011'
                     });
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -1400,7 +1400,7 @@ describe('hover info', function() {
                     axis: '2'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should display the correct format when ticklabels false', function(done) {
@@ -1414,7 +1414,7 @@ describe('hover info', function() {
                     axis: '2'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1483,7 +1483,7 @@ describe('hover info', function() {
             .then(function() {
                 expect(hoverHandler).not.toHaveBeenCalled();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should emit events only if the event looks user-driven', function(done) {
@@ -1509,7 +1509,7 @@ describe('hover info', function() {
             .then(function() {
                 expect(hoverHandler).toHaveBeenCalledTimes(1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1545,7 +1545,7 @@ describe('hover info', function() {
 
                 expect(labelCount()).toBe(8);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1581,7 +1581,7 @@ describe('hover info', function() {
 
                 expect(labelCount()).toBe(4);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
     describe('overlapping hover labels of different lengths', function() {
@@ -1614,7 +1614,7 @@ describe('hover info', function() {
 
                 expect(labelCount()).toBe(12);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1697,7 +1697,7 @@ describe('hover info', function() {
                 assertLabelsInsideBoxes(nodes);
                 assertSecondaryRightToPrimaryBox(nodes);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('centered-aligned, should stack nicely upon each other', function(done) {
@@ -1745,7 +1745,7 @@ describe('hover info', function() {
                 expect(calcLineOverlap(boxLABB.top, boxLABB.bottom, boxSFBB.top, boxSFBB.bottom))
                   .toBeWithin(0, 1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should stack multi-line trace-name labels nicely', function(done) {
@@ -1789,7 +1789,7 @@ describe('hover info', function() {
                 expect(calcLineOverlap(secondaryBB.top, secondaryBB.bottom, secondaryBB2.top, secondaryBB2.bottom))
                   .toBeWithin(2, 1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('does not overlap lebels for different trace types', function(done) {
@@ -1842,7 +1842,7 @@ describe('hover info', function() {
                 ).toBeWithin(2, 1);
                     }
                 })
-              .then(done, done.fail);
+              .then(()=>done(), done.fail);
         });
     });
 
@@ -1892,7 +1892,7 @@ describe('hover info', function() {
             .then(_assert('left-edge hover (side:top)', {txt: 'Jan 1, 2019', lx: 37}))
             .then(_hoverRight)
             .then(_assert('right-edge hover (side:top)', {txt: 'Jan 1, 2020', lx: 362}))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('hovermode:y common label should shift and clip text start into graph div', function(done) {
@@ -1958,7 +1958,7 @@ describe('hover info', function() {
                 ltx: 38,
                 tspanX: [-11, 38]
             }))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1994,7 +1994,7 @@ describe('hover info', function() {
                     axis: '0.388'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should format labels according to a template string and locale', function(done) {
@@ -2032,7 +2032,7 @@ describe('hover info', function() {
                     axis: '0,388'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should format secondary label with extra tag', function(done) {
@@ -2054,7 +2054,7 @@ describe('hover info', function() {
                     axis: '0.388'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should support pseudo-html', function(done) {
@@ -2076,7 +2076,7 @@ describe('hover info', function() {
                     axis: '0.388'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should support array', function(done) {
@@ -2102,7 +2102,7 @@ describe('hover info', function() {
                     axis: '0.388'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should contain the axis names', function(done) {
@@ -2125,7 +2125,7 @@ describe('hover info', function() {
                     axis: '0.388'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should work with layout.meta references', function(done) {
@@ -2143,7 +2143,7 @@ describe('hover info', function() {
                     axis: '0.388'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should work with trace meta references', function(done) {
@@ -2162,7 +2162,7 @@ describe('hover info', function() {
                     axis: '0.388'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -2189,7 +2189,7 @@ describe('hover info', function() {
                 axis: '2'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should fallback to regular hover content when hoveron does not support hovertemplate', function(done) {
@@ -2220,7 +2220,7 @@ describe('hover info', function() {
                 name: 'trace 1'
             }, 'hovering on a pt');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should honor *hoverlabel.align', function(done) {
@@ -2267,7 +2267,7 @@ describe('hover info', function() {
         .then(function() { _assert('arrayOk align:right left pt', {textAnchor: 'end', posX: 84.73}); })
         .then(function() { _hoverNatural(gd, 395, 395); })
         .then(function() { _assert('arrayOk align:left right pt', {textAnchor: 'start', posX: -84.73}); })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should honor *hoverlabel.align (centered label case)', function(done) {
@@ -2305,7 +2305,7 @@ describe('hover info', function() {
         })
         .then(function() { _hoverNatural(gd, 200, 200); })
         .then(function() { _assert('align:right', {textAnchor: 'end', posX: 57}); })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -2884,7 +2884,7 @@ describe('hover on many lines+bars', function() {
             expect(d3Select(gd).selectAll('g.hovertext').size()).toBe(2);
             expect(d3Select(gd).selectAll('g.axistext').size()).toBe(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -2906,7 +2906,7 @@ describe('hover info on overlaid subplots', function() {
                 axis: '1'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -2971,7 +2971,7 @@ describe('hover after resizing', function() {
         .then(function() {
             return check(pos1, [null, null, null], 'back to initial, not showing blank spot');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -3005,7 +3005,7 @@ describe('hover on fill', function() {
             assertLabelsCorrect([242, 292], [233, 210], 'trace 1');
             assertLabelsCorrect([147, 252], [158.925, 248.1], 'trace 0');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should always show one label in the right place (symmetric fill edge case)', function(done) {
@@ -3034,7 +3034,7 @@ describe('hover on fill', function() {
             // gives same results w/o closing point
             assertLabelsCorrect([200, 200], [73.75, 250], 'trace 0');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work for scatterternary too', function(done) {
@@ -3070,7 +3070,7 @@ describe('hover on fill', function() {
             // then make sure we can still select a *different* item afterward
             assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should act like closest mode on ternary when cartesian is in compare mode', function(done) {
@@ -3096,7 +3096,7 @@ describe('hover on fill', function() {
             // hover on the cartesian trace in the corner
             assertLabelsCorrect([363, 122], [367, 122], 'trace 38');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -3148,7 +3148,7 @@ describe('Hover on multicategory axes', function() {
             assertHoverLabelContent({ nums: 'Sample: b\nYear: 2018' });
             expect(eventData.x).toEqual(['2018', 'b']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work on heatmap traces', function(done) {
@@ -3181,7 +3181,7 @@ describe('Hover on multicategory axes', function() {
             });
             expect(eventData.x).toEqual(['2017', 'q3']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work with series', function(done) {
@@ -3207,7 +3207,7 @@ describe('Hover on multicategory axes', function() {
         .then(function() {
             expect(eventData.x).toEqual(['High', 4]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -3355,7 +3355,7 @@ describe('hover on traces with (x|y)period positioning', function() {
             });
         })
 
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('shows hover info for box, ohlc, candlestick traces', function(done) {
@@ -3430,7 +3430,7 @@ describe('hover on traces with (x|y)period positioning', function() {
             });
         })
 
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('shows hover info and hovertemplate for bar and scatter traces using (start | middle | end) alignments and different periods', function(done) {
@@ -3636,7 +3636,7 @@ describe('hover on traces with (x|y)period positioning', function() {
             });
         })
 
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -3726,7 +3726,7 @@ describe('Hover on axes with rangebreaks', function() {
                 y: 8
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work when rangebreaks are present on x-axis (reversed range)', function(done) {
@@ -3794,7 +3794,7 @@ describe('Hover on axes with rangebreaks', function() {
                 y: 0
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work when rangebreaks are present on y-axis using hovermode x (case of bar and autorange reversed)', function(done) {
@@ -3872,7 +3872,7 @@ describe('Hover on axes with rangebreaks', function() {
                 x: 8
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work when rangebreaks are present on y-axis', function(done) {
@@ -3939,7 +3939,7 @@ describe('Hover on axes with rangebreaks', function() {
                 y: '1970-01-01'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work when rangebreaks are present on y-axis (reversed range)', function(done) {
@@ -4007,7 +4007,7 @@ describe('Hover on axes with rangebreaks', function() {
                 y: '1970-01-01 00:00:00.2'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -4082,7 +4082,7 @@ describe('hover updates', function() {
             // Assert label restored:
             assertLabelsCorrect(null, [103, 100], 'trace 10.5', 'animation/update 3');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not trigger infinite loop of plotly_unhover events', function(done) {
@@ -4182,7 +4182,7 @@ describe('hover updates', function() {
             assertLabelsCorrect(offPt2, null, null, 'after react() resolves [off-pt]');
             expect(Fx.hover).toHaveBeenCalledTimes(2);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('drag should trigger unhover', function(done) {
@@ -4231,7 +4231,7 @@ describe('hover updates', function() {
                 expect(hoverHandler).toHaveBeenCalled();
                 expect(unhoverHandler).toHaveBeenCalled();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 });
 
@@ -4434,7 +4434,7 @@ describe('Test hover label custom styling:', function() {
                 text: [13, 'Arial', 'rgb(255, 255, 255)']
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work for x/y cartesian traces (multi-trace case)', function(done) {
@@ -4499,7 +4499,7 @@ describe('Test hover label custom styling:', function() {
                 color: ['rgb(68, 68, 68)', 'rgb(68, 68, 68)']
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work for 2d z cartesian traces', function(done) {
@@ -4554,7 +4554,7 @@ describe('Test hover label custom styling:', function() {
                 text: [11, 'Gravitas', 'rgb(255, 0, 0)']
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -4621,7 +4621,7 @@ describe('hover distance', function() {
                     name: 'trace 0'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('correctly responds to setting the hoverdistance to -1 by increasing ' +
@@ -4644,7 +4644,7 @@ describe('hover distance', function() {
                     name: 'trace 0'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -4692,7 +4692,7 @@ describe('hover distance', function() {
 
                 expect(gd._hoverdata).toEqual(undefined);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('responds to hoverdistance change from 10 to 30 (part 2)', function(done) {
@@ -4715,7 +4715,7 @@ describe('hover distance', function() {
                     name: 'trace 0'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('responds to hoverdistance change from default to 0 (part 1)', function() {
@@ -4746,7 +4746,7 @@ describe('hover distance', function() {
 
                 expect(gd._hoverdata).toEqual(undefined);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('responds to setting the hoverdistance to -1 by increasing ' +
@@ -4778,7 +4778,7 @@ describe('hover distance', function() {
                     name: 'trace 0'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -4804,7 +4804,7 @@ describe('hover distance', function() {
 
                     expect(gd._hoverdata.length).toEqual(2);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
         });
 
         it('selects all points at the same position on a log axis', function(done) {
@@ -4820,7 +4820,7 @@ describe('hover distance', function() {
 
                     expect(gd._hoverdata.length).toEqual(2);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
         });
 
         it('selects all points at the same position on a category axis', function(done) {
@@ -4836,7 +4836,7 @@ describe('hover distance', function() {
 
                     expect(gd._hoverdata.length).toEqual(2);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
         });
 
         it('selects all points at the same position on a date axis', function(done) {
@@ -4852,7 +4852,7 @@ describe('hover distance', function() {
 
                     expect(gd._hoverdata.length).toEqual(2);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
         });
 
         it('correctly format the epoch timestamp in a given hover format', function(done) {
@@ -4867,7 +4867,7 @@ describe('hover distance', function() {
                     Fx.hover(gd, {xpx: 120, ypx: 110});
                     assertHoverLabelContent({nums: '(00:00:00, 1)'});
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
         });
     });
 });
@@ -4945,7 +4945,7 @@ describe('hover label rotation:', function() {
             }], {
                 hovermode: 'y'
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should rotate labels under *hovermode:y*', function() {
@@ -4970,7 +4970,7 @@ describe('hover label rotation:', function() {
                     isRotated: false
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -4993,7 +4993,7 @@ describe('hover label rotation:', function() {
             }], {
                 hovermode: 'y'
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should rotate labels under *hovermode:y*', function() {
@@ -5018,7 +5018,7 @@ describe('hover label rotation:', function() {
                     isRotated: false
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -5049,7 +5049,7 @@ describe('hover labels z-position', function() {
             compareMask = modebar[0].compareDocumentPosition(hoverlayer[0]);
             expect(compareMask).toBe(Node.DOCUMENT_POSITION_FOLLOWING, '.hoverlayer appears after the .modebar');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -5085,7 +5085,7 @@ describe('touch devices', function() {
                         expect(clickHandler).toHaveBeenCalled();
                         expect(hoverHandler).not.toHaveBeenCalled();
                     })
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
             });
         });
     });
@@ -5114,7 +5114,7 @@ describe('dragmode: false', function() {
             .then(function() {
                 expect(hoverHandler).toHaveBeenCalled();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 });
 
@@ -5199,7 +5199,7 @@ describe('hovermode: (x|y)unified', function() {
                 expect(ax.spikesnap).toBe('hovered data');
                 expect(gd._fullLayout.yaxis.showspike).toBeFalse;
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('set smart defaults for spikeline in y unified', function(done) {
@@ -5215,7 +5215,7 @@ describe('hovermode: (x|y)unified', function() {
                 expect(ax.spikesnap).toBe('hovered data');
                 expect(gd._fullLayout.yaxis.showspike).toBeFalse;
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('x unified should work for x/y cartesian traces', function(done) {
@@ -5226,7 +5226,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertLabel({title: '3', items: ['trace 0 : 4', 'trace 1 : 8']});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should not display hover for display: none', function(done) {
@@ -5258,7 +5258,7 @@ describe('hovermode: (x|y)unified', function() {
                 'A : 1'
             ]});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not fail if only hoverinfo: "none" are current visible', function(done) {
@@ -5292,7 +5292,7 @@ describe('hovermode: (x|y)unified', function() {
             expect(gd._hoverdata, undefined);
             assertHoverLabelContent({});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('y unified should work for x/y cartesian traces', function(done) {
@@ -5304,7 +5304,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertLabel({title: '6', items: ['trace 0 : 2', 'trace 1 : 5']});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('unified hover modes should work for x/y cartesian traces via template', function(done) {
@@ -5331,7 +5331,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertLabel({title: '6', items: ['trace 0 : 2', 'trace 1 : 5']});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('x unified should work for x/y cartesian traces with legendgroup', function(done) {
@@ -5357,7 +5357,7 @@ describe('hovermode: (x|y)unified', function() {
                     'trace 4 : 1'
                 ]});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should display hover for scatter and bars at various intervals (default hoverdistance)', function(done) {
@@ -5406,7 +5406,7 @@ describe('hovermode: (x|y)unified', function() {
                 'scatter : 26'
             ]});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should display hover for scatter and bars at various intervals (case of hoverdistance: -1) tests finitRange', function(done) {
@@ -5456,7 +5456,7 @@ describe('hovermode: (x|y)unified', function() {
                 'scatter : 26'
             ]});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should pick the bar which is closest to the winning point no the bar that close to the cursor', function(done) {
@@ -5528,7 +5528,7 @@ describe('hovermode: (x|y)unified', function() {
                 'scatter : 25'
             ]});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should format differing position using *xother* `hovertemplate` and in respect to `xhoverformat`', function(done) {
@@ -5598,7 +5598,7 @@ describe('hovermode: (x|y)unified', function() {
                 'trace 4 : (_x_)y: (1.451) 5',
             ]});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should display hover for two high-res scatter at different various intervals', function(done) {
@@ -5668,7 +5668,7 @@ describe('hovermode: (x|y)unified', function() {
                 'low : −71'
             ]});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('case of scatter points on period bars', function(done) {
@@ -5789,7 +5789,7 @@ describe('hovermode: (x|y)unified', function() {
                 'bar : 5'
             ]});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('case of M1 period bars overlaid on M3 period bars', function(done) {
@@ -5917,7 +5917,7 @@ describe('hovermode: (x|y)unified', function() {
                 'M3 : 5'
             ]});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     [{
@@ -6032,7 +6032,7 @@ describe('hovermode: (x|y)unified', function() {
                     'scatter : 3.2'
                 ]});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -6089,7 +6089,7 @@ describe('hovermode: (x|y)unified', function() {
                     'end : 1',
                 ]});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -6147,7 +6147,7 @@ describe('hovermode: (x|y)unified', function() {
                     'two : 2',
                 ]});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -6205,7 +6205,7 @@ describe('hovermode: (x|y)unified', function() {
                     'trace 1 : 2'
                 ]});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         [{
@@ -6329,7 +6329,7 @@ describe('hovermode: (x|y)unified', function() {
                         'trace 1 : 3'
                     ]});
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -6485,7 +6485,7 @@ describe('hovermode: (x|y)unified', function() {
                 'scatter : 12'
             ]});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should have the same traceorder as the legend', function(done) {
@@ -6505,7 +6505,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertLabel({title: '3', items: expectation.reverse()});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should order items based on trace index as in the legend', function(done) {
@@ -6523,7 +6523,7 @@ describe('hovermode: (x|y)unified', function() {
                     'Attic (Ardui... : (Apr 13, 2014, 15:26:34, 98.49)'
                 ]});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should work for finance traces', function(done) {
@@ -6539,7 +6539,7 @@ describe('hovermode: (x|y)unified', function() {
                     'candlestick : open: 22high: 27low: 19close: 23  ▲'
                 ]});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should work for "legend_horizontal_autowrap"', function(done) {
@@ -6553,7 +6553,7 @@ describe('hovermode: (x|y)unified', function() {
                 assertElementCount('g.hoverlayer g.legend', 1);
                 assertElementCount('g.hoverlayer g.traces', 20);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should style scatter symbols accordingly', function(done) {
@@ -6571,7 +6571,7 @@ describe('hovermode: (x|y)unified', function() {
                 assertLabel({title: '2', items: ['3']});
                 assertSymbol([['rgb(253, 231, 37)', '0px', '']]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should style bar symbols accordingly', function(done) {
@@ -6589,7 +6589,7 @@ describe('hovermode: (x|y)unified', function() {
                 assertLabel({title: '20', items: ['20']});
                 assertSymbol([['rgb(168, 140, 33)', '4px', 'rgb(111, 193, 115)']]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should style funnel symbols accordingly', function(done) {
@@ -6605,7 +6605,7 @@ describe('hovermode: (x|y)unified', function() {
                   ['rgb(255, 255, 0)', '5px', 'rgb(0, 0, 127)']
                 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should style waterfall symbols correctly', function(done) {
@@ -6629,7 +6629,7 @@ describe('hovermode: (x|y)unified', function() {
                   ['rgb(255, 65, 54)', '5px', 'rgb(238, 130, 238)']
                 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('label should have bgcolor/bordercolor from hoverlabel or legend or paper_bgcolor', function(done) {
@@ -6707,7 +6707,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertRectColor(bgcolor[3], bgcolor[3]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should use hoverlabel.font or legend.font or layout.font', function(done) {
@@ -6786,7 +6786,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertFont('Mono', '30px', 'rgb(255, 0, 0)');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should use hoverlabel.font for group titles as well as traces', function(done) {
@@ -6818,7 +6818,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertFont('Mono', '20px', 'rgb(255, 127, 0)');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should use hoverlabel.grouptitlefont for group titles', function(done) {
@@ -6852,7 +6852,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertFont('Mono', '20px', 'rgb(255, 127, 0)');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('should work with hovertemplate', function(done) {
@@ -6878,7 +6878,7 @@ describe('hovermode: (x|y)unified', function() {
                     '8.00'
                 ]});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 
     it('on relayout, it deletes existing hover', function(done) {
@@ -6899,7 +6899,7 @@ describe('hovermode: (x|y)unified', function() {
                 assertElementCount('g.hovertext', 0);
                 assertElementCount('g.legend', 1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
     });
 });
 
@@ -6978,7 +6978,7 @@ describe('hover on traces with (x|y)hoverformat', function() {
                     nums: t.nums
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -7008,7 +7008,7 @@ describe('hover on traces with (x|y)hoverformat', function() {
                     nums: t.nums
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -7035,6 +7035,6 @@ describe('hover on traces with (x|y)hoverformat', function() {
                 nums: '(02/01/2000, 4.00)'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

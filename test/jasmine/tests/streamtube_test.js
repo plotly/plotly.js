@@ -100,7 +100,7 @@ describe('Test streamtube autorange', function() {
                 [-5.32, 5.51], [-6.32, 3.85], [-3.54, 3.91]
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -160,7 +160,7 @@ describe('Test streamtube starting positions defaults:', function() {
                 cellsLength: 2096
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should cut xz at min-y and take all x/y/z pts on that plane except those on the edges', function(done) {
@@ -170,7 +170,7 @@ describe('Test streamtube starting positions defaults:', function() {
                 cellsLength: 512
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should take middle pt if mesh vector has length 2', function(done) {
@@ -180,7 +180,7 @@ describe('Test streamtube starting positions defaults:', function() {
                 cellsLength: 432
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should take pt if mesh vector has length 1', function(done) {
@@ -190,7 +190,7 @@ describe('Test streamtube starting positions defaults:', function() {
                 cellsLength: 240
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -237,7 +237,7 @@ describe('Test streamtube interactions', function() {
                 cellsLength: 512
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     [ // list of directions
@@ -327,7 +327,7 @@ describe('Test streamtube interactions', function() {
                         cellsLength: 2112
                     });
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -381,7 +381,7 @@ describe('Test streamtube interactions', function() {
         }).then(function() {
             expect(Lib.warn).toHaveBeenCalledWith('Encountered arbitrary coordinates! Unable to input data grid.');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should add/clear gl objects correctly', function(done) {
@@ -413,7 +413,7 @@ describe('Test streamtube interactions', function() {
         .then(function() {
             _assert('after deleteTraces #2', {glObjCnt: 0});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should be able to restyle to a cone trace and back', function(done) {
@@ -445,7 +445,7 @@ describe('Test streamtube interactions', function() {
                 objTypes: ['cone', 'streamtube']
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -524,7 +524,7 @@ describe('Test streamtube hover', function() {
         .then(function() {
             assertHoverLabelContent({nums: 'SCALAR HOVERTEXT !!'});
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display hover labels (multi-trace case)', function(done) {
@@ -567,7 +567,7 @@ describe('Test streamtube hover', function() {
                 name: 'TUBE'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should emit correct event data', function(done) {
@@ -619,6 +619,6 @@ describe('Test streamtube hover', function() {
                 fail('did not trigger plotly_hover');
             }
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

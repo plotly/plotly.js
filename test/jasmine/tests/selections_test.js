@@ -167,7 +167,7 @@ describe('Test selections:', function() {
                 expect(getLastSelection(gd)).toEqual(selection);
                 expect(countSelections(gd)).toEqual(index + 2);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should be able to remove a selection', function(done) {
@@ -189,7 +189,7 @@ describe('Test selections:', function() {
             .then(function() {
                 expect(countSelections(gd)).toEqual(index - 1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should be able to remove all selections', function(done) {
@@ -210,7 +210,7 @@ describe('Test selections:', function() {
                 expect(countSelectionPathsInGraph()).toEqual(0);
                 expect(gd.layout.selections).toBeUndefined();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can replace the selections array', function(done) {
@@ -225,7 +225,7 @@ describe('Test selections:', function() {
                 expect(gd.layout.selections.length).toBe(2);
                 expect(Lib.warn).not.toHaveBeenCalled();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should be able to update a selection layer', function(done) {
@@ -256,7 +256,7 @@ describe('Test selections:', function() {
                 expect(getLastSelection(gd)).toEqual(selection);
                 expect(countSelections(gd)).toEqual(index + 1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -318,6 +318,6 @@ describe('Emit plotly_selected when plot a graph that has selections', function(
             expect(selections.length).toEqual(1);
             expect(selections[0].x0).toEqual(0.25);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

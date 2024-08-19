@@ -268,7 +268,7 @@ describe('Test mesh3d', function() {
 
                 return Plotly.purge(gd);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -316,7 +316,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertCells(4, 'to be OK cells');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be visible when the indices could be rounded to be in vertex range', function(done) {
@@ -338,7 +338,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertCells(4, 'to be OK cells');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be visible when the indices are equal or greater than the number of vertices', function(done) {
@@ -360,7 +360,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertCells(0, 'to be OK cells');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be visible when the indices are negative', function(done) {
@@ -382,7 +382,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertCells(0, 'to be OK cells');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be visible when the indices have different sizes', function(done) {
@@ -404,7 +404,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertCells(0, 'to be OK cells');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be visible when the indices are provided and OK', function(done) {
@@ -426,7 +426,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertCells(4, 'to be OK cells');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be visible when values are passed in string format', function(done) {
@@ -447,7 +447,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertCells(4, 'to be OK cells');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be visible when the index arrays are empty', function(done) {
@@ -469,7 +469,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertCells(0, 'to be OK cells');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be visible when the index arrays are not provided', function(done) {
@@ -488,7 +488,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertCells(3, 'to be OK cells');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be visible when the vertex arrays are empty', function(done) {
@@ -507,7 +507,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertCells(0, 'to be OK cells');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be invisible when the vertex arrays missing', function(done) {
@@ -517,7 +517,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(false, 'to be visible');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be invisible when the vertex arrays are not arrays - number case', function(done) {
@@ -533,7 +533,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(false, 'to be visible');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be invisible when the vertex arrays are not arrays - boolean case', function(done) {
@@ -549,7 +549,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(false, 'to be visible');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be invisible when the vertex arrays are not arrays - object case', function(done) {
@@ -565,7 +565,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(false, 'to be visible');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be invisible when the vertex arrays are not arrays - string case', function(done) {
@@ -581,7 +581,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(false, 'to be visible');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be invisible when the index arrays are not arrays - string case', function(done) {
@@ -597,7 +597,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(false, 'to be visible');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be invisible when the index arrays are not arrays - object case', function(done) {
@@ -613,7 +613,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(false, 'to be visible');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be invisible when the index arrays are not arrays - boolean case', function(done) {
@@ -629,7 +629,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(false, 'to be visible');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl mesh3d should be invisible when the index arrays are not arrays - number case', function(done) {
@@ -645,7 +645,7 @@ describe('Test mesh3d', function() {
             .then(function() {
                 assertVisibility(false, 'to be visible');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

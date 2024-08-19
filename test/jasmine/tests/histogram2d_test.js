@@ -249,7 +249,7 @@ describe('Test histogram2d', function() {
             .then(function() {
                 return Plotly.relayout(gd, 'xaxis.range', [0, 2]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         function _assert(xBinsFull, yBinsFull, xBins, yBins) {
@@ -323,7 +323,7 @@ describe('Test histogram2d', function() {
                     {start: -0.5, end: 59.5, size: 20},
                     undefined, undefined);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('respects explicit autobin: false as a one-time autobin', function(done) {
@@ -346,7 +346,7 @@ describe('Test histogram2d', function() {
             .then(function() {
                 _assert(binSpec, binSpec, binSpec, binSpec);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -431,7 +431,7 @@ describe('Test histogram2d hover:', function() {
                 name: ''
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     describe('hover info', function() {
@@ -453,7 +453,7 @@ describe('Test histogram2d hover:', function() {
                     nums: 'x: 3 - 5\ny: 4 - 6\nz: 3'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('shows the data range when bins have multiple values (case 2)', function(done) {
@@ -470,7 +470,7 @@ describe('Test histogram2d hover:', function() {
                 _hover(250, 250);
                 assertHoverLabelContent({nums: ['x: b', 'y: 4 - 5', 'z: 0'].join('\n')});
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('shows the exact data when bins have single values', function(done) {
@@ -491,7 +491,7 @@ describe('Test histogram2d hover:', function() {
                     nums: 'x: 3.3\ny: 4.2\nz: 3'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('shows the data range when bins have no value in it', function(done) {
@@ -538,7 +538,7 @@ describe('Test histogram2d hover:', function() {
                 _check('off left/bottom of pt', 50, 325, ['x: 5 - 9', 'y: 2', 'z: 0']);
                 _check('off right/bottom of pt', 300, 325, ['x: 50 - 54', 'y: 2', 'z: 0']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

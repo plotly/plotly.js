@@ -126,6 +126,6 @@ describe('heatmapgl plotting', function() {
         .then(function() {
             expect(layout.xaxis.range).toBeCloseToArray([-1, 3], 3);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

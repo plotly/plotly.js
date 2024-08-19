@@ -43,7 +43,7 @@ describe('Test removal of gl contexts', function() {
 
             expect(!!gd._fullLayout._plots.xy._scene).toBe(false);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
@@ -85,7 +85,7 @@ describe('Test removal of gl contexts', function() {
                 firstCanvas !== secondCanvas && firstGlContext.isContextLost()
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -122,7 +122,7 @@ describe('Test gl plot side effects', function() {
             var rangeSlider = document.getElementsByClassName('range-slider')[0];
             expect(rangeSlider).not.toBeDefined();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should be able to replot from a blank graph', function(done) {
@@ -163,7 +163,7 @@ describe('Test gl plot side effects', function() {
 
             return Plotly.purge(gd);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should be able to switch trace type', function(done) {
@@ -187,7 +187,7 @@ describe('Test gl plot side effects', function() {
         .then(function() {
             expect(d3SelectAll('canvas').size()).toEqual(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should be able to resize canvas properly', function(done) {
@@ -205,7 +205,7 @@ describe('Test gl plot side effects', function() {
         .then(function() {
             expect(gd.querySelector('.gl-canvas-context').width).toBe(600);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
@@ -251,7 +251,7 @@ describe('Test gl plot side effects', function() {
             // isn't used for scattergl traces
             expect(eventData).toBeUndefined();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should not clear context when dimensions are not integers', function(done) {
@@ -304,7 +304,7 @@ describe('Test gl plot side effects', function() {
             expect(Plots.cleanPlot).toHaveBeenCalledTimes(2);
             expect(Lib.log).toHaveBeenCalledTimes(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should be able to toggle from svg to gl', function(done) {
@@ -327,7 +327,7 @@ describe('Test gl plot side effects', function() {
             expect(countCanvases()).toBe(0);
             expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should create two WebGL contexts per graph', function(done) {
@@ -340,7 +340,7 @@ describe('Test gl plot side effects', function() {
             });
             expect(cnt).toBe(2);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should clear canvases on *replot* edits', function(done) {
@@ -373,7 +373,7 @@ describe('Test gl plot side effects', function() {
             expect(gd._fullLayout._glcanvas.data()[0].regl.clear).toHaveBeenCalledTimes(1);
             expect(gd._fullLayout._glcanvas.data()[1].regl.clear).toHaveBeenCalledTimes(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -501,7 +501,7 @@ describe('Test gl2d plot interactions:', function() {
                 'yaxis.range[1]': jasmine.any(Number)
             }));
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl supports 1D and 2D Zoom', function(done) {
@@ -553,7 +553,7 @@ describe('Test gl2d plot interactions:', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
             expect(gd.layout.yaxis.range).toBeCloseToArray([5, 7], 3);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl supports axis constraints with zoom', function(done) {
@@ -619,7 +619,7 @@ describe('Test gl2d plot interactions:', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([-8.2, 24.2], 1);
             expect(gd.layout.yaxis.range).toBeCloseToArray([-0.12, 16.1], 1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl data-referenced annotations should update on drag', function(done) {
@@ -661,7 +661,7 @@ describe('Test gl2d plot interactions:', function() {
         .then(function() {
             assertAnnotation([327, 331]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should not scroll document while panning', function(done) {
@@ -714,6 +714,6 @@ describe('Test gl2d plot interactions:', function() {
         .then(function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

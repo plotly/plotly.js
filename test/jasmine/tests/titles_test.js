@@ -49,7 +49,7 @@ describe('Plot title', function() {
         .then(function() {
             expectDefaultCenteredPosition(gd);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can still be defined as `layout.title` to ensure backwards-compatibility', function(done) {
@@ -58,7 +58,7 @@ describe('Plot title', function() {
             expectTitle('Plotly line chart');
             expectDefaultCenteredPosition(gd);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can be updated via `relayout`', function(done) {
@@ -68,7 +68,7 @@ describe('Plot title', function() {
               return Plotly.relayout(gd, {title: {text: 'Some other title'}});
           })
           .then(expectTitleFn('Some other title'))
-          .then(done, done.fail);
+          .then(()=>done(), done.fail);
     });
 
     // Horizontal alignment
@@ -91,7 +91,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectLeftEdgeAlignedTo(testCase.selector);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can be placed at the right edge of the ' + testCase.selector.desc, function(done) {
@@ -103,7 +103,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectRightEdgeAlignedTo(testCase.selector);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can be placed at the center of the ' + testCase.selector.desc, function(done) {
@@ -115,7 +115,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredWithin(testCase.selector);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -139,7 +139,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCapLineAlignsWithTopEdgeOf(testCase.selector);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can be placed at the bottom edge of the ' + testCase.selector.desc, function(done) {
@@ -151,7 +151,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectBaselineAlignsWithBottomEdgeOf(testCase.selector);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can be placed in the vertical center of the ' + testCase.selector.desc, function(done) {
@@ -163,7 +163,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredVerticallyWithin(testCase.selector);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -184,7 +184,7 @@ describe('Plot title', function() {
         .then(function() {
             expectBaselineInMiddleOfTopMargin(gd);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     // xanchor 'auto' test
@@ -214,7 +214,7 @@ describe('Plot title', function() {
                 var textAnchor = titleSel().attr('text-anchor');
                 expect(textAnchor).toBe(testCase.expAlignment, testDesc);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     }
 
@@ -246,7 +246,7 @@ describe('Plot title', function() {
             .then(function() {
                 testCase.expFn(elemSelector);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     }
 
@@ -259,7 +259,7 @@ describe('Plot title', function() {
         .then(function() {
             expectDefaultCenteredPosition(gd);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     // Horizontal padding
@@ -275,7 +275,7 @@ describe('Plot title', function() {
                 expect(titleSel().attr('text-anchor')).toBe('start');
                 expect(titleX() - 10).toBe(leftOf(refSelector));
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -291,7 +291,7 @@ describe('Plot title', function() {
                 expect(titleSel().attr('text-anchor')).toBe('end');
                 expect(titleX() + 10).toBe(rightOf(refSelector));
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -319,7 +319,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredWithin(refSelector);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -339,7 +339,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredWithin(paperElemSelector);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -355,7 +355,7 @@ describe('Plot title', function() {
         .then(function() {
             expectRightEdgeAlignedTo(paperElemSelector);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('mutes right padding when xanchor is left', function(done) {
@@ -370,7 +370,7 @@ describe('Plot title', function() {
         .then(function() {
             expectLeftEdgeAlignedTo(paperElemSelector);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     // Vertical padding
@@ -386,7 +386,7 @@ describe('Plot title', function() {
                 var capLineY = calcTextCapLineY(titleSel());
                 expect(capLineY).toBe(topOf(refSelector) + 10);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -402,7 +402,7 @@ describe('Plot title', function() {
                 var baselineY = calcTextBaselineY(titleSel());
                 expect(baselineY).toBe(bottomOf(refSelector) - 10);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -430,7 +430,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredVerticallyWithin(refSelector);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -450,7 +450,7 @@ describe('Plot title', function() {
             .then(function() {
                 expectCenteredVerticallyWithin(paperElemSelector);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -466,7 +466,7 @@ describe('Plot title', function() {
         .then(function() {
             expectBaselineAlignsWithBottomEdgeOf(paperElemSelector);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('mutes bottom padding when yanchor is top', function(done) {
@@ -481,7 +481,7 @@ describe('Plot title', function() {
         .then(function() {
             expectCapLineAlignsWithTopEdgeOf(paperElemSelector);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     function extendLayout(titleAttrs) {
@@ -652,7 +652,7 @@ describe('Titles can be updated', function() {
             .then(function() {
                 expectChangedTitles();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('via `Plotly.update` ' + testCase.desc, function(done) {
@@ -660,7 +660,7 @@ describe('Titles can be updated', function() {
             .then(function() {
                 expectChangedTitles();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -733,7 +733,7 @@ describe('Titles and labels', function() {
             expect(xTitleSel().text()).toBe('x-new');
             expect(d3Select('.xtick').text()).toBe('b');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -787,7 +787,7 @@ describe('Titles support setting custom font properties', function() {
             expectXAxisTitleFont('#333', 'sans-serif', 20);
             expectYAxisTitleFont('#666', 'Arial', 16);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('through using the deprecated `titlefont` properties (backwards-compatibility)', function(done) {
@@ -828,7 +828,7 @@ describe('Titles support setting custom font properties', function() {
             expectXAxisTitleFont('#333', 'sans-serif', 20);
             expectYAxisTitleFont('#666', 'Arial', 16);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -955,7 +955,7 @@ describe('Title fonts can be updated', function() {
             .then(function() {
                 expectChangedTitleFonts();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('via `Plotly.update` ' + testCase.desc, function(done) {
@@ -963,7 +963,7 @@ describe('Title fonts can be updated', function() {
             .then(function() {
                 expectChangedTitleFonts();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1032,7 +1032,7 @@ describe('Titles for multiple axes', function() {
             expect(yTitleSel(2).text()).toBe('Y-Axis 2');
             expect(yTitleSel(2).node().style.fill).toBe(rgb('blue'));
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can be updated using deprecated `title` and `titlefont` syntax (backwards-compatibility)', function(done) {
@@ -1062,7 +1062,7 @@ describe('Titles for multiple axes', function() {
             expect(y2Style.fontFamily).toBe('monospace');
             expect(y2Style.fontSize).toBe('5px');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1110,7 +1110,7 @@ describe('Title automargining', function() {
             return Plotly.relayout(gd, 'title.yanchor', 'top');
         }).then(function() {
             expect(gd._fullLayout._size.t).toBe(0);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 
 
@@ -1130,7 +1130,7 @@ describe('Title automargining', function() {
             expect(gd._fullLayout._size.b).toBeCloseTo(27, -1);
             expect(gd._fullLayout._size.h).toBeCloseTo(273, -1);
             expect(gd._fullLayout.title.yanchor).toBe('top');
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 
     it('should avoid overlap with container and plot area for yref=container and allow padding', function(done) {
@@ -1153,7 +1153,7 @@ describe('Title automargining', function() {
         }).then(function() {
             expect(gd._fullLayout._size.t).toBeCloseTo(147, -1);
             expect(gd._fullLayout._size.h).toBeCloseTo(153, -1);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 
     it('should make space for multiple container-referenced components on the same side of the plot', function(done) {
@@ -1175,7 +1175,7 @@ describe('Title automargining', function() {
         }).then(function() {
             expect(gd._fullLayout._size.b).toBeCloseTo(57, -1);
             expect(gd._fullLayout._size.h).toBeCloseTo(243, -1);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 });
 
@@ -1371,7 +1371,7 @@ describe('Editable titles', function() {
                 checkTitle('gtitle-subtitle', 'Click to enter Plot subtitle', 0.2, 0.2)
             ]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('has hover effects for blank titles', function(done) {
@@ -1388,7 +1388,7 @@ describe('Editable titles', function() {
                 checkTitle('gtitle-subtitle', 'Click to enter Plot subtitle', 0, 1)
             ]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('has no hover effects for titles that used to be blank', function(done) {
@@ -1417,6 +1417,6 @@ describe('Editable titles', function() {
                 checkTitle('gtitle-subtitle', 'SSS', 1, 1)
             ]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

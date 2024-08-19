@@ -172,7 +172,7 @@ describe('Test cone autorange:', function() {
             var rng = [1.229, 10.771];
             _assertAxisRanges('after spacing out the x/y/z coordinates', rng, rng, rng);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -204,7 +204,7 @@ describe('Test cone autorange:', function() {
         }).then(function() {
             expect(gd._fullLayout.scene._scene.glplot.objects[0].vectorScale).toBeCloseTo(0.2857, 4);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -246,7 +246,7 @@ describe('Test cone interactions', function() {
 
             expect(scene).toBeUndefined();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should not pass zero or infinite `coneSize` to gl-cone3d', function(done) {
@@ -280,7 +280,7 @@ describe('Test cone interactions', function() {
             expect(objs[1].coneScale).toBe(0.5, 'absolute case');
             expect(objs[2].coneScale).toBe(0.5, 'absolute + 0-norm case');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display hover labels', function(done) {
@@ -355,7 +355,7 @@ describe('Test cone interactions', function() {
                 nums: 'NORM : 3.00\nat 2,2,2'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display hover labels (multi-trace case)', function(done) {
@@ -396,6 +396,6 @@ describe('Test cone interactions', function() {
                 name: 'blue cone'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

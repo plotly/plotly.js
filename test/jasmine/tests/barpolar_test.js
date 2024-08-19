@@ -456,7 +456,7 @@ describe('Test barpolar hover:', function() {
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).then(done, done.fail);
+            run(specs).then(()=>done(), done.fail);
         });
     });
 });

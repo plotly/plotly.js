@@ -807,7 +807,7 @@ describe('scattermap hover', function() {
             out = hoverPoints(getPointData(gd), xval, yval)[0];
             expect(out.extraText).toEqual('(10°, 10°)<br>A');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should generate hover label info (positive winding case)', function() {
@@ -847,7 +847,7 @@ describe('scattermap hover', function() {
 
             expect(out.extraText).toEqual('lon: 10°');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should generate hover label info (hoverinfo: \'lat\' case)', function(done) {
@@ -859,7 +859,7 @@ describe('scattermap hover', function() {
 
             expect(out.extraText).toEqual('lat: 10°');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should generate hover label info (hoverinfo: \'text\' + \'text\' array case)', function(done) {
@@ -871,7 +871,7 @@ describe('scattermap hover', function() {
 
             expect(out.extraText).toEqual('A');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should generate hover label info (hoverinfo: \'text\' + \'hovertext\' array case)', function(done) {
@@ -883,7 +883,7 @@ describe('scattermap hover', function() {
 
             expect(out.extraText).toEqual('Apple');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should generate hover label (\'marker.color\' array case)', function(done) {
@@ -892,7 +892,7 @@ describe('scattermap hover', function() {
 
             expect(out.color).toEqual('red');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should generate hover label (\'marker.color\' w/ colorscale case)', function(done) {
@@ -901,7 +901,7 @@ describe('scattermap hover', function() {
 
             expect(out.color).toEqual('rgb(245, 195, 157)');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should generate hover label (\'hoverinfo\' array case)', function(done) {
@@ -925,7 +925,7 @@ describe('scattermap hover', function() {
         .then(function() {
             check('(10°, 10°)<br>Apple');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should pass along hovertemplate', function(done) {
@@ -937,7 +937,7 @@ describe('scattermap hover', function() {
 
             expect(out.hovertemplate).toEqual('tpl');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should always display hoverlabel when hovertemplate is defined', function(done) {
@@ -948,7 +948,7 @@ describe('scattermap hover', function() {
         .then(function() {
             checkHoverLabel([190, 215], ['tpl2', '']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1115,7 +1115,7 @@ describe('Test plotly events on a scattermap plot:', function() {
                 expect(pt.lon).toEqual(10, 'points[0].lon');
                 expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -1243,7 +1243,7 @@ describe('Test plotly events on a scattermap plot when css transform is present:
                 expect(pt.lon).toEqual(10, 'points[0].lon');
                 expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -1286,6 +1286,6 @@ describe('scattermap restyle', function() {
             }
         }).then(function() {
             return Plotly.restyle(gd, 'visible', true);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 });

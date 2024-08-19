@@ -856,7 +856,7 @@ describe('Test colorscale restyle calls:', function() {
                 colorscaleIn: 'Greens'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to toggle between autocolorscale true/false and set colorscales (scatter marker case)', function(done) {
@@ -932,7 +932,7 @@ describe('Test colorscale restyle calls:', function() {
                 colorscaleIn: 'Greens'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to toggle between autocolorscale true/false and set colorscales (scatter marker line case)', function(done) {
@@ -1016,7 +1016,7 @@ describe('Test colorscale restyle calls:', function() {
                 colorscaleIn: 'Greens'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to toggle between autocolorscale true/false and set colorscales (coloraxis case)', function(done) {
@@ -1095,7 +1095,7 @@ describe('Test colorscale restyle calls:', function() {
                 colorscaleIn: 'Greens'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should update coloraxis cmin/cmax on color value changes', function(done) {
@@ -1130,7 +1130,7 @@ describe('Test colorscale restyle calls:', function() {
         .then(_assert('marker.color [-1,2,3]', -1, 3))
         .then(function() { return Plotly.react(gd, fig([1, 2, 3])); })
         .then(_assert('back again to marker.color [1,2,3]', 1, 3))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should work with templates', function(done) {
@@ -1168,7 +1168,7 @@ describe('Test colorscale restyle calls:', function() {
                 mcc: ['rgb(68, 1, 84)', 'rgb(33, 145, 140)', 'rgb(253, 231, 37)']
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should work with scatter3d', function(done) {
@@ -1196,6 +1196,6 @@ describe('Test colorscale restyle calls:', function() {
             expect(gd._fullData[0].line.cmin).toBe(2);
             expect(gd._fullData[0].line.cmax).toBe(4);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

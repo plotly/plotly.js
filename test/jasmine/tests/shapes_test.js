@@ -246,7 +246,7 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInLowerLayer())
                     .toEqual(countShapesInLowerLayer(gd));
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -267,7 +267,7 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInUpperLayer())
                     .toEqual(countShapesInUpperLayer(gd));
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -290,7 +290,7 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInSubplots())
                     .toEqual(countShapesInSubplots(gd));
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -337,7 +337,7 @@ describe('Test shapes:', function() {
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 2);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should be able to remove a shape', function(done) {
@@ -369,7 +369,7 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount - 2);
                 expect(countShapes(gd)).toEqual(index - 1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should be able to remove all shapes', function(done) {
@@ -396,7 +396,7 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInSubplots()).toEqual(0);
                 expect(gd.layout.shapes).toBeUndefined();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('can replace the shapes array', function(done) {
@@ -413,7 +413,7 @@ describe('Test shapes:', function() {
                 expect(gd.layout.shapes.length).toBe(2);
                 expect(Lib.warn).not.toHaveBeenCalled();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should be able to update a shape layer', function(done) {
@@ -458,7 +458,7 @@ describe('Test shapes:', function() {
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -522,7 +522,7 @@ describe('shapes axis reference changes', function() {
         .then(function() {
             expect(getShape(0).attr('clip-path') || '').toMatch(/xy2\)$/);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -560,7 +560,7 @@ describe('shapes edge cases', function() {
             expect(countShapePathsInUpperLayer()).toBe(0);
             expect(countShapePathsInSubplots()).toBe(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -615,7 +615,7 @@ describe('shapes autosize', function() {
         .then(function() {
             assertRanges('stretched shapes[0]', [0, 3], [0, 2]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should propagate axis autorange changes when axis ranges are set', function(done) {
@@ -647,7 +647,7 @@ describe('shapes autosize', function() {
         .then(function() {
             assertRanges('auto rng / small shape', [-0.18, 3], [0.86, 3]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -716,7 +716,7 @@ describe('Test shapes: a plot with shapes and an overlaid axis', function() {
 
     it('should not throw an exception', function(done) {
         Plotly.newPlot(gd, data, layout)
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -859,7 +859,7 @@ describe('A fixed size path shape', function() {
         .then(function() {
             assertShapeSize(getFirstShapeNode(), 30, 20);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('is draggable', function(done) {
@@ -868,7 +868,7 @@ describe('A fixed size path shape', function() {
               drag({node: getFirstShapeNode(), dpos: [50, 50]}).then(function() {
                   assertShapeSize(getFirstShapeNode(), 30, 20);
               })
-              .then(done, done.fail);
+              .then(()=>done(), done.fail);
           });
     });
 
@@ -890,7 +890,7 @@ describe('A fixed size path shape', function() {
                     expect(bbox.width).toBeLessThan(widthBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
       });
 
@@ -912,7 +912,7 @@ describe('A fixed size path shape', function() {
                     expect(bbox.height).toBeLessThan(heightBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
       });
 });
@@ -1031,7 +1031,7 @@ describe('A fixed size shape', function() {
             var reRenderedShapeNode = getFirstShapeNode();
             assertShapeSize(reRenderedShapeNode, 25, 25);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('is draggable', function(done) {
@@ -1040,7 +1040,7 @@ describe('A fixed size shape', function() {
               drag({node: getFirstShapeNode(), dpos: [50, 50]}).then(function() {
                   assertShapeSize(getFirstShapeNode(), 25, 25);
               })
-              .then(done, done.fail);
+              .then(()=>done(), done.fail);
           });
     });
 
@@ -1063,7 +1063,7 @@ describe('A fixed size shape', function() {
                     expect(bbox.width).toBeLessThan(widthBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
       });
 
@@ -1086,7 +1086,7 @@ describe('A fixed size shape', function() {
                     expect(bbox.height).toBeLessThan(heightBeforeDrag);
                     assertShapeFullyVisible(shapeNodeAfterDrag);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
       });
 
@@ -1128,7 +1128,7 @@ describe('A fixed size shape', function() {
                                 expect(bBoxAfterDrag.width).toBeCloseTo(bBoxBeforeDrag.width + resizeFactor * Math.abs(dx));
                                 assertShapeFullyVisible(shapeNodeAfterDrag);
                             })
-                            .then(done, done.fail);
+                            .then(()=>done(), done.fail);
                       });
                 });
             });
@@ -1157,7 +1157,7 @@ describe('A fixed size shape', function() {
                         expect(bBoxAfterDrag.left).toBe(bBoxBeforeDrag.left + 10);
                         expect(bBoxAfterDrag.top).toBe(bBoxBeforeDrag.top - 10);
                     })
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
               });
         });
 
@@ -1179,7 +1179,7 @@ describe('A fixed size shape', function() {
                         expect(bBoxAfterDrag.bottom).toBe(bBoxBeforeDrag.bottom, 'bottom');
                         expect(bBoxAfterDrag.left).toBe(bBoxBeforeDrag.left + 25, 'left');
                     })
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
               });
         });
 
@@ -1201,7 +1201,7 @@ describe('A fixed size shape', function() {
                         expect(bBoxAfterDrag.bottom).toBe(bBoxBeforeDrag.bottom - 10, 'bottom');
                         expect(bBoxAfterDrag.left).toBe(bBoxBeforeDrag.left, 'left');
                     })
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
               });
         });
     });

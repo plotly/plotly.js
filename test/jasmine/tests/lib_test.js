@@ -2961,7 +2961,7 @@ describe('Queue', function() {
             expect(gd.undoQueue.index).toEqual(0);
             expect(gd.undoQueue.queue).toEqual([]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should fill in undoQueue up to value found in *queueLength* config', function(done) {
@@ -3031,6 +3031,6 @@ describe('Queue', function() {
             expect(gd.undoQueue.queue[1].redo.args[0][1])
                 .toEqual({ 'transforms[0]': null });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

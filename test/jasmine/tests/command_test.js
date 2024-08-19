@@ -35,7 +35,7 @@ describe('Plots.executeAPICommand', function() {
 
                 expect(value).toEqual('resolution');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -55,14 +55,14 @@ describe('Plots.executeAPICommand', function() {
 
                 expect(value).toEqual('rejection');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
     describe('with the skip command', function() {
         it('resolves immediately', function(done) {
             Plots.executeAPICommand(gd, 'skip')
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
         });
     });
 });
@@ -544,7 +544,7 @@ describe('component bindings', function() {
         }).then(function() {
             expect(count).toEqual(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('logs a warning if unable to create an observer', function() {
@@ -567,7 +567,7 @@ describe('component bindings', function() {
         Plotly.restyle(gd, 'marker.color', 'blue').then(function() {
             expect(gd.layout.sliders[0].active).toBe(4);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('does not update the component if the value is not present', function(done) {
@@ -576,7 +576,7 @@ describe('component bindings', function() {
         Plotly.restyle(gd, 'marker.color', 'black').then(function() {
             expect(gd.layout.sliders[0].active).toBe(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('udpates bound components when the computed value changes', function(done) {
@@ -588,7 +588,7 @@ describe('component bindings', function() {
         Plotly.restyle(gd, 'line.color', 'blue').then(function() {
             expect(gd.layout.sliders[0].active).toBe(4);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -657,7 +657,7 @@ describe('attaching component bindings', function() {
             // been removed
             expect(gd._internalEv._events.plotly_animatingframe).toBeUndefined();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('attaches and updates bindings for updatemenus', function(done) {
@@ -711,6 +711,6 @@ describe('attaching component bindings', function() {
             // been removed
             expect(gd._internalEv._events.plotly_animatingframe).toBeUndefined();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

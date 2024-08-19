@@ -349,14 +349,14 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'hoverinfo', 'lon+lat+text+name').then(function() {
             check([381, 221], ['(10°, 10°)\nA', 'trace 0']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should use the hovertemplate', function(done) {
         Plotly.restyle(gd, 'hovertemplate', 'tpl %{lat}<extra>x</extra>').then(function() {
             check([381, 221], ['tpl 10', 'x']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not hide hover label when hovertemplate', function(done) {
@@ -366,28 +366,28 @@ describe('Test scattergeo hover', function() {
         }).then(function() {
             check([381, 221], ['tpl 10', 'x']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should generate hover label info (\'text\' single value case)', function(done) {
         Plotly.restyle(gd, 'text', 'text').then(function() {
             check([381, 221], ['(10°, 10°)\ntext', null]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should generate hover label info (\'hovertext\' single value case)', function(done) {
         Plotly.restyle(gd, 'hovertext', 'hovertext').then(function() {
             check([381, 221], ['(10°, 10°)\nhovertext', null]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should generate hover label info (\'hovertext\' array case)', function(done) {
         Plotly.restyle(gd, 'hovertext', ['Apple', 'Banana', 'Orange']).then(function() {
             check([381, 221], ['(10°, 10°)\nApple', null]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should generate hover label with custom styling', function(done) {
@@ -404,14 +404,14 @@ describe('Test scattergeo hover', function() {
                 fontFamily: 'Arial'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should generate hover label with arrayOk \'hoverinfo\' settings', function(done) {
         Plotly.restyle(gd, 'hoverinfo', [['lon', null, 'lat+name']]).then(function() {
             check([381, 221], ['lon: 10°', null]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     describe('should preserve lon/lat formatting hovetemplate equivalence', function() {
@@ -424,7 +424,7 @@ describe('Test scattergeo hover', function() {
                 lat: [[10.00087683]]
             })
             .then(function() { check(pos, exp); })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('- hovertemplate case (same lat/lon truncation)', function(done) {
@@ -434,7 +434,7 @@ describe('Test scattergeo hover', function() {
                 hovertemplate: '(%{lat}°, %{lon}°)<br>%{text}<extra></extra>'
             })
             .then(function() { check(pos, exp); })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -450,7 +450,7 @@ describe('Test scattergeo hover', function() {
         .then(function() {
             check([275, 255], ['New York', 'LOOK']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -474,7 +474,7 @@ describe('scattergeo drawing', function() {
             // only utopia logs - others are silently ignored
             expect(loggers.log).toHaveBeenCalledTimes(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('preserves order after hide/show', function(done) {
@@ -499,7 +499,7 @@ describe('scattergeo drawing', function() {
         .then(function() {
             expect(getIndices()).toEqual([0, 1]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 

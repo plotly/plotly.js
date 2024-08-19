@@ -391,7 +391,7 @@ describe('Test Plots', function() {
                 expect(gd.id).toBeTruthy();
 
                 Plotly.Plots.resize(gd.id)
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -414,7 +414,7 @@ describe('Test Plots', function() {
                     .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
                     .then(function() { return Plotly.Plots.resize(gd); })
                     .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
             });
         });
 
@@ -438,7 +438,7 @@ describe('Test Plots', function() {
                         expect(v[0]).toEqual(v[1]);
                         expect(v[1]).toEqual(v[2]);
                     })
-                    .then(done, done.fail);
+                    .then(()=>done(), done.fail);
             });
         });
     });
@@ -611,7 +611,7 @@ describe('Test Plots', function() {
                     name: 'garbage'
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should convert typed arrays to regular arrays', function(done) {
@@ -640,7 +640,7 @@ describe('Test Plots', function() {
                 expect(obj.data[0].marker.size).toEqual([20, 30, 10]);
                 expect(obj.data[0].marker.color).toEqual([10, 30, 20]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -784,7 +784,7 @@ describe('Test Plots', function() {
 
                 destroyGraphDiv();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should handle cases when module plot is not set (ternary case)', function(done) {
@@ -803,7 +803,7 @@ describe('Test Plots', function() {
 
                 destroyGraphDiv();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -851,7 +851,7 @@ describe('Test Plots', function() {
                 // some special Plots.style logic.
                 expect(Drawing.pointStyle).toHaveBeenCalledTimes(3);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -917,7 +917,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy']}, 'totally blank');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('uses the first x & y axes it finds in making a blank cartesian subplot', function(done) {
@@ -925,7 +925,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['x3y4']}, 'blank with axis objects');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('shows expected cartesian subplots from visible traces and components', function(done) {
@@ -942,7 +942,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy', 'x2y2', 'x3y3', 'x5y5']}, 'visible components');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('shows expected cartesian subplots from invisible traces and components', function(done) {
@@ -959,7 +959,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy', 'x2y2', 'x3y3', 'x5y5']}, 'invisible components');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('ignores unused axis and subplot objects', function(done) {
@@ -978,7 +978,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({pie: 1}, 'just pie');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1045,7 +1045,7 @@ describe('Test Plots', function() {
                     plotCallCnt: 0
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -1111,7 +1111,7 @@ describe('grids', function() {
                 }));
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('defaults to a coupled layout', function(done) {
@@ -1154,7 +1154,7 @@ describe('grids', function() {
             });
             _assertMissing(['xaxis', 'yaxis', 'xaxis4', 'yaxis4']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('has a bigger default gap with independent layout', function(done) {
@@ -1201,7 +1201,7 @@ describe('grids', function() {
             });
             _assertMissing(['xaxis', 'yaxis']);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can set x and y gaps and change domain', function(done) {
@@ -1248,7 +1248,7 @@ describe('grids', function() {
                 yaxis2: [0, 0.35 / 1.7]
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('responds to xside and yside', function(done) {
@@ -1294,7 +1294,7 @@ describe('grids', function() {
             checkAxis('xaxis2', 'free', 'bottom', 0);
             checkAxis('yaxis2', 'free', 'left', 0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('places other subplots in the grid by default', function(done) {
@@ -1325,7 +1325,7 @@ describe('grids', function() {
             checkDomain(gd._fullData[0], 1, 0, [0.6, 1], [0.6, 1]);
             checkDomain(gd._fullLayout.geo, 0, 1, [0, 0.4], [0, 0.4]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1371,6 +1371,6 @@ describe('Test Plots with automargin and minreducedwidth/height', function() {
             assert('width', '100');
             assert('height', '100');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

@@ -104,7 +104,7 @@ describe('Test gl3d trace click/hover:', function() {
                 }
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should honor *hoverlabel.namelength*', function(done) {
@@ -127,7 +127,7 @@ describe('Test gl3d trace click/hover:', function() {
                 }
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
@@ -299,7 +299,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText(null, null, null, 'THIS Y -- a');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display correct hover labels and emit correct event data (surface case with connectgaps enabled)', function(done) {
@@ -331,7 +331,7 @@ describe('Test gl3d trace click/hover:', function() {
                 fontColor: 'rgb(255, 255, 255)'
             }, 'initial');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display correct hover labels and emit correct event data (surface case)', function(done) {
@@ -450,7 +450,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText(null, null, null, '!!! 43 !!!');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should emit correct event data on click (scatter3d case)', function(done) {
@@ -475,7 +475,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display correct hover labels (mesh3d case)', function(done) {
@@ -547,7 +547,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText(null, null, null, '3-4-5');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display correct face colors', function(done) {
@@ -599,7 +599,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'face color'
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display correct face intensities (uniform grid)', function(done) {
@@ -629,7 +629,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'trace 0'
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display correct face intensities (non-uniform grid)', function(done) {
@@ -654,7 +654,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'trace 0'
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display correct face intensities *alpha-hull* case', function(done) {
@@ -697,7 +697,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'trace 0'
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should display correct face intensities *delaunay* case', function(done) {
@@ -740,7 +740,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'trace 0'
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     function scroll(target, amt) {
@@ -824,7 +824,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'vertex color'
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should pick correct points after orthographic scroll zoom - scatter3d case', function(done) {
@@ -893,7 +893,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'marker color'
             );
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should pick latest & closest points on hover if two points overlap', function(done) {
@@ -917,7 +917,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(function() {
             assertHoverText('x: 1', 'y: 1', 'z: 1', 'third above', 'trace 1');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     describe('propagate colors to hover labels', function() {
@@ -1093,7 +1093,7 @@ describe('Test gl3d trace click/hover:', function() {
                         fontFamily: 'Arial'
                     }, 'undefined');
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('@gl scatter3d ' + t + ' colorscale', function(done) {
@@ -1264,7 +1264,7 @@ describe('Test gl3d trace click/hover:', function() {
                         fontFamily: 'Arial'
                     }, '6th point');
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -1341,7 +1341,7 @@ describe('Test gl3d trace click/hover:', function() {
                 'marker.line.color': 'black'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -1412,7 +1412,7 @@ describe('hover on traces with (x|y|z|u|v|w)hoverformat and valuehoverformat', f
                     nums: t.nums
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1438,7 +1438,7 @@ describe('hover on traces with (x|y|z|u|v|w)hoverformat and valuehoverformat', f
                 nums: 'x: 1.0\ny: 1.00\nz: 1.000'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl mesh3d trace', function(done) {
@@ -1466,7 +1466,7 @@ describe('hover on traces with (x|y|z|u|v|w)hoverformat and valuehoverformat', f
                 nums: 'x: 2.0\ny: 0.00\nz: 1.000'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     [
@@ -1499,7 +1499,7 @@ describe('hover on traces with (x|y|z|u|v|w)hoverformat and valuehoverformat', f
                     nums: t.nums
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

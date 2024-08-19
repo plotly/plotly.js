@@ -22,7 +22,7 @@ describe('calculated data and points', function() {
                 expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
                 expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should exclude null and undefined points as categories when false', function(done) {
@@ -31,7 +31,7 @@ describe('calculated data and points', function() {
                 expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
                 expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -48,7 +48,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3].y).toEqual(13);
                     expect(gd.calcdata[0][4].y).toEqual(14);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in the given order if `trace` order is explicitly specified', function(done) {
@@ -67,7 +67,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3].y).toEqual(13);
                     expect(gd.calcdata[0][4].y).toEqual(14);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -84,7 +84,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 1, y: 13}));
                     expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 3, y: 14}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in descending domain alphanumerical order', function(done) {
@@ -99,7 +99,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 3, y: 13}));
                     expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 1, y: 14}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in ascending domain alphanumerical order even if categories are all numbers', function(done) {
@@ -114,7 +114,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 1, y: 13}));
                     expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 3, y: 14}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in categoryorder order even if category array is defined', function(done) {
@@ -130,7 +130,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 1, y: 13}));
                     expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 3, y: 14}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in ascending domain alphanumerical order, excluding undefined', function(done) {
@@ -144,7 +144,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 0, y: 13}));
                     expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 2, y: 14}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should combine duplicate categories', function(done) {
@@ -157,7 +157,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: 0, y: 20}));
                     expect(gd._fullLayout.xaxis._categories).toEqual(['1']);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should skip over visible-false traces', function(done) {
@@ -180,7 +180,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[1][2]).toEqual(jasmine.objectContaining({x: 8, y: 0}));
                     expect(gd._fullLayout.yaxis2._categories).toEqual(['C', 'B', 'A']);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -198,7 +198,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 0, y: 13}));
                     expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 2, y: 14}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in explicitly supplied order even if category values are all numbers', function(done) {
@@ -214,7 +214,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 0, y: 13}));
                     expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 2, y: 14}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in explicitly supplied order, independent of trace order, pruned', function(done) {
@@ -230,7 +230,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
                     expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 2, y: 14}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in explicitly supplied order even if not all categories are present', function(done) {
@@ -246,7 +246,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 0, y: 13}));
                     expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 3, y: 14}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in explicitly supplied order even if some missing categories were at the beginning or end of categoryarray', function(done) {
@@ -270,7 +270,7 @@ describe('calculated data and points', function() {
 
                     expect(domTickTexts).toEqual(['b', 'x', 'a', 'd', 'z', 'e', 'c']);  // y, q and k has no data points
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in explicitly supplied order even if some missing categories were at the beginning or end of categoryarray', function(done) {
@@ -295,7 +295,7 @@ describe('calculated data and points', function() {
 
                     expect(domTickTexts).toEqual(['y', 'b', 'x', 'a', 'd', 'z', 'e', 'c']);  // q, k has no data; y is null
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in explicitly supplied order even if not all categories are present, and should interact with a null value orthogonally', function(done) {
@@ -311,7 +311,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 0, y: 13}));
                     expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 3, y: 14}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('should output categories in explicitly supplied order first, if not all categories are covered', function(done) {
@@ -332,7 +332,7 @@ describe('calculated data and points', function() {
                     // based on the categoryorder. This of course means that the mere presence of categories triggers this
                     // behavior, rather than an explicit 'explicit' categoryorder.
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -362,7 +362,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 9, y: 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 10, y: 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order follows the trace order (even if categoryarray is specified)', function(done) {
@@ -394,7 +394,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 9, y: 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 10, y: 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order is category ascending (even if categoryarray is specified)', function(done) {
@@ -427,7 +427,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 5, y: 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 9, y: 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order is category descending (even if categoryarray is specified)', function(done) {
@@ -460,7 +460,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 5, y: 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 1, y: 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order follows categoryarray', function(done) {
@@ -492,7 +492,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 10, y: 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 3, y: 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -523,7 +523,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 1, y: 32}));
                     expect(gd.calcdata[2][3]).toEqual(jasmine.objectContaining({x: 10, y: 33}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order follows the trace order (even if categoryarray is specified)', function(done) {
@@ -556,7 +556,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 1, y: 32}));
                     expect(gd.calcdata[2][3]).toEqual(jasmine.objectContaining({x: 10, y: 33}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order is category ascending (even if categoryarray is specified)', function(done) {
@@ -590,7 +590,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 0, y: 32}));
                     expect(gd.calcdata[2][3]).toEqual(jasmine.objectContaining({x: 9, y: 33}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order is category descending (even if categoryarray is specified)', function(done) {
@@ -624,7 +624,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 10, y: 32}));
                     expect(gd.calcdata[2][3]).toEqual(jasmine.objectContaining({x: 1, y: 33}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order follows categoryarray', function(done) {
@@ -657,7 +657,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 1, y: 32}));
                     expect(gd.calcdata[2][3]).toEqual(jasmine.objectContaining({x: 3, y: 33}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -685,7 +685,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 0, y: 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 1, y: 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order follows the trace order (even if categoryarray is specified)', function(done) {
@@ -715,7 +715,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 0, y: 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 1, y: 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order is category ascending (even if categoryarray is specified)', function(done) {
@@ -746,7 +746,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 1, y: 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 0, y: 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order is category descending (even if categoryarray is specified)', function(done) {
@@ -777,7 +777,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 1, y: 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 2, y: 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order follows categoryarray', function(done) {
@@ -809,7 +809,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 2, y: 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 0, y: 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('category order follows categoryarray even if data is sparse', function(done) {
@@ -841,7 +841,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 9, y: 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 1, y: 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -879,7 +879,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 1, y: 11 + 32}));
                     expect(gd.calcdata[2][3]).toEqual(jasmine.objectContaining({x: 3, y: 33}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
 
             it('fully overlapping - category order follows categoryarray and stacking produces expected results', function(done) {
@@ -912,7 +912,7 @@ describe('calculated data and points', function() {
                     expect(gd.calcdata[2][1]).toEqual(jasmine.objectContaining({x: 2, y: 10 + 21 + 31}));
                     expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 0, y: 11 + 20 + 32}));
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -928,7 +928,7 @@ describe('calculated data and points', function() {
                 expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'c', 'e', 'g']);
                 expect(gd._fullLayout.xaxis2._categories).toEqual(['h', 'f', 'd', 'b']);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should consider number categories and their string representation to be the same', function(done) {
@@ -946,7 +946,7 @@ describe('calculated data and points', function() {
                     b: 1
                 });
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         describe('by value', function() {
@@ -1060,7 +1060,7 @@ describe('calculated data and points', function() {
                                 expect(gd._fullLayout[trace.type === 'splom' ? 'xaxis' : axName]._categories).toEqual(finalOrder, 'wrong order');
                             }
                         })
-                        .then(done, done.fail);
+                        .then(()=>done(), done.fail);
                     }
 
                     ['total ascending', 'total descending'].forEach(function(categoryorder) {
@@ -1213,7 +1213,7 @@ describe('calculated data and points', function() {
                 .then(function() {
                     expect(gd._fullLayout.yaxis5._categories).toEqual(order.reverse(), 'wrong order');
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -1230,7 +1230,7 @@ describe('calculated data and points', function() {
                 expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({data: 'b'}));
                 expect(gd.calcdata[0][2]).toEqual(jasmine.objectContaining({data: {foo: 'bar'}}));
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

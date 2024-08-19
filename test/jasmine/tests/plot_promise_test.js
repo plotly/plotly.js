@@ -420,7 +420,7 @@ describe('Plotly.___ methods', function() {
                 expect(typeof gd).toBe('object');
                 expect(gd.layout).toBeDefined();
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should return a rejected promise if gd is hidden', function(done) {
@@ -431,7 +431,7 @@ describe('Plotly.___ methods', function() {
                 expect(err).toBeDefined();
                 expect(err.message).toBe('Resize must be passed a displayed plot div element.');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should return a rejected promise if gd is detached from the DOM', function(done) {
@@ -442,7 +442,7 @@ describe('Plotly.___ methods', function() {
                 expect(err).toBeDefined();
                 expect(err.message).toBe('Resize must be passed a displayed plot div element.');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('should return a resolved promise if plot has been purged and there is nothing to resize', function(done) {
@@ -452,7 +452,7 @@ describe('Plotly.___ methods', function() {
             destroyGraphDiv();
 
             resizePromise
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
         });
 
         it('should return a resolved promise if plot has been hidden and gd is hidden', function(done) {
@@ -461,7 +461,7 @@ describe('Plotly.___ methods', function() {
             initialDiv.style.display = 'none';
 
             resizePromise
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
         });
 
         it('errors before even generating a promise if gd is not defined', function() {

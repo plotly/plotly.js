@@ -689,7 +689,7 @@ describe('heatmap plot', function() {
         }).then(function() {
             assertImageCnt(5);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('keeps the correct ordering after hide and show', function(done) {
@@ -718,7 +718,7 @@ describe('heatmap plot', function() {
         .then(function() {
             expect(getIndices()).toEqual([0, 1]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should be able to restyle', function(done) {
@@ -752,7 +752,7 @@ describe('heatmap plot', function() {
 
             expect(imageURLs[1]).toEqual(imageURLs[3]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('draws canvas with correct margins', function(done) {
@@ -801,7 +801,7 @@ describe('heatmap plot', function() {
                 expect(args[3]).toBe(argumentsWithoutPadding[i][3] + nearZeroGap - yGap, i);
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can change z values with connected gaps', function(done) {
@@ -828,7 +828,7 @@ describe('heatmap plot', function() {
         .then(function() {
             expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2]]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should set canvas dimensions according to z data shape when using fast drawing method', function(done) {
@@ -864,7 +864,7 @@ describe('heatmap plot', function() {
             return Plotly.newPlot(gd, mock2.data, mock2.layout);
         }).then(function() {
             assertCanvas(mock2.data[0].z);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 
     it('should create imageData that fits the canvas dimensions if zsmooth is set and/or drawing method is fast', function(done) {
@@ -937,7 +937,7 @@ describe('heatmap plot', function() {
             return Plotly.newPlot(gd, mock2.data, mock2.layout);
         }).then(function() {
             assertImageData([0]);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 });
 
@@ -1081,7 +1081,7 @@ describe('heatmap hover', function() {
 
             Plotly.restyle(gd, {zsmooth: 'none'}, [0])
             .then(checkData)
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 

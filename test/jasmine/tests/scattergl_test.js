@@ -36,7 +36,7 @@ describe('end-to-end scattergl tests', function() {
             var subplot = fullLayout._plots.xy;
             var scene = subplot._scene;
             expect(scene.glText.length).toEqual(1);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 
     it('@gl should update a plot with text labels', function(done) {
@@ -104,7 +104,7 @@ describe('end-to-end scattergl tests', function() {
             var subplot = fullLayout._plots.xy;
             var scene = subplot._scene;
             expect(scene.glText.length).toEqual(2);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 
     ['text', 'texttemplate'].forEach(function(attr) {
@@ -167,7 +167,7 @@ describe('end-to-end scattergl tests', function() {
             assertDrawCall('back up', 1);
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 216, 200)[0]).not.toBe(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should be able to toggle trace with different modes', function(done) {
@@ -213,7 +213,7 @@ describe('end-to-end scattergl tests', function() {
             expect(scene.glText[0].render).toHaveBeenCalledTimes(1);
             expect(scene.scatter2d.draw).toHaveBeenCalledTimes(3, 'both traces have markers');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should change plot type with incomplete data', function(done) {
@@ -228,7 +228,7 @@ describe('end-to-end scattergl tests', function() {
                 return Plotly.restyle(gd, {y: [[1]]}, 0);
             }).not.toThrow();
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should restyle opacity', function(done) {
@@ -251,7 +251,7 @@ describe('end-to-end scattergl tests', function() {
         .then(function() {
             expect(ScatterGl.calc).toHaveBeenCalledTimes(2);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should update selected points', function(done) {
@@ -337,7 +337,7 @@ describe('end-to-end scattergl tests', function() {
             expect(scene.selectBatch).toEqual([[], []], msg);
             expect(scene.unselectBatch).toEqual([[], []], msg);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should remove fill2d', function(done) {
@@ -353,7 +353,7 @@ describe('end-to-end scattergl tests', function() {
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 200, 160)[0]).toBe(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should be able to draw more than 4096 colors', function(done) {
@@ -397,7 +397,7 @@ describe('end-to-end scattergl tests', function() {
             // and 105545275 after.
             expect(total).toBeGreaterThan(4e6);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should work with typed array', function(done) {
@@ -427,7 +427,7 @@ describe('end-to-end scattergl tests', function() {
             expect(opts.positions)
                 .toBeCloseToArray([1, 1, 2, 2, 3, 1]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should handle transform traces properly (calcTransform case)', function(done) {
@@ -458,7 +458,7 @@ describe('end-to-end scattergl tests', function() {
             var scene = gd.calcdata[0][0].t._scene;
             expect(scene.selectBatch[0]).toEqual([0]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should handle transform traces properly (default transform case)', function(done) {
@@ -491,7 +491,7 @@ describe('end-to-end scattergl tests', function() {
             var scene = gd.calcdata[0][0].t._scene;
             expect(scene.selectBatch).toEqual([[], [0]]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should not cause infinite loops when coordinate arrays start/end with NaN', function(done) {
@@ -563,7 +563,7 @@ describe('end-to-end scattergl tests', function() {
                 [undefined, 0, undefined, 0]
             ]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should reset the sanp to length after react and not to TOO_MANY_POINTS constant', function(done) {
@@ -607,7 +607,7 @@ describe('end-to-end scattergl tests', function() {
         })
         .then(function() {
             expect(getSnap()).toEqual(TOO_MANY_POINTS + 1);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     });
 });
 
@@ -657,7 +657,7 @@ describe('Test scattergl autorange:', function() {
                     expect(gd._fullLayout.xaxis.range).toBeCloseToArray(glRangeX, 'x range');
                     expect(gd._fullLayout.yaxis.range).toBeCloseToArray(glRangeY, 'y range');
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -706,7 +706,7 @@ describe('Test scattergl autorange:', function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.079, 1.079], 2, 'x range');
                 expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.105, 1.105], 2, 'y range');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl - case array marker.size', function(done) {
@@ -721,7 +721,7 @@ describe('Test scattergl autorange:', function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.119, 1.119], 2, 'x range');
                 expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.199, 1.199], 2, 'y range');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl - case mode:lines', function(done) {
@@ -734,7 +734,7 @@ describe('Test scattergl autorange:', function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0, N - 1], 2, 'x range');
                 expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.0555, 1.0555], 2, 'y range');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

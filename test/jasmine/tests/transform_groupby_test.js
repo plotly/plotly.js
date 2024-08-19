@@ -89,7 +89,7 @@ describe('groupby', function() {
 
                 assertDims([4, 3]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('Accepts deprecated object notation for styles', function(done) {
@@ -138,7 +138,7 @@ describe('groupby', function() {
                 expect(gd._fullData[0].marker.opacity).toEqual(1);
                 expect(gd._fullData[1].marker.opacity).toEqual(1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
 
             // The final test for restyle updates using deprecated syntax
             // is omitted since old style syntax is *only* sanitized on
@@ -191,7 +191,7 @@ describe('groupby', function() {
                     [0.4, 0.4]
                 );
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('Plotly.react should work', function(done) {
@@ -254,7 +254,7 @@ describe('groupby', function() {
                     [1, 1]
                 );
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('Plotly.extendTraces should work', function(done) {
@@ -281,7 +281,7 @@ describe('groupby', function() {
 
                 assertDims([5, 5]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('Plotly.deleteTraces should work', function(done) {
@@ -300,7 +300,7 @@ describe('groupby', function() {
             }).then(function() {
                 assertDims([]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('toggling trace visibility should work', function(done) {
@@ -323,7 +323,7 @@ describe('groupby', function() {
             }).then(function() {
                 assertDims([4, 3, 4, 3]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('Plotly.newPlot should group points properly using typed array', function(done) {
@@ -338,7 +338,7 @@ describe('groupby', function() {
                 expect(gd._fullData[1].x).toEqual([11, 2, 3]);
                 expect(gd._fullData[1].y).toEqual([2, 2, 0]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -450,7 +450,7 @@ describe('groupby', function() {
 
                 assertDims([4, 3]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('Plotly.newPlot should plot the transform traces', function(done) {
@@ -466,7 +466,7 @@ describe('groupby', function() {
                 expect(gd._fullData.length).toEqual(1);
                 assertDims([7]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('Plotly.newPlot should plot the transform traces', function(done) {
@@ -485,7 +485,7 @@ describe('groupby', function() {
 
                 assertDims([7]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('Plotly.newPlot should plot the transform traces', function(done) {
@@ -505,7 +505,7 @@ describe('groupby', function() {
 
                 assertDims([7]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('Plotly.newPlot should plot the transform traces', function(done) {
@@ -525,7 +525,7 @@ describe('groupby', function() {
 
                 assertDims([7]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -562,7 +562,7 @@ describe('groupby', function() {
 
                     assertDims([4, 3]);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             };
         }
 
@@ -694,7 +694,7 @@ describe('groupby', function() {
                 expect(gd._fullData[0].marker.line.color).toEqual(['orange', 'red', 'cyan', 'pink']);
                 expect(gd._fullData[1].marker.line.color).toEqual('yellow');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('passes with no explicit styling for the individual group', test(mockData4));
@@ -729,7 +729,7 @@ describe('groupby', function() {
 
                     assertDims([7]);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             };
         }
 

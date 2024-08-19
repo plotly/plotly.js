@@ -34,6 +34,6 @@ describe('Dynamic @lib/ module imports', function() {
             expect(polarLayer.size()).toBe(1, 'one polar layer');
             expect(polarLayer.selectAll('.trace').size()).toBe(1, 'one scatterpolar trace');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });

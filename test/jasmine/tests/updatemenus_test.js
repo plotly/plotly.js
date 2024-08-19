@@ -435,7 +435,7 @@ describe('update menus interactions', function() {
             expect(gd.layout.updatemenus).toBeUndefined();
             assertPushMargins([false, false, false]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should drop/fold buttons when clicking on header', function(done) {
@@ -463,7 +463,7 @@ describe('update menus interactions', function() {
         }).then(function() {
             assertMenus([3, 0]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can set buttons visible or hidden', function(done) {
@@ -482,7 +482,7 @@ describe('update menus interactions', function() {
         .then(function() {
             assertMenus([0, 4]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should execute the API command when execute = true', function(done) {
@@ -494,7 +494,7 @@ describe('update menus interactions', function() {
             // Has been changed:
             expect(gd.data[0].line.color).toEqual('green');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should not execute the API command when execute = false', function(done) {
@@ -511,7 +511,7 @@ describe('update menus interactions', function() {
             // Is unchanged:
             expect(gd.data[0].line.color).toEqual('blue');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should emit an event on button click', function(done) {
@@ -537,7 +537,7 @@ describe('update menus interactions', function() {
             expect(data.length).toEqual(2);
             expect(data[1].active).toEqual(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should still emit the event if method = skip', function(done) {
@@ -565,7 +565,7 @@ describe('update menus interactions', function() {
         }).then(function() {
             expect(clickCnt).toEqual(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should apply update on button click', function(done) {
@@ -589,7 +589,7 @@ describe('update menus interactions', function() {
         }).then(function() {
             assertActive(gd, [0, 0]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should apply update on button click (toggle via args2 case)', function(done) {
@@ -632,7 +632,7 @@ describe('update menus interactions', function() {
             assertItemColor(btn, bgColor);
             assertLineColor('base', 'red');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should update correctly on failed binding comparisons', function(done) {
@@ -677,7 +677,7 @@ describe('update menus interactions', function() {
         .then(function() {
             assertActive(gd, [1]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should change color on mouse over', function(done) {
@@ -711,7 +711,7 @@ describe('update menus interactions', function() {
             mouseEvent('mouseout', button);
             assertItemColor(button, activeColor);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should relayout', function(done) {
@@ -766,7 +766,7 @@ describe('update menus interactions', function() {
             assertItemColor(selectHeader(0), 'rgb(0, 0, 0)');
             assertItemColor(selectHeader(1), 'rgb(0, 0, 0)');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('applies padding on all sides', function(done) {
@@ -798,7 +798,7 @@ describe('update menus interactions', function() {
             expect(xy1[0] - xy2[0]).toEqual(xpad);
             expect(xy1[1] - xy2[1]).toEqual(ypad);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('applies y padding on relayout', function(done) {
@@ -822,7 +822,7 @@ describe('update menus interactions', function() {
 
             expect(x1 - x2).toBeCloseTo(padShift, 1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     function assertNodeCount(query, cnt) {
@@ -963,7 +963,7 @@ describe('update menus interaction with other components:', function() {
             expect(menuLayer.selectAll('.updatemenu-container').size()).toBe(1);
             expect(infoLayer.node().nextSibling).toBe(menuLayer.node());
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 

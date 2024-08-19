@@ -330,7 +330,7 @@ describe('Draw new selections to layout', function() {
                     });
                 })
 
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
     });
@@ -579,7 +579,7 @@ describe('Activate and edit selections', function() {
                 expect(lassoPoints).toBeUndefined();
             })
 
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('closed-path using ' + device, function(done) {
@@ -653,7 +653,7 @@ describe('Activate and edit selections', function() {
                 expect(range).toBeUndefined();
             })
 
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });
@@ -717,7 +717,7 @@ describe('Activate and edit selections', function() {
             expect(el.style['stroke-width']).toBe('7px'); // extra pixels to help activate selection
         })
 
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 
@@ -793,7 +793,7 @@ describe('emit plotly_selected event on editing selections in various dragmodes'
                 expect(selections[0].y0).toBeCloseTo(2.5062641509433967, 3);
                 expect(selections[0].y1).toBeCloseTo(3.5062641509433967, 3);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 });

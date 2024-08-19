@@ -532,7 +532,7 @@ describe('contour plotting and editing', function() {
             checkTicks('y', ['Jan 102016', 'Jan 24', 'Feb 7', 'Feb 21'], 'date y #2');
             expect(gd._fullLayout.yaxis.type).toBe('date');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('works and draws labels when explicitly specifying ncontours=1', function(done) {
@@ -550,7 +550,7 @@ describe('contour plotting and editing', function() {
         .then(function() {
             expect(gd.querySelector('.contourlabels text').textContent).toBe('0.41');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('should always draw heatmap coloring layer below contour lines', function(done) {
@@ -578,7 +578,7 @@ describe('contour plotting and editing', function() {
         .then(function() {
             assertNodeOrder('.hm', '.contourlevel', 'back to heatmap coloring');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('can change z values with gaps', function(done) {
@@ -619,7 +619,7 @@ describe('contour plotting and editing', function() {
             expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2.5]]);
             expect(gd.calcdata[0][0].zmask).toEqual([[1, 1], [0, 1], [1, 0]]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('keeps the correct ordering after hide and show', function(done) {
@@ -648,7 +648,7 @@ describe('contour plotting and editing', function() {
         .then(function() {
             expect(getIndices()).toEqual([0, 1]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 });
 

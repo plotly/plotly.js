@@ -152,7 +152,7 @@ describe('Shapes referencing domain', function() {
                 testObjectMove(color, x, y, type);
             })
             .then(delay(DELAY_TIME))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         };
     }
     function testAnnotationMoveLabelItFun(color, x, y) {
@@ -161,7 +161,7 @@ describe('Shapes referencing domain', function() {
             .then(delay(DELAY_TIME))
             .then(testAnnotationMoveLabel(color, x, y))
             .then(delay(DELAY_TIME))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         };
     }
     function testAnnotationMoveWholeItFun(color, arrowColor, x, y, corner) {
@@ -170,7 +170,7 @@ describe('Shapes referencing domain', function() {
             .then(delay(DELAY_TIME))
             .then(testAnnotationMoveWhole(color, arrowColor, x, y, corner))
             .then(delay(DELAY_TIME))
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         };
     }
     it('should move box on linear x axis and log y to the proper position',

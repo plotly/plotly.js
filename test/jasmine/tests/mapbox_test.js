@@ -546,7 +546,7 @@ describe('mapbox plots', function() {
         .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to delete and add traces', function(done) {
@@ -586,7 +586,7 @@ describe('mapbox plots', function() {
         .then(function() {
             expect(gd._fullLayout.mapbox === undefined).toBe(true);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should not update center while dragging', function(done) {
@@ -613,7 +613,7 @@ describe('mapbox plots', function() {
             // Second relayout on mapbox.center does not result in a setCenter
             // call since map drag is underway
             expect(map.setCenter).toHaveBeenCalledTimes(1);
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should not update zoom while scroll wheeling', function(done) {
@@ -633,7 +633,7 @@ describe('mapbox plots', function() {
                 // call since a scroll wheel zoom is underway
                 expect(map.setZoom).toHaveBeenCalledTimes(1);
             });
-        }).then(done, done.fail);
+        }).then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to restyle', function(done) {
@@ -692,7 +692,7 @@ describe('mapbox plots', function() {
                 [1, 0, 0, 1]
             ]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to relayout', function(done) {
@@ -753,7 +753,7 @@ describe('mapbox plots', function() {
 
             assertLayout([0, 0], 6, [80, 100, 454, 135]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to relayout the map style', function(done) {
@@ -778,7 +778,7 @@ describe('mapbox plots', function() {
         .then(function() {
             assertLayout('Mapbox Dark');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to add, update and remove layers', function(done) {
@@ -936,7 +936,7 @@ describe('mapbox plots', function() {
             expect(getLayerLength(gd)).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to update layer image', function(done) {
@@ -1008,7 +1008,7 @@ describe('mapbox plots', function() {
             expect(indexUpper).toBeGreaterThan(0);
             expect(indexUpper).toBe(indexLower + 1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to react to layer changes', function(done) {
@@ -1062,7 +1062,7 @@ describe('mapbox plots', function() {
         .then(function() {
             _assert('rgba(255,0,0,1)');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should not wedge graph after reacting to invalid layer', function(done) {
@@ -1095,7 +1095,7 @@ describe('mapbox plots', function() {
             expect(mapInfo.layoutLayers.length).toBe(1, 'one layer');
             expect(mapInfo.layoutSources.length).toBe(1, 'one layer source');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should not attempt to remove non-existing layer sources', function(done) {
@@ -1116,7 +1116,7 @@ describe('mapbox plots', function() {
             });
         })
         .then(_assert('no layers', 0))
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should validate layout layer input', function(done) {
@@ -1133,7 +1133,7 @@ describe('mapbox plots', function() {
             expect(mapInfo.layoutLayers.length).toBe(0, 'no on-map layer');
             expect(mapInfo.layoutSources.length).toBe(0, 'no map source');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to update the access token', function(done) {
@@ -1149,7 +1149,7 @@ describe('mapbox plots', function() {
             expect(gd._fullLayout.mapbox.accesstoken).toEqual(MAPBOX_ACCESS_TOKEN);
             expect(gd._promises.length).toEqual(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to update traces', function(done) {
@@ -1186,7 +1186,7 @@ describe('mapbox plots', function() {
         .then(function() {
             assertDataPts([5, 5]);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should display to hover labels on mouse over', function(done) {
@@ -1223,7 +1223,7 @@ describe('mapbox plots', function() {
                 name: 'trace 0'
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should respond to hover interactions by', function(done) {
@@ -1266,7 +1266,7 @@ describe('mapbox plots', function() {
             expect(hoverCnt).toEqual(1);
             expect(unhoverCnt).toEqual(1);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should not attempt to rehover over exiting subplots', function(done) {
@@ -1297,7 +1297,7 @@ describe('mapbox plots', function() {
                 expect(Fx.hover.calls.argsFor(0)[2]).toBe('xy');
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@noCI @gl should respond drag / scroll / double-click interactions', function(done) {
@@ -1382,7 +1382,7 @@ describe('mapbox plots', function() {
             expect(doubleClickCnt).toBe(1, 'double click cnt');
             expect(getMapInfo(gd).zoom).toBeGreaterThan(1.234);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should respond to click interactions by', function(done) {
@@ -1406,7 +1406,7 @@ describe('mapbox plots', function() {
             expect(ptData.curveNumber).toEqual(0, 'returning the correct curve number');
             expect(ptData.pointNumber).toEqual(0, 'returning the correct point number');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@noCI @gl should respect scrollZoom config option', function(done) {
@@ -1467,7 +1467,7 @@ describe('mapbox plots', function() {
             var zoomNew = getMapInfo(gd).zoom;
             expect(zoomNew).toBe(zoom0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     describe('attributions', function() {
@@ -1492,7 +1492,7 @@ describe('mapbox plots', function() {
                     'https://www.openstreetmap.org/copyright'
                 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         ['stamen-terrain', 'stamen-toner'].forEach(function(style) {
@@ -1509,7 +1509,7 @@ describe('mapbox plots', function() {
                         'https://www.openstreetmap.org/copyright'
                     ]);
                 })
-                .then(done, done.fail);
+                .then(()=>done(), done.fail);
             });
         });
 
@@ -1526,7 +1526,7 @@ describe('mapbox plots', function() {
                     'https://creativecommons.org/licenses/by-sa/3.0'
                 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl should be displayed for style "open-street-map"', function(done) {
@@ -1539,7 +1539,7 @@ describe('mapbox plots', function() {
                     'https://www.openstreetmap.org/copyright'
                 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl should be displayed for style from Mapbox', function(done) {
@@ -1554,7 +1554,7 @@ describe('mapbox plots', function() {
                     'https://apps.mapbox.com/feedback/?owner=mapbox&id=basic-v9&access_token=' + MAPBOX_ACCESS_TOKEN // Improve this map
                 ]);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         function mockLayoutCustomStyle() {
@@ -1594,7 +1594,7 @@ describe('mapbox plots', function() {
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('');
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@gl should be displayed for custom style with attribution', function(done) {
@@ -1607,7 +1607,7 @@ describe('mapbox plots', function() {
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual(attr);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
 
         it('@noCI @gl should be displayed for attributions defined in layers\' sourceattribution', function(done) {
@@ -1627,7 +1627,7 @@ describe('mapbox plots', function() {
                 expect(s.html().indexOf('<img src=x onerror="alert(XSS);">')).toBe(-1);
                 expect(s.html().indexOf('&lt;img src=x onerror="alert(XSS);"&gt;')).not.toBe(-1);
             })
-            .then(done, done.fail);
+            .then(()=>done(), done.fail);
         });
     });
 
@@ -1798,7 +1798,7 @@ describe('mapbox react', function() {
         .then(function() {
             assertTile(secondLink);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 });
 
@@ -1921,7 +1921,7 @@ describe('test mapbox trace/layout *below* interactions', function() {
                 layout: 24
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
     it('@gl should be able to update *below* - scattermapbox + choroplethmapbox + densitymapbox case', function(done) {
@@ -1986,7 +1986,7 @@ describe('test mapbox trace/layout *below* interactions', function() {
                 choropleth: [5, 6]
             });
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
     it('@gl should be warn when *below* value does not correspond to a layer on the map', function(done) {
@@ -2059,7 +2059,7 @@ describe('test mapbox trace/layout *below* interactions', function() {
         .then(function() {
             expect(Lib.warn).toHaveBeenCalledTimes(0);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });
 
@@ -2100,7 +2100,7 @@ describe('Test mapbox GeoJSON fetching:', function() {
             expect(Lib.isPlainObject(window.PlotlyGeoAssets[url])).toBe(true, 'is a GeoJSON object');
             expect(Lib.isPlainObject(window.PlotlyGeoAssets[url2])).toBe(true, 'is a GeoJSON object');
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     });
 
     it('@gl should fetch GeoJSON using URLs found in the traces', function(done) {
@@ -2125,7 +2125,7 @@ describe('Test mapbox GeoJSON fetching:', function() {
             expect(actual).toEqual(new Error('GeoJSON at URL "invalidUrl" does not exist.'));
             expect(window.PlotlyGeoAssets.invalidUrl).toBe(undefined);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 });
 
@@ -2162,7 +2162,7 @@ describe('mapbox toImage', function() {
         .then(function(imgData) {
             expect(imgData.length).toBeGreaterThan(MINIMUM_LENGTH);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should generate image data with config credentials', function(done) {
@@ -2179,7 +2179,7 @@ describe('mapbox toImage', function() {
         .then(function(imgData) {
             expect(imgData.length).toBeGreaterThan(MINIMUM_LENGTH);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should generate image data with layout credentials', function(done) {
@@ -2198,7 +2198,7 @@ describe('mapbox toImage', function() {
         .then(function(imgData) {
             expect(imgData.length).toBeGreaterThan(MINIMUM_LENGTH);
         })
-        .then(done, done.fail);
+        .then(()=>done(), done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 });
 
