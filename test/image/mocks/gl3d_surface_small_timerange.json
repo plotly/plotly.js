@@ -1,0 +1,37 @@
+{
+ "data": [
+  {
+   "type": "surface",
+   "x": [0.1, 0.2],
+   "y": ["2024-02-03T10:00:00", "2024-02-03T11:00:00"],
+   "z": [[1001, 1002], [1002, 1001]]
+  }
+ ],
+ "layout": {
+  "title": { "text": "Surface plot with time axis with small timerange" },
+  "width": 600,
+  "height": 400,
+  "scene": {
+   "yaxis": {
+    "type": "date"
+   },
+   "aspectratio": {
+    "x": 1,
+    "y": 2,
+    "z": 0.5
+   },
+   "camera": {
+    "center": {
+     "x": 0.11,
+     "y": 0.19,
+     "z": -0.3
+    },
+    "eye": {
+     "x": 1.44,
+     "y": 1.53,
+     "z": 1.02
+    }
+   }
+  }
+ }
+}

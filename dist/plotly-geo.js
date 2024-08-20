@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.32.0
+* plotly.js (geo) v2.34.0
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -1087,7 +1087,10 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         fontColor: hoverFont.color,
         fontWeight: hoverFont.weight,
         fontStyle: hoverFont.style,
-        fontVariant: hoverFont.variant
+        fontVariant: hoverFont.variant,
+        fontShadow: hoverFont.fontShadow,
+        fontLineposition: hoverFont.fontLineposition,
+        fontTextcase: hoverFont.fontTextcase
       }, {
         container: fullLayout._hoverlayer.node(),
         outerContainer: fullLayout._paper.node(),
@@ -2756,6 +2759,8 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
   var font = layout.font;
   var opts = {
     noAutotickangles: true,
+    noTicklabelshift: true,
+    noTicklabelstandoff: true,
     outerTicks: false,
     font: font
   };
@@ -2768,11 +2773,8 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
   handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
   coerce('title.text', layout._dfltTitle.colorbar);
   var tickFont = colorbarOut.showticklabels ? colorbarOut.tickfont : font;
-  var dfltTitleFont = Lib.extendFlat({}, tickFont, {
-    weight: font.weight,
-    style: font.style,
-    variant: font.variant,
-    color: font.color,
+  var dfltTitleFont = Lib.extendFlat({}, font, {
+    family: tickFont.family,
     size: Lib.bigFont(tickFont.size)
   });
   Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
@@ -4874,23 +4876,41 @@ var drawing = module.exports = {};
 // styling functions for plot elements
 // -----------------------------------------------------
 
-drawing.font = function (s, family, size, color, weight, style, variant) {
-  // also allow the form font(s, {family, size, color, weight, style, variant})
-  if (Lib.isPlainObject(family)) {
-    variant = family.variant;
-    style = family.style;
-    weight = family.weight;
-    color = family.color;
-    size = family.size;
-    family = family.family;
-  }
+drawing.font = function (s, font) {
+  var variant = font.variant;
+  var style = font.style;
+  var weight = font.weight;
+  var color = font.color;
+  var size = font.size;
+  var family = font.family;
+  var shadow = font.shadow;
+  var lineposition = font.lineposition;
+  var textcase = font.textcase;
   if (family) s.style('font-family', family);
   if (size + 1) s.style('font-size', size + 'px');
   if (color) s.call(Color.fill, color);
   if (weight) s.style('font-weight', weight);
   if (style) s.style('font-style', style);
   if (variant) s.style('font-variant', variant);
+  if (textcase) s.style('text-transform', dropNone(textcase2transform(textcase)));
+  if (shadow) s.style('text-shadow', shadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(color)) : dropNone(shadow));
+  if (lineposition) s.style('text-decoration-line', dropNone(lineposition2decorationLine(lineposition)));
 };
+function dropNone(a) {
+  return a === 'none' ? undefined : a;
+}
+var textcase2transformOptions = {
+  normal: 'none',
+  lower: 'lowercase',
+  upper: 'uppercase',
+  'word caps': 'capitalize'
+};
+function textcase2transform(textcase) {
+  return textcase2transformOptions[textcase];
+}
+function lineposition2decorationLine(lineposition) {
+  return lineposition.replace('under', 'underline').replace('over', 'overline').replace('through', 'line-through').split('+').join(' ');
+}
 
 /*
  * Positioning helpers
@@ -5799,6 +5819,9 @@ drawing.textPointStyle = function (s, trace, gd) {
       weight: d.tw || trace.textfont.weight,
       style: d.ty || trace.textfont.style,
       variant: d.tv || trace.textfont.variant,
+      textcase: d.tC || trace.textfont.textcase,
+      lineposition: d.tE || trace.textfont.lineposition,
+      shadow: d.tS || trace.textfont.shadow,
       size: fontSize,
       color: fontColor
     }).text(text).call(svgTextUtils.convertToTspans, gd).call(textPointPosition, pos, fontSize, d.mrc);
@@ -7925,6 +7948,7 @@ var Drawing = __webpack_require__(3616);
 var Color = __webpack_require__(6308);
 var dragElement = __webpack_require__(6476);
 var Axes = __webpack_require__(4460);
+var zindexSeparator = (__webpack_require__(3816).zindexSeparator);
 var Registry = __webpack_require__(4040);
 var helpers = __webpack_require__(624);
 var constants = __webpack_require__(2456);
@@ -8149,6 +8173,10 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 // The actual implementation is here:
 function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
   if (!subplot) subplot = 'xy';
+  if (typeof subplot === 'string') {
+    // drop zindex from subplot id
+    subplot = subplot.split(zindexSeparator)[0];
+  }
 
   // if the user passed in an array of subplots,
   // use those instead of finding overlayed plots
@@ -8756,6 +8784,9 @@ function createHoverText(hoverData, opts) {
   var fontWeight = opts.fontWeight || fullLayout.font.weight;
   var fontStyle = opts.fontStyle || fullLayout.font.style;
   var fontVariant = opts.fontVariant || fullLayout.font.variant;
+  var fontTextcase = opts.fontTextcase || fullLayout.font.textcase;
+  var fontLineposition = opts.fontLineposition || fullLayout.font.lineposition;
+  var fontShadow = opts.fontShadow || fullLayout.font.shadow;
   var c0 = hoverData[0];
   var xa = c0.xa;
   var ya = c0.ya;
@@ -8826,13 +8857,17 @@ function createHoverText(hoverData, opts) {
     var commonBgColor = commonLabelOpts.bgcolor || Color.defaultLine;
     var commonStroke = commonLabelOpts.bordercolor || Color.contrast(commonBgColor);
     var contrastColor = Color.contrast(commonBgColor);
+    var commonLabelOptsFont = commonLabelOpts.font;
     var commonLabelFont = {
-      weight: commonLabelOpts.font.weight || fontWeight,
-      style: commonLabelOpts.font.style || fontStyle,
-      variant: commonLabelOpts.font.variant || fontVariant,
-      family: commonLabelOpts.font.family || fontFamily,
-      size: commonLabelOpts.font.size || fontSize,
-      color: commonLabelOpts.font.color || contrastColor
+      weight: commonLabelOptsFont.weight || fontWeight,
+      style: commonLabelOptsFont.style || fontStyle,
+      variant: commonLabelOptsFont.variant || fontVariant,
+      textcase: commonLabelOptsFont.textcase || fontTextcase,
+      lineposition: commonLabelOptsFont.lineposition || fontLineposition,
+      shadow: commonLabelOptsFont.shadow || fontShadow,
+      family: commonLabelOptsFont.family || fontFamily,
+      size: commonLabelOptsFont.size || fontSize,
+      color: commonLabelOptsFont.color || contrastColor
     };
     lpath.style({
       fill: commonBgColor,
@@ -9113,6 +9148,9 @@ function createHoverText(hoverData, opts) {
       weight: fontWeight,
       style: fontStyle,
       variant: fontVariant,
+      textcase: fontTextcase,
+      lineposition: fontLineposition,
+      shadow: fontShadow,
       family: fontFamily,
       size: fontSize
     });
@@ -9147,7 +9185,10 @@ function createHoverText(hoverData, opts) {
       color: d.fontColor || contrastColor,
       weight: d.fontWeight || fontWeight,
       style: d.fontStyle || fontStyle,
-      variant: d.fontVariant || fontVariant
+      variant: d.fontVariant || fontVariant,
+      textcase: d.fontTextcase || fontTextcase,
+      lineposition: d.fontLineposition || fontLineposition,
+      shadow: d.fontShadow || fontShadow
     }).text(text).attr('data-notex', 1).call(svgTextUtils.positionText, 0, 0).call(svgTextUtils.convertToTspans, gd);
     var tx2 = g.select('text.name');
     var tx2width = 0;
@@ -9161,7 +9202,10 @@ function createHoverText(hoverData, opts) {
         color: nameColor,
         weight: d.fontWeight || fontWeight,
         style: d.fontStyle || fontStyle,
-        variant: d.fontVariant || fontVariant
+        variant: d.fontVariant || fontVariant,
+        textcase: d.fontTextcase || fontTextcase,
+        lineposition: d.fontLineposition || fontLineposition,
+        shadow: d.fontShadow || fontShadow
       }).text(name).attr('data-notex', 1).call(svgTextUtils.positionText, 0, 0).call(svgTextUtils.convertToTspans, gd);
       var t2bb = getBoundingClientRect(gd, tx2.node());
       tx2width = t2bb.width + 2 * HOVERTEXTPAD;
@@ -9502,9 +9546,7 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabelBo
       var p0 = g0[g0.length - 1];
       var p1 = g1[0];
       topOverlap = p0.pos + p0.dp + p0.size - p1.pos - p1.dp + p1.size;
-
-      // Only group points that lie on the same axes
-      if (topOverlap > 0.01 && p0.pmin === p1.pmin && p0.pmax === p1.pmax) {
+      if (topOverlap > 0.01) {
         // push the new point(s) added to this group out of the way
         for (j = g1.length - 1; j >= 0; j--) g1[j].dp += topOverlap;
 
@@ -9868,7 +9910,7 @@ function spikesChanged(gd, oldspikepoints) {
 function plainText(s, len) {
   return svgTextUtils.plainText(s || '', {
     len: len,
-    allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
+    allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em', 's', 'u']
   });
 }
 function orderRangePoints(hoverData, hovermode) {
@@ -11226,9 +11268,11 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     return Lib.coerce(traceIn, traceOut, plotsAttrs, attr, dflt);
   };
   var globalFont = layoutOut.font || {};
-  var grouptitlefont = Lib.coerceFont(coerce, 'grouptitlefont', Lib.extendFlat({}, globalFont, {
-    size: Math.round(globalFont.size * 1.1)
-  }));
+  var grouptitlefont = Lib.coerceFont(coerce, 'grouptitlefont', globalFont, {
+    overrideDflt: {
+      size: Math.round(globalFont.size * 1.1)
+    }
+  });
   var legendTraceCount = 0;
   var legendReallyHasATrace = false;
   var defaultOrder = 'normal';
@@ -11735,17 +11779,22 @@ function drawOne(gd, opts) {
       dragElement.init({
         element: legend.node(),
         gd: gd,
-        prepFn: function () {
+        prepFn: function (e) {
+          if (e.target === scrollBar.node()) {
+            return;
+          }
           var transform = Drawing.getTranslate(legend);
           x0 = transform.x;
           y0 = transform.y;
         },
         moveFn: function (dx, dy) {
-          var newX = x0 + dx;
-          var newY = y0 + dy;
-          Drawing.setTranslate(legend, newX, newY);
-          xf = dragElement.align(newX, legendObj._width, gs.l, gs.l + gs.w, legendObj.xanchor);
-          yf = dragElement.align(newY + legendObj._height, -legendObj._height, gs.t + gs.h, gs.t, legendObj.yanchor);
+          if (x0 !== undefined && y0 !== undefined) {
+            var newX = x0 + dx;
+            var newY = y0 + dy;
+            Drawing.setTranslate(legend, newX, newY);
+            xf = dragElement.align(newX, legendObj._width, gs.l, gs.l + gs.w, legendObj.xanchor);
+            yf = dragElement.align(newY + legendObj._height, -legendObj._height, gs.t + gs.h, gs.t, legendObj.yanchor);
+          }
         },
         doneFn: function () {
           if (xf !== undefined && yf !== undefined) {
@@ -12873,6 +12922,9 @@ module.exports = function style(s, gd, legend) {
         dEdit.tw = boundVal('textfont.weight', pickFirst);
         dEdit.ty = boundVal('textfont.style', pickFirst);
         dEdit.tv = boundVal('textfont.variant', pickFirst);
+        dEdit.tC = boundVal('textfont.textcase', pickFirst);
+        dEdit.tE = boundVal('textfont.lineposition', pickFirst);
+        dEdit.tS = boundVal('textfont.shadow', pickFirst);
       }
       dMod = [Lib.minExtend(d0, dEdit)];
       tMod = Lib.minExtend(trace, tEdit);
@@ -14215,7 +14267,7 @@ function getButtonGroups(gd) {
   // regardless of what other types are on the plot, since they'll all
   // just treat any truthy hovermode as 'closest'
   if (hasCartesian) {
-    hoverGroup = ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian'];
+    hoverGroup.push('toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian');
   }
   if (hasNoHover(fullData) || hasUnifiedHoverLabel) {
     hoverGroup = [];
@@ -14272,7 +14324,6 @@ function getButtonGroups(gd) {
           enableHover('hoverClosestGl2d');
           enableHover('hoverClosestPie');
         } else if (b === 'v1hovermode') {
-          enableHover('toggleHover');
           enableHover('hoverClosestCartesian');
           enableHover('hoverCompareCartesian');
           enableHover('hoverClosestGeo');
@@ -17837,6 +17888,20 @@ module.exports = templatedArray('shape', {
     valType: 'any',
     editType: 'calc+arraydraw'
   },
+  x0shift: {
+    valType: 'number',
+    dflt: 0,
+    min: -1,
+    max: 1,
+    editType: 'calc'
+  },
+  x1shift: {
+    valType: 'number',
+    dflt: 0,
+    min: -1,
+    max: 1,
+    editType: 'calc'
+  },
   yref: extendFlat({}, annAttrs.yref, {}),
   ysizemode: {
     valType: 'enumerated',
@@ -17855,6 +17920,20 @@ module.exports = templatedArray('shape', {
   y1: {
     valType: 'any',
     editType: 'calc+arraydraw'
+  },
+  y0shift: {
+    valType: 'number',
+    dflt: 0,
+    min: -1,
+    max: 1,
+    editType: 'calc'
+  },
+  y1shift: {
+    valType: 'number',
+    dflt: 0,
+    min: -1,
+    max: 1,
+    editType: 'calc'
   },
   path: {
     valType: 'string',
@@ -17966,19 +18045,15 @@ module.exports = function calcAutorange(gd) {
 
     // paper and axis domain referenced shapes don't affect autorange
     if (shape.xref !== 'paper' && xRefType !== 'domain') {
-      var vx0 = shape.xsizemode === 'pixel' ? shape.xanchor : shape.x0;
-      var vx1 = shape.xsizemode === 'pixel' ? shape.xanchor : shape.x1;
       ax = Axes.getFromId(gd, shape.xref);
-      bounds = shapeBounds(ax, vx0, vx1, shape.path, constants.paramIsX);
+      bounds = shapeBounds(ax, shape, constants.paramIsX);
       if (bounds) {
         shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcXPaddingOptions(shape));
       }
     }
     if (shape.yref !== 'paper' && yRefType !== 'domain') {
-      var vy0 = shape.ysizemode === 'pixel' ? shape.yanchor : shape.y0;
-      var vy1 = shape.ysizemode === 'pixel' ? shape.yanchor : shape.y1;
       ax = Axes.getFromId(gd, shape.yref);
-      bounds = shapeBounds(ax, vy0, vy1, shape.path, constants.paramIsY);
+      bounds = shapeBounds(ax, shape, constants.paramIsY);
       if (bounds) {
         shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcYPaddingOptions(shape));
       }
@@ -18011,13 +18086,31 @@ function calcPaddingOptions(lineWidth, sizeMode, v0, v1, path, isYAxis) {
     };
   }
 }
-function shapeBounds(ax, v0, v1, path, paramsToUse) {
-  var convertVal = ax.type === 'category' || ax.type === 'multicategory' ? ax.r2c : ax.d2c;
-  if (v0 !== undefined) return [convertVal(v0), convertVal(v1)];
-  if (!path) return;
+function shapeBounds(ax, shape, paramsToUse) {
+  var dim = ax._id.charAt(0) === 'x' ? 'x' : 'y';
+  var isCategory = ax.type === 'category' || ax.type === 'multicategory';
+  var v0;
+  var v1;
+  var shiftStart = 0;
+  var shiftEnd = 0;
+  var convertVal = isCategory ? ax.r2c : ax.d2c;
+  var isSizeModeScale = shape[dim + 'sizemode'] === 'scaled';
+  if (isSizeModeScale) {
+    v0 = shape[dim + '0'];
+    v1 = shape[dim + '1'];
+    if (isCategory) {
+      shiftStart = shape[dim + '0shift'];
+      shiftEnd = shape[dim + '1shift'];
+    }
+  } else {
+    v0 = shape[dim + 'anchor'];
+    v1 = shape[dim + 'anchor'];
+  }
+  if (v0 !== undefined) return [convertVal(v0) + shiftStart, convertVal(v1) + shiftEnd];
+  if (!shape.path) return;
   var min = Infinity;
   var max = -Infinity;
-  var segments = path.match(constants.segmentRE);
+  var segments = shape.path.match(constants.segmentRE);
   var i;
   var segment;
   var drawnParam;
@@ -18223,6 +18316,10 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
       ax._shapeIndices.push(shapeOut._index);
       r2pos = helpers.rangeToShapePosition(ax);
       pos2r = helpers.shapePositionToRange(ax);
+      if (ax.type === 'category' || ax.type === 'multicategory') {
+        coerce(axLetter + '0shift');
+        coerce(axLetter + '1shift');
+      }
     } else {
       pos2r = r2pos = Lib.identity;
     }
@@ -18371,15 +18468,25 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
     // and convert them to pixel coordinates
     // Setup conversion functions
     var xa = Axes.getFromId(gd, options.xref);
+    var xShiftStart = options.x0shift;
+    var xShiftEnd = options.x1shift;
     var xRefType = Axes.getRefType(options.xref);
     var ya = Axes.getFromId(gd, options.yref);
+    var yShiftStart = options.y0shift;
+    var yShiftEnd = options.y1shift;
     var yRefType = Axes.getRefType(options.yref);
-    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
-    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
-    shapex0 = x2p(options.x0);
-    shapex1 = x2p(options.x1);
-    shapey0 = y2p(options.y0);
-    shapey1 = y2p(options.y1);
+    var x2p = function (v, shift) {
+      var dataToPixel = helpers.getDataToPixel(gd, xa, shift, false, xRefType);
+      return dataToPixel(v);
+    };
+    var y2p = function (v, shift) {
+      var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true, yRefType);
+      return dataToPixel(v);
+    };
+    shapex0 = x2p(options.x0, xShiftStart);
+    shapex1 = x2p(options.x1, xShiftEnd);
+    shapey0 = y2p(options.y0, yShiftStart);
+    shapey1 = y2p(options.y1, yShiftEnd);
   }
 
   // Handle `auto` angle
@@ -19066,8 +19173,18 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
   var xRefType = Axes.getRefType(shapeOptions.xref);
   var ya = Axes.getFromId(gd, shapeOptions.yref);
   var yRefType = Axes.getRefType(shapeOptions.yref);
-  var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
-  var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+  var shiftXStart = shapeOptions.x0shift;
+  var shiftXEnd = shapeOptions.x1shift;
+  var shiftYStart = shapeOptions.y0shift;
+  var shiftYEnd = shapeOptions.y1shift;
+  var x2p = function (v, shift) {
+    var dataToPixel = helpers.getDataToPixel(gd, xa, shift, false, xRefType);
+    return dataToPixel(v);
+  };
+  var y2p = function (v, shift) {
+    var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true, yRefType);
+    return dataToPixel(v);
+  };
   var p2x = helpers.getPixelToData(gd, xa, false, xRefType);
   var p2y = helpers.getPixelToData(gd, ya, true, yRefType);
   var sensoryElement = obtainSensoryElement();
@@ -19108,14 +19225,14 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     var circleRadius = Math.max(sensoryWidth / 2, minSensoryWidth);
     g.append('circle').attr({
       'data-line-point': 'start-point',
-      cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x0 : x2p(shapeOptions.x0),
-      cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0),
+      cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x0 : x2p(shapeOptions.x0, shiftXStart),
+      cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0, shiftYStart),
       r: circleRadius
     }).style(circleStyle).classed('cursor-grab', true);
     g.append('circle').attr({
       'data-line-point': 'end-point',
-      cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x1 : x2p(shapeOptions.x1),
-      cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1),
+      cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x1 : x2p(shapeOptions.x1, shiftXEnd),
+      cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1, shiftYEnd),
       r: circleRadius
     }).style(circleStyle).classed('cursor-grab', true);
     return g;
@@ -19979,10 +20096,10 @@ function newShapes(outlines, dragOptions) {
         case 'line':
         case 'rect':
         case 'circle':
-          modifyItem('x0', afterEdit.x0);
-          modifyItem('x1', afterEdit.x1);
-          modifyItem('y0', afterEdit.y0);
-          modifyItem('y1', afterEdit.y1);
+          modifyItem('x0', afterEdit.x0 - (beforeEdit.x0shift || 0));
+          modifyItem('x1', afterEdit.x1 - (beforeEdit.x1shift || 0));
+          modifyItem('y0', afterEdit.y0 - (beforeEdit.y0shift || 0));
+          modifyItem('y1', afterEdit.y1 - (beforeEdit.y1shift || 0));
           break;
         case 'path':
           modifyItem('path', afterEdit.path);
@@ -20200,7 +20317,7 @@ exports.extractPathCoords = function (path, paramsToUse, isRaw) {
   });
   return extractedCoordinates;
 };
-exports.getDataToPixel = function (gd, axis, isVertical, refType) {
+exports.getDataToPixel = function (gd, axis, shift, isVertical, refType) {
   var gs = gd._fullLayout._size;
   var dataToPixel;
   if (axis) {
@@ -20211,7 +20328,8 @@ exports.getDataToPixel = function (gd, axis, isVertical, refType) {
     } else {
       var d2r = exports.shapePositionToRange(axis);
       dataToPixel = function (v) {
-        return axis._offset + axis.r2p(d2r(v, true));
+        var shiftPixels = getPixelShift(axis, shift);
+        return axis._offset + axis.r2p(d2r(v, true)) + shiftPixels;
       };
       if (axis.type === 'date') dataToPixel = exports.decodeDate(dataToPixel);
     }
@@ -20320,6 +20438,10 @@ exports.getPathString = function (gd, options) {
   var ya = Axes.getFromId(gd, options.yref);
   var gs = gd._fullLayout._size;
   var x2r, x2p, y2r, y2p;
+  var xShiftStart = getPixelShift(xa, options.x0shift);
+  var xShiftEnd = getPixelShift(xa, options.x1shift);
+  var yShiftStart = getPixelShift(ya, options.y0shift);
+  var yShiftEnd = getPixelShift(ya, options.y1shift);
   var x0, x1, y0, y1;
   if (xa) {
     if (xRefType === 'domain') {
@@ -20360,19 +20482,19 @@ exports.getPathString = function (gd, options) {
   }
   if (options.xsizemode === 'pixel') {
     var xAnchorPos = x2p(options.xanchor);
-    x0 = xAnchorPos + options.x0;
-    x1 = xAnchorPos + options.x1;
+    x0 = xAnchorPos + options.x0 + xShiftStart;
+    x1 = xAnchorPos + options.x1 + xShiftEnd;
   } else {
-    x0 = x2p(options.x0);
-    x1 = x2p(options.x1);
+    x0 = x2p(options.x0) + xShiftStart;
+    x1 = x2p(options.x1) + xShiftEnd;
   }
   if (options.ysizemode === 'pixel') {
     var yAnchorPos = y2p(options.yanchor);
-    y0 = yAnchorPos - options.y0;
-    y1 = yAnchorPos - options.y1;
+    y0 = yAnchorPos - options.y0 + yShiftStart;
+    y1 = yAnchorPos - options.y1 + yShiftEnd;
   } else {
-    y0 = y2p(options.y0);
-    y1 = y2p(options.y1);
+    y0 = y2p(options.y0) + yShiftStart;
+    y1 = y2p(options.y1) + yShiftEnd;
   }
   if (type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
   if (type === 'rect') return 'M' + x0 + ',' + y0 + 'H' + x1 + 'V' + y1 + 'H' + x0 + 'Z';
@@ -20415,6 +20537,14 @@ function convertPath(options, x2p, y2p) {
     }
     return segmentType + paramString;
   });
+}
+function getPixelShift(axis, shift) {
+  shift = shift || 0;
+  var shiftPixels = 0;
+  if (shift && axis && (axis.type === 'category' || axis.type === 'multicategory')) {
+    shiftPixels = (axis.r2p(1) - axis.r2p(0)) * shift;
+  }
+  return shiftPixels;
 }
 
 /***/ }),
@@ -20465,11 +20595,23 @@ function y0Fn(shape) {
 function y1Fn(shape) {
   return shape.y1;
 }
+function x0shiftFn(shape) {
+  return shape.x0shift || 0;
+}
+function x1shiftFn(shape) {
+  return shape.x1shift || 0;
+}
+function y0shiftFn(shape) {
+  return shape.y0shift || 0;
+}
+function y1shiftFn(shape) {
+  return shape.y1shift || 0;
+}
 function dxFn(shape, xa) {
-  return d2l(shape.x1, xa) - d2l(shape.x0, xa);
+  return d2l(shape.x1, xa) + x1shiftFn(shape) - d2l(shape.x0, xa) - x0shiftFn(shape);
 }
 function dyFn(shape, xa, ya) {
-  return d2l(shape.y1, ya) - d2l(shape.y0, ya);
+  return d2l(shape.y1, ya) + y1shiftFn(shape) - d2l(shape.y0, ya) - y0shiftFn(shape);
 }
 function widthFn(shape, xa) {
   return Math.abs(dxFn(shape, xa));
@@ -20481,10 +20623,10 @@ function lengthFn(shape, xa, ya) {
   return shape.type !== 'line' ? undefined : Math.sqrt(Math.pow(dxFn(shape, xa), 2) + Math.pow(dyFn(shape, xa, ya), 2));
 }
 function xcenterFn(shape, xa) {
-  return l2d((d2l(shape.x1, xa) + d2l(shape.x0, xa)) / 2, xa);
+  return l2d((d2l(shape.x1, xa) + x1shiftFn(shape) + d2l(shape.x0, xa) + x0shiftFn(shape)) / 2, xa);
 }
 function ycenterFn(shape, xa, ya) {
-  return l2d((d2l(shape.y1, ya) + d2l(shape.y0, ya)) / 2, ya);
+  return l2d((d2l(shape.y1, ya) + y1shiftFn(shape) + d2l(shape.y0, ya) + y0shiftFn(shape)) / 2, ya);
 }
 function slopeFn(shape, xa, ya) {
   return shape.type !== 'line' ? undefined : dyFn(shape, xa, ya) / dxFn(shape, xa);
@@ -21364,6 +21506,8 @@ var svgTextUtils = __webpack_require__(2736);
 var interactConstants = __webpack_require__(3448);
 var OPPOSITE_SIDE = (__webpack_require__(4284).OPPOSITE_SIDE);
 var numStripRE = / [XY][0-9]* /;
+var SUBTITLE_PADDING_MATHJAX_EM = 1.6;
+var SUBTITLE_PADDING_EM = 1.6;
 
 /**
  * Titles - (re)draw titles on the axes and plot:
@@ -21398,6 +21542,7 @@ var numStripRE = / [XY][0-9]* /;
  *  @return {selection} d3 selection of title container group
  */
 function draw(gd, titleClass, options) {
+  var fullLayout = gd._fullLayout;
   var cont = options.propContainer;
   var prop = options.propName;
   var placeholder = options.placeholder;
@@ -21406,11 +21551,10 @@ function draw(gd, titleClass, options) {
   var attributes = options.attributes;
   var transform = options.transform;
   var group = options.containerGroup;
-  var fullLayout = gd._fullLayout;
   var opacity = 1;
-  var isplaceholder = false;
   var title = cont.title;
   var txt = (title && title.text ? title.text : '').trim();
+  var titleIsPlaceholder = false;
   var font = title && title.font ? title.font : {};
   var fontFamily = font.family;
   var fontSize = font.size;
@@ -21418,34 +21562,70 @@ function draw(gd, titleClass, options) {
   var fontWeight = font.weight;
   var fontStyle = font.style;
   var fontVariant = font.variant;
+  var fontTextcase = font.textcase;
+  var fontLineposition = font.lineposition;
+  var fontShadow = font.shadow;
+
+  // Get subtitle properties
+  var subtitleProp = options.subtitlePropName;
+  var subtitleEnabled = !!subtitleProp;
+  var subtitlePlaceholder = options.subtitlePlaceholder;
+  var subtitle = (cont.title || {}).subtitle || {
+    text: '',
+    font: {}
+  };
+  var subtitleTxt = subtitle.text.trim();
+  var subtitleIsPlaceholder = false;
+  var subtitleOpacity = 1;
+  var subtitleFont = subtitle.font;
+  var subFontFamily = subtitleFont.family;
+  var subFontSize = subtitleFont.size;
+  var subFontColor = subtitleFont.color;
+  var subFontWeight = subtitleFont.weight;
+  var subFontStyle = subtitleFont.style;
+  var subFontVariant = subtitleFont.variant;
+  var subFontTextcase = subtitleFont.textcase;
+  var subFontLineposition = subtitleFont.lineposition;
+  var subFontShadow = subtitleFont.shadow;
 
   // only make this title editable if we positively identify its property
   // as one that has editing enabled.
+  // Subtitle is editable if and only if title is editable
   var editAttr;
   if (prop === 'title.text') editAttr = 'titleText';else if (prop.indexOf('axis') !== -1) editAttr = 'axisTitleText';else if (prop.indexOf('colorbar' !== -1)) editAttr = 'colorbarTitleText';
   var editable = gd._context.edits[editAttr];
-  if (txt === '') opacity = 0;
-  // look for placeholder text while stripping out numbers from eg X2, Y3
-  // this is just for backward compatibility with the old version that had
-  // "Click to enter X2 title" and may have gotten saved in some old plots,
-  // we don't want this to show up when these are displayed.
-  else if (txt.replace(numStripRE, ' % ') === placeholder.replace(numStripRE, ' % ')) {
-    opacity = 0.2;
-    isplaceholder = true;
+  function matchesPlaceholder(text, placeholder) {
+    if (text === undefined || placeholder === undefined) return false;
+    // look for placeholder text while stripping out numbers from eg X2, Y3
+    // this is just for backward compatibility with the old version that had
+    // "Click to enter X2 title" and may have gotten saved in some old plots,
+    // we don't want this to show up when these are displayed.
+    return text.replace(numStripRE, ' % ') === placeholder.replace(numStripRE, ' % ');
+  }
+  if (txt === '') opacity = 0;else if (matchesPlaceholder(txt, placeholder)) {
     if (!editable) txt = '';
+    opacity = 0.2;
+    titleIsPlaceholder = true;
+  }
+  if (subtitleEnabled) {
+    if (subtitleTxt === '') subtitleOpacity = 0;else if (matchesPlaceholder(subtitleTxt, subtitlePlaceholder)) {
+      if (!editable) subtitleTxt = '';
+      subtitleOpacity = 0.2;
+      subtitleIsPlaceholder = true;
+    }
   }
   if (options._meta) {
     txt = Lib.templateString(txt, options._meta);
   } else if (fullLayout._meta) {
     txt = Lib.templateString(txt, fullLayout._meta);
   }
-  var elShouldExist = txt || editable;
+  var elShouldExist = txt || subtitleTxt || editable;
   var hColorbarMoveTitle;
   if (!group) {
     group = Lib.ensureSingle(fullLayout._infolayer, 'g', 'g-' + titleClass);
     hColorbarMoveTitle = fullLayout._hColorbarMoveTitle;
   }
-  var el = group.selectAll('text').data(elShouldExist ? [0] : []);
+  var el = group.selectAll('text.' + titleClass).data(elShouldExist ? [0] : []);
   el.enter().append('text');
   el.text(txt)
   // this is hacky, but convertToTspans uses the class
@@ -21455,11 +21635,25 @@ function draw(gd, titleClass, options) {
   // for now) - ie don't use .classed
   .attr('class', titleClass);
   el.exit().remove();
-  if (!elShouldExist) return group;
-  function titleLayout(titleEl) {
-    Lib.syncOrAsync([drawTitle, scootTitle], titleEl);
+  var subtitleEl = null;
+  var subtitleClass = titleClass + '-subtitle';
+  var subtitleElShouldExist = subtitleTxt || editable;
+  if (subtitleEnabled && subtitleElShouldExist) {
+    subtitleEl = group.selectAll('text.' + subtitleClass).data(subtitleElShouldExist ? [0] : []);
+    subtitleEl.enter().append('text');
+    subtitleEl.text(subtitleTxt).attr('class', subtitleClass);
+    subtitleEl.exit().remove();
   }
-  function drawTitle(titleEl) {
+  if (!elShouldExist) return group;
+  function titleLayout(titleEl, subtitleEl) {
+    Lib.syncOrAsync([drawTitle, scootTitle], {
+      title: titleEl,
+      subtitle: subtitleEl
+    });
+  }
+  function drawTitle(titleAndSubtitleEls) {
+    var titleEl = titleAndSubtitleEls.title;
+    var subtitleEl = titleAndSubtitleEls.subtitle;
     var transformVal;
     if (!transform && hColorbarMoveTitle) {
       transform = {};
@@ -21476,18 +21670,61 @@ function draw(gd, titleClass, options) {
       transformVal = null;
     }
     titleEl.attr('transform', transformVal);
-    titleEl.style({
-      'font-family': fontFamily,
-      'font-size': d3.round(fontSize, 2) + 'px',
-      fill: Color.rgb(fontColor),
-      opacity: opacity * Color.opacity(fontColor),
-      'font-weight': fontWeight,
-      'font-style': fontStyle,
-      'font-variant': fontVariant
-    }).attr(attributes).call(svgTextUtils.convertToTspans, gd);
+
+    // Callback to adjust the subtitle position after mathjax is rendered
+    // Mathjax is rendered asynchronously, which is why this step needs to be
+    // passed as a callback
+    function adjustSubtitlePosition(titleElMathGroup) {
+      if (!titleElMathGroup) return;
+      var subtitleElement = d3.select(titleElMathGroup.node().parentNode).select('.' + subtitleClass);
+      if (!subtitleElement.empty()) {
+        var titleElMathBbox = titleElMathGroup.node().getBBox();
+        if (titleElMathBbox.height) {
+          // Position subtitle based on bottom of Mathjax title
+          var subtitleY = titleElMathBbox.y + titleElMathBbox.height + SUBTITLE_PADDING_MATHJAX_EM * subFontSize;
+          subtitleElement.attr('y', subtitleY);
+        }
+      }
+    }
+    titleEl.style('opacity', opacity * Color.opacity(fontColor)).call(Drawing.font, {
+      color: Color.rgb(fontColor),
+      size: d3.round(fontSize, 2),
+      family: fontFamily,
+      weight: fontWeight,
+      style: fontStyle,
+      variant: fontVariant,
+      textcase: fontTextcase,
+      shadow: fontShadow,
+      lineposition: fontLineposition
+    }).attr(attributes).call(svgTextUtils.convertToTspans, gd, adjustSubtitlePosition);
+    if (subtitleEl) {
+      // Set subtitle y position based on bottom of title
+      // We need to check the Mathjax group as well, in case the Mathjax
+      // has already rendered
+      var titleElMathGroup = group.select('.' + titleClass + '-math-group');
+      var titleElBbox = titleEl.node().getBBox();
+      var titleElMathBbox = titleElMathGroup.node() ? titleElMathGroup.node().getBBox() : undefined;
+      var subtitleY = titleElMathBbox ? titleElMathBbox.y + titleElMathBbox.height + SUBTITLE_PADDING_MATHJAX_EM * subFontSize : titleElBbox.y + titleElBbox.height + SUBTITLE_PADDING_EM * subFontSize;
+      var subtitleAttributes = Lib.extendFlat({}, attributes, {
+        y: subtitleY
+      });
+      subtitleEl.attr('transform', transformVal);
+      subtitleEl.style('opacity', subtitleOpacity * Color.opacity(subFontColor)).call(Drawing.font, {
+        color: Color.rgb(subFontColor),
+        size: d3.round(subFontSize, 2),
+        family: subFontFamily,
+        weight: subFontWeight,
+        style: subFontStyle,
+        variant: subFontVariant,
+        textcase: subFontTextcase,
+        shadow: subFontShadow,
+        lineposition: subFontLineposition
+      }).attr(subtitleAttributes).call(svgTextUtils.convertToTspans, gd);
+    }
     return Plots.previousPromises(gd);
   }
-  function scootTitle(titleElIn) {
+  function scootTitle(titleAndSubtitleEls) {
+    var titleElIn = titleAndSubtitleEls.title;
     var titleGroup = d3.select(titleElIn.node().parentNode);
     if (avoid && avoid.selection && avoid.side && txt) {
       titleGroup.attr('transform', null);
@@ -21558,18 +21795,19 @@ function draw(gd, titleClass, options) {
       }
     }
   }
-  el.call(titleLayout);
-  function setPlaceholder() {
-    opacity = 0;
-    isplaceholder = true;
-    el.text(placeholder).on('mouseover.opacity', function () {
+  el.call(titleLayout, subtitleEl);
+  function setPlaceholder(element, placeholderText) {
+    element.text(placeholderText).on('mouseover.opacity', function () {
       d3.select(this).transition().duration(interactConstants.SHOW_PLACEHOLDER).style('opacity', 1);
     }).on('mouseout.opacity', function () {
       d3.select(this).transition().duration(interactConstants.HIDE_PLACEHOLDER).style('opacity', 0);
     });
   }
   if (editable) {
-    if (!txt) setPlaceholder();else el.on('.opacity', null);
+    if (!txt) {
+      setPlaceholder(el, placeholder);
+      titleIsPlaceholder = true;
+    } else el.on('.opacity', null);
     el.call(svgTextUtils.makeEditable, {
       gd: gd
     }).on('edit', function (text) {
@@ -21583,12 +21821,37 @@ function draw(gd, titleClass, options) {
     }).on('input', function (d) {
       this.text(d || ' ').call(svgTextUtils.positionText, attributes.x, attributes.y);
     });
+    if (subtitleEnabled) {
+      // Adjust subtitle position now that title placeholder has been added
+      // Only adjust if subtitle is enabled and title text was originally empty
+      if (subtitleEnabled && !txt) {
+        var titleElBbox = el.node().getBBox();
+        var subtitleY = titleElBbox.y + titleElBbox.height + SUBTITLE_PADDING_EM * subFontSize;
+        subtitleEl.attr('y', subtitleY);
+      }
+      if (!subtitleTxt) {
+        setPlaceholder(subtitleEl, subtitlePlaceholder);
+        subtitleIsPlaceholder = true;
+      } else subtitleEl.on('.opacity', null);
+      subtitleEl.call(svgTextUtils.makeEditable, {
+        gd: gd
+      }).on('edit', function (text) {
+        Registry.call('_guiRelayout', gd, 'title.subtitle.text', text);
+      }).on('cancel', function () {
+        this.text(this.attr('data-unformatted')).call(titleLayout);
+      }).on('input', function (d) {
+        this.text(d || ' ').call(svgTextUtils.positionText, subtitleEl.attr('x'), subtitleEl.attr('y'));
+      });
+    }
   }
-  el.classed('js-placeholder', isplaceholder);
+  el.classed('js-placeholder', titleIsPlaceholder);
+  if (subtitleEl) subtitleEl.classed('js-placeholder', subtitleIsPlaceholder);
   return group;
 }
 module.exports = {
-  draw: draw
+  draw: draw,
+  SUBTITLE_PADDING_EM: SUBTITLE_PADDING_EM,
+  SUBTITLE_PADDING_MATHJAX_EM: SUBTITLE_PADDING_MATHJAX_EM
 };
 
 /***/ }),
@@ -22929,6 +23192,8 @@ module.exports = {
   ONEHOUR: 3600000,
   ONEMIN: 60000,
   ONESEC: 1000,
+  ONEMILLI: 1,
+  ONEMICROSEC: 0.001,
   /*
    * For fast conversion btwn world calendars and epoch ms, the Julian Day Number
    * of the unix epoch. From calendars.instance().newDate(1970, 1, 1).toJD()
@@ -23778,6 +24043,7 @@ module.exports = function clearResponsive(gd) {
 
 var isNumeric = __webpack_require__(8248);
 var tinycolor = __webpack_require__(9760);
+var extendFlat = (__webpack_require__(2880).extendFlat);
 var baseTraceAttrs = __webpack_require__(5464);
 var colorscales = __webpack_require__(8304);
 var Color = __webpack_require__(6308);
@@ -23820,6 +24086,7 @@ exports.valObjectMeta = {
   },
   number: {
     coerceFunction: function (v, propOut, dflt, opts) {
+      if (isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
       if (!isNumeric(v) || opts.min !== undefined && v < opts.min || opts.max !== undefined && v > opts.max) {
         propOut.set(dflt);
       } else propOut.set(+v);
@@ -23827,6 +24094,11 @@ exports.valObjectMeta = {
   },
   integer: {
     coerceFunction: function (v, propOut, dflt, opts) {
+      if ((opts.extras || []).indexOf(v) !== -1) {
+        propOut.set(v);
+        return;
+      }
+      if (isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
       if (v % 1 || !isNumeric(v) || opts.min !== undefined && v < opts.min || opts.max !== undefined && v > opts.max) {
         propOut.set(dflt);
       } else propOut.set(+v);
@@ -23843,6 +24115,7 @@ exports.valObjectMeta = {
   },
   color: {
     coerceFunction: function (v, propOut, dflt) {
+      if (isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
       if (tinycolor(v).isValid()) propOut.set(v);else propOut.set(dflt);
     }
   },
@@ -23861,6 +24134,7 @@ exports.valObjectMeta = {
   },
   angle: {
     coerceFunction: function (v, propOut, dflt) {
+      if (isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
       if (v === 'auto') propOut.set('auto');else if (!isNumeric(v)) propOut.set(dflt);else propOut.set(modHalf(+v, 360));
     }
   },
@@ -24067,14 +24341,25 @@ exports.coerce2 = function (containerIn, containerOut, attributes, attribute, df
  */
 exports.coerceFont = function (coerce, attr, dfltObj, opts) {
   if (!opts) opts = {};
-  var out = {};
-  dfltObj = dfltObj || {};
-  out.family = coerce(attr + '.family', dfltObj.family);
-  out.size = coerce(attr + '.size', dfltObj.size);
-  out.color = coerce(attr + '.color', dfltObj.color);
-  out.weight = coerce(attr + '.weight', dfltObj.weight);
-  out.style = coerce(attr + '.style', dfltObj.style);
+  dfltObj = extendFlat({}, dfltObj);
+  dfltObj = extendFlat(dfltObj, opts.overrideDflt || {});
+  var out = {
+    family: coerce(attr + '.family', dfltObj.family),
+    size: coerce(attr + '.size', dfltObj.size),
+    color: coerce(attr + '.color', dfltObj.color),
+    weight: coerce(attr + '.weight', dfltObj.weight),
+    style: coerce(attr + '.style', dfltObj.style)
+  };
   if (!opts.noFontVariant) out.variant = coerce(attr + '.variant', dfltObj.variant);
+  if (!opts.noFontLineposition) out.lineposition = coerce(attr + '.lineposition', dfltObj.lineposition);
+  if (!opts.noFontTextcase) out.textcase = coerce(attr + '.textcase', dfltObj.textcase);
+  if (!opts.noFontShadow) {
+    var dfltShadow = dfltObj.shadow;
+    if (dfltShadow === 'none' && opts.autoShadowDflt) {
+      dfltShadow = 'auto';
+    }
+    out.shadow = coerce(attr + '.shadow', dfltShadow);
+  }
   return out;
 };
 
@@ -24833,6 +25118,9 @@ function getElementAndAncestors(element) {
   while (isTransformableElement(element)) {
     allElements.push(element);
     element = element.parentNode;
+    if (typeof ShadowRoot === 'function' && element instanceof ShadowRoot) {
+      element = element.host;
+    }
   }
   return allElements;
 }
@@ -25986,6 +26274,7 @@ var statsModule = __webpack_require__(3084);
 lib.aggNums = statsModule.aggNums;
 lib.len = statsModule.len;
 lib.mean = statsModule.mean;
+lib.geometricMean = statsModule.geometricMean;
 lib.median = statsModule.median;
 lib.midRange = statsModule.midRange;
 lib.variance = statsModule.variance;
@@ -28906,6 +29195,12 @@ exports.mean = function (data, len) {
     return a + b;
   }, 0, data) / len;
 };
+exports.geometricMean = function (data, len) {
+  if (!len) len = exports.len(data);
+  return Math.pow(exports.aggNums(function (a, b) {
+    return a * b;
+  }, 1, data), 1 / len);
+};
 exports.midRange = function (numArr) {
   if (numArr === undefined || numArr.length === 0) return undefined;
   return (exports.aggNums(Math.max, null, numArr) + exports.aggNums(Math.min, null, numArr)) / 2;
@@ -29213,6 +29508,8 @@ var TAG_STYLES = {
   // baseline below
   sup: 'font-size:70%',
   sub: 'font-size:70%',
+  s: 'text-decoration:line-through',
+  u: 'text-decoration:underline',
   b: 'font-weight:bold',
   i: 'font-style:italic',
   a: 'cursor:pointer',
@@ -35679,6 +35976,7 @@ var doAutoRange = (__webpack_require__(9280).doAutoRange);
 var SVG_TEXT_ANCHOR_START = 'start';
 var SVG_TEXT_ANCHOR_MIDDLE = 'middle';
 var SVG_TEXT_ANCHOR_END = 'end';
+var zindexSeparator = (__webpack_require__(3816).zindexSeparator);
 exports.layoutStyles = function (gd) {
   return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
 };
@@ -35768,7 +36066,7 @@ function lsInner(gd) {
       var xDomain = plotinfo.xaxis.domain;
       var yDomain = plotinfo.yaxis.domain;
       var plotgroup = plotinfo.plotgroup;
-      if (overlappingDomain(xDomain, yDomain, lowerDomains)) {
+      if (overlappingDomain(xDomain, yDomain, lowerDomains) && subplot.indexOf(zindexSeparator) === -1) {
         var pgNode = plotgroup.node();
         var plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
         pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
@@ -35995,7 +36293,9 @@ exports.drawMainTitle = function (gd) {
   Titles.draw(gd, 'gtitle', {
     propContainer: fullLayout,
     propName: 'title.text',
+    subtitlePropName: 'title.subtitle.text',
     placeholder: fullLayout._dfltTitle.plot,
+    subtitlePlaceholder: fullLayout._dfltTitle.subtitle,
     attributes: {
       x: x,
       y: y,
@@ -36005,7 +36305,7 @@ exports.drawMainTitle = function (gd) {
   });
   if (title.text && title.automargin) {
     var titleObj = d3.selectAll('.gtitle');
-    var titleHeight = Drawing.bBox(titleObj.node()).height;
+    var titleHeight = Drawing.bBox(d3.selectAll('.g-gtitle').node()).height;
     var pushMargin = needsMarginPush(gd, title, titleHeight);
     if (pushMargin > 0) {
       applyTitleAutoMargin(gd, y, pushMargin, titleHeight);
@@ -36026,6 +36326,21 @@ exports.drawMainTitle = function (gd) {
           var newDy = +this.getAttribute('dy').slice(0, -2) - delta + 'em';
           this.setAttribute('dy', newDy);
         });
+      }
+
+      // If there is a subtitle
+      var subtitleObj = d3.selectAll('.gtitle-subtitle');
+      if (subtitleObj.node()) {
+        // Get bottom edge of title bounding box
+        var titleBB = titleObj.node().getBBox();
+        var titleBottom = titleBB.y + titleBB.height;
+        var subtitleY = titleBottom + Titles.SUBTITLE_PADDING_EM * title.subtitle.font.size;
+        subtitleObj.attr({
+          x: x,
+          y: subtitleY,
+          'text-anchor': textAnchor,
+          dy: getMainTitleDyAdj(title.yanchor)
+        }).call(svgTextUtils.positionText, x, subtitleY);
       }
     }
   }
@@ -38421,6 +38736,8 @@ var HALFDAY = ONEDAY / 2;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
+var ONEMILLI = constants.ONEMILLI;
+var ONEMICROSEC = constants.ONEMICROSEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 var ZERO_PATH = {
@@ -39230,6 +39547,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
   var calendar = ax.calendar;
   var ticklabelstep = ax.ticklabelstep;
   var isPeriod = ax.ticklabelmode === 'period';
+  var isReversed = ax.range[0] > ax.range[1];
+  var ticklabelIndex = !ax.ticklabelindex || Lib.isArrayOrTypedArray(ax.ticklabelindex) ? ax.ticklabelindex : [ax.ticklabelindex];
   var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
   var axrev = rng[1] < rng[0];
   var minRange = Math.min(rng[0], rng[1]);
@@ -39239,6 +39558,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
   var minorTicks = [];
   var tickVals = [];
   var minorTickVals = [];
+  // all ticks for which labels are drawn which is not necessarily the major ticks when
+  // `ticklabelindex` is set.
+  var allTicklabelVals = [];
   var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
 
   // calc major first
@@ -39361,6 +39683,47 @@ axes.calcTicks = function calcTicks(ax, opts) {
       }
     }
   }
+
+  // check if ticklabelIndex makes sense, otherwise ignore it
+  if (!minorTickVals || minorTickVals.length < 2) {
+    ticklabelIndex = false;
+  } else {
+    var diff = (minorTickVals[1].value - minorTickVals[0].value) * (isReversed ? -1 : 1);
+    if (!periodCompatibleWithTickformat(diff, ax.tickformat)) {
+      ticklabelIndex = false;
+    }
+  }
+  // Determine for which ticks to draw labels
+  if (!ticklabelIndex) {
+    allTicklabelVals = tickVals;
+  } else {
+    // Collect and sort all major and minor ticks, to find the minor ticks `ticklabelIndex`
+    // steps away from each major tick. For those minor ticks we want to draw the label.
+
+    var allTickVals = tickVals.concat(minorTickVals);
+    if (isPeriod && tickVals.length) {
+      // first major tick was just added for period handling
+      allTickVals = allTickVals.slice(1);
+    }
+    allTickVals = allTickVals.sort(function (a, b) {
+      return a.value - b.value;
+    }).filter(function (tick, index, self) {
+      return index === 0 || tick.value !== self[index - 1].value;
+    });
+    var majorTickIndices = allTickVals.map(function (item, index) {
+      return item.minor === undefined && !item.skipLabel ? index : null;
+    }).filter(function (index) {
+      return index !== null;
+    });
+    majorTickIndices.forEach(function (majorIdx) {
+      ticklabelIndex.map(function (nextLabelIdx) {
+        var minorIdx = majorIdx + nextLabelIdx;
+        if (minorIdx >= 0 && minorIdx < allTickVals.length) {
+          Lib.pushUnique(allTicklabelVals, allTickVals[minorIdx]);
+        }
+      });
+    });
+  }
   if (hasMinor) {
     var canOverlap = ax.minor.ticks === 'inside' && ax.ticks === 'outside' || ax.minor.ticks === 'outside' && ax.ticks === 'inside';
     if (!canOverlap) {
@@ -39389,7 +39752,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
       minorTickVals = list;
     }
   }
-  if (isPeriod) positionPeriodTicks(tickVals, ax, ax._definedDelta);
+  if (isPeriod) positionPeriodTicks(allTicklabelVals, ax, ax._definedDelta);
   var i;
   if (ax.rangebreaks) {
     var flip = ax._id.charAt(0) === 'y';
@@ -39438,33 +39801,42 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._prevDateHead = lastVisibleHead;
   };
   tickVals = tickVals.concat(minorTickVals);
-  var t, p;
+  function setTickLabel(ax, tickVal) {
+    var text = axes.tickText(ax, tickVal.value, false,
+    // hover
+    tickVal.simpleLabel // noSuffixPrefix
+    );
+
+    var p = tickVal.periodX;
+    if (p !== undefined) {
+      text.periodX = p;
+      if (p > maxRange || p < minRange) {
+        // hide label if outside the range
+        if (p > maxRange) text.periodX = maxRange;
+        if (p < minRange) text.periodX = minRange;
+        hideLabel(text);
+      }
+    }
+    return text;
+  }
+  var t;
   for (i = 0; i < tickVals.length; i++) {
     var _minor = tickVals[i].minor;
     var _value = tickVals[i].value;
     if (_minor) {
-      minorTicks.push({
-        x: _value,
-        minor: true
-      });
+      if (ticklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
+        t = setTickLabel(ax, tickVals[i]);
+      } else {
+        t = {
+          x: _value
+        };
+      }
+      t.minor = true;
+      minorTicks.push(t);
     } else {
       lastVisibleHead = ax._prevDateHead;
-      t = axes.tickText(ax, _value, false,
-      // hover
-      tickVals[i].simpleLabel // noSuffixPrefix
-      );
-
-      p = tickVals[i].periodX;
-      if (p !== undefined) {
-        t.periodX = p;
-        if (p > maxRange || p < minRange) {
-          // hide label if outside the range
-          if (p > maxRange) t.periodX = maxRange;
-          if (p < minRange) t.periodX = minRange;
-          hideLabel(t);
-        }
-      }
-      if (tickVals[i].skipLabel) {
+      t = setTickLabel(ax, tickVals[i]);
+      if (tickVals[i].skipLabel || ticklabelIndex && allTicklabelVals.indexOf(tickVals[i]) === -1) {
         hideLabel(t);
       }
       ticksOut.push(t);
@@ -39938,6 +40310,9 @@ function tickTextObj(ax, x, text) {
     fontWeight: tf.weight,
     fontStyle: tf.style,
     fontVariant: tf.variant,
+    fontTextcase: tf.textcase,
+    fontLineposition: tf.lineposition,
+    fontShadow: tf.shadow,
     fontColor: tf.color
   };
 }
@@ -41074,12 +41449,26 @@ axes.makeTransTickFn = function (ax) {
 };
 axes.makeTransTickLabelFn = function (ax) {
   var uv = getTickLabelUV(ax);
+  var shift = ax.ticklabelshift || 0;
+  var standoff = ax.ticklabelstandoff || 0;
   var u = uv[0];
   var v = uv[1];
+  var isReversed = ax.range[0] > ax.range[1];
+  var labelsInside = ax.ticklabelposition && ax.ticklabelposition.indexOf('inside') !== -1;
+  var labelsOutside = !labelsInside;
+  if (shift) {
+    var shiftSign = isReversed ? -1 : 1;
+    shift = shift * shiftSign;
+  }
+  if (standoff) {
+    var side = ax.side;
+    var standoffSign = labelsInside && (side === 'top' || side === 'left') || labelsOutside && (side === 'bottom' || side === 'right') ? 1 : -1;
+    standoff = standoff * standoffSign;
+  }
   return ax._id.charAt(0) === 'x' ? function (d) {
-    return strTranslate(u + ax._offset + ax.l2p(getPosX(d)), v);
+    return strTranslate(u + ax._offset + ax.l2p(getPosX(d)) + shift, v + standoff);
   } : function (d) {
-    return strTranslate(v, u + ax._offset + ax.l2p(getPosX(d)));
+    return strTranslate(v + standoff, u + ax._offset + ax.l2p(getPosX(d)) + shift);
   };
 };
 function getPosX(d) {
@@ -41494,7 +41883,10 @@ axes.drawLabels = function (gd, ax, opts) {
       color: d.fontColor,
       weight: d.fontWeight,
       style: d.fontStyle,
-      variant: d.fontVariant
+      variant: d.fontVariant,
+      textcase: d.fontTextcase,
+      lineposition: d.fontLineposition,
+      shadow: d.fontShadow
     }).text(d.text).call(svgTextUtils.convertToTspans, gd);
     if (gd._promises[newPromise]) {
       // if we have an async label, we'll deal with that
@@ -42309,6 +42701,18 @@ function setShiftVal(ax, axShifts) {
   return ax.autoshift ? axShifts[ax.overlaying][ax.side] : ax.shift || 0;
 }
 
+/**
+ * Checks if the given period is at least the period described by the tickformat or larger. If that
+ * is the case, they are compatible, because then the tickformat can be used to describe the period.
+ * E.g. it doesn't make sense to put a year label on a period spanning only a month.
+ * @param {number} period in ms
+ * @param {string} tickformat
+ * @returns {boolean}
+ */
+function periodCompatibleWithTickformat(period, tickformat) {
+  return /%f/.test(tickformat) ? period >= ONEMICROSEC : /%L/.test(tickformat) ? period >= ONEMILLI : /%[SX]/.test(tickformat) ? period >= ONESEC : /%M/.test(tickformat) ? period >= ONEMIN : /%[HI]/.test(tickformat) ? period >= ONEHOUR : /%p/.test(tickformat) ? period >= HALFDAY : /%[Aadejuwx]/.test(tickformat) ? period >= ONEDAY : /%[UVW]/.test(tickformat) ? period >= ONEWEEK : /%[Bbm]/.test(tickformat) ? period >= ONEMINMONTH : /%[q]/.test(tickformat) ? period >= ONEMINQUARTER : /%[Yy]/.test(tickformat) ? period >= ONEMINYEAR : true;
+}
+
 /***/ }),
 
 /***/ 2976:
@@ -42475,6 +42879,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
       ticklabelmode = coerce('ticklabelmode');
     }
   }
+  if (!options.noTicklabelindex && (axType === 'date' || axType === 'linear')) {
+    coerce('ticklabelindex');
+  }
   var ticklabelposition = '';
   if (!options.noTicklabelposition || axType === 'multicategory') {
     ticklabelposition = Lib.coerce(containerIn, containerOut, {
@@ -42503,13 +42910,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
   handlePrefixSuffixDefaults(containerIn, containerOut, coerce, axType, options);
   if (!visible) return containerOut;
   coerce('title.text', dfltTitle);
-  Lib.coerceFont(coerce, 'title.font', {
-    family: font.family,
-    weight: font.weight,
-    style: font.style,
-    variant: font.variant,
-    size: Lib.bigFont(font.size),
-    color: dfltFontColor
+  Lib.coerceFont(coerce, 'title.font', font, {
+    overrideDflt: {
+      size: Lib.bigFont(font.size),
+      color: dfltFontColor
+    }
   });
 
   // major ticks
@@ -43074,7 +43479,8 @@ module.exports = {
   layerValue2layerClass: {
     'above traces': 'above',
     'below traces': 'below'
-  }
+  },
+  zindexSeparator: 'z' // used for zindex of cartesian subplots e.g. xy, xyz2, xyz3, etc.
 };
 
 /***/ }),
@@ -44432,12 +44838,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         xa = sp.xaxis;
         ya = sp.yaxis;
         if (sp._scene) {
-          var xrng = Lib.simpleMap(xa.range, xa.r2l);
-          var yrng = Lib.simpleMap(ya.range, ya.r2l);
           if (xa.limitRange) xa.limitRange();
           if (ya.limitRange) ya.limitRange();
-          xrng = xa.range;
-          yrng = ya.range;
+          var xrng = Lib.simpleMap(xa.range, xa.r2l);
+          var yrng = Lib.simpleMap(ya.range, ya.r2l);
           sp._scene.update({
             range: [xrng[0], yrng[0], xrng[1], yrng[1]]
           });
@@ -45048,6 +45452,7 @@ function ensureSingleAndAddDatum(parent, nodeType, className) {
     s.datum(className);
   });
 }
+var zindexSeparator = constants.zindexSeparator;
 exports.name = 'cartesian';
 exports.attr = ['xaxis', 'yaxis'];
 exports.idRoot = ['x', 'y'];
@@ -45156,68 +45561,73 @@ exports.plot = function (gd, traces, transitionOpts, makeOnCompleteCallback) {
     traces = [];
     for (i = 0; i < calcdata.length; i++) traces.push(i);
   }
+  var zindices = fullLayout._zindices;
+  // Plot each zorder group in ascending order
+  for (var z = 0; z < zindices.length; z++) {
+    var zorder = zindices[z];
 
-  // For each subplot
-  for (i = 0; i < subplots.length; i++) {
-    var subplot = subplots[i];
-    var subplotInfo = fullLayout._plots[subplot];
-
-    // Get all calcdata (traces) for this subplot:
-    var cdSubplot = [];
-    var pcd;
-
-    // For each trace
-    for (var j = 0; j < calcdata.length; j++) {
-      var cd = calcdata[j];
-      var trace = cd[0].trace;
-
-      // Skip trace if whitelist provided and it's not whitelisted:
-      // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
-      if (trace.xaxis + trace.yaxis === subplot) {
-        // XXX: Should trace carpet dependencies. Only replot all carpet plots if the carpet
-        // axis has actually changed:
-        //
-        // If this trace is specifically requested, add it to the list:
-        if (traces.indexOf(trace.index) !== -1 || trace.carpet) {
-          // Okay, so example: traces 0, 1, and 2 have fill = tonext. You animate
-          // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
-          // is outdated. So this retroactively adds the previous trace if the
-          // traces are interdependent.
-          if (pcd && pcd[0].trace.xaxis + pcd[0].trace.yaxis === subplot && ['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1 && cdSubplot.indexOf(pcd) === -1) {
-            cdSubplot.push(pcd);
-          }
-          cdSubplot.push(cd);
-        }
-
-        // Track the previous trace on this subplot for the retroactive-add step
-        // above:
-        pcd = cd;
+    // For each subplot
+    for (i = 0; i < subplots.length; i++) {
+      var subplot = subplots[i];
+      var subplotInfo = fullLayout._plots[subplot];
+      if (z > 0) {
+        var idWithZ = subplotInfo.id;
+        if (idWithZ.indexOf(zindexSeparator) !== -1) continue;
+        idWithZ += zindexSeparator + (z + 1);
+        subplotInfo = Lib.extendFlat({}, subplotInfo, {
+          id: idWithZ,
+          plot: fullLayout._cartesianlayer.selectAll('.subplot').select('.' + idWithZ)
+        });
       }
+
+      // Get all calcdata (traces) for this subplot:
+      var cdSubplot = [];
+      var pcd;
+
+      // For each trace
+      for (var j = 0; j < calcdata.length; j++) {
+        var cd = calcdata[j];
+        var trace = cd[0].trace;
+        if (zorder !== (trace.zorder || 0)) continue;
+
+        // Skip trace if whitelist provided and it's not whitelisted:
+        // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
+        if (trace.xaxis + trace.yaxis === subplot) {
+          // XXX: Should trace carpet dependencies. Only replot all carpet plots if the carpet
+          // axis has actually changed:
+          //
+          // If this trace is specifically requested, add it to the list:
+          if (traces.indexOf(trace.index) !== -1 || trace.carpet) {
+            // Okay, so example: traces 0, 1, and 2 have fill = tonext. You animate
+            // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
+            // is outdated. So this retroactively adds the previous trace if the
+            // traces are interdependent.
+            if (pcd && pcd[0].trace.xaxis + pcd[0].trace.yaxis === subplot && ['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1 && cdSubplot.indexOf(pcd) === -1) {
+              cdSubplot.push(pcd);
+            }
+            cdSubplot.push(cd);
+          }
+
+          // Track the previous trace on this subplot for the retroactive-add step
+          // above:
+          pcd = cd;
+        }
+      }
+      // Plot the traces for this subplot
+      plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback);
     }
-    // Plot the traces for this subplot
-    plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback);
   }
 };
 function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback) {
   var traceLayerClasses = constants.traceLayerClasses;
   var fullLayout = gd._fullLayout;
+  var zindices = fullLayout._zindices;
   var modules = fullLayout._modules;
   var _module, cdModuleAndOthers, cdModule;
-
-  // Separate traces by zorder and plot each zorder group separately
-  // TODO: Performance
-  var traceZorderGroups = {};
-  for (var t = 0; t < cdSubplot.length; t++) {
-    var trace = cdSubplot[t][0].trace;
-    var zi = trace.zorder || 0;
-    if (!traceZorderGroups[zi]) traceZorderGroups[zi] = [];
-    traceZorderGroups[zi].push(cdSubplot[t]);
-  }
   var layerData = [];
   var zoomScaleQueryParts = [];
 
   // Plot each zorder group in ascending order
-  var zindices = Object.keys(traceZorderGroups).map(Number).sort(Lib.sorterAsc);
   for (var z = 0; z < zindices.length; z++) {
     var zorder = zindices[z];
     // For each "module" (trace type)
@@ -45345,6 +45755,9 @@ exports.clean = function (newFullData, newFullLayout, oldFullData, oldFullLayout
 
     for (i = 0; i < oldSubplotList.cartesian.length; i++) {
       var oldSubplotId = oldSubplotList.cartesian[i];
+
+      // skip zindex layes in this process
+      if (oldSubplotId.indexOf(zindexSeparator) !== -1) continue;
       if (!newPlots[oldSubplotId]) {
         var selector = '.' + oldSubplotId + ',.' + oldSubplotId + '-x,.' + oldSubplotId + '-y';
         oldFullLayout._cartesianlayer.selectAll(selector).remove();
@@ -45355,7 +45768,37 @@ exports.clean = function (newFullData, newFullLayout, oldFullData, oldFullLayout
 };
 exports.drawFramework = function (gd) {
   var fullLayout = gd._fullLayout;
-  var subplotData = makeSubplotData(gd);
+  var calcdata = gd.calcdata;
+  var i;
+
+  // Separate traces by zorder and plot each zorder group separately
+  var traceZorderGroups = {};
+  for (i = 0; i < calcdata.length; i++) {
+    var cdi = calcdata[i][0];
+    var trace = cdi.trace;
+    var zi = trace.zorder || 0;
+    if (!traceZorderGroups[zi]) traceZorderGroups[zi] = [];
+    traceZorderGroups[zi].push(cdi);
+  }
+
+  // Group by zorder group in ascending order
+  var zindices = Object.keys(traceZorderGroups).map(Number).sort(Lib.sorterAsc);
+  if (!zindices.length) zindices = [0];
+  fullLayout._zindices = zindices;
+  var initialSubplotData = makeSubplotData(gd);
+  var len = initialSubplotData.length;
+  var subplotData = [];
+  for (i = 0; i < len; i++) {
+    subplotData[i] = initialSubplotData[i].slice();
+  }
+  for (var z = 1; z < zindices.length; z++) {
+    var newSubplotData = [];
+    for (i = 0; i < len; i++) {
+      newSubplotData[i] = initialSubplotData[i].slice();
+      newSubplotData[i][0] += zindexSeparator + (z + 1);
+    }
+    subplotData = subplotData.concat(newSubplotData);
+  }
   var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot').data(subplotData, String);
   subplotLayers.enter().append('g').attr('class', function (d) {
     return 'subplot ' + d[0];
@@ -45364,14 +45807,28 @@ exports.drawFramework = function (gd) {
   subplotLayers.exit().call(purgeSubplotLayers, fullLayout);
   subplotLayers.each(function (d) {
     var id = d[0];
+    var posZ = id.indexOf(zindexSeparator);
+    var hasZ = posZ !== -1;
+    var idWithoutZ = hasZ ? id.slice(0, posZ) : id;
     var plotinfo = fullLayout._plots[id];
-    plotinfo.plotgroup = d3.select(this);
-    makeSubplotLayer(gd, plotinfo);
-
-    // make separate drag layers for each subplot,
-    // but append them to paper rather than the plot groups,
-    // so they end up on top of the rest
-    plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
+    if (!plotinfo) {
+      plotinfo = Lib.extendFlat({}, fullLayout._plots[idWithoutZ]);
+      if (plotinfo) {
+        plotinfo.id = id;
+        fullLayout._plots[id] = plotinfo;
+        fullLayout._subplots.cartesian.push(id);
+      }
+    }
+    if (plotinfo) {
+      plotinfo.plotgroup = d3.select(this);
+      makeSubplotLayer(gd, plotinfo);
+      if (!hasZ) {
+        // make separate drag layers for each subplot,
+        // but append them to paper rather than the plot groups,
+        // so they end up on top of the rest
+        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
+      }
+    }
   });
 };
 exports.rangePlot = function (gd, plotinfo, cdSubplot) {
@@ -45381,6 +45838,7 @@ exports.rangePlot = function (gd, plotinfo, cdSubplot) {
 };
 function makeSubplotData(gd) {
   var fullLayout = gd._fullLayout;
+  var numZ = fullLayout._zindices.length;
   var ids = fullLayout._subplots.cartesian;
   var len = ids.length;
   var i, j, id, plotinfo, xa, ya;
@@ -45418,26 +45876,34 @@ function makeSubplotData(gd) {
 
   // put 'regular' subplot data before 'overlaying'
   var subplotIds = regulars.concat(overlays);
-  var subplotData = new Array(len);
+  var subplotData = [];
   for (i = 0; i < len; i++) {
     id = subplotIds[i];
     plotinfo = fullLayout._plots[id];
     xa = plotinfo.xaxis;
     ya = plotinfo.yaxis;
+    var d = [];
+    for (var z = 1; z <= numZ; z++) {
+      var zStr = '';
+      if (z > 1) zStr += zindexSeparator + z;
 
-    // use info about axis layer and overlaying pattern
-    // to clean what need to be cleaned up in exit selection
-    var d = [id, xa.layer, ya.layer, xa.overlaying || '', ya.overlaying || ''];
-    for (j = 0; j < plotinfo.overlays.length; j++) {
-      d.push(plotinfo.overlays[j].id);
+      // use info about axis layer and overlaying pattern
+      // to clean what need to be cleaned up in exit selection
+      d.push(id + zStr);
+      for (j = 0; j < plotinfo.overlays.length; j++) {
+        d.push(plotinfo.overlays[j].id + zStr);
+      }
     }
-    subplotData[i] = d;
+    d = d.concat([xa.layer, ya.layer, xa.overlaying || '', ya.overlaying || '']);
+    subplotData.push(d);
   }
   return subplotData;
 }
 function makeSubplotLayer(gd, plotinfo) {
   var plotgroup = plotinfo.plotgroup;
   var id = plotinfo.id;
+  var posZ = id.indexOf(zindexSeparator);
+  var hasZ = posZ !== -1;
   var xLayer = constants.layerValue2layerClass[plotinfo.xaxis.layer];
   var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
   var hasOnlyLargeSploms = gd._fullLayout._hasOnlyLargeSploms;
@@ -45453,35 +45919,39 @@ function makeSubplotLayer(gd, plotinfo) {
       plotinfo.xaxislayer = ensureSingle(plotgroup, 'g', 'xaxislayer-above');
       plotinfo.yaxislayer = ensureSingle(plotgroup, 'g', 'yaxislayer-above');
     } else {
-      var backLayer = ensureSingle(plotgroup, 'g', 'layer-subplot');
-      plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
-      plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
-      plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
-      plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
-      plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
-      var betweenLayer = ensureSingle(plotgroup, 'g', 'layer-between');
-      plotinfo.shapelayerBetween = ensureSingle(betweenLayer, 'g', 'shapelayer');
-      plotinfo.imagelayerBetween = ensureSingle(betweenLayer, 'g', 'imagelayer');
-      ensureSingle(plotgroup, 'path', 'xlines-below');
-      ensureSingle(plotgroup, 'path', 'ylines-below');
-      plotinfo.overlinesBelow = ensureSingle(plotgroup, 'g', 'overlines-below');
-      ensureSingle(plotgroup, 'g', 'xaxislayer-below');
-      ensureSingle(plotgroup, 'g', 'yaxislayer-below');
-      plotinfo.overaxesBelow = ensureSingle(plotgroup, 'g', 'overaxes-below');
-      plotinfo.plot = ensureSingle(plotgroup, 'g', 'plot');
+      if (!hasZ) {
+        var backLayer = ensureSingle(plotgroup, 'g', 'layer-subplot');
+        plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
+        plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
+        plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
+        plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
+        plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+        var betweenLayer = ensureSingle(plotgroup, 'g', 'layer-between');
+        plotinfo.shapelayerBetween = ensureSingle(betweenLayer, 'g', 'shapelayer');
+        plotinfo.imagelayerBetween = ensureSingle(betweenLayer, 'g', 'imagelayer');
+        ensureSingle(plotgroup, 'path', 'xlines-below');
+        ensureSingle(plotgroup, 'path', 'ylines-below');
+        plotinfo.overlinesBelow = ensureSingle(plotgroup, 'g', 'overlines-below');
+        ensureSingle(plotgroup, 'g', 'xaxislayer-below');
+        ensureSingle(plotgroup, 'g', 'yaxislayer-below');
+        plotinfo.overaxesBelow = ensureSingle(plotgroup, 'g', 'overaxes-below');
+      }
       plotinfo.overplot = ensureSingle(plotgroup, 'g', 'overplot');
-      plotinfo.xlines = ensureSingle(plotgroup, 'path', 'xlines-above');
-      plotinfo.ylines = ensureSingle(plotgroup, 'path', 'ylines-above');
-      plotinfo.overlinesAbove = ensureSingle(plotgroup, 'g', 'overlines-above');
-      ensureSingle(plotgroup, 'g', 'xaxislayer-above');
-      ensureSingle(plotgroup, 'g', 'yaxislayer-above');
-      plotinfo.overaxesAbove = ensureSingle(plotgroup, 'g', 'overaxes-above');
+      plotinfo.plot = ensureSingle(plotinfo.overplot, 'g', id);
+      if (!hasZ) {
+        plotinfo.xlines = ensureSingle(plotgroup, 'path', 'xlines-above');
+        plotinfo.ylines = ensureSingle(plotgroup, 'path', 'ylines-above');
+        plotinfo.overlinesAbove = ensureSingle(plotgroup, 'g', 'overlines-above');
+        ensureSingle(plotgroup, 'g', 'xaxislayer-above');
+        ensureSingle(plotgroup, 'g', 'yaxislayer-above');
+        plotinfo.overaxesAbove = ensureSingle(plotgroup, 'g', 'overaxes-above');
 
-      // set refs to correct layers as determined by 'axis.layer'
-      plotinfo.xlines = plotgroup.select('.xlines-' + xLayer);
-      plotinfo.ylines = plotgroup.select('.ylines-' + yLayer);
-      plotinfo.xaxislayer = plotgroup.select('.xaxislayer-' + xLayer);
-      plotinfo.yaxislayer = plotgroup.select('.yaxislayer-' + yLayer);
+        // set refs to correct layers as determined by 'axis.layer'
+        plotinfo.xlines = plotgroup.select('.xlines-' + xLayer);
+        plotinfo.ylines = plotgroup.select('.ylines-' + yLayer);
+        plotinfo.xaxislayer = plotgroup.select('.xaxislayer-' + xLayer);
+        plotinfo.yaxislayer = plotgroup.select('.yaxislayer-' + yLayer);
+      }
     }
   } else {
     var mainplotinfo = plotinfo.mainplotinfo;
@@ -45513,23 +45983,24 @@ function makeSubplotLayer(gd, plotinfo) {
     plotinfo.xaxislayer = mainplotgroup.select('.overaxes-' + xLayer).select('.' + xId);
     plotinfo.yaxislayer = mainplotgroup.select('.overaxes-' + yLayer).select('.' + yId);
   }
+  if (!hasZ) {
+    // common attributes for all subplots, overlays or not
 
-  // common attributes for all subplots, overlays or not
-
-  if (!hasOnlyLargeSploms) {
-    ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
-    ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
-    plotinfo.minorGridlayer.selectAll('g').map(function (d) {
-      return d[0];
-    }).sort(axisIds.idSort);
-    ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
-    ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
-    plotinfo.gridlayer.selectAll('g').map(function (d) {
-      return d[0];
-    }).sort(axisIds.idSort);
+    if (!hasOnlyLargeSploms) {
+      ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
+      ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
+      plotinfo.minorGridlayer.selectAll('g').map(function (d) {
+        return d[0];
+      }).sort(axisIds.idSort);
+      ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
+      ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
+      plotinfo.gridlayer.selectAll('g').map(function (d) {
+        return d[0];
+      }).sort(axisIds.idSort);
+    }
+    plotinfo.xlines.style('fill', 'none').classed('crisp', true);
+    plotinfo.ylines.style('fill', 'none').classed('crisp', true);
   }
-  plotinfo.xlines.style('fill', 'none').classed('crisp', true);
-  plotinfo.ylines.style('fill', 'none').classed('crisp', true);
 }
 function purgeSubplotLayers(layers, fullLayout) {
   if (!layers) return;
@@ -45981,6 +46452,23 @@ module.exports = {
     values: ['allow', 'hide past div', 'hide past domain'],
     editType: 'calc'
   },
+  ticklabelshift: {
+    valType: 'integer',
+    dflt: 0,
+    editType: 'ticks'
+  },
+  ticklabelstandoff: {
+    valType: 'integer',
+    dflt: 0,
+    editType: 'ticks'
+  },
+  ticklabelindex: {
+    // in the future maybe add `extras: ['all', 'minor']` to allow showing labels for all ticks
+    // or for all minor ticks.
+    valType: 'integer',
+    arrayOk: true,
+    editType: 'calc'
+  },
   mirror: {
     valType: 'enumerated',
     values: [true, 'ticks', false, 'all', 'allticks'],
@@ -46267,7 +46755,7 @@ module.exports = {
   },
   categoryorder: {
     valType: 'enumerated',
-    values: ['trace', 'category ascending', 'category descending', 'array', 'total ascending', 'total descending', 'min ascending', 'min descending', 'max ascending', 'max descending', 'sum ascending', 'sum descending', 'mean ascending', 'mean descending', 'median ascending', 'median descending'],
+    values: ['trace', 'category ascending', 'category descending', 'array', 'total ascending', 'total descending', 'min ascending', 'min descending', 'max ascending', 'max descending', 'sum ascending', 'sum descending', 'mean ascending', 'mean descending', 'geometric mean ascending', 'geometric mean descending', 'median ascending', 'median descending'],
     dflt: 'trace',
     editType: 'calc'
   },
@@ -47835,6 +48323,12 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
   var showAttrDflt = getShowAttrDflt(containerIn);
   var showTickLabels = coerce('showticklabels');
   if (showTickLabels) {
+    if (!options.noTicklabelshift) {
+      coerce('ticklabelshift');
+    }
+    if (!options.noTicklabelstandoff) {
+      coerce('ticklabelstandoff');
+    }
     var font = options.font || {};
     var contColor = containerOut.color;
     var position = containerOut.ticklabelposition || '';
@@ -47842,13 +48336,10 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
     // as with titlefont.color, inherit axis.color only if one was
     // explicitly provided
     contColor && contColor !== layoutAttributes.color.dflt ? contColor : font.color;
-    Lib.coerceFont(coerce, 'tickfont', {
-      family: font.family,
-      weight: font.weight,
-      style: font.style,
-      variant: font.variant,
-      size: font.size,
-      color: dfltFontColor
+    Lib.coerceFont(coerce, 'tickfont', font, {
+      overrideDflt: {
+        color: dfltFontColor
+      }
     });
     if (!options.noTicklabelstep && axType !== 'multicategory' && axType !== 'log') {
       coerce('ticklabelstep');
@@ -48750,6 +49241,21 @@ module.exports = function (opts) {
   var editType = opts.editType;
   var colorEditType = opts.colorEditType;
   if (colorEditType === undefined) colorEditType = editType;
+  var weight = {
+    editType: editType,
+    valType: 'integer',
+    min: 1,
+    max: 1000,
+    extras: ['normal', 'bold'],
+    dflt: 'normal'
+  };
+  if (opts.noNumericWeightValues) {
+    weight.valType = 'enumerated';
+    weight.values = weight.extras;
+    weight.extras = undefined;
+    weight.min = undefined;
+    weight.max = undefined;
+  }
   var attrs = {
     family: {
       valType: 'string',
@@ -48766,12 +49272,7 @@ module.exports = function (opts) {
       valType: 'color',
       editType: colorEditType
     },
-    weight: {
-      editType: editType,
-      valType: 'enumerated',
-      values: ['normal', 'bold'],
-      dflt: 'normal'
-    },
+    weight: weight,
     style: {
       editType: editType,
       valType: 'enumerated',
@@ -48784,6 +49285,24 @@ module.exports = function (opts) {
       values: variantValues || ['normal', 'small-caps', 'all-small-caps', 'all-petite-caps', 'petite-caps', 'unicase'],
       dflt: 'normal'
     },
+    textcase: opts.noFontTextcase ? undefined : {
+      editType: editType,
+      valType: 'enumerated',
+      values: ['normal', 'word caps', 'upper', 'lower'],
+      dflt: 'normal'
+    },
+    lineposition: opts.noFontLineposition ? undefined : {
+      editType: editType,
+      valType: 'flaglist',
+      flags: ['under', 'over', 'through'],
+      extras: ['none'],
+      dflt: 'none'
+    },
+    shadow: opts.noFontShadow ? undefined : {
+      editType: editType,
+      valType: 'string',
+      dflt: opts.autoShadowDflt ? 'auto' : 'none'
+    },
     editType: editType
     // blank strings so compress_attributes can remove
     // TODO - that's uber hacky... better solution?
@@ -48795,7 +49314,18 @@ module.exports = function (opts) {
     attrs.family.arrayOk = true;
     attrs.weight.arrayOk = true;
     attrs.style.arrayOk = true;
-    attrs.variant.arrayOk = true;
+    if (!opts.noFontVariant) {
+      attrs.variant.arrayOk = true;
+    }
+    if (!opts.noFontTextcase) {
+      attrs.textcase.arrayOk = true;
+    }
+    if (!opts.noFontLineposition) {
+      attrs.lineposition.arrayOk = true;
+    }
+    if (!opts.noFontShadow) {
+      attrs.shadow.arrayOk = true;
+    }
     attrs.size.arrayOk = true;
     attrs.color.arrayOk = true;
   }
@@ -50802,6 +51332,16 @@ module.exports = {
     font: fontAttrs({
       editType: 'layoutstyle'
     }),
+    subtitle: {
+      text: {
+        valType: 'string',
+        editType: 'layoutstyle'
+      },
+      font: fontAttrs({
+        editType: 'layoutstyle'
+      }),
+      editType: 'layoutstyle'
+    },
     xref: {
       valType: 'enumerated',
       dflt: 'container',
@@ -51338,6 +51878,7 @@ plots.supplyDefaults = function (gd, opts) {
   // When editable=false the two behave the same, no title is drawn.
   newFullLayout._dfltTitle = {
     plot: _(gd, 'Click to enter Plot title'),
+    subtitle: _(gd, 'Click to enter Plot subtitle'),
     x: _(gd, 'Click to enter X axis title'),
     y: _(gd, 'Click to enter Y axis title'),
     colorbar: _(gd, 'Click to enter Colorscale title'),
@@ -52338,9 +52879,11 @@ plots.supplyLayoutGlobalDefaults = function (layoutIn, layoutOut, formatObj) {
   coerce('autotypenumbers');
   var font = Lib.coerceFont(coerce, 'font');
   var fontSize = font.size;
-  Lib.coerceFont(coerce, 'title.font', Lib.extendFlat({}, font, {
-    size: Math.round(fontSize * 1.4)
-  }));
+  Lib.coerceFont(coerce, 'title.font', font, {
+    overrideDflt: {
+      size: Math.round(fontSize * 1.4)
+    }
+  });
   coerce('title.text', layoutOut._dfltTitle.plot);
   coerce('title.xref');
   var titleYref = coerce('title.yref');
@@ -52353,6 +52896,12 @@ plots.supplyLayoutGlobalDefaults = function (layoutIn, layoutOut, formatObj) {
   coerce('title.xanchor');
   coerce('title.y');
   coerce('title.yanchor');
+  coerce('title.subtitle.text', layoutOut._dfltTitle.subtitle);
+  Lib.coerceFont(coerce, 'title.subtitle.font', font, {
+    overrideDflt: {
+      size: Math.round(layoutOut.title.font.size * 0.7)
+    }
+  });
   if (titleAutomargin) {
     // when automargin=true
     // title.y is 1 or 0 if paper ref
@@ -53870,7 +54419,7 @@ plots.doCalcdata = function (gd, traces) {
   Registry.getComponentMethod('fx', 'calc')(gd);
   Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
-var sortAxisCategoriesByValueRegex = /(total|sum|min|max|mean|median) (ascending|descending)/;
+var sortAxisCategoriesByValueRegex = /(total|sum|min|max|mean|geometric mean|median) (ascending|descending)/;
 function sortAxisCategoriesByValue(axList, gd) {
   var affectedTraces = [];
   var i, j, k, l, o;
@@ -53912,6 +54461,9 @@ function sortAxisCategoriesByValue(axList, gd) {
     },
     mean: function (values) {
       return Lib.mean(values);
+    },
+    'geometric mean': function (values) {
+      return Lib.geometricMean(values);
     },
     median: function (values) {
       return Lib.median(values);
@@ -55384,7 +55936,8 @@ module.exports = function toSVG(gd, format, scale) {
 
     // Drop normal font-weight, font-style and font-variant to reduce the size
     var fw = this.style.fontWeight;
-    if (fw && fw === 'normal') {
+    if (fw && (fw === 'normal' || fw === '400')) {
+      // font-weight 400 is similar to normal
       txt.style('font-weight', undefined);
     }
     var fs = this.style.fontStyle;
@@ -56871,6 +57424,9 @@ module.exports = function arraysToCalcdata(cd, trace) {
     Lib.mergeArray(trace.textfont.weight, cd, 'tw');
     Lib.mergeArray(trace.textfont.style, cd, 'ty');
     Lib.mergeArray(trace.textfont.variant, cd, 'tv');
+    Lib.mergeArray(trace.textfont.textcase, cd, 'tC');
+    Lib.mergeArray(trace.textfont.lineposition, cd, 'tE');
+    Lib.mergeArray(trace.textfont.shadow, cd, 'tS');
   }
   var marker = trace.marker;
   if (marker) {
@@ -61562,7 +62118,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.32.0';
+exports.version = '2.34.0';
 
 /***/ }),
 
@@ -61600,7 +62156,7 @@ function isMobile(opts) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
   var d3 = {
-    version: "3.8.0"
+    version: "3.8.2"
   };
   var d3_arraySlice = [].slice, d3_array = function(list) {
     return d3_arraySlice.call(list);
@@ -66470,10 +67026,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
     };
   }
   d3.random = {
-    normal: function(µ, σ) {
+    normal: function(mu, sigma) {
       var n = arguments.length;
-      if (n < 2) σ = 1;
-      if (n < 1) µ = 0;
+      if (n < 2) sigma = 1;
+      if (n < 1) mu = 0;
       return function() {
         var x, y, r;
         do {
@@ -66481,7 +67037,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
           y = Math.random() * 2 - 1;
           r = x * x + y * y;
         } while (!r || r > 1);
-        return µ + σ * x * Math.sqrt(-2 * Math.log(r) / r);
+        return mu + sigma * x * Math.sqrt(-2 * Math.log(r) / r);
       };
     },
     logNormal: function() {

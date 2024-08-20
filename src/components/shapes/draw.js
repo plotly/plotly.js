@@ -227,8 +227,18 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     var xRefType = Axes.getRefType(shapeOptions.xref);
     var ya = Axes.getFromId(gd, shapeOptions.yref);
     var yRefType = Axes.getRefType(shapeOptions.yref);
-    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
-    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+    var shiftXStart = shapeOptions.x0shift;
+    var shiftXEnd = shapeOptions.x1shift;
+    var shiftYStart = shapeOptions.y0shift;
+    var shiftYEnd = shapeOptions.y1shift;
+    var x2p = function(v, shift) {
+        var dataToPixel = helpers.getDataToPixel(gd, xa, shift, false, xRefType);
+        return dataToPixel(v);
+    };
+    var y2p = function(v, shift) {
+        var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true, yRefType);
+        return dataToPixel(v);
+    };
     var p2x = helpers.getPixelToData(gd, xa, false, xRefType);
     var p2y = helpers.getPixelToData(gd, ya, true, yRefType);
 
@@ -279,8 +289,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         g.append('circle')
           .attr({
               'data-line-point': 'start-point',
-              cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x0 : x2p(shapeOptions.x0),
-              cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0),
+              cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x0 : x2p(shapeOptions.x0, shiftXStart),
+              cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0, shiftYStart),
               r: circleRadius
           })
           .style(circleStyle)
@@ -289,8 +299,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         g.append('circle')
           .attr({
               'data-line-point': 'end-point',
-              cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x1 : x2p(shapeOptions.x1),
-              cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1),
+              cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x1 : x2p(shapeOptions.x1, shiftXEnd),
+              cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1, shiftYEnd),
               r: circleRadius
           })
           .style(circleStyle)

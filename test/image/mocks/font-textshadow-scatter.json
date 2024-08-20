@@ -1,0 +1,60 @@
+{
+ "data": [
+  {
+   "hovertemplate": "%{text}",
+   "texttemplate": "Rien ne se perd, rien ne se crée, tout se transforme<br>%{text}",
+   "mode": "text",
+   "text": [
+    "none",
+    "auto",
+    "1px 1px 2px pink",
+    "#FC0 1px 0 10px",
+    "5px 5px #558ABB",
+    "red 2px 5px",
+    "5px 10px",
+    "1px 1px 2px red, 0 0 1em blue, 0 0 0.2em blue"
+   ],
+   "textfont": {
+    "family": "Inter",
+    "size": 16,
+    "shadow": [
+     "none",
+     "auto",
+     "1px 1px 2px pink",
+     "#FC0 1px 0 10px",
+     "5px 5px #558ABB",
+     "red 2px 5px",
+     "5px 10px",
+     "1px 1px 2px red, 0 0 1em blue, 0 0 0.2em blue"
+    ]
+   },
+   "x": [0, 0, 0, 0, 0, 0, 0, 0],
+   "y": [0, 1, 2, 3, 4, 5, 6, 7]
+  }
+ ],
+ "layout": {
+  "plot_bgcolor": "lightyellow",
+  "showlegend": false,
+  "margin": {
+   "l": 0,
+   "r": 0,
+   "t": 0,
+   "b": 0
+  },
+  "xaxis": {
+   "range": [-1, 1],
+   "showticklabels": false,
+   "showgrid": false,
+   "zeroline": false
+  },
+  "yaxis": {
+   "range": [7.5, -0.5],
+   "showticklabels": false,
+   "showgrid": false,
+   "zeroline": false
+  },
+  "width": 400,
+  "height": 400,
+  "hovermode": "closest"
+ }
+}

@@ -2053,7 +2053,7 @@ describe('Test scatter *clipnaxis*:', function() {
         }
 
         function _assert(layerClips, nodeDisplays, errorBarClips, lineClips) {
-            var subplotLayer = d3Select('.plot');
+            var subplotLayer = d3Select('.overplot').select('.xy');
             var scatterLayer = subplotLayer.select('.scatterlayer');
 
             _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');

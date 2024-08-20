@@ -1,0 +1,41 @@
+{
+ "data": [
+  {
+   "hovertemplate": "%{text}",
+   "texttemplate": "Rien ne se perd, rien ne se crée, tout se transforme!<br>%{text}",
+   "mode": "text",
+   "text": ["normal", "word caps", "upper", "lower"],
+   "textfont": {
+    "family": "Inter",
+    "size": 16,
+    "textcase": ["normal", "word caps", "upper", "lower"]
+   },
+   "x": [0, 0, 0, 0],
+   "y": [0, 1, 2, 3]
+  }
+ ],
+ "layout": {
+  "showlegend": false,
+  "margin": {
+   "l": 0,
+   "r": 0,
+   "t": 0,
+   "b": 0
+  },
+  "xaxis": {
+   "range": [-1, 1],
+   "showticklabels": false,
+   "showgrid": false,
+   "zeroline": false
+  },
+  "yaxis": {
+   "range": [3.5, -0.5],
+   "showticklabels": false,
+   "showgrid": false,
+   "zeroline": false
+  },
+  "width": 500,
+  "height": 250,
+  "hovermode": "closest"
+ }
+}

@@ -1008,7 +1008,7 @@ describe('animating scatter traces', function() {
 
         // assert what Cartesian.transitionAxes does
         function getSubplotTranslate() {
-            var sp = d3Select(gd).select('.subplot.xy > .plot');
+            var sp = d3Select(gd).select('.subplot.xy > .overplot').select('.xy');
             return sp.attr('transform')
                 .split('translate(')[1].split(')')[0]
                 .split(',')

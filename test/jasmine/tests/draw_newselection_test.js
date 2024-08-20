@@ -278,9 +278,7 @@ describe('Draw new selections to layout', function() {
                 Plotly.newPlot(gd, {
                     data: fig.data,
                     layout: fig.layout,
-                    config: {
-                        mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
-                    }
+                    config: {}
                 })
                 .then(function() {
                     n = gd._fullLayout.selections.length; // initial number of selections on _fullLayout

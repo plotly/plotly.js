@@ -1,0 +1,163 @@
+{
+ "data": [
+  {
+   "xaxis": "x",
+   "yaxis": "y",
+   "x": ["20-12-20", "21-01-20"],
+   "y": [1e-1, 1e6]
+  },
+  {
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "x": ["20-10", "21-05-15"],
+   "y": [1e-1, 1e6]
+  },
+  {
+   "xaxis": "x3",
+   "yaxis": "y3",
+   "x": ["20", "23"],
+   "y": [1e-1, 1e6]
+  },
+  {
+   "xaxis": "x4",
+   "yaxis": "y4",
+   "x": ["20-12-20", "21-01-20"],
+   "y": [1e-1, 1e6]
+  }
+ ],
+ "layout": {
+  "xaxis": {
+   "minor": { "showgrid": true },
+   "anchor": "y",
+   "domain": [0, 0.475],
+   "type": "date",
+   "ticklabelmode": "period",
+   "ticklabelstandoff": 20,
+   "ticklabelshift": 20,
+   "side": "bottom",
+   "ticks": "inside",
+   "tickfont": { "size": 16 },
+   "ticklen": 16,
+   "tickwidth": 8,
+   "linewidth": 1,
+   "gridcolor": "white"
+  },
+  "yaxis": {
+   "minor": { "showgrid": true },
+   "anchor": "x",
+   "domain": [0, 0.475],
+   "autorange": "reversed",
+   "type": "log",
+   "side": "left",
+   "ticks": "inside",
+   "ticklabelposition": "outside top",
+   "ticklabelstandoff": 20,
+   "tickfont": { "size": 20 },
+   "ticklen": 8,
+   "tickwidth": 4,
+   "linewidth": 4,
+   "gridcolor": "white"
+  },
+  "xaxis2": {
+   "minor": { "showgrid": true },
+   "anchor": "y2",
+   "domain": [0.525, 1],
+   "autorange": "reversed",
+   "type": "date",
+   "side": "bottom",
+   "ticks": "inside",
+   "ticklabelposition": "inside left",
+   "ticklabelstandoff": 20,
+   "tickfont": { "size": 20 },
+   "ticklen": 8,
+   "tickwidth": 4,
+   "linewidth": 4,
+   "gridcolor": "white"
+  },
+  "yaxis2": {
+   "minor": { "showgrid": true },
+   "anchor": "x2",
+   "domain": [0, 0.475],
+   "type": "log",
+   "side": "right",
+   "ticks": "inside",
+   "ticklabelposition": "inside",
+   "ticklabelstandoff": 20,
+   "ticklen": 16,
+   "tickwidth": 8,
+   "linewidth": 1,
+   "gridcolor": "white"
+  },
+  "xaxis3": {
+   "minor": { "showgrid": true },
+   "anchor": "y3",
+   "domain": [0.525, 1],
+   "type": "date",
+   "side": "top",
+   "ticks": "inside",
+   "ticklabelposition": "inside right",
+   "ticklabelstandoff": 20,
+   "ticklabelshift": 40,
+   "tickfont": { "size": 20 },
+   "ticklen": 16,
+   "tickwidth": 8,
+   "linewidth": 1,
+   "gridcolor": "white"
+  },
+  "yaxis3": {
+   "minor": { "showgrid": true },
+   "anchor": "x3",
+   "domain": [0.525, 1],
+   "autorange": "reversed",
+   "type": "log",
+   "side": "right",
+   "ticks": "inside",
+   "ticklabelposition": "inside bottom",
+   "ticklabelstandoff": 10,
+   "ticklabelshift": -10,
+   "tickfont": { "size": 16 },
+   "ticklen": 8,
+   "tickwidth": 4,
+   "linewidth": 4,
+   "gridcolor": "white"
+  },
+  "xaxis4": {
+   "minor": { "showgrid": true },
+   "anchor": "y4",
+   "domain": [0, 0.475],
+   "autorange": "reversed",
+   "type": "date",
+   "ticklabelmode": "period",
+   "side": "top",
+   "ticks": "outside",
+   "ticklabelposition": "outside",
+   "ticklabelstandoff": -10,
+   "ticklabelshift": 15,
+   "tickfont": { "size": 16 },
+   "ticklen": 8,
+   "tickwidth": 4,
+   "linewidth": 4,
+   "gridcolor": "white"
+  },
+  "yaxis4": {
+   "minor": { "showgrid": true },
+   "anchor": "x4",
+   "domain": [0.525, 1],
+   "type": "log",
+   "side": "left",
+   "ticks": "outside",
+   "ticklabelposition": "outside bottom",
+   "tickangle": 30,
+   "tickfont": { "size": 16 },
+   "ticklen": 16,
+   "tickwidth": 8,
+   "linewidth": 1,
+   "gridcolor": "white"
+  },
+  "font": {
+   "family": "Raleway"
+  },
+  "plot_bgcolor": "lightblue",
+  "showlegend": false
+ }
+}

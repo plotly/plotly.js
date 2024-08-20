@@ -1,7 +1,0 @@
-{
-  "extends": "../.eslintrc",
-  "env": {
-    "node": true,
-    "browser": true
-  }
-}
