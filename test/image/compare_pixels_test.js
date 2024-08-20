@@ -114,14 +114,28 @@ for(var i = 0; i < allMockList.length; i++) {
     // See https://github.com/plotly/plotly.js/issues/7075
     if(isMapbox) continue;
 
-    var isOtherFlaky = [
-        // list flaky mocks other than mapbox:
+    var flakyMap = [
+        // more flaky
         'map_density0-legend',
         'map_osm-style',
         'map_predefined-styles1',
         'map_predefined-styles2',
+
+        'mapbox_angles',
+        'mapbox_layers',
+        'mapbox_custom-style',
+        'mapbox_geojson-attributes'
+    ].indexOf(mockName) !== -1;
+
+    var otherFlaky = [
+        // list flaky mocks other than maps:
         'gl3d_bunny-hull'
     ].indexOf(mockName) !== -1;
+
+    var threshold =
+        flakyMap ? 1 :
+        otherFlaky ? 0.15 :
+        0;
 
     if(mathjax3) mockName = 'mathjax3___' + mockName;
 
@@ -163,16 +177,6 @@ for(var i = 0; i < allMockList.length; i++) {
         width: width,
         height: height
     });
-
-    var shouldBePixelPerfect = !(isMapbox || isOtherFlaky);
-
-    var threshold = shouldBePixelPerfect ? 0 : [
-        // more flaky
-        'mapbox_angles',
-        'mapbox_layers',
-        'mapbox_custom-style',
-        'mapbox_geojson-attributes'
-    ].indexOf(mockName) !== -1 ? 1 : 0.15;
 
     if(virtualWebgl) {
         threshold = Math.max(0.4, threshold);
