@@ -95,7 +95,10 @@ describe('parcoords initialization tests', function() {
                 color: 'blue',
                 weight: 'bold',
                 style: 'italic',
-                variant: 'small-caps'
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: '1px 1px 2px green',
             };
 
             supplyAllDefaults(gd);
@@ -106,7 +109,10 @@ describe('parcoords initialization tests', function() {
                 color: 'blue',
                 weight: 'bold',
                 style: 'italic',
-                variant: 'small-caps'
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: '1px 1px 2px green',
             };
 
             expect(gd._fullData[0].labelfont).toEqual(expected);

@@ -316,6 +316,7 @@ plots.supplyDefaults = function(gd, opts) {
     // When editable=false the two behave the same, no title is drawn.
     newFullLayout._dfltTitle = {
         plot: _(gd, 'Click to enter Plot title'),
+        subtitle: _(gd, 'Click to enter Plot subtitle'),
         x: _(gd, 'Click to enter X axis title'),
         y: _(gd, 'Click to enter Y axis title'),
         colorbar: _(gd, 'Click to enter Colorscale title'),
@@ -1476,9 +1477,9 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     var font = Lib.coerceFont(coerce, 'font');
     var fontSize = font.size;
 
-    Lib.coerceFont(coerce, 'title.font', Lib.extendFlat({}, font, {
+    Lib.coerceFont(coerce, 'title.font', font, { overrideDflt: {
         size: Math.round(fontSize * 1.4)
-    }));
+    }});
 
     coerce('title.text', layoutOut._dfltTitle.plot);
     coerce('title.xref');
@@ -1493,6 +1494,13 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('title.xanchor');
     coerce('title.y');
     coerce('title.yanchor');
+
+    coerce('title.subtitle.text', layoutOut._dfltTitle.subtitle);
+    Lib.coerceFont(coerce, 'title.subtitle.font', font, {
+        overrideDflt: {
+            size: Math.round(layoutOut.title.font.size * 0.7)
+        }
+    });
 
     if(titleAutomargin) {
         // when automargin=true
@@ -3189,7 +3197,7 @@ plots.doCalcdata = function(gd, traces) {
     Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
-var sortAxisCategoriesByValueRegex = /(total|sum|min|max|mean|median) (ascending|descending)/;
+var sortAxisCategoriesByValueRegex = /(total|sum|min|max|mean|geometric mean|median) (ascending|descending)/;
 
 function sortAxisCategoriesByValue(axList, gd) {
     var affectedTraces = [];
@@ -3224,6 +3232,7 @@ function sortAxisCategoriesByValue(axList, gd) {
         sum: function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
         total: function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
         mean: function(values) {return Lib.mean(values);},
+        'geometric mean': function(values) {return Lib.geometricMean(values);},
         median: function(values) {return Lib.median(values);}
     };
 

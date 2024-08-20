@@ -1,0 +1,25 @@
+{
+ "data": [
+  {
+   "x": [1, 2, 3, 4],
+   "y": [10, 12, 11, 13],
+   "type": "scatter"
+  }
+ ],
+ "layout": {
+  "title": {
+   "text": "Main title<br>2nd line",
+   "subtitle": {
+    "font": {
+     "weight": "bold",
+     "style": "italic",
+     "variant": "small-caps",
+     "textcase": "word caps",
+     "lineposition": "under",
+     "shadow": "2px 2px 4px yellow"
+    },
+    "text": "subtitle<br>2nd line"
+   }
+  }
+ }
+}

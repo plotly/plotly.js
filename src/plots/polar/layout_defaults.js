@@ -157,6 +157,9 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             var dfltFontWeight;
             var dfltFontStyle;
             var dfltFontVariant;
+            var dfltFontTextcase;
+            var dfltFontLineposition;
+            var dfltFontShadow;
             var font = opts.font || {};
 
             dfltColor = coerceAxis('color');
@@ -166,6 +169,9 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             dfltFontWeight = font.weight;
             dfltFontStyle = font.style;
             dfltFontVariant = font.variant;
+            dfltFontTextcase = font.textcase;
+            dfltFontLineposition = font.lineposition;
+            dfltFontShadow = font.shadow;
 
             handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
             handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
@@ -173,11 +179,16 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     weight: dfltFontWeight,
                     style: dfltFontStyle,
                     variant: dfltFontVariant,
+                    textcase: dfltFontTextcase,
+                    lineposition: dfltFontLineposition,
+                    shadow: dfltFontShadow,
                     color: dfltFontColor,
                     size: dfltFontSize,
                     family: dfltFontFamily
                 },
-                noAutotickangles: axName === 'angularaxis'
+                noAutotickangles: axName === 'angularaxis',
+                noTicklabelshift: true,
+                noTicklabelstandoff: true
             });
 
             handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
@@ -205,6 +216,9 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     weight: dfltFontWeight,
                     style: dfltFontStyle,
                     variant: dfltFontVariant,
+                    textcase: dfltFontTextcase,
+                    lineposition: dfltFontLineposition,
+                    shadow: dfltFontShadow,
                     color: dfltFontColor,
                     size: Lib.bigFont(dfltFontSize),
                     family: dfltFontFamily

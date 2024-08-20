@@ -1,0 +1,27 @@
+{
+ "data": [
+  {
+   "x": [1, 2, 3, 4],
+   "y": [10, 12, 11, 13],
+   "type": "scatter"
+  }
+ ],
+ "layout": {
+  "title": {
+   "text": "A simple plot",
+   "subtitle": {
+    "text": "With a subtitle"
+   }
+  },
+  "xaxis": {
+   "title": {
+    "text": "x-axis"
+   }
+  },
+  "yaxis": {
+   "title": {
+    "text": "y-axis"
+   }
+  }
+ }
+}

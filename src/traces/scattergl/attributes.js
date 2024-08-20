@@ -38,9 +38,13 @@ var attrs = module.exports = overrideAll({
 
     textposition: scatterAttrs.textposition,
     textfont: fontAttrs({
+        noFontShadow: true,
+        noFontLineposition: true,
+        noFontTextcase: true,
         editType: 'calc',
         colorEditType: 'style',
         arrayOk: true,
+        noNumericWeightValues: true,
         variantValues: ['normal', 'small-caps'],
         description: 'Sets the text font.'
     }),

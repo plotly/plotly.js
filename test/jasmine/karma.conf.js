@@ -273,7 +273,7 @@ func.defaultConfig = {
             }
         },
         plugins: [
-            new NodePolyfillPlugin({ includeAliases: ['process'] }),
+            new NodePolyfillPlugin({ additionalAliases: ['process'] }),
             new LoaderOptionsPlugin({
                 // test: /\.xxx$/, // may apply this only for some modules
                 options: {

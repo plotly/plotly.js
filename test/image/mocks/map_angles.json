@@ -1,0 +1,56 @@
+{
+ "data": [
+  {
+   "type": "scattermap",
+   "mode": "markers",
+   "lon": [-73.6, -73.55, -73.57],
+   "lat": [45.5, 45.49, 45.51],
+   "marker": {
+    "size": 15,
+    "symbol": ["monument", "harbor", "music"]
+   }
+  },
+  {
+   "type": "scattermap",
+   "mode": "markers",
+   "lon": [-73.6, -73.55, -73.57],
+   "lat": [45.5, 45.49, 45.51],
+   "marker": {
+    "size": 12,
+    "symbol": ["monument", "harbor", "music"],
+    "angle": [-45, 45, 0],
+    "allowoverlap": true
+   },
+   "subplot": "map2"
+  }
+ ],
+ "layout": {
+  "map": {
+   "domain": {
+    "x": [0, 1],
+    "y": [0, 1]
+   },
+   "center": {
+    "lon": -73.58432898976686,
+    "lat": 45.51514448108094
+   },
+   "zoom": 10.8,
+   "pitch": 60,
+   "bearing": -60
+  },
+  "map2": {
+   "domain": {
+    "x": [0.6, 1],
+    "y": [0.6, 1]
+   },
+   "center": {
+    "lon": -73.61356140239891,
+    "lat": 45.49896198405253
+   },
+   "zoom": 9.8
+  },
+  "showlegend": false,
+  "width": 700,
+  "height": 450
+ }
+}

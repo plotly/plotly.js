@@ -7,14 +7,9 @@ module.exports = function handleLabelDefaults(coerce, layout, lineColor, opts) {
     var showLabels = coerce('contours.showlabels');
     if(showLabels) {
         var globalFont = layout.font;
-        Lib.coerceFont(coerce, 'contours.labelfont', {
-            weight: globalFont.weight,
-            style: globalFont.style,
-            variant: globalFont.variant,
-            family: globalFont.family,
-            size: globalFont.size,
+        Lib.coerceFont(coerce, 'contours.labelfont', globalFont, { overrideDflt: {
             color: lineColor
-        });
+        }});
         coerce('contours.labelformat');
     }
 

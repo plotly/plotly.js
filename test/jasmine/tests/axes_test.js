@@ -2372,7 +2372,10 @@ describe('Test axes', function() {
                     color: '#444',
                     weight: 'normal',
                     style: 'normal',
-                    variant: 'normal'
+                    variant: 'normal',
+                    textcase: 'normal',
+                    lineposition: 'none',
+                    shadow: 'none',
                 });
                 expect(yaxis.tickangle).toBe('auto');
             })
@@ -2392,7 +2395,10 @@ describe('Test axes', function() {
                         color: '#0FF',
                         weight: 'normal',
                         style: 'normal',
-                        variant: 'normal'
+                        variant: 'normal',
+                        textcase: 'normal',
+                        lineposition: 'none',
+                        shadow: 'none',
                     },
                     tickangle: -20
                 }
@@ -2412,7 +2418,10 @@ describe('Test axes', function() {
                     color: '#0FF',
                     weight: 'normal',
                     style: 'normal',
-                    variant: 'normal'
+                    variant: 'normal',
+                    textcase: 'normal',
+                    lineposition: 'none',
+                    shadow: 'none',
                 });
                 expect(yaxis.tickangle).toBe(-20);
             })

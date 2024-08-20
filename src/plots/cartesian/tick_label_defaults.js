@@ -16,6 +16,12 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
+        if(!options.noTicklabelshift) {
+            coerce('ticklabelshift');
+        }
+        if(!options.noTicklabelstandoff) {
+            coerce('ticklabelstandoff');
+        }
         var font = options.font || {};
         var contColor = containerOut.color;
         var position = containerOut.ticklabelposition || '';
@@ -26,14 +32,9 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             (contColor && contColor !== layoutAttributes.color.dflt) ?
             contColor : font.color;
 
-        Lib.coerceFont(coerce, 'tickfont', {
-            family: font.family,
-            weight: font.weight,
-            style: font.style,
-            variant: font.variant,
-            size: font.size,
+        Lib.coerceFont(coerce, 'tickfont', font, { overrideDflt: {
             color: dfltFontColor
-        });
+        }});
 
         if(
             !options.noTicklabelstep &&

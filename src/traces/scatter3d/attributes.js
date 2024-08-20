@@ -157,6 +157,9 @@ var attrs = module.exports = overrideAll({
 
     textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
     textfont: fontAttrs({
+        noFontShadow: true,
+        noFontLineposition: true,
+        noFontTextcase: true,
         editType: 'calc',
         colorEditType: 'style',
         arrayOk: true,

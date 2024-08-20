@@ -1,0 +1,195 @@
+{
+ "data": [
+  {
+   "subplot": "map",
+   "text": ["dark"],
+   "textposition": "top center",
+   "marker": {
+    "size": [0]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [-75],
+   "lat": [45.05]
+  },
+  {
+   "subplot": "map2",
+   "text": ["light"],
+   "textposition": "top center",
+   "marker": {
+    "size": [0]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [-75],
+   "lat": [45.05]
+  },
+  {
+   "subplot": "map3",
+   "text": ["open-street-map"],
+   "textposition": "top center",
+   "marker": {
+    "size": [0]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [-75],
+   "lat": [45.05]
+  },
+  {
+   "subplot": "map4",
+   "text": ["outdoors"],
+   "textposition": "top center",
+   "marker": {
+    "size": [0]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [-75],
+   "lat": [45.05]
+  },
+  {
+   "subplot": "map5",
+   "text": ["satellite"],
+   "textposition": "top center",
+   "marker": {
+    "size": [0]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [-75],
+   "lat": [45.05]
+  },
+  {
+   "subplot": "map6",
+   "text": ["satellite-streets"],
+   "textposition": "top center",
+   "marker": {
+    "size": [0]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [-75],
+   "lat": [45.05]
+  },
+  {
+   "subplot": "map7",
+   "text": ["streets"],
+   "textposition": "top center",
+   "marker": {
+    "size": [0]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [-75],
+   "lat": [45.05]
+  }
+ ],
+ "layout": {
+  "map": {
+   "zoom": 10,
+   "style": "dark",
+   "center": {
+    "lon": -75,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.84, 0.96]
+   }
+  },
+  "map2": {
+   "zoom": 10,
+   "style": "light",
+   "center": {
+    "lon": -75,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.7, 0.82]
+   }
+  },
+  "map3": {
+   "zoom": 10,
+   "style": "open-street-map",
+   "center": {
+    "lon": -75,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.56, 0.68]
+   }
+  },
+  "map4": {
+   "zoom": 10,
+   "style": "outdoors",
+   "center": {
+    "lon": -75,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.42, 0.54]
+   }
+  },
+  "map5": {
+   "zoom": 10,
+   "style": "satellite",
+   "center": {
+    "lon": -75,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.28, 0.4]
+   }
+  },
+  "map6": {
+   "zoom": 10,
+   "style": "satellite-streets",
+   "center": {
+    "lon": -75,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.14, 0.26]
+   }
+  },
+  "map7": {
+   "zoom": 10,
+   "style": "streets",
+   "center": {
+    "lon": -75,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0, 0.12]
+   }
+  },
+  "height": 3000,
+  "width": 900,
+  "margin": {
+   "t": 50,
+   "b": 10,
+   "l": 10,
+   "r": 10
+  },
+  "showlegend": false,
+  "title": {
+   "text": "Predefined styles in maps",
+   "font": {
+    "size": 28,
+    "weight": 800,
+    "style": "italic"
+   }
+  },
+  "font": {
+   "color": "#777",
+   "size": 28
+  }
+ }
+}

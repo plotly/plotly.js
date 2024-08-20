@@ -1,79 +1,39 @@
 {
-  "data": [
-    {
-      "x": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8
-      ],
-      "y": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8
-      ],
-      "name": "Name of Trace 1",
-      "type": "scatter"
-    },
-    {
-      "x": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8
-      ],
-      "y": [
-        1,
-        0,
-        3,
-        2,
-        5,
-        4,
-        7,
-        6,
-        8
-      ],
-      "name": "Name of Trace 2",
-      "type": "scatter"
-    }
-  ],
-  "layout": {
-    "title": {"text": "Plot Title"},
-    "xaxis": {
-      "title": {
-        "font": {
-          "color": "#7f7f7f",
-          "family": "Courier New, monospace",
-          "size": 18
-        },
-        "text": "x Axis"
-      }
-    },
-    "yaxis": {
-      "title": {
-        "font": {
-          "color": "#7f7f7f",
-          "family": "Courier New, monospace",
-          "size": 18
-        },
-        "text": "y Axis"
-      }
-    }
+ "data": [
+  {
+   "x": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+   "y": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+   "name": "Name of Trace 1",
+   "type": "scatter"
+  },
+  {
+   "x": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+   "y": [1, 0, 3, 2, 5, 4, 7, 6, 8],
+   "name": "Name of Trace 2",
+   "type": "scatter"
   }
+ ],
+ "layout": {
+  "title": { "text": "Plot Title" },
+  "xaxis": {
+   "title": {
+    "font": {
+     "color": "#7f7f7f",
+     "family": "Courier New, monospace",
+     "size": 18
+    },
+    "text": "x Axis"
+   }
+  },
+  "yaxis": {
+   "title": {
+    "font": {
+     "color": "#7f7f7f",
+     "family": "Courier New, monospace",
+     "size": 18
+    },
+    "text": "y Axis"
+   }
+  }
+ }
 }

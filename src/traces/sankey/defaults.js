@@ -106,7 +106,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
     coerce('arrangement', dfltArrangement);
 
-    Lib.coerceFont(coerce, 'textfont', Lib.extendFlat({}, layout.font));
+    Lib.coerceFont(coerce, 'textfont', layout.font, { autoShadowDflt: true });
 
     // disable 1D transforms - arrays here are 1D but their lengths/meanings
     // don't match, between nodes and links

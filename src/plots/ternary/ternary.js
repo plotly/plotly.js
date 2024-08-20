@@ -30,6 +30,7 @@ function Ternary(options, fullLayout) {
     this.graphDiv = options.graphDiv;
     this.init(fullLayout);
     this.makeFramework(fullLayout);
+    this.updateFx(fullLayout);
 
     // unfortunately, we have to keep track of some axis tick settings
     // as ternary subplots do not implement the 'ticks' editType
@@ -95,6 +96,12 @@ proto.makeFramework = function(fullLayout) {
 
     Drawing.setClipUrl(_this.layers.backplot, clipId, gd);
     Drawing.setClipUrl(_this.layers.grids, clipId, gd);
+};
+
+proto.updateFx = function(fullLayout) {
+    fullLayout._ternarylayer
+        .selectAll('g.toplevel')
+        .style('cursor', fullLayout.dragmode === 'pan' ? 'move' : 'crosshair');
 };
 
 proto.updateLayers = function(ternaryLayout) {

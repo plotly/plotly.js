@@ -156,7 +156,10 @@ describe('Fx defaults', function() {
                     color: 'pink',
                     weight: 'bold',
                     style: 'italic',
-                    variant: 'small-caps'
+                    variant: 'small-caps',
+                    textcase: 'word caps',
+                    lineposition: 'under',
+                    shadow: 'auto',
                 }
             }
         });
@@ -170,7 +173,10 @@ describe('Fx defaults', function() {
                 color: 'pink',
                 weight: 'bold',
                 style: 'italic',
-                variant: 'small-caps'
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             },
             align: 'auto',
             namelength: 15
@@ -185,7 +191,10 @@ describe('Fx defaults', function() {
                 color: 'red',
                 weight: 'bold',
                 style: 'italic',
-                variant: 'small-caps'
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             },
             align: 'auto',
             namelength: 15
@@ -200,7 +209,10 @@ describe('Fx defaults', function() {
                 color: 'pink',
                 weight: 'bold',
                 style: 'italic',
-                variant: 'small-caps'
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             }
         });
 
@@ -213,7 +225,10 @@ describe('Fx defaults', function() {
                 color: 'pink',
                 weight: 'bold',
                 style: 'italic',
-                variant: 'small-caps'
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             }
         });
     });

@@ -52,7 +52,7 @@ module.exports = {
         }
     },
     plugins: [
-        new NodePolyfillPlugin({ includeAliases: ['process'] })
+        new NodePolyfillPlugin({ additionalAliases: ['process'] })
     ],
     watchOptions: {
         ignored: [

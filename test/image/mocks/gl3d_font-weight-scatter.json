@@ -1,0 +1,110 @@
+{
+ "data": [
+  {
+   "type": "scatter3d",
+   "hovertemplate": "Difficult -0.123456789 | %{text}",
+   "texttemplate": "Difficult -0.123456789 | %{text}",
+   "mode": "text",
+   "text": [
+    "1 Minimum",
+    "100 Thin (Hairline)",
+    "200 Extra Light (Ultra Light)",
+    "300 Light",
+    "400 Normal (Regular)",
+    "500 Medium",
+    "600 Semi Bold (Demi Bold)",
+    "700 Bold",
+    "800 Extra Bold (Ultra Bold)",
+    "900 Black (Heavy)",
+    "950 Extra Black (Ultra Black)",
+    "1000 Maximum"
+   ],
+   "textfont": {
+    "family": "Inter",
+    "size": 16,
+    "weight": [1, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950, 1000]
+   },
+   "z": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   "x": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   "y": [-5.5, -4.5, -3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5]
+  }
+ ],
+ "layout": {
+  "showlegend": false,
+  "margin": {
+   "l": 0,
+   "r": 0,
+   "t": 0,
+   "b": 0
+  },
+  "scene": {
+   "xaxis": {
+    "title": {
+     "text": "X",
+     "font": {
+      "size": 20,
+      "color": "red",
+      "weight": 800
+     }
+    },
+    "showticklabels": false,
+    "showgrid": false,
+    "zeroline": false
+   },
+   "yaxis": {
+    "title": {
+     "text": "Y",
+     "font": {
+      "size": 16,
+      "color": "blue",
+      "weight": 400
+     }
+    },
+    "showticklabels": false,
+    "showgrid": false,
+    "zeroline": false
+   },
+   "zaxis": {
+    "title": {
+     "text": "Z",
+     "font": {
+      "size": 12,
+      "color": "green",
+      "weight": 200
+     }
+    },
+    "showticklabels": false,
+    "showgrid": false,
+    "zeroline": false
+   },
+   "aspectratio": {
+    "x": 1.5,
+    "y": 1.5,
+    "z": 1.5
+   },
+   "camera": {
+    "projection": {
+     "type": "orthographic"
+    },
+    "eye": {
+     "x": 0,
+     "y": 0,
+     "z": 10
+    },
+    "center": {
+     "x": 0,
+     "y": 0,
+     "z": 0
+    },
+    "up": {
+     "x": 0,
+     "y": 1,
+     "z": 0
+    }
+   }
+  },
+  "width": 400,
+  "height": 400,
+  "hovermode": "closest"
+ }
+}
