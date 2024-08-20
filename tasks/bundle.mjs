@@ -97,7 +97,6 @@ tasks.push(function(done) {
         noCompressAttributes: true
     }, function() {
         prependFile.sync(pathToPlotlyDistWithMeta, header, common.throwOnError);
-        amdWrapper(pathToPlotlyDistWithMeta)
         done();
     });
 });
