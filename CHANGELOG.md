@@ -9,6 +9,51 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.34.0] -- 2024-07-18
+
+### Added
+ - Add `subtitle` attribute to `layout.title` to enable adding subtitles to plots [[#7012](https://github.com/plotly/plotly.js/pull/7012)]
+ - Introduce "u" and "s" pseudo html tags to add partial underline and strike-through styles to SVG text elements [[#7043](https://github.com/plotly/plotly.js/pull/7043)]
+ - Add geometric mean functionality and 'geometric mean ascending' + 'geometric mean descending' to `category_order` on cartesian axes [[#6223](https://github.com/plotly/plotly.js/pull/6223)],
+   with thanks to @acxz and @prabhathc for the contribution!
+ - Add axis property `ticklabelindex` for drawing the label for each minor tick n positions away from a major tick,
+   with thanks to @my-tien for the contribution! [[#7036](https://github.com/plotly/plotly.js/pull/7036)]
+ - Add property `ticklabelstandoff` and `ticklabelshift` to cartesian axes to adjust positioning of tick labels,
+   with thanks to @my-tien for the contribution! [[#7006](https://github.com/plotly/plotly.js/pull/7006)]
+ - Add `x0shift`, `x1shift`, `y0shift`, `y1shift` to shapes to add control over positioning of shape vertices on (multi-)category axes,
+   with thanks to @my-tien for the contribution! [[#7005](https://github.com/plotly/plotly.js/pull/7005)]
+
+### Fixed
+ - Fix displaying scattergl traces while zooming or panning (regression introduced in 2.26.0) [[#7018](https://github.com/plotly/plotly.js/pull/7018)],
+   with thanks to @eiriklv for the contribution!
+ - Fix for excessive hoverlabel removal and overlap for plots with both scatter and bar traces [[#6954](https://github.com/plotly/plotly.js/pull/6954)],
+   with thanks to @mbant for the contribution!
+ - Fix adding cartesian "togglehover" when included in `modebar.add` [[#5879](https://github.com/plotly/plotly.js/pull/5879)],
+   with thanks to @Sizurka for the contribution!
+ - Handle `zorder` between overlaying cartesian subplots [[#7032](https://github.com/plotly/plotly.js/pull/7032)],
+   This feature was anonymously sponsored: thank you to our sponsor!
+
+
+## [2.33.0] -- 2024-05-29
+
+### Added
+ - Add support for numeric text font `weight` [[#6990](https://github.com/plotly/plotly.js/pull/6990)]
+ - Add `shadow`, `lineposition` and `textcase` options to SVG fonts [[#6983](https://github.com/plotly/plotly.js/pull/6983)]
+
+### Fixed
+ - Fix unicode variable names in @plotly/d3 [[#6992](https://github.com/plotly/plotly.js/pull/6992)],
+   with thanks to @GeorchW for the contribution!
+ - Fix `getFullTransformMatrix` in shadow DOM [[#6996](https://github.com/plotly/plotly.js/pull/6996)],
+   with thanks to @OpportunityLiu for the contribution!
+ - Fix drag on legend scrollbar while `edits.legendPosition` is `true` [[#6997](https://github.com/plotly/plotly.js/pull/6997)],
+   with thanks to @OpportunityLiu for the contribution!
+ - Fix numerical instability in 3D plots [[6998](https://github.com/plotly/plotly.js/pull/6998)],
+   with thanks to @hborchardt for the contribution!
+ - Fix numerical precision of drawing surface trace [[6999](https://github.com/plotly/plotly.js/pull/6999)],
+   with thanks to @hborchardt for the contribution!
+ - Fix isosurface maximum value calculation when `isomax` is set to null [[#7002](https://github.com/plotly/plotly.js/pull/7002)]
+
+
 ## [2.32.0] -- 2024-04-23
 
 ### Added

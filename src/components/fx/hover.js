@@ -15,6 +15,7 @@ var Drawing = require('../drawing');
 var Color = require('../color');
 var dragElement = require('../dragelement');
 var Axes = require('../../plots/cartesian/axes');
+var zindexSeparator = require('../../plots/cartesian/constants').zindexSeparator;
 var Registry = require('../../registry');
 
 var helpers = require('./helpers');
@@ -260,6 +261,11 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 // The actual implementation is here:
 function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     if(!subplot) subplot = 'xy';
+
+    if(typeof subplot === 'string') {
+        // drop zindex from subplot id
+        subplot = subplot.split(zindexSeparator)[0];
+    }
 
     // if the user passed in an array of subplots,
     // use those instead of finding overlayed plots
@@ -1555,7 +1561,11 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
     if(d.zLabel !== undefined) {
         if(d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
         if(d.yLabel !== undefined) text += 'y: ' + d.yLabel + '<br>';
-        if(d.trace.type !== 'choropleth' && d.trace.type !== 'choroplethmapbox') {
+        if(
+            d.trace.type !== 'choropleth' &&
+            d.trace.type !== 'choroplethmapbox' &&
+            d.trace.type !== 'choroplethmap'
+        ) {
             text += (text ? 'z: ' : '') + d.zLabel;
         }
     } else if(showCommonLabel && d[h0 + 'Label'] === t0) {
@@ -1824,8 +1834,7 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabelBo
             var p1 = g1[0];
             topOverlap = p0.pos + p0.dp + p0.size - p1.pos - p1.dp + p1.size;
 
-            // Only group points that lie on the same axes
-            if(topOverlap > 0.01 && (p0.pmin === p1.pmin) && (p0.pmax === p1.pmax)) {
+            if(topOverlap > 0.01) {
                 // push the new point(s) added to this group out of the way
                 for(j = g1.length - 1; j >= 0; j--) g1[j].dp += topOverlap;
 
@@ -2268,7 +2277,7 @@ function spikesChanged(gd, oldspikepoints) {
 function plainText(s, len) {
     return svgTextUtils.plainText(s || '', {
         len: len,
-        allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
+        allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em', 's', 'u']
     });
 }
 

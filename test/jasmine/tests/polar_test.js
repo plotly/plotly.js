@@ -447,7 +447,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to restyle radial axis title', function(done) {
+    it('@noCI should be able to restyle radial axis title', function(done) {
         var gd = createGraphDiv();
         var lastBBox;
 

@@ -1,0 +1,81 @@
+{
+ "data": [
+  {
+   "y": [["A", "A", "B", "B"], ["C", "D", "C", "D"]],
+   "x": [1, 2, 3, 4],
+   "type": "bar",
+   "marker": {
+    "color": "rgba(153, 217, 234, 1)"
+   },
+   "orientation": "h"
+  },
+  {
+   "y": [["A", "A", "B", "B"], ["C", "D", "C", "D"]],
+   "x": [4, 3, 2, 1],
+   "type": "bar",
+   "orientation": "h"
+  }
+ ],
+ "layout": {
+  "shapes": [
+   {
+    "layer": "above",
+    "type": "rect",
+    "label": {
+     "text": "around A,D",
+     "textposition": "bottom center",
+     "textangle": 0
+    },
+    "line": {
+     "color": "black",
+     "width": 3.0
+    },
+    "y0": ["A", "D"],
+    "y1": ["A", "D"],
+    "x0": 0,
+    "x1": 0.25,
+    "y0shift": -0.5,
+    "y1shift": 0.5,
+    "xref": "paper"
+   },
+   {
+    "layer": "above",
+    "type": "line",
+    "label": {
+     "text": "on B,D",
+     "textposition": "middle",
+     "textangle": 0
+    },
+    "line": {
+     "color": "blue",
+     "width": 3.0
+    },
+    "y0": ["B", "D"],
+    "y1": ["B", "D"],
+    "x0": 0,
+    "x1": 0.25,
+    "xref": "paper"
+   },
+   {
+    "layer": "above",
+    "type": "line",
+    "label": {
+     "text": "Before B,D",
+     "textposition": "middle",
+     "textangle": 0
+    },
+    "line": {
+     "color": "green",
+     "width": 3.0
+    },
+    "y0": ["B", "D"],
+    "y1": ["B", "D"],
+    "x0": 0,
+    "x1": 0.25,
+    "y0shift": -0.5,
+    "y1shift": -0.5,
+    "xref": "paper"
+   }
+  ]
+ }
+}

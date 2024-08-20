@@ -16,12 +16,17 @@ function x1Fn(shape) { return shape.x1; }
 function y0Fn(shape) { return shape.y0; }
 function y1Fn(shape) { return shape.y1; }
 
+function x0shiftFn(shape) { return shape.x0shift || 0; }
+function x1shiftFn(shape) { return shape.x1shift || 0; }
+function y0shiftFn(shape) { return shape.y0shift || 0; }
+function y1shiftFn(shape) { return shape.y1shift || 0; }
+
 function dxFn(shape, xa) {
-    return d2l(shape.x1, xa) - d2l(shape.x0, xa);
+    return d2l(shape.x1, xa) + x1shiftFn(shape) - d2l(shape.x0, xa) - x0shiftFn(shape);
 }
 
 function dyFn(shape, xa, ya) {
-    return d2l(shape.y1, ya) - d2l(shape.y0, ya);
+    return d2l(shape.y1, ya) + y1shiftFn(shape) - d2l(shape.y0, ya) - y0shiftFn(shape);
 }
 
 function widthFn(shape, xa) {
@@ -41,11 +46,11 @@ function lengthFn(shape, xa, ya) {
 }
 
 function xcenterFn(shape, xa) {
-    return l2d((d2l(shape.x1, xa) + d2l(shape.x0, xa)) / 2, xa);
+    return l2d((d2l(shape.x1, xa) + x1shiftFn(shape) + d2l(shape.x0, xa) + x0shiftFn(shape)) / 2, xa);
 }
 
 function ycenterFn(shape, xa, ya) {
-    return l2d((d2l(shape.y1, ya) + d2l(shape.y0, ya)) / 2, ya);
+    return l2d((d2l(shape.y1, ya) + y1shiftFn(shape) + d2l(shape.y0, ya) + y0shiftFn(shape)) / 2, ya);
 }
 
 function slopeFn(shape, xa, ya) {

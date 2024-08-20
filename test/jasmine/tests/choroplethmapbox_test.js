@@ -490,7 +490,7 @@ describe('Test choroplethmapbox convert:', function() {
         var opts = convertModule.convert(calcTrace);
 
         expect(opts.geojson.features[0].geometry.coordinates).toBe(coordsIn);
-        expect(calcTrace[0].ct).toEqual([100.4, 0.4]);
+        expect(calcTrace[0].ct).toEqual([100.5, 0.5]);
     });
 
     it('should find correct centroid (multi-polygon case)', function() {
@@ -499,7 +499,7 @@ describe('Test choroplethmapbox convert:', function() {
         var coordsIn = [
             [
                 // this one has the bigger area
-                [[30, 20], [45, 40], [10, 40], [30, 20]]
+                [[30, 20], [47, 40], [10, 33], [30, 20]]
             ],
             [
                 [[15, 5], [40, 10], [10, 20], [5, 10], [15, 5]]
@@ -512,7 +512,7 @@ describe('Test choroplethmapbox convert:', function() {
         var opts = convertModule.convert(calcTrace);
 
         expect(opts.geojson.features[0].geometry.coordinates).toBe(coordsIn);
-        expect(calcTrace[0].ct).toEqual([28.75, 30]);
+        expect(calcTrace[0].ct).toEqual([29, 31]);
     });
 });
 
@@ -640,7 +640,7 @@ describe('Test choroplethmapbox hover:', function() {
             return fig;
         },
         nums: '### 100',
-        name: '-86.7 | 32.0 ###',
+        name: '-86.7 | 31.9 ###',
         evtPts: [{location: 100, z: 10, pointNumber: 0, curveNumber: 0}]
     }];
 

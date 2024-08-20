@@ -1,0 +1,42 @@
+{
+ "data": [
+  {
+   "type": "scattermap",
+   "mode": "markers+lines+text",
+   "lon": [10, 20, 30],
+   "lat": [10, 20, 30],
+   "marker": {
+    "size": [10, 30, 20],
+    "color": ["red", "green", "blue"]
+   },
+   "text": ["A", "B \n b", "C <br> c"],
+   "textposition": "top left",
+   "textfont": {
+    "size": 20,
+    "color": "red"
+   }
+  }
+ ],
+ "layout": {
+  "font": {
+   "weight": "bold",
+   "style": "italic"
+  },
+  "map": {
+   "bounds": {
+    "west": -60,
+    "east": 60,
+    "south": -30,
+    "north": 30
+   },
+   "style": "light",
+   "zoom": 2.5,
+   "center": {
+    "lon": 19.5,
+    "lat": 22
+   }
+  },
+  "width": 700,
+  "height": 450
+ }
+}

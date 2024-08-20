@@ -77,12 +77,14 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 #### Prerequisites
 
 - git
-- [node.js](https://nodejs.org/en/). We recommend using node.js v16.x.
+- [node.js](https://nodejs.org/en/). We recommend using node.js v18.x.
   Upgrading and managing node versions can be easily done using
   [`nvm`](https://github.com/creationix/nvm) or its Windows alternatives.
-- [`npm`](https://www.npmjs.com/) v7.x and up to ensure that the
+- [`npm`](https://www.npmjs.com/) v10.x and up to ensure that the
   [`package-lock.json`](https://docs.npmjs.com/files/package-lock.json) file is
   used and updated correctly.
+- [`python3`](https://www.python.org/downloads/)
+Note: for M1 mac users specifically, you might need to install some [extra dependencies](https://github.com/Automattic/node-canvas/issues/1733#issuecomment-761703018). 
 
 #### Step 1: Fork the plotly.js repository, clone your fork and step into it
 
@@ -389,7 +391,3 @@ Other methods used by some trace modules:
 
 Check if ok, with `npm run lint`
 
-- See [eslintrc](https://github.com/plotly/plotly.js/blob/master/.eslintrc) and
-  the eslint [list of rules](http://eslint.org/docs/rules/) for more details.
-- Rules listed in the eslintrc file with the ignore flag `0` are the recommended
-  rules for new code added.

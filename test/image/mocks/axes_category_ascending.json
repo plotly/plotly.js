@@ -1,14 +1,17 @@
 {
-    "data": [{
-        "x": ["c","a","e","b","d"],
-        "y": [15,11,12,13,14]}
-    ],
-    "layout": {
-        "xaxis": {
-            "title": {
-                "text": "category ascending"
-            },
-            "type": "category",
-            "categoryorder": "category ascending"
-        }}
+ "data": [
+  {
+   "x": ["c", "a", "e", "b", "d"],
+   "y": [15, 11, 12, 13, 14]
+  }
+ ],
+ "layout": {
+  "xaxis": {
+   "title": {
+    "text": "category ascending"
+   },
+   "type": "category",
+   "categoryorder": "category ascending"
+  }
+ }
 }

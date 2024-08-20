@@ -1,0 +1,185 @@
+{
+ "data": [
+  {
+   "textfont": { "weight": 200 },
+   "type": "scattermap",
+   "subplot": "map",
+   "name": "20 (20)",
+   "mode": "markers",
+   "marker": {
+    "size": 20,
+    "color": "lightgray",
+    "opacity": 0.5
+   },
+   "cluster": {
+    "size": 20,
+    "color": "yellow"
+   },
+   "lon": [
+    -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13,
+    -104.61
+   ],
+   "lat": [45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44],
+   "text": [
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ]
+  },
+  {
+   "textfont": { "weight": 400 },
+   "type": "scattermap",
+   "subplot": "map2",
+   "name": "20 (10)",
+   "mode": "markers",
+   "marker": {
+    "size": 20
+   },
+   "cluster": {
+    "size": 10
+   },
+   "lon": [
+    -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13,
+    -104.61
+   ],
+   "lat": [45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44],
+   "text": [
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ]
+  },
+  {
+   "textfont": { "weight": 600 },
+   "type": "scattermap",
+   "subplot": "map3",
+   "name": "10 (20)",
+   "mode": "markers",
+   "marker": {
+    "size": 10
+   },
+   "cluster": {
+    "size": 20
+   },
+   "lon": [
+    -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13,
+    -104.61
+   ],
+   "lat": [45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44],
+   "text": [
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ]
+  },
+  {
+   "textfont": { "weight": 800 },
+   "type": "scattermap",
+   "subplot": "map4",
+   "name": "10 (10)",
+   "mode": "markers",
+   "marker": {
+    "size": 10
+   },
+   "cluster": {
+    "size": 10
+   },
+   "lon": [
+    -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36, -97.13,
+    -104.61
+   ],
+   "lat": [45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44],
+   "text": [
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ]
+  }
+ ],
+ "layout": {
+  "font": {
+   "style": "italic"
+  },
+  "title": {
+   "text": "Clustering points over Canadian cities"
+  },
+  "map": {
+   "zoom": 2,
+   "style": "dark",
+   "center": {
+    "lon": -90,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0.55, 1],
+    "y": [0.55, 1]
+   }
+  },
+  "map2": {
+   "zoom": 2,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0.55, 1],
+    "y": [0, 0.45]
+   }
+  },
+  "map3": {
+   "zoom": 2,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0, 0.45],
+    "y": [0.55, 1]
+   }
+  },
+  "map4": {
+   "zoom": 2,
+   "style": "dark",
+   "center": {
+    "lon": -90,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0, 0.45],
+    "y": [0, 0.45]
+   }
+  },
+  "height": 800,
+  "width": 1200
+ }
+}

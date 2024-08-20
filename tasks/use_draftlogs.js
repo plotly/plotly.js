@@ -16,7 +16,7 @@ function startsWithNumber(v) {
 var allLogs = fs.readdirSync(pathToDraftlogs).filter(startsWithNumber);
 
 var len = allLogs.length;
-if(!len) return;
+if(!len) process.exit(0);
 
 var writeAfterMe = 'where X.Y.Z is the semver of most recent plotly.js release.';
 var changelog = fs.readFileSync(pathToChangelog).toString().split(writeAfterMe);

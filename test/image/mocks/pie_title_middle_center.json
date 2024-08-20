@@ -1,22 +1,22 @@
 {
-  "data": [
-    {
-      "values": [955, 405, 360, 310, 295],
-      "labels": ["Mandarin", "Spanish", "English", "Hindi", "Arabic"],
-      "textinfo": "label+percent",
-      "hole": 0.1,
-      "title": {
-        "text": "Num. speakers",
-        "position": "middle center"
-      },
-      "type": "pie"
-    }
-  ],
-  "layout": {
-    "title": {
-      "text": "Top 5 languages by number of native speakers (2010, est.)"
-    },
-    "height": 600,
-    "width": 600
+ "data": [
+  {
+   "values": [955, 405, 360, 310, 295],
+   "labels": ["Mandarin", "Spanish", "English", "Hindi", "Arabic"],
+   "textinfo": "label+percent",
+   "hole": 0.1,
+   "title": {
+    "text": "Num. speakers",
+    "position": "middle center"
+   },
+   "type": "pie"
   }
+ ],
+ "layout": {
+  "title": {
+   "text": "Top 5 languages by number of native speakers (2010, est.)"
+  },
+  "height": 600,
+  "width": 600
+ }
 }

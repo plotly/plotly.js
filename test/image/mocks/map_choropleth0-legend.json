@@ -1,0 +1,54 @@
+{
+ "data": [
+  {
+   "type": "choroplethmap",
+   "name": "NY",
+   "locations": ["NY"],
+   "z": [1],
+   "colorscale": [[0, "blue"], [1, "blue"]],
+   "showlegend": true,
+   "showscale": false,
+   "geojson": "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json"
+  },
+  {
+   "type": "choroplethmap",
+   "name": "MA",
+   "locations": ["MA"],
+   "z": [1],
+   "colorscale": [[0, "orange"], [1, "orange"]],
+   "showlegend": true,
+   "showscale": false,
+   "geojson": "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json"
+  },
+  {
+   "type": "choroplethmap",
+   "name": "VT",
+   "locations": ["VT"],
+   "z": [1],
+   "colorscale": [[0, "green"], [1, "green"]],
+   "showlegend": true,
+   "showscale": false,
+   "geojson": "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json"
+  }
+ ],
+ "layout": {
+  "map": {
+   "center": {
+    "lon": -74.22,
+    "lat": 42.35
+   },
+   "zoom": 3.5
+  },
+  "title": {
+   "text": "choroplethmap with legends"
+  },
+  "width": 500,
+  "height": 250,
+  "margin": {
+   "t": 50,
+   "b": 0,
+   "l": 0,
+   "r": 0
+  }
+ }
+}

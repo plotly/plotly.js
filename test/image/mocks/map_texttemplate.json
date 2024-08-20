@@ -1,0 +1,28 @@
+{
+ "data": [
+  {
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [-73.57, -79.24, -123.06],
+   "lat": [45.5, 43.4, 49.13],
+   "text": ["Montreal", "Toronto", "Vancouver"],
+   "texttemplate": "%{text} (%{lon}, %{lat}): %{customdata:.2s}",
+   "textposition": "top center",
+   "customdata": [1780000, 2930000, 675218]
+  }
+ ],
+
+ "layout": {
+  "width": 500,
+  "height": 500,
+  "title": { "text": "Map with texttemplate" },
+  "margin": { "t": 30, "b": 0, "l": 0, "r": 0 },
+  "map": {
+   "center": {
+    "lon": -90,
+    "lat": 45
+   },
+   "zoom": 1.5
+  }
+ }
+}

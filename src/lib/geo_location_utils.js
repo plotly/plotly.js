@@ -2,9 +2,9 @@
 
 var d3 = require('@plotly/d3');
 var countryRegex = require('country-regex');
-var turfArea = require('@turf/area');
-var turfCentroid = require('@turf/centroid');
-var turfBbox = require('@turf/bbox');
+var { area: turfArea } = require('@turf/area');
+var { centroid: turfCentroid } = require('@turf/centroid');
+var { bbox: turfBbox } = require('@turf/bbox');
 
 var identity = require('./identity');
 var loggers = require('./loggers');
@@ -226,7 +226,11 @@ function extractTraceFeature(calcTrace) {
                 };
 
                 // Compute centroid, add it to the properties
-                fOut.properties.ct = findCentroid(fOut);
+                if (fOut.geometry.coordinates.length > 0) {
+                    fOut.properties.ct = findCentroid(fOut);
+                } else {
+                    fOut.properties.ct = [NaN, NaN];
+                }
 
                 // Mutate in in/out features into calcdata
                 cdi.fIn = fIn;
@@ -291,7 +295,7 @@ function findCentroid(feature) {
 
         for(var i = 0; i < coords.length; i++) {
             var polyi = {type: 'Polygon', coordinates: coords[i]};
-            var area = turfArea.default(polyi);
+            var area = turfArea(polyi);
             if(area > maxArea) {
                 maxArea = area;
                 poly = polyi;
@@ -301,7 +305,7 @@ function findCentroid(feature) {
         poly = geometry;
     }
 
-    return turfCentroid.default(poly).geometry.coordinates;
+    return turfCentroid(poly).geometry.coordinates;
 }
 
 function fetchTraceGeoData(calcData) {
@@ -362,7 +366,7 @@ function fetchTraceGeoData(calcData) {
 // TODO `turf/bbox` gives wrong result when the input feature/geometry
 // crosses the anti-meridian. We should try to implement our own bbox logic.
 function computeBbox(d) {
-    return turfBbox.default(d);
+    return turfBbox(d);
 }
 
 module.exports = {
