@@ -1,4 +1,4 @@
-{
+module.exports = {
   "version": 8,
   "name": "orto",
   "metadata": {"maputnik:renderer": "mlgljs"},
@@ -2013,4 +2013,4 @@
     }
   ],
   "id": "qebnlkra6"
-}
+};

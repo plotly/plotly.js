@@ -1,8 +1,8 @@
 'use strict';
 
 var sortObjectKeys = require('../../lib/sort_object_keys');
-var arcgisSatHybrid = require('./styles/arcgis-sat-hybrid.json'); // https://raw.githubusercontent.com/go2garret/maps/v1.0.0/LICENSE
-var arcgisSat = require('./styles/arcgis-sat.json');
+var arcgisSatHybrid = require('./styles/arcgis-sat-hybrid'); // https://raw.githubusercontent.com/go2garret/maps/v1.0.0/LICENSE
+var arcgisSat = require('./styles/arcgis-sat');
 
 
 var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
