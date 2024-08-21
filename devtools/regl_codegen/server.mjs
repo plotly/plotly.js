@@ -20,12 +20,7 @@ var reglTraceList = [
     'splom'
 ];
 
-var devtoolsPath = path.join(constants.pathToRoot, 'devtools/regl_codegen');
-config.entryPoints = [path.join(devtoolsPath, 'devtools.js')];
-config.outfile = './build/regl_codegen-bundle.js';
-config.sourcemap = false;
-config.minify = false;
-await build(config);
+
 
 // Create server
 var _static = ecstatic({
@@ -71,11 +66,19 @@ server.listen(PORT);
 open('http://localhost:' + PORT + '/devtools/regl_codegen/index' + (strict ? '-strict' : '') + '.html');
 
 // Build and bundle all the things!
-getMockFiles()
+await getMockFiles()
     .then(readFiles)
     .then(createMocksList)
     .then(saveMockListToFile)
     .then(saveReglTracesToFile.bind(null, reglTraceList));
+
+
+var devtoolsPath = path.join(constants.pathToRoot, 'devtools/regl_codegen');
+config.entryPoints = [path.join(devtoolsPath, 'devtools.js')];
+config.outfile = './build/regl_codegen-bundle.js';
+config.sourcemap = false;
+config.minify = false;
+await build(config);
 
 function getMockFiles() {
     return new Promise(function(resolve, reject) {
