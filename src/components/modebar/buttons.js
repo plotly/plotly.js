@@ -734,7 +734,7 @@ modeBarButtons.tooltip = {
                 if(pts.low !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.low);
                 if(pts.close !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.close);
                 // not consistent:
-                // box: missing max, upper fence...
+                // box: missing max, upper fence... in data.points[0]
 
                 var defaultTemplate = defaultTemplateParts.join('<br>');
 
@@ -813,7 +813,7 @@ function addTooltip(gd, data, userTemplate, customStyle) {
         // Prevent having multiple tooltip annotations on the same point (useful when user wants to annotate nearby points)
         // Does not prevent multiple tooltips on histogram (would not be useful on bars)
         var existingIndex = fullLayout.annotations.findIndex(function(ann) {
-            return ann.x === x && ann.y === y;
+            return ann.x === x && ann.y === y && ann.xref === xAxisName && ann.yref === yAxisName;
         });
 
         if(existingIndex === -1) {
