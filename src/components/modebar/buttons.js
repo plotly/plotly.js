@@ -679,6 +679,8 @@ var DEFAULT_TEMPLATES = {
     date_y: '%{y|%Y-%m-%d}',
     multicategory_x: '%{x}', // xaxis.type == "multicategory"
     multicategory_y: '%{y}',
+    category_x: '%{x}', // xaxis.type == "category"
+    category_y: '%{y}',
     x: 'x: %{x:.4~g}',
     y: 'y: %{y:.4~g}',
     z: 'z: %{z:.4~g}',
