@@ -4,6 +4,7 @@ import prependFile from 'prepend-file';
 import constants from './util/constants.js';
 import common from './util/common.js';
 import _bundle from './util/bundle_wrapper.mjs';
+import fsExtra from 'fs-extra';
 
 var header = constants.licenseDist + '\n';
 var pathToPlotlyDist = constants.pathToPlotlyDist;
@@ -27,6 +28,11 @@ if(!doesFileExist(constants.pathToCSSBuild)) {
     ].join('\n'));
 }
 
+function amdWrapper(path){
+    prependFile.sync(path, "define(function (require, exports, module) {", common.throwOnError)
+    fsExtra.appendFile(path, "})", common.throwOnError)
+}
+
 // list of tasks to pass to run-series to not blow up
 // memory consumption.
 var tasks = [];
@@ -36,7 +42,7 @@ tasks.push(function(done) {
     _bundle(pathToPlotlyIndex, pathToPlotlyDist, {
     }, function() {
         prependFile.sync(pathToPlotlyDist, header, common.throwOnError);
-
+        amdWrapper(pathToPlotlyDist)
         done();
     });
 });
@@ -47,7 +53,7 @@ tasks.push(function(done) {
         minify: true,
     }, function() {
         prependFile.sync(pathToPlotlyDistMin, header, common.throwOnError);
-
+        amdWrapper(pathToPlotlyDistMin)
         done();
     });
 });
@@ -57,7 +63,7 @@ tasks.push(function(done) {
     _bundle(pathToPlotlyStrict, pathToPlotlyStrictDist, {
     }, function() {
         prependFile.sync(pathToPlotlyStrictDist, header.replace('plotly.js', 'plotly.js (strict)'), common.throwOnError);
-
+        amdWrapper(pathToPlotlyStrictDist)
         done();
     });
 });
@@ -68,7 +74,7 @@ tasks.push(function(done) {
         minify: true,
     }, function() {
         prependFile.sync(pathToPlotlyStrictDistMin, header.replace('plotly.js', 'plotly.js (strict - minified)'), common.throwOnError);
-
+        amdWrapper(pathToPlotlyStrictDistMin)
         done();
     });
 });
@@ -80,7 +86,7 @@ tasks.push(function(done) {
         standalone: 'PlotlyGeoAssets'
     }, function() {
         prependFile.sync(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
-
+        amdWrapper(pathToPlotlyGeoAssetsDist)
         done();
     });
 });
@@ -91,7 +97,6 @@ tasks.push(function(done) {
         noCompressAttributes: true
     }, function() {
         prependFile.sync(pathToPlotlyDistWithMeta, header, common.throwOnError);
-
         done();
     });
 });
