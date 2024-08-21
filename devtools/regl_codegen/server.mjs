@@ -58,13 +58,6 @@ var server = http.createServer(function(req, res) {
     }
 });
 
-
-// Start the server up!
-server.listen(PORT);
-
-// open up browser window
-open('http://localhost:' + PORT + '/devtools/regl_codegen/index' + (strict ? '-strict' : '') + '.html');
-
 // Build and bundle all the things!
 await getMockFiles()
     .then(readFiles)
@@ -72,6 +65,11 @@ await getMockFiles()
     .then(saveMockListToFile)
     .then(saveReglTracesToFile.bind(null, reglTraceList));
 
+// Start the server up!
+server.listen(PORT);
+
+// open up browser window
+open('http://localhost:' + PORT + '/devtools/regl_codegen/index' + (strict ? '-strict' : '') + '.html');
 
 var devtoolsPath = path.join(constants.pathToRoot, 'devtools/regl_codegen');
 config.entryPoints = [path.join(devtoolsPath, 'devtools.js')];
