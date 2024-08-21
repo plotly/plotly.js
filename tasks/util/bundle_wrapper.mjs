@@ -1,9 +1,13 @@
+import fsExtra from 'fs-extra';
+import prependFile from 'prepend-file';
+
 import { build } from 'esbuild';
 
 import esbuildConfig from '../../esbuild-config.js';
 import browserifyAdapter from 'esbuild-plugin-browserify-adapter';
 
 import transform from '../../tasks/compress_attributes.js';
+import common from './common.js';
 
 var basePlugins = esbuildConfig.plugins;
 
@@ -38,5 +42,41 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
     if(opts.noPlugins) config.plugins = [];
 
     await build(config);
+
+    addWrapper(pathToBundle)
+
     if(cb) cb();
+}
+
+// Until https://github.com/evanw/esbuild/pull/513 is merged
+// Thanks to https://github.com/prantlf and https://github.com/birkskyum
+function addWrapper(path){
+    prependFile.sync(
+        path,
+        [
+            '(',
+            ' function(root, factory) {',
+            '  if (typeof define === "function" && define.amd) {',
+            '   define(factory);',
+            '  } else if (typeof module === "object" && module.exports) {',
+            '   module.exports = factory();',
+            '  } else {',
+            '   root.moduleName = factory();',
+            '  }',
+            '} (typeof self !== "undefined" ? self : this, () => {',
+            ''
+        ].join('\n'),
+        common.throwOnError
+    );
+
+    fsExtra.appendFile(
+        path,
+        [
+            '',
+            'window.Plotly = Plotly;',
+            'return Plotly;',
+            '}));',
+        ].join('\n'),
+        common.throwOnError
+    );
 }

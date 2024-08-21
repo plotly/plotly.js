@@ -1,10 +1,9 @@
 var glsl = require('esbuild-plugin-glsl').glsl;
 var environmentPlugin = require('esbuild-plugin-environment').environmentPlugin;
-var umdWrapper = require('esbuild-plugin-umd-wrapper').umdWrapper;
 
 module.exports = {
     entryPoints: ['./lib/index.js'],
-    format: 'cjs',
+    format: 'iife',
     globalName: 'Plotly',
     bundle: true,
     minify: false,
@@ -16,9 +15,6 @@ module.exports = {
         environmentPlugin({
             NODE_DEBUG: false,
         }),
-        umdWrapper({
-            libraryName: 'Plotly'
-        })
     ],
     alias: {
         stream: 'stream-browserify',
