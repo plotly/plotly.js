@@ -73,7 +73,9 @@ function addWrapper(path){
         path,
         [
             '',
-            'window.Plotly = Plotly;',
+            'if (!(typeof define === "function" && define.amd)) {',
+            ' window.Plotly = Plotly;',
+            '}',
             'return Plotly;',
             '}));',
         ].join('\n'),
