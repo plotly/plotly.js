@@ -52,7 +52,6 @@ if(process.argv.length > 2) {
     var args = minimist(process.argv.slice(2), {});
 
     // parse arguments
-    var unminified = inputBoolean(args.unminified, false);
     var out = args.out ? args.out : 'custom';
     var traces = inputArray(args.traces, allTraces);
     var transforms = inputArray(args.transforms, allTransforms);
@@ -67,13 +66,8 @@ if(process.argv.length > 2) {
         strict: strict,
     };
 
-    if(unminified) {
-        opts.dist = path.join(constants.pathToDist, 'plotly-' + out + '.js');
-    } else {
-        opts.distMin = path.join(constants.pathToDist, 'plotly-' + out + '.min.js');
-    }
-
-    console.log(opts);
+    opts.dist = path.join(constants.pathToDist, 'plotly-' + out + '.js');
+    opts.distMin = path.join(constants.pathToDist, 'plotly-' + out + '.min.js');
 
     opts.calendars = true;
     opts.deleteIndex = true;
