@@ -1,4 +1,4 @@
-var path = require('path');
+import path from 'path';
 import minimist from 'minimist';
 import runSeries from 'run-series';
 

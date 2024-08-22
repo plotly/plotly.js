@@ -1,5 +1,5 @@
 import fs from 'fs';
-import path  from 'path';
+import path from 'path';
 import http from 'http';
 import ecstatic from 'ecstatic';
 import open from 'open';
