@@ -52,6 +52,7 @@ if(process.argv.length > 2) {
     var args = minimist(process.argv.slice(2), {});
 
     // parse arguments
+    var unminified = inputBoolean(args.unminified, false);
     var out = args.out ? args.out : 'custom';
     var traces = inputArray(args.traces, allTraces);
     var transforms = inputArray(args.transforms, allTransforms);
@@ -69,12 +70,19 @@ if(process.argv.length > 2) {
     opts.dist = path.join(constants.pathToDist, 'plotly-' + out + '.js');
     opts.distMin = path.join(constants.pathToDist, 'plotly-' + out + '.min.js');
 
+    console.log(opts);
+
     opts.calendars = true;
     opts.deleteIndex = true;
 
     var tasks = [];
 
     partialBundle(tasks, opts);
+
+    tasks = [
+        tasks[0],
+        tasks[unminified ? 1 : 2]
+    ];
 
     runSeries(tasks, function(err) {
         if(err) throw err;
