@@ -4237,7 +4237,7 @@
     },
     "role": "object",
     "style": {
-     "description": "Defines the map layers that are rendered by default below the trace layers defined in `data`, which are themselves by default rendered below the layers defined in `layout.map.layers`.  These layers can be defined either explicitly as a Map Style object which can contain multiple layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS) or implicitly by using one of the built-in style objects which use WMSes or by using a custom style URL  Map Style objects are of the form described in the MapLibre GL JS documentation available at https://maplibre.org/maplibre-style-spec/  The built-in plotly.js styles objects are: basic, carto-darkmatter, carto-darkmatter-nolabels, carto-positron, carto-positron-nolabels, carto-voyager, carto-voyager-nolabels, dark, light, open-street-map, outdoors, satellite, satellite-streets, stamen-terrain, stamen-toner, stamen-watercolor, streets, white-bg.",
+     "description": "Defines the map layers that are rendered by default below the trace layers defined in `data`, which are themselves by default rendered below the layers defined in `layout.map.layers`.  These layers can be defined either explicitly as a Map Style object which can contain multiple layer definitions that load data from any public or private Tile Map Service (TMS or XYZ) or Web Map Service (WMS) or implicitly by using one of the built-in style objects which use WMSes or by using a custom style URL  Map Style objects are of the form described in the MapLibre GL JS documentation available at https://maplibre.org/maplibre-style-spec/  The built-in plotly.js styles objects are: basic, carto-darkmatter, carto-darkmatter-nolabels, carto-positron, carto-positron-nolabels, carto-voyager, carto-voyager-nolabels, dark, light, open-street-map, outdoors, satellite, satellite-streets, streets, white-bg.",
      "dflt": "basic",
      "editType": "plot",
      "valType": "any",
@@ -4255,9 +4255,6 @@
       "outdoors",
       "satellite",
       "satellite-streets",
-      "stamen-terrain",
-      "stamen-toner",
-      "stamen-watercolor",
       "streets",
       "white-bg"
      ]

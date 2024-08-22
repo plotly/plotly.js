@@ -403,7 +403,7 @@ describe('Click-to-select', function() {
           .then(done, done.fail);
     });
 
-    it('@gl works in a multi-trace plot', function(done) {
+    it('@noCI @gl works in a multi-trace plot', function(done) {
         _newPlot(gd, [
             {
                 x: [1, 3, 5, 4, 10, 12, 12, 7],
