@@ -176,7 +176,7 @@ function getButtonGroups(gd) {
         hoverGroup = ['toggleHover'];
         resetGroup = ['resetViewMap'];
     } else if(hasGL2D) {
-        hoverGroup = ['hoverClosestGl2d'];
+        hoverGroup = ['hoverClosestGl2d', 'tooltip'];
     } else if(hasPie) {
         hoverGroup = ['hoverClosestPie'];
     } else if(hasSankey) {
