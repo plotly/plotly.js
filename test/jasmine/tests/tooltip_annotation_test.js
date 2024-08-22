@@ -213,7 +213,7 @@ describe('Log Tooltip interactions', function() {
 
     it('should create a tooltip annotation on second log plot click', function(done) {
         console.log('Simulating plot click for tooltip...');
-        click(539, 117);
+        click(540, 117);
 
         setTimeout(function() {
             console.log('Checking if another annotation has been created...');
