@@ -17,6 +17,7 @@
                 9.333771080586484
             ],
             "type": "scatter",
+            "tooltiptemplate": "(with tooltiptemplate)<br>%{fullData.name}<br>%{x|%H:%M:%S}<br>y: %{y:.2e}",
             "tooltip": {
                 "align": "left",
                 "arrowcolor": "blue",
@@ -48,7 +49,8 @@
                 17.60752687975191,
                 2.5038703600044876
             ],
-            "type": "scatter"
+            "type": "scatter",
+            "tooltiptemplate": "%{fullData.name}<br>%{x|%H:%M:%S}<br>y: %{y:.2e}"
         }
     ],
     "config": {
