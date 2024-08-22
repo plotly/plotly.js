@@ -723,6 +723,10 @@ modeBarButtons.tooltip = {
                 var trace = gd.data[traceIndex];
                 var pts = data.points[0];
 
+                // handle missing axis in data.points[0] (in scattercarpet)
+                if(pts.xaxis === undefined) pts.xaxis = fullLayout.xaxis;
+                if(pts.yaxis === undefined) pts.yaxis = fullLayout.yaxis;
+
                 // Build the default tooltip template dynamically based on available data fields
                 var defaultTemplateParts = [];
                 var xAxisType = pts.xaxis.type;
