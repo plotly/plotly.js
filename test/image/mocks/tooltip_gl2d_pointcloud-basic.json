@@ -68,5 +68,16 @@
         "width": 1080,
         "autosize": true,
         "showlegend": false
-    }
+    },
+   "config": {
+      "editable": true,
+      "modeBarButtonsToAdd": [
+         "tooltip",
+         "hoverclosest",
+         "hovercompare",
+         "togglespikelines"
+      ],
+      "displaylogo": false,
+      "displayModeBar": true
+   }
 }
