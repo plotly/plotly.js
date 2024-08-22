@@ -21,7 +21,7 @@
     "plotly"
   ],
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "scripts": {
     "custom-bundle": "node tasks/custom_bundle.mjs",
