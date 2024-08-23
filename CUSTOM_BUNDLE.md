@@ -55,20 +55,26 @@ npm run custom-bundle -- --traces scatter,scattergl --strict
 ```
 
 Use the `out` option to change the bundle filename (default `custom`).
-The new bundle will be created in the `dist/` directory and named `plotly-<out>.js` and `plotly-<out>.min.js` for minified.
+The new bundle will be created in the `dist/` directory and named `plotly-<out>.min.js` or `plotly-<out>.js` if unminified.
 ```sh
 npm run custom-bundle -- --out myBundleName
 ```
 
+Use the `unminified` option to disable compression.
+```sh
+npm run custom-bundle -- --unminified
+```
+
 # Example illustrating use of different options together
-To create a custom bundle named `myScatters` including `scatter`, `scattergl` and `scatter3d` traces without any transforms:
+To create an unminified custom bundle named `myScatters` including `scatter`, `scattergl` and `scatter3d` traces without any transforms:
 ```sh
 npm run custom-bundle -- \
+    --unminified \
     --out myScatters \
     --traces scatter,scattergl,scatter3d \
     --transforms none
 ```
 Or simply on one line:
 ```sh
-npm run custom-bundle -- --out myScatters --traces scatter,scattergl,scatter3d --transforms none
+npm run custom-bundle -- --unminified --out myScatters --traces scatter,scattergl,scatter3d --transforms none
 ```
