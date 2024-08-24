@@ -39,9 +39,12 @@ jobs:
       - image: cimg/node:18.20.4-browsers
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -75,9 +78,12 @@ jobs:
     parallelism: 12
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -94,9 +100,12 @@ jobs:
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -113,9 +122,12 @@ jobs:
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -131,9 +143,12 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -149,9 +164,12 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -167,7 +185,7 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - browser-tools/install-browser-tools:
           install-chrome: false
           install-chromedriver: false
       - attach_workspace:
