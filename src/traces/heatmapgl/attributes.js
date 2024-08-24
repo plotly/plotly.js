@@ -11,7 +11,8 @@ var commonList = [
     'x', 'x0', 'dx',
     'y', 'y0', 'dy',
     'text', 'transpose',
-    'xtype', 'ytype'
+    'xtype', 'ytype',
+    'tooltip','tooltiptemplate'
 ];
 
 var attrs = {};

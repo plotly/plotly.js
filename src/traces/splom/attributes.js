@@ -133,7 +133,11 @@ module.exports = {
     }),
 
     hovertemplate: hovertemplateAttrs(),
-    tooltip: annotationAttrs,
+    tooltip: {
+        type: 'object',
+        description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+        editType: 'plot'
+    },
     tooltiptemplate: tooltiptemplateAttrs(),
 
     xhoverformat: axisHoverFormat('x'),

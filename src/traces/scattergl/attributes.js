@@ -35,6 +35,8 @@ var attrs = module.exports = overrideAll({
 
     text: scatterAttrs.text,
     hovertext: scatterAttrs.hovertext,
+    tooltip: scatterAttrs.tooltip,
+    tooltiptemplate: scatterAttrs.tooltiptemplate,
 
     textposition: scatterAttrs.textposition,
     textfont: fontAttrs({

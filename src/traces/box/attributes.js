@@ -442,6 +442,9 @@ module.exports = {
         ].join(' ')
     }),
 
+    tooltip: scatterAttrs.tooltip,
+    tooltiptemplate: scatterAttrs.tooltiptemplate,
+
     hoveron: {
         valType: 'flaglist',
         flags: ['boxes', 'points'],

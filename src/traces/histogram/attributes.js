@@ -252,7 +252,11 @@ module.exports = {
         bardir: barAttrs._deprecated.bardir
     },
 
-    tooltip: annotationAttrs,
+    tooltip: {
+        type: 'object',
+        description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+        editType: 'plot'
+    },
     tooltiptemplate: tooltiptemplateAttrs({}, {
         keys: constants.eventDataKeys
     }),

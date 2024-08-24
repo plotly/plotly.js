@@ -136,7 +136,11 @@ module.exports = {
         }
     }),
 
-    tooltip: annotationAttrs,
+    tooltip: {
+        type: 'object',
+        description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+        editType: 'plot'
+    },
     tooltiptemplate: tooltiptemplateAttrs(),
 
     zorder: scatterAttrs.zorder
