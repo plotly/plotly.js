@@ -1,5 +1,17 @@
 'use strict';
 
+// Fix for Chrome 128
+var INF = 1e38;
+function ensureFinite(arr) {
+    return arr.map(function(v) {
+        return (
+            v > INF ? INF :
+            v < -INF ? -INF :
+            v
+        );
+    });
+}
+
 var vertexShaderSource = [
     'precision highp float;',
     '',
@@ -564,14 +576,14 @@ module.exports = function(canvasGL, d) {
         return {
             maskTexture: maskTexture,
             maskHeight: maskHeight,
-            loA: limits[0].slice(0, 16),
-            loB: limits[0].slice(16, 32),
-            loC: limits[0].slice(32, 48),
-            loD: limits[0].slice(48, 64),
-            hiA: limits[1].slice(0, 16),
-            hiB: limits[1].slice(16, 32),
-            hiC: limits[1].slice(32, 48),
-            hiD: limits[1].slice(48, 64),
+            loA: ensureFinite(limits[0].slice(0, 16)),
+            loB: ensureFinite(limits[0].slice(16, 32)),
+            loC: ensureFinite(limits[0].slice(32, 48)),
+            loD: ensureFinite(limits[0].slice(48, 64)),
+            hiA: ensureFinite(limits[1].slice(0, 16)),
+            hiB: ensureFinite(limits[1].slice(16, 32)),
+            hiC: ensureFinite(limits[1].slice(32, 48)),
+            hiD: ensureFinite(limits[1].slice(48, 64)),
         };
     }
 
