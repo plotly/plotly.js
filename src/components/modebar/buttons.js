@@ -8,7 +8,6 @@ var eraseActiveShape = require('../shapes/draw').eraseActiveShape;
 var Lib = require('../../lib');
 var _ = Lib._;
 var lodash = require('lodash');  // Import lodash, not using default _
-var Plotly = require('../../plot_api/plot_api');
 
 var modeBarButtons = module.exports = {};
 
@@ -824,7 +823,8 @@ function addTooltip(gd, data, userTemplate, customStyle) {
 
         if(existingIndex === -1) {
             fullLayout.annotations.push(newAnnotation);
-            Plotly.relayout(gd, { annotations: fullLayout.annotations });
+            var aObj = { annotations: fullLayout.annotations };
+            Registry.call('_guiRelayout', gd, aObj);
         }
     }
 }
@@ -836,7 +836,8 @@ function removeEmptyAnnotations(gd, eventData) {
             if(eventData[key] === '') {
                 var updatedAnnotations = gd.layout.annotations || [];
                 updatedAnnotations.splice(index, 1);
-                Plotly.relayout(gd, { annotations: updatedAnnotations });
+                var aObj = { annotations: updatedAnnotations };
+                Registry.call('_guiRelayout', gd, aObj);
                 break;
             }
         }
