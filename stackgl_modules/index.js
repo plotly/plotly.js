@@ -23536,6 +23536,19 @@ function makeVector(length, fill) {
   return result
 }
 
+// Fix for Chrome 128
+var INF = 1e38
+function ensureFinite(arr) {
+    return arr.map(function(v) {
+        return (
+            isNaN(v) ? 0 :
+            v > INF ? INF :
+            v < -INF ? -INF :
+            v
+        )
+    })
+}
+
 //Create shims for uniforms
 function createUniformWrapper(gl, wrapper, uniforms, locations) {
 
@@ -23598,7 +23611,7 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
                     gl['uniform' + d + 'iv'](locations[idx], objPath)
                     break
                   case 'v':
-                    gl['uniform' + d + 'fv'](locations[idx], objPath)
+                    gl['uniform' + d + 'fv'](locations[idx], ensureFinite(objPath))
                     break
                   default:
                     throw new GLError('', 'Unrecognized data type for vector ' + name + ': ' + t)
@@ -23608,7 +23621,7 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
                 if(d < 2 || d > 4) {
                   throw new GLError('', 'Invalid uniform dimension type for matrix ' + name + ': ' + t)
                 }
-                gl['uniformMatrix' + d + 'fv'](locations[idx], false, objPath)
+                gl['uniformMatrix' + d + 'fv'](locations[idx], false, ensureFinite(objPath))
                 break
               } else {
                 throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + t)

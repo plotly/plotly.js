@@ -24,7 +24,7 @@
     "gl-pointcloud2d": "^1.0.3",
     "gl-scatter3d": "^1.4.1",
     "gl-select-box": "^1.0.4",
-    "gl-shader": "4.3.1",
+    "gl-shader": "github:archmoj/gl-shader#0409f68f8005ef3a3f3fccb6121bc7f0a5fda8bb",
     "gl-spikes2d": "^1.0.2",
     "gl-spikes3d": "^1.0.11",
     "gl-streamtube3d": "^1.4.2",
