@@ -1,92 +1,44 @@
 {
  "data": [
   {
-   "subplot": "map",
+   "subplot": "mapbox",
    "text": ["basic"],
    "textposition": "top center",
    "marker": {
     "size": [0]
    },
-   "type": "scattermap",
+   "type": "scattermapbox",
    "mode": "markers+text",
    "lon": [-75],
    "lat": [45.05]
   },
   {
-   "subplot": "map2",
+   "subplot": "mapbox2",
    "text": ["carto-darkmatter"],
    "textposition": "top center",
    "marker": {
     "size": [0]
    },
-   "type": "scattermap",
+   "type": "scattermapbox",
    "mode": "markers+text",
    "lon": [-75],
    "lat": [45.05]
   },
   {
-   "subplot": "map3",
-   "text": ["carto-darkmatter-nolabels"],
-   "textposition": "top center",
-   "marker": {
-    "size": [0]
-   },
-   "type": "scattermap",
-   "mode": "markers+text",
-   "lon": [-75],
-   "lat": [45.05]
-  },
-  {
-   "subplot": "map4",
+   "subplot": "mapbox4",
    "text": ["carto-positron"],
    "textposition": "top center",
    "marker": {
     "size": [0]
    },
-   "type": "scattermap",
-   "mode": "markers+text",
-   "lon": [-75],
-   "lat": [45.05]
-  },
-  {
-   "subplot": "map5",
-   "text": ["carto-positron-nolabels"],
-   "textposition": "top center",
-   "marker": {
-    "size": [0]
-   },
-   "type": "scattermap",
-   "mode": "markers+text",
-   "lon": [-75],
-   "lat": [45.05]
-  },
-  {
-   "subplot": "map6",
-   "text": ["carto-voyager"],
-   "textposition": "top center",
-   "marker": {
-    "size": [0]
-   },
-   "type": "scattermap",
-   "mode": "markers+text",
-   "lon": [-75],
-   "lat": [45.05]
-  },
-  {
-   "subplot": "map7",
-   "text": ["carto-voyager-nolabels"],
-   "textposition": "top center",
-   "marker": {
-    "size": [0]
-   },
-   "type": "scattermap",
+   "type": "scattermapbox",
    "mode": "markers+text",
    "lon": [-75],
    "lat": [45.05]
   }
  ],
  "layout": {
-  "map": {
+  "mapbox": {
    "zoom": 10,
    "style": "basic",
    "center": {
@@ -98,7 +50,7 @@
     "y": [0.84, 0.96]
    }
   },
-  "map2": {
+  "mapbox2": {
    "zoom": 10,
    "style": "carto-darkmatter",
    "center": {
@@ -110,66 +62,19 @@
     "y": [0.7, 0.82]
    }
   },
-  "map3": {
-   "zoom": 10,
-   "style": "carto-darkmatter-nolabels",
-   "center": {
-    "lon": -75,
-    "lat": 45
+  "mapbox4": {
+    "zoom": 10,
+    "style": "carto-positron",
+    "center": {
+     "lon": -75,
+     "lat": 45
+    },
+    "domain": {
+     "x": [0, 1],
+     "y": [0.42, 0.54]
+    }
    },
-   "domain": {
-    "x": [0, 1],
-    "y": [0.56, 0.68]
-   }
-  },
-  "map4": {
-   "zoom": 10,
-   "style": "carto-positron",
-   "center": {
-    "lon": -75,
-    "lat": 45
-   },
-   "domain": {
-    "x": [0, 1],
-    "y": [0.42, 0.54]
-   }
-  },
-  "map5": {
-   "zoom": 10,
-   "style": "carto-positron-nolabels",
-   "center": {
-    "lon": -75,
-    "lat": 45
-   },
-   "domain": {
-    "x": [0, 1],
-    "y": [0.28, 0.4]
-   }
-  },
-  "map6": {
-   "zoom": 10,
-   "style": "carto-voyager",
-   "center": {
-    "lon": -75,
-    "lat": 45
-   },
-   "domain": {
-    "x": [0, 1],
-    "y": [0.14, 0.26]
-   }
-  },
-  "map7": {
-   "zoom": 10,
-   "style": "carto-voyager-nolabels",
-   "center": {
-    "lon": -75,
-    "lat": 45
-   },
-   "domain": {
-    "x": [0, 1],
-    "y": [0, 0.12]
-   }
-  },
+
   "height": 3000,
   "width": 900,
   "margin": {
@@ -180,7 +85,7 @@
   },
   "showlegend": false,
   "title": {
-   "text": "Predefined styles in maps",
+   "text": "Predefined styles in mapbox",
    "font": {
     "size": 28,
     "weight": 800,
