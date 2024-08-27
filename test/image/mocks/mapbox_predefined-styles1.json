@@ -1,0 +1,100 @@
+{
+ "data": [
+  {
+   "subplot": "mapbox",
+   "text": ["basic"],
+   "textposition": "top center",
+   "marker": {
+    "size": [0]
+   },
+   "type": "scattermapbox",
+   "mode": "markers+text",
+   "lon": [-75],
+   "lat": [45.05]
+  },
+  {
+   "subplot": "mapbox2",
+   "text": ["carto-darkmatter"],
+   "textposition": "top center",
+   "marker": {
+    "size": [0]
+   },
+   "type": "scattermapbox",
+   "mode": "markers+text",
+   "lon": [-75],
+   "lat": [45.05]
+  },
+  {
+   "subplot": "mapbox4",
+   "text": ["carto-positron"],
+   "textposition": "top center",
+   "marker": {
+    "size": [0]
+   },
+   "type": "scattermapbox",
+   "mode": "markers+text",
+   "lon": [-75],
+   "lat": [45.05]
+  }
+ ],
+ "layout": {
+  "mapbox": {
+   "zoom": 10,
+   "style": "basic",
+   "center": {
+    "lon": -75,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.84, 0.96]
+   }
+  },
+  "mapbox2": {
+   "zoom": 10,
+   "style": "carto-darkmatter",
+   "center": {
+    "lon": -75,
+    "lat": 45
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.7, 0.82]
+   }
+  },
+  "mapbox4": {
+    "zoom": 10,
+    "style": "carto-positron",
+    "center": {
+     "lon": -75,
+     "lat": 45
+    },
+    "domain": {
+     "x": [0, 1],
+     "y": [0.42, 0.54]
+    }
+   },
+
+  "height": 3000,
+  "width": 900,
+  "margin": {
+   "t": 50,
+   "b": 10,
+   "l": 10,
+   "r": 10
+  },
+  "showlegend": false,
+  "title": {
+   "text": "Predefined styles in mapbox",
+   "font": {
+    "size": 28,
+    "weight": 800,
+    "style": "italic"
+   }
+  },
+  "font": {
+   "color": "#777",
+   "size": 28
+  }
+ }
+}
