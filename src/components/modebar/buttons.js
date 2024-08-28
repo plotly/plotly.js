@@ -682,7 +682,8 @@ var DEFAULT_TEMPLATES = {
     category_y: '%{y}',
     x: 'x: %{x:.4~g}',
     y: 'y: %{y:.4~g}',
-    z: 'z: %{z:.4~g}',
+    // z: 'z: %{z:.4~g}',
+    z: 'z: %{z}',
     open: 'open: %{open:.2f}',
     high: 'high: %{high:.2f}',
     low: 'low: %{low:.2f}',
@@ -743,7 +744,7 @@ modeBarButtons.tooltip = {
 
                 var defaultTemplate = defaultTemplateParts.join('<br>');
 
-                var userTemplate = trace.tooltiptemplate || defaultTemplate; // Use user defined tooltiptemplate if availabe
+                var userTemplate = trace.tooltiptemplate || gd._fullData[traceIndex].tooltiptemplate || defaultTemplate; // Use user defined tooltiptemplate, or trace default if availabe
                 var customStyle = lodash.defaults({}, trace.tooltip, DEFAULT_STYLE);  // Merge custom style with default
                 addTooltip(gd, data, userTemplate, customStyle);
             };
