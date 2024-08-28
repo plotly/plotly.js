@@ -28,6 +28,7 @@ allNames = [
     'gl2d_no-clustering2',
     'gl3d_surface-heatmap-treemap_transparent-colorscale',
     'mapbox_density-multiple_legend',
+    'map_density-multiple_legend',
     'smith_modes',
     'zsmooth_methods',
     'fonts',

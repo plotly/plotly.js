@@ -884,7 +884,7 @@ describe('@noCIdep Plotly.react', function() {
     });
 
     mockLists.mapbox.forEach(function(mockSpec) {
-        it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbpox mocks)', function(done) {
+        it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbox mocks)', function(done) {
             Plotly.setPlotConfig({
                 mapboxAccessToken: MAPBOX_ACCESS_TOKEN
             });
@@ -892,7 +892,14 @@ describe('@noCIdep Plotly.react', function() {
         });
     });
 
-    // since CI breaks up gl/svg types, and drops scattermapbox, this test won't work there
+    mockLists.map.forEach(function(mockSpec) {
+        it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (map mocks)', function(done) {
+            Plotly.setPlotConfig({});
+            _runReactMock(mockSpec, done);
+        });
+    });
+
+    // since CI breaks up gl/svg types, and drops scattermap*, this test won't work there
     // but I should hope that if someone is doing something as major as adding a new type,
     // they'll run the full test suite locally!
     it('@noCI tested every trace & transform type at least once', function() {
@@ -1935,6 +1942,39 @@ describe('Plotly.react and uirevision attributes', function() {
         _run(fig, editMap, checkInitial, checkEdited).then(done);
     });
 
+    it('@gl preserves map view changes using map.uirevision', function(done) {
+        function fig(mainRev, mapRev) {
+            return {
+                data: [{lat: [1, 2], lon: [1, 2], type: 'scattermap'}],
+                layout: {
+                    uirevision: mainRev,
+                    map: {uirevision: mapRev}
+                }
+            };
+        }
+
+        function attrs(original) {
+            return {
+                'map.center.lat': original ? [undefined, 0] : 1,
+                'map.center.lon': original ? [undefined, 0] : 2,
+                'map.zoom': original ? [undefined, 1] : 3,
+                'map.bearing': original ? [undefined, 0] : 4,
+                'map.pitch': original ? [undefined, 0] : 5
+            };
+        }
+
+        function editMap() {
+            return Registry.call('_guiRelayout', gd, attrs());
+        }
+
+        var checkInitial = checkState([], attrs(true));
+        var checkEdited = checkState([], attrs());
+
+        Plotly.setPlotConfig({});
+
+        _run(fig, editMap, checkInitial, checkEdited).then(done);
+    });
+
     it('preserves editable: true shape & annotation edits using editrevision', function(done) {
         function fig(mainRev, editRev) {
             return {layout: {
@@ -2350,6 +2390,79 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             expect(fullMapbox.center.lon).toBe(0);
             expect(fullMapbox.center.lat).toBe(0);
             expect(fullMapbox.zoom).toBe(1);
+
+            expect(gd._fullLayout._preGUI).toEqual({});
+        })
+        .then(function() { return _drag([200, 200], [250, 250]); })
+        .then(function() { _assertGUI('before'); })
+        .then(_react)
+        .then(function() { _assertGUI('after'); })
+        .then(done, done.fail);
+    });
+
+    it('@gl map subplots should preserve viewport changes after panning', function(done) {
+        Plotly.setPlotConfig({});
+
+        function _react() {
+            return Plotly.react(gd, [{
+                type: 'scattermap',
+                lon: [3, 1, 2],
+                lat: [2, 3, 1]
+            }], {
+                width: 500,
+                height: 500,
+                uirevision: true
+            });
+        }
+
+        // see map_test.js for rationale
+        function _mouseEvent(type, pos) {
+            return new Promise(function(resolve) {
+                mouseEvent(type, pos[0], pos[1], {
+                    buttons: 1 // left button
+                });
+                setTimeout(resolve, 100);
+            });
+        }
+
+        // see map_test.js for rationale
+        function _drag(p0, p1) {
+            return _mouseEvent('mousemove', p0)
+                .then(function() { return _mouseEvent('mousedown', p0); })
+                .then(function() { return _mouseEvent('mousemove', p1); })
+                .then(function() { return _mouseEvent('mousemove', p1); })
+                .then(function() { return _mouseEvent('mouseup', p1); })
+                .then(function() { return _mouseEvent('mouseup', p1); });
+        }
+
+        // should be same before & after 2nd react()
+        function _assertGUI(msg) {
+            var TOL = 2;
+
+            var map = gd.layout.map || {};
+            expect((map.center || {}).lon).toBeCloseTo(-17.578, TOL, msg);
+            expect((map.center || {}).lat).toBeCloseTo(17.308, TOL, msg);
+            expect(map.zoom).toBe(1);
+
+            var fullMap = gd._fullLayout.map || {};
+            expect(fullMap.center.lon).toBeCloseTo(-17.578, TOL, msg);
+            expect(fullMap.center.lat).toBeCloseTo(17.308, TOL, msg);
+            expect(fullMap.zoom).toBe(1);
+
+            var preGUI = gd._fullLayout._preGUI;
+            expect(preGUI['map.center.lon']).toBe(null, msg);
+            expect(preGUI['map.center.lat']).toBe(null, msg);
+            expect(preGUI['map.zoom']).toBe(null, msg);
+        }
+
+        _react()
+        .then(function() {
+            expect(gd.layout.map).toEqual({});
+
+            var fullMap = gd._fullLayout.map;
+            expect(fullMap.center.lon).toBe(0);
+            expect(fullMap.center.lat).toBe(0);
+            expect(fullMap.zoom).toBe(1);
 
             expect(gd._fullLayout._preGUI).toEqual({});
         })

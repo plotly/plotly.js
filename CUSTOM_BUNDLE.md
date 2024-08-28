@@ -1,10 +1,29 @@
 # Custom bundle
 You can simply make custom bundles yourself, if none of the [distributed packages](https://github.com/plotly/plotly.js/blob/master/dist/README.md) meet your needs, or you want to make a more optimized bundle file with/without specific traces and transforms.
 
-Install plotly.js, move to plotly.js folder then install plotly.js dependencies:
+Make sure you have the versions of node/npm that's recommended:
+- plotly.js before 2.5: Node 12/npm 6
+- plotly.js from 2.5: Node 16/npm 8
+- plotly.js from 2.35: Node 18/npm 10
+
+To download a specific node version look [here](https://nodejs.org/en/download/package-manager).
+
+Note: For CI, it's faster to do `git clone --depth 1` to only get one commit.
+
+Clone plotly.js, where the <version> is one of [these](https://github.com/plotly/plotly.js/tags):
 ```sh
-npm i plotly.js
-cd node_modules/plotly.js
+git clone --branch <version> https://github.com/plotly/plotly.js.git
+```
+
+Note: If you've already cloned plotly.js, then could switch to another version with:
+```sh
+git fetch
+git checkout <version>
+```
+
+Move to plotly.js folder then install plotly.js dependencies:
+```sh
+cd plotly.js
 npm i
 ```
 

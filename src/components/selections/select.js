@@ -752,7 +752,7 @@ function clearSelectionsCache(dragOptions, immediateSelect) {
             var selections;
             if(
                 isSelectMode &&
-                !hasSubplot(dragOptions) // only allow cartesian - no mapbox for now
+                !hasSubplot(dragOptions) // only allow cartesian - no maps for now
             ) {
                 selections = newSelections(outlines, dragOptions);
             }
@@ -1549,7 +1549,7 @@ function getFillRangeItems(dragOptions) {
     var plotinfo = dragOptions.plotinfo;
 
     return (
-        plotinfo.fillRangeItems || // allow subplots (i.e. geo, mapbox, sankey) to override fillRangeItems routine
+        plotinfo.fillRangeItems || // allow subplots (i.e. geo, mapbox, map, sankey) to override fillRangeItems routine
         makeFillRangeItems(dragOptions.xaxes.concat(dragOptions.yaxes))
     );
 }

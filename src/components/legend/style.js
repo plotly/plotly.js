@@ -542,12 +542,14 @@ module.exports = function style(s, gd, legend) {
                     break;
                 case 'choropleth' :
                 case 'choroplethmapbox' :
+                case 'choroplethmap' :
                     ptsData = [
                         ['M-6,-6V6H6V-6Z']
                     ];
                     useGradient = true;
                     break;
                 case 'densitymapbox' :
+                case 'densitymap' :
                     ptsData = [
                         ['M-6,0 a6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0']
                     ];

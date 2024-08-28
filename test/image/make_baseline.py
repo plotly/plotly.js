@@ -95,6 +95,7 @@ allNames += [item for item, had_item in zip(LAST, HAD) if had_item]
 
 # unable to generate baselines for the following mocks
 blacklist = [
+    'map_stamen-style',
     'mapbox_density0-legend',
     'mapbox_osm-style',
     'mapbox_stamen-style', # Could pass by setting mapboxAccessToken to a stadiamaps.com token
