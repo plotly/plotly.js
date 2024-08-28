@@ -1610,7 +1610,7 @@ describe('mapbox plots', function() {
             .then(done, done.fail);
         });
 
-        it('@gl should be displayed for attributions defined in layers\' sourceattribution', function(done) {
+        it('@noCI @gl should be displayed for attributions defined in layers\' sourceattribution', function(done) {
             var mock = require('../../image/mocks/mapbox_layers.json');
             var customMock = Lib.extendDeep(mock);
 

@@ -53,7 +53,7 @@ exports.extractPathCoords = function(path, paramsToUse, isRaw) {
     return extractedCoordinates;
 };
 
-exports.getDataToPixel = function(gd, axis, isVertical, refType) {
+exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
     var gs = gd._fullLayout._size;
     var dataToPixel;
 
@@ -66,7 +66,8 @@ exports.getDataToPixel = function(gd, axis, isVertical, refType) {
             var d2r = exports.shapePositionToRange(axis);
 
             dataToPixel = function(v) {
-                return axis._offset + axis.r2p(d2r(v, true));
+                var shiftPixels = getPixelShift(axis, shift);
+                return axis._offset + axis.r2p(d2r(v, true)) + shiftPixels;
             };
 
             if(axis.type === 'date') dataToPixel = exports.decodeDate(dataToPixel);
@@ -179,6 +180,10 @@ exports.getPathString = function(gd, options) {
     var ya = Axes.getFromId(gd, options.yref);
     var gs = gd._fullLayout._size;
     var x2r, x2p, y2r, y2p;
+    var xShiftStart = getPixelShift(xa, options.x0shift);
+    var xShiftEnd = getPixelShift(xa, options.x1shift);
+    var yShiftStart = getPixelShift(ya, options.y0shift);
+    var yShiftEnd = getPixelShift(ya, options.y1shift);
     var x0, x1, y0, y1;
 
     if(xa) {
@@ -208,23 +213,22 @@ exports.getPathString = function(gd, options) {
         if(ya && ya.type === 'date') y2p = exports.decodeDate(y2p);
         return convertPath(options, x2p, y2p);
     }
-
     if(options.xsizemode === 'pixel') {
         var xAnchorPos = x2p(options.xanchor);
-        x0 = xAnchorPos + options.x0;
-        x1 = xAnchorPos + options.x1;
+        x0 = xAnchorPos + options.x0 + xShiftStart;
+        x1 = xAnchorPos + options.x1 + xShiftEnd;
     } else {
-        x0 = x2p(options.x0);
-        x1 = x2p(options.x1);
+        x0 = x2p(options.x0) + xShiftStart;
+        x1 = x2p(options.x1) + xShiftEnd;
     }
 
     if(options.ysizemode === 'pixel') {
         var yAnchorPos = y2p(options.yanchor);
-        y0 = yAnchorPos - options.y0;
-        y1 = yAnchorPos - options.y1;
+        y0 = yAnchorPos - options.y0 + yShiftStart;
+        y1 = yAnchorPos - options.y1 + yShiftEnd;
     } else {
-        y0 = y2p(options.y0);
-        y1 = y2p(options.y1);
+        y0 = y2p(options.y0) + yShiftStart;
+        y1 = y2p(options.y1) + yShiftEnd;
     }
 
     if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
@@ -278,4 +282,13 @@ function convertPath(options, x2p, y2p) {
 
         return segmentType + paramString;
     });
+}
+
+function getPixelShift(axis, shift) {
+    shift = shift || 0;
+    var shiftPixels = 0;
+    if(shift && axis && (axis.type === 'category' || axis.type === 'multicategory')) {
+        shiftPixels = (axis.r2p(1) - axis.r2p(0)) * shift;
+    }
+    return shiftPixels;
 }

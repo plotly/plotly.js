@@ -20,6 +20,8 @@ function ensureSingleAndAddDatum(parent, nodeType, className) {
     });
 }
 
+var zindexSeparator = constants.zindexSeparator;
+
 exports.name = 'cartesian';
 
 exports.attr = ['xaxis', 'yaxis'];
@@ -141,77 +143,84 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
         for(i = 0; i < calcdata.length; i++) traces.push(i);
     }
 
-    // For each subplot
-    for(i = 0; i < subplots.length; i++) {
-        var subplot = subplots[i];
-        var subplotInfo = fullLayout._plots[subplot];
+    var zindices = fullLayout._zindices;
+    // Plot each zorder group in ascending order
+    for(var z = 0; z < zindices.length; z++) {
+        var zorder = zindices[z];
 
-        // Get all calcdata (traces) for this subplot:
-        var cdSubplot = [];
-        var pcd;
+        // For each subplot
+        for(i = 0; i < subplots.length; i++) {
+            var subplot = subplots[i];
+            var subplotInfo = fullLayout._plots[subplot];
 
-        // For each trace
-        for(var j = 0; j < calcdata.length; j++) {
-            var cd = calcdata[j];
-            var trace = cd[0].trace;
+            if(z > 0) {
+                var idWithZ = subplotInfo.id;
+                if(idWithZ.indexOf(zindexSeparator) !== -1) continue;
+                idWithZ += zindexSeparator + (z + 1);
+                subplotInfo = Lib.extendFlat({}, subplotInfo, {
+                    id: idWithZ,
+                    plot: fullLayout._cartesianlayer.selectAll('.subplot').select('.' + idWithZ)
+                });
+            }
 
-            // Skip trace if whitelist provided and it's not whitelisted:
-            // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
-            if(trace.xaxis + trace.yaxis === subplot) {
-                // XXX: Should trace carpet dependencies. Only replot all carpet plots if the carpet
-                // axis has actually changed:
-                //
-                // If this trace is specifically requested, add it to the list:
-                if(traces.indexOf(trace.index) !== -1 || trace.carpet) {
-                    // Okay, so example: traces 0, 1, and 2 have fill = tonext. You animate
-                    // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
-                    // is outdated. So this retroactively adds the previous trace if the
-                    // traces are interdependent.
-                    if(
-                        pcd &&
-                        pcd[0].trace.xaxis + pcd[0].trace.yaxis === subplot &&
-                        ['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1 &&
-                        cdSubplot.indexOf(pcd) === -1
-                    ) {
-                        cdSubplot.push(pcd);
+            // Get all calcdata (traces) for this subplot:
+            var cdSubplot = [];
+            var pcd;
+
+            // For each trace
+            for(var j = 0; j < calcdata.length; j++) {
+                var cd = calcdata[j];
+                var trace = cd[0].trace;
+
+                if(zorder !== (trace.zorder || 0)) continue;
+
+                // Skip trace if whitelist provided and it's not whitelisted:
+                // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
+                if(trace.xaxis + trace.yaxis === subplot) {
+                    // XXX: Should trace carpet dependencies. Only replot all carpet plots if the carpet
+                    // axis has actually changed:
+                    //
+                    // If this trace is specifically requested, add it to the list:
+                    if(traces.indexOf(trace.index) !== -1 || trace.carpet) {
+                        // Okay, so example: traces 0, 1, and 2 have fill = tonext. You animate
+                        // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
+                        // is outdated. So this retroactively adds the previous trace if the
+                        // traces are interdependent.
+                        if(
+                            pcd &&
+                            pcd[0].trace.xaxis + pcd[0].trace.yaxis === subplot &&
+                            ['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1 &&
+                            cdSubplot.indexOf(pcd) === -1
+                        ) {
+                            cdSubplot.push(pcd);
+                        }
+
+                        cdSubplot.push(cd);
                     }
 
-                    cdSubplot.push(cd);
+                    // Track the previous trace on this subplot for the retroactive-add step
+                    // above:
+                    pcd = cd;
                 }
-
-                // Track the previous trace on this subplot for the retroactive-add step
-                // above:
-                pcd = cd;
             }
+            // Plot the traces for this subplot
+            plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback);
         }
-        // Plot the traces for this subplot
-        plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback);
     }
 };
 
 function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback) {
     var traceLayerClasses = constants.traceLayerClasses;
     var fullLayout = gd._fullLayout;
+    var zindices = fullLayout._zindices;
+
     var modules = fullLayout._modules;
     var _module, cdModuleAndOthers, cdModule;
-
-    // Separate traces by zorder and plot each zorder group separately
-    // TODO: Performance
-    var traceZorderGroups = {};
-    for(var t = 0; t < cdSubplot.length; t++) {
-        var trace = cdSubplot[t][0].trace;
-        var zi = trace.zorder || 0;
-        if(!traceZorderGroups[zi]) traceZorderGroups[zi] = [];
-        traceZorderGroups[zi].push(cdSubplot[t]);
-    }
 
     var layerData = [];
     var zoomScaleQueryParts = [];
 
     // Plot each zorder group in ascending order
-    var zindices = Object.keys(traceZorderGroups)
-        .map(Number)
-        .sort(Lib.sorterAsc);
     for(var z = 0; z < zindices.length; z++) {
         var zorder = zindices[z];
         // For each "module" (trace type)
@@ -363,6 +372,10 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
         for(i = 0; i < oldSubplotList.cartesian.length; i++) {
             var oldSubplotId = oldSubplotList.cartesian[i];
+
+            // skip zindex layes in this process
+            if(oldSubplotId.indexOf(zindexSeparator) !== -1) continue;
+
             if(!newPlots[oldSubplotId]) {
                 var selector = '.' + oldSubplotId + ',.' + oldSubplotId + '-x,.' + oldSubplotId + '-y';
                 oldFullLayout._cartesianlayer.selectAll(selector).remove();
@@ -374,10 +387,49 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
 exports.drawFramework = function(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotData = makeSubplotData(gd);
+    var calcdata = gd.calcdata;
+    var i;
+
+    // Separate traces by zorder and plot each zorder group separately
+    var traceZorderGroups = {};
+    for(i = 0; i < calcdata.length; i++) {
+        var cdi = calcdata[i][0];
+        var trace = cdi.trace;
+
+        var zi = trace.zorder || 0;
+        if(!traceZorderGroups[zi]) traceZorderGroups[zi] = [];
+        traceZorderGroups[zi].push(cdi);
+    }
+
+    // Group by zorder group in ascending order
+    var zindices = Object.keys(traceZorderGroups)
+        .map(Number)
+        .sort(Lib.sorterAsc);
+
+    if(!zindices.length) zindices = [0];
+
+    fullLayout._zindices = zindices;
+
+    var initialSubplotData = makeSubplotData(gd);
+
+    var len = initialSubplotData.length;
+    var subplotData = [];
+    for(i = 0; i < len; i++) {
+        subplotData[i] = initialSubplotData[i].slice();
+    }
+
+    for(var z = 1; z < zindices.length; z++) {
+        var newSubplotData = [];
+        for(i = 0; i < len; i++) {
+            newSubplotData[i] = initialSubplotData[i].slice();
+            newSubplotData[i][0] += zindexSeparator + (z + 1);
+        }
+        subplotData = subplotData.concat(newSubplotData);
+    }
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
         .data(subplotData, String);
+
 
     subplotLayers.enter().append('g')
         .attr('class', function(d) { return 'subplot ' + d[0]; });
@@ -389,15 +441,34 @@ exports.drawFramework = function(gd) {
 
     subplotLayers.each(function(d) {
         var id = d[0];
+        var posZ = id.indexOf(zindexSeparator);
+        var hasZ = posZ !== -1;
+        var idWithoutZ = hasZ ?
+            id.slice(0, posZ) :
+            id;
+
         var plotinfo = fullLayout._plots[id];
+        if(!plotinfo) {
+            plotinfo = Lib.extendFlat({}, fullLayout._plots[idWithoutZ]);
 
-        plotinfo.plotgroup = d3.select(this);
-        makeSubplotLayer(gd, plotinfo);
+            if(plotinfo) {
+                plotinfo.id = id;
+                fullLayout._plots[id] = plotinfo;
+                fullLayout._subplots.cartesian.push(id);
+            }
+        }
 
-        // make separate drag layers for each subplot,
-        // but append them to paper rather than the plot groups,
-        // so they end up on top of the rest
-        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
+        if(plotinfo) {
+            plotinfo.plotgroup = d3.select(this);
+            makeSubplotLayer(gd, plotinfo);
+
+            if(!hasZ) {
+                // make separate drag layers for each subplot,
+                // but append them to paper rather than the plot groups,
+                // so they end up on top of the rest
+                plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
+            }
+        }
     });
 };
 
@@ -409,6 +480,8 @@ exports.rangePlot = function(gd, plotinfo, cdSubplot) {
 
 function makeSubplotData(gd) {
     var fullLayout = gd._fullLayout;
+    var numZ = fullLayout._zindices.length;
+
     var ids = fullLayout._subplots.cartesian;
     var len = ids.length;
     var i, j, id, plotinfo, xa, ya;
@@ -449,7 +522,7 @@ function makeSubplotData(gd) {
 
     // put 'regular' subplot data before 'overlaying'
     var subplotIds = regulars.concat(overlays);
-    var subplotData = new Array(len);
+    var subplotData = [];
 
     for(i = 0; i < len; i++) {
         id = subplotIds[i];
@@ -457,13 +530,28 @@ function makeSubplotData(gd) {
         xa = plotinfo.xaxis;
         ya = plotinfo.yaxis;
 
-        // use info about axis layer and overlaying pattern
-        // to clean what need to be cleaned up in exit selection
-        var d = [id, xa.layer, ya.layer, xa.overlaying || '', ya.overlaying || ''];
-        for(j = 0; j < plotinfo.overlays.length; j++) {
-            d.push(plotinfo.overlays[j].id);
+        var d = [];
+
+        for(var z = 1; z <= numZ; z++) {
+            var zStr = '';
+            if(z > 1) zStr += zindexSeparator + z;
+
+            // use info about axis layer and overlaying pattern
+            // to clean what need to be cleaned up in exit selection
+            d.push(id + zStr);
+            for(j = 0; j < plotinfo.overlays.length; j++) {
+                d.push(plotinfo.overlays[j].id + zStr);
+            }
         }
-        subplotData[i] = d;
+
+        d = d.concat([
+            xa.layer,
+            ya.layer,
+            xa.overlaying || '',
+            ya.overlaying || ''
+        ]);
+
+        subplotData.push(d);
     }
     return subplotData;
 }
@@ -471,6 +559,10 @@ function makeSubplotData(gd) {
 function makeSubplotLayer(gd, plotinfo) {
     var plotgroup = plotinfo.plotgroup;
     var id = plotinfo.id;
+
+    var posZ = id.indexOf(zindexSeparator);
+    var hasZ = posZ !== -1;
+
     var xLayer = constants.layerValue2layerClass[plotinfo.xaxis.layer];
     var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
     var hasOnlyLargeSploms = gd._fullLayout._hasOnlyLargeSploms;
@@ -487,42 +579,46 @@ function makeSubplotLayer(gd, plotinfo) {
             plotinfo.xaxislayer = ensureSingle(plotgroup, 'g', 'xaxislayer-above');
             plotinfo.yaxislayer = ensureSingle(plotgroup, 'g', 'yaxislayer-above');
         } else {
-            var backLayer = ensureSingle(plotgroup, 'g', 'layer-subplot');
-            plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
-            plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
+            if(!hasZ) {
+                var backLayer = ensureSingle(plotgroup, 'g', 'layer-subplot');
+                plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
+                plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
 
-            plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
-            plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
-            plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+                plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
+                plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
+                plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
 
-            var betweenLayer = ensureSingle(plotgroup, 'g', 'layer-between');
-            plotinfo.shapelayerBetween = ensureSingle(betweenLayer, 'g', 'shapelayer');
-            plotinfo.imagelayerBetween = ensureSingle(betweenLayer, 'g', 'imagelayer');
+                var betweenLayer = ensureSingle(plotgroup, 'g', 'layer-between');
+                plotinfo.shapelayerBetween = ensureSingle(betweenLayer, 'g', 'shapelayer');
+                plotinfo.imagelayerBetween = ensureSingle(betweenLayer, 'g', 'imagelayer');
 
-            ensureSingle(plotgroup, 'path', 'xlines-below');
-            ensureSingle(plotgroup, 'path', 'ylines-below');
-            plotinfo.overlinesBelow = ensureSingle(plotgroup, 'g', 'overlines-below');
+                ensureSingle(plotgroup, 'path', 'xlines-below');
+                ensureSingle(plotgroup, 'path', 'ylines-below');
+                plotinfo.overlinesBelow = ensureSingle(plotgroup, 'g', 'overlines-below');
 
-            ensureSingle(plotgroup, 'g', 'xaxislayer-below');
-            ensureSingle(plotgroup, 'g', 'yaxislayer-below');
-            plotinfo.overaxesBelow = ensureSingle(plotgroup, 'g', 'overaxes-below');
+                ensureSingle(plotgroup, 'g', 'xaxislayer-below');
+                ensureSingle(plotgroup, 'g', 'yaxislayer-below');
+                plotinfo.overaxesBelow = ensureSingle(plotgroup, 'g', 'overaxes-below');
+            }
 
-            plotinfo.plot = ensureSingle(plotgroup, 'g', 'plot');
             plotinfo.overplot = ensureSingle(plotgroup, 'g', 'overplot');
+            plotinfo.plot = ensureSingle(plotinfo.overplot, 'g', id);
 
-            plotinfo.xlines = ensureSingle(plotgroup, 'path', 'xlines-above');
-            plotinfo.ylines = ensureSingle(plotgroup, 'path', 'ylines-above');
-            plotinfo.overlinesAbove = ensureSingle(plotgroup, 'g', 'overlines-above');
+            if(!hasZ) {
+                plotinfo.xlines = ensureSingle(plotgroup, 'path', 'xlines-above');
+                plotinfo.ylines = ensureSingle(plotgroup, 'path', 'ylines-above');
+                plotinfo.overlinesAbove = ensureSingle(plotgroup, 'g', 'overlines-above');
 
-            ensureSingle(plotgroup, 'g', 'xaxislayer-above');
-            ensureSingle(plotgroup, 'g', 'yaxislayer-above');
-            plotinfo.overaxesAbove = ensureSingle(plotgroup, 'g', 'overaxes-above');
+                ensureSingle(plotgroup, 'g', 'xaxislayer-above');
+                ensureSingle(plotgroup, 'g', 'yaxislayer-above');
+                plotinfo.overaxesAbove = ensureSingle(plotgroup, 'g', 'overaxes-above');
 
-            // set refs to correct layers as determined by 'axis.layer'
-            plotinfo.xlines = plotgroup.select('.xlines-' + xLayer);
-            plotinfo.ylines = plotgroup.select('.ylines-' + yLayer);
-            plotinfo.xaxislayer = plotgroup.select('.xaxislayer-' + xLayer);
-            plotinfo.yaxislayer = plotgroup.select('.yaxislayer-' + yLayer);
+                // set refs to correct layers as determined by 'axis.layer'
+                plotinfo.xlines = plotgroup.select('.xlines-' + xLayer);
+                plotinfo.ylines = plotgroup.select('.ylines-' + yLayer);
+                plotinfo.xaxislayer = plotgroup.select('.xaxislayer-' + xLayer);
+                plotinfo.yaxislayer = plotgroup.select('.yaxislayer-' + yLayer);
+            }
         }
     } else {
         var mainplotinfo = plotinfo.mainplotinfo;
@@ -558,29 +654,31 @@ function makeSubplotLayer(gd, plotinfo) {
         plotinfo.yaxislayer = mainplotgroup.select('.overaxes-' + yLayer).select('.' + yId);
     }
 
-    // common attributes for all subplots, overlays or not
+    if(!hasZ) {
+        // common attributes for all subplots, overlays or not
 
-    if(!hasOnlyLargeSploms) {
-        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
-        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
-        plotinfo.minorGridlayer.selectAll('g')
-            .map(function(d) { return d[0]; })
-            .sort(axisIds.idSort);
+        if(!hasOnlyLargeSploms) {
+            ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
+            ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
+            plotinfo.minorGridlayer.selectAll('g')
+                .map(function(d) { return d[0]; })
+                .sort(axisIds.idSort);
 
-        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
-        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
-        plotinfo.gridlayer.selectAll('g')
-            .map(function(d) { return d[0]; })
-            .sort(axisIds.idSort);
+            ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
+            ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
+            plotinfo.gridlayer.selectAll('g')
+                .map(function(d) { return d[0]; })
+                .sort(axisIds.idSort);
+        }
+
+        plotinfo.xlines
+            .style('fill', 'none')
+            .classed('crisp', true);
+
+        plotinfo.ylines
+            .style('fill', 'none')
+            .classed('crisp', true);
     }
-
-    plotinfo.xlines
-        .style('fill', 'none')
-        .classed('crisp', true);
-
-    plotinfo.ylines
-        .style('fill', 'none')
-        .classed('crisp', true);
 }
 
 function purgeSubplotLayers(layers, fullLayout) {

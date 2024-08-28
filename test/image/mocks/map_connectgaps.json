@@ -1,0 +1,38 @@
+{
+ "data": [
+  {
+   "type": "scattermap",
+   "mode": "lines",
+   "lon": [10, 20, 30, null, 20, 30, 40],
+   "lat": [10, 20, 30, null, 10, 20, 30],
+   "line": {
+    "width": 5
+   },
+   "name": "connectgaps false"
+  },
+  {
+   "type": "scattermap",
+   "mode": "lines",
+   "lon": [10, 20, 30, null, 20, 30, 40],
+   "lat": [-10, -20, -30, null, -10, -20, -30],
+   "line": {
+    "width": 10
+   },
+   "connectgaps": true,
+   "name": "connectgaps true"
+  }
+ ],
+ "layout": {
+  "map": {
+   "style": "streets",
+   "zoom": 1.5,
+   "center": {
+    "lon": 56,
+    "lat": 1
+   }
+  },
+  "height": 450,
+  "width": 1100,
+  "autosize": true
+ }
+}

@@ -132,7 +132,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         var opts = {
             font: layout.font,
             noAutotickangles: true,
-            outerTicks: true
+            outerTicks: true,
+            noTicklabelshift: true,
+            noTicklabelstandoff: true
         };
         handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');
         handlePrefixSuffixDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);

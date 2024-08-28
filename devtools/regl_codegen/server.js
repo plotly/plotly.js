@@ -22,7 +22,7 @@ var reglTraceList = [
 ];
 
 // Create server
-var static = ecstatic({
+var _static = ecstatic({
     root: constants.pathToRoot,
     cache: 0,
     gzip: true,
@@ -53,7 +53,7 @@ var server = http.createServer(function(req, res) {
         res.end();
         setTimeout(process.exit, 1000);
     } else {
-        static(req, res);
+        _static(req, res);
     }
 });
 

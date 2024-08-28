@@ -169,7 +169,30 @@ module.exports = templatedArray('shape', {
             'See `type` and `xsizemode` for more info.'
         ].join(' ')
     },
-
+    x0shift: {
+        valType: 'number',
+        dflt: 0,
+        min: -1,
+        max: 1,
+        editType: 'calc',
+        description: [
+            'Shifts `x0` away from the center of the category when `xref` is a *category* or',
+            '*multicategory* axis. -0.5 corresponds to the start of the category and 0.5',
+            'corresponds to the end of the category.'
+        ].join(' ')
+    },
+    x1shift: {
+        valType: 'number',
+        dflt: 0,
+        min: -1,
+        max: 1,
+        editType: 'calc',
+        description: [
+            'Shifts `x1` away from the center of the category when `xref` is a *category* or',
+            '*multicategory* axis. -0.5 corresponds to the start of the category and 0.5',
+            'corresponds to the end of the category.'
+        ].join(' ')
+    },
     yref: extendFlat({}, annAttrs.yref, {
         description: [
             'Sets the shape\'s y coordinate axis.',
@@ -220,7 +243,30 @@ module.exports = templatedArray('shape', {
             'See `type` and `ysizemode` for more info.'
         ].join(' ')
     },
-
+    y0shift: {
+        valType: 'number',
+        dflt: 0,
+        min: -1,
+        max: 1,
+        editType: 'calc',
+        description: [
+            'Shifts `y0` away from the center of the category when `yref` is a *category* or',
+            '*multicategory* axis. -0.5 corresponds to the start of the category and 0.5',
+            'corresponds to the end of the category.'
+        ].join(' ')
+    },
+    y1shift: {
+        valType: 'number',
+        dflt: 0,
+        min: -1,
+        max: 1,
+        editType: 'calc',
+        description: [
+            'Shifts `y1` away from the center of the category when `yref` is a *category* or',
+            '*multicategory* axis. -0.5 corresponds to the start of the category and 0.5',
+            'corresponds to the end of the category.'
+        ].join(' ')
+    },
     path: {
         valType: 'string',
         editType: 'calc+arraydraw',

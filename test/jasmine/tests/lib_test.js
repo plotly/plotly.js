@@ -126,6 +126,24 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('geometricMean() should', function() {
+        it('toss out non-numerics (strings)', function() {
+            var input = [1, 2, 'apple', 'orange'];
+            var res = Lib.geometricMean(input);
+            expect(res).toBeCloseTo(1.414, 3);
+        });
+        it('toss out non-numerics (NaN)', function() {
+            var input = [1, 2, NaN];
+            var res = Lib.geometricMean(input);
+            expect(res).toBeCloseTo(1.414, 3);
+        });
+        it('evaluate numbers which are passed around as text strings:', function() {
+            var input = ['1', '2'];
+            var res = Lib.geometricMean(input);
+            expect(res).toBeCloseTo(1.414, 3);
+        });
+    });
+
     describe('midRange() should', function() {
         it('should calculate the arithmetic mean of the maximum and minimum value of a given array', function() {
             var input = [1, 5.5, 6, 15, 10, 13];
@@ -2569,7 +2587,7 @@ describe('Test lib.js:', function() {
         });
 
         it('puts simple subplots in the right order', function() {
-            ['scene', 'geo', 'ternary', 'mapbox'].forEach(function(v) {
+            ['scene', 'geo', 'ternary', 'mapbox', 'map'].forEach(function(v) {
                 var a = [v + '100', v + '43', v, v + '10', v + '2'];
                 a.sort(Lib.subplotSort);
                 expect(a).toEqual([v, v + '2', v + '10', v + '43', v + '100']);

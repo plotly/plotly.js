@@ -280,6 +280,40 @@ describe('filter transforms calc:', function() {
         expect(out[1].lat).toEqual([-50, -40]);
     });
 
+    it('filters should handle geographical *lon* data', function() {
+        var trace0 = {
+            type: 'scattergeo',
+            lon: [-90, -40, 100, 120, 130],
+            lat: [-50, -40, 10, 20, 30],
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: 0,
+                target: 'lon'
+            }]
+        };
+
+        var trace1 = {
+            type: 'scattermap',
+            lon: [-90, -40, 100, 120, 130],
+            lat: [-50, -40, 10, 20, 30],
+            transforms: [{
+                type: 'filter',
+                operation: '<',
+                value: 0,
+                target: 'lat'
+            }]
+        };
+
+        var out = _transform([trace0, trace1]);
+
+        expect(out[0].lon).toEqual([100, 120, 130]);
+        expect(out[0].lat).toEqual([10, 20, 30]);
+
+        expect(out[1].lon).toEqual([-90, -40]);
+        expect(out[1].lat).toEqual([-50, -40]);
+    });
+
     it('filters should handle nested attributes', function() {
         var out = _transform([Lib.extendDeep({}, base, {
             transforms: [{
@@ -1367,6 +1401,20 @@ describe('filter resulting in empty coordinate arrays', function() {
         Plotly.setPlotConfig({
             mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
         });
+
+        mockList.forEach(function(d) {
+            it('@gl' + d[0], function(done) {
+                gd = createGraphDiv();
+                var fig = filter2empty(d[1]);
+                Plotly.newPlot(gd, fig).then(done, done.fail);
+            });
+        });
+    });
+
+    describe('map mocks', function() {
+        var mockList = require('../assets/mock_lists').map;
+
+        Plotly.setPlotConfig({});
 
         mockList.forEach(function(d) {
             it('@gl' + d[0], function(done) {

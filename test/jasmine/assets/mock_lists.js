@@ -77,9 +77,16 @@ var mapboxMockList = [
     ['densitymapbox', require('../../image/mocks/mapbox_density0.json')]
 ];
 
+var mapMockList = [
+    ['scattermap', require('../../image/mocks/map_bubbles-text.json')],
+    ['choroplethmap', require('../../image/mocks/map_choropleth0.json')],
+    ['densitymap', require('../../image/mocks/map_density0.json')]
+];
+
 module.exports = {
     svg: svgMockList,
     gl: glMockList,
     mapbox: mapboxMockList,
-    all: svgMockList.concat(glMockList).concat(mapboxMockList)
+    map: mapMockList,
+    all: svgMockList.concat(glMockList).concat(mapboxMockList).concat(mapMockList)
 };

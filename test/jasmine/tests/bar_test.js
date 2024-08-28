@@ -2087,7 +2087,7 @@ describe('A bar plot', function() {
         }
 
         function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
-            var subplotLayer = d3Select('.plot');
+            var subplotLayer = d3Select('.overplot').select('.xy');
             var barLayer = subplotLayer.select('.barlayer');
 
             _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
