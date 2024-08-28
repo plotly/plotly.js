@@ -100,14 +100,11 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
         } else {
             dPos = dPos0;
 
-            var groupId = getAxisGroup(fullLayout, posAxis._id) + trace.orientation;
-            if(fullLayout._alignmentOpts[traceType] === undefined) {
-                fullLayout._alignmentOpts[traceType] = {};
-            }
-            var alignmentGroups = fullLayout._alignmentOpts[traceType][groupId] || {};
-            var alignmentGroupOpts = alignmentGroups[trace.alignmentgroup] || {};
-            var nOffsetGroups = Object.keys(alignmentGroupOpts.offsetGroups || {}).length;
             if(group) {
+                var groupId = getAxisGroup(fullLayout, posAxis._id) + trace.orientation;
+                var alignmentGroups = fullLayout._alignmentOpts[groupId] || {};
+                var alignmentGroupOpts = alignmentGroups[trace.alignmentgroup] || {};
+                var nOffsetGroups = Object.keys(alignmentGroupOpts.offsetGroups || {}).length;
                 var num = nOffsetGroups || numTotal;
                 var shift = nOffsetGroups ? trace._offsetIndex : t.num;
 

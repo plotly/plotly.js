@@ -8,12 +8,7 @@ module.exports = function handleGroupingDefaults(traceIn, traceOut, fullLayout, 
     var posAxId = traceOut[{v: 'x', h: 'y'}[orientation] + 'axis'];
     var groupId = getAxisGroup(fullLayout, posAxId) + orientation;
 
-    var allAlignmentOpts = fullLayout._alignmentOpts || {};
-    if(allAlignmentOpts[traceOut.type] === undefined) {
-        allAlignmentOpts[traceOut.type] = {};
-    }
-    var alignmentOpts = allAlignmentOpts[traceOut.type];
-
+    var alignmentOpts = fullLayout._alignmentOpts || {};
     var alignmentgroup = coerce('alignmentgroup');
 
     var alignmentGroups = alignmentOpts[groupId];
