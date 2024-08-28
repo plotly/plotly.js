@@ -2,9 +2,10 @@
 
 // Fix for Chrome 128
 var INF = 1e38;
-function ensureFinite(arr) {
+function ensureFinite(arr, dfltNaN) {
     return arr.map(function(v) {
         return (
+            isNaN(v) ? dfltNaN :
             v > INF ? INF :
             v < -INF ? -INF :
             v
@@ -576,14 +577,14 @@ module.exports = function(canvasGL, d) {
         return {
             maskTexture: maskTexture,
             maskHeight: maskHeight,
-            loA: ensureFinite(limits[0].slice(0, 16)),
-            loB: ensureFinite(limits[0].slice(16, 32)),
-            loC: ensureFinite(limits[0].slice(32, 48)),
-            loD: ensureFinite(limits[0].slice(48, 64)),
-            hiA: ensureFinite(limits[1].slice(0, 16)),
-            hiB: ensureFinite(limits[1].slice(16, 32)),
-            hiC: ensureFinite(limits[1].slice(32, 48)),
-            hiD: ensureFinite(limits[1].slice(48, 64)),
+            loA: ensureFinite(limits[0].slice(0, 16), -INF),
+            loB: ensureFinite(limits[0].slice(16, 32), -INF),
+            loC: ensureFinite(limits[0].slice(32, 48), -INF),
+            loD: ensureFinite(limits[0].slice(48, 64), -INF),
+            hiA: ensureFinite(limits[1].slice(0, 16), INF),
+            hiB: ensureFinite(limits[1].slice(16, 32), INF),
+            hiC: ensureFinite(limits[1].slice(32, 48), INF),
+            hiD: ensureFinite(limits[1].slice(48, 64), INF),
         };
     }
 
