@@ -29751,7 +29751,7 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
+     "description": "mapbox subplots and traces are deprecated! Please consider switching to `map` subplots and traces. Learn more at: https://plotly.com/javascript/maplibre-migration/ Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
      "dflt": "mapbox",
      "editType": "calc",
      "valType": "subplotid"
@@ -29865,7 +29865,7 @@
     "showLegend"
    ],
    "meta": {
-    "description": "GeoJSON features to be filled are set in `geojson` The data that describes the choropleth value-to-color mapping is set in `locations` and `z`.",
+    "description": "*choroplethmapbox* trace is deprecated! Please consider switching to the *choroplethmap* trace type and `map` subplots. Learn more at: https://plotly.com/javascript/maplibre-migration/ GeoJSON features to be filled are set in `geojson` The data that describes the choropleth value-to-color mapping is set in `locations` and `z`.",
     "hr_name": "choropleth_mapbox"
    },
    "type": "choroplethmapbox"
@@ -37184,7 +37184,7 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
+     "description": "mapbox subplots and traces are deprecated! Please consider switching to `map` subplots and traces. Learn more at: https://plotly.com/javascript/maplibre-migration/ Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
      "dflt": "mapbox",
      "editType": "calc",
      "valType": "subplotid"
@@ -37282,7 +37282,7 @@
     "showLegend"
    ],
    "meta": {
-    "description": "Draws a bivariate kernel density estimation with a Gaussian kernel from `lon` and `lat` coordinates and optional `z` values using a colorscale.",
+    "description": "*densitymapbox* trace is deprecated! Please consider switching to the *densitymap* trace type and `map` subplots. Learn more at: https://plotly.com/javascript/maplibre-migration/ Draws a bivariate kernel density estimation with a Gaussian kernel from `lon` and `lat` coordinates and optional `z` values using a colorscale.",
     "hr_name": "density_mapbox"
    },
    "type": "densitymapbox"
@@ -80422,7 +80422,7 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
+     "description": "mapbox subplots and traces are deprecated! Please consider switching to `map` subplots and traces. Learn more at: https://plotly.com/javascript/maplibre-migration/ Sets a reference between this trace's data coordinates and a mapbox subplot. If *mapbox* (the default value), the data refer to `layout.mapbox`. If *mapbox2*, the data refer to `layout.mapbox2`, and so on.",
      "dflt": "mapbox",
      "editType": "calc",
      "valType": "subplotid"
@@ -80580,7 +80580,7 @@
     "scatter-like"
    ],
    "meta": {
-    "description": "The data visualized as scatter point, lines or marker symbols on a Mapbox GL geographic map is provided by longitude/latitude pairs in `lon` and `lat`.",
+    "description": "*scattermapbox* trace is deprecated! Please consider switching to the *scattermap* trace type and `map` subplots. Learn more at: https://plotly.com/javascript/maplibre-migration/ The data visualized as scatter point, lines or marker symbols on a Mapbox GL geographic map is provided by longitude/latitude pairs in `lon` and `lat`.",
     "hrName": "scatter_mapbox"
    },
    "type": "scattermapbox"
