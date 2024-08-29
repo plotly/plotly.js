@@ -12,7 +12,8 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ## [2.35.0] -- 2024-08-29
 
 ### Added
- - Add new traces: scattermap, choroplethmap and densitymap and map subplots which use maplibre to render maps [[#7015](https://github.com/plotly/plotly.js/pull/7015), [#7060](https://github.com/plotly/plotly.js/pull/7060), [#7085](https://github.com/plotly/plotly.js/pull/7085), [#7088](https://github.com/plotly/plotly.js/pull/7088), [#7090](https://github.com/plotly/plotly.js/pull/7090), [#7092](https://github.com/plotly/plotly.js/pull/7092), [#7094](https://github.com/plotly/plotly.js/pull/7094), [#7134](https://github.com/plotly/plotly.js/pull/7134)]
+ - Add new traces: scattermap, choroplethmap and densitymap and map subplots which use maplibre to render maps [[#7015](https://github.com/plotly/plotly.js/pull/7015), [#7060](https://github.com/plotly/plotly.js/pull/7060), [#7085](https://github.com/plotly/plotly.js/pull/7085), [#7088](https://github.com/plotly/plotly.js/pull/7088), [#7090](https://github.com/plotly/plotly.js/pull/7090), [#7092](https://github.com/plotly/plotly.js/pull/7092), [#7094](https://github.com/plotly/plotly.js/pull/7094), [#7134](https://github.com/plotly/plotly.js/pull/7134)],
+ with thanks to @birkskyum for the contribution!
 
 ### Changed
  - Deprecate mapbox traces and mapbox subplot [[#7087](https://github.com/plotly/plotly.js/pull/7087)]
