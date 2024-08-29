@@ -27,7 +27,8 @@ exports.idRegex = exports.attrRegex = Lib.counterRegex(MAPBOX);
 
 var deprecationWarning = [
     'mapbox subplots and traces are deprecated!',
-    'Please consider switching to `map` subplots and traces.'
+    'Please consider switching to `map` subplots and traces.',
+    'Learn more at: https://plotly.com/javascript/maplibre-migration/'
 ].join(' ');
 
 exports.attributes = {
@@ -52,7 +53,7 @@ exports.supplyLayoutDefaults = require('./layout_defaults');
 var firstPlot = true;
 
 exports.plot = function plot(gd) {
-    if(firstPlot) {
+    if (firstPlot) {
         firstPlot = false;
         Lib.warn(deprecationWarning);
     }
@@ -61,25 +62,25 @@ exports.plot = function plot(gd) {
     var calcData = gd.calcdata;
     var mapboxIds = fullLayout._subplots[MAPBOX];
 
-    if(mapboxgl.version !== constants.requiredVersion) {
+    if (mapboxgl.version !== constants.requiredVersion) {
         throw new Error(constants.wrongVersionErrorMsg);
     }
 
     var accessToken = findAccessToken(gd, mapboxIds);
     mapboxgl.accessToken = accessToken;
 
-    for(var i = 0; i < mapboxIds.length; i++) {
+    for (var i = 0; i < mapboxIds.length; i++) {
         var id = mapboxIds[i];
         var subplotCalcData = getSubplotCalcData(calcData, MAPBOX, id);
         var opts = fullLayout[id];
         var mapbox = opts._subplot;
 
-        if(!mapbox) {
+        if (!mapbox) {
             mapbox = new Mapbox(gd, id);
             fullLayout[id]._subplot = mapbox;
         }
 
-        if(!mapbox.viewInitial) {
+        if (!mapbox.viewInitial) {
             mapbox.viewInitial = {
                 center: Lib.extendFlat({}, opts.center),
                 zoom: opts.zoom,
@@ -92,24 +93,24 @@ exports.plot = function plot(gd) {
     }
 };
 
-exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+exports.clean = function (newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var oldMapboxKeys = oldFullLayout._subplots[MAPBOX] || [];
 
-    for(var i = 0; i < oldMapboxKeys.length; i++) {
+    for (var i = 0; i < oldMapboxKeys.length; i++) {
         var oldMapboxKey = oldMapboxKeys[i];
 
-        if(!newFullLayout[oldMapboxKey] && !!oldFullLayout[oldMapboxKey]._subplot) {
+        if (!newFullLayout[oldMapboxKey] && !!oldFullLayout[oldMapboxKey]._subplot) {
             oldFullLayout[oldMapboxKey]._subplot.destroy();
         }
     }
 };
 
-exports.toSVG = function(gd) {
+exports.toSVG = function (gd) {
     var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots[MAPBOX];
     var size = fullLayout._size;
 
-    for(var i = 0; i < subplotIds.length; i++) {
+    for (var i = 0; i < subplotIds.length; i++) {
         var opts = fullLayout[subplotIds[i]];
         var domain = opts.domain;
         var mapbox = opts._subplot;
@@ -131,65 +132,65 @@ exports.toSVG = function(gd) {
 
         // Append logo if visible
         var hidden = subplotDiv.select('.mapboxgl-ctrl-logo').node().offsetParent === null;
-        if(!hidden) {
+        if (!hidden) {
             var logo = fullLayout._glimages.append('g');
             logo.attr('transform', strTranslate(size.l + size.w * domain.x[0] + 10, size.t + size.h * (1 - domain.y[0]) - 31));
             logo.append('path')
-              .attr('d', constants.mapboxLogo.path0)
-              .style({
-                  opacity: 0.9,
-                  fill: '#ffffff',
-                  'enable-background': 'new'
-              });
+                .attr('d', constants.mapboxLogo.path0)
+                .style({
+                    opacity: 0.9,
+                    fill: '#ffffff',
+                    'enable-background': 'new'
+                });
 
             logo.append('path')
-              .attr('d', constants.mapboxLogo.path1)
-              .style('opacity', 0.35)
-              .style('enable-background', 'new');
+                .attr('d', constants.mapboxLogo.path1)
+                .style('opacity', 0.35)
+                .style('enable-background', 'new');
 
             logo.append('path')
-              .attr('d', constants.mapboxLogo.path2)
-              .style('opacity', 0.35)
-              .style('enable-background', 'new');
+                .attr('d', constants.mapboxLogo.path2)
+                .style('opacity', 0.35)
+                .style('enable-background', 'new');
 
             logo.append('polygon')
-              .attr('points', constants.mapboxLogo.polygon)
-              .style({
-                  opacity: 0.9,
-                  fill: '#ffffff',
-                  'enable-background': 'new'
-              });
+                .attr('points', constants.mapboxLogo.polygon)
+                .style({
+                    opacity: 0.9,
+                    fill: '#ffffff',
+                    'enable-background': 'new'
+                });
         }
 
         // Add attributions
         var attributions = subplotDiv
-                              .select('.mapboxgl-ctrl-attrib').text()
-                              .replace('Improve this map', '');
+            .select('.mapboxgl-ctrl-attrib').text()
+            .replace('Improve this map', '');
 
         var attributionGroup = fullLayout._glimages.append('g');
 
         var attributionText = attributionGroup.append('text');
         attributionText
-          .text(attributions)
-          .classed('static-attribution', true)
-          .attr({
-              'font-size': 12,
-              'font-family': 'Arial',
-              color: 'rgba(0, 0, 0, 0.75)',
-              'text-anchor': 'end',
-              'data-unformatted': attributions
-          });
+            .text(attributions)
+            .classed('static-attribution', true)
+            .attr({
+                'font-size': 12,
+                'font-family': 'Arial',
+                color: 'rgba(0, 0, 0, 0.75)',
+                'text-anchor': 'end',
+                'data-unformatted': attributions
+            });
 
         var bBox = Drawing.bBox(attributionText.node());
 
         // Break into multiple lines twice larger than domain
         var maxWidth = size.w * (domain.x[1] - domain.x[0]);
-        if((bBox.width > maxWidth / 2)) {
+        if ((bBox.width > maxWidth / 2)) {
             var multilineAttributions = attributions.split('|').join('<br>');
             attributionText
-              .text(multilineAttributions)
-              .attr('data-unformatted', multilineAttributions)
-              .call(svgTextUtils.convertToTspans, gd);
+                .text(multilineAttributions)
+                .attr('data-unformatted', multilineAttributions)
+                .call(svgTextUtils.convertToTspans, gd);
 
             bBox = Drawing.bBox(attributionText.node());
         }
@@ -197,18 +198,18 @@ exports.toSVG = function(gd) {
 
         // Draw white rectangle behind text
         attributionGroup
-          .insert('rect', '.static-attribution')
-          .attr({
-              x: -bBox.width - 6,
-              y: -bBox.height - 3,
-              width: bBox.width + 6,
-              height: bBox.height + 3,
-              fill: 'rgba(255, 255, 255, 0.75)'
-          });
+            .insert('rect', '.static-attribution')
+            .attr({
+                x: -bBox.width - 6,
+                y: -bBox.height - 3,
+                width: bBox.width + 6,
+                height: bBox.height + 3,
+                fill: 'rgba(255, 255, 255, 0.75)'
+            });
 
         // Scale down if larger than domain
         var scaleRatio = 1;
-        if((bBox.width + 6) > maxWidth) scaleRatio = maxWidth / (bBox.width + 6);
+        if ((bBox.width + 6) > maxWidth) scaleRatio = maxWidth / (bBox.width + 6);
 
         var offset = [(size.l + size.w * domain.x[1]), (size.t + size.h * (1 - domain.y[0]))];
         attributionGroup.attr('transform', strTranslate(offset[0], offset[1]) + strScale(scaleRatio));
@@ -222,7 +223,7 @@ function findAccessToken(gd, mapboxIds) {
     var context = gd._context;
 
     // special case for Mapbox Atlas users
-    if(context.mapboxAccessToken === '') return '';
+    if (context.mapboxAccessToken === '') return '';
 
     var tokensUseful = [];
     var tokensListed = [];
@@ -231,15 +232,15 @@ function findAccessToken(gd, mapboxIds) {
 
     // Take the first token we find in a mapbox subplot.
     // These default to the context value but may be overridden.
-    for(var i = 0; i < mapboxIds.length; i++) {
+    for (var i = 0; i < mapboxIds.length; i++) {
         var opts = fullLayout[mapboxIds[i]];
         var token = opts.accesstoken;
 
-        if(isStyleRequireAccessToken(opts.style)) {
-            if(token) {
+        if (isStyleRequireAccessToken(opts.style)) {
+            if (token) {
                 Lib.pushUnique(tokensUseful, token);
             } else {
-                if(isStyleRequireAccessToken(opts._input.style)) {
+                if (isStyleRequireAccessToken(opts._input.style)) {
                     Lib.error('Uses Mapbox map style, but did not set an access token.');
                     hasOneSetMapboxStyle = true;
                 }
@@ -247,12 +248,12 @@ function findAccessToken(gd, mapboxIds) {
             }
         }
 
-        if(token) {
+        if (token) {
             Lib.pushUnique(tokensListed, token);
         }
     }
 
-    if(wontWork) {
+    if (wontWork) {
         var msg = hasOneSetMapboxStyle ?
             constants.noAccessTokenErrorMsg :
             constants.missingStyleErrorMsg;
@@ -260,13 +261,13 @@ function findAccessToken(gd, mapboxIds) {
         throw new Error(msg);
     }
 
-    if(tokensUseful.length) {
-        if(tokensUseful.length > 1) {
+    if (tokensUseful.length) {
+        if (tokensUseful.length > 1) {
             Lib.warn(constants.multipleTokensErrorMsg);
         }
         return tokensUseful[0];
     } else {
-        if(tokensListed.length) {
+        if (tokensListed.length) {
             Lib.log([
                 'Listed mapbox access token(s)', tokensListed.join(','),
                 'but did not use a Mapbox map style, ignoring token(s).'
@@ -284,11 +285,11 @@ function isStyleRequireAccessToken(s) {
     );
 }
 
-exports.updateFx = function(gd) {
+exports.updateFx = function (gd) {
     var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots[MAPBOX];
 
-    for(var i = 0; i < subplotIds.length; i++) {
+    for (var i = 0; i < subplotIds.length; i++) {
         var subplotObj = fullLayout[subplotIds[i]]._subplot;
         subplotObj.updateFx(fullLayout);
     }

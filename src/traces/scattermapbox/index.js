@@ -2,7 +2,8 @@
 
 var deprecationWarning = [
     '*scattermapbox* trace is deprecated!',
-    'Please consider switching to the *scattermap* trace type and `map` subplots.'
+    'Please consider switching to the *scattermap* trace type and `map` subplots.',
+    'Learn more at: https://plotly.com/javascript/maplibre-migration/'
 ].join(' ');
 
 module.exports = {
@@ -16,8 +17,8 @@ module.exports = {
     eventData: require('./event_data'),
     selectPoints: require('./select'),
 
-    styleOnSelect: function(_, cd) {
-        if(cd) {
+    styleOnSelect: function (_, cd) {
+        if (cd) {
             var trace = cd[0].trace;
             trace._glTrace.update(cd);
         }

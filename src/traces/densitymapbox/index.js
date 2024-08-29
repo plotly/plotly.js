@@ -2,7 +2,8 @@
 
 var deprecationWarning = [
     '*densitymapbox* trace is deprecated!',
-    'Please consider switching to the *densitymap* trace type and `map` subplots.'
+    'Please consider switching to the *densitymap* trace type and `map` subplots.',
+    'Learn more at: https://plotly.com/javascript/maplibre-migration/'
 ].join(' ');
 
 module.exports = {
@@ -15,15 +16,15 @@ module.exports = {
     hoverPoints: require('./hover'),
     eventData: require('./event_data'),
 
-    getBelow: function(trace, subplot) {
+    getBelow: function (trace, subplot) {
         var mapLayers = subplot.getMapLayers();
 
         // find first layer with `type: 'symbol'`,
         // that is not a plotly layer
-        for(var i = 0; i < mapLayers.length; i++) {
+        for (var i = 0; i < mapLayers.length; i++) {
             var layer = mapLayers[i];
             var layerId = layer.id;
-            if(layer.type === 'symbol' &&
+            if (layer.type === 'symbol' &&
                 typeof layerId === 'string' && layerId.indexOf('plotly-') === -1
             ) {
                 return layerId;
