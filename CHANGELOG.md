@@ -9,6 +9,26 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.35.0] -- 2024-08-29
+
+### Added
+ - Add new traces: scattermap, choroplethmap and densitymap and map subplots which use maplibre to render maps [[#7015](https://github.com/plotly/plotly.js/pull/7015), [#7060](https://github.com/plotly/plotly.js/pull/7060), [#7085](https://github.com/plotly/plotly.js/pull/7085), [#7088](https://github.com/plotly/plotly.js/pull/7088), [#7090](https://github.com/plotly/plotly.js/pull/7090), [#7092](https://github.com/plotly/plotly.js/pull/7092), [#7094](https://github.com/plotly/plotly.js/pull/7094), [#7134](https://github.com/plotly/plotly.js/pull/7134)]
+
+### Changed
+ - Deprecate mapbox traces and mapbox subplot [[#7087](https://github.com/plotly/plotly.js/pull/7087)]
+ - Drop obsolete `npm v6` installation [[#7095](https://github.com/plotly/plotly.js/pull/7095)]
+ - Use `Node.js v18` and `npm v10` in development [[#7078](https://github.com/plotly/plotly.js/pull/7078)]
+ - Update npm lockfile to v3 [[#7099](https://github.com/plotly/plotly.js/pull/7099)]
+ - Update turf to v7 [[#7116](https://github.com/plotly/plotly.js/pull/7116)]
+
+### Fixed
+ - Fix centroid calculation in turf [[#7115](https://github.com/plotly/plotly.js/pull/7115)],
+   with thanks to @birkskyum for the contribution!
+ - Fix missing cursor for Ternary Plot[[#7057](https://github.com/plotly/plotly.js/pull/7057)],
+   with thanks to @Lexachoc for the contribution!
+ - Elaborate on the Custom Bundle guide [[#7101](https://github.com/plotly/plotly.js/pull/7101)]
+
+
 ## [2.34.0] -- 2024-07-18
 
 ### Added
