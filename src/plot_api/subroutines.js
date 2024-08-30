@@ -135,7 +135,7 @@ function lsInner(gd) {
         } else {
             var xDomain = plotinfo.xaxis.domain;
             var yDomain = plotinfo.yaxis.domain;
-            var plotgroup = plotinfo.plotgroup;
+            var plotgroup = plotinfo.plotgroup[0];
 
             if(overlappingDomain(xDomain, yDomain, lowerDomains) && subplot.indexOf(zindexSeparator) === -1) {
                 var pgNode = plotgroup.node();

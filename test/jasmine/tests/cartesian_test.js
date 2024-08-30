@@ -436,7 +436,7 @@ describe('subplot creation / deletion:', function() {
 
     function checkBGLayers(behindCount, x2y2Count, subplots) {
         expect(gd.querySelectorAll('.bglayer rect.bg').length).toBe(behindCount);
-        expect(gd.querySelectorAll('.subplot.x2y2 rect.bg').length).toBe(x2y2Count);
+        expect(gd.querySelectorAll('.subplot.x2y2-below rect.bg').length).toBe(x2y2Count);
 
         // xy is the first subplot, so it never gets put in front of others
         expect(gd.querySelectorAll('.subplot.xy rect.bg').length).toBe(0);
@@ -445,7 +445,7 @@ describe('subplot creation / deletion:', function() {
         expect(gd.querySelectorAll('.subplot.xy3 rect.bg').length).toBe(0);
 
         // verify that these are *all* the subplots and backgrounds we have
-        expect(gd.querySelectorAll('.subplot').length).toBe(subplots.length);
+        expect(gd.querySelectorAll('.subplot').length).toBe(subplots.length * 2);
         subplots.forEach(function(subplot) {
             expect(gd.querySelectorAll('.subplot.' + subplot).length).toBe(1);
         });
@@ -791,14 +791,15 @@ describe('subplot creation / deletion:', function() {
     it('clear axis ticks, labels and title when relayout an axis to `*visible:false*', function(done) {
         function _assert(xaxis, yaxis) {
             var g = d3Select('.subplot.xy');
+            var gBelow = d3Select('.subplot.xy-below');
             var info = d3Select('.infolayer');
 
             expect(g.selectAll('.xtick').size()).toBe(xaxis[0], 'x tick cnt');
-            expect(g.selectAll('.gridlayer .xgrid').size()).toBe(xaxis[1], 'x gridline cnt');
+            expect(gBelow.selectAll('.gridlayer .xgrid').size()).toBe(xaxis[1], 'x gridline cnt');
             expect(info.selectAll('.g-xtitle').size()).toBe(xaxis[2], 'x title cnt');
 
             expect(g.selectAll('.ytick').size()).toBe(yaxis[0], 'y tick cnt');
-            expect(g.selectAll('.gridlayer .ygrid').size()).toBe(yaxis[1], 'y gridline cnt');
+            expect(gBelow.selectAll('.gridlayer .ygrid').size()).toBe(yaxis[1], 'y gridline cnt');
             expect(info.selectAll('.g-ytitle').size()).toBe(yaxis[2], 'y title cnt');
         }
 
