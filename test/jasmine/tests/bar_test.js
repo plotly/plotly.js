@@ -243,7 +243,7 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.ycalendar).toBe('ethiopian');
     });
 
-    it('should not include alignmentgroup/offsetgroup when barmode is not *group*', function() {
+    it('should include alignmentgroup/offsetgroup regardless of barmode', function() {
         var gd = {
             data: [{type: 'bar', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
             layout: {barmode: 'group'}
@@ -255,8 +255,8 @@ describe('Bar.supplyDefaults', function() {
 
         gd.layout.barmode = 'stack';
         supplyAllDefaults(gd);
-        expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
-        expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
+        expect(gd._fullData[0].alignmentgroup).toBe('a', 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe('1', 'offsetgroup');
     });
 
     it('should have a barmode only if it contains bars', function() {
