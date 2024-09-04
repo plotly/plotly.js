@@ -41,7 +41,7 @@ function handleMarkerDefaults(traceIn, traceOut, layout, coerce, isPie) {
     if(lineWidth) {
         coerce('marker.line.color',
             isPie ? undefined :
-            layout.paper_bgcolor // case of funnelarea, sunburst, icicle, treemap
+            layout.paper_bgcolor // case of funnelarea, sunburst, icicle, treemap, voronoi
         );
     }
 

@@ -20,6 +20,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
     var isSunburst = trace.type === 'sunburst';
     var isTreemapOrIcicle =
         trace.type === 'treemap' ||
+        trace.type === 'voronoi' ||
         trace.type === 'icicle';
 
     // hover state vars

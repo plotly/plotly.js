@@ -132,16 +132,17 @@ function assertSrcContents() {
                     } else if(IE_BLACK_LIST.indexOf(lastPart) !== -1) {
                         logs.push(file + ' : contains .' + lastPart + ' (IE failure)');
                     } else if(IE_SVG_BLACK_LIST.indexOf(lastPart) !== -1) {
-                        // add special case for sunburst, icicle and treemap where we use 'children'
+                        // add special case for sunburst, icicle, voronoi and treemap where we use 'children'
                         // off the d3-hierarchy output
                         var dirParts = path.dirname(file).split(path.sep);
                         var filename = dirParts[dirParts.length - 1];
-                        var isSunburstOrIcicleOrTreemap =
+                        var hasHierarchy =
                             filename === 'sunburst' ||
                             filename === 'icicle' ||
+                            filename === 'voronoi' ||
                             filename === 'treemap';
                         var isLinkedToObject = ['pt', 'd', 'parent', 'node'].indexOf(parts[parts.length - 2]) !== -1;
-                        if(!(isSunburstOrIcicleOrTreemap && isLinkedToObject)) {
+                        if(!(hasHierarchy && isLinkedToObject)) {
                             logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
                         }
                     }

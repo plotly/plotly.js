@@ -1,0 +1,374 @@
+{
+ "data": [
+  {
+   "type": "voronoi",
+   "hoverinfo": "all",
+   "textinfo": "label",
+   "textfont": {
+    "size": 10
+   },
+   "pathbar": {
+    "visible": true
+   },
+   "tiling": {
+    "shape": "square",
+    "aspectratio": 1,
+    "pad": 0
+   },
+   "marker": {
+    "cornerradius": 10,
+    "depthfade": "reversed"
+   },
+   "labels": [
+    "Alpha",
+    "Bravo",
+    "Charlie",
+    "Delta",
+    "Echo",
+    "Foxtrot",
+    "Golf",
+    "Hotel",
+    "India",
+    "Juliet",
+    "Kilo",
+    "Lima",
+    "Mike",
+    "November",
+    "Oscar",
+    "Papa",
+    "Quebec",
+    "Romeo",
+    "Sierra",
+    "Tango",
+    "Uniform",
+    "Victor",
+    "Whiskey",
+    "X ray",
+    "Yankee",
+    "Zulu"
+   ],
+   "parents": [
+    "",
+    "",
+    "",
+    "Bravo",
+    "Bravo",
+    "Bravo",
+    "Echo",
+    "Echo",
+    "Echo",
+    "Hotel",
+    "Hotel",
+    "Hotel",
+    "Kilo",
+    "Kilo",
+    "Kilo",
+    "November",
+    "November",
+    "November",
+    "Quebec",
+    "Quebec",
+    "Quebec",
+    "Tango",
+    "Tango",
+    "Tango",
+    "Whiskey",
+    "Whiskey"
+   ],
+   "domain": {
+    "x": [0.02, 0.31],
+    "y": [0, 0.45]
+   }
+  },
+  {
+   "type": "voronoi",
+   "hoverinfo": "all",
+   "textinfo": "label",
+   "textfont": {
+    "size": 10
+   },
+   "pathbar": {
+    "visible": true
+   },
+   "tiling": {
+    "shape": "square",
+    "aspectratio": 0.75,
+    "pad": 0
+   },
+   "marker": {
+    "cornerradius": 10,
+    "depthfade": "reversed"
+   },
+   "labels": [
+    "Alpha",
+    "Bravo",
+    "Charlie",
+    "Delta",
+    "Echo",
+    "Foxtrot",
+    "Golf",
+    "Hotel",
+    "India",
+    "Juliet",
+    "Kilo",
+    "Lima",
+    "Mike",
+    "November",
+    "Oscar",
+    "Papa",
+    "Quebec",
+    "Romeo",
+    "Sierra",
+    "Tango",
+    "Uniform",
+    "Victor",
+    "Whiskey",
+    "X ray",
+    "Yankee",
+    "Zulu"
+   ],
+   "parents": [
+    "",
+    "",
+    "",
+    "Bravo",
+    "Bravo",
+    "Bravo",
+    "Echo",
+    "Echo",
+    "Echo",
+    "Hotel",
+    "Hotel",
+    "Hotel",
+    "Kilo",
+    "Kilo",
+    "Kilo",
+    "November",
+    "November",
+    "November",
+    "Quebec",
+    "Quebec",
+    "Quebec",
+    "Tango",
+    "Tango",
+    "Tango",
+    "Whiskey",
+    "Whiskey"
+   ],
+   "domain": {
+    "x": [0.02, 0.31],
+    "y": [0.5, 0.95]
+   }
+  },
+  {
+   "type": "voronoi",
+   "hoverinfo": "all",
+   "textinfo": "label",
+   "textfont": {
+    "size": 10
+   },
+   "pathbar": {
+    "visible": true
+   },
+   "tiling": {
+    "shape": "square",
+    "aspectratio": 1,
+    "pad": 0
+   },
+   "marker": {
+    "cornerradius": 10,
+    "depthfade": true
+   },
+   "labels": [
+    "Alpha",
+    "Bravo",
+    "Charlie",
+    "Delta",
+    "Echo",
+    "Foxtrot",
+    "Golf",
+    "Hotel",
+    "India",
+    "Juliet",
+    "Kilo",
+    "Lima",
+    "Mike",
+    "November",
+    "Oscar",
+    "Papa",
+    "Quebec",
+    "Romeo",
+    "Sierra",
+    "Tango",
+    "Uniform",
+    "Victor",
+    "Whiskey",
+    "X ray",
+    "Yankee",
+    "Zulu"
+   ],
+   "parents": [
+    "",
+    "",
+    "",
+    "Bravo",
+    "Bravo",
+    "Bravo",
+    "Echo",
+    "Echo",
+    "Echo",
+    "Hotel",
+    "Hotel",
+    "Hotel",
+    "Kilo",
+    "Kilo",
+    "Kilo",
+    "November",
+    "November",
+    "November",
+    "Quebec",
+    "Quebec",
+    "Quebec",
+    "Tango",
+    "Tango",
+    "Tango",
+    "Whiskey",
+    "Whiskey"
+   ],
+   "domain": {
+    "x": [0.35, 0.98],
+    "y": [0, 0.45]
+   }
+  },
+  {
+   "type": "voronoi",
+   "hoverinfo": "all",
+   "textinfo": "label",
+   "textfont": {
+    "size": 10
+   },
+   "pathbar": {
+    "visible": true
+   },
+   "tiling": {
+    "shape": "square",
+    "aspectratio": 0.75,
+    "pad": 0
+   },
+   "marker": {
+    "cornerradius": 10,
+    "depthfade": true
+   },
+   "labels": [
+    "Alpha",
+    "Bravo",
+    "Charlie",
+    "Delta",
+    "Echo",
+    "Foxtrot",
+    "Golf",
+    "Hotel",
+    "India",
+    "Juliet",
+    "Kilo",
+    "Lima",
+    "Mike",
+    "November",
+    "Oscar",
+    "Papa",
+    "Quebec",
+    "Romeo",
+    "Sierra",
+    "Tango",
+    "Uniform",
+    "Victor",
+    "Whiskey",
+    "X ray",
+    "Yankee",
+    "Zulu"
+   ],
+   "parents": [
+    "",
+    "",
+    "",
+    "Bravo",
+    "Bravo",
+    "Bravo",
+    "Echo",
+    "Echo",
+    "Echo",
+    "Hotel",
+    "Hotel",
+    "Hotel",
+    "Kilo",
+    "Kilo",
+    "Kilo",
+    "November",
+    "November",
+    "November",
+    "Quebec",
+    "Quebec",
+    "Quebec",
+    "Tango",
+    "Tango",
+    "Tango",
+    "Whiskey",
+    "Whiskey"
+   ],
+   "domain": {
+    "x": [0.35, 0.98],
+    "y": [0.5, 0.95]
+   }
+  }
+ ],
+ "layout": {
+  "width": 1200,
+  "height": 800,
+  "annotations": [
+   {
+    "showarrow": false,
+    "text": "square<br>depthfade: 'reversed'",
+    "font": {
+     "size": 16
+    },
+    "x": 0.17,
+    "xanchor": "center",
+    "y": 0,
+    "yanchor": "top"
+   },
+   {
+    "showarrow": false,
+    "text": "aspectratio: 0.75<br>depthfade: 'reversed'",
+    "font": {
+     "size": 16
+    },
+    "x": 0.17,
+    "xanchor": "center",
+    "y": 1,
+    "yanchor": "bottom"
+   },
+   {
+    "showarrow": false,
+    "text": "square",
+    "font": {
+     "size": 16
+    },
+    "x": 0.66,
+    "xanchor": "center",
+    "y": 0,
+    "yanchor": "top"
+   },
+   {
+    "showarrow": false,
+    "text": "aspectratio: 0.75",
+    "font": {
+     "size": 16
+    },
+    "x": 0.66,
+    "xanchor": "center",
+    "y": 1,
+    "yanchor": "bottom"
+   }
+  ]
+ }
+}

@@ -132,7 +132,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
         pt._y0 = viewY(pt.y0);
         pt._y1 = viewY(pt.y1);
 
-        pt._hoverX = viewX(pt.x1 - trace.marker.pad.r),
+        pt._hoverX = viewX(pt.x1 - trace.marker.pad.r);
         pt._hoverY = hasBottom ?
                 viewY(pt.y1 - trace.marker.pad.b / 2) :
                 viewY(pt.y0 + trace.marker.pad.t / 2);

@@ -2149,7 +2149,7 @@ describe('Plotly.react and uirevision attributes', function() {
         _run(fig, editComponents, checkInitial, checkEdited).then(done);
     });
 
-    ['sunburst', 'icicle', 'treemap'].forEach(function(type) {
+    ['sunburst', 'icicle', 'treemap', 'voronoi'].forEach(function(type) {
         it('preserves ' + type + ' level changes', function(done) {
             function assertLevel(msg, exp) {
                 expect(gd._fullData[0].level).toBe(exp, msg);

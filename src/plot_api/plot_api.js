@@ -3805,11 +3805,14 @@ function makePlotFramework(gd) {
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
-    // single treemap layer for the whole plot
+    // single icicle layer for the whole plot
     fullLayout._iciclelayer = fullLayout._paper.append('g').classed('iciclelayer', true);
 
     // single treemap layer for the whole plot
     fullLayout._treemaplayer = fullLayout._paper.append('g').classed('treemaplayer', true);
+
+    // single voronoi layer for the whole plot
+    fullLayout._voronoilayer = fullLayout._paper.append('g').classed('voronoilayer', true);
 
     // single sunburst layer for the whole plot
     fullLayout._sunburstlayer = fullLayout._paper.append('g').classed('sunburstlayer', true);
