@@ -16,7 +16,7 @@ module.exports = {
         }),
         environmentPlugin({
             NODE_DEBUG: false,
-        })
+        }),
     ],
     alias: {
         stream: 'stream-browserify',
