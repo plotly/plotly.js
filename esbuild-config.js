@@ -1,5 +1,6 @@
 var glsl = require('esbuild-plugin-glsl').glsl;
 var environmentPlugin = require('esbuild-plugin-environment').environmentPlugin;
+const stylePlugin = require('esbuild-style-plugin');
 
 module.exports = {
     entryPoints: ['./lib/index.js'],
@@ -9,12 +10,13 @@ module.exports = {
     minify: false,
     sourcemap: false,
     plugins: [
+        stylePlugin(),
         glsl({
             minify: true,
         }),
         environmentPlugin({
             NODE_DEBUG: false,
-        }),
+        })
     ],
     alias: {
         stream: 'stream-browserify',
