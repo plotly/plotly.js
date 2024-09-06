@@ -557,6 +557,7 @@ function makeSubplotData(gd) {
 }
 
 function makeSubplotLayer(gd, plotinfo) {
+    var fullLayout = gd._fullLayout;
     var plotgroup = plotinfo.plotgroup;
     var id = plotinfo.id;
 
@@ -565,9 +566,9 @@ function makeSubplotLayer(gd, plotinfo) {
 
     var xLayer = constants.layerValue2layerClass[plotinfo.xaxis.layer];
     var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
-    var hasOnlyLargeSploms = gd._fullLayout._hasOnlyLargeSploms;
+    var hasOnlyLargeSploms = fullLayout._hasOnlyLargeSploms;
 
-    if(!plotinfo.mainplot) {
+    if(!plotinfo.mainplot || fullLayout._zindices.length > 1) {
         if(hasOnlyLargeSploms) {
             // TODO could do even better
             // - we don't need plot (but we would have to mock it in lsInner
