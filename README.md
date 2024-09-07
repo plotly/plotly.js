@@ -62,7 +62,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 
 ```html
 <head>
-    <script src="https://cdn.plot.ly/plotly-2.34.0.min.js" charset="utf-8"></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.0.min.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="gd"></div>
@@ -79,7 +79,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 Alternatively you may consider using [native ES6 import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in the script tag.
 ```html
 <script type="module">
-    import "https://cdn.plot.ly/plotly-2.34.0.min.js"
+    import "https://cdn.plot.ly/plotly-2.35.0.min.js"
     Plotly.newPlot("gd", [{ y: [1, 2, 3] }])
 </script>
 ```
@@ -89,7 +89,7 @@ Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastl
 ### Un-minified versions are also available on CDN
 While non-minified source files may contain characters outside UTF-8, it is recommended that you specify the `charset` when loading those bundles.
 ```html
-<script src="https://cdn.plot.ly/plotly-2.34.0.js" charset="utf-8"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.0.js" charset="utf-8"></script>
 ```
 
 > Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.5. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
@@ -151,6 +151,7 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 |**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | [@solarchvision](https://twitter.com/solarchvision) | Active, Maintainer |
 |**Emily Kellison-Linn** | [@emilykl](https://github.com/emilykl) | | Active, Maintainer |
 |**My-Tien Nguyen**| [@my-tien](https://github.com/my-tien) | | Active, Community Contributor |
+|**Birk Skyum**| [@birkskyum](https://github.com/birkskyum) | | Active, Community Contributor |
 |**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) | Hall of Fame |
 |**Antoine Roy-Gobeil** | [@antoinerg](https://github.com/antoinerg) | | Hall of Fame |
 |**Jack Parmer**| [@jackparmer](https://github.com/jackparmer) | | Hall of Fame |

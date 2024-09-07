@@ -124,7 +124,7 @@
   },
   "map4": {
    "zoom": 10,
-   "style": "carto-darkmatter-nolabels",
+   "style": "carto-positron",
    "center": {
     "lon": -75,
     "lat": 45
