@@ -9,6 +9,14 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.35.1] -- 2024-09-09
+
+### Fixed
+ - Fix rendering traces with `zorder` on overlayed subplots case of multiple traces in each subplot [[#7141](https://github.com/plotly/plotly.js/pull/7141)]
+ - Fix missing CSS for map(maplibre) subplots when used offline [[#7140](https://github.com/plotly/plotly.js/pull/7140)],
+   with thanks to @birkskyum for the contribution!
+
+
 ## [2.35.0] -- 2024-08-29
 
 ### Added
