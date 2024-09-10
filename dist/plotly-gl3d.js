@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.35.1
+* plotly.js (gl3d) v2.35.2
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -45464,7 +45464,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         if (cdModule.length) {
           layerData.push({
             i: traceLayerClasses.indexOf(classBaseName),
-            zorder: z,
+            zindex: z,
             className: className,
             plotMethod: plotMethod,
             cdModule: cdModule
@@ -45476,9 +45476,9 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
       }
     }
   }
-  // Sort the layers primarily by z, then by i
+  // Sort the layers primarily by zindex, then by i
   layerData.sort(function (a, b) {
-    return (a.zorder || 0) - (b.zorder || 0) || a.i - b.i;
+    return (a.zindex || 0) - (b.zindex || 0) || a.i - b.i;
   });
   var layers = plotinfo.plot.selectAll('g.mlayer').data(layerData, function (d) {
     return d.className;
@@ -65624,7 +65624,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.35.1';
+exports.version = '2.35.2';
 
 /***/ }),
 
