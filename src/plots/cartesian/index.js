@@ -153,7 +153,7 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
             var subplot = subplots[i];
             var subplotInfo = fullLayout._plots[subplot];
 
-            if(z > 0) {
+            if(zindices.length > 1) {
                 var idWithZ = subplotInfo.id;
                 if(idWithZ.indexOf(zindexSeparator) !== -1) continue;
                 idWithZ += zindexSeparator + (z + 1);
@@ -418,7 +418,7 @@ exports.drawFramework = function(gd) {
         subplotData[i] = initialSubplotData[i].slice();
     }
 
-    for(var z = 1; z < zindices.length; z++) {
+    for(var z = 0; z < zindices.length; z++) {
         var newSubplotData = [];
         for(i = 0; i < len; i++) {
             newSubplotData[i] = initialSubplotData[i].slice();
