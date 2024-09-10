@@ -532,9 +532,9 @@ function makeSubplotData(gd) {
 
         var d = [];
 
-        for(var z = 1; z <= numZ; z++) {
+        for(var z = 0; z <= numZ; z++) {
             var zStr = '';
-            if(z > 1) zStr += zindexSeparator + z;
+            if(z > 0) zStr += zindexSeparator + z;
 
             // use info about axis layer and overlaying pattern
             // to clean what need to be cleaned up in exit selection
