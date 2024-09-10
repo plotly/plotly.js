@@ -274,7 +274,7 @@ function registerTraceModule(_module) {
 
     // add maplibre-gl CSS here to avoid console warning on instantiation
     if(bpmName === 'map') {
-        require('../node_modules/maplibre-gl/dist/maplibre-gl.css');
+        require('maplibre-gl/dist/maplibre-gl.css');
     }
 
     // if `plotly-geo-assets.js` is not included,
