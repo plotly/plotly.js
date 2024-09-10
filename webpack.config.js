@@ -44,6 +44,12 @@ module.exports = {
             use: [
                 'ify-loader'
             ]
+        }, {
+            test: /\.css$/,
+            use: [
+                'style-loader',
+                'css-loader'
+            ]
         }]
     },
     resolve: {

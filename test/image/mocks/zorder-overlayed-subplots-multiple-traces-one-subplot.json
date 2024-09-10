@@ -1,0 +1,111 @@
+{
+ "data": [
+  {
+   "line": {
+    "color": "blue",
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [1, 2, 3, 4],
+   "zorder": 8
+  },
+  {
+   "line": {
+    "color": "darkblue",
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [1.2, 2.2, 3.2, 4.2],
+   "zorder": 7
+  },
+  {
+   "line": {
+    "color": "orange",
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [2, 3, 4, 1],
+   "yaxis": "y2",
+   "zorder": 6
+  },
+  {
+   "line": {
+    "color": "darkorange",
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [2.2, 3.2, 4.2, 1.2],
+   "yaxis": "y2",
+   "zorder": 5
+  },
+  {
+   "line": {
+    "color": "green",
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [3, 4, 1, 2],
+   "xaxis": "x2",
+   "zorder": 4
+  },
+  {
+   "line": {
+    "color": "darkgreen",
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [3.2, 4.2, 1.2, 2.2],
+   "xaxis": "x2",
+   "zorder": 3
+  },
+  {
+   "line": {
+    "color": "red",
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [4, 1, 2, 3],
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "zorder": 2
+  },
+  {
+   "line": {
+    "color": "darkred",
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [4.2, 1.2, 2.2, 3.2],
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "zorder": 1
+  }
+ ],
+ "layout": {
+  "showlegend": true,
+  "title": {
+   "text": "zorder overlayed subplots",
+   "subtitle": {
+    "text": "case of multiple traces in one subplot"
+   }
+  },
+  "width": 600,
+  "height": 400,
+  "xaxis2": {
+   "overlaying": "x",
+   "side": "top"
+  },
+  "yaxis2": {
+   "overlaying": "y",
+   "side": "right"
+  }
+ }
+}
