@@ -3,6 +3,8 @@
 var extendFlat = require('../../lib').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
+var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
+var annotationAttrs = require('../../components/annotations/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var fxAttrs = require('../../components/fx/attributes');
 var delta = require('../../constants/delta.js');
@@ -133,6 +135,13 @@ module.exports = {
             ].join(' ')
         }
     }),
+
+    tooltip: {
+        type: 'object',
+        description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+        editType: 'plot'
+    },
+    tooltiptemplate: tooltiptemplateAttrs(),
 
     zorder: scatterAttrs.zorder
 };

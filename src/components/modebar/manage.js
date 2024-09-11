@@ -176,7 +176,7 @@ function getButtonGroups(gd) {
         hoverGroup = ['toggleHover'];
         resetGroup = ['resetViewMap'];
     } else if(hasGL2D) {
-        hoverGroup = ['hoverClosestGl2d'];
+        hoverGroup = ['hoverClosestGl2d', 'tooltip'];
     } else if(hasPie) {
         hoverGroup = ['hoverClosestPie'];
     } else if(hasSankey) {
@@ -190,7 +190,7 @@ function getButtonGroups(gd) {
     // regardless of what other types are on the plot, since they'll all
     // just treat any truthy hovermode as 'closest'
     if(hasCartesian) {
-        hoverGroup.push('toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian');
+        hoverGroup.push('toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian', 'tooltip');
     }
     if(hasNoHover(fullData) || hasUnifiedHoverLabel) {
         hoverGroup = [];
@@ -257,6 +257,8 @@ function getButtonGroups(gd) {
                     enableHover('hoverClosest3d');
                     enableHover('hoverClosestGl2d');
                     enableHover('hoverClosestPie');
+                } else if(b === 'tooltip') {
+                    enableHover('tooltip');
                 }
             } else newList.push(b);
         }

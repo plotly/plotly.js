@@ -134,5 +134,7 @@ module.exports = {
         },
         editType: 'calc'
     },
+    tooltip: scatterglAttrs.tooltip,
+    tooltiptemplate: scatterglAttrs.tooltiptemplate,
     transforms: undefined
 };

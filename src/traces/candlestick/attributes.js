@@ -2,6 +2,8 @@
 
 var extendFlat = require('../../lib').extendFlat;
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
+var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
+var annotationAttrs = require('../../components/annotations/attributes');
 var OHLCattrs = require('../ohlc/attributes');
 var boxAttrs = require('../box/attributes');
 
@@ -53,5 +55,13 @@ module.exports = {
     whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
 
     hoverlabel: OHLCattrs.hoverlabel,
+
+    tooltip: {
+        type: 'object',
+        description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+        editType: 'plot'
+    },
+    tooltiptemplate: tooltiptemplateAttrs(),
+
     zorder: boxAttrs.zorder
 };

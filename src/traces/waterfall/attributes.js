@@ -86,6 +86,9 @@ module.exports = {
         flags: ['name', 'x', 'y', 'text', 'initial', 'delta', 'final']
     }),
 
+    tooltip: barAttrs.tooltip,
+    tooltiptemplate: barAttrs.tooltiptemplate,
+
     textinfo: {
         valType: 'flaglist',
         flags: ['label', 'text', 'initial', 'delta', 'final'],
