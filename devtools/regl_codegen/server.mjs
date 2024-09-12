@@ -1,14 +1,13 @@
-var fs = require('fs');
-var path = require('path');
-var http = require('http');
-var ecstatic = require('ecstatic');
-var open = require('open');
-var webpack = require('webpack');
-var minimist = require('minimist');
+import fs from 'fs';
+import path from 'path';
+import http from 'http';
+import ecstatic from 'ecstatic';
+import open from 'open';
+import minimist from 'minimist';
 
-var constants = require('../../tasks/util/constants');
-var config = require('../../webpack.config.js');
-config.optimization = { minimize: false };
+import constants from '../../tasks/util/constants.js';
+import { build } from 'esbuild';
+import config from '../../esbuild-config.js';
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
@@ -20,6 +19,8 @@ var reglTraceList = [
     'scatterpolargl',
     'splom'
 ];
+
+
 
 // Create server
 var _static = ecstatic({
@@ -57,6 +58,12 @@ var server = http.createServer(function(req, res) {
     }
 });
 
+// Build and bundle all the things!
+await getMockFiles()
+    .then(readFiles)
+    .then(createMocksList)
+    .then(saveMockListToFile)
+    .then(saveReglTracesToFile.bind(null, reglTraceList));
 
 // Start the server up!
 server.listen(PORT);
@@ -64,48 +71,12 @@ server.listen(PORT);
 // open up browser window
 open('http://localhost:' + PORT + '/devtools/regl_codegen/index' + (strict ? '-strict' : '') + '.html');
 
-// Build and bundle all the things!
-getMockFiles()
-    .then(readFiles)
-    .then(createMocksList)
-    .then(saveMockListToFile)
-    .then(saveReglTracesToFile.bind(null, reglTraceList));
-
-// Devtools config
-var devtoolsConfig = {};
-
 var devtoolsPath = path.join(constants.pathToRoot, 'devtools/regl_codegen');
-devtoolsConfig.entry = path.join(devtoolsPath, 'devtools.js');
-
-devtoolsConfig.output = {
-    path: config.output.path,
-    filename: 'regl_codegen-bundle.js',
-    library: {
-        name: 'Tabs',
-        type: 'umd'
-    }
-};
-
-devtoolsConfig.target = config.target;
-devtoolsConfig.plugins = config.plugins;
-devtoolsConfig.optimization = config.optimization;
-devtoolsConfig.mode = 'production';
-
-var compiler;
-
-compiler = webpack(devtoolsConfig);
-compiler.run(function(devtoolsErr, devtoolsStats) {
-    if(devtoolsErr) {
-        console.log('err:', devtoolsErr);
-    } else if(devtoolsStats.errors && devtoolsStats.errors.length) {
-        console.log('stats.errors:', devtoolsStats.errors);
-    } else {
-        console.log('success:', devtoolsConfig.output.path + '/' + devtoolsConfig.output.filename);
-
-        purgeGeneratedCode(reglTraceList);
-    }
-});
-
+config.entryPoints = [path.join(devtoolsPath, 'devtools.js')];
+config.outfile = './build/regl_codegen-bundle.js';
+config.sourcemap = false;
+config.minify = false;
+await build(config);
 
 function getMockFiles() {
     return new Promise(function(resolve, reject) {
@@ -239,19 +210,4 @@ function handleCodegen(data) {
 
     var precompiled = header + imports + exports;
     fs.writeFileSync(pathToReglPrecompiledSrc, precompiled);
-}
-
-
-function purgeGeneratedCode(traces) {
-    var pathToReglCodegenSrc = constants.pathToReglCodegenSrc;
-
-    var files = fs.readdirSync(pathToReglCodegenSrc);
-    files.forEach(function(file) {
-        fs.unlinkSync(path.join(pathToReglCodegenSrc, file));
-    });
-
-    traces.forEach(function(trace) {
-        var pathToReglPrecompiledSrc = path.join(constants.pathToSrc, 'traces', trace, 'regl_precompiled.js');
-        fs.writeFileSync(pathToReglPrecompiledSrc, 'module.exports = {};\n');
-    });
 }

@@ -1,9 +1,12 @@
-var minimist = require('minimist');
-var path = require('path');
-var fs = require('fs');
+import minimist from 'minimist';
+import path from 'path';
+import fs from 'fs';
 
-var plotlyNode = require('./util/plotly_node');
+import plotlyNode from './util/plotly_node.mjs';
 var Plotly = plotlyNode('build/plotly.js');
+
+import { fileURLToPath } from 'url';
+var __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 var pathToRoot = path.join(__dirname, '..');
 var pathToMocks = path.join(pathToRoot, 'test', 'image', 'mocks');

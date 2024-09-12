@@ -1,9 +1,9 @@
-var path = require('path');
-var minimist = require('minimist');
-var runSeries = require('run-series');
+import path from 'path';
+import minimist from 'minimist';
+import runSeries from 'run-series';
 
-var partialBundle = require('./partial_bundle');
-var constants = require('./util/constants');
+import partialBundle from './partial_bundle.mjs';
+import constants from './util/constants.js';
 
 var allTransforms = constants.allTransforms;
 var allTraces = constants.allTraces;
@@ -67,11 +67,8 @@ if(process.argv.length > 2) {
         strict: strict,
     };
 
-    if(unminified) {
-        opts.dist = path.join(constants.pathToDist, 'plotly-' + out + '.js');
-    } else {
-        opts.distMin = path.join(constants.pathToDist, 'plotly-' + out + '.min.js');
-    }
+    opts.dist = path.join(constants.pathToDist, 'plotly-' + out + '.js');
+    opts.distMin = path.join(constants.pathToDist, 'plotly-' + out + '.min.js');
 
     console.log(opts);
 
@@ -81,6 +78,11 @@ if(process.argv.length > 2) {
     var tasks = [];
 
     partialBundle(tasks, opts);
+
+    tasks = [
+        tasks[0],
+        tasks[unminified ? 1 : 2]
+    ];
 
     runSeries(tasks, function(err) {
         if(err) throw err;

@@ -75,7 +75,7 @@ jobs:
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
-    parallelism: 12
+    parallelism: 4
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update

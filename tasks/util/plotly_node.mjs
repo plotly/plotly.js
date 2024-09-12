@@ -1,5 +1,5 @@
-var fs = require('fs');
-var JSDOM = require('jsdom').JSDOM;
+import fs from 'fs';
+import { JSDOM } from 'jsdom';
 
 var window = new JSDOM('', {
     runScripts: 'dangerously'
@@ -8,7 +8,7 @@ var window = new JSDOM('', {
 // Mock things that jsdom doesn't support out-of-the-box
 window.URL.createObjectURL = function() {};
 
-module.exports = function plotlyNode(plotlyPath) {
+export default function plotlyNode(plotlyPath) {
     // Execute source code by inserting a <script> tag containing it
     var scriptEl = window.document.createElement('script');
     scriptEl.textContent = fs.readFileSync(plotlyPath, { encoding: 'utf-8' });
