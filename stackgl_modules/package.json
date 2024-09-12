@@ -8,7 +8,7 @@
     "bundle-stackgl": "webpack --mode production"
   },
   "dependencies": {
-    "@plotly/point-cluster": "^3.1.9",
+    "@plotly/point-cluster": "^4.0.0",
     "alpha-shape": "^1.0.0",
     "box-intersect": "plotly/box-intersect#v1.1.0",
     "convex-hull": "^1.0.3",
