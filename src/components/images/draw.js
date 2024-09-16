@@ -5,6 +5,7 @@ var Drawing = require('../drawing');
 var Axes = require('../../plots/cartesian/axes');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var zindexSeparator = require('../../plots/cartesian/constants').zindexSeparator;
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
@@ -226,6 +227,9 @@ module.exports = function draw(gd) {
     var allSubplots = Object.keys(fullLayout._plots);
     for(i = 0; i < allSubplots.length; i++) {
         subplot = allSubplots[i];
+        if (subplot.indexOf(zindexSeparator) !== -1) {
+            continue;
+        }
         var subplotObj = fullLayout._plots[subplot];
 
         // filter out overlaid plots (which have their images on the main plot)

@@ -258,6 +258,9 @@ function lsInner(gd) {
     }
 
     for(subplot in fullLayout._plots) {
+        if (subplot.indexOf(zindexSeparator) !== -1) {
+            continue;
+        }
         plotinfo = fullLayout._plots[subplot];
         xa = plotinfo.xaxis;
         ya = plotinfo.yaxis;
