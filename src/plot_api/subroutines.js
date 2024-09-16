@@ -137,7 +137,10 @@ function lsInner(gd) {
             var yDomain = plotinfo.yaxis.domain;
             var plotgroup = plotinfo.plotgroup;
 
-            if(overlappingDomain(xDomain, yDomain, lowerDomains) && subplot.indexOf(zindexSeparator) === -1) {
+            if(overlappingDomain(xDomain, yDomain, lowerDomains) &&
+                subplot.indexOf(zindexSeparator) === -1 &&
+                subplot !== xDomain + yDomain + zindexSeparator + 1
+            ) {
                 var pgNode = plotgroup.node();
                 var plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
                 pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
