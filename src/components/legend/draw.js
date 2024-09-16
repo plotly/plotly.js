@@ -774,18 +774,30 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var endPad = 2 * (bw + itemGap);
 
     var yanchor = getYanchor(legendObj);
-    var isBelowPlotArea = legendObj.y < 0 || (legendObj.y === 0 && yanchor === 'top');
-    var isAbovePlotArea = legendObj.y > 1 || (legendObj.y === 1 && yanchor === 'bottom');
+    var isBelowPlotArea;
+    var isAbovePlotArea;
 
     var traceGroupGap = legendObj.tracegroupgap;
     var legendGroupWidths = {};
 
-    // - if below/above plot area, give it the maximum potential margin-push value
-    // - otherwise, extend the height of the plot area
-    legendObj._maxHeight = Math.max(
-        (isBelowPlotArea || isAbovePlotArea) ? fullLayout.height / 2 : gs.h,
-        30
-    );
+    if (legendObj.yref === 'paper') {
+        isBelowPlotArea = legendObj.y < 0 || (legendObj.y === 0 && yanchor === 'top');
+        isAbovePlotArea = legendObj.y > 1 || (legendObj.y === 1 && yanchor === 'bottom');
+        // - if below/above plot area, give it the maximum potential margin-push value
+        // - otherwise, extend the height of the plot area
+        legendObj._maxHeight = Math.max(
+            (isBelowPlotArea || isAbovePlotArea) ? fullLayout.height / 2 : gs.h,
+            30
+        );
+    } else {
+        if (yanchor === 'top')
+            legendObj._maxHeight = legendObj.y * fullLayout.height;
+        else if (yanchor === 'bottom')
+            legendObj._maxHeight = (1 - legendObj.y) * fullLayout.height;
+        else // if (yanchor === 'middle')
+            legendObj._maxHeight = 2 * Math.min(1 - legendObj.y, legendObj.y) * fullLayout.height;
+        legendObj._maxHeight = Math.max(legendObj._maxHeight, 30);
+    }
 
     var toggleRectWidth = 0;
     legendObj._width = 0;
@@ -815,19 +827,30 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
         }
     } else {
         var xanchor = getXanchor(legendObj);
-        var isLeftOfPlotArea = legendObj.x < 0 || (legendObj.x === 0 && xanchor === 'right');
-        var isRightOfPlotArea = legendObj.x > 1 || (legendObj.x === 1 && xanchor === 'left');
-        var isBeyondPlotAreaY = isAbovePlotArea || isBelowPlotArea;
-        var hw = fullLayout.width / 2;
+        if (legendObj.xref === 'paper') {
+            var isLeftOfPlotArea = legendObj.x < 0 || (legendObj.x === 0 && xanchor === 'right');
+            var isRightOfPlotArea = legendObj.x > 1 || (legendObj.x === 1 && xanchor === 'left');
+            var isBeyondPlotAreaY = isAbovePlotArea || isBelowPlotArea;
+            var hw = fullLayout.width / 2;
 
-        // - if placed within x-margins, extend the width of the plot area
-        // - else if below/above plot area and anchored in the margin, extend to opposite margin,
-        // - otherwise give it the maximum potential margin-push value
-        legendObj._maxWidth = Math.max(
-            isLeftOfPlotArea ? ((isBeyondPlotAreaY && xanchor === 'left') ? gs.l + gs.w : hw) :
-            isRightOfPlotArea ? ((isBeyondPlotAreaY && xanchor === 'right') ? gs.r + gs.w : hw) :
-            gs.w,
-        2 * textGap);
+            // - if placed within x-margins, extend the width of the plot area
+            // - else if below/above plot area and anchored in the margin, extend to opposite margin,
+            // - otherwise give it the maximum potential margin-push value
+            legendObj._maxWidth = Math.max(
+                isLeftOfPlotArea ? ((isBeyondPlotAreaY && xanchor === 'left') ? gs.l + gs.w : hw) :
+                isRightOfPlotArea ? ((isBeyondPlotAreaY && xanchor === 'right') ? gs.r + gs.w : hw) :
+                gs.w,
+                2 * textGap);
+        } else {
+            if (xanchor === 'right')
+                legendObj._maxWidth = legendObj.x * fullLayout.width;
+            else if (xanchor === 'left')
+                legendObj._maxWidth = (1 - legendObj.x) * fullLayout.width;
+            else // if (xanchor === 'center')
+                legendObj._maxWidth = 2 * Math.min(1 - legendObj.x, legendObj.x) * fullLayout.width;
+            legendObj._maxWidth = Math.max(legendObj._maxWidth, 2 * textGap);
+        }
+
         var maxItemWidth = 0;
         var combinedItemWidth = 0;
         traces.each(function(d) {
