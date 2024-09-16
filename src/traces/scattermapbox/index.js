@@ -1,5 +1,11 @@
 'use strict';
 
+var deprecationWarning = [
+    '*scattermapbox* trace is deprecated!',
+    'Please consider switching to the *scattermap* trace type and `map` subplots.',
+    'Learn more at: https://plotly.com/javascript/maplibre-migration/'
+].join(' ');
+
 module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
@@ -25,6 +31,7 @@ module.exports = {
     meta: {
         hrName: 'scatter_mapbox',
         description: [
+            deprecationWarning,
             'The data visualized as scatter point, lines or marker symbols',
             'on a Mapbox GL geographic map',
             'is provided by longitude/latitude pairs in `lon` and `lat`.'

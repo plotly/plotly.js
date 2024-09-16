@@ -31,6 +31,8 @@ var HALFDAY = ONEDAY / 2;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
+var ONEMILLI = constants.ONEMILLI;
+var ONEMICROSEC = constants.ONEMICROSEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 
@@ -908,7 +910,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var calendar = ax.calendar;
     var ticklabelstep = ax.ticklabelstep;
     var isPeriod = ax.ticklabelmode === 'period';
-
+    var isReversed = ax.range[0] > ax.range[1];
+    var ticklabelIndex = (!ax.ticklabelindex || Lib.isArrayOrTypedArray(ax.ticklabelindex)) ?
+        ax.ticklabelindex : [ax.ticklabelindex];
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
@@ -921,6 +925,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     var tickVals = [];
     var minorTickVals = [];
+    // all ticks for which labels are drawn which is not necessarily the major ticks when
+    // `ticklabelindex` is set.
+    var allTicklabelVals = [];
 
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
 
@@ -1075,6 +1082,52 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
+    // check if ticklabelIndex makes sense, otherwise ignore it
+    if(!minorTickVals || minorTickVals.length < 2) {
+        ticklabelIndex = false;
+    } else {
+        var diff = (minorTickVals[1].value - minorTickVals[0].value) * (isReversed ? -1 : 1);
+        if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
+            ticklabelIndex = false;
+        }
+    }
+    // Determine for which ticks to draw labels
+    if(!ticklabelIndex) {
+        allTicklabelVals = tickVals;
+    } else {
+        // Collect and sort all major and minor ticks, to find the minor ticks `ticklabelIndex`
+        // steps away from each major tick. For those minor ticks we want to draw the label.
+
+        var allTickVals = tickVals.concat(minorTickVals);
+        if(isPeriod && tickVals.length) {
+            // first major tick was just added for period handling
+            allTickVals = allTickVals.slice(1);
+        }
+
+        allTickVals =
+            allTickVals
+            .sort(function(a, b) { return a.value - b.value; })
+            .filter(function(tick, index, self) {
+                return index === 0 || tick.value !== self[index - 1].value;
+            });
+
+        var majorTickIndices =
+            allTickVals
+            .map(function(item, index) {
+                return item.minor === undefined && !item.skipLabel ? index : null;
+            })
+            .filter(function(index) { return index !== null; });
+
+        majorTickIndices.forEach(function(majorIdx) {
+            ticklabelIndex.map(function(nextLabelIdx) {
+                var minorIdx = majorIdx + nextLabelIdx;
+                if(minorIdx >= 0 && minorIdx < allTickVals.length) {
+                    Lib.pushUnique(allTicklabelVals, allTickVals[minorIdx]);
+                }
+            });
+        });
+    }
+
     if(hasMinor) {
         var canOverlap =
             (ax.minor.ticks === 'inside' && ax.ticks === 'outside') ||
@@ -1108,7 +1161,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    if(isPeriod) positionPeriodTicks(tickVals, ax, ax._definedDelta);
+    if(isPeriod) positionPeriodTicks(allTicklabelVals, ax, ax._definedDelta);
 
     var i;
     if(ax.rangebreaks) {
@@ -1166,38 +1219,44 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     tickVals = tickVals.concat(minorTickVals);
 
-    var t, p;
+    function setTickLabel(ax, tickVal) {
+        var text = axes.tickText(
+            ax,
+            tickVal.value,
+            false, // hover
+            tickVal.simpleLabel // noSuffixPrefix
+        );
+        var p = tickVal.periodX;
+        if(p !== undefined) {
+            text.periodX = p;
+            if(p > maxRange || p < minRange) { // hide label if outside the range
+                if(p > maxRange) text.periodX = maxRange;
+                if(p < minRange) text.periodX = minRange;
+
+                hideLabel(text);
+            }
+        }
+        return text;
+    }
+
+    var t;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
 
         if(_minor) {
-            minorTicks.push({
-                x: _value,
-                minor: true
-            });
+            if(ticklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
+                t = setTickLabel(ax, tickVals[i]);
+            } else {
+                t = { x: _value };
+            }
+            t.minor = true;
+            minorTicks.push(t);
         } else {
             lastVisibleHead = ax._prevDateHead;
-
-            t = axes.tickText(
-                ax,
-                _value,
-                false, // hover
-                tickVals[i].simpleLabel // noSuffixPrefix
-            );
-
-            p = tickVals[i].periodX;
-            if(p !== undefined) {
-                t.periodX = p;
-                if(p > maxRange || p < minRange) { // hide label if outside the range
-                    if(p > maxRange) t.periodX = maxRange;
-                    if(p < minRange) t.periodX = minRange;
-
-                    hideLabel(t);
-                }
-            }
-
-            if(tickVals[i].skipLabel) {
+            t = setTickLabel(ax, tickVals[i]);
+            if(tickVals[i].skipLabel ||
+                ticklabelIndex && allTicklabelVals.indexOf(tickVals[i]) === -1) {
                 hideLabel(t);
             }
 
@@ -1737,6 +1796,12 @@ function tickTextObj(ax, x, text) {
         text: text || '',
         fontSize: tf.size,
         font: tf.family,
+        fontWeight: tf.weight,
+        fontStyle: tf.style,
+        fontVariant: tf.variant,
+        fontTextcase: tf.textcase,
+        fontLineposition: tf.lineposition,
+        fontShadow: tf.shadow,
         fontColor: tf.color
     };
 }
@@ -2962,20 +3027,39 @@ axes.makeTransTickFn = function(ax) {
 
 axes.makeTransTickLabelFn = function(ax) {
     var uv = getTickLabelUV(ax);
+    var shift = ax.ticklabelshift || 0;
+    var standoff = ax.ticklabelstandoff || 0;
+
     var u = uv[0];
     var v = uv[1];
 
+    var isReversed = ax.range[0] > ax.range[1];
+    var labelsInside = ax.ticklabelposition && ax.ticklabelposition.indexOf('inside') !== -1;
+    var labelsOutside = !labelsInside;
+
+    if(shift) {
+        var shiftSign = isReversed ? -1 : 1;
+        shift = shift * shiftSign;
+    }
+    if(standoff) {
+        var side = ax.side;
+        var standoffSign = (
+            (labelsInside && (side === 'top' || side === 'left')) ||
+            (labelsOutside && (side === 'bottom' || side === 'right'))
+        ) ? 1 : -1;
+        standoff = standoff * standoffSign;
+    }
     return ax._id.charAt(0) === 'x' ?
         function(d) {
             return strTranslate(
-                u + ax._offset + ax.l2p(getPosX(d)),
-                v
+                u + ax._offset + ax.l2p(getPosX(d)) + shift,
+                v + standoff
             );
         } :
         function(d) {
             return strTranslate(
-                v,
-                u + ax._offset + ax.l2p(getPosX(d))
+                v + standoff,
+                u + ax._offset + ax.l2p(getPosX(d)) + shift
             );
         };
 };
@@ -3498,7 +3582,17 @@ axes.drawLabels = function(gd, ax, opts) {
 
                 thisLabel
                     .call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d))
-                    .call(Drawing.font, d.font, d.fontSize, d.fontColor)
+                    .call(Drawing.font, {
+                        family: d.font,
+                        size: d.fontSize,
+                        color: d.fontColor,
+                        weight: d.fontWeight,
+                        style: d.fontStyle,
+                        variant: d.fontVariant,
+                        textcase: d.fontTextcase,
+                        lineposition: d.fontLineposition,
+                        shadow: d.fontShadow,
+                    })
                     .text(d.text)
                     .call(svgTextUtils.convertToTspans, gd);
 
@@ -3748,11 +3842,41 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
             });
 
-            if((ax.tickson === 'boundaries' || ax.showdividers) && !opts.secondary) {
+            // autotickangles
+            // if there are dividers or ticks on boundaries, the labels will be in between and
+            // we need to prevent overlap with the next divider/tick. Else the labels will be on
+            // the ticks and we need to prevent overlap with the next label.
+
+            // TODO should secondary labels also fall into this fix-overlap regime?
+            var preventOverlapWithTick = (ax.tickson === 'boundaries' || ax.showdividers) && !opts.secondary;
+
+            var vLen = vals.length;
+            var tickSpacing = Math.abs((vals[vLen - 1].x - vals[0].x) * ax._m) / (vLen - 1);
+
+            var adjacent = preventOverlapWithTick ? tickSpacing / 2 : tickSpacing;
+            var opposite = preventOverlapWithTick ? ax.ticklen : maxFontSize * 1.25 * maxLines;
+            var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
+            var maxCos = adjacent / hypotenuse;
+            var autoTickAnglesRadians = ax.autotickangles.map(
+                function(degrees) { return degrees * Math.PI / 180; }
+            );
+            var angleRadians = autoTickAnglesRadians.find(
+                function(angle) { return Math.abs(Math.cos(angle)) <= maxCos; }
+            );
+            if(angleRadians === undefined) {
+                // no angle with smaller cosine than maxCos, just pick the angle with smallest cosine
+                angleRadians = autoTickAnglesRadians.reduce(
+                    function(currentMax, nextAngle) {
+                        return Math.abs(Math.cos(currentMax)) < Math.abs(Math.cos(nextAngle)) ? currentMax : nextAngle;
+                    }
+                    , autoTickAnglesRadians[0]
+                );
+            }
+            var newAngle = angleRadians * (180 / Math.PI /* to degrees */);
+
+            if(preventOverlapWithTick) {
                 var gap = 2;
                 if(ax.ticks) gap += ax.tickwidth / 2;
-
-                // TODO should secondary labels also fall into this fix-overlap regime?
 
                 for(i = 0; i < lbbArray.length; i++) {
                     var xbnd = vals[i].xbnd;
@@ -3761,14 +3885,11 @@ axes.drawLabels = function(gd, ax, opts) {
                         (xbnd[0] !== null && (lbb.left - ax.l2p(xbnd[0])) < gap) ||
                         (xbnd[1] !== null && (ax.l2p(xbnd[1]) - lbb.right) < gap)
                     ) {
-                        autoangle = 90;
+                        autoangle = newAngle;
                         break;
                     }
                 }
             } else {
-                var vLen = vals.length;
-                var tickSpacing = Math.abs((vals[vLen - 1].x - vals[0].x) * ax._m) / (vLen - 1);
-
                 var ticklabelposition = ax.ticklabelposition || '';
                 var has = function(str) {
                     return ticklabelposition.indexOf(str) !== -1;
@@ -3779,29 +3900,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 var isBottom = has('bottom');
                 var isAligned = isBottom || isLeft || isTop || isRight;
                 var pad = !isAligned ? 0 :
-                    (ax.tickwidth || 0) + 2 * TEXTPAD;
-
-                // autotickangles
-                var adjacent = tickSpacing;
-                var opposite = maxFontSize * 1.25 * maxLines;
-                var hypotenuse = Math.sqrt(Math.pow(adjacent, 2) + Math.pow(opposite, 2));
-                var maxCos = adjacent / hypotenuse;
-                var autoTickAnglesRadians = ax.autotickangles.map(
-                    function(degrees) { return degrees * Math.PI / 180; }
-                );
-                var angleRadians = autoTickAnglesRadians.find(
-                    function(angle) { return Math.abs(Math.cos(angle)) <= maxCos; }
-                );
-                if(angleRadians === undefined) {
-                    // no angle with smaller cosine than maxCos, just pick the angle with smallest cosine
-                    angleRadians = autoTickAnglesRadians.reduce(
-                        function(currentMax, nextAngle) {
-                            return Math.abs(Math.cos(currentMax)) < Math.abs(Math.cos(nextAngle)) ? currentMax : nextAngle;
-                        }
-                        , autoTickAnglesRadians[0]
-                    );
-                }
-                var newAngle = angleRadians * (180 / Math.PI /* to degrees */);
+                (ax.tickwidth || 0) + 2 * TEXTPAD;
 
                 for(i = 0; i < lbbArray.length - 1; i++) {
                     if(Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
@@ -4060,9 +4159,7 @@ function approxTitleDepth(ax) {
     var fontSize = ax.title.font.size;
     var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
     if(ax.title.hasOwnProperty('standoff')) {
-        return extraLines ?
-            fontSize * (CAP_SHIFT + (extraLines * LINE_SPACING)) :
-            fontSize * CAP_SHIFT;
+        return fontSize * (CAP_SHIFT + (extraLines * LINE_SPACING));
     } else {
         return extraLines ?
             fontSize * (extraLines + 1) * LINE_SPACING :
@@ -4093,9 +4190,20 @@ function drawTitle(gd, ax) {
     var axLetter = axId.charAt(0);
     var fontSize = ax.title.font.size;
     var titleStandoff;
+    var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
 
     if(ax.title.hasOwnProperty('standoff')) {
-        titleStandoff = ax._depth + ax.title.standoff + approxTitleDepth(ax);
+        // With ax._depth the initial drawing baseline is at the outer axis border (where the
+        // ticklabels are drawn). Since the title text will be drawn above the baseline,
+        // bottom/right axes must be shifted by 1 text line to draw below ticklabels instead of on
+        // top of them, whereas for top/left axes, the first line would be drawn
+        // before the ticklabels, but we need an offset for the descender portion of the first line
+        // and all subsequent lines.
+        if(ax.side === 'bottom' || ax.side === 'right') {
+            titleStandoff = ax._depth + ax.title.standoff + fontSize * CAP_SHIFT;
+        } else if(ax.side === 'top' || ax.side === 'left') {
+            titleStandoff = ax._depth + ax.title.standoff + fontSize * (MID_SHIFT + (extraLines * LINE_SPACING));
+        }
     } else {
         var isInside = insideTicklabelposition(ax);
 
@@ -4492,4 +4600,29 @@ function setShiftVal(ax, axShifts) {
     return ax.autoshift ?
         axShifts[ax.overlaying][ax.side] :
         (ax.shift || 0);
+}
+
+/**
+ * Checks if the given period is at least the period described by the tickformat or larger. If that
+ * is the case, they are compatible, because then the tickformat can be used to describe the period.
+ * E.g. it doesn't make sense to put a year label on a period spanning only a month.
+ * @param {number} period in ms
+ * @param {string} tickformat
+ * @returns {boolean}
+ */
+function periodCompatibleWithTickformat(period, tickformat) {
+    return (
+        /%f/.test(tickformat) ? period >= ONEMICROSEC :
+        /%L/.test(tickformat) ? period >= ONEMILLI :
+        /%[SX]/.test(tickformat) ? period >= ONESEC :
+        /%M/.test(tickformat) ? period >= ONEMIN :
+        /%[HI]/.test(tickformat) ? period >= ONEHOUR :
+        /%p/.test(tickformat) ? period >= HALFDAY :
+        /%[Aadejuwx]/.test(tickformat) ? period >= ONEDAY :
+        /%[UVW]/.test(tickformat) ? period >= ONEWEEK :
+        /%[Bbm]/.test(tickformat) ? period >= ONEMINMONTH :
+        /%[q]/.test(tickformat) ? period >= ONEMINQUARTER :
+        /%[Yy]/.test(tickformat) ? period >= ONEMINYEAR :
+        true
+    );
 }

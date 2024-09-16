@@ -661,7 +661,6 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .attr('stroke-width', '1px');
 
     axis.selectAll('text')
-        .style('text-shadow', svgTextUtils.makeTextShadow(paperColor))
         .style('cursor', 'default');
 
     var axisHeading = axisOverlays.selectAll('.' + c.cn.axisHeading)

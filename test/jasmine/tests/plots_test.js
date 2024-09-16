@@ -887,6 +887,7 @@ describe('Test Plots', function() {
             gl3d: '.gl-container>div[id^="scene"]',
             geo: '.geolayer>g',
             mapbox: '.mapboxgl-map',
+            map: '.maplibregl-map',
             parcoords: '.parcoords-line-layers',
             pie: '.pielayer .trace',
             sankey: '.sankey',
@@ -899,7 +900,7 @@ describe('Test Plots', function() {
         }
 
         // opts.cartesian and opts.gl2d should be arrays of subplot ids ('xy', 'x2y2' etc)
-        // others should be counts: gl3d, geo, mapbox, parcoords, pie, ternary
+        // others should be counts: gl3d, geo, mapbox, map, parcoords, pie, ternary
         // if omitted, that subplot type is assumed to not exist
         function assertSubplots(opts, msg) {
             msg = msg || '';
@@ -971,7 +972,8 @@ describe('Test Plots', function() {
                 scene: {},
                 geo: {},
                 ternary: {},
-                mapbox: {}
+                mapbox: {},
+                map: {}
             })
             .then(function() {
                 assertSubplots({pie: 1}, 'just pie');

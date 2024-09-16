@@ -76,6 +76,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
             coerce('connector.line.dash');
         }
     }
+    coerce('zorder');
 }
 
 function crossTraceDefaults(fullData, fullLayout) {

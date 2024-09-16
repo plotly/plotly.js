@@ -143,6 +143,9 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 fontFamily: _cast('hoverlabel.font.family'),
                 fontSize: _cast('hoverlabel.font.size'),
                 fontColor: _cast('hoverlabel.font.color'),
+                fontWeight: _cast('hoverlabel.font.weight'),
+                fontStyle: _cast('hoverlabel.font.style'),
+                fontVariant: _cast('hoverlabel.font.variant'),
                 nameLength: _cast('hoverlabel.namelength'),
                 textAlign: _cast('hoverlabel.align'),
                 hovertemplate: hovertemplate,
@@ -216,9 +219,9 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
     var onClick = function(pt) {
         // TODO: this does not support right-click. If we want to support it, we
         // would likely need to change pie to use dragElement instead of straight
-        // mapbox event binding. Or perhaps better, make a simple wrapper with the
+        // map subplots event binding. Or perhaps better, make a simple wrapper with the
         // right mousedown, mousemove, and mouseup handlers just for a left/right click
-        // mapbox would use this too.
+        // map subplots would use this too.
         var fullLayoutNow = gd._fullLayout;
         var traceNow = gd._fullData[trace.index];
 

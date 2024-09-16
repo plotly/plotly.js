@@ -423,18 +423,23 @@ function drawOne(gd, opts) {
                 dragElement.init({
                     element: legend.node(),
                     gd: gd,
-                    prepFn: function() {
+                    prepFn: function(e) {
+                        if(e.target === scrollBar.node()) {
+                            return;
+                        }
                         var transform = Drawing.getTranslate(legend);
                         x0 = transform.x;
                         y0 = transform.y;
                     },
                     moveFn: function(dx, dy) {
-                        var newX = x0 + dx;
-                        var newY = y0 + dy;
+                        if(x0 !== undefined && y0 !== undefined) {
+                            var newX = x0 + dx;
+                            var newY = y0 + dy;
 
-                        Drawing.setTranslate(legend, newX, newY);
-                        xf = dragElement.align(newX, legendObj._width, gs.l, gs.l + gs.w, legendObj.xanchor);
-                        yf = dragElement.align(newY + legendObj._height, -legendObj._height, gs.t + gs.h, gs.t, legendObj.yanchor);
+                            Drawing.setTranslate(legend, newX, newY);
+                            xf = dragElement.align(newX, legendObj._width, gs.l, gs.l + gs.w, legendObj.xanchor);
+                            yf = dragElement.align(newY + legendObj._height, -legendObj._height, gs.t + gs.h, gs.t, legendObj.yanchor);
+                        }
                     },
                     doneFn: function() {
                         if(xf !== undefined && yf !== undefined) {

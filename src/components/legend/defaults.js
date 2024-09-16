@@ -33,9 +33,9 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     };
 
     var globalFont = layoutOut.font || {};
-    var grouptitlefont = Lib.coerceFont(coerce, 'grouptitlefont', Lib.extendFlat({}, globalFont, {
+    var grouptitlefont = Lib.coerceFont(coerce, 'grouptitlefont', globalFont, { overrideDflt: {
         size: Math.round(globalFont.size * 1.1)
-    }));
+    }});
 
     var legendTraceCount = 0;
     var legendReallyHasATrace = false;

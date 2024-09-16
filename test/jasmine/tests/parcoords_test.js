@@ -92,7 +92,13 @@ describe('parcoords initialization tests', function() {
             gd.layout.font = {
                 family: 'Gravitas',
                 size: 20,
-                color: 'blue'
+                color: 'blue',
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: '1px 1px 2px green',
             };
 
             supplyAllDefaults(gd);
@@ -100,7 +106,13 @@ describe('parcoords initialization tests', function() {
             var expected = {
                 family: 'Gravitas',
                 size: 17,
-                color: 'blue'
+                color: 'blue',
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: '1px 1px 2px green',
             };
 
             expect(gd._fullData[0].labelfont).toEqual(expected);

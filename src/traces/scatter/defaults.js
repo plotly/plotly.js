@@ -30,6 +30,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('xhoverformat');
     coerce('yhoverformat');
 
+    coerce('zorder');
+
     var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
     if(
         layout.scattermode === 'group' &&

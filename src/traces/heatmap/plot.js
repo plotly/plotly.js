@@ -467,7 +467,6 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             }
 
             var font = trace.textfont;
-            var fontFamily = font.family;
             var fontSize = font.size;
             var globalFontSize = gd._fullLayout.font.size;
 
@@ -545,7 +544,17 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                     thisLabel
                         .attr('data-notex', 1)
                         .call(svgTextUtils.positionText, xFn(d), yFn(d))
-                        .call(Drawing.font, fontFamily, fontSize, fontColor)
+                        .call(Drawing.font, {
+                            family: font.family,
+                            size: fontSize,
+                            color: fontColor,
+                            weight: font.weight,
+                            style: font.style,
+                            variant: font.variant,
+                            textcase: font.textcase,
+                            lineposition: font.lineposition,
+                            shadow: font.shadow,
+                        })
                         .text(d.t)
                         .call(svgTextUtils.convertToTspans, gd);
                 });

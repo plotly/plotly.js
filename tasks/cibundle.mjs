@@ -1,3 +1,4 @@
+import runSeries from 'run-series';
 import constants from './util/constants.js';
 import _bundle from './util/bundle_wrapper.mjs';
 
@@ -11,14 +12,33 @@ import _bundle from './util/bundle_wrapper.mjs';
  *  - plotly.min.js bundle in build/ (for minified_bundle test)
  */
 
-// Bundle plotly.js and plotly.min.js
-_bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuild, {
-    noCompressAttributes: true,
-    pathToMinBundle: constants.pathToPlotlyBuildMin
-}, function() {
-    // Bundle the geo assets
+// list of tasks to pass to run-series to not blow up
+// memory consumption.
+var tasks = [];
+
+// Bundle plotly.js
+tasks.push(function(done) {
+    _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuild, {
+        noCompressAttributes: true,
+    }, done)
+});
+
+// Bundle plotly.min.js
+tasks.push(function(done) {
+    _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuildMin, {
+        minify: true,
+        noCompressAttributes: true,
+    }, done)
+});
+
+// Bundle the geo assets
+tasks.push(function(done) {
     _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
         noPlugins: true,
         standalone: 'PlotlyGeoAssets'
-    });
+    }, done)
+});
+
+runSeries(tasks, function(err) {
+    if(err) throw err;
 });

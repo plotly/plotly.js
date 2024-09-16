@@ -330,6 +330,8 @@ var TAG_STYLES = {
     // baseline below
     sup: 'font-size:70%',
     sub: 'font-size:70%',
+    s: 'text-decoration:line-through',
+    u: 'text-decoration:underline',
     b: 'font-weight:bold',
     i: 'font-style:italic',
     a: 'cursor:pointer',

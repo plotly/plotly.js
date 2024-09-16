@@ -105,6 +105,7 @@ module.exports = {
     }),
 
     tickfont: fontAttrs({
+        autoShadowDflt: true,
         editType: 'calc',
         description: 'Sets the font for the `category` labels.'
     }),

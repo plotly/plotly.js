@@ -1,0 +1,20 @@
+{
+ "data": [
+  {
+   "type": "scatter",
+   "name": "scatter",
+   "y": [-1, 0, 1, 2, 3],
+   "x": [-1, 0, 1, 2, 3],
+   "zorder": 1
+  },
+  {
+   "type": "contour",
+   "z": [[1, 2, 3], [2, 0, 0], [3, 0, 3]],
+   "zorder": 10
+  }
+ ],
+ "layout": {
+  "width": 400,
+  "height": 400
+ }
+}

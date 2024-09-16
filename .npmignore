@@ -14,7 +14,5 @@ bower.json
 
 .ackrc
 .agignore
-.eslintignore
-.eslintrc
 
 npm-debug.log

@@ -64,6 +64,7 @@ var attrs = module.exports = overrideAll({
     },
 
     textfont: fontAttrs({
+        autoShadowDflt: true,
         description: 'Sets the font for node labels'
     }),
 

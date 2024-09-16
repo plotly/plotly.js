@@ -1,0 +1,107 @@
+{
+ "data": [
+  {
+   "mode": "markers",
+   "x": [100, 200, 300, 400, 500],
+   "y": [200, 300, 400, 500, 600],
+   "type": "scatter"
+  },
+  {
+   "mode": "markers",
+   "x": [100, 200, 300, 400, 500],
+   "y": [200, 300, 400, 500, 600],
+   "type": "scatter",
+   "xaxis": "x2",
+   "yaxis": "y2"
+  },
+  {
+   "mode": "markers",
+   "x": [100, 200, 300, 400, 500],
+   "y": [200, 300, 400, 500, 600],
+   "type": "scatter",
+   "xaxis": "x3",
+   "yaxis": "y3"
+  },
+  {
+   "mode": "markers",
+   "x": [100, 200, 300, 400, 500],
+   "y": [200, 300, 400, 500, 600],
+   "type": "scatter",
+   "xaxis": "x4",
+   "yaxis": "y4"
+  }
+ ],
+ "layout": {
+  "width": 800,
+  "legend": {
+   "visible": false
+  },
+  "grid": {
+   "rows": 2,
+   "columns": 2,
+   "pattern": "independent",
+   "xgap": 0.4
+  },
+  "xaxis": {
+   "title": {
+    "text": "______xaxis______",
+    "standoff": 0
+   },
+   "side": "top",
+   "automargin": true
+  },
+  "xaxis3": {
+   "title": {
+    "text": "¯¯¯¯¯¯xaxis3¯¯¯¯¯¯",
+    "standoff": 0
+   },
+   "automargin": true
+  },
+  "yaxis": {
+   "title": {
+    "text": "______yaxis______",
+    "standoff": 0
+   },
+   "automargin": true
+  },
+  "yaxis3": {
+   "title": {
+    "text": "¯¯¯¯¯¯yaxis3¯¯¯¯¯¯",
+    "standoff": 0
+   },
+   "side": "right",
+   "automargin": true
+  },
+  "xaxis2": {
+   "title": {
+    "text": "xaxis2<br>some<br>more<br>______text______",
+    "standoff": 0
+   },
+   "side": "top",
+   "automargin": true
+  },
+  "xaxis4": {
+   "title": {
+    "text": "¯¯¯¯¯¯xaxis4¯¯¯¯¯¯<br>some<br>more<br>text",
+    "standoff": 0
+   },
+   "side": "bottom",
+   "automargin": true
+  },
+  "yaxis2": {
+   "title": {
+    "text": "¯¯¯¯¯¯yaxis2¯¯¯¯¯¯<br>some<br>more<br>text",
+    "standoff": 0
+   },
+   "side": "right",
+   "automargin": true
+  },
+  "yaxis4": {
+   "title": {
+    "text": "yaxis4<br>some<br>more<br>______text______",
+    "standoff": 0
+   },
+   "automargin": true
+  }
+ }
+}
