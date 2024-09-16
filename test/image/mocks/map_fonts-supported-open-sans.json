@@ -1,0 +1,502 @@
+{
+ "data": [
+  {
+   "subplot": "map",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Open Sans Regular"
+   },
+   "text": [
+    "Open Sans Regular",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map2",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Open Sans Bold Italic"
+   },
+   "text": [
+    "Open Sans Bold Italic",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map3",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Open Sans Bold"
+   },
+   "text": [
+    "Open Sans Bold",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map4",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Open Sans Extrabold Italic"
+   },
+   "text": [
+    "Open Sans Extrabold Italic",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map5",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Open Sans Extrabold"
+   },
+   "text": [
+    "Open Sans Extrabold",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map6",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Open Sans Italic"
+   },
+   "text": [
+    "Open Sans Italic",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map7",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Open Sans Light Italic"
+   },
+   "text": [
+    "Open Sans Light Italic",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map8",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Open Sans Light"
+   },
+   "text": [
+    "Open Sans Light",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map9",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Open Sans Semibold Italic"
+   },
+   "text": [
+    "Open Sans Semibold Italic",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map10",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Open Sans Semibold"
+   },
+   "text": [
+    "Open Sans Semibold",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  }
+ ],
+ "layout": {
+  "showlegend": false,
+  "margin": {
+   "t": 50,
+   "b": 10,
+   "l": 10,
+   "r": 10
+  },
+  "title": {
+   "text": "Supported Open Sans fonts  in maps",
+   "font": {
+    "weight": 800,
+    "style": "italic"
+   }
+  },
+  "map": {
+   "zoom": 3,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.905, 0.995]
+   }
+  },
+  "map2": {
+   "zoom": 3,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.805, 0.895]
+   }
+  },
+  "map3": {
+   "zoom": 3,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.705, 0.795]
+   }
+  },
+  "map4": {
+   "zoom": 3,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.605, 0.695]
+   }
+  },
+  "map5": {
+   "zoom": 3,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.505, 0.595]
+   }
+  },
+  "map6": {
+   "zoom": 3,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.405, 0.495]
+   }
+  },
+  "map7": {
+   "zoom": 3,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.305, 0.395]
+   }
+  },
+  "map8": {
+   "zoom": 3,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.205, 0.295]
+   }
+  },
+  "map9": {
+   "zoom": 3,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.105, 0.195]
+   }
+  },
+  "map10": {
+   "zoom": 3,
+   "style": "light",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.005, 0.095]
+   }
+  },
+  "height": 3000,
+  "width": 900
+ }
+}

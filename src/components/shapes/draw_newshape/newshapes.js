@@ -84,10 +84,10 @@ function newShapes(outlines, dragOptions) {
                 case 'line':
                 case 'rect':
                 case 'circle':
-                    modifyItem('x0', afterEdit.x0);
-                    modifyItem('x1', afterEdit.x1);
-                    modifyItem('y0', afterEdit.y0);
-                    modifyItem('y1', afterEdit.y1);
+                    modifyItem('x0', afterEdit.x0 - (beforeEdit.x0shift || 0));
+                    modifyItem('x1', afterEdit.x1 - (beforeEdit.x1shift || 0));
+                    modifyItem('y0', afterEdit.y0 - (beforeEdit.y0shift || 0));
+                    modifyItem('y1', afterEdit.y1 - (beforeEdit.y1shift || 0));
                     break;
 
                 case 'path':

@@ -133,4 +133,6 @@ module.exports = {
             ].join(' ')
         }
     }),
+
+    zorder: scatterAttrs.zorder
 };

@@ -152,9 +152,28 @@ describe('Bar.supplyDefaults', function() {
             y: [1, 2, 3]
         };
         var layout = {
-            font: {family: 'arial', color: '#AAA', size: 13}
+            font: {
+                family: 'arial',
+                color: '#AAA',
+                size: 13,
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
+            }
         };
-        var layoutFontMinusColor = {family: 'arial', size: 13};
+        var layoutFontMinusColor = {
+            family: 'arial',
+            size: 13,
+            weight: 'bold',
+            style: 'italic',
+            variant: 'small-caps',
+            textcase: 'word caps',
+            lineposition: 'under',
+            shadow: 'auto',
+        };
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -2068,7 +2087,7 @@ describe('A bar plot', function() {
         }
 
         function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
-            var subplotLayer = d3Select('.plot');
+            var subplotLayer = d3Select('.overplot').select('.xy');
             var barLayer = subplotLayer.select('.barlayer');
 
             _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');

@@ -1,5 +1,11 @@
 'use strict';
 
+var deprecationWarning = [
+    '*choroplethmapbox* trace is deprecated!',
+    'Please consider switching to the *choroplethmap* trace type and `map` subplots.',
+    'Learn more at: https://plotly.com/javascript/maplibre-migration/'
+].join(' ');
+
 module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
@@ -27,7 +33,7 @@ module.exports = {
 
             if(typeof layerId === 'string' &&
                 layerId.indexOf('water') === 0
-             ) {
+            ) {
                 for(var j = i + 1; j < mapLayers.length; j++) {
                     layerId = mapLayers[j].id;
 
@@ -48,6 +54,7 @@ module.exports = {
     meta: {
         hr_name: 'choropleth_mapbox',
         description: [
+            deprecationWarning,
             'GeoJSON features to be filled are set in `geojson`',
             'The data that describes the choropleth value-to-color mapping',
             'is set in `locations` and `z`.'

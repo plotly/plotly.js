@@ -24,6 +24,8 @@ var SVG_TEXT_ANCHOR_START = 'start';
 var SVG_TEXT_ANCHOR_MIDDLE = 'middle';
 var SVG_TEXT_ANCHOR_END = 'end';
 
+var zindexSeparator = require('../plots/cartesian/constants').zindexSeparator;
+
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
 };
@@ -135,7 +137,7 @@ function lsInner(gd) {
             var yDomain = plotinfo.yaxis.domain;
             var plotgroup = plotinfo.plotgroup;
 
-            if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
+            if(overlappingDomain(xDomain, yDomain, lowerDomains) && subplot.indexOf(zindexSeparator) === -1) {
                 var pgNode = plotgroup.node();
                 var plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
                 pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
@@ -408,18 +410,20 @@ exports.drawMainTitle = function(gd) {
     Titles.draw(gd, 'gtitle', {
         propContainer: fullLayout,
         propName: 'title.text',
+        subtitlePropName: 'title.subtitle.text',
         placeholder: fullLayout._dfltTitle.plot,
+        subtitlePlaceholder: fullLayout._dfltTitle.subtitle,
         attributes: ({
             x: x,
             y: y,
             'text-anchor': textAnchor,
             dy: dy
-        })
+        }),
     });
 
     if(title.text && title.automargin) {
         var titleObj = d3.selectAll('.gtitle');
-        var titleHeight = Drawing.bBox(titleObj.node()).height;
+        var titleHeight = Drawing.bBox(d3.selectAll('.g-gtitle').node()).height;
         var pushMargin = needsMarginPush(gd, title, titleHeight);
         if(pushMargin > 0) {
             applyTitleAutoMargin(gd, y, pushMargin, titleHeight);
@@ -442,6 +446,21 @@ exports.drawMainTitle = function(gd) {
                     var newDy = +(this.getAttribute('dy')).slice(0, -2) - delta + 'em';
                     this.setAttribute('dy', newDy);
                 });
+            }
+
+            // If there is a subtitle
+            var subtitleObj = d3.selectAll('.gtitle-subtitle');
+            if(subtitleObj.node()) {
+                // Get bottom edge of title bounding box
+                var titleBB = titleObj.node().getBBox();
+                var titleBottom = titleBB.y + titleBB.height;
+                var subtitleY = titleBottom + Titles.SUBTITLE_PADDING_EM * title.subtitle.font.size;
+                subtitleObj.attr({
+                    x: x,
+                    y: subtitleY,
+                    'text-anchor': textAnchor,
+                    dy: getMainTitleDyAdj(title.yanchor)
+                }).call(svgTextUtils.positionText, x, subtitleY);
             }
         }
     }

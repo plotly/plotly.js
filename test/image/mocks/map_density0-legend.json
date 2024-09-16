@@ -1,0 +1,45 @@
+{
+ "data": [
+  {
+   "type": "densitymap",
+   "name": "Montreal",
+   "lon": [-73.5],
+   "lat": [45.5],
+   "z": [1],
+   "colorscale": [[0, "blue"], [1, "blue"]],
+   "showscale": false,
+   "showlegend": true
+  },
+  {
+   "type": "densitymap",
+   "name": "Boston",
+   "lon": [-71.0],
+   "lat": [42.3],
+   "z": [1],
+   "colorscale": [[0, "red"], [1, "red"]],
+   "showscale": false,
+   "showlegend": true
+  }
+ ],
+ "layout": {
+  "map": {
+   "style": "open-street-map",
+   "center": {
+    "lon": -72.25,
+    "lat": 43.9
+   },
+   "zoom": 4
+  },
+  "title": {
+   "text": "densitymap with legends"
+  },
+  "width": 500,
+  "height": 250,
+  "margin": {
+   "t": 50,
+   "b": 0,
+   "l": 0,
+   "r": 0
+  }
+ }
+}

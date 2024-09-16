@@ -35,7 +35,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('header.line.width');
     coerce('header.line.color');
     coerce('header.fill.color');
-    Lib.coerceFont(coerce, 'header.font', Lib.extendFlat({}, layout.font));
+    Lib.coerceFont(coerce, 'header.font', layout.font);
 
     defaultColumnOrder(traceOut, coerce);
 
@@ -48,7 +48,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('cells.line.width');
     coerce('cells.line.color');
     coerce('cells.fill.color');
-    Lib.coerceFont(coerce, 'cells.font', Lib.extendFlat({}, layout.font));
+    Lib.coerceFont(coerce, 'cells.font', layout.font);
 
     // disable 1D transforms
     traceOut._length = null;

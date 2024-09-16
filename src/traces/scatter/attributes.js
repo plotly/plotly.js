@@ -686,4 +686,14 @@ module.exports = {
         arrayOk: true,
         description: 'Sets the text font.'
     }),
+    zorder: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'plot',
+        description: [
+            'Sets the layer on which this trace is displayed, relative to',
+            'other SVG traces on the same subplot. SVG traces with higher `zorder`',
+            'appear in front of those with lower `zorder`.'
+        ].join(' ')
+    }
 };

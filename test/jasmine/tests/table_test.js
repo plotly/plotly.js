@@ -53,7 +53,13 @@ describe('table initialization tests', function() {
             gd.layout.font = {
                 family: 'Gravitas',
                 size: 20,
-                color: 'blue'
+                color: 'blue',
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             };
 
             supplyAllDefaults(gd);
@@ -61,7 +67,13 @@ describe('table initialization tests', function() {
             var expected = {
                 family: 'Gravitas',
                 size: 20,
-                color: 'blue'
+                color: 'blue',
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             };
 
             expect(gd._fullData[0].header.font).toEqual(expected);
@@ -73,7 +85,19 @@ describe('table initialization tests', function() {
         function _supply(traceIn) {
             var traceOut = { visible: true };
             var defaultColor = '#777';
-            var layout = { font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'} };
+            var layout = {
+                font: {
+                    family: '"Open Sans", verdana, arial, sans-serif',
+                    size: 12,
+                    color: '#444',
+                    weight: 'bold',
+                    style: 'italic',
+                    variant: 'small-caps',
+                    textcase: 'word caps',
+                    lineposition: 'under',
+                    shadow: 'auto',
+                }
+            };
 
             Table.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -129,7 +153,17 @@ describe('table initialization tests', function() {
                 height: 28,
                 line: { width: 1, color: 'grey' },
                 fill: { color: attributes.header.fill.color.dflt },
-                font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'}
+                font: {
+                    family: '"Open Sans", verdana, arial, sans-serif',
+                    size: 12,
+                    color: '#444',
+                    weight: 'bold',
+                    style: 'italic',
+                    variant: 'small-caps',
+                    textcase: 'word caps',
+                    lineposition: 'under',
+                    shadow: 'auto',
+                }
             });
 
             expect(fullTrace.cells).toEqual({
@@ -139,7 +173,17 @@ describe('table initialization tests', function() {
                 height: 20,
                 line: { width: 1, color: 'grey' },
                 fill: { color: attributes.cells.fill.color.dflt },
-                font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'}
+                font: {
+                    family: '"Open Sans", verdana, arial, sans-serif',
+                    size: 12,
+                    color: '#444',
+                    weight: 'bold',
+                    style: 'italic',
+                    variant: 'small-caps',
+                    textcase: 'word caps',
+                    lineposition: 'under',
+                    shadow: 'auto',
+                }
             });
         });
     });

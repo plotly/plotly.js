@@ -55,4 +55,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut._defaultColor = defaultColor;
         traceOut._length = null;
     }
+    coerce('zorder');
 };

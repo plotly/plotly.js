@@ -12,8 +12,7 @@ npm-debug.log*
 tags
 
 .*
+!.github
 !.circleci
 !.gitignore
 !.npmignore
-!.eslintrc
-!.eslintignore

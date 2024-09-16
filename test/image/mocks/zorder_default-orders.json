@@ -1,0 +1,35 @@
+{
+ "data": [
+  {
+   "marker": {
+    "size": 10
+   },
+   "mode": "markers",
+   "name": "scatter",
+   "type": "scatter",
+   "x": [1, 2, 3, 4, 5],
+   "y": [2, 1, 6, 4, 4]
+  },
+  {
+   "name": "bar",
+   "type": "bar",
+   "x": [1, 2, 3, 4, 5],
+   "y": [1, 6, 3, 6, 1]
+  },
+  {
+   "mode": "lines",
+   "name": "line",
+   "type": "scatter",
+   "x": [1, 2, 3, 4, 5],
+   "y": [2, 3, 4, 3, 2],
+   "zorder": -1
+  }
+ ],
+ "layout": {
+  "width": 350,
+  "height": 350,
+  "title": {
+   "text": "Move line plot to back only"
+  }
+ }
+}

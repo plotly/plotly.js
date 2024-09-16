@@ -225,8 +225,6 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .attr('class', 'catlabel')
         .attr('pointer-events', 'none');
 
-    var paperColor = graphDiv._fullLayout.paper_bgcolor;
-
     // Update category label
     categorySelection.select('text.catlabel')
         .attr('text-anchor',
@@ -240,8 +238,6 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
                 }
             })
         .attr('alignment-baseline', 'middle')
-
-        .style('text-shadow', svgTextUtils.makeTextShadow(paperColor))
         .style('fill', 'rgb(0, 0, 0)')
         .attr('x',
             function(d) {
@@ -921,7 +917,7 @@ function createHoverLabelForColorHovermode(gd, rootBBox, bandElement) {
     var pColorGivenCat = bandColorCount / catCount;
 
     var labels = {
-        countLabel: totalCount,
+        countLabel: bandColorCount,
         categoryLabel: catLabel,
         probabilityLabel: pColorAndCat.toFixed(3)
     };

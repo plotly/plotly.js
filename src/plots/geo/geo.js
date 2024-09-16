@@ -526,7 +526,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
             }
 
             if(clickMode.indexOf('event') > -1) {
-                // TODO: like pie and mapbox, this doesn't support right-click
+                // TODO: like pie and maps, this doesn't support right-click
                 // actually this one is worse, as right-click starts a pan, or leaves
                 // select in a weird state.
                 // Also, only tangentially related, we should cancel hover during pan

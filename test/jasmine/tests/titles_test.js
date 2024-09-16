@@ -1312,8 +1312,8 @@ describe('Editable titles', function() {
         gd = createGraphDiv();
     });
 
-    function checkTitle(letter, text, opacityOut, opacityIn) {
-        var titleEl = d3Select('.' + letter + 'title');
+    function checkTitle(className, text, opacityOut, opacityIn) {
+        var titleEl = d3Select('.' + className);
         expect(titleEl.text()).toBe(text);
         expect(+(titleEl.node().style.opacity || 1)).toBe(opacityOut);
 
@@ -1328,6 +1328,7 @@ describe('Editable titles', function() {
             expect(+(titleEl.node().style.opacity || 1)).toBe(opacityIn);
 
             mouseEvent('mouseout', xCenter, yCenter);
+            console.log({ titleEl_opacity: titleEl.node().style.opacity, className: className });
             setTimeout(function() {
                 expect(+(titleEl.node().style.opacity || 1)).toBe(opacityOut);
                 done();
@@ -1337,14 +1338,15 @@ describe('Editable titles', function() {
         return promise;
     }
 
-    function editTitle(letter, attr, text) {
+    function editTitle(className, attr, text) {
         return new Promise(function(resolve) {
             gd.once('plotly_relayout', function(eventData) {
-                expect(eventData[attr]).toEqual(text, [letter, attr, eventData]);
+                expect(eventData[attr]).toEqual(text, [className, attr, eventData]);
+                console.log(eventData[attr]);
                 setTimeout(resolve, 10);
             });
 
-            var textNode = document.querySelector('.' + letter + 'title');
+            var textNode = document.querySelector('.' + className);
             textNode.dispatchEvent(new window.MouseEvent('click'));
 
             var editNode = document.querySelector('.plugin-editable.editable');
@@ -1359,13 +1361,14 @@ describe('Editable titles', function() {
         Plotly.newPlot(gd, data, {}, {editable: true})
         .then(function() {
             return Promise.all([
-                // Check all three titles in parallel. This only works because
+                // Check all four titles in parallel. This only works because
                 // we're using synthetic events, not a real mouse. It's a big
                 // win though because the test takes 1.2 seconds with the
                 // animations...
-                checkTitle('x', 'Click to enter X axis title', 0.2, 0.2),
-                checkTitle('y', 'Click to enter Y axis title', 0.2, 0.2),
-                checkTitle('g', 'Click to enter Plot title', 0.2, 0.2)
+                checkTitle('xtitle', 'Click to enter X axis title', 0.2, 0.2),
+                checkTitle('ytitle', 'Click to enter Y axis title', 0.2, 0.2),
+                checkTitle('gtitle', 'Click to enter Plot title', 0.2, 0.2),
+                checkTitle('gtitle-subtitle', 'Click to enter Plot subtitle', 0.2, 0.2)
             ]);
         })
         .then(done, done.fail);
@@ -1375,13 +1378,14 @@ describe('Editable titles', function() {
         Plotly.newPlot(gd, data, {
             xaxis: {title: {text: ''}},
             yaxis: {title: {text: ''}},
-            title: {text: ''}
+            title: { text: '', subtitle: { text: ''}},
         }, {editable: true})
         .then(function() {
             return Promise.all([
-                checkTitle('x', 'Click to enter X axis title', 0, 1),
-                checkTitle('y', 'Click to enter Y axis title', 0, 1),
-                checkTitle('g', 'Click to enter Plot title', 0, 1)
+                checkTitle('xtitle', 'Click to enter X axis title', 0, 1),
+                checkTitle('ytitle', 'Click to enter Y axis title', 0, 1),
+                checkTitle('gtitle', 'Click to enter Plot title', 0, 1),
+                checkTitle('gtitle-subtitle', 'Click to enter Plot subtitle', 0, 1)
             ]);
         })
         .then(done, done.fail);
@@ -1394,19 +1398,23 @@ describe('Editable titles', function() {
             title: {text: ''}
         }, {editable: true})
         .then(function() {
-            return editTitle('x', 'xaxis.title.text', 'XXX');
+            return editTitle('xtitle', 'xaxis.title.text', 'XXX');
         })
         .then(function() {
-            return editTitle('y', 'yaxis.title.text', 'YYY');
+            return editTitle('ytitle', 'yaxis.title.text', 'YYY');
         })
         .then(function() {
-            return editTitle('g', 'title.text', 'TTT');
+            return editTitle('gtitle', 'title.text', 'TTT');
+        })
+        .then(function() {
+            return editTitle('gtitle-subtitle', 'title.subtitle.text', 'SSS');
         })
         .then(function() {
             return Promise.all([
-                checkTitle('x', 'XXX', 1, 1),
-                checkTitle('y', 'YYY', 1, 1),
-                checkTitle('g', 'TTT', 1, 1)
+                checkTitle('xtitle', 'XXX', 1, 1),
+                checkTitle('ytitle', 'YYY', 1, 1),
+                checkTitle('gtitle', 'TTT', 1, 1),
+                checkTitle('gtitle-subtitle', 'SSS', 1, 1)
             ]);
         })
         .then(done, done.fail);

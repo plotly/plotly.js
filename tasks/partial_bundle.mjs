@@ -55,15 +55,27 @@ export default function partialBundle(tasks, opts) {
 
     tasks.push(function(done) {
         var bundleOpts = {
-            deleteIndex: deleteIndex,
-            pathToMinBundle: distMin
+            deleteIndex: deleteIndex && !distMin,
         };
 
         _bundle(index, dist, bundleOpts, function() {
             var headerDist = header.replace('plotly.js', 'plotly.js (' + name + ')');
-            var headerDistMin = header.replace('plotly.js', 'plotly.js (' + name + ' - minified)');
 
             if(dist) prependFile.sync(dist, headerDist, common.throwOnError);
+
+            done();
+        });
+    });
+
+    tasks.push(function(done) {
+        var bundleOpts = {
+            deleteIndex: deleteIndex,
+            minify: true,
+        };
+
+        _bundle(index, distMin, bundleOpts, function() {
+            var headerDistMin = header.replace('plotly.js', 'plotly.js (' + name + ' - minified)');
+
             if(distMin) prependFile.sync(distMin, headerDistMin, common.throwOnError);
 
             done();

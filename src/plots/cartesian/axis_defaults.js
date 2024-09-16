@@ -59,6 +59,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
+    if(!options.noTicklabelindex && (axType === 'date' || axType === 'linear')) {
+        coerce('ticklabelindex');
+    }
+
     var ticklabelposition = '';
     if(!options.noTicklabelposition || axType === 'multicategory') {
         ticklabelposition = Lib.coerce(containerIn, containerOut, {
@@ -111,11 +115,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     if(!visible) return containerOut;
 
     coerce('title.text', dfltTitle);
-    Lib.coerceFont(coerce, 'title.font', {
-        family: font.family,
+    Lib.coerceFont(coerce, 'title.font', font, { overrideDflt: {
         size: Lib.bigFont(font.size),
         color: dfltFontColor
-    });
+    }});
 
     // major ticks
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);

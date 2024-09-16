@@ -1,0 +1,109 @@
+{
+ "data": [
+  {
+   "name": "scatter",
+   "x": ["A", "B", "C", "D", 2000.0],
+   "y": [100, 200, 150, 190, 50],
+   "type": "scatter"
+  },
+  {
+   "name": "bar",
+   "x": ["A", "B", "C", "D", 2000.0],
+   "y": [50, 70, 90, 35, 55],
+   "type": "bar",
+   "yaxis": "y2"
+  }
+ ],
+ "layout": {
+  "shapes": [
+   {
+    "name": "dashdot line",
+    "fillcolor": "rgba(179,179,179,1)",
+    "layer": "above",
+    "line": {
+     "color": "rgba(66,127,109,1)",
+     "dash": "dashdot"
+    },
+    "type": "line",
+    "x0": 0.4,
+    "x1": 0.4,
+    "xref": "x",
+    "y0": 0.0,
+    "y1": 1.0,
+    "yref": "paper"
+   },
+   {
+    "name": "horizontal line",
+    "fillcolor": "rgba(179,179,179,1)",
+    "layer": "above",
+    "line": {
+     "color": "rgba(0,0,0,1)"
+    },
+    "type": "line",
+    "x0": 0.0,
+    "x1": 1.0,
+    "xref": "paper",
+    "y0": 120.0,
+    "y1": 120.0,
+    "yref": "y"
+   },
+   {
+    "name": "blue rect",
+    "fillcolor": "rgba(108,173,225,1)",
+    "layer": "between",
+    "label": {
+     "text": "hello, I am between gridlines and traces!"
+    },
+    "line": {
+     "color": "rgba(108,173,225,1)"
+    },
+    "type": "rect",
+    "x0": "B",
+    "x1": "D",
+    "xref": "x",
+    "y0": 35,
+    "y1": 65.0
+   },
+   {
+    "name": "big rect",
+    "fillcolor": "rgba(179,179,179,1)",
+    "layer": "below",
+    "line": {
+     "color": "rgba(179,179,179,1)"
+    },
+    "type": "rect",
+    "x0": "C",
+    "x1": 0.25,
+    "xref": "x",
+    "y0": 0.0,
+    "y1": 1.0,
+    "yref": "paper"
+   },
+   {
+    "name": "dashed rect",
+    "fillcolor": "rgba(130,143,198,1)",
+    "layer": "between",
+    "line": {
+     "color": "rgba(0,0,0,1)",
+     "dash": "dash",
+     "width": 3.0
+    },
+    "type": "rect",
+    "x0": "D",
+    "x1": 5,
+    "y0": 140,
+    "y1": 200
+   }
+  ],
+  "yaxis": {
+   "gridcolor": "red",
+   "insiderange": ["0", "215"],
+   "type": "linear"
+  },
+  "yaxis2": {
+   "gridwidth": 2,
+   "side": "right",
+   "overlaying": "y"
+  }
+ }
+}

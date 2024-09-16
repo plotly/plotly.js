@@ -265,7 +265,8 @@ module.exports = extendFlat({
             ].join(' ')
         }),
         editType: 'plot'
-    }
+    },
+    zorder: scatterAttrs.zorder
 },
     colorScaleAttrs('', {
         cLetter: 'z',

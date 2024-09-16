@@ -21,6 +21,9 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
         inheritFontAttr('size');
         inheritFontAttr('family');
         inheritFontAttr('color');
+        inheritFontAttr('weight');
+        inheritFontAttr('style');
+        inheritFontAttr('variant');
 
         if(hasLegend) {
             if(!opts.bgcolor) opts.bgcolor = Color.combine(contOut.legend.bgcolor, contOut.paper_bgcolor);

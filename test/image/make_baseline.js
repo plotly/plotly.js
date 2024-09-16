@@ -63,7 +63,8 @@ if(mathjax3) {
         'table_latex_multitrace_scatter',
         'table_plain_birds',
         'table_wrapped_birds',
-        'ternary-mathjax'
+        'ternary-mathjax',
+        'ternary-mathjax-title-place-subtitle'
     ];
 }
 
