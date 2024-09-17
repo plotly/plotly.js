@@ -790,6 +790,8 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
             30
         );
     } else {
+        isBelowPlotArea = legendObj.y * fullLayout.height < gs.b || (legendObj.y * fullLayout.height === gs.b && yanchor === 'top');
+        isAbovePlotArea = legendObj.y * fullLayout.height > gs.b + gs.h || (legendObj.y * fullLayout.height === gs.b + gs.h && yanchor === 'bottom');
         if(yanchor === 'top')
             legendObj._maxHeight = legendObj.y * fullLayout.height;
         else if(yanchor === 'bottom')
