@@ -168,7 +168,7 @@
     "minify-stream": "^2.1.0",
     "npm-link-check": "^5.0.1",
     "open": "^8.4.2",
-    "pixelmatch": "^5.3.0",
+    "pixelmatch": "^6.0.0",
     "prepend-file": "^2.0.1",
     "prettysize": "^2.0.0",
     "raw-loader": "^4.0.2",
