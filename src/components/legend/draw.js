@@ -780,7 +780,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var traceGroupGap = legendObj.tracegroupgap;
     var legendGroupWidths = {};
 
-    if (legendObj.yref === 'paper') {
+    if(legendObj.yref === 'paper') {
         isBelowPlotArea = legendObj.y < 0 || (legendObj.y === 0 && yanchor === 'top');
         isAbovePlotArea = legendObj.y > 1 || (legendObj.y === 1 && yanchor === 'bottom');
         // - if below/above plot area, give it the maximum potential margin-push value
@@ -790,9 +790,9 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
             30
         );
     } else {
-        if (yanchor === 'top')
+        if(yanchor === 'top')
             legendObj._maxHeight = legendObj.y * fullLayout.height;
-        else if (yanchor === 'bottom')
+        else if(yanchor === 'bottom')
             legendObj._maxHeight = (1 - legendObj.y) * fullLayout.height;
         else // if (yanchor === 'middle')
             legendObj._maxHeight = 2 * Math.min(1 - legendObj.y, legendObj.y) * fullLayout.height;
@@ -827,7 +827,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
         }
     } else {
         var xanchor = getXanchor(legendObj);
-        if (legendObj.xref === 'paper') {
+        if(legendObj.xref === 'paper') {
             var isLeftOfPlotArea = legendObj.x < 0 || (legendObj.x === 0 && xanchor === 'right');
             var isRightOfPlotArea = legendObj.x > 1 || (legendObj.x === 1 && xanchor === 'left');
             var isBeyondPlotAreaY = isAbovePlotArea || isBelowPlotArea;
@@ -842,9 +842,9 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                 gs.w,
                 2 * textGap);
         } else {
-            if (xanchor === 'right')
+            if(xanchor === 'right')
                 legendObj._maxWidth = legendObj.x * fullLayout.width;
-            else if (xanchor === 'left')
+            else if(xanchor === 'left')
                 legendObj._maxWidth = (1 - legendObj.x) * fullLayout.width;
             else // if (xanchor === 'center')
                 legendObj._maxWidth = 2 * Math.min(1 - legendObj.x, legendObj.x) * fullLayout.width;
