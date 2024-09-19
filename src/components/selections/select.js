@@ -182,6 +182,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             for(var q = 0; q < selections.length; q++) {
                 var s = fullLayout.selections[q];
                 if(
+                    !s ||
                     s.xref !== xRef ||
                     s.yref !== yRef
                 ) {
