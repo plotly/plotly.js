@@ -21,7 +21,7 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var SORTED_EVENT_KEYS = [
     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-    'xaxis', 'yaxis', 'a', 'b', 'c',
+    'xaxis', 'yaxis', 'a', 'b', 'c', 'id',
     'bbox'
 ].sort();
 

@@ -2079,6 +2079,7 @@ describe('Test select box and lasso per trace:', function() {
                     function() {
                         assertPoints([[0.5, 0.25, 0.25]]);
                         assertSelectedPoints({0: [0]});
+                        expect(selectedData.points[0].id).toBe("first ID")
                     },
                     [380, 180],
                     BOXEVENTS, 'scatterternary select'
