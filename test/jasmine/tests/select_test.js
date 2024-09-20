@@ -2061,7 +2061,7 @@ describe('Test select box and lasso per trace:', function() {
     }
 
     [false, true].forEach(function(hasCssTransform) {
-        fit('should work on scatterternary traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('should work on scatterternary traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['a', 'b', 'c']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
