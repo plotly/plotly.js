@@ -481,7 +481,7 @@ var configAttributes = {
             info: {},
             closedCaptions: {generate: false, elId: 'c2m-plotly-cc', elClassname: 'c2m-plotly-closed_captions'}
         },
-        description: ['Accessibility options: which library to use; whether to enable, options to pass to the library, info to pass to the library, closedCaptions to control how plotly renders the closed-captions element.',
+        description: ['Sonification options: whether to enable, options to pass to the library, info to pass to the library, closedCaptions to control how plotly renders the closed-captions element.',
             'chart2music is supported and options here include Options and Info from https://www.chart2music.com/docs/API/Config. '
         ].join(' ')
     },

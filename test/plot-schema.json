@@ -104,21 +104,6 @@
   }
  },
  "config": {
-  "accessibility": {
-   "description": "Accessibility options: which library to use; whether to enable, options to pass to the library, info to pass to the library, closedCaptions to control how plotly renders the closed-captions element. chart2music is supported and options here include Options and Info from https://www.chart2music.com/docs/API/Config. ",
-   "dflt": {
-    "closedCaptions": {
-     "elClassname": "c2m-plotly-closed_captions",
-     "elId": "c2m-plotly-cc",
-     "generate": false
-    },
-    "enabled": true,
-    "info": {},
-    "library": "chart2music",
-    "options": {}
-   },
-   "valType": "any"
-  },
   "autosizable": {
    "description": "Determines whether the graphs are plotted with respect to layout.autosize:true and infer its container size.",
    "dflt": false,
@@ -369,6 +354,20 @@
    "description": "Determines whether or not tips are shown while interacting with the resulting graphs.",
    "dflt": true,
    "valType": "boolean"
+  },
+  "sonification": {
+   "description": "Accessibility options: which library to use; whether to enable, options to pass to the library, info to pass to the library, closedCaptions to control how plotly renders the closed-captions element. chart2music is supported and options here include Options and Info from https://www.chart2music.com/docs/API/Config. ",
+   "dflt": {
+    "closedCaptions": {
+     "elClassname": "c2m-plotly-closed_captions",
+     "elId": "c2m-plotly-cc",
+     "generate": false
+    },
+    "enabled": false,
+    "info": {},
+    "options": {}
+   },
+   "valType": "any"
   },
   "staticPlot": {
    "description": "Determines whether the graphs are interactive or not. If *false*, no interactivity, for export or image generation.",
