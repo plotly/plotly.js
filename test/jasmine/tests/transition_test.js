@@ -558,10 +558,11 @@ describe('Plotly.react transitions:', function() {
         var data = [{y: [1, 2, 1]}];
         var layout = {transition: {duration: 10}};
         var config = {scrollZoom: true};
+
         Plotly.react(gd, data, layout, config)
         .then(function() {
             assertSpies('first draw', [
-                [Plots, 'transitionFromReact', 0] // so Plots.transitionFromReact should equal 0, ie didn't get called
+                [Plots, 'transitionFromReact', 0]
             ]);
         })
         .then(function() {
@@ -580,7 +581,7 @@ describe('Plotly.react transitions:', function() {
         })
         .then(function() {
             assertSpies('no config change', [
-                [Plots, 'transitionFromReact', 1] // react is not calling transitionFromReact, why?
+                [Plots, 'transitionFromReact', 1]
             ]);
         })
         .then(done, done.fail);
