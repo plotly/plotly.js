@@ -5,10 +5,6 @@ var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 
 var codecs = require('./all_codecs').codecs;
-// var codecs = [ require('./xy_scatter_codec') ]
-// I intentionally don't do that because
-// a) it's not possible in ESM w/ `import {}`
-// b) may break weak tree shakers who bail if `require()` not top-level
 
 function initC2M(gd, defaultConfig) {
     // TODO: should this be Lib.getGraphDiv()?

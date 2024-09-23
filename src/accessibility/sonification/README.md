@@ -1,4 +1,4 @@
-# `plotly.js` wrapper for `c2m`, sonified charts
+# `plotly.js` wrapper for `chart2music`, sonified charts
 
 This wrapper attaches a context object to `gd._context._c2m` with the following properties:
 
@@ -15,7 +15,7 @@ The first three have most of their values set by the defaults in *src/plot_api/p
 **index.js** exposes the following api:
 
 * `initC2M(gd, defaultConfig)` full resets the `c2mChart` object.
-  * `defaultConfig` is equal to `gd._context.accessibility`, as defined in *src/plot_api/plot_config.js*.
+  * `defaultConfig` is equal to `gd._context.sonification`, as defined in *src/plot_api/plot_config.js*.
   
 
 * `initClosedCaptionDiv(gd, config)` finds or creates the closed caption div, depending on `config`.

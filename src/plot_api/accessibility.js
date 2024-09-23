@@ -1,16 +1,10 @@
 'use strict';
 
-var c2mPlotly = require('../accessibility/c2m');
+var c2mPlotly = require('../accessibility/sonification');
 
-function enable(gd) {
+function enable_sonification(gd) {
     // Collecting defaults
-    var defaultConfig = gd._context.accessibility;
-
-    if(defaultConfig.library === 'chart2music') {
-        c2mPlotly.initC2M(gd, defaultConfig);
-    } else {
-        // User has some bunk configuration values, what do we do here?
-        return;
-    }
+    var defaultConfig = gd._context.sonification;
+    c2mPlotly.initC2M(gd, defaultConfig);
 }
-exports.enable = enable;
+exports.enable_sonification = enable_sonification;

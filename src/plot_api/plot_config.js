@@ -473,11 +473,10 @@ var configAttributes = {
         ].join(' ')
     },
 
-    accessibility: {
+    sonification: {
         valType: 'any',
         dflt: {
-            library: 'chart2music',
-            enabled: true,
+            enabled: false,
             options: {},
             info: {},
             closedCaptions: {generate: false, elId: 'c2m-plotly-cc', elClassname: 'c2m-plotly-closed_captions'}

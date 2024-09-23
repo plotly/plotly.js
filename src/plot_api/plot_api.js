@@ -392,7 +392,7 @@ function _doPlot(gd, data, layout, config) {
     }
     seq.push(saveRangeInitialForInsideTickLabels);
 
-    if(gd._context.accessibility.enabled) seq.push(accessibility.enable);
+    if(gd._context.sonification.enabled) seq.push(accessibility.enable_sonification);
 
     seq.push(Plots.previousPromises);
 
