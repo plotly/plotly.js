@@ -33,14 +33,5 @@
    "line": { "width": 10, "color": "red" },
    "marker": { "size": 20, "color": "blue" }
   }
- ],
- "config": {
-    "sonification": {
-        "enabled": true,
-        "closedCaptions": {
-            "generate": false,
-            "elId": "c2m-plotly-cc"
-        }
-    }
- }
+ ]
 }
