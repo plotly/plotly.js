@@ -1,6 +1,6 @@
 'use strict';
 
-var c2mPlotly = require('../accessibility/sonification');
+var c2mPlotly = require('.');
 
 function enable_sonification(gd) {
     // Collecting defaults
