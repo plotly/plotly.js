@@ -29,7 +29,7 @@ var manageArrays = require('./manage_arrays');
 var helpers = require('./helpers');
 var subroutines = require('./subroutines');
 var editTypes = require('./edit_types');
-var accessibility = require('./accessibility');
+var sonification = require('../accessibility/sonification/enable_sonification');
 
 var AX_NAME_PATTERN = require('../plots/cartesian/constants').AX_NAME_PATTERN;
 
@@ -392,7 +392,7 @@ function _doPlot(gd, data, layout, config) {
     }
     seq.push(saveRangeInitialForInsideTickLabels);
 
-    if(gd._context.sonification.enabled) seq.push(accessibility.enable_sonification);
+    if(gd._context.sonification.enabled) seq.push(sonification.enable_sonification);
 
     seq.push(Plots.previousPromises);
 
