@@ -385,13 +385,6 @@ function _doPlot(gd, data, layout, config) {
         Plots.doAutoMargin
     );
 
-    function saveRangeInitialForInsideTickLabels(gd) {
-        if(gd._fullLayout._insideTickLabelsAutorange) {
-            if(graphWasEmpty) Axes.saveRangeInitial(gd, true);
-        }
-    }
-    seq.push(saveRangeInitialForInsideTickLabels);
-
     if(gd._context.sonification.enabled) seq.push(sonification.enable_sonification);
 
     seq.push(Plots.previousPromises);
