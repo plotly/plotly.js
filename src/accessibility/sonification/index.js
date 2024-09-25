@@ -31,7 +31,11 @@ function initC2M(gd, defaultConfig) {
     // I'd rather the callback be given its c2m handler which
     // could store extra data. Or bind c2mContext as `this`.
 
-    var titleText = gd._fullLayout.title?.text ?? 'Chart';
+    var titleText = 'Chart';
+    if((gd._fullLayout.title !== undefined) && (gd._fullLayout.title.text !== undefined)) {
+        titleText = gd._fullLayout.title.text;
+    }
+
     var ccElement = initClosedCaptionDiv(gd, c2mContext.ccOptions);
 
     // TODO:
@@ -40,8 +44,19 @@ function initC2M(gd, defaultConfig) {
     // Furthermore, I think that the traces would have to point to their axis,
     // since it might not be x1, could be x2, etc
     // So this really needs to be part of process()
-    var xAxisText = gd._fullLayout.xaxis?.title?.text ?? 'X Axis';
-    var yAxisText = gd._fullLayout.yaxis?.title?.text ?? 'Y Axis';
+    var xAxisText = 'X Axis';
+    if((gd._fullLayout.xaxis !== undefined) &&
+      (gd._fullLayout.xaxis.title !== undefined) &&
+      (gd._fullLayout.xaxis.title.text !== undefined)) {
+        xAxisText = gd._fullLayout.xaxis.title.text;
+    }
+    var yAxisText = 'Y Axis';
+    if((gd._fullLayout.yaxis !== undefined) &&
+      (gd._fullLayout.yaxis.title !== undefined) &&
+      (gd._fullLayout.yaxis.title.text !== undefined)) {
+        yAxisText = gd._fullLayout.yaxis.title.text;
+    }
+
 
     var c2mData = {};
     var types = [];
@@ -52,12 +67,12 @@ function initC2M(gd, defaultConfig) {
         // TODO: what happens if this doesn't run, weird c2m errors
         for(var codecI = 0; codecI < codecs.length; codecI++) {
             var test = codecs[codecI].test(trace);
-            if (!test) continue;
+            if(!test) continue;
             var label = test.name ? test.name : i.toString() + ' ';
 
             var labelCount = 0;
             var originalLabel = label;
-            while (label in c2mData) {
+            while(label in c2mData) {
                 labelCount++;
                 label = originalLabel + labelCount.toString();
             }
