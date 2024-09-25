@@ -7,7 +7,6 @@ var Lib = require('../../lib');
 var codecs = require('./all_codecs').codecs;
 
 function initC2M(gd, defaultConfig) {
-    // TODO: should this be Lib.getGraphDiv()?
     // TODO what is there besides a fullReset?
     // TODO Do we need the capacity to add data (live listen?)
     // TODO Do we need the capacity to reset all data
