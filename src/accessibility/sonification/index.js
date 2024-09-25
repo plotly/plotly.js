@@ -37,12 +37,6 @@ function initC2M(gd, defaultConfig) {
 
     var ccElement = initClosedCaptionDiv(gd, c2mContext.ccOptions);
 
-    // TODO:
-    // I believe that title OR title.text could contain the information needed
-    // So we should stop if title is a type string
-    // Furthermore, I think that the traces would have to point to their axis,
-    // since it might not be x1, could be x2, etc
-    // So this really needs to be part of process()
     var xAxisText = 'X Axis';
     if((gd._fullLayout.xaxis !== undefined) &&
       (gd._fullLayout.xaxis.title !== undefined) &&
@@ -56,7 +50,9 @@ function initC2M(gd, defaultConfig) {
         yAxisText = gd._fullLayout.yaxis.title.text;
     }
 
-
+    // I think that the traces have to point to their axis,
+    // since it might not be x1, could be x2, etc
+    // So this really needs to be part of process()
     var c2mData = {};
     var types = [];
     var fullData = gd._fullData;
