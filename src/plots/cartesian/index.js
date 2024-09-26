@@ -621,6 +621,16 @@ function makeSubplotLayer(gd, plotinfo) {
                 plotinfo.yaxislayer = plotgroup.select('.yaxislayer-' + yLayer);
             }
         }
+
+        if(fullLayout._zindices.length > 1) {
+            var mainplotinfo = plotinfo.mainplotinfo;
+            if(mainplotinfo) {
+                plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
+                plotinfo.gridlayer = mainplotinfo.gridlayer;
+                plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+            }
+        }
+
     } else {
         var mainplotinfo = plotinfo.mainplotinfo;
         var mainplotgroup = mainplotinfo.plotgroup;
