@@ -588,9 +588,15 @@ function makeSubplotLayer(gd, plotinfo) {
                 plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
                 plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
 
-                plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
-                plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
-                plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+                if(mainplotinfo && hasMultipleZ) {
+                    plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
+                    plotinfo.gridlayer = mainplotinfo.gridlayer;
+                    plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+                } else {
+                    plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
+                    plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
+                    plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+                }
 
                 var betweenLayer = ensureSingle(plotgroup, 'g', 'layer-between');
                 plotinfo.shapelayerBetween = ensureSingle(betweenLayer, 'g', 'shapelayer');
@@ -622,12 +628,6 @@ function makeSubplotLayer(gd, plotinfo) {
                 plotinfo.ylines = plotgroup.select('.ylines-' + yLayer);
                 plotinfo.xaxislayer = plotgroup.select('.xaxislayer-' + xLayer);
                 plotinfo.yaxislayer = plotgroup.select('.yaxislayer-' + yLayer);
-            }
-
-            if(mainplotinfo && hasMultipleZ) {
-                plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
-                plotinfo.gridlayer = mainplotinfo.gridlayer;
-                plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
             }
         }
     } else {
