@@ -623,13 +623,13 @@ function makeSubplotLayer(gd, plotinfo) {
                 plotinfo.xaxislayer = plotgroup.select('.xaxislayer-' + xLayer);
                 plotinfo.yaxislayer = plotgroup.select('.yaxislayer-' + yLayer);
             }
-        }
 
-        if(hasMultipleZ) {
-            if(mainplotinfo) {
-                plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
-                plotinfo.gridlayer = mainplotinfo.gridlayer;
-                plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+            if(hasMultipleZ) {
+                if(mainplotinfo) {
+                    plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
+                    plotinfo.gridlayer = mainplotinfo.gridlayer;
+                    plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+                }
             }
         }
     } else {
