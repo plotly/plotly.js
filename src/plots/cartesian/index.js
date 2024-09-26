@@ -568,7 +568,10 @@ function makeSubplotLayer(gd, plotinfo) {
     var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
     var hasOnlyLargeSploms = fullLayout._hasOnlyLargeSploms;
 
-    if(!plotinfo.mainplot || fullLayout._zindices.length > 1) {
+    var hasMultipleZ = fullLayout._zindices.length > 1;
+    var mainplotinfo = plotinfo.mainplotinfo;
+
+    if(!plotinfo.mainplot || hasMultipleZ) {
         if(hasOnlyLargeSploms) {
             // TODO could do even better
             // - we don't need plot (but we would have to mock it in lsInner
@@ -622,17 +625,14 @@ function makeSubplotLayer(gd, plotinfo) {
             }
         }
 
-        if(fullLayout._zindices.length > 1) {
-            var mainplotinfo = plotinfo.mainplotinfo;
+        if(hasMultipleZ) {
             if(mainplotinfo) {
                 plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
                 plotinfo.gridlayer = mainplotinfo.gridlayer;
                 plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
             }
         }
-
     } else {
-        var mainplotinfo = plotinfo.mainplotinfo;
         var mainplotgroup = mainplotinfo.plotgroup;
         var xId = id + '-x';
         var yId = id + '-y';
