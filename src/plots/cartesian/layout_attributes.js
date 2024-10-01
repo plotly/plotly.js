@@ -1240,30 +1240,4 @@ module.exports = {
     },
     editType: 'calc',
 
-    _deprecated: {
-        autotick: {
-            valType: 'boolean',
-            editType: 'ticks',
-            description: [
-                'Obsolete.',
-                'Set `tickmode` to *auto* for old `autotick` *true* behavior.',
-                'Set `tickmode` to *linear* for `autotick` *false*.'
-            ].join(' ')
-        },
-        title: {
-            valType: 'string',
-            editType: 'ticks',
-            description: [
-                'Value of `title` is no longer a simple *string* but a set of sub-attributes.',
-                'To set the axis\' title, please use `title.text` now.'
-            ].join(' ')
-        },
-        titlefont: fontAttrs({
-            editType: 'ticks',
-            description: [
-                'Former `titlefont` is now the sub-attribute `font` of `title`.',
-                'To customize title font properties, please use `title.font` now.'
-            ].join(' ')
-        })
-    }
 };
