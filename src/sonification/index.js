@@ -66,16 +66,16 @@ function initC2M(gd, defaultConfig) {
     var fullData = gd._fullData;
 
     // Iterate through the traces and find the codec that matches the trace
-    for(var trace of fullData) {
-        for(var codec of codecs) {
+    for (var trace of fullData) {
+        for (var codec of codecs) {
             var test = codec.test(trace);
-            if(!test) continue;
+            if (!test) continue;
 
             // Generate a unique label for the trace
-            var label = test.name ? test.name : i.toString() + ' ';
+            var label = test.name;
             var labelCount = 0;
             var originalLabel = label;
-            while(label in c2mData) {
+            for (label in c2mData) {
                 labelCount++;
                 label = originalLabel + labelCount.toString();
             }
