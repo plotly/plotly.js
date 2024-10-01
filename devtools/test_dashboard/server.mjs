@@ -6,8 +6,10 @@ import open from 'open';
 import minimist from 'minimist';
 
 import constants from '../../tasks/util/constants.js';
-import { context } from 'esbuild';
+import { context, build } from 'esbuild';
 import config from '../../esbuild-config.js';
+
+import { glsl } from 'esbuild-plugin-glsl';
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
@@ -24,10 +26,35 @@ config.outfile = './build/plotly.js';
 var mockFolder = constants.pathToTestImageMocks;
 
 // mock list
-getMockFiles()
+await getMockFiles()
     .then(readFiles)
     .then(createMocksList)
     .then(saveMockListToFile);
+
+// Devtools config
+var devtoolsConfig = {
+    entryPoints: [
+        path.join(constants.pathToRoot, 'devtools', 'test_dashboard', 'devtools.js')
+    ],
+    outfile: path.join(constants.pathToRoot, 'build', 'test_dashboard-bundle.js'),
+    format: 'cjs',
+    globalName: 'Tabs',
+    bundle: true,
+    minify: false,
+    sourcemap: false,
+    plugins: [
+        glsl({
+            minify: true,
+        }),
+    ],
+    define: {
+        global: 'window',
+    },
+    target: 'es2016',
+    logLevel: 'info',
+};
+
+build(devtoolsConfig);
 
 var ctx = await context(config);
 devServer();
