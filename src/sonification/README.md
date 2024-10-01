@@ -17,10 +17,6 @@ The first three have most of their values set by the defaults in *src/plot_api/p
 * `initC2M(gd, defaultConfig)` full resets the `c2mChart` object.
   * `defaultConfig` is equal to `gd._context.sonification`, as defined in *src/plot_api/plot_config.js*.
   
-
-* `initClosedCaptionDiv(gd, config)` finds or creates the closed caption div, depending on `config`.
-  * `config` is equal to `defaultConfig.closedCaptions`.
-
 ### all_codecs.js
 **all_codecs.js** agregates all the individual **_codec.js* files, all are expect to export exactly two functions: `test` and `process`.
 

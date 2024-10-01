@@ -66,13 +66,13 @@ function initC2M(gd, defaultConfig) {
     var fullData = gd._fullData;
 
     // Iterate through the traces and find the codec that matches the trace
-    for(var i = 0; i < fullData.length; i++) {
-        var trace = fullData[i];
-        for(var codecI = 0; codecI < codecs.length; codecI++) {
-            var test = codecs[codecI].test(trace);
+    for(var trace of fullData) {
+        for(var codec of codecs) {
+            var test = codec.test(trace);
             if(!test) continue;
-            var label = test.name ? test.name : i.toString() + ' ';
 
+            // Generate a unique label for the trace
+            var label = test.name ? test.name : i.toString() + ' ';
             var labelCount = 0;
             var originalLabel = label;
             while(label in c2mData) {
@@ -82,7 +82,7 @@ function initC2M(gd, defaultConfig) {
 
             labels.push(label);
             types.push(test.type);
-            c2mData[label] = codecs[codecI].process(trace);
+            c2mData[label] = codec.process(trace);
         }
     }
 
