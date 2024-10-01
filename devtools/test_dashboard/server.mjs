@@ -26,7 +26,7 @@ config.outfile = './build/plotly.js';
 var mockFolder = constants.pathToTestImageMocks;
 
 // mock list
-getMockFiles()
+await getMockFiles()
     .then(readFiles)
     .then(createMocksList)
     .then(saveMockListToFile);
