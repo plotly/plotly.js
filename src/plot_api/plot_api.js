@@ -29,7 +29,7 @@ var manageArrays = require('./manage_arrays');
 var helpers = require('./helpers');
 var subroutines = require('./subroutines');
 var editTypes = require('./edit_types');
-var sonification = require('../accessibility/sonification/enable_sonification');
+var sonification = require('../sonification/enable_sonification');
 
 var AX_NAME_PATTERN = require('../plots/cartesian/constants').AX_NAME_PATTERN;
 
