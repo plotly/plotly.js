@@ -1,8 +1,8 @@
 'use strict';
 
 var c2m = require('chart2music');
-var Fx = require('../../components/fx');
-var Lib = require('../../lib');
+var Fx = require('../components/fx');
+var Lib = require('../lib');
 
 var codecs = require('./all_codecs').codecs;
 
