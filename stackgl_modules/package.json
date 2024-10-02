@@ -54,7 +54,7 @@
     "@babel/core": "^7.25.2",
     "@babel/plugin-transform-modules-commonjs": "7.24.1",
     "@babel/preset-env": "7.24.1",
-    "babel-loader": "9.1.3",
+    "babel-loader": "9.2.1",
     "ify-loader": "1.1.0",
     "node-polyfill-webpack-plugin": "^4.0.0",
     "webpack": "5.90.3",
