@@ -73,13 +73,6 @@ function initC2M(gd, defaultConfig) {
 
             // Generate a unique label for the trace
             var label = test.name;
-            var labelCount = 0;
-            var originalLabel = label;
-            for (label in c2mData) {
-                labelCount++;
-                label = originalLabel + labelCount.toString();
-            }
-
             labels.push(label);
             types.push(test.type);
             c2mData[label] = codec.process(trace);
