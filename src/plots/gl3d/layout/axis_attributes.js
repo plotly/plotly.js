@@ -122,7 +122,5 @@ module.exports = overrideAll({
     zerolinecolor: axesAttrs.zerolinecolor,
     zerolinewidth: axesAttrs.zerolinewidth,
     _deprecated: {
-        title: axesAttrs._deprecated.title,
-        titlefont: axesAttrs._deprecated.titlefont
     }
 }, 'plot', 'from-root');

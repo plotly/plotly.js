@@ -90,19 +90,6 @@ exports.cleanLayout = function(layout) {
                 delete ax.autotick;
             }
 
-            cleanTitle(ax);
-        } else if(polarAttrRegex && polarAttrRegex.test(key)) {
-            // modifications for polar
-
-            var polar = layout[key];
-            cleanTitle(polar.radialaxis);
-        } else if(ternaryAttrRegex && ternaryAttrRegex.test(key)) {
-            // modifications for ternary
-
-            var ternary = layout[key];
-            cleanTitle(ternary.aaxis);
-            cleanTitle(ternary.baxis);
-            cleanTitle(ternary.caxis);
         } else if(sceneAttrRegex && sceneAttrRegex.test(key)) {
             // modifications for 3D scenes
 
@@ -130,11 +117,6 @@ exports.cleanLayout = function(layout) {
 
                 delete scene.cameraposition;
             }
-
-            // clean axis titles
-            cleanTitle(scene.xaxis);
-            cleanTitle(scene.yaxis);
-            cleanTitle(scene.zaxis);
         }
     }
 
@@ -199,9 +181,6 @@ exports.cleanLayout = function(layout) {
         }
     }
 
-    // clean plot title
-    cleanTitle(layout);
-
     /*
      * Moved from rotate -> orbit for dragmode
      */
@@ -224,44 +203,6 @@ function cleanAxRef(container, attr) {
     var axLetter = attr.charAt(0);
     if(valIn && valIn !== 'paper') {
         container[attr] = cleanId(valIn, axLetter, true);
-    }
-}
-
-/**
- * Cleans up old title attribute structure (flat) in favor of the new one (nested).
- *
- * @param {Object} titleContainer - an object potentially including deprecated title attributes
- */
-function cleanTitle(titleContainer) {
-    if(titleContainer) {
-        // title -> title.text
-        // (although title used to be a string attribute,
-        // numbers are accepted as well)
-        if(typeof titleContainer.title === 'string' || typeof titleContainer.title === 'number') {
-            titleContainer.title = {
-                text: titleContainer.title
-            };
-        }
-
-        rewireAttr('titlefont', 'font');
-        rewireAttr('titleposition', 'position');
-        rewireAttr('titleside', 'side');
-        rewireAttr('titleoffset', 'offset');
-    }
-
-    function rewireAttr(oldAttrName, newAttrName) {
-        var oldAttrSet = titleContainer[oldAttrName];
-        var newAttrSet = titleContainer.title && titleContainer.title[newAttrName];
-
-        if(oldAttrSet && !newAttrSet) {
-            // Ensure title object exists
-            if(!titleContainer.title) {
-                titleContainer.title = {};
-            }
-
-            titleContainer.title[newAttrName] = titleContainer[oldAttrName];
-            delete titleContainer[oldAttrName];
-        }
     }
 }
 
@@ -467,13 +408,6 @@ exports.cleanData = function(data) {
             delete trace.autobiny;
             delete trace.ybins;
         }
-
-        cleanTitle(trace);
-        if(trace.colorbar) cleanTitle(trace.colorbar);
-        if(trace.marker && trace.marker.colorbar) cleanTitle(trace.marker.colorbar);
-        if(trace.line && trace.line.colorbar) cleanTitle(trace.line.colorbar);
-        if(trace.aaxis) cleanTitle(trace.aaxis);
-        if(trace.baxis) cleanTitle(trace.baxis);
     }
 };
 

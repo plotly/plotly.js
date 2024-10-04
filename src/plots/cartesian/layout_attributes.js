@@ -207,20 +207,11 @@ module.exports = {
         text: {
             valType: 'string',
             editType: 'ticks',
-            description: [
-                'Sets the title of this axis.',
-                'Note that before the existence of `title.text`, the title\'s',
-                'contents used to be defined as the `title` attribute itself.',
-                'This behavior has been deprecated.'
-            ].join(' ')
+            description: 'Sets the title of this axis.'
         },
         font: fontAttrs({
             editType: 'ticks',
-            description: [
-                'Sets this axis\' title font.',
-                'Note that the title\'s font used to be customized',
-                'by the now deprecated `titlefont` attribute.'
-            ].join(' ')
+            description: 'Sets this axis\' title font.'
         }),
         standoff: {
             valType: 'number',
@@ -1250,20 +1241,5 @@ module.exports = {
                 'Set `tickmode` to *linear* for `autotick` *false*.'
             ].join(' ')
         },
-        title: {
-            valType: 'string',
-            editType: 'ticks',
-            description: [
-                'Value of `title` is no longer a simple *string* but a set of sub-attributes.',
-                'To set the axis\' title, please use `title.text` now.'
-            ].join(' ')
-        },
-        titlefont: fontAttrs({
-            editType: 'ticks',
-            description: [
-                'Former `titlefont` is now the sub-attribute `font` of `title`.',
-                'To customize title font properties, please use `title.font` now.'
-            ].join(' ')
-        })
     }
 };
