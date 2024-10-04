@@ -55,9 +55,9 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
 
             return Plotly.newPlot(gd, fig)
                 .then(function() { assertNoIntersect('base'); })
-                .then(function() { return Plotly.relayout(gd, 'xaxis.titlefont.size', 40); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.title.font.size', 40); })
                 .then(function() { assertNoIntersect('large title font size'); })
-                .then(function() { return Plotly.relayout(gd, 'xaxis.titlefont.size', null); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.title.font.size', null); })
                 .then(function() { assertNoIntersect('back to base'); })
                 .then(function() { return Plotly.relayout(gd, 'xaxis.tickfont.size', 40); })
                 .then(function() { assertNoIntersect('large title font size'); })

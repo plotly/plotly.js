@@ -490,7 +490,7 @@ describe('Test relayout on polar subplots:', function() {
         })
         .then(function() {
             assertTitle('yo2', true);
-            return Plotly.relayout(gd, 'polar.radialaxis.titlefont.color', 'red');
+            return Plotly.relayout(gd, 'polar.radialaxis.title.font.color', 'red');
         })
         .then(function() {
             assertTitle('yo2', false);

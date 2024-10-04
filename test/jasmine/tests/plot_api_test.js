@@ -535,7 +535,7 @@ describe('Test plot api', function() {
                     expect(eventData).toEqual({
                         title: { text: 'Plotly chart' },
                         'xaxis.title': 'X',
-                        'xaxis.titlefont': {color: 'green'},
+                        'xaxis.title.font': {color: 'green'},
                         'yaxis.title': 'Y',
                         'polar.radialaxis.title': 'Radial'
                     });
@@ -545,7 +545,7 @@ describe('Test plot api', function() {
                 return Plotly.relayout(gd, {
                     title: { text: 'Plotly chart' },
                     'xaxis.title': 'X',
-                    'xaxis.titlefont': {color: 'green'},
+                    'xaxis.title.font': {color: 'green'},
                     'yaxis.title': 'Y',
                     'polar.radialaxis.title': 'Radial'
                 });
