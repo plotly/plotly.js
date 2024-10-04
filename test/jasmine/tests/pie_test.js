@@ -305,7 +305,7 @@ describe('Pie traces', function() {
     it('shows multiline title in hole', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<br>Title',
+            title: { text: 'Test<BR>Title' },
             hole: 0.5,
             type: 'pie',
             textinfo: 'none'
@@ -329,7 +329,7 @@ describe('Pie traces', function() {
     it('scales multiline title to fit in hole', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<br>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'middle center',
             titlefont: {
                 size: 60
@@ -379,7 +379,7 @@ describe('Pie traces', function() {
     it('shows title top center if hole is zero', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'middle center',
             titlefont: {
                 size: 12
@@ -395,7 +395,7 @@ describe('Pie traces', function() {
     it('shows title top center if titleposition is undefined and no hole', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titlefont: {
                 size: 12
             },
@@ -409,7 +409,7 @@ describe('Pie traces', function() {
     it('shows title top center', function(done) {
         Plotly.newPlot(gd, [{
             values: [1, 1, 1, 1, 2],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'top center',
             titlefont: {
                 size: 12
@@ -424,7 +424,7 @@ describe('Pie traces', function() {
     it('shows title top left', function(done) {
         Plotly.newPlot(gd, [{
             values: [3, 2, 1],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'top left',
             titlefont: {
                 size: 12
@@ -439,7 +439,7 @@ describe('Pie traces', function() {
     it('shows title top right', function(done) {
         Plotly.newPlot(gd, [{
             values: [4, 5, 6, 5],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'top right',
             titlefont: {
                 size: 12
@@ -454,7 +454,7 @@ describe('Pie traces', function() {
     it('shows title bottom left', function(done) {
         Plotly.newPlot(gd, [{
             values: [4, 5, 6, 5],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'bottom left',
             titlefont: {
                 size: 12
@@ -469,7 +469,7 @@ describe('Pie traces', function() {
     it('shows title bottom center', function(done) {
         Plotly.newPlot(gd, [{
             values: [4, 5, 6, 5],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'bottom center',
             titlefont: {
                 size: 12
@@ -484,7 +484,7 @@ describe('Pie traces', function() {
     it('shows title bottom right', function(done) {
         Plotly.newPlot(gd, [{
             values: [4, 5, 6, 5],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'bottom right',
             titlefont: {
                 size: 12
@@ -499,7 +499,7 @@ describe('Pie traces', function() {
     it('should be able to restyle title position', function(done) {
         Plotly.newPlot(gd, [{
             values: [3, 2, 1],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'top left',
             titlefont: {
                 size: 12
@@ -522,7 +522,7 @@ describe('Pie traces', function() {
     it('does not intersect pulled slices', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'top center',
             titlefont: {
                 size: 14
@@ -548,7 +548,7 @@ describe('Pie traces', function() {
     it('correctly positions large title', function(done) {
         Plotly.newPlot(gd, [{
             values: [1, 3, 4, 1, 2],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'top center',
             titlefont: {
                 size: 60
@@ -795,7 +795,7 @@ describe('Pie traces', function() {
         Plotly.newPlot(gd, [{
             type: 'pie',
             values: [1, 2, 3],
-            title: 'yo',
+            title: { text: 'yo' },
             titlefont: {color: 'blue'},
             titleposition: 'top left'
         }])
@@ -837,7 +837,7 @@ describe('Pie traces', function() {
         Plotly.newPlot(gd, [{
             type: 'pie',
             values: [1, 2, 3],
-            title: 'yo',
+            title: { text: 'yo' },
             titlefont: {color: 'blue'},
             titleposition: 'top left'
         }])
@@ -846,7 +846,7 @@ describe('Pie traces', function() {
               _verifyTitle(true, false, true, false, false);
 
               return Plotly.restyle(gd, {
-                  title: 'oy',
+                  title: { text: 'oy' },
                   'titlefont.color': 'red',
                   titleposition: 'bottom right'
               });

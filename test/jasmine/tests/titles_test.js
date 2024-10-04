@@ -52,17 +52,8 @@ describe('Plot title', function() {
         .then(done, done.fail);
     });
 
-    it('can still be defined as `layout.title` to ensure backwards-compatibility', function(done) {
-        Plotly.newPlot(gd, data, {title: 'Plotly line chart'})
-        .then(function() {
-            expectTitle('Plotly line chart');
-            expectDefaultCenteredPosition(gd);
-        })
-        .then(done, done.fail);
-    });
-
     it('can be updated via `relayout`', function(done) {
-        Plotly.newPlot(gd, data, {title: 'Plotly line chart'})
+        Plotly.newPlot(gd, data, { title: { text: 'Plotly line chart' } })
           .then(expectTitleFn('Plotly line chart'))
           .then(function() {
               return Plotly.relayout(gd, {title: {text: 'Some other title'}});
@@ -983,26 +974,26 @@ describe('Titles for multiple axes', function() {
     ];
     var multiAxesLayout = {
         xaxis: {
-            title: 'X-Axis 1',
+            title: { text: 'X-Axis 1' },
             titlefont: {
                 size: 30
             }
         },
         xaxis2: {
-            title: 'X-Axis 2',
+            title: { text: 'X-Axis 2' },
             titlefont: {
                 family: 'serif'
             },
             side: 'top'
         },
         yaxis: {
-            title: 'Y-Axis 1',
+            title: { text: 'Y-Axis 1' },
             titlefont: {
                 family: 'Roboto'
             },
         },
         yaxis2: {
-            title: 'Y-Axis 2',
+            title: { text: 'Y-Axis 2' },
             titlefont: {
                 color: 'blue'
             },

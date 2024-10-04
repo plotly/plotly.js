@@ -260,8 +260,8 @@ describe('Test plot api', function() {
                 x: [1, 2, 3],
                 y: [1, 2, 1]
             }], {
-                xaxis: { title: 'x title' },
-                yaxis: { title: 'y title' }
+                xaxis: { title: { text: 'x title' } },
+                yaxis: { title: { text: 'y title' } }
             })
             .then(function() {
                 return Plotly.relayout(gd, { zaxis: {} });
@@ -533,7 +533,7 @@ describe('Test plot api', function() {
             .then(function() {
                 gd.on('plotly_relayout', function(eventData) {
                     expect(eventData).toEqual({
-                        title: 'Plotly chart',
+                        title: { text: 'Plotly chart' },
                         'xaxis.title': 'X',
                         'xaxis.titlefont': {color: 'green'},
                         'yaxis.title': 'Y',
@@ -543,7 +543,7 @@ describe('Test plot api', function() {
                 });
 
                 return Plotly.relayout(gd, {
-                    title: 'Plotly chart',
+                    title: { text: 'Plotly chart' },
                     'xaxis.title': 'X',
                     'xaxis.titlefont': {color: 'green'},
                     'yaxis.title': 'Y',
@@ -2283,7 +2283,7 @@ describe('Test plot api', function() {
         it('', function(done) {
             var gd = createGraphDiv();
             var initialData = [];
-            var layout = { title: 'Redraw' };
+            var layout = { title: { text: 'Redraw' } };
 
             Plotly.newPlot(gd, initialData, layout)
             .then(function() {
@@ -2757,7 +2757,7 @@ describe('Test plot api', function() {
             };
 
             var layoutUpdate = {
-                xaxis: {title: 'A', type: '-'}
+                xaxis: { title: { text: 'A' }, type: '-'}
             };
 
             Plotly.update(gd, traceUpdate, layoutUpdate).then(function() {

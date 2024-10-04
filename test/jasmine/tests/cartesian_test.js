@@ -392,10 +392,10 @@ describe('subplot creation / deletion:', function() {
         }
 
         Plotly.newPlot(gd, [], {
-            xaxis: { title: 'X' },
-            yaxis: { title: 'Y' },
-            xaxis2: { title: 'X2', anchor: 'y2' },
-            yaxis2: { title: 'Y2', anchor: 'x2' }
+            xaxis: { title: { text: 'X' } },
+            yaxis: { title: { text: 'Y' } },
+            xaxis2: { title: { text: 'X2' }, anchor: 'y2' },
+            yaxis2: { title: { text: 'Y2' }, anchor: 'x2' }
         })
         .then(function() {
             assertOrphanSubplot(1);
@@ -415,7 +415,7 @@ describe('subplot creation / deletion:', function() {
     it('should remove unused axes when deleting traces', function(done) {
         Plotly.newPlot(gd,
             [{y: [1, 2, 3]}, {y: [10, 30, 20], yaxis: 'y2'}],
-            {yaxis2: {side: 'right', overlaying: 'y', title: 'Hi!'}}
+            { yaxis2: { side: 'right', overlaying: 'y', title: { text: 'Hi!' } }}
         )
         .then(function() {
             expect(gd.querySelectorAll('.xy2,.xy2-x,.xy2-y').length).not.toBe(0);
@@ -805,8 +805,8 @@ describe('subplot creation / deletion:', function() {
         Plotly.newPlot(gd, [{
             y: [1, 2, 1]
         }], {
-            xaxis: {title: 'X'},
-            yaxis: {title: 'Y'}
+            xaxis: { title: { text: 'X' } },
+            yaxis: { title: { text: 'Y' } }
         })
         .then(function() {
             _assert([5, 4, 1], [6, 6, 1]);

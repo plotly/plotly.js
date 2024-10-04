@@ -121,7 +121,7 @@ var plotData = {
         }
     ],
     layout: {
-        title: 'Point Cloud - basic',
+        title: { text: 'Point Cloud - basic' },
         xaxis: {
             type: 'linear',
             range: [

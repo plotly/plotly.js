@@ -84,7 +84,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                     y: [1, 2, 1]
                 }],
                 layout: {
-                    xaxis: {title: 'TITLE'},
+                    xaxis: { title: { text: 'TITLE' } },
                     width: 500,
                     height: 500,
                     margin: {t: 100, b: 100, l: 100, r: 100}
@@ -125,7 +125,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                     y: [1, 2, 1]
                 }],
                 layout: {
-                    xaxis: {title: 'TITLE'},
+                    xaxis: { title: { text: 'TITLE' } },
                     width: 500,
                     height: 500,
                     margin: {t: 100, b: 100, l: 100, r: 100}
@@ -145,7 +145,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                     y: [1, 2, 1]
                 }],
                 layout: {
-                    xaxis: {title: texTitle},
+                    xaxis: { title: { text: texTitle } },
                     width: 500,
                     height: 500,
                     margin: {t: 100, b: 100, l: 100, r: 100}

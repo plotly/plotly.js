@@ -473,7 +473,7 @@ describe('Test relayout on polar subplots:', function() {
             theta: [10, 20, 30]
         }], {
             polar: {
-                radialaxis: {title: 'yo'}
+                radialaxis: { title: { text: 'yo' } }
             }
         })
         .then(function() {

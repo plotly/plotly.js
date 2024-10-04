@@ -301,7 +301,7 @@ describe('Funnelarea traces', function() {
     it('shows title top center if titleposition is undefined', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titlefont: {
                 size: 12
             },
@@ -315,7 +315,7 @@ describe('Funnelarea traces', function() {
     it('shows title top center', function(done) {
         Plotly.newPlot(gd, [{
             values: [1, 1, 1, 1, 2],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'top center',
             titlefont: {
                 size: 12
@@ -330,7 +330,7 @@ describe('Funnelarea traces', function() {
     it('shows title top left', function(done) {
         Plotly.newPlot(gd, [{
             values: [3, 2, 1],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'top left',
             titlefont: {
                 size: 12
@@ -345,7 +345,7 @@ describe('Funnelarea traces', function() {
     it('shows title top right', function(done) {
         Plotly.newPlot(gd, [{
             values: [4, 5, 6, 5],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'top right',
             titlefont: {
                 size: 12
@@ -360,7 +360,7 @@ describe('Funnelarea traces', function() {
     it('correctly positions large title', function(done) {
         Plotly.newPlot(gd, [{
             values: [1, 3, 4, 1, 2],
-            title: 'Test<BR>Title',
+            title: { text: 'Test<BR>Title' },
             titleposition: 'top center',
             titlefont: {
                 size: 60
@@ -591,7 +591,7 @@ describe('Funnelarea traces', function() {
         Plotly.newPlot(gd, [{
             type: 'funnelarea',
             values: [1, 2, 3],
-            title: 'yo',
+            title: { text: 'yo' },
             titlefont: {color: 'blue'},
             titleposition: 'top left'
         }])
@@ -600,7 +600,7 @@ describe('Funnelarea traces', function() {
               _verifyTitle(true, false, true, false, false);
 
               return Plotly.restyle(gd, {
-                  title: 'oy',
+                  title: { text: 'oy' },
                   'titlefont.color': 'red',
                   titleposition: 'top right'
               });
