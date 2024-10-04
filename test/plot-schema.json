@@ -1768,7 +1768,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -17640,7 +17640,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -19684,7 +19684,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -24787,7 +24787,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -26085,7 +26085,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -27373,7 +27373,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -28700,7 +28700,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -30046,7 +30046,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -31874,7 +31874,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -33101,7 +33101,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -34327,7 +34327,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -36215,7 +36215,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -38849,7 +38849,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -40392,7 +40392,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "calc",
        "valType": "string"
       }
@@ -42478,7 +42478,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -43935,7 +43935,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -45444,7 +45444,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -47816,7 +47816,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -51191,7 +51191,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "calc",
        "valType": "string"
       }
@@ -52712,7 +52712,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -55319,7 +55319,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -56613,7 +56613,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -61945,7 +61945,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -64607,7 +64607,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "calc",
         "valType": "string"
        }
@@ -65317,7 +65317,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "calc",
         "valType": "string"
        }
@@ -67155,7 +67155,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -69453,7 +69453,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "calc",
         "valType": "string"
        }
@@ -71880,7 +71880,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "calc",
         "valType": "string"
        }
@@ -74213,7 +74213,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "calc",
         "valType": "string"
        }
@@ -75761,7 +75761,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "calc",
         "valType": "string"
        }
@@ -77292,7 +77292,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -79563,7 +79563,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "calc",
         "valType": "string"
        }
@@ -81778,7 +81778,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -84088,7 +84088,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -86329,7 +86329,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -87861,7 +87861,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "colorbars",
        "valType": "string"
       }
@@ -89907,7 +89907,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -91202,7 +91202,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "calc",
        "valType": "string"
       }
@@ -94529,7 +94529,7 @@
         ]
        },
        "text": {
-        "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+        "description": "Sets the title of the color bar.",
         "editType": "colorbars",
         "valType": "string"
        }
@@ -97578,7 +97578,7 @@
        ]
       },
       "text": {
-       "description": "Sets the title of the color bar. Note that before the existence of `title.text`, the title's contents used to be defined as the `title` attribute itself. This behavior has been deprecated.",
+       "description": "Sets the title of the color bar.",
        "editType": "calc",
        "valType": "string"
       }
