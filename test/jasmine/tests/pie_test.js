@@ -786,29 +786,6 @@ describe('Pie traces', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to restyle title despite using the deprecated attributes', function(done) {
-        Plotly.newPlot(gd, [{
-            type: 'pie',
-            values: [1, 2, 3],
-            title: { text: 'yo', font: { color: 'blue' }, position: 'top left' }
-        }])
-          .then(function() {
-              _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
-              _verifyTitle(true, false, true, false, false);
-
-              return Plotly.restyle(gd, {
-                  title: { text: 'oy' },
-                  'title.font.color': 'red',
-                  'title.position': 'bottom right'
-              });
-          })
-          .then(function() {
-              _assertTitle('base', 'oy', 'rgb(255, 0, 0)');
-              _verifyTitle(false, true, false, true, false);
-          })
-          .then(done, done.fail);
-    });
-
     it('should be able to react with new text colors', function(done) {
         Plotly.newPlot(gd, [{
             type: 'pie',

@@ -619,23 +619,6 @@ describe('Titles can be updated', function() {
                 'xaxis.title.text': NEW_XTITLE,
                 'yaxis.title.text': NEW_YTITLE
             }
-        },
-        {
-            desc: 'despite passing title only as a string (backwards-compatibility)',
-            update: {
-                title: NEW_TITLE,
-                xaxis: {title: NEW_XTITLE},
-                yaxis: {title: NEW_YTITLE}
-            }
-        },
-        {
-            desc: 'despite passing title only as a string using string attributes ' +
-            '(backwards-compatibility)',
-            update: {
-                title: NEW_TITLE,
-                'xaxis.title': NEW_XTITLE,
-                'yaxis.title': NEW_YTITLE
-            }
         }
     ].forEach(function(testCase) {
         it('via `Plotly.relayout` ' + testCase.desc, function(done) {

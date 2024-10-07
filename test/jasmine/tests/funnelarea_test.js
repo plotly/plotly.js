@@ -323,7 +323,7 @@ describe('Funnelarea traces', function() {
     it('shows title top left', function(done) {
         Plotly.newPlot(gd, [{
             values: [3, 2, 1],
-            title: { text: 'Test<BR>Title', position: 'top center', font: { size: 12 } },
+            title: { text: 'Test<BR>Title', position: 'top left', font: { size: 12 } },
             type: 'funnelarea',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -566,29 +566,6 @@ describe('Funnelarea traces', function() {
             _verifyTitle(false, true, true, false, false);
         })
         .then(done, done.fail);
-    });
-
-    it('should be able to restyle title despite using the deprecated attributes', function(done) {
-        Plotly.newPlot(gd, [{
-            type: 'funnelarea',
-            values: [1, 2, 3],
-            title: { text: 'yo', position: 'top left', font: { color: 'blue' } },
-        }])
-          .then(function() {
-              _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
-              _verifyTitle(true, false, true, false, false);
-
-              return Plotly.restyle(gd, {
-                  title: { text: 'oy' },
-                  'title.font.color': 'red',
-                  'title.position': 'top right'
-              });
-          })
-          .then(function() {
-              _assertTitle('base', 'oy', 'rgb(255, 0, 0)');
-              _verifyTitle(false, true, true, false, false);
-          })
-          .then(done, done.fail);
     });
 
     it('should be able to react with new text colors', function(done) {
