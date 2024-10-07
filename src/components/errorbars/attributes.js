@@ -102,7 +102,7 @@ module.exports = {
     color: {
         valType: 'color',
         editType: 'style',
-        description: 'Sets the stoke color of the error bars.'
+        description: 'Sets the stroke color of the error bars.'
     },
     thickness: {
         valType: 'number',
