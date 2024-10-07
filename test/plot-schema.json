@@ -6698,13 +6698,6 @@
     "_arrayAttrRegexps": [
      {}
     ],
-    "_deprecated": {
-     "cameraposition": {
-      "description": "Obsolete. Use `camera` instead.",
-      "editType": "camera",
-      "valType": "info_array"
-     }
-    },
     "_isSubplotObj": true,
     "annotations": {
      "items": {
