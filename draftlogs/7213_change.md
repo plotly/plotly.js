@@ -1,0 +1,1 @@
+ - Drop deprecated pointcloud and heatmapgl traces and gl2d subplots [[#7213](https://github.com/plotly/plotly.js/pull/7213)]
