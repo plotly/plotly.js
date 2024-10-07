@@ -345,7 +345,7 @@ describe('Funnelarea traces', function() {
     it('correctly positions large title', function(done) {
         Plotly.newPlot(gd, [{
             values: [1, 3, 4, 1, 2],
-            title: { text: 'Test<BR>Title', position: 'top center', size: 60 },
+            title: { text: 'Test<BR>Title', position: 'top center', font: { size: 60 } },
             type: 'funnelarea',
             textinfo: 'none'
         }], {height: 300, width: 300})
