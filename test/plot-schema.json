@@ -596,7 +596,6 @@
  },
  "layout": {
   "layoutAttributes": {
-   "_deprecated": {},
    "activeselection": {
     "editType": "none",
     "fillcolor": {
@@ -1232,7 +1231,6 @@
      "valType": "number"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -5641,7 +5639,6 @@
      "valType": "number"
     },
     "radialaxis": {
-     "_deprecated": {},
      "angle": {
       "description": "Sets the angle (in degrees) from which the radial axis is drawn. Note that by default, radial axis line on the theta=0 line corresponds to a line pointing right (like what mathematicians prefer). Defaults to the first `polar.sector` angle.",
       "editType": "plot",
@@ -7079,7 +7076,6 @@
      "valType": "any"
     },
     "xaxis": {
-     "_deprecated": {},
      "autorange": {
       "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided and it has a value for both the lower and upper bound, `autorange` is set to *false*. Using *min* applies autorange only to set the minimum. Using *max* applies autorange only to set the maximum. Using *min reversed* applies autorange only to set the minimum on a reversed axis. Using *max reversed* applies autorange only to set the maximum on a reversed axis. Using *reversed* applies autorange on both ends and reverses the axis direction.",
       "dflt": true,
@@ -7819,7 +7815,6 @@
      }
     },
     "yaxis": {
-     "_deprecated": {},
      "autorange": {
       "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided and it has a value for both the lower and upper bound, `autorange` is set to *false*. Using *min* applies autorange only to set the minimum. Using *max* applies autorange only to set the maximum. Using *min reversed* applies autorange only to set the minimum on a reversed axis. Using *max reversed* applies autorange only to set the maximum on a reversed axis. Using *reversed* applies autorange on both ends and reverses the axis direction.",
       "dflt": true,
@@ -8559,7 +8554,6 @@
      }
     },
     "zaxis": {
-     "_deprecated": {},
      "autorange": {
       "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided and it has a value for both the lower and upper bound, `autorange` is set to *false*. Using *min* applies autorange only to set the minimum. Using *max* applies autorange only to set the maximum. Using *min reversed* applies autorange only to set the minimum on a reversed axis. Using *max reversed* applies autorange only to set the maximum on a reversed axis. Using *reversed* applies autorange on both ends and reverses the axis direction.",
       "dflt": true,
@@ -11105,7 +11099,6 @@
    "ternary": {
     "_isSubplotObj": true,
     "aaxis": {
-     "_deprecated": {},
      "color": {
       "description": "Sets default for all colors associated with this axis all at once: line, font, tick, and grid colors. Grid color is lightened by blending this with the plot background Individual pieces can override this.",
       "dflt": "#444",
@@ -11619,7 +11612,6 @@
      }
     },
     "baxis": {
-     "_deprecated": {},
      "color": {
       "description": "Sets default for all colors associated with this axis all at once: line, font, tick, and grid colors. Grid color is lightened by blending this with the plot background Individual pieces can override this.",
       "dflt": "#444",
@@ -12139,7 +12131,6 @@
      "valType": "color"
     },
     "caxis": {
-     "_deprecated": {},
      "color": {
       "description": "Sets default for all colors associated with this axis all at once: line, font, tick, and grid colors. Grid color is lightened by blending this with the plot background Individual pieces can override this.",
       "dflt": "#444",
@@ -17104,7 +17095,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -19148,7 +19138,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -22522,7 +22511,6 @@
      "valType": "number"
     },
     "aaxis": {
-     "_deprecated": {},
      "arraydtick": {
       "description": "The stride between grid lines along the axis",
       "dflt": 1,
@@ -23194,7 +23182,6 @@
      "valType": "number"
     },
     "baxis": {
-     "_deprecated": {},
      "arraydtick": {
       "description": "The stride between grid lines along the axis",
       "dflt": 1,
@@ -24251,7 +24238,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -25549,7 +25535,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -26837,7 +26822,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -28164,7 +28148,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -29510,7 +29493,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -31338,7 +31320,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -32565,7 +32546,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -33791,7 +33771,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -35679,7 +35658,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -38313,7 +38291,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -39856,7 +39833,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -41942,7 +41918,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -43399,7 +43374,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -44908,7 +44882,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -47280,7 +47253,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -50655,7 +50627,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -52176,7 +52147,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -54783,7 +54753,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -56077,7 +56046,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -57063,7 +57031,6 @@
   "pie": {
    "animatable": false,
    "attributes": {
-    "_deprecated": {},
     "automargin": {
      "description": "Determines whether outside text labels can push the margins.",
      "dflt": false,
@@ -61409,7 +61376,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -64071,7 +64037,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -64781,7 +64746,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -66619,7 +66583,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -68917,7 +68880,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -71344,7 +71306,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -73677,7 +73638,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -75225,7 +75185,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -76756,7 +76715,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -79027,7 +78985,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -81242,7 +81199,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -83552,7 +83508,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -85793,7 +85748,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -87325,7 +87279,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -89371,7 +89324,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -90666,7 +90618,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
@@ -93993,7 +93944,6 @@
       "valType": "subplotid"
      },
      "colorbar": {
-      "_deprecated": {},
       "bgcolor": {
        "description": "Sets the color of padded area.",
        "dflt": "rgba(0,0,0,0)",
@@ -97042,7 +96992,6 @@
      "valType": "subplotid"
     },
     "colorbar": {
-     "_deprecated": {},
      "bgcolor": {
       "description": "Sets the color of padded area.",
       "dflt": "rgba(0,0,0,0)",
