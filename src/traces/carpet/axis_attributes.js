@@ -451,9 +451,5 @@ module.exports = {
         editType: 'calc',
         description: 'The stride between grid lines along the axis'
     },
-
-    _deprecated: {
-    },
-
     editType: 'calc'
 };

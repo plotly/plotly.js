@@ -62,8 +62,6 @@ var ternaryAxesAttrs = {
             'all the minima set to zero.'
         ].join(' ')
     },
-    _deprecated: {
-    }
 };
 
 var attrs = module.exports = overrideAll({

@@ -121,6 +121,4 @@ module.exports = overrideAll({
     zeroline: axesAttrs.zeroline,
     zerolinecolor: axesAttrs.zerolinecolor,
     zerolinewidth: axesAttrs.zerolinewidth,
-    _deprecated: {
-    }
 }, 'plot', 'from-root');

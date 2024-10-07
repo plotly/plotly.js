@@ -451,6 +451,4 @@ module.exports = {
         ].join(' '),
         editType: 'none'
     }),
-    _deprecated: {
-    }
 };

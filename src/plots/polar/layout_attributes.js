@@ -146,9 +146,6 @@ var radialAxisAttrs = {
     },
 
     editType: 'calc',
-
-    _deprecated: {
-    }
 };
 
 extendFlat(

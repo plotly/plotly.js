@@ -228,7 +228,4 @@ module.exports = overrideAll({
             ].join(' ')
         }
     },
-
-    _deprecated: {
-    }
 }, 'colorbars', 'from-root');

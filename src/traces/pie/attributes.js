@@ -292,7 +292,4 @@ module.exports = {
             'or an array to highlight one or more slices.'
         ].join(' ')
     },
-
-    _deprecated: {
-    }
 };
