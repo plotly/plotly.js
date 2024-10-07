@@ -17291,17 +17291,6 @@
   "bar": {
    "animatable": true,
    "attributes": {
-    "_deprecated": {
-     "bardir": {
-      "description": "Renamed to `orientation`.",
-      "editType": "calc",
-      "valType": "enumerated",
-      "values": [
-       "v",
-       "h"
-      ]
-     }
-    },
     "alignmentgroup": {
      "description": "Set several traces linked to the same position axis or matching axes to the same alignmentgroup. This controls whether bars compute their positional range dependently or independently.",
      "dflt": "",
@@ -43700,17 +43689,6 @@
   "histogram": {
    "animatable": false,
    "attributes": {
-    "_deprecated": {
-     "bardir": {
-      "description": "Renamed to `orientation`.",
-      "editType": "calc",
-      "valType": "enumerated",
-      "values": [
-       "v",
-       "h"
-      ]
-     }
-    },
     "alignmentgroup": {
      "description": "Set several traces linked to the same position axis or matching axes to the same alignmentgroup. This controls whether bars compute their positional range dependently or independently.",
      "dflt": "",
