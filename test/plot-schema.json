@@ -730,13 +730,6 @@
    "annotations": {
     "items": {
      "annotation": {
-      "_deprecated": {
-       "ref": {
-        "description": "Obsolete. Set `xref` and `yref` separately instead.",
-        "editType": "calc",
-        "valType": "string"
-       }
-      },
       "align": {
        "description": "Sets the horizontal alignment of the `text` within the box. Has an effect only if `text` spans two or more lines (i.e. `text` contains one or more <br> HTML tags) or if an explicit width is set to override the text width.",
        "dflt": "center",
