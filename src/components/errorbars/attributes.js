@@ -121,15 +121,4 @@ module.exports = {
         ].join(' ')
     },
     editType: 'calc',
-
-    _deprecated: {
-        opacity: {
-            valType: 'number',
-            editType: 'style',
-            description: [
-                'Obsolete.',
-                'Use the alpha channel in error bar `color` to set the opacity.'
-            ].join(' ')
-        }
-    }
 };
