@@ -295,17 +295,6 @@ exports.cleanData = function(data) {
             delete trace.error_y.opacity;
         }
 
-        // convert bardir to orientation, and put the data into
-        // the axes it's eventually going to be used with
-        if('bardir' in trace) {
-            if(trace.bardir === 'h' && (traceIs(trace, 'bar') ||
-                trace.type.substr(0, 9) === 'histogram')) {
-                trace.orientation = 'h';
-                exports.swapXYData(trace);
-            }
-            delete trace.bardir;
-        }
-
         // now we have only one 1D histogram type, and whether
         // it uses x or y data depends on trace.orientation
         if(trace.type === 'histogramy') exports.swapXYData(trace);
