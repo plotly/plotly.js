@@ -2191,8 +2191,6 @@ function _relayout(gd, aobj) {
                 !(vOld === 'lasso' || vOld === 'select'))
             ) {
                 flags.plot = true;
-            } else if(fullLayout._has('gl2d')) {
-                flags.plot = true;
             } else if(valObject) editTypes.update(flags, valObject);
             else flags.calc = true;
 
