@@ -108,29 +108,6 @@ exports.cleanLayout = function(layout) {
 
             var scene = layout[key];
 
-            // clean old Camera coords
-            var cameraposition = scene.cameraposition;
-
-            if(Array.isArray(cameraposition) && cameraposition[0].length === 4) {
-                var rotation = cameraposition[0];
-                var center = cameraposition[1];
-                var radius = cameraposition[2];
-                var mat = m4FromQuat([], rotation);
-                var eye = [];
-
-                for(j = 0; j < 3; ++j) {
-                    eye[j] = center[j] + radius * mat[2 + 4 * j];
-                }
-
-                scene.camera = {
-                    eye: {x: eye[0], y: eye[1], z: eye[2]},
-                    center: {x: center[0], y: center[1], z: center[2]},
-                    up: {x: 0, y: 0, z: 1} // we just ignore calculating camera z up in this case
-                };
-
-                delete scene.cameraposition;
-            }
-
             // clean axis titles
             cleanTitle(scene.xaxis);
             cleanTitle(scene.yaxis);
