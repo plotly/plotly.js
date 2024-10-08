@@ -1,0 +1,1 @@
+Drop support for deprecated error bar `opacity` attribute (use alpha channel of error bar `color` attribute instead) [[#7214](https://github.com/plotly/plotly.js/pull/7216)]

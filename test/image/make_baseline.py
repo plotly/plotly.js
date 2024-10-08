@@ -67,32 +67,6 @@ if len(args) > 0 :
 else :
     allNames = ALL_MOCKS
 
-# gl2d pointcloud and other non-regl gl2d mock(s)
-# must be tested in certain order to work on CircleCI;
-#
-# gl-shader appears to conflict with regl.
-# We suspect that the lone gl context on CircleCI is
-# having issues with dealing with the two different
-# program binding algorithm.
-#
-# The problem will be solved by switching all our
-# WebGL-based trace types to regl.
-#
-# More info here:
-# https://github.com/plotly/plotly.js/pull/1037
-
-LAST = [
-    'gl2d_pointcloud-basic',
-    'gl2d_heatmapgl',
-    'gl2d_heatmapgl_discrete'
-]
-
-HAD = [item in allNames for item in LAST]
-
-allNames = [a for a in allNames if a not in LAST]
-
-allNames += [item for item, had_item in zip(LAST, HAD) if had_item]
-
 # unable to generate baselines for the following mocks
 blacklist = [
     'map_stamen-style',

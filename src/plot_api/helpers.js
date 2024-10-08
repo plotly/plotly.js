@@ -90,33 +90,6 @@ exports.cleanLayout = function(layout) {
                 delete ax.autotick;
             }
 
-        } else if(sceneAttrRegex && sceneAttrRegex.test(key)) {
-            // modifications for 3D scenes
-
-            var scene = layout[key];
-
-            // clean old Camera coords
-            var cameraposition = scene.cameraposition;
-
-            if(Array.isArray(cameraposition) && cameraposition[0].length === 4) {
-                var rotation = cameraposition[0];
-                var center = cameraposition[1];
-                var radius = cameraposition[2];
-                var mat = m4FromQuat([], rotation);
-                var eye = [];
-
-                for(j = 0; j < 3; ++j) {
-                    eye[j] = center[j] + radius * mat[2 + 4 * j];
-                }
-
-                scene.camera = {
-                    eye: {x: eye[0], y: eye[1], z: eye[2]},
-                    center: {x: center[0], y: center[1], z: center[2]},
-                    up: {x: 0, y: 0, z: 1} // we just ignore calculating camera z up in this case
-                };
-
-                delete scene.cameraposition;
-            }
         }
     }
 
@@ -125,17 +98,6 @@ exports.cleanLayout = function(layout) {
         var ann = layout.annotations[i];
 
         if(!Lib.isPlainObject(ann)) continue;
-
-        if(ann.ref) {
-            if(ann.ref === 'paper') {
-                ann.xref = 'paper';
-                ann.yref = 'paper';
-            } else if(ann.ref === 'data') {
-                ann.xref = 'x';
-                ann.yref = 'y';
-            }
-            delete ann.ref;
-        }
 
         cleanAxRef(ann, 'xref');
         cleanAxRef(ann, 'yref');
@@ -222,29 +184,6 @@ exports.cleanData = function(data) {
         if(trace.type === 'histogramy' && 'xbins' in trace && !('ybins' in trace)) {
             trace.ybins = trace.xbins;
             delete trace.xbins;
-        }
-
-        // error_y.opacity is obsolete - merge into color
-        if(trace.error_y && 'opacity' in trace.error_y) {
-            var dc = Color.defaults;
-            var yeColor = trace.error_y.color || (traceIs(trace, 'bar') ?
-                Color.defaultLine :
-                dc[tracei % dc.length]);
-            trace.error_y.color = Color.addOpacity(
-                Color.rgb(yeColor),
-                Color.opacity(yeColor) * trace.error_y.opacity);
-            delete trace.error_y.opacity;
-        }
-
-        // convert bardir to orientation, and put the data into
-        // the axes it's eventually going to be used with
-        if('bardir' in trace) {
-            if(trace.bardir === 'h' && (traceIs(trace, 'bar') ||
-                trace.type.substr(0, 9) === 'histogram')) {
-                trace.orientation = 'h';
-                exports.swapXYData(trace);
-            }
-            delete trace.bardir;
         }
 
         // now we have only one 1D histogram type, and whether
