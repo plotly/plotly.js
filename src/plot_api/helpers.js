@@ -272,18 +272,6 @@ exports.cleanData = function(data) {
             delete trace.xbins;
         }
 
-        // error_y.opacity is obsolete - merge into color
-        if(trace.error_y && 'opacity' in trace.error_y) {
-            var dc = Color.defaults;
-            var yeColor = trace.error_y.color || (traceIs(trace, 'bar') ?
-                Color.defaultLine :
-                dc[tracei % dc.length]);
-            trace.error_y.color = Color.addOpacity(
-                Color.rgb(yeColor),
-                Color.opacity(yeColor) * trace.error_y.opacity);
-            delete trace.error_y.opacity;
-        }
-
         // now we have only one 1D histogram type, and whether
         // it uses x or y data depends on trace.orientation
         if(trace.type === 'histogramy') exports.swapXYData(trace);

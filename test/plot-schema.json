@@ -17345,13 +17345,6 @@
      "valType": "number"
     },
     "error_x": {
-     "_deprecated": {
-      "opacity": {
-       "description": "Obsolete. Use the alpha channel in error bar `color` to set the opacity.",
-       "editType": "style",
-       "valType": "number"
-      }
-     },
      "array": {
       "description": "Sets the data corresponding the length of each error bar. Values are plotted relative to the underlying data.",
       "editType": "calc",
@@ -17373,7 +17366,7 @@
       "valType": "string"
      },
      "color": {
-      "description": "Sets the stoke color of the error bars.",
+      "description": "Sets the stroke color of the error bars.",
       "editType": "style",
       "valType": "color"
      },
@@ -17445,13 +17438,6 @@
      }
     },
     "error_y": {
-     "_deprecated": {
-      "opacity": {
-       "description": "Obsolete. Use the alpha channel in error bar `color` to set the opacity.",
-       "editType": "style",
-       "valType": "number"
-      }
-     },
      "array": {
       "description": "Sets the data corresponding the length of each error bar. Values are plotted relative to the underlying data.",
       "editType": "calc",
@@ -17473,7 +17459,7 @@
       "valType": "string"
      },
      "color": {
-      "description": "Sets the stoke color of the error bars.",
+      "description": "Sets the stroke color of the error bars.",
       "editType": "style",
       "valType": "color"
      },
@@ -43766,13 +43752,6 @@
      "valType": "string"
     },
     "error_x": {
-     "_deprecated": {
-      "opacity": {
-       "description": "Obsolete. Use the alpha channel in error bar `color` to set the opacity.",
-       "editType": "style",
-       "valType": "number"
-      }
-     },
      "array": {
       "description": "Sets the data corresponding the length of each error bar. Values are plotted relative to the underlying data.",
       "editType": "calc",
@@ -43794,7 +43773,7 @@
       "valType": "string"
      },
      "color": {
-      "description": "Sets the stoke color of the error bars.",
+      "description": "Sets the stroke color of the error bars.",
       "editType": "style",
       "valType": "color"
      },
@@ -43866,13 +43845,6 @@
      }
     },
     "error_y": {
-     "_deprecated": {
-      "opacity": {
-       "description": "Obsolete. Use the alpha channel in error bar `color` to set the opacity.",
-       "editType": "style",
-       "valType": "number"
-      }
-     },
      "array": {
       "description": "Sets the data corresponding the length of each error bar. Values are plotted relative to the underlying data.",
       "editType": "calc",
@@ -43894,7 +43866,7 @@
       "valType": "string"
      },
      "color": {
-      "description": "Sets the stoke color of the error bars.",
+      "description": "Sets the stroke color of the error bars.",
       "editType": "style",
       "valType": "color"
      },
@@ -64053,13 +64025,6 @@
      "valType": "number"
     },
     "error_x": {
-     "_deprecated": {
-      "opacity": {
-       "description": "Obsolete. Use the alpha channel in error bar `color` to set the opacity.",
-       "editType": "style",
-       "valType": "number"
-      }
-     },
      "array": {
       "description": "Sets the data corresponding the length of each error bar. Values are plotted relative to the underlying data.",
       "editType": "calc",
@@ -64081,7 +64046,7 @@
       "valType": "string"
      },
      "color": {
-      "description": "Sets the stoke color of the error bars.",
+      "description": "Sets the stroke color of the error bars.",
       "editType": "style",
       "valType": "color"
      },
@@ -64153,13 +64118,6 @@
      }
     },
     "error_y": {
-     "_deprecated": {
-      "opacity": {
-       "description": "Obsolete. Use the alpha channel in error bar `color` to set the opacity.",
-       "editType": "style",
-       "valType": "number"
-      }
-     },
      "array": {
       "description": "Sets the data corresponding the length of each error bar. Values are plotted relative to the underlying data.",
       "editType": "calc",
@@ -64181,7 +64139,7 @@
       "valType": "string"
      },
      "color": {
-      "description": "Sets the stoke color of the error bars.",
+      "description": "Sets the stroke color of the error bars.",
       "editType": "style",
       "valType": "color"
      },
@@ -66984,13 +66942,6 @@
      "valType": "string"
     },
     "error_x": {
-     "_deprecated": {
-      "opacity": {
-       "description": "Obsolete. Use the alpha channel in error bar `color` to set the opacity.",
-       "editType": "calc",
-       "valType": "number"
-      }
-     },
      "array": {
       "description": "Sets the data corresponding the length of each error bar. Values are plotted relative to the underlying data.",
       "editType": "calc",
@@ -67012,7 +66963,7 @@
       "valType": "string"
      },
      "color": {
-      "description": "Sets the stoke color of the error bars.",
+      "description": "Sets the stroke color of the error bars.",
       "editType": "calc",
       "valType": "color"
      },
@@ -67084,13 +67035,6 @@
      }
     },
     "error_y": {
-     "_deprecated": {
-      "opacity": {
-       "description": "Obsolete. Use the alpha channel in error bar `color` to set the opacity.",
-       "editType": "calc",
-       "valType": "number"
-      }
-     },
      "array": {
       "description": "Sets the data corresponding the length of each error bar. Values are plotted relative to the underlying data.",
       "editType": "calc",
@@ -67112,7 +67056,7 @@
       "valType": "string"
      },
      "color": {
-      "description": "Sets the stoke color of the error bars.",
+      "description": "Sets the stroke color of the error bars.",
       "editType": "calc",
       "valType": "color"
      },
@@ -67184,13 +67128,6 @@
      }
     },
     "error_z": {
-     "_deprecated": {
-      "opacity": {
-       "description": "Obsolete. Use the alpha channel in error bar `color` to set the opacity.",
-       "editType": "calc",
-       "valType": "number"
-      }
-     },
      "array": {
       "description": "Sets the data corresponding the length of each error bar. Values are plotted relative to the underlying data.",
       "editType": "calc",
@@ -67212,7 +67149,7 @@
       "valType": "string"
      },
      "color": {
-      "description": "Sets the stoke color of the error bars.",
+      "description": "Sets the stroke color of the error bars.",
       "editType": "calc",
       "valType": "color"
      },
@@ -74702,13 +74639,6 @@
      "valType": "number"
     },
     "error_x": {
-     "_deprecated": {
-      "opacity": {
-       "description": "Obsolete. Use the alpha channel in error bar `color` to set the opacity.",
-       "editType": "calc",
-       "valType": "number"
-      }
-     },
      "array": {
       "description": "Sets the data corresponding the length of each error bar. Values are plotted relative to the underlying data.",
       "editType": "calc",
@@ -74730,7 +74660,7 @@
       "valType": "string"
      },
      "color": {
-      "description": "Sets the stoke color of the error bars.",
+      "description": "Sets the stroke color of the error bars.",
       "editType": "calc",
       "valType": "color"
      },
@@ -74802,13 +74732,6 @@
      }
     },
     "error_y": {
-     "_deprecated": {
-      "opacity": {
-       "description": "Obsolete. Use the alpha channel in error bar `color` to set the opacity.",
-       "editType": "calc",
-       "valType": "number"
-      }
-     },
      "array": {
       "description": "Sets the data corresponding the length of each error bar. Values are plotted relative to the underlying data.",
       "editType": "calc",
@@ -74830,7 +74753,7 @@
       "valType": "string"
      },
      "color": {
-      "description": "Sets the stoke color of the error bars.",
+      "description": "Sets the stroke color of the error bars.",
       "editType": "calc",
       "valType": "color"
      },
