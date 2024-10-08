@@ -144,17 +144,6 @@ exports.cleanLayout = function(layout) {
 
         if(!Lib.isPlainObject(ann)) continue;
 
-        if(ann.ref) {
-            if(ann.ref === 'paper') {
-                ann.xref = 'paper';
-                ann.yref = 'paper';
-            } else if(ann.ref === 'data') {
-                ann.xref = 'x';
-                ann.yref = 'y';
-            }
-            delete ann.ref;
-        }
-
         cleanAxRef(ann, 'xref');
         cleanAxRef(ann, 'yref');
     }
