@@ -214,7 +214,8 @@
     "xatype": "category",
     "yatype": "linear",
     "tag": "",
-    "ref": "paper"
+    "xref": "paper",
+    "yref": "paper"
    }
   ],
   "margin": {

@@ -246,9 +246,5 @@ module.exports = {
     selected: barAttrs.selected,
     unselected: barAttrs.unselected,
 
-    _deprecated: {
-        bardir: barAttrs._deprecated.bardir
-    },
-
     zorder: barAttrs.zorder
 };

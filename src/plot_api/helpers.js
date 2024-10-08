@@ -144,17 +144,6 @@ exports.cleanLayout = function(layout) {
 
         if(!Lib.isPlainObject(ann)) continue;
 
-        if(ann.ref) {
-            if(ann.ref === 'paper') {
-                ann.xref = 'paper';
-                ann.yref = 'paper';
-            } else if(ann.ref === 'data') {
-                ann.xref = 'x';
-                ann.yref = 'y';
-            }
-            delete ann.ref;
-        }
-
         cleanAxRef(ann, 'xref');
         cleanAxRef(ann, 'yref');
     }
@@ -281,17 +270,6 @@ exports.cleanData = function(data) {
         if(trace.type === 'histogramy' && 'xbins' in trace && !('ybins' in trace)) {
             trace.ybins = trace.xbins;
             delete trace.xbins;
-        }
-
-        // convert bardir to orientation, and put the data into
-        // the axes it's eventually going to be used with
-        if('bardir' in trace) {
-            if(trace.bardir === 'h' && (traceIs(trace, 'bar') ||
-                trace.type.substr(0, 9) === 'histogram')) {
-                trace.orientation = 'h';
-                exports.swapXYData(trace);
-            }
-            delete trace.bardir;
         }
 
         // now we have only one 1D histogram type, and whether
