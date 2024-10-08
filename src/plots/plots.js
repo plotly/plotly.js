@@ -461,12 +461,10 @@ plots.supplyDefaults = function(gd, opts) {
     // clean subplots and other artifacts from previous plot calls
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
-    var hadGL2D = !!(oldFullLayout._has && oldFullLayout._has('gl2d'));
-    var hasGL2D = !!(newFullLayout._has && newFullLayout._has('gl2d'));
     var hadCartesian = !!(oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = !!(newFullLayout._has && newFullLayout._has('cartesian'));
-    var hadBgLayer = hadCartesian || hadGL2D;
-    var hasBgLayer = hasCartesian || hasGL2D;
+    var hadBgLayer = hadCartesian;
+    var hasBgLayer = hasCartesian;
     if(hadBgLayer && !hasBgLayer) {
         // remove bgLayer
         oldFullLayout._bgLayer.remove();
@@ -855,7 +853,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         _fullLayout: newFullLayout
     };
 
-    var ids = newSubplotList.cartesian.concat(newSubplotList.gl2d || []);
+    var ids = newSubplotList.cartesian || [];
 
     for(i = 0; i < ids.length; i++) {
         var id = ids[i];
