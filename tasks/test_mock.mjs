@@ -169,7 +169,6 @@ function notBlackListed(name) {
         'gl2d_fonts',
         'gl2d_layout_image',
         'gl2d_marker_coloraxis',
-        'gl2d_pointcloud-basic',
         'gl2d_rgb_dont_accept_alpha_scattergl',
         'gl2d_scatter-marker-line-colorscales',
         'gl2d_scatter-subplot-panel',

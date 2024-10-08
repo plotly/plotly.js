@@ -387,33 +387,6 @@ describe('Test hover and click interactions', function() {
         .then(done, done.fail);
     });
 
-    it('@gl should output correct event data for pointcloud', function(done) {
-        var _mock = Lib.extendDeep({}, require('../../image/mocks/gl2d_pointcloud-basic.json'));
-
-        _mock.layout.hoverlabel = { font: {size: 8} };
-        _mock.data[2].hoverlabel = {
-            bgcolor: ['red', 'green', 'blue']
-        };
-
-        var run = makeRunner([540, 150], {
-            x: 4.5,
-            y: 9,
-            curveNumber: 2,
-            pointNumber: 1,
-            bgcolor: 'rgb(0, 128, 0)',
-            bordercolor: 'rgb(255, 255, 255)',
-            fontSize: 8,
-            fontFamily: 'Arial',
-            fontColor: 'rgb(255, 255, 255)'
-        }, {
-            msg: 'pointcloud'
-        });
-
-        Plotly.newPlot(gd, _mock)
-        .then(run)
-        .then(done, done.fail);
-    });
-
     it('@gl scattergl should propagate marker colors to hover labels', function(done) {
         var _mock = Lib.extendDeep({}, mock0);
         _mock.layout.hovermode = 'x';
@@ -432,86 +405,6 @@ describe('Test hover and click interactions', function() {
             fontColor: 'rgb(68, 68, 68)'
         }, {
             msg: 'scattergl marker colors'
-        });
-
-        Plotly.newPlot(gd, _mock)
-        .then(run)
-        .then(done, done.fail);
-    });
-
-    it('@gl should output correct event data for heatmapgl', function(done) {
-        var z = [
-            [10, 10.625, 12.5, 15.625, 20],
-            [5.625, 6.25, 8.125, 11.25, 15.625],
-            [2.5, 3.125, 5, 8.125, 12.5],
-            [0.625, 1.25, 3.125, 20, 10.625],
-            [0, 0.625, 2.5, 5.625, 10]
-        ];
-
-        var _mock = {
-            data: [{
-                type: 'heatmapgl',
-                z: z,
-                hoverlabel: {
-                    font: { size: z }
-                },
-                colorscale: 'Jet',
-                // contours: { start: 2, end: 10, size: 1 },
-                zmin: 0,
-                zmax: 20
-            }],
-            layout: {
-                hoverlabel: {
-                    font: { family: 'Roboto' }
-                }
-            }
-        };
-
-        var run = makeRunner([540, 150], {
-            x: 3,
-            y: 3,
-            curveNumber: 0,
-            pointNumber: [3, 3],
-            bgcolor: 'rgb(68, 68, 68)',
-            bordercolor: 'rgb(255, 255, 255)',
-            fontSize: 20,
-            fontFamily: 'Roboto',
-            fontColor: 'rgb(255, 255, 255)'
-        }, {
-            noUnHover: true,
-            msg: 'heatmapgl'
-        });
-
-        Plotly.newPlot(gd, _mock)
-        .then(run)
-        .then(done, done.fail);
-    });
-
-    it('@gl should output correct event data for heatmapgl (asymmetric case) ', function(done) {
-        var _mock = {
-            data: [{
-                type: 'heatmapgl',
-                z: [[1, 2, 0], [2, 3, 1]],
-                text: [['a', 'b', 'c'], ['D', 'E', 'F']],
-                hoverlabel: {
-                    bgcolor: [['red', 'blue', 'green'], ['cyan', 'pink', 'black']]
-                }
-            }]
-        };
-
-        var run = makeRunner([540, 150], {
-            x: 2,
-            y: 1,
-            curveNumber: 0,
-            pointNumber: [1, 2],
-            bgcolor: 'rgb(0, 0, 0)',
-            bordercolor: 'rgb(255, 255, 255)',
-            fontSize: 13,
-            fontFamily: 'Arial',
-            fontColor: 'rgb(255, 255, 255)'
-        }, {
-            noUnHover: true,
-            msg: 'heatmapgl'
         });
 
         Plotly.newPlot(gd, _mock)
