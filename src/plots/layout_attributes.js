@@ -26,20 +26,11 @@ module.exports = {
         text: {
             valType: 'string',
             editType: 'layoutstyle',
-            description: [
-                'Sets the plot\'s title.',
-                'Note that before the existence of `title.text`, the title\'s',
-                'contents used to be defined as the `title` attribute itself.',
-                'This behavior has been deprecated.'
-            ].join(' ')
+            description: 'Sets the plot\'s title.'
         },
         font: fontAttrs({
             editType: 'layoutstyle',
-            description: [
-                'Sets the title font.',
-                'Note that the title\'s font used to be customized',
-                'by the now deprecated `titlefont` attribute.'
-            ].join(' ')
+            description: 'Sets the title font.'
         }),
         subtitle: {
             text: {
@@ -460,21 +451,4 @@ module.exports = {
         ].join(' '),
         editType: 'none'
     }),
-    _deprecated: {
-        title: {
-            valType: 'string',
-            editType: 'layoutstyle',
-            description: [
-                'Value of `title` is no longer a simple *string* but a set of sub-attributes.',
-                'To set the contents of the title, please use `title.text` now.'
-            ].join(' ')
-        },
-        titlefont: fontAttrs({
-            editType: 'layoutstyle',
-            description: [
-                'Former `titlefont` is now the sub-attribute `font` of `title`.',
-                'To customize title font properties, please use `title.font` now.'
-            ].join(' ')
-        })
-    }
 };

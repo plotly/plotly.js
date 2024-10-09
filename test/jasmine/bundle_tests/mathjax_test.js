@@ -55,9 +55,9 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
 
             return Plotly.newPlot(gd, fig)
                 .then(function() { assertNoIntersect('base'); })
-                .then(function() { return Plotly.relayout(gd, 'xaxis.titlefont.size', 40); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.title.font.size', 40); })
                 .then(function() { assertNoIntersect('large title font size'); })
-                .then(function() { return Plotly.relayout(gd, 'xaxis.titlefont.size', null); })
+                .then(function() { return Plotly.relayout(gd, 'xaxis.title.font.size', null); })
                 .then(function() { assertNoIntersect('back to base'); })
                 .then(function() { return Plotly.relayout(gd, 'xaxis.tickfont.size', 40); })
                 .then(function() { assertNoIntersect('large title font size'); })
@@ -84,7 +84,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                     y: [1, 2, 1]
                 }],
                 layout: {
-                    xaxis: {title: 'TITLE'},
+                    xaxis: { title: { text: 'TITLE' } },
                     width: 500,
                     height: 500,
                     margin: {t: 100, b: 100, l: 100, r: 100}
@@ -125,7 +125,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                     y: [1, 2, 1]
                 }],
                 layout: {
-                    xaxis: {title: 'TITLE'},
+                    xaxis: { title: { text: 'TITLE' } },
                     width: 500,
                     height: 500,
                     margin: {t: 100, b: 100, l: 100, r: 100}
@@ -145,7 +145,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                     y: [1, 2, 1]
                 }],
                 layout: {
-                    xaxis: {title: texTitle},
+                    xaxis: { title: { text: texTitle } },
                     width: 500,
                     height: 500,
                     margin: {t: 100, b: 100, l: 100, r: 100}

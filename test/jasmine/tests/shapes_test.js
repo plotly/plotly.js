@@ -748,7 +748,7 @@ describe('A path shape sized relative to data', function() {
             type: 'scatter'
         }];
         layout = {
-            title: 'Path shape sized relative to data',
+            title: { text: 'Path shape sized relative to data' },
             width: 400,
             height: 400,
             shapes: [{
@@ -792,7 +792,7 @@ describe('A fixed size path shape', function() {
             type: 'scatter'
         }];
         layout = {
-            title: 'Fixed size path shape',
+            title: { text: 'Fixed size path shape' },
             width: 400,
             height: 400,
             shapes: [{
@@ -930,7 +930,7 @@ describe('A fixed size shape', function() {
             type: 'scatter'
         }];
         layout = {
-            title: 'Fixed size shape',
+            title: { text: 'Fixed size shape' },
             width: 400,
             height: 400,
             shapes: [{
@@ -1315,19 +1315,19 @@ describe('Test shapes', function() {
     var testCases = [
         // xref: 'paper', yref: 'paper'
         {
-            title: 'linked to paper'
+            title: { text: 'linked to paper' }
         },
 
         // xaxis.type: 'linear', yaxis.type: 'log'
         {
-            title: 'linked to linear and log axes',
+            title: { text: 'linked to linear and log axes' },
             xaxis: { type: 'linear', range: [0, 10] },
             yaxis: { type: 'log', range: [Math.log10(1), Math.log10(1000)] }
         },
 
         // xaxis.type: 'date', yaxis.type: 'category'
         {
-            title: 'linked to date and category axes',
+            title: { text: 'linked to date and category axes' },
             xaxis: {
                 type: 'date',
                 range: ['2000-01-01', '2000-02-02']
