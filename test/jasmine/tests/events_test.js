@@ -1,11 +1,3 @@
-/* global $:false, jQuery:false */
-
-/*
- * Note this test requires JQuery in the global scope.
- * we should keep it that way to keep testing our backward
- * compatibility with JQuery events.
- */
-
 var Events = require('../../../src/lib/events');
 
 describe('Events', function() {
@@ -54,19 +46,6 @@ describe('Events', function() {
 
             setTimeout(function() {
                 plotObj.emit('ping', 'pong');
-            });
-        });
-
-        it('triggers jquery events', function(done) {
-            Events.init(plotDiv);
-
-            $(plotDiv).bind('ping', function(event, data) {
-                expect(data).toBe('pong');
-                done();
-            });
-
-            setTimeout(function() {
-                $(plotDiv).trigger('ping', 'pong');
             });
         });
 
@@ -139,86 +118,6 @@ describe('Events', function() {
             expect(result).toBe('pong');
         });
 
-        it('triggers jQuery handlers when no matching node events bound', function() {
-            var eventBaton = 0;
-
-            Events.init(plotDiv);
-
-            $(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            /*
-             * This will not be called
-             */
-            plotDiv.on('pong', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            $(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'pong';
-            });
-
-            var result = Events.triggerHandler(plotDiv, 'ping');
-
-            expect(eventBaton).toBe(2);
-            expect(result).toBe('pong');
-        });
-
-        it('triggers jQuery handlers when no node events initialized', function() {
-            var eventBaton = 0;
-
-            $(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            $(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            $(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'pong';
-            });
-
-            var result = Events.triggerHandler(plotDiv, 'ping');
-
-            expect(eventBaton).toBe(3);
-            expect(result).toBe('pong');
-        });
-
-
-        it('triggers jQuery + nodejs handlers and returns last jQuery value', function() {
-            var eventBaton = 0;
-
-            Events.init(plotDiv);
-
-            $(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            plotDiv.on('ping', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            $(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'pong';
-            });
-
-            var result = Events.triggerHandler(plotDiv, 'ping');
-
-            expect(eventBaton).toBe(3);
-            expect(result).toBe('pong');
-        });
-
         it('works with *once* event handlers', function() {
             var eventBaton = 0;
 
@@ -245,108 +144,6 @@ describe('Events', function() {
             Events.purge(plotObj);
 
             expect(plotObj).toEqual({});
-        });
-    });
-
-    describe('when jQuery.noConflict is set, ', function() {
-        beforeEach(function() {
-            $.noConflict();
-        });
-
-        afterEach(function() {
-            window.$ = jQuery;
-        });
-
-        it('triggers jquery events', function(done) {
-            Events.init(plotDiv);
-
-            jQuery(plotDiv).bind('ping', function(event, data) {
-                expect(data).toBe('pong');
-                done();
-            });
-
-            setTimeout(function() {
-                jQuery(plotDiv).trigger('ping', 'pong');
-            });
-        });
-
-        it('triggers jQuery handlers when no matching node events bound', function() {
-            var eventBaton = 0;
-
-            Events.init(plotDiv);
-
-            jQuery(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            /*
-             * This will not be called
-             */
-            plotDiv.on('pong', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            jQuery(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'pong';
-            });
-
-            var result = Events.triggerHandler(plotDiv, 'ping');
-
-            expect(eventBaton).toBe(2);
-            expect(result).toBe('pong');
-        });
-
-        it('triggers jQuery handlers when no node events initialized', function() {
-            var eventBaton = 0;
-
-            jQuery(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            jQuery(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            jQuery(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'pong';
-            });
-
-            var result = Events.triggerHandler(plotDiv, 'ping');
-
-            expect(eventBaton).toBe(3);
-            expect(result).toBe('pong');
-        });
-
-        it('triggers jQuery + nodejs handlers and returns last jQuery value', function() {
-            var eventBaton = 0;
-
-            Events.init(plotDiv);
-
-            jQuery(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            plotDiv.on('ping', function() {
-                eventBaton++;
-                return 'ping';
-            });
-
-            jQuery(plotDiv).bind('ping', function() {
-                eventBaton++;
-                return 'pong';
-            });
-
-            var result = Events.triggerHandler(plotDiv, 'ping');
-
-            expect(eventBaton).toBe(3);
-            expect(result).toBe('pong');
         });
     });
 });
