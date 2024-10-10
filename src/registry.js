@@ -17,7 +17,6 @@ exports.modules = {};
 exports.allCategories = {};
 exports.allTypes = [];
 exports.subplotsRegistry = {};
-exports.transformsRegistry = {};
 exports.componentsRegistry = {};
 exports.layoutArrayContainers = [];
 exports.layoutArrayRegexes = [];
@@ -144,47 +143,6 @@ exports.traceIs = function(traceType, category) {
     }
 
     return !!_module.categories[category];
-};
-
-/**
- * Determine if this trace has a transform of the given type and return
- * array of matching indices.
- *
- * @param {object} data
- *  a trace object (member of data or fullData)
- * @param {string} type
- *  type of trace to test
- * @return {array}
- *  array of matching indices. If none found, returns []
- */
-exports.getTransformIndices = function(data, type) {
-    var indices = [];
-    var transforms = data.transforms || [];
-    for(var i = 0; i < transforms.length; i++) {
-        if(transforms[i].type === type) {
-            indices.push(i);
-        }
-    }
-    return indices;
-};
-
-/**
- * Determine if this trace has a transform of the given type
- *
- * @param {object} data
- *  a trace object (member of data or fullData)
- * @param {string} type
- *  type of trace to test
- * @return {boolean}
- */
-exports.hasTransform = function(data, type) {
-    var transforms = data.transforms || [];
-    for(var i = 0; i < transforms.length; i++) {
-        if(transforms[i].type === type) {
-            return true;
-        }
-    }
-    return false;
 };
 
 /**
@@ -331,10 +289,6 @@ function registerComponentModule(_module) {
         mergeComponentAttrsToSubplot(name, subplotName);
     }
 
-    for(var transformType in exports.transformsRegistry) {
-        mergeComponentAttrsToTransform(name, transformType);
-    }
-
     if(_module.schema && _module.schema.layout) {
         extendDeepAll(baseLayoutAttributes, _module.schema.layout);
     }
@@ -364,12 +318,6 @@ function registerTransformModule(_module) {
     }
     if(typeof _module.supplyDefaults !== 'function') {
         Loggers.log(prefix + ' registered without a *supplyDefaults* method.');
-    }
-
-    exports.transformsRegistry[_module.name] = _module;
-
-    for(var componentName in exports.componentsRegistry) {
-        mergeComponentAttrsToTransform(componentName, _module.name);
     }
 }
 
@@ -427,16 +375,6 @@ function mergeComponentAttrsToTrace(componentName, traceType) {
     var traceAttrs = componentSchema.traces[traceType];
     if(traceAttrs) {
         extendDeepAll(exports.modules[traceType]._module.attributes, traceAttrs);
-    }
-}
-
-function mergeComponentAttrsToTransform(componentName, transformType) {
-    var componentSchema = exports.componentsRegistry[componentName].schema;
-    if(!componentSchema || !componentSchema.transforms) return;
-
-    var transformAttrs = componentSchema.transforms[transformType];
-    if(transformAttrs) {
-        extendDeepAll(exports.transformsRegistry[transformType].attributes, transformAttrs);
     }
 }
 
