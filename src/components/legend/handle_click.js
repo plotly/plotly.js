@@ -92,14 +92,6 @@ module.exports = function handleClick(g, gd, numClicks) {
         if(index === undefined) index = fullInput._index;
 
         if(Registry.hasTransform(fullInput, 'groupby')) {
-            var kcont = carrs[index];
-            if(!kcont) {
-                var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
-                var lastGroupbyIndex = groupbyIndices[groupbyIndices.length - 1];
-                kcont = Lib.keyedContainer(fullInput, 'transforms[' + lastGroupbyIndex + '].styles', 'target', 'value.visible');
-                carrs[index] = kcont;
-            }
-
             var curState = kcont.get(fullTrace._group);
 
             // If not specified, assume visible. This happens if there are other style

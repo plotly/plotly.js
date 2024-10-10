@@ -165,4 +165,3 @@ var attrs = module.exports = overrideAll({
         font: extendFlat({}, fontAttrs({arrayOk: true}))
     }
 }, 'calc', 'from-root');
-attrs.transforms = undefined;

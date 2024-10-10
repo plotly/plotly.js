@@ -135,5 +135,4 @@ module.exports = extendFlat({
     }),
 
     zorder: zorder,
-    transforms: undefined
 });
