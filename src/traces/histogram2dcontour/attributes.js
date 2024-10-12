@@ -45,11 +45,7 @@ module.exports = extendFlat({
     hovertemplate: histogram2dAttrs.hovertemplate,
     texttemplate: contourAttrs.texttemplate,
     textfont: contourAttrs.textfont,
-    tooltip: {
-        type: 'object',
-        description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
-        editType: 'plot'
-    },
+    tooltip: histogram2dAttrs.tooltip,
     tooltiptemplate: histogram2dAttrs.tooltiptemplate
 },
     colorScaleAttrs('', {
