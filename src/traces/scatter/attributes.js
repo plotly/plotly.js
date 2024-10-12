@@ -688,14 +688,12 @@ module.exports = {
         arrayOk: true,
         description: 'Sets the text font.'
     }),
-    tooltip: {
-        type: 'object',
+    tooltip: {annotationAttrs, 
+        valType: 'any',
         description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
-        editType: 'plot'
+        editType: 'calc'
     },
-    tooltiptemplate: tooltiptemplateAttrs({}, {
-        keys: constants.eventDataKeys
-    }),
+    tooltiptemplate: extendFlat({}, tooltiptemplateAttrs(), {dflt: 'x: %{x:.4~g}<br>y: %{y:.4~g}'}),
     zorder: {
         valType: 'integer',
         dflt: 0,
