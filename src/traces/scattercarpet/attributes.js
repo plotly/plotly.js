@@ -120,6 +120,8 @@ module.exports = {
     hoveron: scatterAttrs.hoveron,
     hovertemplate: hovertemplateAttrs(),
     tooltip: scatterAttrs.tooltip,
-    tooltiptemplate: scatterAttrs.tooltiptemplate,
+    tooltiptemplate: extendFlat({}, scatterAttrs.tooltiptemplate, {
+        flags: ['a', 'b', 'text', 'name']
+    }),
     zorder: scatterAttrs.zorder
 };
