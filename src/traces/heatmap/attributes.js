@@ -136,10 +136,10 @@ module.exports = extendFlat({
 
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false}),
 
-    tooltip: {
-        type: 'object',
-        description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
-        editType: 'plot'
+    tooltip: {annotationAttrs, 
+            valType: 'any',
+            description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+            editType: 'calc'
     },
     tooltiptemplate: extendFlat({}, tooltiptemplateAttrs(), {dflt: 'x: %{x:.4~g}<br>y: %{y:.4~g}<br>z: %{z:.4~g}'}),
 

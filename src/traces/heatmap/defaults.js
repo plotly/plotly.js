@@ -29,7 +29,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     coerce('hovertemplate');
     
-    // coerce('tooltip');
+    coerce('tooltip');
     coerce('tooltiptemplate');
 
     handleHeatmapLabelDefaults(coerce, layout);
