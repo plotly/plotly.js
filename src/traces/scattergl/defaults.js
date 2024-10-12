@@ -39,6 +39,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertemplate');
     coerce('mode', defaultMode);
 
+    coerce('tooltip');
+    coerce('tooltiptemplate');
+
     if(subTypes.hasMarkers(traceOut)) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noAngleRef: true, noStandOff: true});
         coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
