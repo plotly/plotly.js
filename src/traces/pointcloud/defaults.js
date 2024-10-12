@@ -24,6 +24,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     }
 
     coerce('text');
+    coerce('tooltip');
+    coerce('tooltiptemplate');
     coerce('marker.color', defaultColor);
     coerce('marker.opacity');
     coerce('marker.blend');
