@@ -220,10 +220,10 @@ module.exports = {
         editType: 'style'
     },
 
-    tooltip: {
-        type: 'object',
+    tooltip: {annotationAttrs, 
+        valType: 'any',
         description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
-        editType: 'plot'
+        editType: 'calc'
     },
     tooltiptemplate: tooltiptemplateAttrs({}, {
         keys: constants.eventDataKeys
