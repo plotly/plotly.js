@@ -121,7 +121,7 @@ module.exports = {
     hovertemplate: hovertemplateAttrs(),
     tooltip: scatterAttrs.tooltip,
     tooltiptemplate: extendFlat({}, scatterAttrs.tooltiptemplate, {
-        flags: ['a', 'b', 'text', 'name']
+        // flags: ['a', 'b', 'text', 'name']
     }),
     zorder: scatterAttrs.zorder
 };

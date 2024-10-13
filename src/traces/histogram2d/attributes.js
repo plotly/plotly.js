@@ -79,7 +79,7 @@ module.exports = extendFlat(
             keys: 'z'
         }),
         textfont: heatmapAttrs.textfont,
-        tooltip: {annotationAttrs, 
+        tooltip: {values: extendFlat({}, annotationAttrs),
             valType: 'any',
             description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
             editType: 'calc'
