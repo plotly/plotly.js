@@ -5,7 +5,7 @@
       "y": [null, null, null, null, 7, null, 6],
       "name": "AA",
       "type": "bar",
-      "tooltiptemplate": "%{fullData.name}<br>%{x}<br>y: %{y}",
+      "tooltiptemplate": "%{value}<br>%{label}<br>%{fullData.name}<br>%{x}<br>y: %{y}",
       "tooltip": {"arrowcolor": "blue"}
     },
     {
