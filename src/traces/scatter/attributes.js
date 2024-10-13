@@ -693,7 +693,9 @@ module.exports = {
         description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
         editType: 'calc'
     },
-    tooltiptemplate: extendFlat({}, tooltiptemplateAttrs(), {dflt: 'x: %{x:.4~g}<br>y: %{y:.4~g}'}),
+    tooltiptemplate: tooltiptemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
     zorder: {
         valType: 'integer',
         dflt: 0,
