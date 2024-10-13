@@ -766,7 +766,7 @@ function addTooltip(gd, data, userTemplate, customStyle) {
 
         // Handle histogram with more than one curve (bars displayed side to side)
         // This ensures the tooltip is on the clicked bar and not always on the middle bar
-        if(pts.fullData && ['bar', 'histogram', 'box', 'violin'].includes(pts.fullData.type) && fullLayout._dataLength) {
+        if(pts.fullData && ['bar', 'box', 'histogram', 'violin', 'waterfall'].includes(pts.fullData.type) && fullLayout._dataLength) {
             var clickCoord = clickPointToCoord(gd, data);
             if(pts.fullData.orientation === 'v') {
                 x = clickCoord.x;
