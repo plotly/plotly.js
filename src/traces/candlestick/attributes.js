@@ -61,7 +61,7 @@ module.exports = {
         description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
         editType: 'calc'
     },
-    tooltiptemplate: tooltiptemplateAttrs(),
+    tooltiptemplate: OHLCattrs.tooltiptemplate,
 
     zorder: boxAttrs.zorder
 };
