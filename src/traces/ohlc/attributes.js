@@ -141,7 +141,10 @@ module.exports = {
         description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
         editType: 'calc'
     },
-    tooltiptemplate: tooltiptemplateAttrs(),
+    tooltiptemplate: extendFlat(
+        {}, tooltiptemplateAttrs(),
+        {dflt: 'x: %{x}<br>open: %{open:.2f}<br>high: %{high:.2f}<br>low: %{low:.2f}<br>close: %{close:.2f}'
+    }),
 
     zorder: scatterAttrs.zorder
 };

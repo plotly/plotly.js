@@ -670,12 +670,7 @@ var DEFAULT_TEMPLATES = {
     category_y: '%{y}',
     x: 'x: %{x:.4~g}',
     y: 'y: %{y:.4~g}',
-    // z: 'z: %{z:.4~g}',
     z: 'z: %{z}',
-    open: 'open: %{open:.2f}',
-    high: 'high: %{high:.2f}',
-    low: 'low: %{low:.2f}',
-    close: 'close: %{close:.2f}'
 };
 
 var DEFAULT_STYLE = {
@@ -722,11 +717,6 @@ modeBarButtons.tooltip = {
                 if(pts.x !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.hasOwnProperty(xAxisType + '_x') ? DEFAULT_TEMPLATES[xAxisType + '_x'] : DEFAULT_TEMPLATES.x);
                 if(pts.y !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.hasOwnProperty(yAxisType + '_y') ? DEFAULT_TEMPLATES[yAxisType + '_y'] : DEFAULT_TEMPLATES.y);
                 if(pts.z !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.z);
-                // ohlc
-                if(pts.open !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.open);
-                if(pts.high !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.high);
-                if(pts.low !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.low);
-                if(pts.close !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.close);
                 // not consistent:
                 // box: missing max, upper fence... in data.points[0]
 
