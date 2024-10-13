@@ -4,6 +4,7 @@ var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
 var baseAttrs = require('../../plots/attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
@@ -120,8 +121,8 @@ module.exports = {
     hoveron: scatterAttrs.hoveron,
     hovertemplate: hovertemplateAttrs(),
     tooltip: scatterAttrs.tooltip,
-    tooltiptemplate: extendFlat({}, scatterAttrs.tooltiptemplate, {
-        // flags: ['a', 'b', 'text', 'name']
-    }),
+    tooltiptemplate: extendFlat({}, tooltiptemplateAttrs({}, {
+        flags: ['a', 'b', 'text', 'name']
+    }), {dflt: 'a: %{a}<br>b: %{b}<br>y: %{y}'}),
     zorder: scatterAttrs.zorder
 };
