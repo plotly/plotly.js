@@ -1,0 +1,56 @@
+   tooltip_tooltiptemplate_bar_stack-with-gaps TOFIX: wrong placement except from bottom bars
+ tooltip_bar-grouping-vs-defaults working, but could be placed in the middle of bars or at click X
+ tooltip_box_grouped-multicategory
+ tooltip_tooltiptemplate_box_grouped-multicategory
+   **candlestick_double-y-axis broken on master** may be able to move special attributes to defaults.js?
+   tooltip_candlestick_double-y-axis
+   tooltip_tooltiptemplate_candlestick_double-y-axis
+  
+  **~ funnel (wrong placement) Should disable? not very useful for this graph**
+  tooltip_funnel_horizontal_group_basic 
+  tooltip_tooltiptemplate_funnel_horizontal_group_basic
+ tooltip_gl2d_heatmapgl
+ tooltip_tooltiptemplate_gl2d_heatmapgl
+ **gl2d_pointcloud-basic broken on master**
+ tooltip_gl2d_pointcloud-basic
+ tooltip_gl2d_scattergl_simple_line_reversed_ranges
+ tooltip_tooltiptemplate_gl2d_scattergl_simple_line_reversed_ranges
+ tooltip_heatmap
+ tooltip_tooltiptemplate_heatmap
+ tooltip_histogram
+ tooltip_tooltiptemplate_histogram
+ tooltip_histogram_horizontal
+ tooltip_tooltiptemplate_histogram_horizontal
+ tooltip_histogram_subplots
+ tooltip_histogram2d
+ tooltip_tooltiptemplate_histogram2d
+ tooltip_histogram2dcontour_legend-coloraxis
+ tooltip_tooltiptemplate_histogram2dcontour_legend-coloraxis
+ tooltip_log_scatter
+ tooltip_multiple_subplots
+ **may be able to move special attributes to defaults.js?**
+  **ohlc_first broken on master**
+  tooltip_ohlc TOFIX
+  tooltip_tooltiptemplate_ohlc
+ tooltip_scatter
+ tooltip_tooltiptemplate_scatter
+ tooltip_scattercarpet-on-two-carpets
+ tooltip_tooltiptemplate_scattercarpet-on-two-carpets
+ tooltip_simple_contour
+ tooltip_tooltiptemplate_simple_contour
+ tooltip_splom
+ tooltip_tooltiptemplate_splom
+ tooltip_template_heatmap
+ tooltip_violin_grouped
+ tooltip_tooltiptemplate_violin_grouped
+ tooltip_waterfall-grouping-vs-defaults
+ tooltip_tooltiptemplate_waterfall-grouping-vs-defaults.json
+ tooltip_waterfall_axis
+
+
+
+axes_breaks-candlestick axes_breaks-candlestick2 axes_breaks-ohlc_candlestick_box candlestick_double-y-axis candlestick_rangeslider_thai
+
+
+
+
