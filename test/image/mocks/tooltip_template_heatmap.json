@@ -6,7 +6,7 @@
 		"type":"heatmap",
 		"colorscale":"Viridis",
 		"tooltip":{"bgcolor":"rgba(255, 255, 255, 0.2)"},
-        "tooltiptemplate":"%{x}<br>%{y}<br>%{z}"
+        "tooltiptemplate":"x: %{x:.4~g}<br>y: %{y:.4~g}<br>z: %{z:.4~g}"
 		}
 	],
     "config": {
