@@ -579,7 +579,7 @@ describe('Test Plots', function() {
                         y: [1, 2, 1],
                     }],
                     layout: {
-                        title: 'frame A'
+                        title: { text: 'frame A' }
                     },
                     name: 'A'
                 }, null, {
@@ -587,7 +587,7 @@ describe('Test Plots', function() {
                         y: [1, 2, 3],
                     }],
                     layout: {
-                        title: 'frame B'
+                        title: { text: 'frame B' }
                     },
                     name: 'B'
                 }, {

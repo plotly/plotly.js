@@ -248,10 +248,6 @@ module.exports = {
     selected: barAttrs.selected,
     unselected: barAttrs.unselected,
 
-    _deprecated: {
-        bardir: barAttrs._deprecated.bardir
-    },
-
     tooltip: {values: extendFlat({}, annotationAttrs), 
         valType: 'any',
         description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',

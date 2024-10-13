@@ -612,7 +612,8 @@
     "xatype": "linear",
     "yatype": "linear",
     "tag": "",
-    "ref": "plot"
+    "xref": "plot",
+    "yref": "plot"
    }
   ],
   "margin": {

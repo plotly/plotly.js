@@ -45,7 +45,7 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
     var xList = subplots.xaxis;
     var yList = subplots.yaxis;
     var spSVG = subplots.cartesian;
-    var spAll = spSVG.concat(subplots.gl2d || []);
+    var spAll = spSVG;
     var allX = {};
     var allY = {};
     var i, xi, yi;
@@ -244,7 +244,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
                 if(cdModule.length) {
                     layerData.push({
                         i: traceLayerClasses.indexOf(classBaseName),
-                        zorder: z,
+                        zindex: z,
                         className: className,
                         plotMethod: plotMethod,
                         cdModule: cdModule
@@ -257,10 +257,10 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             }
         }
     }
-    // Sort the layers primarily by z, then by i
+    // Sort the layers primarily by zindex, then by i
     layerData.sort(function(a, b) {
         return (
-            (a.zorder || 0) - (b.zorder || 0) ||
+            (a.zindex || 0) - (b.zindex || 0) ||
             (a.i - b.i)
         );
     });
@@ -557,6 +557,7 @@ function makeSubplotData(gd) {
 }
 
 function makeSubplotLayer(gd, plotinfo) {
+    var fullLayout = gd._fullLayout;
     var plotgroup = plotinfo.plotgroup;
     var id = plotinfo.id;
 
@@ -565,9 +566,9 @@ function makeSubplotLayer(gd, plotinfo) {
 
     var xLayer = constants.layerValue2layerClass[plotinfo.xaxis.layer];
     var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
-    var hasOnlyLargeSploms = gd._fullLayout._hasOnlyLargeSploms;
+    var hasOnlyLargeSploms = fullLayout._hasOnlyLargeSploms;
 
-    if(!plotinfo.mainplot) {
+    if(!plotinfo.mainplot || fullLayout._zindices.length > 1) {
         if(hasOnlyLargeSploms) {
             // TODO could do even better
             // - we don't need plot (but we would have to mock it in lsInner

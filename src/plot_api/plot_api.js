@@ -1397,8 +1397,6 @@ function _restyle(gd, aobj, traces) {
     var eventData = Lib.extendDeepAll({}, aobj);
     var i;
 
-    cleanDeprecatedAttributeKeys(aobj);
-
     // initialize flags
     var flags = editTypes.traceFlags();
 
@@ -1701,49 +1699,6 @@ function _restyle(gd, aobj, traces) {
 }
 
 /**
- * Converts deprecated attribute keys to
- * the current API to ensure backwards compatibility.
- *
- * This is needed for the update mechanism to determine which
- * subroutines to run based on the actual attribute
- * definitions (that don't include the deprecated ones).
- *
- * E.g. Maps {'xaxis.title': 'A chart'} to {'xaxis.title.text': 'A chart'}
- * and {titlefont: {...}} to {'title.font': {...}}.
- *
- * @param aobj
- */
-function cleanDeprecatedAttributeKeys(aobj) {
-    var oldAxisTitleRegex = Lib.counterRegex('axis', '\.title', false, false);
-    var colorbarRegex = /colorbar\.title$/;
-    var keys = Object.keys(aobj);
-    var i, key, value;
-
-    for(i = 0; i < keys.length; i++) {
-        key = keys[i];
-        value = aobj[key];
-
-        if((key === 'title' || oldAxisTitleRegex.test(key) || colorbarRegex.test(key)) &&
-          (typeof value === 'string' || typeof value === 'number')) {
-            replace(key, key.replace('title', 'title.text'));
-        } else if(key.indexOf('titlefont') > -1 && key.indexOf('grouptitlefont') === -1) {
-            replace(key, key.replace('titlefont', 'title.font'));
-        } else if(key.indexOf('titleposition') > -1) {
-            replace(key, key.replace('titleposition', 'title.position'));
-        } else if(key.indexOf('titleside') > -1) {
-            replace(key, key.replace('titleside', 'title.side'));
-        } else if(key.indexOf('titleoffset') > -1) {
-            replace(key, key.replace('titleoffset', 'title.offset'));
-        }
-    }
-
-    function replace(oldAttrStr, newAttrStr) {
-        aobj[newAttrStr] = aobj[oldAttrStr];
-        delete aobj[oldAttrStr];
-    }
-}
-
-/**
  * relayout: update layout attributes of an existing plot
  *
  * Can be called two ways:
@@ -1926,7 +1881,6 @@ function _relayout(gd, aobj) {
 
     var arrayStr, i, j;
 
-    cleanDeprecatedAttributeKeys(aobj);
     keys = Object.keys(aobj);
 
     // look for 'allaxes', split out into all axes
@@ -2190,8 +2144,6 @@ function _relayout(gd, aobj) {
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))
             ) {
-                flags.plot = true;
-            } else if(fullLayout._has('gl2d')) {
                 flags.plot = true;
             } else if(valObject) editTypes.update(flags, valObject);
             else flags.calc = true;
