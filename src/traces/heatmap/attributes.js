@@ -141,7 +141,7 @@ module.exports = extendFlat({
             description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
             editType: 'calc'
     },
-    tooltiptemplate: extendFlat({}, tooltiptemplateAttrs(), {dflt: 'x: %{x:.4~g}<br>y: %{y:.4~g}<br>z: %{z:.4~g}'}),
+    tooltiptemplate: extendFlat({}, tooltiptemplateAttrs(), {dflt: 'x: %{x}<br>y: %{y}<br>z: %{z}'}),
 
     zorder: scatterAttrs.zorder
 }, {
