@@ -786,6 +786,24 @@ describe('Pie traces', function() {
         .then(done, done.fail);
     });
 
+    it('should be able to restyle title despite using deprecated title-as-string', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'funnelarea',
+            values: [1, 2, 3],
+            title: 'yo',
+        }])
+        .then(function() {
+            _assertTitle('base', 'yo', 'rgb(0, 0, 0)');
+            return Plotly.restyle(gd, {
+                title: 'oy',
+            });
+        })
+        .then(function() {
+            _assertTitle('base', 'oy', 'rgb(0, 0, 0)');
+        })
+        .then(done, done.fail);
+    });
+
     it('should be able to react with new text colors', function(done) {
         Plotly.newPlot(gd, [{
             type: 'pie',

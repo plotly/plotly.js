@@ -526,6 +526,30 @@ describe('Test plot api', function() {
             .then(assertSizeAndThen(543, 432, true, 'final back to autosize'))
             .then(done, done.fail);
         });
+
+        it('passes update data back to plotly_relayout unmodified ' +
+            'even if deprecated title-as-string has been used', function(done) {
+                Plotly.newPlot(gd, [{y: [1, 3, 2]}])
+                .then(function() {
+                    gd.on('plotly_relayout', function(eventData) {
+                        expect(eventData).toEqual({
+                            title: 'Plotly chart',
+                            'xaxis.title': 'X',
+                            'yaxis.title': 'Y',
+                            'polar.radialaxis.title': 'Radial'
+                        });
+                        done();
+                    });
+    
+                    return Plotly.relayout(gd, {
+                        title: 'Plotly chart',
+                        'xaxis.title': 'X',
+                        'yaxis.title': 'Y',
+                        'polar.radialaxis.title': 'Radial'
+                    });
+                })
+                .then(done, done.fail);
+        });
     });
 
     describe('Plotly.relayout subroutines switchboard', function() {
