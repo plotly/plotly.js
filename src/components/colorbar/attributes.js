@@ -228,4 +228,10 @@ module.exports = overrideAll({
             ].join(' ')
         }
     },
+    _deprecated: {
+        title: {
+            valType: 'string',
+            description: 'It is recommended to use the color bar\'s `title.text` attribute instead.'
+        }
+    }
 }, 'colorbars', 'from-root');

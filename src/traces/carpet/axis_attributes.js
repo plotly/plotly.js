@@ -451,5 +451,15 @@ module.exports = {
         editType: 'calc',
         description: 'The stride between grid lines along the axis'
     },
-    editType: 'calc'
+
+
+    _deprecated: {
+        title: {
+            valType: 'string',
+            editType: 'calc',
+            description: 'It is recommended to use the axis\'s `title.text` attribute instead.'
+        }
+    },
+
+    editType: 'calc',
 };

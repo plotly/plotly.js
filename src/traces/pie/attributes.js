@@ -292,4 +292,13 @@ module.exports = {
             'or an array to highlight one or more slices.'
         ].join(' ')
     },
+
+    _deprecated: {
+        title: {
+            valType: 'string',
+            dflt: '',
+            editType: 'calc',
+            description: 'It is recommended to use the pie\'s `title.text` attribute instead.'
+        }
+    }
 };

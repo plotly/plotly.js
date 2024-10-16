@@ -451,4 +451,11 @@ module.exports = {
         ].join(' '),
         editType: 'none'
     }),
+    _deprecated: {
+        title: {
+            valType: 'string',
+            editType: 'layoutstyle',
+            description: 'It is recommended to use the layout\'s `title.text` attribute instead.'
+        }
+    }
 };

@@ -1241,5 +1241,10 @@ module.exports = {
                 'Set `tickmode` to *linear* for `autotick` *false*.'
             ].join(' ')
         },
+        title: {
+            valType: 'string',
+            editType: 'ticks',
+            description: 'It is recommended to use the layout\'s `title.text` attribute instead.'
+        },
     }
 };
