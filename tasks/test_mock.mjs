@@ -177,7 +177,6 @@ function notBlackListed(name) {
         'gl2d_text_chart_single-string',
         'gl2d_text_chart_styling',
         'gl2d_texttemplate',
-        'gl3d_autocolorscale',
         'gl3d_bunny',
         'gl3d_bunny-hull',
         'gl3d_coloraxes',
