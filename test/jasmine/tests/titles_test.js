@@ -52,6 +52,15 @@ describe('Plot title', function() {
         .then(done, done.fail);
     });
 
+    it('can still be defined as `layout.title` to ensure backwards-compatibility', function(done) {
+        Plotly.newPlot(gd, data, {title: 'Plotly line chart'})
+        .then(function() {
+            expectTitle('Plotly line chart');
+            expectDefaultCenteredPosition(gd);
+        })
+        .then(done, done.fail);
+    });
+
     it('can be updated via `relayout`', function(done) {
         Plotly.newPlot(gd, data, { title: { text: 'Plotly line chart' } })
           .then(expectTitleFn('Plotly line chart'))
@@ -619,6 +628,23 @@ describe('Titles can be updated', function() {
                 'xaxis.title.text': NEW_XTITLE,
                 'yaxis.title.text': NEW_YTITLE
             }
+        },
+        {
+            desc: 'despite passing title only as a string (backwards-compatibility)',
+            update: {
+                title: NEW_TITLE,
+                xaxis: {title: NEW_XTITLE},
+                yaxis: {title: NEW_YTITLE}
+            }
+        },
+        {
+            desc: 'despite passing title only as a string using string attributes ' +
+            '(backwards-compatibility)',
+            update: {
+                title: NEW_TITLE,
+                'xaxis.title': NEW_XTITLE,
+                'yaxis.title': NEW_YTITLE
+            }
         }
     ].forEach(function(testCase) {
         it('via `Plotly.relayout` ' + testCase.desc, function(done) {
@@ -867,6 +893,60 @@ describe('Title fonts can be updated', function() {
         expectXAxisTitleFont(NEW_XTITLE_FONT.color, NEW_XTITLE_FONT.family, NEW_XTITLE_FONT.size);
         expectYAxisTitleFont(NEW_YTITLE_FONT.color, NEW_YTITLE_FONT.family, NEW_YTITLE_FONT.size);
     }
+});
+
+describe('Titles for multiple axes', function() {
+    'use strict';
+
+    var data = [
+      {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x', yaxis: 'y'},
+      {x: [1, 2, 3], y: [3, 2, 1], xaxis: 'x2', yaxis: 'y2'}
+    ];
+    var multiAxesLayout = {
+        xaxis: { title: 'X-Axis 1' },
+        xaxis2: {
+            title: 'X-Axis 2',
+            side: 'top'
+        },
+        yaxis: { title: 'Y-Axis 1' },
+        yaxis2: {
+            title: 'Y-Axis 2',
+            side: 'right'
+        }
+    };
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('still supports deprecated title-as-string (backwards-compatibility)', function(done) {
+        Plotly.newPlot(gd, data, multiAxesLayout)
+        .then(function() {
+            expect(xTitleSel(1).text()).toBe('X-Axis 1');
+            expect(xTitleSel(2).text()).toBe('X-Axis 2');
+            expect(yTitleSel(1).text()).toBe('Y-Axis 1');
+            expect(yTitleSel(2).text()).toBe('Y-Axis 2');
+        })
+        .then(done, done.fail);
+    });
+
+    it('can be updated using deprecated title-as-string (backwards-compatibility)', function(done) {
+        Plotly.newPlot(gd, data, multiAxesLayout)
+        .then(function() {
+            return Plotly.relayout(gd, {
+                'xaxis2.title': '2nd X-Axis',
+                'yaxis2.title': '2nd Y-Axis',
+            });
+        })
+        .then(function() {
+            expect(xTitleSel(2).text()).toBe('2nd X-Axis');
+            expect(yTitleSel(2).text()).toBe('2nd Y-Axis');
+        })
+        .then(done, done.fail);
+    });
 });
 
 // TODO: Add in tests for interactions with other automargined elements
