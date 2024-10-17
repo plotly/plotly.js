@@ -793,13 +793,13 @@ describe('Pie traces', function() {
             title: 'yo',
         }])
         .then(function() {
-            _assertTitle('base', 'yo', 'rgb(0, 0, 0)');
+            _assertTitle('base', 'yo', 'rgb(68, 68, 68)');
             return Plotly.restyle(gd, {
                 title: 'oy',
             });
         })
         .then(function() {
-            _assertTitle('base', 'oy', 'rgb(0, 0, 0)');
+            _assertTitle('base', 'oy', 'rgb(68, 68, 68)');
         })
         .then(done, done.fail);
     });
