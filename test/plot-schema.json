@@ -88601,20 +88601,6 @@
   "surface": {
    "animatable": false,
    "attributes": {
-    "_deprecated": {
-     "zauto": {
-      "description": "Obsolete. Use `cauto` instead.",
-      "editType": "calc"
-     },
-     "zmax": {
-      "description": "Obsolete. Use `cmax` instead.",
-      "editType": "calc"
-     },
-     "zmin": {
-      "description": "Obsolete. Use `cmin` instead.",
-      "editType": "calc"
-     }
-    },
     "autocolorscale": {
      "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `colorscale`. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
      "dflt": false,
