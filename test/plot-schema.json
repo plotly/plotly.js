@@ -272,7 +272,7 @@
    "valType": "integer"
   },
   "plotGlPixelRatio": {
-   "description": "Set the pixel ratio during WebGL image export. This config option was formerly named `plot3dPixelRatio` which is now deprecated.",
+   "description": "Set the pixel ratio during WebGL image export.",
    "dflt": 2,
    "max": 4,
    "min": 1,
