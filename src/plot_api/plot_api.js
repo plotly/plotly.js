@@ -452,11 +452,6 @@ function setPlotContext(gd, config) {
             }
         }
 
-        // map plot3dPixelRatio to plotGlPixelRatio for backward compatibility
-        if(config.plot3dPixelRatio && !context.plotGlPixelRatio) {
-            context.plotGlPixelRatio = context.plot3dPixelRatio;
-        }
-
         // now deal with editable and edits - first editable overrides
         // everything, then edits refines
         var editable = config.editable;
