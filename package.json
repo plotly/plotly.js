@@ -98,7 +98,7 @@
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
     "is-mobile": "^4.0.0",
-    "maplibre-gl": "^4.5.2",
+    "maplibre-gl": "^4.7.1",
     "mouse-change": "^1.4.0",
     "mouse-event-offset": "^3.0.2",
     "mouse-wheel": "^1.2.0",
