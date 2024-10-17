@@ -58,7 +58,7 @@ function isValidCategory(v) {
  * Creates/updates these conversion functions, and a few more utilities
  * like cleanRange, and makeCalcdata
  *
- * also clears the autotick constraints ._minDtick, ._forceTick0
+ * also clears ._minDtick, ._forceTick0
  */
 module.exports = function setConvert(ax, fullLayout) {
     fullLayout = fullLayout || {};
