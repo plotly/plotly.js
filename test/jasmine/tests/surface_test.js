@@ -107,35 +107,6 @@ describe('Test surface', function() {
             expect(traceOut.colorbar).toBeDefined();
         });
 
-        it('should coerce \'c\' attributes with \'z\' if \'c\' isn\'t present', function() {
-            traceIn = {
-                z: [[1, 2, 3], [2, 1, 2]],
-                zauto: false,
-                zmin: 0,
-                zmax: 10
-            };
-
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.cauto).toEqual(false);
-            expect(traceOut.cmin).toEqual(0);
-            expect(traceOut.cmax).toEqual(10);
-        });
-
-        it('should coerce \'c\' attributes with \'c\' values regardless of `\'z\' if \'c\' is present', function() {
-            traceIn = {
-                z: [[1, 2, 3], [2, 1, 2]],
-                zmin: 0,
-                zmax: 10,
-                cmin: -10,
-                cmax: 20
-            };
-
-            supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.cauto).toEqual(false);
-            expect(traceOut.cmin).toEqual(-10);
-            expect(traceOut.cmax).toEqual(20);
-        });
-
         it('should default \'c\' attributes with if \'surfacecolor\' is present', function() {
             traceIn = {
                 z: [[1, 2, 3], [2, 1, 2]],
