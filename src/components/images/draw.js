@@ -73,7 +73,7 @@ module.exports = function draw(gd) {
 
         thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
-        if(d.source && d.source.slice(0, 5) === 'data:') {
+        if(!gd._context.staticPlot || (d.source && d.source.slice(0, 5) === 'data:')) {
             thisImage.attr('xlink:href', d.source);
             this._imgSrc = d.source;
         } else {
