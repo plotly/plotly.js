@@ -10,7 +10,7 @@
    "dtick": 1000,
    "colorbar": {
     "tickprefix": "",
-    "autotick": false,
+    "tickmode": "linear",
     "title": { "text": "" }
    },
    "lat": [9.95, 6.43, 14.5, 8.46],
@@ -34,7 +34,7 @@
    "dtick": 1000,
    "colorbar": {
     "tickprefix": "",
-    "autotick": false,
+    "tickmode": "linear",
     "title": { "text": "" }
    },
    "lat": [9.95, 6.43, 14.5, 8.46],
@@ -57,7 +57,7 @@
    "dtick": 1000,
    "colorbar": {
     "tickprefix": "",
-    "autotick": false,
+    "tickmode": "linear",
     "title": { "text": "" }
    },
    "lat": [9.95, 6.43, 8.46],
@@ -80,7 +80,7 @@
    "dtick": 1000,
    "colorbar": {
     "tickprefix": "",
-    "autotick": false,
+    "tickmode": "linear",
     "title": { "text": "" }
    },
    "lat": [9.95, 6.43, 8.46],

@@ -942,7 +942,7 @@
    "showgrid": true,
    "zeroline": false,
    "showline": true,
-   "autotick": false,
+   "tickmode": "linear",
    "nticks": 0,
    "ticks": "",
    "showticklabels": true,

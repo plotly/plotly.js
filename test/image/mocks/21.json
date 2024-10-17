@@ -388,7 +388,7 @@
    "showgrid": true,
    "zeroline": true,
    "showline": false,
-   "autotick": false,
+   "tickmode": "linear",
    "nticks": 0,
    "ticks": "outside",
    "showticklabels": true,
