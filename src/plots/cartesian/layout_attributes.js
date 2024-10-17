@@ -1230,16 +1230,4 @@ module.exports = {
         ].join(' ')
     },
     editType: 'calc',
-
-    _deprecated: {
-        autotick: {
-            valType: 'boolean',
-            editType: 'ticks',
-            description: [
-                'Obsolete.',
-                'Set `tickmode` to *auto* for old `autotick` *true* behavior.',
-                'Set `tickmode` to *linear* for `autotick` *false*.'
-            ].join(' ')
-        },
-    }
 };

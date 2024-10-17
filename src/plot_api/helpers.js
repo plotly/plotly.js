@@ -81,15 +81,6 @@ exports.cleanLayout = function(layout) {
 
             // prune empty domain arrays made before the new nestedProperty
             if(emptyContainer(ax, 'domain')) delete ax.domain;
-
-            // autotick -> tickmode
-            if(ax.autotick !== undefined) {
-                if(ax.tickmode === undefined) {
-                    ax.tickmode = ax.autotick ? 'auto' : 'linear';
-                }
-                delete ax.autotick;
-            }
-
         }
     }
 
