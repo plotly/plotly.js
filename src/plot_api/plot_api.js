@@ -59,6 +59,8 @@ var numericNameWarningCountLimit = 5;
 function _doPlot(gd, data, layout, config) {
     var frames;
 
+    console.log('doPlot');
+
     gd = Lib.getGraphDiv(gd);
 
     // Events.init is idempotent and bails early if gd has already been init'd
