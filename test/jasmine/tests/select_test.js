@@ -3356,52 +3356,6 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('should work on traces with enabled transforms, hasCssTransform: ' + hasCssTransform, function(done) {
-            var assertSelectedPoints = makeAssertSelectedPoints();
-
-            _newPlot(gd, [{
-                x: [1, 2, 3, 4, 5],
-                y: [2, 3, 1, 7, 9],
-                marker: {size: [10, 20, 20, 20, 10]},
-                transforms: [{
-                    type: 'filter',
-                    operation: '>',
-                    value: 2,
-                    target: 'y'
-                }, {
-                    type: 'aggregate',
-                    groups: 'marker.size',
-                    aggregations: [
-                        // 20: 6, 10: 5
-                        {target: 'x', func: 'sum'},
-                        // 20: 5, 10: 9
-                        {target: 'y', func: 'avg'}
-                    ]
-                }]
-            }], {
-                dragmode: 'select',
-                showlegend: false,
-                width: 400,
-                height: 400,
-                margin: {l: 0, t: 0, r: 0, b: 0}
-            })
-            .then(function() {
-                if(hasCssTransform) transformPlot(gd, cssTransform);
-
-                return _run(hasCssTransform,
-                    [[5, 5], [395, 395]],
-                    function() {
-                        assertSelectedPoints({0: [1, 3, 4]});
-                    },
-                    [380, 180],
-                    BOXEVENTS, 'transformed trace select (all points selected)'
-                );
-            })
-            .then(done, done.fail);
-        });
-    });
-
-    [false, true].forEach(function(hasCssTransform) {
         it('should work on scatter/bar traces with text nodes, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertSelectedPoints = makeAssertSelectedPoints();
 

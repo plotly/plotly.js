@@ -427,15 +427,6 @@ var configAttributes = {
         description: 'Sets the length of the undo/redo queue.'
     },
 
-    globalTransforms: {
-        valType: 'any',
-        dflt: [],
-        description: [
-            'Set global transform to be applied to all traces with no',
-            'specification needed'
-        ].join(' ')
-    },
-
     locale: {
         valType: 'string',
         dflt: 'en-US',

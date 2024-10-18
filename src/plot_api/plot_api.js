@@ -2782,7 +2782,6 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
     for(i = 0; i < oldFullData.length; i++) {
         if(newFullData[i]) {
             trace = newFullData[i]._fullInput;
-            if(Plots.hasMakesDataTransform(trace)) trace = newFullData[i];
             if(seenUIDs[trace.uid]) continue;
             seenUIDs[trace.uid] = 1;
 

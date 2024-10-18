@@ -36,14 +36,6 @@ describe('plot schema', function() {
         });
     }
 
-    function assertTransformSchema(callback) {
-        var transforms = plotSchema.transforms;
-
-        Object.keys(transforms).forEach(function(transformName) {
-            Plotly.PlotSchema.crawl(transforms[transformName].attributes, callback, 0, transformName);
-        });
-    }
-
     function assertLayoutSchema(callback) {
         Plotly.PlotSchema.crawl(plotSchema.layout.layoutAttributes, callback, 0, 'layout');
 
@@ -60,7 +52,6 @@ describe('plot schema', function() {
     function assertPlotSchema(callback) {
         assertTraceSchema(callback);
         assertLayoutSchema(callback);
-        assertTransformSchema(callback);
     }
 
     it('all attributes should have a valid `valType`', function() {
@@ -271,47 +262,12 @@ describe('plot schema', function() {
             }
         });
 
-        assertTransformSchema(function(attr, attrName, attrs, level, attrString) {
-            if(shouldHaveEditType(attr, attrName)) {
-                expect(Lib.validate(attr.editType, editType.traces))
-                    .toBe(true, attrString + ': ' + JSON.stringify(attr.editType));
-            }
-        });
-
         assertLayoutSchema(function(attr, attrName, attrs, level, attrString) {
             if(shouldHaveEditType(attr, attrName)) {
                 expect(Lib.validate(attr.editType, editType.layout))
                     .toBe(true, attrString + ': ' + JSON.stringify(attr.editType));
             }
         });
-    });
-
-    it('should work with registered transforms', function() {
-        var valObjects = plotSchema.transforms.filter.attributes;
-        var attrNames = Object.keys(valObjects);
-
-        ['operation', 'value', 'target'].forEach(function(k) {
-            expect(attrNames).toContain(k);
-        });
-    });
-
-    it('should work with registered transforms (2)', function() {
-        var valObjects = plotSchema.transforms.groupby.attributes;
-        var items = valObjects.styles.items || {};
-
-        expect(Object.keys(items)).toEqual(['style']);
-    });
-
-    it('should work with registered components', function() {
-        expect(plotSchema.traces.scatter.attributes.xcalendar.valType).toEqual('enumerated');
-        expect(plotSchema.traces.scatter3d.attributes.zcalendar.valType).toEqual('enumerated');
-
-        expect(plotSchema.layout.layoutAttributes.calendar.valType).toEqual('enumerated');
-        expect(plotSchema.layout.layoutAttributes.xaxis.calendar.valType).toEqual('enumerated');
-        expect(plotSchema.layout.layoutAttributes.scene.xaxis.calendar.valType).toEqual('enumerated');
-
-        expect(plotSchema.transforms.filter.attributes.valuecalendar.valType).toEqual('enumerated');
-        expect(plotSchema.transforms.filter.attributes.targetcalendar.valType).toEqual('enumerated');
     });
 
     it('should list correct defs', function() {
@@ -438,34 +394,6 @@ describe('getTraceValObject', function() {
             .toBe(surface.attributes.xcalendar);
         expect(getTraceValObject({_module: surface}, ['zcalendar']))
             .toBe(surface.attributes.zcalendar);
-    });
-
-    it('supports transform attributes', function() {
-        var mockTrace = {transforms: [
-            {type: 'filter'},
-            {type: 'groupby'}
-        ]};
-
-        var filterAttrs = require('../../../lib/filter').attributes;
-        expect(getTraceValObject(mockTrace, ['transforms', 0, 'operation']))
-            .toBe(filterAttrs.operation);
-        // check a component-provided attr
-        expect(getTraceValObject(mockTrace, ['transforms', 0, 'valuecalendar']))
-            .toBe(filterAttrs.valuecalendar);
-
-        expect(getTraceValObject(mockTrace, ['transforms', 1, 'styles', 13, 'value', 'line', 'color']))
-            .toBe(require('../../../lib/groupby').attributes.styles.value);
-
-        [
-            ['transforms', 0],
-            ['transforms', 0, 'nameformat'],
-            ['transforms', 2, 'enabled'],
-            ['transforms', '0', 'operation']
-        ].forEach(function(attrArray) {
-            expect(getTraceValObject(mockTrace, attrArray)).toBe(false, attrArray);
-        });
-
-        expect(getTraceValObject({}, ['transforms', 0, 'operation'])).toBe(false);
     });
 
     it('does not return attribute properties', function() {

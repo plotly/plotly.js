@@ -270,51 +270,6 @@ exports.cleanData = function(data) {
             }
         }
 
-        // transforms backward compatibility fixes
-        if(Array.isArray(trace.transforms)) {
-            var transforms = trace.transforms;
-
-            for(i = 0; i < transforms.length; i++) {
-                var transform = transforms[i];
-
-                if(!Lib.isPlainObject(transform)) continue;
-
-                switch(transform.type) {
-                    case 'filter':
-                        if(transform.filtersrc) {
-                            transform.target = transform.filtersrc;
-                            delete transform.filtersrc;
-                        }
-
-                        if(transform.calendar) {
-                            if(!transform.valuecalendar) {
-                                transform.valuecalendar = transform.calendar;
-                            }
-                            delete transform.calendar;
-                        }
-                        break;
-
-                    case 'groupby':
-                        // Name has changed from `style` to `styles`, so use `style` but prefer `styles`:
-                        transform.styles = transform.styles || transform.style;
-
-                        if(transform.styles && !Array.isArray(transform.styles)) {
-                            var prevStyles = transform.styles;
-                            var styleKeys = Object.keys(prevStyles);
-
-                            transform.styles = [];
-                            for(var j = 0; j < styleKeys.length; j++) {
-                                transform.styles.push({
-                                    target: styleKeys[j],
-                                    value: prevStyles[styleKeys[j]]
-                                });
-                            }
-                        }
-                        break;
-                }
-            }
-        }
-
         // prune empty containers made before the new nestedProperty
         if(emptyContainer(trace, 'line')) delete trace.line;
         if('marker' in trace) {

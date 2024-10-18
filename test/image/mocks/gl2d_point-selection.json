@@ -27,15 +27,7 @@
      "color": "green",
      "opacity": 0.5
     }
-   },
-   "transforms": [
-    {
-     "type": "filter",
-     "target": "x",
-     "operation": "][",
-     "value": [3.5, 4.5]
-    }
-   ]
+   }
   },
   {
    "type": "scattergl",
@@ -60,15 +52,7 @@
      "color": "blue",
      "opacity": 0.5
     }
-   },
-   "transforms": [
-    {
-     "type": "filter",
-     "target": "x",
-     "operation": "][",
-     "value": [3.5, 4.5]
-    }
-   ]
+   }
   }
  ],
  "layout": {

@@ -80,12 +80,6 @@ function assert(name, v) {
 
 function notBlackListed(name) {
     return [
-        // has transforms See https://github.com/plotly/plotly.js/issues/4759
-        'gl2d_transforms',
-        'polar_transforms',
-        'smith_transforms',
-        'transforms',
-
         // has contourcarpet See https://github.com/plotly/plotly.js/issues/5669
         'airfoil',
         'h-colorbar_airfoil',

@@ -185,28 +185,6 @@ describe('Test gl2d lasso/select:', function() {
         .then(done, done.fail);
     });
 
-    it('@gl should work on trace with enabled transforms', function(done) {
-        var fig = Lib.extendDeep({}, require('../../image/mocks/gl2d_transforms.json'));
-        fig.layout.dragmode = 'select';
-        fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
-        fig.layout.height = 500;
-        fig.layout.width = 500;
-        gd = createGraphDiv();
-
-        _newPlot(gd, fig)
-        .then(delay(20))
-        .then(function() { return select(gd, [[100, 100], [250, 250]]); })
-        .then(function(eventData) {
-            assertEventData(eventData, {
-                points: [
-                    { x: 3, y: 4 },
-                    { x: 2, y: 4 }
-                ]
-            });
-        })
-        .then(done, done.fail);
-    });
-
     it('@gl should work on gl text charts', function(done) {
         var fig = Lib.extendDeep({}, require('../../image/mocks/gl2d_text_chart_basic.json'));
         fig.layout.dragmode = 'select';
