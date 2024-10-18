@@ -6,7 +6,7 @@ var Calendars = require('../../../lib/calendars');
 
 var checkComponent = require('../assets/check_component');
 
-describe('Bundle with a component loaded before traces and transforms', function() {
+describe('Bundle with a component loaded before traces', function() {
     'use strict';
 
     Plotly.register([Calendars, Filter, Scatter3d, Bar]);
