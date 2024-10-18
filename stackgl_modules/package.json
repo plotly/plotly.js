@@ -46,7 +46,7 @@
     "zero-crossings": "plotly/zero-crossings#v1.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
+    "@babel/core": "^7.25.8",
     "@babel/plugin-transform-modules-commonjs": "7.24.1",
     "@babel/preset-env": "7.24.1",
     "babel-loader": "9.1.3",
