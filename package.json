@@ -78,7 +78,7 @@
     "base64-arraybuffer": "^1.0.2",
     "canvas-fit": "^1.5.0",
     "color-alpha": "1.0.4",
-    "color-normalize": "1.5.0",
+    "color-normalize": "2.0.0",
     "color-parse": "2.0.0",
     "color-rgba": "2.1.1",
     "country-regex": "^1.1.0",
