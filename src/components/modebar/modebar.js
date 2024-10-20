@@ -54,8 +54,12 @@ proto.update = function(graphInfo, buttons) {
     }
 
     var style = fullLayout.modebar;
-    var bgSelector = context.displayModeBar === 'hover' ? '.js-plotly-plot .plotly:hover ' : '';
 
+    // set style for modebar-group directly instead of inline CSS that's not allowed by strict CSP's
+    var groupSelector = '#' + modeBarId + ' .modebar-group';
+    document.querySelectorAll(groupSelector).forEach(function(group) {
+        group.style.backgroundColor = style.bgcolor;
+    });
     // set styles on hover using event listeners instead of inline CSS that's not allowed by strict CSP's
     Lib.setStyleOnHover('#' + modeBarId + ' .modebar-btn', '.active', '.icon path', 'fill: ' + style.activecolor, 'fill: ' + style.color);
 
