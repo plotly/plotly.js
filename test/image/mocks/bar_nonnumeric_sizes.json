@@ -1,19 +1,9 @@
 {
-  "data": [
-    {
-      "x": [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
-      "y": [
-        1,
-        null,
-        "nonsense",
-        15
-      ],
-      "type": "bar"
-    }
-  ]
+ "data": [
+  {
+   "x": ["a", "b", "c", "d"],
+   "y": [1, null, "nonsense", 15],
+   "type": "bar"
+  }
+ ]
 }

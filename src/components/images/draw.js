@@ -73,7 +73,7 @@ module.exports = function draw(gd) {
 
         thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
-        if(d.source && d.source.slice(0, 5) === 'data:') {
+        if(!gd._context.staticPlot || (d.source && d.source.slice(0, 5) === 'data:')) {
             thisImage.attr('xlink:href', d.source);
             this._imgSrc = d.source;
         } else {
@@ -229,7 +229,6 @@ module.exports = function draw(gd) {
         var subplotObj = fullLayout._plots[subplot];
 
         // filter out overlaid plots (which have their images on the main plot)
-        // and gl2d plots (which don't support below images, at least not yet)
         if(!subplotObj.imagelayer) continue;
 
         var imagesOnSubplot = subplotObj.imagelayer.selectAll('image')

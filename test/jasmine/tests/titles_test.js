@@ -52,17 +52,8 @@ describe('Plot title', function() {
         .then(done, done.fail);
     });
 
-    it('can still be defined as `layout.title` to ensure backwards-compatibility', function(done) {
-        Plotly.newPlot(gd, data, {title: 'Plotly line chart'})
-        .then(function() {
-            expectTitle('Plotly line chart');
-            expectDefaultCenteredPosition(gd);
-        })
-        .then(done, done.fail);
-    });
-
     it('can be updated via `relayout`', function(done) {
-        Plotly.newPlot(gd, data, {title: 'Plotly line chart'})
+        Plotly.newPlot(gd, data, { title: { text: 'Plotly line chart' } })
           .then(expectTitleFn('Plotly line chart'))
           .then(function() {
               return Plotly.relayout(gd, {title: {text: 'Some other title'}});
@@ -628,23 +619,6 @@ describe('Titles can be updated', function() {
                 'xaxis.title.text': NEW_XTITLE,
                 'yaxis.title.text': NEW_YTITLE
             }
-        },
-        {
-            desc: 'despite passing title only as a string (backwards-compatibility)',
-            update: {
-                title: NEW_TITLE,
-                xaxis: {title: NEW_XTITLE},
-                yaxis: {title: NEW_YTITLE}
-            }
-        },
-        {
-            desc: 'despite passing title only as a string using string attributes ' +
-            '(backwards-compatibility)',
-            update: {
-                title: NEW_TITLE,
-                'xaxis.title': NEW_XTITLE,
-                'yaxis.title': NEW_YTITLE
-            }
         }
     ].forEach(function(testCase) {
         it('via `Plotly.relayout` ' + testCase.desc, function(done) {
@@ -789,47 +763,6 @@ describe('Titles support setting custom font properties', function() {
         })
         .then(done, done.fail);
     });
-
-    it('through using the deprecated `titlefont` properties (backwards-compatibility)', function(done) {
-        var layout = {
-            title: {
-                text: 'Plotly line chart',
-            },
-            titlefont: {
-                color: 'blue',
-                family: 'serif',
-                size: 24
-            },
-            xaxis: {
-                title: {
-                    text: 'X-Axis',
-                },
-                titlefont: {
-                    color: '#333',
-                    family: 'sans-serif',
-                    size: 20
-                }
-            },
-            yaxis: {
-                title: {
-                    text: 'Y-Axis',
-                },
-                titlefont: {
-                    color: '#666',
-                    family: 'Arial',
-                    size: 16
-                }
-            }
-        };
-
-        Plotly.newPlot(gd, data, layout)
-        .then(function() {
-            expectTitleFont('blue', 'serif', 24);
-            expectXAxisTitleFont('#333', 'sans-serif', 20);
-            expectYAxisTitleFont('#666', 'Arial', 16);
-        })
-        .then(done, done.fail);
-    });
 });
 
 describe('Title fonts can be updated', function() {
@@ -911,44 +844,6 @@ describe('Title fonts can be updated', function() {
                 'yaxis.title.font.size': NEW_YTITLE_FONT.size
             }
         },
-        {
-            desc: 'despite passing deprecated `titlefont` properties (backwards-compatibility)',
-            update: {
-                titlefont: NEW_TITLE_FONT,
-                xaxis: {
-                    title: NEW_XTITLE,
-                    titlefont: NEW_XTITLE_FONT
-                },
-                yaxis: {
-                    title: NEW_YTITLE,
-                    titlefont: NEW_YTITLE_FONT
-                }
-            }
-        },
-        {
-            desc: 'despite using string attributes representing the deprecated structure ' +
-            '(backwards-compatibility)',
-            update: {
-                'titlefont.color': NEW_TITLE_FONT.color,
-                'titlefont.family': NEW_TITLE_FONT.family,
-                'titlefont.size': NEW_TITLE_FONT.size,
-                'xaxis.titlefont.color': NEW_XTITLE_FONT.color,
-                'xaxis.titlefont.family': NEW_XTITLE_FONT.family,
-                'xaxis.titlefont.size': NEW_XTITLE_FONT.size,
-                'yaxis.titlefont.color': NEW_YTITLE_FONT.color,
-                'yaxis.titlefont.family': NEW_YTITLE_FONT.family,
-                'yaxis.titlefont.size': NEW_YTITLE_FONT.size
-            }
-        },
-        {
-            desc: 'despite using string attributes replacing deprecated `titlefont` attributes ' +
-            '(backwards-compatibility)',
-            update: {
-                titlefont: NEW_TITLE_FONT,
-                'xaxis.titlefont': NEW_XTITLE_FONT,
-                'yaxis.titlefont': NEW_YTITLE_FONT
-            }
-        }
     ].forEach(function(testCase) {
         it('via `Plotly.relayout` ' + testCase.desc, function(done) {
             Plotly.relayout(gd, testCase.update)
@@ -972,98 +867,6 @@ describe('Title fonts can be updated', function() {
         expectXAxisTitleFont(NEW_XTITLE_FONT.color, NEW_XTITLE_FONT.family, NEW_XTITLE_FONT.size);
         expectYAxisTitleFont(NEW_YTITLE_FONT.color, NEW_YTITLE_FONT.family, NEW_YTITLE_FONT.size);
     }
-});
-
-describe('Titles for multiple axes', function() {
-    'use strict';
-
-    var data = [
-      {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x', yaxis: 'y'},
-      {x: [1, 2, 3], y: [3, 2, 1], xaxis: 'x2', yaxis: 'y2'}
-    ];
-    var multiAxesLayout = {
-        xaxis: {
-            title: 'X-Axis 1',
-            titlefont: {
-                size: 30
-            }
-        },
-        xaxis2: {
-            title: 'X-Axis 2',
-            titlefont: {
-                family: 'serif'
-            },
-            side: 'top'
-        },
-        yaxis: {
-            title: 'Y-Axis 1',
-            titlefont: {
-                family: 'Roboto'
-            },
-        },
-        yaxis2: {
-            title: 'Y-Axis 2',
-            titlefont: {
-                color: 'blue'
-            },
-            side: 'right'
-        }
-    };
-    var gd;
-
-    beforeEach(function() {
-        gd = createGraphDiv();
-    });
-
-    afterEach(destroyGraphDiv);
-
-    it('still support deprecated `title` and `titlefont` syntax (backwards-compatibility)', function(done) {
-        Plotly.newPlot(gd, data, multiAxesLayout)
-        .then(function() {
-            expect(xTitleSel(1).text()).toBe('X-Axis 1');
-            expect(xTitleSel(1).node().style.fontSize).toBe('30px');
-
-            expect(xTitleSel(2).text()).toBe('X-Axis 2');
-            expect(xTitleSel(2).node().style.fontFamily).toBe('serif');
-
-            expect(yTitleSel(1).text()).toBe('Y-Axis 1');
-            expect(yTitleSel(1).node().style.fontFamily).toBe('Roboto');
-
-            expect(yTitleSel(2).text()).toBe('Y-Axis 2');
-            expect(yTitleSel(2).node().style.fill).toBe(rgb('blue'));
-        })
-        .then(done, done.fail);
-    });
-
-    it('can be updated using deprecated `title` and `titlefont` syntax (backwards-compatibility)', function(done) {
-        Plotly.newPlot(gd, data, multiAxesLayout)
-        .then(function() {
-            return Plotly.relayout(gd, {
-                'xaxis2.title': '2nd X-Axis',
-                'xaxis2.titlefont.color': 'pink',
-                'xaxis2.titlefont.family': 'sans-serif',
-                'xaxis2.titlefont.size': '14',
-                'yaxis2.title': '2nd Y-Axis',
-                'yaxis2.titlefont.color': 'yellow',
-                'yaxis2.titlefont.family': 'monospace',
-                'yaxis2.titlefont.size': '5'
-            });
-        })
-        .then(function() {
-            var x2Style = xTitleSel(2).node().style;
-            expect(xTitleSel(2).text()).toBe('2nd X-Axis');
-            expect(x2Style.fill).toBe(rgb('pink'));
-            expect(x2Style.fontFamily).toBe('sans-serif');
-            expect(x2Style.fontSize).toBe('14px');
-
-            var y2Style = yTitleSel(2).node().style;
-            expect(yTitleSel(2).text()).toBe('2nd Y-Axis');
-            expect(y2Style.fill).toBe(rgb('yellow'));
-            expect(y2Style.fontFamily).toBe('monospace');
-            expect(y2Style.fontSize).toBe('5px');
-        })
-        .then(done, done.fail);
-    });
 });
 
 // TODO: Add in tests for interactions with other automargined elements

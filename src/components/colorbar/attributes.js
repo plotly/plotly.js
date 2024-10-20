@@ -212,19 +212,10 @@ module.exports = overrideAll({
     title: {
         text: {
             valType: 'string',
-            description: [
-                'Sets the title of the color bar.',
-                'Note that before the existence of `title.text`, the title\'s',
-                'contents used to be defined as the `title` attribute itself.',
-                'This behavior has been deprecated.'
-            ].join(' ')
+            description: 'Sets the title of the color bar.'
         },
         font: fontAttrs({
-            description: [
-                'Sets this color bar\'s title font.',
-                'Note that the title\'s font used to be set',
-                'by the now deprecated `titlefont` attribute.'
-            ].join(' ')
+            description: 'Sets this color bar\'s title font.'
         }),
         side: {
             valType: 'enumerated',
@@ -234,29 +225,7 @@ module.exports = overrideAll({
                 'with respect to the color bar.',
                 'Defaults to *top* when `orientation` if *v* and ',
                 'defaults to *right* when `orientation` if *h*.',
-                'Note that the title\'s location used to be set',
-                'by the now deprecated `titleside` attribute.'
             ].join(' ')
         }
     },
-
-    _deprecated: {
-        title: {
-            valType: 'string',
-            description: [
-                'Deprecated in favor of color bar\'s `title.text`.',
-                'Note that value of color bar\'s `title` is no longer a simple',
-                '*string* but a set of sub-attributes.'
-            ].join(' ')
-        },
-        titlefont: fontAttrs({
-            description: 'Deprecated in favor of color bar\'s `title.font`.'
-        }),
-        titleside: {
-            valType: 'enumerated',
-            values: ['right', 'top', 'bottom'],
-            dflt: 'top',
-            description: 'Deprecated in favor of color bar\'s `title.side`.'
-        }
-    }
 }, 'colorbars', 'from-root');

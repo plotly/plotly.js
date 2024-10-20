@@ -39,9 +39,12 @@ jobs:
       - image: cimg/node:18.20.4-browsers
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -72,12 +75,15 @@ jobs:
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
-    parallelism: 12
+    parallelism: 4
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -94,9 +100,12 @@ jobs:
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -113,14 +122,37 @@ jobs:
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
           name: Run jasmine tests (part B)
           command: .circleci/test.sh virtual-webgl-jasmine
+
+  webgl-jasmine-chromeLatest:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: cimg/node:18.20.4-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    parallelism: 8
+    working_directory: ~/plotly.js
+    steps:
+      - browser-tools/install-browser-tools: &browser-versions
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run jasmine tests (part B)
+          command: .circleci/test.sh webgl-jasmine
 
   flaky-no-gl-jasmine:
     docker:
@@ -131,9 +163,12 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -149,9 +184,12 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "127.0.6533.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -167,7 +205,7 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - browser-tools/install-browser-tools:
           install-chrome: false
           install-chromedriver: false
       - attach_workspace:
@@ -426,12 +464,6 @@ jobs:
       - run:
           name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
           command: diff --unified --color dist/plot-schema.json test/plot-schema.json
-      - run:
-          name: Test plotly.min.js import using amdefine
-          command: npm run test-amdefine
-      - run:
-          name: Test plotly.min.js import using requirejs
-          command: npm run test-requirejs
 
   test-stackgl-bundle:
     docker:
@@ -473,6 +505,9 @@ workflows:
           requires:
             - install-and-cibuild
       - virtual-webgl-jasmine:
+          requires:
+            - install-and-cibuild
+      - webgl-jasmine-chromeLatest:
           requires:
             - install-and-cibuild
       - flaky-no-gl-jasmine:

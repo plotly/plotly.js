@@ -87,9 +87,7 @@ var partialBundleTraces = {
         'scattergeo'
     ],
     gl2d: [
-        'heatmapgl',
         'parcoords',
-        'pointcloud',
         'scatter',
         'scattergl',
         'splom'
@@ -125,7 +123,6 @@ var partialBundleTraces = {
         'funnel',
         'funnelarea',
         'heatmap',
-        'heatmapgl',
         'histogram',
         'histogram2d',
         'histogram2dcontour',
@@ -138,7 +135,6 @@ var partialBundleTraces = {
         'parcats',
         'parcoords',
         'pie',
-        'pointcloud',
         'sankey',
         'scatter',
         'scattergl',

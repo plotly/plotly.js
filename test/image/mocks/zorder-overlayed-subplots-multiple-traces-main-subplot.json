@@ -1,0 +1,59 @@
+{
+ "data": [
+  {
+   "line": {
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [1, 2, 3, 4],
+   "zorder": 1
+  },
+  {
+   "line": {
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [2, 3, 4, 1],
+   "zorder": 2
+  },
+  {
+   "line": {
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [3, 4, 1, 2],
+   "xaxis": "x2",
+   "zorder": 3
+  },
+  {
+   "line": {
+    "width": 15
+   },
+   "mode": "lines",
+   "x": ["A", "B", "C", "D"],
+   "y": [4, 1, 2, 3],
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "zorder": 4
+  }
+ ],
+ "layout": {
+  "showlegend": true,
+  "title": {
+   "text": "zorder overlayed subplots - multiple on the same subplot"
+  },
+  "width": 600,
+  "height": 400,
+  "xaxis2": {
+   "overlaying": "x",
+   "side": "top"
+  },
+  "yaxis2": {
+   "overlaying": "y",
+   "side": "right"
+  }
+ }
+}

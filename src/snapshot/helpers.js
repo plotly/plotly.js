@@ -7,7 +7,6 @@ exports.getDelay = function(fullLayout) {
 
     return (
         fullLayout._has('gl3d') ||
-        fullLayout._has('gl2d') ||
         fullLayout._has('mapbox') ||
         fullLayout._has('map')
     ) ? 500 : 0;

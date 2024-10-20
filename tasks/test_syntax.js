@@ -2,7 +2,7 @@ var path = require('path');
 var fs = require('fs');
 
 var falafel = require('falafel');
-var glob = require('glob');
+var { glob } = require('glob');
 var madge = require('madge');
 var readLastLines = require('read-last-lines');
 var trueCasePath = require('true-case-path').trueCasePathSync;
@@ -37,7 +37,7 @@ function assertJasmineSuites() {
 
     var addTagPrefix = function(t) { return '@' + t; };
 
-    glob(combineGlobs([testGlob, bundleTestGlob]), function(err, files) {
+    glob(combineGlobs([testGlob, bundleTestGlob])).then((files) => {
         files.forEach(function(file) {
             var code = fs.readFileSync(file, 'utf-8');
             var bn = path.basename(file);
@@ -112,7 +112,7 @@ function assertSrcContents() {
 
     var getComputedStyleCnt = 0;
 
-    glob(combineGlobs([srcGlob, libGlob]), function(err, files) {
+    glob(combineGlobs([srcGlob, libGlob])).then((files) => {
         files.forEach(function(file) {
             var code = fs.readFileSync(file, 'utf-8');
 
@@ -218,7 +218,7 @@ function assertFileNames() {
 
     var logs = [];
 
-    glob(pattern, function(err, files) {
+    glob(pattern).then((files) => {
         files.forEach(function(file) {
             var base = path.basename(file);
 
@@ -257,7 +257,7 @@ function assertTrailingNewLine() {
     var promises = [];
     var logs = [];
 
-    glob(pattern, function(err, files) {
+    glob(pattern).then((files) => {
         files.forEach(function(file) {
             var promise = readLastLines.read(file, 1);
 
