@@ -1088,11 +1088,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
         fullTrace.index = i;
         fullTrace._input = trace;
-        fullTrace._expandedIndex = cnt;
-
-        // add identify refs for consistency with transformed traces
         fullTrace._fullInput = fullTrace;
-        fullTrace._expandedInput = fullTrace;
 
         pushModule(fullTrace);
 

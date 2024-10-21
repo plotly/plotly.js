@@ -131,17 +131,11 @@ describe('Test Plots', function() {
             expect(gd._fullData[0].index).toEqual(0);
             expect(gd._fullData[1].index).toEqual(1);
 
-            expect(gd._fullData[0]._expandedIndex).toEqual(0);
-            expect(gd._fullData[1]._expandedIndex).toEqual(1);
-
             expect(gd._fullData[0]._input).toBe(trace0);
             expect(gd._fullData[1]._input).toBe(trace1);
 
             expect(gd._fullData[0]._fullInput).toBe(gd._fullData[0]);
             expect(gd._fullData[1]._fullInput).toBe(gd._fullData[1]);
-
-            expect(gd._fullData[0]._expandedInput).toBe(gd._fullData[0]);
-            expect(gd._fullData[1]._expandedInput).toBe(gd._fullData[1]);
         });
 
         function testSanitizeMarginsHasBeenCalledOnlyOnce(gd) {

@@ -484,7 +484,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         event: evt,
         node: legendItem.node(),
         curveNumber: trace.index,
-        expandedIndex: trace._expandedIndex,
+        expandedIndex: trace.index,
         data: gd.data,
         layout: gd.layout,
         frames: gd._transitionData._frames,
