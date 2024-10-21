@@ -62,10 +62,6 @@ var ternaryAxesAttrs = {
             'all the minima set to zero.'
         ].join(' ')
     },
-    _deprecated: {
-        title: axesAttrs._deprecated.title,
-        titlefont: axesAttrs._deprecated.titlefont
-    }
 };
 
 var attrs = module.exports = overrideAll({

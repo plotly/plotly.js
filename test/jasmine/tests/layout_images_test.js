@@ -319,9 +319,8 @@ describe('Layout images', function() {
         var gd;
         var data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
 
-        beforeEach(function(done) {
-            gd = createGraphDiv();
-            Plotly.newPlot(gd, data, {
+        var layoutFn = function() {
+            return {
                 images: [{
                     source: jsLogo,
                     x: 2,
@@ -331,12 +330,17 @@ describe('Layout images', function() {
                 }],
                 width: 500,
                 height: 400
-            }).then(done);
+            };
+        }
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.newPlot(gd, data, layoutFn()).then(done);
         });
 
         afterEach(destroyGraphDiv);
 
-        it('should only create canvas if url image', function(done) {
+        it('should only create canvas if url image and staticPlot', function(done) {
             var originalCreateElement = document.createElement;
             var newCanvasElement;
             spyOn(document, 'createElement').and.callFake(function(elementType) {
@@ -350,7 +354,21 @@ describe('Layout images', function() {
 
             Plotly.relayout(gd, 'images[0].source', dataUriImage)
             .then(function() {
-                expect(newCanvasElement).toBeUndefined();
+                expect(newCanvasElement).withContext('non-static data uri').toBeUndefined();
+
+                return Plotly.relayout(gd, 'images[0].source', jsLogo);
+            })
+            .then(function() {
+                expect(newCanvasElement).withContext('non-static url').toBeUndefined();
+
+                return Plotly.newPlot(gd, data, layoutFn(), {staticPlot: true});
+            })
+            .then(function() {
+                newCanvasElement = undefined;
+                return Plotly.relayout(gd, 'images[0].source', dataUriImage);
+            })
+            .then(function() {
+                expect(newCanvasElement).withContext('static data uri').toBeUndefined();
 
                 return Plotly.relayout(gd, 'images[0].source', jsLogo);
             })
@@ -392,11 +410,21 @@ describe('Layout images', function() {
             .then(done, done.fail);
         });
 
-        it('should remove the image tag if an invalid source', function(done) {
+        it('should remove the image tag if an invalid source and staticPlot', function(done) {
             var selection = d3Select('image');
             expect(selection.size()).toBe(1);
 
             Plotly.relayout(gd, 'images[0].source', 'invalidUrl')
+            .then(function() {
+                var newSelection = d3Select('image');
+                expect(newSelection.size()).toBe(1);
+            })
+            .then(function() {
+                return Plotly.newPlot(gd, data, layoutFn(), {staticPlot: true});
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'images[0].source', 'invalidUrl');
+            })
             .then(function() {
                 var newSelection = d3Select('image');
                 expect(newSelection.size()).toBe(0);

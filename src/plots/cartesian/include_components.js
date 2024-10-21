@@ -26,7 +26,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
         var xaList = subplots.xaxis;
         var yaList = subplots.yaxis;
         var cartesianList = subplots.cartesian;
-        var hasCartesianOrGL2D = layoutOut._has('cartesian') || layoutOut._has('gl2d');
+        var hasCartesian = layoutOut._has('cartesian');
 
         for(var i = 0; i < array.length; i++) {
             var itemi = array[i];
@@ -40,7 +40,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
             var hasXref = idRegex.x.test(xref);
             var hasYref = idRegex.y.test(yref);
             if(hasXref || hasYref) {
-                if(!hasCartesianOrGL2D) Lib.pushUnique(layoutOut._basePlotModules, Cartesian);
+                if(!hasCartesian) Lib.pushUnique(layoutOut._basePlotModules, Cartesian);
 
                 var newAxis = false;
                 if(hasXref && xaList.indexOf(xref) === -1) {

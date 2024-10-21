@@ -1512,7 +1512,7 @@
    },
    "yaxis": {
     "showticklabels": false,
-    "autotick": true,
+    "tickmode": "linear",
     "rangemode": "normal",
     "autorange": true,
     "nticks": 0,
@@ -1540,18 +1540,27 @@
     "range": [1, 2],
     "gridcolor": "rgb(255, 255, 255)"
    },
-   "cameraposition": [
-    [
-     -0.8326258918343652, -0.31013201281074904, -0.14770225080852764,
-     0.4344379172943774
-    ],
-    [-0.09586835824120499, -0.07248137902934104, 0.013764797418843955],
-    1.9263438581634802
-   ],
+   "camera": {
+    "eye": {
+     "x": 0.8970225259545955,
+     "y": -1.289611163151606,
+     "z": -1.101386959324396
+    },
+    "center": {
+     "x": -0.09586835824120499,
+     "y": -0.07248137902934104,
+     "z": 0.013764797418843955
+    },
+    "up": {
+     "x": 0,
+     "y": 0,
+     "z":1
+    }
+   },
    "bgcolor": "rgb(67, 67, 67)",
    "zaxis": {
     "showticklabels": false,
-    "autotick": true,
+    "tickmode": "linear",
     "rangemode": "normal",
     "autorange": true,
     "nticks": 0,
@@ -1581,7 +1590,7 @@
    },
    "xaxis": {
     "showticklabels": false,
-    "autotick": true,
+    "tickmode": "linear",
     "rangemode": "normal",
     "autorange": true,
     "nticks": 0,

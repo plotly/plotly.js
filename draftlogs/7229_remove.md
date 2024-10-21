@@ -1,0 +1,1 @@
+ - Drop AMD support from bundle header [[#7229](https://github.com/plotly/plotly.js/pull/7229)]

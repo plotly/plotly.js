@@ -350,9 +350,7 @@ var configAttributes = {
         min: 1,
         max: 4,
         description: [
-            'Set the pixel ratio during WebGL image export.',
-            'This config option was formerly named `plot3dPixelRatio`',
-            'which is now deprecated.'
+            'Set the pixel ratio during WebGL image export.'
         ].join(' ')
     },
 
