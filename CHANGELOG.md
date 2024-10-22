@@ -9,6 +9,13 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.35.2] -- 2024-09-10
+
+### Fixed
+- Fix require path to maplibre-gl.css (regression introduced in 2.35.1) [[#7146](https://github.com/plotly/plotly.js/pull/7146)],
+  with thanks to @birkskyum for the contribution!
+
+
 ## [2.35.1] -- 2024-09-09
 
 ### Fixed

@@ -578,33 +578,6 @@ describe('getLayoutValObject', function() {
         expect(getLayoutValObject(layout3D, ['scene1', 'bgcolor'])).toBe(false);
         expect(getLayoutValObject(layout3D, ['scene2k', 'bgcolor'])).toBe(false);
     });
-
-    it('lets gl2d override cartesian & global attrs', function() {
-        var svgModule = Registry.subplotsRegistry.cartesian;
-        var gl2dModule = Registry.subplotsRegistry.gl2d;
-        var layoutSVG = {_basePlotModules: [svgModule]};
-        var layoutGL2D = {_basePlotModules: [gl2dModule]};
-        var combinedLayout1 = {_basePlotModules: [svgModule, gl2dModule]};
-        var combinedLayout2 = {_basePlotModules: [gl2dModule, svgModule]};
-
-        var bgParts = ['plot_bgcolor'];
-        var baseBG = baseLayoutAttrs.plot_bgcolor;
-        var gl2dBG = gl2dModule.baseLayoutAttrOverrides.plot_bgcolor;
-        expect(getLayoutValObject(blankLayout, bgParts)).toBe(baseBG);
-        expect(getLayoutValObject(layoutSVG, bgParts)).toBe(baseBG);
-        expect(getLayoutValObject(layoutGL2D, bgParts)).toBe(gl2dBG);
-        expect(getLayoutValObject(combinedLayout1, bgParts)).toBe(gl2dBG);
-        expect(getLayoutValObject(combinedLayout2, bgParts)).toBe(gl2dBG);
-
-        var ticklenParts = ['xaxis4', 'ticklen'];
-        var svgTicklen = svgModule.layoutAttributes.ticklen;
-        var gl2dTicklen = gl2dModule.layoutAttrOverrides.ticklen;
-        expect(getLayoutValObject(blankLayout, ticklenParts)).toBe(false);
-        expect(getLayoutValObject(layoutSVG, ticklenParts)).toBe(svgTicklen);
-        expect(getLayoutValObject(layoutGL2D, ticklenParts)).toBe(gl2dTicklen);
-        expect(getLayoutValObject(combinedLayout1, ticklenParts)).toBe(gl2dTicklen);
-        expect(getLayoutValObject(combinedLayout2, ticklenParts)).toBe(gl2dTicklen);
-    });
 });
 
 describe('component schemas', function() {

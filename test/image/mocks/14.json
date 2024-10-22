@@ -54,7 +54,7 @@
    "showgrid": true,
    "zeroline": true,
    "showline": false,
-   "autotick": true,
+   "tickmode": "auto",
    "nticks": 40,
    "ticks": "",
    "showticklabels": true,
@@ -95,7 +95,7 @@
    "showgrid": true,
    "zeroline": true,
    "showline": false,
-   "autotick": true,
+   "tickmode": "auto",
    "nticks": 6,
    "ticks": "",
    "showticklabels": true,
@@ -167,7 +167,8 @@
     "xatype": "log",
     "yatype": "log",
     "tag": "",
-    "ref": "plot"
+    "xref": "plot",
+    "yref": "plot"
    },
    {
     "x": 0.15585471975544452,
@@ -198,7 +199,8 @@
     "xatype": "log",
     "yatype": "log",
     "tag": "",
-    "ref": "plot"
+    "xref": "plot",
+    "yref": "plot"
    },
    {
     "x": 1.8420351138192386,
@@ -229,7 +231,8 @@
     "xatype": "log",
     "yatype": "log",
     "tag": "",
-    "ref": "plot"
+    "xref": "plot",
+    "yref": "plot"
    },
    {
     "x": -0.5537301200821234,
@@ -260,7 +263,8 @@
     "xatype": "log",
     "yatype": "log",
     "tag": "",
-    "ref": "plot"
+    "xref": "plot",
+    "yref": "plot"
    },
    {
     "x": -2.701204903100102,
@@ -291,7 +295,8 @@
     "xatype": "log",
     "yatype": "log",
     "tag": "",
-    "ref": "plot"
+    "xref": "plot",
+    "yref": "plot"
    },
    {
     "x": -1.6961577824283882,
@@ -322,7 +327,8 @@
     "xatype": "log",
     "yatype": "log",
     "tag": "",
-    "ref": "plot"
+    "xref": "plot",
+    "yref": "plot"
    }
   ],
   "margin": {

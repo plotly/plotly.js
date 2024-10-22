@@ -75,7 +75,7 @@ jobs:
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
-    parallelism: 12
+    parallelism: 4
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
@@ -464,12 +464,6 @@ jobs:
       - run:
           name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
           command: diff --unified --color dist/plot-schema.json test/plot-schema.json
-      - run:
-          name: Test plotly.min.js import using amdefine
-          command: npm run test-amdefine
-      - run:
-          name: Test plotly.min.js import using requirejs
-          command: npm run test-requirejs
 
   test-stackgl-bundle:
     docker:

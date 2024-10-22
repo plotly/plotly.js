@@ -4,6 +4,7 @@
    "a": [2, 1, 1],
    "b": [1, 2, 1],
    "c": [1, 1, 2.12345],
+   "ids": ["first ID", "second ID", "third ID"],
    "type": "scatterternary"
   }
  ],

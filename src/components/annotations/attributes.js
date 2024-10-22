@@ -487,14 +487,4 @@ module.exports = templatedArray('annotation', {
         ].join(' ')
     },
     editType: 'calc',
-
-    _deprecated: {
-        ref: {
-            valType: 'string',
-            editType: 'calc',
-            description: [
-                'Obsolete. Set `xref` and `yref` separately instead.'
-            ].join(' ')
-        }
-    }
 });

@@ -260,8 +260,8 @@ describe('Test plot api', function() {
                 x: [1, 2, 3],
                 y: [1, 2, 1]
             }], {
-                xaxis: { title: 'x title' },
-                yaxis: { title: 'y title' }
+                xaxis: { title: { text: 'x title' } },
+                yaxis: { title: { text: 'y title' } }
             })
             .then(function() {
                 return Plotly.relayout(gd, { zaxis: {} });
@@ -524,32 +524,6 @@ describe('Test plot api', function() {
             .then(assertSizeAndThen(700, 500, false, 'explicit height and width',
                 {autosize: true}))
             .then(assertSizeAndThen(543, 432, true, 'final back to autosize'))
-            .then(done, done.fail);
-        });
-
-        it('passes update data back to plotly_relayout unmodified ' +
-          'even if deprecated attributes have been used', function(done) {
-            Plotly.newPlot(gd, [{y: [1, 3, 2]}])
-            .then(function() {
-                gd.on('plotly_relayout', function(eventData) {
-                    expect(eventData).toEqual({
-                        title: 'Plotly chart',
-                        'xaxis.title': 'X',
-                        'xaxis.titlefont': {color: 'green'},
-                        'yaxis.title': 'Y',
-                        'polar.radialaxis.title': 'Radial'
-                    });
-                    done();
-                });
-
-                return Plotly.relayout(gd, {
-                    title: 'Plotly chart',
-                    'xaxis.title': 'X',
-                    'xaxis.titlefont': {color: 'green'},
-                    'yaxis.title': 'Y',
-                    'polar.radialaxis.title': 'Radial'
-                });
-            })
             .then(done, done.fail);
         });
     });
@@ -2283,7 +2257,7 @@ describe('Test plot api', function() {
         it('', function(done) {
             var gd = createGraphDiv();
             var initialData = [];
-            var layout = { title: 'Redraw' };
+            var layout = { title: { text: 'Redraw' } };
 
             Plotly.newPlot(gd, initialData, layout)
             .then(function() {
@@ -2540,7 +2514,6 @@ describe('Test plot api', function() {
 
             var layout = {
                 annotations: [
-                    { ref: 'paper' },
                     null,
                     { xref: 'x02', yref: 'y1' }
                 ],
@@ -2553,9 +2526,8 @@ describe('Test plot api', function() {
 
             Plotly.newPlot(gd, data, layout);
 
-            expect(gd.layout.annotations[0]).toEqual({ xref: 'paper', yref: 'paper' });
-            expect(gd.layout.annotations[1]).toEqual(null);
-            expect(gd.layout.annotations[2]).toEqual({ xref: 'x2', yref: 'y' });
+            expect(gd.layout.annotations[0]).toEqual(null);
+            expect(gd.layout.annotations[1]).toEqual({ xref: 'x2', yref: 'y' });
 
             expect(gd.layout.shapes[0].xref).toBeUndefined();
             expect(gd.layout.shapes[0].yref).toBeUndefined();
@@ -2757,7 +2729,7 @@ describe('Test plot api', function() {
             };
 
             var layoutUpdate = {
-                xaxis: {title: 'A', type: '-'}
+                xaxis: { title: { text: 'A' }, type: '-'}
             };
 
             Plotly.update(gd, traceUpdate, layoutUpdate).then(function() {
