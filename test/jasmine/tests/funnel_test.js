@@ -244,7 +244,7 @@ describe('Funnel.supplyDefaults', function() {
         expect(traceOut.ycalendar).toBe('ethiopian');
     });
 
-    it('should not include alignementgroup/offsetgroup when funnelmode is not *group*', function() {
+    it('should include alignementgroup/offsetgroup regardless of the funnelmode', function() {
         var gd = {
             data: [{type: 'funnel', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
             layout: {funnelmode: 'group'}
@@ -256,8 +256,8 @@ describe('Funnel.supplyDefaults', function() {
 
         gd.layout.funnelmode = 'stack';
         supplyAllDefaults(gd);
-        expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
-        expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
+        expect(gd._fullData[0].alignmentgroup).toBe('a', 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe('1', 'offsetgroup');
     });
 });
 
