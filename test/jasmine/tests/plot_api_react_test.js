@@ -1149,7 +1149,7 @@ describe('Plotly.react and uirevision attributes', function() {
             dataKeys.forEach(function(traceKeys, i) {
                 var trace = gd.data[i];
                 var fullTrace = gd._fullData.filter(function(ft) {
-                    return ft._fullInput.index === i;
+                    return ft.index === i;
                 })[0]._fullInput;
 
                 for(var key in traceKeys) {
