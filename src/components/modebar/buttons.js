@@ -51,11 +51,6 @@ modeBarButtons.toImage = {
 
         Lib.notifier(_(gd, 'Taking snapshot - this may take a few seconds'), 'long');
 
-        if(opts.format !== 'svg' && Lib.isIE()) {
-            Lib.notifier(_(gd, 'IE only supports svg.  Changing format to svg.'), 'long');
-            opts.format = 'svg';
-        }
-
         ['filename', 'width', 'height', 'scale'].forEach(function(key) {
             if(key in toImageButtonOptions) {
                 opts[key] = toImageButtonOptions[key];

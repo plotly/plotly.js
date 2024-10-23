@@ -13,19 +13,6 @@ function svgToImg(opts) {
         var svg = opts.svg;
         var format = opts.format || 'png';
 
-        // IE only support svg
-        if(Lib.isIE() && format !== 'svg') {
-            var ieSvgError = new Error(helpers.MSG_IE_BAD_FORMAT);
-            reject(ieSvgError);
-            // eventually remove the ev
-            //  in favor of promises
-            if(!opts.promise) {
-                return ev.emit('error', ieSvgError);
-            } else {
-                return promise;
-            }
-        }
-
         var canvas = opts.canvas;
         var scale = opts.scale || 1;
         var w0 = opts.width || 300;
