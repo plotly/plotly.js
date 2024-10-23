@@ -118,7 +118,6 @@ if(isFullSuite) {
 }
 
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
-var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
 var pathToSaneTopojsonDist = path.join(__dirname, '..', '..', 'node_modules', 'sane-topojson', 'dist');
 var pathToMathJax2 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v2');
 var pathToMathJax3 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v3');
@@ -189,7 +188,6 @@ func.defaultConfig = {
     // N.B. the rest of this field is filled below
     files: [
         pathToCustomMatchers,
-        pathToUnpolyfill,
         // available to fetch from /base/node_modules/mathjax-v2/
         // more info: http://karma-runner.github.io/3.0/config/files.html
         {pattern: pathToMathJax2 + '/**', included: false, watched: false, served: true},
