@@ -879,7 +879,7 @@ function concatTypedArray(arr0, arr1) {
  * @param {Object|HTMLDivElement} gd The graph div
  * @param {Object} update The key:array map of target attributes to extend
  * @param {Number|Number[]} indices The locations of traces to be extended
- * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening.
+ * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening
  *
  */
 function extendTraces(gd, update, indices, maxPoints) {
@@ -933,7 +933,16 @@ function extendTraces(gd, update, indices, maxPoints) {
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = exports.redraw(gd);
+    var promise = gd;
+    if (gd._context.redrawMinimumInterval > 0) {
+        Lib.throttle(
+            gd._fullLayout._uid + '-redraw',
+            gd._context.redrawMinimumInterval,
+            function() { promise = exports.redraw(gd); }
+        );
+    } else {
+        promise = exports.redraw(gd);
+    }
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     Queue.add(gd, exports.prependTraces, undoArgs, extendTraces, arguments);
 
@@ -990,7 +999,16 @@ function prependTraces(gd, update, indices, maxPoints) {
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = exports.redraw(gd);
+    var promise = gd;
+    if (gd._context.redrawMinimumInterval > 0) {
+        Lib.throttle(
+            gd._fullLayout._uid + '-redraw',
+            gd._context.redrawMinimumInterval,
+            function() { promise = exports.redraw(gd); }
+        );
+    } else {
+        promise = exports.redraw(gd);
+    }
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     Queue.add(gd, exports.extendTraces, undoArgs, prependTraces, arguments);
 

@@ -436,6 +436,13 @@ var configAttributes = {
         ].join(' ')
     },
 
+    redrawMinimumInterval: {
+        valType: 'integer',
+        min: 0,
+        dflt: 0,
+        description: 'Sets the minimum redraw interval in ms for use with extendTraces/prependTraces.'
+    },
+
     locale: {
         valType: 'string',
         dflt: 'en-US',
