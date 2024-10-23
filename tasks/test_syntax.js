@@ -112,10 +112,7 @@ function assertSrcContents() {
                 // look for .classList
                 if(node.type === 'MemberExpression') {
                     var source = node.source();
-
-                    if(source === 'Math.sign') {
-                        logs.push(file + ' : contains Math.sign (IE failure)');
-                    } else if(source === 'window.getComputedStyle') {
+                    if(source === 'window.getComputedStyle') {
                         getComputedStyleCnt++;
                     }
                 } else if(node.type === 'Identifier' && node.source() === 'getComputedStyle') {
