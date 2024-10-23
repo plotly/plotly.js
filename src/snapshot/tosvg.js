@@ -143,11 +143,6 @@ module.exports = function toSVG(gd, format, scale) {
             .attr('stroke-width', 0);
     }
 
-    // fix for IE namespacing quirk?
-    // http://stackoverflow.com/questions/19610089/unwanted-namespaces-on-svg-markup-when-using-xmlserializer-in-javascript-with-ie
-    svg.node().setAttributeNS(xmlnsNamespaces.xmlns, 'xmlns', xmlnsNamespaces.svg);
-    svg.node().setAttributeNS(xmlnsNamespaces.xmlns, 'xmlns:xlink', xmlnsNamespaces.xlink);
-
     if(format === 'svg' && scale) {
         svg.attr('width', scale * width);
         svg.attr('height', scale * height);
