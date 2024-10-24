@@ -452,11 +452,6 @@ function setPlotContext(gd, config) {
             }
         }
 
-        // map plot3dPixelRatio to plotGlPixelRatio for backward compatibility
-        if(config.plot3dPixelRatio && !context.plotGlPixelRatio) {
-            context.plotGlPixelRatio = context.plot3dPixelRatio;
-        }
-
         // now deal with editable and edits - first editable overrides
         // everything, then edits refines
         var editable = config.editable;
@@ -2825,7 +2820,6 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
     for(i = 0; i < oldFullData.length; i++) {
         if(newFullData[i]) {
             trace = newFullData[i]._fullInput;
-            if(Plots.hasMakesDataTransform(trace)) trace = newFullData[i];
             if(seenUIDs[trace.uid]) continue;
             seenUIDs[trace.uid] = 1;
 

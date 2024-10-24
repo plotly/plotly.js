@@ -118,7 +118,6 @@ if(isFullSuite) {
 }
 
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
-var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
 var pathToSaneTopojsonDist = path.join(__dirname, '..', '..', 'node_modules', 'sane-topojson', 'dist');
 var pathToMathJax2 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v2');
 var pathToMathJax3 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v3');
@@ -189,7 +188,6 @@ func.defaultConfig = {
     // N.B. the rest of this field is filled below
     files: [
         pathToCustomMatchers,
-        pathToUnpolyfill,
         // available to fetch from /base/node_modules/mathjax-v2/
         // more info: http://karma-runner.github.io/3.0/config/files.html
         {pattern: pathToMathJax2 + '/**', included: false, watched: false, served: true},
@@ -278,7 +276,7 @@ func.defaultConfig = {
         //
         // Although not recommended, some tests "depend" on other
         // tests to pass (e.g. the Plotly.react tests check that
-        // all available traces and transforms are tested). Tag these
+        // all available traces are tested). Tag these
         // with @noCIdep, so that
         // - $ npm run test-jasmine -- tags=noCI,noCIdep
         // can pass.

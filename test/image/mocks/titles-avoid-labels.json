@@ -9,7 +9,7 @@
      "text": "colorbar title",
      "side": "right"
     },
-    "autotick": false,
+    "tickmode": "linear",
     "dtick": 0.511,
     "tickangle": -10
    },
@@ -42,7 +42,7 @@
    "gridwidth": 1,
    "autorange": true,
    "rangemode": "normal",
-   "autotick": false,
+   "tickmode": "linear",
    "zeroline": true,
    "zerolinecolor": "#444",
    "zerolinewidth": 1,
@@ -87,7 +87,7 @@
    "gridwidth": 1,
    "autorange": true,
    "rangemode": "normal",
-   "autotick": false,
+   "tickmode": "linear",
    "zeroline": true,
    "zerolinecolor": "#444",
    "zerolinewidth": 1,

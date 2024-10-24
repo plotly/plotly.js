@@ -143,11 +143,6 @@ module.exports = function toSVG(gd, format, scale) {
             .attr('stroke-width', 0);
     }
 
-    // fix for IE namespacing quirk?
-    // http://stackoverflow.com/questions/19610089/unwanted-namespaces-on-svg-markup-when-using-xmlserializer-in-javascript-with-ie
-    svg.node().setAttributeNS(xmlnsNamespaces.xmlns, 'xmlns', xmlnsNamespaces.svg);
-    svg.node().setAttributeNS(xmlnsNamespaces.xmlns, 'xmlns:xlink', xmlnsNamespaces.xlink);
-
     if(format === 'svg' && scale) {
         svg.attr('width', scale * width);
         svg.attr('height', scale * height);
@@ -160,27 +155,6 @@ module.exports = function toSVG(gd, format, scale) {
 
     // Fix quotations around font strings and gradient URLs
     s = s.replace(DUMMY_REGEX, '\'');
-
-    // Do we need this process now that IE9 and IE10 are not supported?
-
-    // IE is very strict, so we will need to clean
-    //  svg with the following regex
-    //  yes this is messy, but do not know a better way
-    // Even with this IE will not work due to tainted canvas
-    //  see https://github.com/kangax/fabric.js/issues/1957
-    //      http://stackoverflow.com/questions/18112047/canvas-todataurl-working-in-all-browsers-except-ie10
-    // Leave here just in case the CORS/tainted IE issue gets resolved
-    if(Lib.isIE()) {
-        // replace double quote with single quote
-        s = s.replace(/"/gi, '\'');
-        // url in svg are single quoted
-        //   since we changed double to single
-        //   we'll need to change these to double-quoted
-        s = s.replace(/(\('#)([^']*)('\))/gi, '(\"#$2\")');
-        // font names with spaces will be escaped single-quoted
-        //   we'll need to change these to double-quoted
-        s = s.replace(/(\\')/gi, '\"');
-    }
 
     return s;
 };

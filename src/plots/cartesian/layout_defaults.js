@@ -143,7 +143,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     function newAxLayoutOut() {
         var traces = ax2traces[axName] || [];
-        axLayoutOut._traceIndices = traces.map(function(t) { return t._expandedIndex; });
+        axLayoutOut._traceIndices = traces.map(function(t) { return t.index; });
         axLayoutOut._annIndices = [];
         axLayoutOut._shapeIndices = [];
         axLayoutOut._selectionIndices = [];

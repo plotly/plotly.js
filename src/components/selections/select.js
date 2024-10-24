@@ -182,6 +182,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             for(var q = 0; q < selections.length; q++) {
                 var s = fullLayout.selections[q];
                 if(
+                    !s ||
                     s.xref !== xRef ||
                     s.yref !== yRef
                 ) {
@@ -596,8 +597,8 @@ function newPointNumTester(pointSelectionDef) {
         ymax: 0,
         pts: [],
         contains: function(pt, omitFirstEdge, pointNumber, searchInfo) {
-            var idxWantedTrace = pointSelectionDef.searchInfo.cd[0].trace._expandedIndex;
-            var idxActualTrace = searchInfo.cd[0].trace._expandedIndex;
+            var idxWantedTrace = pointSelectionDef.searchInfo.cd[0].trace.index;
+            var idxActualTrace = searchInfo.cd[0].trace.index;
             return idxActualTrace === idxWantedTrace &&
               pointNumber === pointSelectionDef.pointNumber;
         },
@@ -843,7 +844,7 @@ function extractClickedPtInfo(hoverData, searchTraces) {
 
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
-        if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
+        if(hoverDatum.fullData.index === searchInfo.cd[0].trace.index) {
             // Special case for box (and violin)
             if(hoverDatum.hoverOnBox === true) {
                 break;

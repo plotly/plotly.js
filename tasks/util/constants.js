@@ -217,6 +217,7 @@ module.exports = {
 
     pathToSCSS: path.join(pathToSrc, 'css/style.scss'),
     pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
+    pathToCSSDist: path.join(pathToDist, 'plotly.css'),
 
     pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
     pathToReglCodegenBundle: path.join(pathToBuild, 'regl_codegen-bundle.js'),

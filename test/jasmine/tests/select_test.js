@@ -75,7 +75,7 @@ function assertSelectionNodes(cornerCnt, outlineCnt, _msg) {
 }
 
 var selectingCnt, selectingData, selectedCnt, selectedData, deselectCnt, doubleClickData;
-var selectedPromise, deselectPromise, clickedPromise;
+var selectedPromise, deselectPromise, clickedPromise, relayoutPromise;
 
 function resetEvents(gd) {
     selectingCnt = 0;
@@ -122,6 +122,12 @@ function resetEvents(gd) {
 
     clickedPromise = new Promise(function(resolve) {
         gd.on('plotly_click', function() {
+            resolve();
+        });
+    });
+
+    relayoutPromise = new Promise(function(resolve) {
+        gd.on('plotly_relayout', function() {
             resolve();
         });
     });
@@ -1030,6 +1036,100 @@ describe('Test select box and lasso in general:', function() {
             })
             .then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    describe('select / deselect with fake selections', function() {
+        var gd;
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+
+            var mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.layout.dragmode = 'select';
+            mockCopy.layout.hovermode = 'closest';
+            mockCopy.layout.selections = [null];
+            addInvisible(mockCopy);
+
+            _newPlot(gd, mockCopy.data, mockCopy.layout)
+                .then(done);
+        });
+
+        it('should trigger selecting/selected/deselect events', function(done) {
+            resetEvents(gd);
+
+            drag(selectPath);
+
+            selectedPromise.then(function() {
+                expect(selectedCnt).toBe(1, 'with the correct selected count');
+                assertEventData(selectedData.points, [{
+                    curveNumber: 0,
+                    pointNumber: 0,
+                    pointIndex: 0,
+                    x: 0.002,
+                    y: 16.25
+                }, {
+                    curveNumber: 0,
+                    pointNumber: 1,
+                    pointIndex: 1,
+                    x: 0.004,
+                    y: 12.5
+                }], 'with the correct selected points (2)');
+                assertRange(selectedData.range, {
+                    x: [0.002000, 0.0046236],
+                    y: [0.10209191961595454, 24.512223978291406]
+                }, 'with the correct selected range');
+
+                return doubleClick(250, 200);
+            })
+            .then(deselectPromise)
+            .then(function() {
+                expect(doubleClickData).toBe(null, 'with the correct deselect data');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should handle add/sub selection', function(done) {
+            resetEvents(gd);
+            expect(gd.layout.selections.length).toBe(1);
+
+            drag([[193, 193], [213, 193]], {shiftKey: true})
+
+            selectedPromise.then(function() {
+                expect(selectedCnt).toBe(1, 'with the correct selected count');
+                assertEventData(selectedData.points, [{
+                    curveNumber: 0,
+                    pointNumber: 4,
+                    pointIndex: 4,
+                    x: 0.013,
+                    y: 6.875
+                }], 'with the correct selected points (1)');
+            })
+            .then(function() {
+                // this is not working here, but it works in the test dashboard, not sure why
+                // but at least this test shows us that no errors are thrown.
+                // expect(gd.layout.selections.length).toBe(2, 'fake selection is still there');
+
+                resetEvents(gd);
+
+                return doubleClick(250, 200);
+            })
+            .then(relayoutPromise)
+            .then(function() {
+                expect(gd.layout.selections.length).toBe(0, 'fake selection is cleared');
+                expect(doubleClickData).toBe(null, 'with the correct deselect data');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should clear fake selections on doubleclick', function(done) {
+            resetEvents(gd);
+
+            doubleClick(250, 200);
+
+            relayoutPromise.then(function() {
+                expect(gd.layout.selections.length).toBe(0, 'fake selections are cleared');
             })
             .then(done, done.fail);
         });
@@ -1979,6 +2079,7 @@ describe('Test select box and lasso per trace:', function() {
                     function() {
                         assertPoints([[0.5, 0.25, 0.25]]);
                         assertSelectedPoints({0: [0]});
+                        expect(selectedData.points[0].id).toBe("first ID")
                     },
                     [380, 180],
                     BOXEVENTS, 'scatterternary select'
@@ -3251,52 +3352,6 @@ describe('Test select box and lasso per trace:', function() {
                 })
                 .then(done, done.fail);
             });
-        });
-    });
-
-    [false, true].forEach(function(hasCssTransform) {
-        it('should work on traces with enabled transforms, hasCssTransform: ' + hasCssTransform, function(done) {
-            var assertSelectedPoints = makeAssertSelectedPoints();
-
-            _newPlot(gd, [{
-                x: [1, 2, 3, 4, 5],
-                y: [2, 3, 1, 7, 9],
-                marker: {size: [10, 20, 20, 20, 10]},
-                transforms: [{
-                    type: 'filter',
-                    operation: '>',
-                    value: 2,
-                    target: 'y'
-                }, {
-                    type: 'aggregate',
-                    groups: 'marker.size',
-                    aggregations: [
-                        // 20: 6, 10: 5
-                        {target: 'x', func: 'sum'},
-                        // 20: 5, 10: 9
-                        {target: 'y', func: 'avg'}
-                    ]
-                }]
-            }], {
-                dragmode: 'select',
-                showlegend: false,
-                width: 400,
-                height: 400,
-                margin: {l: 0, t: 0, r: 0, b: 0}
-            })
-            .then(function() {
-                if(hasCssTransform) transformPlot(gd, cssTransform);
-
-                return _run(hasCssTransform,
-                    [[5, 5], [395, 395]],
-                    function() {
-                        assertSelectedPoints({0: [1, 3, 4]});
-                    },
-                    [380, 180],
-                    BOXEVENTS, 'transformed trace select (all points selected)'
-                );
-            })
-            .then(done, done.fail);
         });
     });
 

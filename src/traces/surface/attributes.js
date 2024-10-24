@@ -288,21 +288,8 @@ colorScaleAttrs('', {
         ].join(' ')
     },
 
-    _deprecated: {
-        zauto: extendFlat({}, colorScaleAttrs.zauto, {
-            description: 'Obsolete. Use `cauto` instead.'
-        }),
-        zmin: extendFlat({}, colorScaleAttrs.zmin, {
-            description: 'Obsolete. Use `cmin` instead.'
-        }),
-        zmax: extendFlat({}, colorScaleAttrs.zmax, {
-            description: 'Obsolete. Use `cmax` instead.'
-        })
-    },
-
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo),
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false}),
 }), 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
-attrs.transforms = undefined;

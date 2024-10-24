@@ -5,7 +5,6 @@ var Loggers = require('../../../src/lib/loggers');
 describe('Test Register:', function() {
     beforeAll(function() {
         this.modulesKeys = Object.keys(Registry.modules);
-        this.allTransformsKeys = Object.keys(Registry.transformsRegistry);
         this.allCategoriesKeys = Object.keys(Registry.allCategories);
         this.allTypes = Registry.allTypes.slice();
     });
@@ -26,7 +25,6 @@ describe('Test Register:', function() {
         }
 
         revertObj(Registry.modules, this.modulesKeys);
-        revertObj(Registry.transformsRegistry, this.allTransformsKeys);
         revertObj(Registry.allCategories, this.allCategoriesKeys);
         revertArray(Registry.allTypes, this.allTypes);
     });
@@ -86,76 +84,6 @@ describe('Test Register:', function() {
             expect(function() {
                 Plotly.register([invalidTrace]);
             }).toThrowError(Error, 'Invalid module was attempted to be registered!');
-
-            expect(Registry.transformsRegistry['mah-transform']).toBeUndefined();
-        });
-
-        it('should throw when if transform module is invalid (1)', function() {
-            var missingTransformName = {
-                moduleType: 'transform'
-            };
-
-            expect(function() {
-                Plotly.register(missingTransformName);
-            }).toThrowError(Error, 'Transform module *name* must be a string.');
-
-            expect(Registry.transformsRegistry['mah-transform']).toBeUndefined();
-        });
-
-        it('should throw when if transform module is invalid (2)', function() {
-            var missingTransformFunc = {
-                moduleType: 'transform',
-                name: 'mah-transform'
-            };
-
-            expect(function() {
-                Plotly.register(missingTransformFunc);
-            }).toThrowError(Error, 'Transform module mah-transform is missing a *transform* or *calcTransform* method.');
-
-            expect(Registry.transformsRegistry['mah-transform']).toBeUndefined();
-        });
-
-        it('should not throw when transform module is valid (1)', function() {
-            var transformModule = {
-                moduleType: 'transform',
-                name: 'mah-transform',
-                transform: function() {}
-            };
-
-            expect(function() {
-                Plotly.register(transformModule);
-            }).not.toThrow();
-
-            expect(Registry.transformsRegistry['mah-transform']).toBeDefined();
-        });
-
-        it('should not throw when transform module is valid (2)', function() {
-            var transformModule = {
-                moduleType: 'transform',
-                name: 'mah-transform',
-                calcTransform: function() {}
-            };
-
-            expect(function() {
-                Plotly.register(transformModule);
-            }).not.toThrow();
-
-            expect(Registry.transformsRegistry['mah-transform']).toBeDefined();
-        });
-
-        it('should not throw when transform module is valid (3)', function() {
-            var transformModule = {
-                moduleType: 'transform',
-                name: 'mah-transform',
-                transform: function() {},
-                calcTransform: function() {}
-            };
-
-            expect(function() {
-                Plotly.register(transformModule);
-            }).not.toThrow();
-
-            expect(Registry.transformsRegistry['mah-transform']).toBeDefined();
         });
 
         it('should not reregister a trace module', function() {
@@ -210,64 +138,6 @@ describe('Test Register:', function() {
         it('traceIs should log on unrecognized trace typed', function() {
             expect(Registry.traceIs('nada')).toBe(false);
             expect(Loggers.log).toHaveBeenCalled();
-        });
-    });
-
-    describe('Registry.getTransformIndices & Registry.hasTransform:', function() {
-        var transformModule = {
-            moduleType: 'transform',
-            name: 'mah-transform',
-            transform: function() {}
-        };
-
-        beforeEach(function() {
-            Plotly.register(transformModule);
-        });
-
-        it('getTransformIndices returns an empty array if no transforms present', function() {
-            expect(Registry.getTransformIndices({}, 'groupby')).toEqual([]);
-        });
-
-        it('getTransformIndices returns an empty array if none present', function() {
-            expect(Registry.getTransformIndices({
-                transforms: [
-                    {type: 'filter'},
-                    {type: 'groupby'}
-                ]
-            }, 'degauss')).toEqual([]);
-        });
-
-        it('getTransformIndices returns a array of indices if transform is present', function() {
-            expect(Registry.getTransformIndices({
-                transforms: [
-                    {type: 'filter'},
-                    {type: 'groupby'},
-                    {type: 'groupby'}
-                ]
-            }, 'groupby')).toEqual([1, 2]);
-        });
-
-        it('hasTransform returns false if no transforms present', function() {
-            expect(Registry.hasTransform({}, 'groupby')).toBe(false);
-        });
-
-        it('hasTransform returns false if none present', function() {
-            expect(Registry.hasTransform({
-                transforms: [
-                    {type: 'filter'},
-                    {type: 'groupby'}
-                ]
-            }, 'degauss')).toBe(false);
-        });
-
-        it('hasTransform returns true if transform is present', function() {
-            expect(Registry.hasTransform({
-                transforms: [
-                    {type: 'filter'},
-                    {type: 'groupby'},
-                    {type: 'groupby'}
-                ]
-            }, 'groupby')).toBe(true);
         });
     });
 });

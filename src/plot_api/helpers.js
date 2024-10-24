@@ -82,14 +82,6 @@ exports.cleanLayout = function(layout) {
             // prune empty domain arrays made before the new nestedProperty
             if(emptyContainer(ax, 'domain')) delete ax.domain;
 
-            // autotick -> tickmode
-            if(ax.autotick !== undefined) {
-                if(ax.tickmode === undefined) {
-                    ax.tickmode = ax.autotick ? 'auto' : 'linear';
-                }
-                delete ax.autotick;
-            }
-
             cleanTitle(ax);
         } else if(polarAttrRegex && polarAttrRegex.test(key)) {
             // modifications for polar
@@ -321,51 +313,6 @@ exports.cleanData = function(data) {
             } else if((increasingName || decreasingName) && !trace.name) {
                 // one sub-name existed but not the base name - just use the sub-name
                 trace.name = increasingName || decreasingName;
-            }
-        }
-
-        // transforms backward compatibility fixes
-        if(Array.isArray(trace.transforms)) {
-            var transforms = trace.transforms;
-
-            for(i = 0; i < transforms.length; i++) {
-                var transform = transforms[i];
-
-                if(!Lib.isPlainObject(transform)) continue;
-
-                switch(transform.type) {
-                    case 'filter':
-                        if(transform.filtersrc) {
-                            transform.target = transform.filtersrc;
-                            delete transform.filtersrc;
-                        }
-
-                        if(transform.calendar) {
-                            if(!transform.valuecalendar) {
-                                transform.valuecalendar = transform.calendar;
-                            }
-                            delete transform.calendar;
-                        }
-                        break;
-
-                    case 'groupby':
-                        // Name has changed from `style` to `styles`, so use `style` but prefer `styles`:
-                        transform.styles = transform.styles || transform.style;
-
-                        if(transform.styles && !Array.isArray(transform.styles)) {
-                            var prevStyles = transform.styles;
-                            var styleKeys = Object.keys(prevStyles);
-
-                            transform.styles = [];
-                            for(var j = 0; j < styleKeys.length; j++) {
-                                transform.styles.push({
-                                    target: styleKeys[j],
-                                    value: prevStyles[styleKeys[j]]
-                                });
-                            }
-                        }
-                        break;
-                }
             }
         }
 

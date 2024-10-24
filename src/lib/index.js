@@ -189,6 +189,7 @@ lib.removeElement = domModule.removeElement;
 lib.addStyleRule = domModule.addStyleRule;
 lib.addRelatedStyleRule = domModule.addRelatedStyleRule;
 lib.deleteRelatedStyleRule = domModule.deleteRelatedStyleRule;
+lib.setStyleOnHover = domModule.setStyleOnHover;
 lib.getFullTransformMatrix = domModule.getFullTransformMatrix;
 lib.getElementTransformMatrix = domModule.getElementTransformMatrix;
 lib.getElementAndAncestors = domModule.getElementAndAncestors;
@@ -752,10 +753,6 @@ lib.containsAny = function(s, fragments) {
         if(s.indexOf(fragments[i]) !== -1) return true;
     }
     return false;
-};
-
-lib.isIE = function() {
-    return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
 var IS_SAFARI_REGEX = /Version\/[\d\.]+.*Safari/;

@@ -19,7 +19,7 @@ function supportsPixelatedImage() {
     _supportsPixelated = false;
 
     // @see https://github.com/plotly/plotly.js/issues/6604
-    var unsupportedBrowser = Lib.isIE() || Lib.isSafari() || Lib.isIOS();
+    var unsupportedBrowser = Lib.isSafari() || Lib.isIOS();
 
     if(window.navigator.userAgent && !unsupportedBrowser) {
         var declarations = Array.from(constants.CSS_DECLARATIONS).reverse();
