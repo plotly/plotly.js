@@ -1557,7 +1557,8 @@ function autoTickRound(ax) {
         var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
         var minexponent = ax.minexponent === undefined ? 3 : ax.minexponent;
         if(Math.abs(rangeexp) > minexponent) {
-            if(isSIFormat(ax.exponentformat) && !beyondSI(rangeexp)) {
+            if((isSIFormat(ax.exponentformat) && ax.exponentformat !== 'SI extended' && !beyondSI(rangeexp)) || 
+            (isSIFormat(ax.exponentformat) && ax.exponentformat === 'SI extended' && !beyondSIExtended(rangeexp))) {
                 ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
             } else ax._tickexponent = rangeexp;
         }
@@ -1903,7 +1904,8 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
         var p = Math.round(x);
         var absP = Math.abs(p);
         var exponentFormat = ax.exponentformat;
-        if(exponentFormat === 'power' || (isSIFormat(exponentFormat) && beyondSI(p))) {
+        if(exponentFormat === 'power' || (isSIFormat(exponentFormat) && exponentFormat !== 'SI extended' && beyondSI(p)) ||
+        (isSIFormat(exponentFormat) && exponentFormat === 'SI extended' && beyondSIExtended(p))) {
             if(p === 0) out.text = 1;
             else if(p === 1) out.text = '10';
             else out.text = '10<sup>' + (p > 1 ? '' : MINUS_SIGN) + absP + '</sup>';
@@ -2048,8 +2050,11 @@ function num2frac(num) {
 // also automatically switch to sci. notation
 var SIPREFIXES = ['f', 'p', 'n', 'μ', 'm', '', 'k', 'M', 'G', 'T'];
 
+// extending SI prefixes
+var SIPREFIXES_EXTENDED = ['q', 'r', 'y', 'z', 'a', 'f', 'p', 'n', 'μ', 'm', '', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y', 'R', 'Q'];
+
 function isSIFormat(exponentFormat) {
-    return exponentFormat === 'SI' || exponentFormat === 'B';
+    return exponentFormat === 'SI' || exponentFormat === 'SI extended' || exponentFormat === 'B';
 }
 
 // are we beyond the range of common SI prefixes?
@@ -2061,6 +2066,10 @@ function isSIFormat(exponentFormat) {
 // 10^16 -> 1x10^16
 function beyondSI(exponent) {
     return exponent > 14 || exponent < -15;
+}
+
+function beyondSIExtended(exponent) {
+    return exponent > 32 || exponent < -30;
 }
 
 function numFormat(v, ax, fmtoverride, hover) {
@@ -2138,7 +2147,8 @@ function numFormat(v, ax, fmtoverride, hover) {
 
     // add exponent
     if(exponent && exponentFormat !== 'hide') {
-        if(isSIFormat(exponentFormat) && beyondSI(exponent)) exponentFormat = 'power';
+        if((isSIFormat(exponentFormat) && exponentFormat !== 'SI extended' && beyondSI(exponent)) ||
+        (isSIFormat(exponentFormat) && exponentFormat === 'SI extended' && beyondSIExtended(exponent))) exponentFormat = 'power';
 
         var signedExponent;
         if(exponent < 0) signedExponent = MINUS_SIGN + -exponent;
@@ -2152,7 +2162,11 @@ function numFormat(v, ax, fmtoverride, hover) {
         } else if(exponentFormat === 'B' && exponent === 9) {
             v += 'B';
         } else if(isSIFormat(exponentFormat)) {
-            v += SIPREFIXES[exponent / 3 + 5];
+            if(exponentFormat !== 'SI extended') {
+                v += SIPREFIXES[exponent / 3 + 5];
+            } else if(exponentFormat === 'SI extended') {
+                v += SIPREFIXES_EXTENDED[exponent / 3 + 10];
+            }
         }
     }
 
