@@ -234,7 +234,7 @@ module.exports = {
     },
     exponentformat: {
         valType: 'enumerated',
-        values: ['none', 'e', 'E', 'power', 'SI', 'B'],
+        values: ['none', 'e', 'E', 'power', 'SI', 'B', 'SI extended'],
         dflt: 'B',
         editType: 'calc',
         description: [
