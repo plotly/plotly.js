@@ -2070,7 +2070,7 @@ function beyondSI(exponent) {
 }
 
 function beyondSIExtended(exponent) {
-    return exponent > 32 || exponent < -32;
+    return exponent > 32 || exponent < -30;
 }
 
 function numFormat(v, ax, fmtoverride, hover) {
