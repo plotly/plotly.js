@@ -14,12 +14,6 @@ describe('Bundle with finance trace type', function() {
 
     var mock = require('../../image/mocks/finance_style.json');
 
-    it('should not register transforms anymore', function() {
-        var transformModules = Object.keys(Plots.transformsRegistry);
-
-        expect(transformModules).toEqual([]);
-    });
-
     it('should register the correct trace modules for the generated traces', function() {
         var traceModules = Object.keys(Plots.modules);
 

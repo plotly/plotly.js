@@ -782,7 +782,6 @@ describe('@noCIdep Plotly.react', function() {
     var typesTested = {};
     var itemType;
     for(itemType in Registry.modules) { typesTested[itemType] = 0; }
-    for(itemType in Registry.transformsRegistry) { typesTested[itemType] = 0; }
 
     function _runReactMock(mockSpec, done) {
         var mock = mockSpec[1];
@@ -849,12 +848,6 @@ describe('@noCIdep Plotly.react', function() {
             }
 
             typesTested[trace.type]++;
-
-            if(trace.transforms) {
-                trace.transforms.forEach(function(transform) {
-                    typesTested[transform.type]++;
-                });
-            }
         });
 
         Plotly.newPlot(gd, mock)
@@ -1156,7 +1149,7 @@ describe('Plotly.react and uirevision attributes', function() {
             dataKeys.forEach(function(traceKeys, i) {
                 var trace = gd.data[i];
                 var fullTrace = gd._fullData.filter(function(ft) {
-                    return ft._fullInput.index === i;
+                    return ft.index === i;
                 })[0]._fullInput;
 
                 for(var key in traceKeys) {
@@ -1534,55 +1527,6 @@ describe('Plotly.react and uirevision attributes', function() {
         _run(fig, hideSome, checkAllVisible, checkSomeHidden).then(done);
     });
 
-    it('preserves groupby group visibility', function(done) {
-        // TODO: there's a known problem if the groups change... unlike
-        // traces we will keep visibility by group in order, not by group value
-
-        function fig(mainRev, legendRev) {
-            return {
-                data: [{
-                    y: [1, 2, 3, 4, 5, 6],
-                    transforms: [{
-                        type: 'groupby',
-                        groups: ['a', 'b', 'c', 'a', 'b', 'c']
-                    }]
-                }, {
-                    y: [7, 8]
-                }],
-                layout: {
-                    uirevision: mainRev,
-                    legend: {uirevision: legendRev}
-                }
-            };
-        }
-
-        function hideSome() {
-            return Registry.call('_guiRestyle', gd, {
-                'transforms[0].styles[0].value.visible': 'legendonly',
-                'transforms[0].styles[2].value.visible': 'legendonly'
-            }, [0])
-            .then(function() {
-                return Registry.call('_guiRestyle', gd, 'visible', 'legendonly', [1]);
-            });
-        }
-
-        function checkVisible(groups, extraTrace) {
-            var trace0edits = {};
-            groups.forEach(function(visi, i) {
-                var attr = 'transforms[0].styles[' + i + '].value.visible';
-                trace0edits[attr] = visi ? undefined : 'legendonly';
-            });
-            return checkState([
-                trace0edits,
-                {visible: extraTrace ? [undefined, true] : 'legendonly'}
-            ]);
-        }
-        var checkAllVisible = checkVisible([true, true, true], true);
-        var checkSomeHidden = checkVisible([false, true, false], false);
-
-        _run(fig, hideSome, checkAllVisible, checkSomeHidden).then(done, done.fail);
-    });
-
     it('@gl preserves modebar interactions using modebar.uirevision', function(done) {
         function fig(mainRev, modebarRev) {
             return {
@@ -1768,46 +1712,6 @@ describe('Plotly.react and uirevision attributes', function() {
             {selectedpoints: [[1]]},
             {selectedpoints: [[2]]}
         ]);
-
-        _run(fig, editSelection, checkNoSelection, checkSelection).then(done, done.fail);
-    });
-
-    it('preserves selectedpoints using selectedrevision (groupby case)', function(done) {
-        function fig(mainRev, selectionRev) {
-            return {
-                data: [{
-                    x: [1, 2, 3, 1, 2, 3, 1, 2, 3],
-                    y: [1, 1, 1, 2, 2, 2, 3, 3, 3],
-                    mode: 'markers',
-                    marker: {size: 20},
-                    transforms: [{
-                        type: 'groupby',
-                        groups: [1, 2, 3, 2, 3, 1, 3, 1, 2]
-                    }]
-                }],
-                layout: {
-                    uirevision: mainRev,
-                    selectionrevision: selectionRev,
-                    dragmode: 'select',
-                    width: 400,
-                    height: 400,
-                    margin: {l: 100, t: 100, r: 100, b: 100}
-                }
-            };
-        }
-
-        function editSelection() {
-            // drag across the upper right quadrant, so we'll select
-            // curve 0 point 1 and curve 1 point 2
-            return drag({node: document.querySelector('.nsewdrag'), dpos: [148, 148], pos0: [150, 102]});
-        }
-
-        var checkNoSelection = checkState([{selectedpoints: undefined}]);
-        // the funny point order here is from the grouping:
-        // points 5 & 7 come first as they're in group 1
-        // point 8 is next, in group 2
-        // point 4 is last, in group 3
-        var checkSelection = checkState([{selectedpoints: [[5, 7, 8, 4]]}]);
 
         _run(fig, editSelection, checkNoSelection, checkSelection).then(done, done.fail);
     });

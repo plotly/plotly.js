@@ -44,7 +44,6 @@ var svgMockList = [
     ['table_wrapped_birds', require('../../image/mocks/table_wrapped_birds.json')],
     ['ternary_fill', require('../../image/mocks/ternary_fill.json')],
     ['text_chart_arrays', require('../../image/mocks/text_chart_arrays.json')],
-    ['transforms', require('../../image/mocks/transforms.json')],
     ['updatemenus', require('../../image/mocks/updatemenus.json')],
     ['violin_side-by-side', require('../../image/mocks/violin_side-by-side.json')],
     ['world-cals', require('../../image/mocks/world-cals.json')],

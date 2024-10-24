@@ -177,7 +177,6 @@ module.exports = extendFlat({
             'Overrides *color* and *vertexcolor*.'
         ].join(' ')
     },
-    transforms: undefined
 },
 
 colorScaleAttrs('', {

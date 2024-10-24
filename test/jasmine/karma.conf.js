@@ -278,7 +278,7 @@ func.defaultConfig = {
         //
         // Although not recommended, some tests "depend" on other
         // tests to pass (e.g. the Plotly.react tests check that
-        // all available traces and transforms are tested). Tag these
+        // all available traces are tested). Tag these
         // with @noCIdep, so that
         // - $ npm run test-jasmine -- tags=noCI,noCIdep
         // can pass.
