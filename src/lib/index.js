@@ -755,10 +755,6 @@ lib.containsAny = function(s, fragments) {
     return false;
 };
 
-lib.isIE = function() {
-    return typeof window.navigator.msSaveBlob !== 'undefined';
-};
-
 var IS_SAFARI_REGEX = /Version\/[\d\.]+.*Safari/;
 lib.isSafari = function() {
     return IS_SAFARI_REGEX.test(window.navigator.userAgent);

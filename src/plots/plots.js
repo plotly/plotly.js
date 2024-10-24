@@ -146,7 +146,7 @@ plots.addLinks = function(gd) {
 
     // If text's width is bigger than the layout
     // Check that text is a child node or document.body
-    // because otherwise IE/Edge might throw an exception
+    // because otherwise Edge might throw an exception
     // when calling getComputedTextLength().
     // Apparently offsetParent is null for invisibles.
     if(document.body.contains(text) && text.getComputedTextLength() >= (fullLayout.width - 20)) {

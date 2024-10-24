@@ -64,7 +64,7 @@ exports.sorterDes = function(a, b) { return b - a; };
  */
 exports.distinctVals = function(valsIn) {
     var vals = valsIn.slice();  // otherwise we sort the original array...
-    vals.sort(exports.sorterAsc); // undefined listed in the end - also works on IE11
+    vals.sort(exports.sorterAsc); // undefined listed in the end
 
     var last;
     for(last = vals.length - 1; last > -1; last--) {
