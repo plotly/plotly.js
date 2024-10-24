@@ -1230,4 +1230,12 @@ module.exports = {
         ].join(' ')
     },
     editType: 'calc',
+
+    _deprecated: {
+        title: {
+            valType: 'string',
+            editType: 'ticks',
+            description: 'It is recommended to use the layout\'s `title.text` attribute instead.'
+        },
+    }
 };
