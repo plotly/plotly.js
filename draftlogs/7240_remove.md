@@ -1,1 +1,1 @@
- - Drop transforms from the API [[#7240](https://github.com/plotly/plotly.js/pull/7240)]
+ - Drop transforms from the API [[#7240](https://github.com/plotly/plotly.js/pull/7240), [#7254](https://github.com/plotly/plotly.js/pull/7254)]
