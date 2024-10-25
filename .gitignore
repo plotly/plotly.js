@@ -5,6 +5,7 @@ build/*
 !build/README.md
 
 dist/*.LICENSE.txt
+dist/*.css
 
 npm-debug.log*
 *.sublime*
