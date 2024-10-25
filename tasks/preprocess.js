@@ -52,15 +52,6 @@ function exposePartsInLib() {
 
     insert('calendars', 'src/components');
 
-    [
-        'aggregate',
-        'filter',
-        'groupby',
-        'sort'
-    ].forEach(function(k) {
-        insert(k, 'src/transforms');
-    });
-
     constants.allTraces.forEach(function(k) {
         insert(k, 'src/traces');
     });

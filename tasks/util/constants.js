@@ -24,12 +24,6 @@ var strictIndex = fs.readFileSync(pathToPlotlyStrict, 'utf-8');
 var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
     .filter(startsWithLowerCase);
 
-var allTransforms = fs.readdirSync(path.join(pathToSrc, 'transforms'))
-    .filter(function(v) {
-        return startsWithLowerCase(v) && v !== 'helpers.js';
-    })
-    .map(function(e) { return e.replace('.js', ''); });
-
 var pathToTopojsonSrc;
 try {
     pathToTopojsonSrc = path.join(path.dirname(require.resolve('sane-topojson')), 'dist/');
@@ -162,7 +156,6 @@ function makePartialBundleOpts(name) {
     return {
         name: name,
         traceList: partialBundleTraces[name],
-        transformList: allTransforms,
         calendars: true,
         index: path.join(pathToLib, 'index-' + name + '.js'),
         dist: path.join(pathToDist, 'plotly-' + name + '.js'),
@@ -185,7 +178,6 @@ module.exports = {
 
     partialBundleTraces: partialBundleTraces,
 
-    allTransforms: allTransforms,
     allTraces: allTraces,
     mainIndex: mainIndex,
     strictIndex: strictIndex,
