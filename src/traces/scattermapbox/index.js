@@ -3,7 +3,8 @@
 var deprecationWarning = [
     '*scattermapbox* trace is deprecated!',
     'Please consider switching to the *scattermap* trace type and `map` subplots.',
-    'Learn more at: https://plotly.com/javascript/maplibre-migration/'
+    'Learn more at: https://plotly.com/python/maplibre-migration/',
+    'as well as https://plotly.com/javascript/maplibre-migration/'
 ].join(' ');
 
 module.exports = {
