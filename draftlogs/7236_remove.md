@@ -1,1 +1,1 @@
- - Drop deprecated autotick attributes from cartesian and gl3d axes [[#7236](https://github.com/plotly/plotly.js/pull/7236)]
+ - Drop deprecated autotick attributes from cartesian axes [[#7236](https://github.com/plotly/plotly.js/pull/7236)]
