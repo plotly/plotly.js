@@ -191,7 +191,10 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     coerce('valign');
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 
-    var titleText = coerce('title.text');
+    var titleIn = containerIn.title;
+    var titleTextDflt = (typeof titleIn === 'string') ? titleIn : undefined;
+
+    var titleText = coerce('title.text', titleTextDflt);
     if(titleText) {
         coerce('title.side', isHorizontal ? 'left' : 'top');
         var dfltTitleFont = Lib.extendFlat({}, itemFont, {

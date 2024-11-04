@@ -1314,6 +1314,10 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('autotypenumbers');
 
+    var titleIn = layoutIn.title;
+    var titleTextDflt = (typeof titleIn === 'string') ? titleIn :
+        layoutOut._dfltTitle.plot;
+
     var font = Lib.coerceFont(coerce, 'font');
     var fontSize = font.size;
 
@@ -1321,7 +1325,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
         size: Math.round(fontSize * 1.4)
     }});
 
-    coerce('title.text', layoutOut._dfltTitle.plot);
+    coerce('title.text', titleTextDflt);
     coerce('title.xref');
     var titleYref = coerce('title.yref');
     coerce('title.pad.t');
@@ -1335,7 +1339,11 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('title.y');
     coerce('title.yanchor');
 
-    coerce('title.subtitle.text', layoutOut._dfltTitle.subtitle);
+    var subtitleIn = layoutIn.title;
+    var subtitleTextDflt = (typeof subtitleIn === 'string') ? subtitleIn :
+        layoutOut._dfltTitle.subtitle;
+
+    coerce('title.subtitle.text', subtitleTextDflt);
     Lib.coerceFont(coerce, 'title.subtitle.font', font, {
         overrideDflt: {
             size: Math.round(layoutOut.title.font.size * 0.7)

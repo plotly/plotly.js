@@ -39,7 +39,10 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         coerce('legend');
         coerce('legendwidth');
         coerce('legendgroup');
-        coerce('legendgrouptitle.text');
+
+        var legendgrouptitleIn = shapeIn.title;
+        var legendgrouptitleTextDflt = (typeof titleIn === 'string') ? legendgrouptitleIn : undefined;
+        coerce('legendgrouptitle.text', legendgrouptitleTextDflt);
         Lib.coerceFont(coerce, 'legendgrouptitle.font');
         coerce('legendrank');
     }

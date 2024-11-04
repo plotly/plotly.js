@@ -73,7 +73,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var titleFontDflt = Lib.extendFlat({}, layout.font);
     titleFontDflt.size = 0.25 * (bignumberFontSize || deltaFontSize || cn.defaultNumberFontSize);
     Lib.coerceFont(coerce, 'title.font', titleFontDflt);
-    coerce('title.text');
+
+    var titleIn = traceIn.title;
+    var titleTextDflt = (typeof titleIn === 'string') ? titleIn : undefined;
+    coerce('title.text', titleTextDflt);
 
     // Gauge attributes
     var gaugeIn, gaugeOut, axisIn, axisOut;

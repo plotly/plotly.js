@@ -107,7 +107,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     // inherit from global font color in case that was provided.
     var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : font.color;
 
-    var title = coerce('title.text');
+    var titleIn = containerIn.title;
+    var titleTextDflt = (typeof titleIn === 'string') ? titleIn : undefined;
+
+    var title = coerce('title.text', titleTextDflt);
     if(title) {
         Lib.coerceFont(coerce, 'title.font', font, { overrideDflt: {
             size: Lib.bigFont(font.size),

@@ -123,7 +123,11 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     handleTickLabelDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
     handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
 
-    coerce('title.text', layout._dfltTitle.colorbar);
+    var titleIn = colorbarIn.title;
+    var titleTextDflt = (typeof titleIn === 'string') ? titleIn :
+        layout._dfltTitle.colorbar;
+
+    coerce('title.text', titleTextDflt);
 
     var tickFont = colorbarOut.showticklabels ? colorbarOut.tickfont : font;
 

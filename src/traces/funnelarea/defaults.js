@@ -61,7 +61,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleDomainDefaults(traceOut, layout, coerce);
 
-    var title = coerce('title.text');
+    var titleIn = traceIn.title;
+    var titleTextDflt = (typeof titleIn === 'string') ? titleIn : undefined;
+
+    var title = coerce('title.text', titleTextDflt);
     if(title) {
         coerce('title.position');
         Lib.coerceFont(coerce, 'title.font', layout.font);

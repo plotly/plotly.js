@@ -109,7 +109,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // template too.
     var dfltFontColor = (dfltColor !== layoutAttributes.color.dflt) ? dfltColor : font.color;
     // try to get default title from splom trace, fallback to graph-wide value
-    var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
+    var titleIn = containerIn.title;
+    var dfltTitle = (typeof titleIn === 'string') ? titleIn :
+        splomStash.label || layoutOut._dfltTitle[letter];
 
     handlePrefixSuffixDefaults(containerIn, containerOut, coerce, axType, options);
     if(!visible) return containerOut;

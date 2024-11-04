@@ -76,10 +76,13 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
 
     var axName = containerOut._name;
     var letterUpper = axName.charAt(0).toUpperCase();
-    var dfltTitle = 'Component ' + letterUpper;
 
-    var title = coerce('title.text', dfltTitle);
-    containerOut._hovertitle = title === dfltTitle ? title : letterUpper;
+    var titleIn = containerIn.title;
+    var dfltTitleText = (typeof titleIn === 'string') ? titleIn :
+        'Component ' + letterUpper;
+
+    var title = coerce('title.text', dfltTitleText);
+    containerOut._hovertitle = title === dfltTitleText ? title : letterUpper;
 
     Lib.coerceFont(coerce, 'title.font', options.font, { overrideDflt: {
         size: Lib.bigFont(options.font.size),
