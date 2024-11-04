@@ -3,6 +3,7 @@ var path = require('path');
 var sass = require('sass');
 
 var constants = require('./util/constants');
+var mapBoxGLStyleRules = require('./../src/plots/mapbox/constants').styleRules;
 var common = require('./util/common');
 var pullCSS = require('./util/pull_css');
 var updateVersion = require('./util/update_version');
@@ -13,7 +14,7 @@ exposePartsInLib();
 copyTopojsonFiles();
 updateVersion(constants.pathToPlotlyVersion);
 
-// convert scss to css to js
+// convert scss to css to js and static css file
 function makeBuildCSS() {
     sass.render({
         file: constants.pathToSCSS,
@@ -21,9 +22,23 @@ function makeBuildCSS() {
     }, function(err, result) {
         if(err) throw err;
 
-        // css to js
+        // To support application with strict CSP where styles cannot be inlined,
+        // build a static CSS file that can be included into such applications.
+        var staticCSS = String(result.css);
+        for(var k in mapBoxGLStyleRules) {
+            staticCSS = addAdditionalCSSRules(staticCSS, '.js-plotly-plot .plotly .mapboxgl-' + k, mapBoxGLStyleRules[k]);
+        }
+        fs.writeFile(constants.pathToCSSDist, staticCSS, function(err) {
+            if(err) throw err;
+        });
+
+        // css to js to be inlined
         pullCSS(String(result.css), constants.pathToCSSBuild);
     });
+}
+
+function addAdditionalCSSRules(staticStyleString, selector, style) {
+    return staticStyleString + selector + '{' + style + '}';
 }
 
 function exposePartsInLib() {
@@ -36,15 +51,6 @@ function exposePartsInLib() {
     insert('core', 'src');
 
     insert('calendars', 'src/components');
-
-    [
-        'aggregate',
-        'filter',
-        'groupby',
-        'sort'
-    ].forEach(function(k) {
-        insert(k, 'src/transforms');
-    });
 
     constants.allTraces.forEach(function(k) {
         insert(k, 'src/traces');

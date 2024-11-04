@@ -233,4 +233,3 @@ colorScaleAttrs('', {
 attrs.flatshading.dflt = true; attrs.lighting.facenormalsepsilon.dflt = 0;
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = attrs.value.editType = 'calc+clearAxisTypes';
-attrs.transforms = undefined;

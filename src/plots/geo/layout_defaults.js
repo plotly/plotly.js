@@ -21,7 +21,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
 function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     var subplotData = getSubplotData(opts.fullData, 'geo', opts.id);
-    var traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
+    var traceIndices = subplotData.map(function(t) { return t.index; });
 
     var resolution = coerce('resolution');
     var scope = coerce('scope');

@@ -5,7 +5,6 @@ import runSeries from 'run-series';
 import partialBundle from './partial_bundle.mjs';
 import constants from './util/constants.js';
 
-var allTransforms = constants.allTransforms;
 var allTraces = constants.allTraces;
 
 function createList(outList, inList, allList, type) {
@@ -55,12 +54,10 @@ if(process.argv.length > 2) {
     var unminified = inputBoolean(args.unminified, false);
     var out = args.out ? args.out : 'custom';
     var traces = inputArray(args.traces, allTraces);
-    var transforms = inputArray(args.transforms, allTransforms);
     var strict = inputBoolean(args.strict, false);
 
     var opts = {
         traceList: createList(['scatter'], traces, allTraces, 'trace'),
-        transformList: createList([], transforms, allTransforms, 'transform'),
 
         name: out,
         index: path.join(constants.pathToLib, 'index-' + (strict ? 'strict-' : '') + out + '.js'),

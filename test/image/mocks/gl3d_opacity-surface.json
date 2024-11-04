@@ -1512,7 +1512,7 @@
    },
    "yaxis": {
     "showticklabels": false,
-    "autotick": true,
+    "tickmode": "linear",
     "rangemode": "normal",
     "autorange": true,
     "nticks": 0,
@@ -1560,7 +1560,7 @@
    "bgcolor": "rgb(67, 67, 67)",
    "zaxis": {
     "showticklabels": false,
-    "autotick": true,
+    "tickmode": "linear",
     "rangemode": "normal",
     "autorange": true,
     "nticks": 0,
@@ -1590,7 +1590,7 @@
    },
    "xaxis": {
     "showticklabels": false,
-    "autotick": true,
+    "tickmode": "linear",
     "rangemode": "normal",
     "autorange": true,
     "nticks": 0,

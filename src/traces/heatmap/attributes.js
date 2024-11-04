@@ -144,8 +144,6 @@ module.exports = extendFlat({
     tooltiptemplate: extendFlat({}, tooltiptemplateAttrs(), {dflt: 'x: %{x}<br>y: %{y}<br>z: %{z}'}),
 
     zorder: scatterAttrs.zorder
-}, {
-    transforms: undefined
 },
     colorScaleAttrs('', {cLetter: 'z', autoColorDflt: false})
 );

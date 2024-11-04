@@ -1,0 +1,1 @@
+ - Drop deprecated autotick attributes from cartesian axes [[#7236](https://github.com/plotly/plotly.js/pull/7236)]

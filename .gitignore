@@ -5,6 +5,7 @@ build/*
 !build/README.md
 
 dist/*.LICENSE.txt
+dist/*.css
 
 npm-debug.log*
 *.sublime*
@@ -12,7 +13,6 @@ npm-debug.log*
 tags
 
 .*
-!.github
 !.circleci
 !.gitignore
 !.npmignore
