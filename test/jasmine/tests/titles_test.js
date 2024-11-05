@@ -52,7 +52,7 @@ describe('Plot title', function() {
         .then(done, done.fail);
     });
 
-    it('can still be defined as `layout.title`', function(done) {
+    it('can be defined as `layout.title`', function(done) {
         Plotly.newPlot(gd, data, {title: 'Plotly line chart'})
         .then(function() {
             expectTitle('Plotly line chart');
@@ -905,7 +905,7 @@ describe('Titles for multiple axes', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('still supports title-as-string', function(done) {
+    it('supports title-as-string', function(done) {
         Plotly.newPlot(gd, data, multiAxesLayout)
         .then(function() {
             expect(xTitleSel(1).text()).toBe('X-Axis 1');
@@ -916,7 +916,7 @@ describe('Titles for multiple axes', function() {
         .then(done, done.fail);
     });
 
-    it('can be updated using deprecated title-as-string', function(done) {
+    it('can be updated using title-as-string', function(done) {
         Plotly.newPlot(gd, data, multiAxesLayout)
         .then(function() {
             return Plotly.relayout(gd, {
