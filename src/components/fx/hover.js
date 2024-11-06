@@ -160,7 +160,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
                 x1 += dx;
                 y0 += dy;
                 y1 += dy;
-            } // TODO: handle heatmapgl
+            }
 
             eventData.bbox = {
                 x0: x0 + gLeft,
@@ -1561,7 +1561,11 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
     if(d.zLabel !== undefined) {
         if(d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
         if(d.yLabel !== undefined) text += 'y: ' + d.yLabel + '<br>';
-        if(d.trace.type !== 'choropleth' && d.trace.type !== 'choroplethmapbox') {
+        if(
+            d.trace.type !== 'choropleth' &&
+            d.trace.type !== 'choroplethmapbox' &&
+            d.trace.type !== 'choroplethmap'
+        ) {
             text += (text ? 'z: ' : '') + d.zLabel;
         }
     } else if(showCommonLabel && d[h0 + 'Label'] === t0) {
@@ -2273,7 +2277,7 @@ function spikesChanged(gd, oldspikepoints) {
 function plainText(s, len) {
     return svgTextUtils.plainText(s || '', {
         len: len,
-        allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
+        allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em', 's', 'u']
     });
 }
 

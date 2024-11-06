@@ -63,9 +63,7 @@ function lsInner(gd) {
     exports.drawMainTitle(gd);
     ModeBar.manage(gd);
 
-    // _has('cartesian') means SVG specifically, not GL2D - but GL2D
-    // can still get here because it makes some of the SVG structure
-    // for shared features like selections.
+    // _has('cartesian') means SVG specifically
     if(!fullLayout._has('cartesian')) {
         return Plots.previousPromises(gd);
     }
@@ -410,18 +408,20 @@ exports.drawMainTitle = function(gd) {
     Titles.draw(gd, 'gtitle', {
         propContainer: fullLayout,
         propName: 'title.text',
+        subtitlePropName: 'title.subtitle.text',
         placeholder: fullLayout._dfltTitle.plot,
+        subtitlePlaceholder: fullLayout._dfltTitle.subtitle,
         attributes: ({
             x: x,
             y: y,
             'text-anchor': textAnchor,
             dy: dy
-        })
+        }),
     });
 
     if(title.text && title.automargin) {
         var titleObj = d3.selectAll('.gtitle');
-        var titleHeight = Drawing.bBox(titleObj.node()).height;
+        var titleHeight = Drawing.bBox(d3.selectAll('.g-gtitle').node()).height;
         var pushMargin = needsMarginPush(gd, title, titleHeight);
         if(pushMargin > 0) {
             applyTitleAutoMargin(gd, y, pushMargin, titleHeight);
@@ -444,6 +444,21 @@ exports.drawMainTitle = function(gd) {
                     var newDy = +(this.getAttribute('dy')).slice(0, -2) - delta + 'em';
                     this.setAttribute('dy', newDy);
                 });
+            }
+
+            // If there is a subtitle
+            var subtitleObj = d3.selectAll('.gtitle-subtitle');
+            if(subtitleObj.node()) {
+                // Get bottom edge of title bounding box
+                var titleBB = titleObj.node().getBBox();
+                var titleBottom = titleBB.y + titleBB.height;
+                var subtitleY = titleBottom + Titles.SUBTITLE_PADDING_EM * title.subtitle.font.size;
+                subtitleObj.attr({
+                    x: x,
+                    y: subtitleY,
+                    'text-anchor': textAnchor,
+                    dy: getMainTitleDyAdj(title.yanchor)
+                }).call(svgTextUtils.positionText, x, subtitleY);
             }
         }
     }

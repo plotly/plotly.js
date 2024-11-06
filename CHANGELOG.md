@@ -9,6 +9,67 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.35.2] -- 2024-09-10
+
+### Fixed
+- Fix require path to maplibre-gl.css (regression introduced in 2.35.1) [[#7146](https://github.com/plotly/plotly.js/pull/7146)],
+  with thanks to @birkskyum for the contribution!
+
+
+## [2.35.1] -- 2024-09-09
+
+### Fixed
+ - Fix rendering traces with `zorder` on overlayed subplots case of multiple traces in each subplot [[#7141](https://github.com/plotly/plotly.js/pull/7141)]
+ - Fix missing CSS for map(maplibre) subplots when used offline [[#7140](https://github.com/plotly/plotly.js/pull/7140)],
+   with thanks to @birkskyum for the contribution!
+
+
+## [2.35.0] -- 2024-08-29
+
+### Added
+ - Add new traces: scattermap, choroplethmap and densitymap and map subplots which use maplibre to render maps [[#7015](https://github.com/plotly/plotly.js/pull/7015), [#7060](https://github.com/plotly/plotly.js/pull/7060), [#7085](https://github.com/plotly/plotly.js/pull/7085), [#7088](https://github.com/plotly/plotly.js/pull/7088), [#7090](https://github.com/plotly/plotly.js/pull/7090), [#7092](https://github.com/plotly/plotly.js/pull/7092), [#7094](https://github.com/plotly/plotly.js/pull/7094), [#7134](https://github.com/plotly/plotly.js/pull/7134)],
+ with thanks to @birkskyum for the contribution!
+
+### Changed
+ - Deprecate mapbox traces and mapbox subplot [[#7087](https://github.com/plotly/plotly.js/pull/7087)]
+ - Drop obsolete `npm v6` installation [[#7095](https://github.com/plotly/plotly.js/pull/7095)]
+ - Use `Node.js v18` and `npm v10` in development [[#7078](https://github.com/plotly/plotly.js/pull/7078)]
+ - Update npm lockfile to v3 [[#7099](https://github.com/plotly/plotly.js/pull/7099)]
+ - Update turf to v7 [[#7116](https://github.com/plotly/plotly.js/pull/7116)]
+
+### Fixed
+ - Fix centroid calculation in turf [[#7115](https://github.com/plotly/plotly.js/pull/7115)],
+   with thanks to @birkskyum for the contribution!
+ - Fix missing cursor for Ternary Plot[[#7057](https://github.com/plotly/plotly.js/pull/7057)],
+   with thanks to @Lexachoc for the contribution!
+ - Elaborate on the Custom Bundle guide [[#7101](https://github.com/plotly/plotly.js/pull/7101)]
+
+
+## [2.34.0] -- 2024-07-18
+
+### Added
+ - Add `subtitle` attribute to `layout.title` to enable adding subtitles to plots [[#7012](https://github.com/plotly/plotly.js/pull/7012)]
+ - Introduce "u" and "s" pseudo html tags to add partial underline and strike-through styles to SVG text elements [[#7043](https://github.com/plotly/plotly.js/pull/7043)]
+ - Add geometric mean functionality and 'geometric mean ascending' + 'geometric mean descending' to `category_order` on cartesian axes [[#6223](https://github.com/plotly/plotly.js/pull/6223)],
+   with thanks to @acxz and @prabhathc for the contribution!
+ - Add axis property `ticklabelindex` for drawing the label for each minor tick n positions away from a major tick,
+   with thanks to @my-tien for the contribution! [[#7036](https://github.com/plotly/plotly.js/pull/7036)]
+ - Add property `ticklabelstandoff` and `ticklabelshift` to cartesian axes to adjust positioning of tick labels,
+   with thanks to @my-tien for the contribution! [[#7006](https://github.com/plotly/plotly.js/pull/7006)]
+ - Add `x0shift`, `x1shift`, `y0shift`, `y1shift` to shapes to add control over positioning of shape vertices on (multi-)category axes,
+   with thanks to @my-tien for the contribution! [[#7005](https://github.com/plotly/plotly.js/pull/7005)]
+
+### Fixed
+ - Fix displaying scattergl traces while zooming or panning (regression introduced in 2.26.0) [[#7018](https://github.com/plotly/plotly.js/pull/7018)],
+   with thanks to @eiriklv for the contribution!
+ - Fix for excessive hoverlabel removal and overlap for plots with both scatter and bar traces [[#6954](https://github.com/plotly/plotly.js/pull/6954)],
+   with thanks to @mbant for the contribution!
+ - Fix adding cartesian "togglehover" when included in `modebar.add` [[#5879](https://github.com/plotly/plotly.js/pull/5879)],
+   with thanks to @Sizurka for the contribution!
+ - Handle `zorder` between overlaying cartesian subplots [[#7032](https://github.com/plotly/plotly.js/pull/7032)],
+   This feature was anonymously sponsored: thank you to our sponsor!
+
+
 ## [2.33.0] -- 2024-05-29
 
 ### Added

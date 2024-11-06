@@ -9,7 +9,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
  * but the test is that they may have been registered in any order
  */
 module.exports = function checkComponent(Plotly) {
-    describe('core (svg 2d, scatter) and registered (bar) traces and transforms', function() {
+    describe('core (svg 2d, scatter) and registered (bar) traces', function() {
         var gd;
 
         var mock = {
@@ -23,15 +23,6 @@ module.exports = function checkComponent(Plotly) {
                     x: ['2001-01-01', '2002-01-01', '2003-01-01'],
                     y: [1, 3, 5],
                     type: 'bar',
-                    transforms: [{
-                        type: 'filter',
-                        operation: '<',
-                        target: 'y',
-                        value: '4',
-                        // need an explicit calendar, as filter uses a default of null
-                        // the rest of them get the default calendar filled in
-                        valuecalendar: 'nepali'
-                    }]
                 }
             ]
         };
@@ -59,7 +50,6 @@ module.exports = function checkComponent(Plotly) {
 
             expect(nodes.size()).toEqual(1);
             expect(gd._fullData[1].xcalendar).toBe('gregorian');
-            expect(gd._fullData[1].transforms[0].valuecalendar).toBe('nepali');
         });
     });
 

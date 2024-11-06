@@ -99,22 +99,10 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
     var subplotData = [];
     var trace, subplotX, subplotY;
 
-    if(type === 'gl2d') {
-        var spmatch = subplotId.match(SUBPLOT_PATTERN);
-        subplotX = 'x' + spmatch[1];
-        subplotY = 'y' + spmatch[2];
-    }
-
     for(var i = 0; i < data.length; i++) {
         trace = data[i];
 
-        if(type === 'gl2d' && Registry.traceIs(trace, 'gl2d')) {
-            if(trace[attr[0]] === subplotX && trace[attr[1]] === subplotY) {
-                subplotData.push(trace);
-            }
-        } else {
-            if(trace[attr] === subplotId) subplotData.push(trace);
-        }
+        if(trace[attr] === subplotId) subplotData.push(trace);
     }
 
     return subplotData;

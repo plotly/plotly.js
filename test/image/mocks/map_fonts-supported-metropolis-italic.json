@@ -1,0 +1,457 @@
+{
+ "data": [
+  {
+   "subplot": "map",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Metropolis Regular"
+   },
+   "text": [
+    "Metropolis Regular",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map2",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Metropolis Black"
+   },
+   "text": [
+    "Metropolis Black",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map3",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Metropolis Bold"
+   },
+   "text": [
+    "Metropolis Bold",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map4",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Metropolis Extra Bold"
+   },
+   "text": [
+    "Metropolis Extra Bold",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map5",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Metropolis Thin"
+   },
+   "text": [
+    "Metropolis Thin",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map6",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Metropolis Extra Light"
+   },
+   "text": [
+    "Metropolis Extra Light",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map7",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Metropolis Light"
+   },
+   "text": [
+    "Metropolis Light",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map8",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Metropolis Medium"
+   },
+   "text": [
+    "Metropolis Medium",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  },
+  {
+   "subplot": "map9",
+   "textfont": {
+    "size": 20,
+    "color": "red",
+    "family": "Metropolis Semi Bold"
+   },
+   "text": [
+    "Metropolis Semi Bold",
+    "Montreal",
+    "Toronto",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Halifax",
+    "Victoria",
+    "Winnepeg",
+    "Regina"
+   ],
+   "textposition": "top center",
+   "marker": {
+    "color": "blue",
+    "opacity": 0.5,
+    "size": [0, 20, 30, 20, 20, 10, 10, 10, 10, 10, 10]
+   },
+   "type": "scattermap",
+   "mode": "markers+text",
+   "lon": [
+    -90, -73.56, -79.38, -123.12, -114.07, -113.49, -75.69, -63.57, -123.36,
+    -97.13, -104.61
+   ],
+   "lat": [
+    55, 45.5, 43.65, 49.28, 51.04, 53.54, 45.42, 44.64, 48.42, 49.89, 50.44
+   ]
+  }
+ ],
+ "layout": {
+  "showlegend": false,
+  "margin": {
+   "t": 50,
+   "b": 10,
+   "l": 10,
+   "r": 10
+  },
+  "title": {
+   "text": "Supported Metropolis fonts  in maps",
+   "font": {
+    "weight": 800,
+    "style": "italic"
+   }
+  },
+  "map": {
+   "zoom": 3,
+   "style": "carto-positron",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.89, 0.99]
+   }
+  },
+  "map2": {
+   "zoom": 3,
+   "style": "carto-positron",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.78, 0.88]
+   }
+  },
+  "map3": {
+   "zoom": 3,
+   "style": "carto-positron",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.67, 0.77]
+   }
+  },
+  "map4": {
+   "zoom": 3,
+   "style": "carto-positron",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.56, 0.66]
+   }
+  },
+  "map5": {
+   "zoom": 3,
+   "style": "carto-positron",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.45, 0.55]
+   }
+  },
+  "map6": {
+   "zoom": 3,
+   "style": "carto-positron",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.34, 0.44]
+   }
+  },
+  "map7": {
+   "zoom": 3,
+   "style": "carto-positron",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.23, 0.33]
+   }
+  },
+  "map8": {
+   "zoom": 3,
+   "style": "carto-positron",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.12, 0.22]
+   }
+  },
+  "map9": {
+   "zoom": 3,
+   "style": "carto-positron",
+   "center": {
+    "lon": -90,
+    "lat": 50
+   },
+   "domain": {
+    "x": [0, 1],
+    "y": [0.01, 0.11]
+   }
+  },
+  "font": {
+   "style": "italic"
+  },
+  "height": 2700,
+  "width": 900
+ }
+}

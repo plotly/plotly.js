@@ -260,8 +260,8 @@ describe('Test plot api', function() {
                 x: [1, 2, 3],
                 y: [1, 2, 1]
             }], {
-                xaxis: { title: 'x title' },
-                yaxis: { title: 'y title' }
+                xaxis: { title: { text: 'x title' } },
+                yaxis: { title: { text: 'y title' } }
             })
             .then(function() {
                 return Plotly.relayout(gd, { zaxis: {} });
@@ -524,32 +524,6 @@ describe('Test plot api', function() {
             .then(assertSizeAndThen(700, 500, false, 'explicit height and width',
                 {autosize: true}))
             .then(assertSizeAndThen(543, 432, true, 'final back to autosize'))
-            .then(done, done.fail);
-        });
-
-        it('passes update data back to plotly_relayout unmodified ' +
-          'even if deprecated attributes have been used', function(done) {
-            Plotly.newPlot(gd, [{y: [1, 3, 2]}])
-            .then(function() {
-                gd.on('plotly_relayout', function(eventData) {
-                    expect(eventData).toEqual({
-                        title: 'Plotly chart',
-                        'xaxis.title': 'X',
-                        'xaxis.titlefont': {color: 'green'},
-                        'yaxis.title': 'Y',
-                        'polar.radialaxis.title': 'Radial'
-                    });
-                    done();
-                });
-
-                return Plotly.relayout(gd, {
-                    title: 'Plotly chart',
-                    'xaxis.title': 'X',
-                    'xaxis.titlefont': {color: 'green'},
-                    'yaxis.title': 'Y',
-                    'polar.radialaxis.title': 'Radial'
-                });
-            })
             .then(done, done.fail);
         });
     });
@@ -1429,31 +1403,6 @@ describe('Test plot api', function() {
             .then(done, done.fail);
         });
 
-        it('sets heatmap xtype/ytype even when data/fullData indices mismatch', function(done) {
-            Plotly.newPlot(gd, [
-                {
-                    // importantly, this is NOT a heatmap trace, so _fullData[1]
-                    // will not have the same attributes as data[1]
-                    x: [1, -1, -2, 0],
-                    y: [1, 2, 3, 1],
-                    transforms: [{type: 'groupby', groups: ['a', 'b', 'a', 'b']}]
-                },
-                {type: 'heatmap', z: [[0, 1], [2, 3]]}
-            ])
-            .then(function() {
-                checkScaling(undefined, undefined, 1, 2);
-                return Plotly.restyle(gd, {x: [[2, 4]], y: [[3, 5]]}, [1]);
-            })
-            .then(function() {
-                checkScaling('array', 'array', 1, 2);
-                return Plotly.restyle(gd, {x0: 1, dy: 3}, [1]);
-            })
-            .then(function() {
-                checkScaling('scaled', 'scaled', 1, 2);
-            })
-            .then(done, done.fail);
-        });
-
         it('sets colorbar.tickmode to linear when editing colorbar.tick0/dtick', function(done) {
             // note: this *should* apply to marker.colorbar etc too but currently that's not implemented
             // once we get this all in the schema it will work though.
@@ -2283,7 +2232,7 @@ describe('Test plot api', function() {
         it('', function(done) {
             var gd = createGraphDiv();
             var initialData = [];
-            var layout = { title: 'Redraw' };
+            var layout = { title: { text: 'Redraw' } };
 
             Plotly.newPlot(gd, initialData, layout)
             .then(function() {
@@ -2476,71 +2425,11 @@ describe('Test plot api', function() {
             expect(gd.data[1].contours).toBeUndefined();
         });
 
-        it('should rename *filtersrc* to *target* in filter transforms', function() {
-            var data = [{
-                transforms: [{
-                    type: 'filter',
-                    filtersrc: 'y'
-                }, {
-                    type: 'filter',
-                    operation: '<'
-                }]
-            }, {
-                transforms: [{
-                    type: 'filter',
-                    target: 'y'
-                }]
-            }];
-
-            Plotly.newPlot(gd, data);
-
-            var trace0 = gd.data[0];
-            var trace1 = gd.data[1];
-
-            expect(trace0.transforms.length).toEqual(2);
-            expect(trace0.transforms[0].filtersrc).toBeUndefined();
-            expect(trace0.transforms[0].target).toEqual('y');
-
-            expect(trace1.transforms.length).toEqual(1);
-            expect(trace1.transforms[0].target).toEqual('y');
-        });
-
-        it('should rename *calendar* to *valuecalendar* in filter transforms', function() {
-            var data = [{
-                transforms: [{
-                    type: 'filter',
-                    target: 'y',
-                    calendar: 'hebrew'
-                }, {
-                    type: 'filter',
-                    operation: '<'
-                }]
-            }, {
-                transforms: [{
-                    type: 'filter',
-                    valuecalendar: 'jalali'
-                }]
-            }];
-
-            Plotly.newPlot(gd, data);
-
-            var trace0 = gd.data[0];
-            var trace1 = gd.data[1];
-
-            expect(trace0.transforms.length).toEqual(2);
-            expect(trace0.transforms[0].calendar).toBeUndefined();
-            expect(trace0.transforms[0].valuecalendar).toEqual('hebrew');
-
-            expect(trace1.transforms.length).toEqual(1);
-            expect(trace1.transforms[0].valuecalendar).toEqual('jalali');
-        });
-
         it('should cleanup annotations / shapes refs', function() {
             var data = [{}];
 
             var layout = {
                 annotations: [
-                    { ref: 'paper' },
                     null,
                     { xref: 'x02', yref: 'y1' }
                 ],
@@ -2553,9 +2442,8 @@ describe('Test plot api', function() {
 
             Plotly.newPlot(gd, data, layout);
 
-            expect(gd.layout.annotations[0]).toEqual({ xref: 'paper', yref: 'paper' });
-            expect(gd.layout.annotations[1]).toEqual(null);
-            expect(gd.layout.annotations[2]).toEqual({ xref: 'x2', yref: 'y' });
+            expect(gd.layout.annotations[0]).toEqual(null);
+            expect(gd.layout.annotations[1]).toEqual({ xref: 'x2', yref: 'y' });
 
             expect(gd.layout.shapes[0].xref).toBeUndefined();
             expect(gd.layout.shapes[0].yref).toBeUndefined();
@@ -2757,7 +2645,7 @@ describe('Test plot api', function() {
             };
 
             var layoutUpdate = {
-                xaxis: {title: 'A', type: '-'}
+                xaxis: { title: { text: 'A' }, type: '-'}
             };
 
             Plotly.update(gd, traceUpdate, layoutUpdate).then(function() {

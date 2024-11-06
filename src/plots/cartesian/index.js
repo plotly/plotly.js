@@ -45,7 +45,7 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
     var xList = subplots.xaxis;
     var yList = subplots.yaxis;
     var spSVG = subplots.cartesian;
-    var spAll = spSVG.concat(subplots.gl2d || []);
+    var spAll = spSVG;
     var allX = {};
     var allY = {};
     var i, xi, yi;
@@ -244,7 +244,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
                 if(cdModule.length) {
                     layerData.push({
                         i: traceLayerClasses.indexOf(classBaseName),
-                        zorder: z,
+                        zindex: z,
                         className: className,
                         plotMethod: plotMethod,
                         cdModule: cdModule
@@ -257,10 +257,10 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             }
         }
     }
-    // Sort the layers primarily by z, then by i
+    // Sort the layers primarily by zindex, then by i
     layerData.sort(function(a, b) {
         return (
-            (a.zorder || 0) - (b.zorder || 0) ||
+            (a.zindex || 0) - (b.zindex || 0) ||
             (a.i - b.i)
         );
     });
@@ -579,20 +579,32 @@ function makeSubplotData(gd) {
 }
 
 function makeSubplotLayerBelow(gd, plotinfo) {
+    var fullLayout = gd._fullLayout;
     var plotgroup = plotinfo.plotgroup[0];
-    var hasOnlyLargeSploms = gd._fullLayout._hasOnlyLargeSploms;
+    var id = plotinfo.id;
+    var posZ = id.indexOf(zindexSeparator);
+    var hasZ = posZ !== -1;
+    var hasMultipleZ = fullLayout._zindices.length > 1;
+    var hasOnlyLargeSploms = fullLayout._hasOnlyLargeSploms;
+    var mainplotinfo = plotinfo.mainplotinfo;
 
-    if(!plotinfo.mainplot) {
-        var backLayer = ensureSingle(plotgroup, 'g', 'layer-subplot');
-        plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
-        plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
-
-        plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
-        plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
-        plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+    if(!plotinfo.mainplot || hasMultipleZ) {
+        if (!hasOnlyLargeSploms && !hasZ) {
+            var backLayer = ensureSingle(plotgroup, 'g', 'layer-subplot');
+            plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
+            plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
+    
+            if(mainplotinfo && hasMultipleZ) {
+                plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
+                plotinfo.gridlayer = mainplotinfo.gridlayer;
+                plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+            } else {
+                plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
+                plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
+                plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+            }
+        }
     } else {
-        var mainplotinfo = plotinfo.mainplotinfo;
-
         // now make the components of overlaid subplots
         // overlays don't have backgrounds, and append all
         // their other components to the corresponding
@@ -604,23 +616,26 @@ function makeSubplotLayerBelow(gd, plotinfo) {
     }
 
     // common attributes for all subplots, overlays or not
-
-    if(!hasOnlyLargeSploms) {
-        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
-        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
-        plotinfo.minorGridlayer.selectAll('g')
-            .map(function(d) { return d[0]; })
-            .sort(axisIds.idSort);
-
-        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
-        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
-        plotinfo.gridlayer.selectAll('g')
-            .map(function(d) { return d[0]; })
-            .sort(axisIds.idSort);
+    if(!hasZ) {
+        if(!hasOnlyLargeSploms) {
+            ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
+            ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
+            plotinfo.minorGridlayer.selectAll('g')
+                .map(function(d) { return d[0]; })
+                .sort(axisIds.idSort);
+    
+            ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
+            ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
+            plotinfo.gridlayer.selectAll('g')
+                .map(function(d) { return d[0]; })
+                .sort(axisIds.idSort);
+        }
     }
 }
 
 function makeSubplotLayerAbove(gd, plotinfo) {
+	var fullLayout = gd._fullLayout;
+	var plotgroup = plotinfo.plotgroup;
     var plotgroup = plotinfo.plotgroup[1];
     var id = plotinfo.id;
 
@@ -629,9 +644,12 @@ function makeSubplotLayerAbove(gd, plotinfo) {
 
     var xLayer = constants.layerValue2layerClass[plotinfo.xaxis.layer];
     var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
-    var hasOnlyLargeSploms = gd._fullLayout._hasOnlyLargeSploms;
+    var hasOnlyLargeSploms = fullLayout._hasOnlyLargeSploms;
 
-    if(!plotinfo.mainplot) {
+    var hasMultipleZ = fullLayout._zindices.length > 1;
+    var mainplotinfo = plotinfo.mainplotinfo;
+
+    if(!plotinfo.mainplot || hasMultipleZ) {
         if(hasOnlyLargeSploms) {
             // TODO could do even better
             // - we don't need plot (but we would have to mock it in lsInner

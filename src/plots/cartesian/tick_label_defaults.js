@@ -16,12 +16,18 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
+        if(!options.noTicklabelshift) {
+            coerce('ticklabelshift');
+        }
+        if(!options.noTicklabelstandoff) {
+            coerce('ticklabelstandoff');
+        }
         var font = options.font || {};
         var contColor = containerOut.color;
         var position = containerOut.ticklabelposition || '';
         var dfltFontColor = position.indexOf('inside') !== -1 ?
             contrast(options.bgColor) :
-            // as with titlefont.color, inherit axis.color only if one was
+            // as with title.font.color, inherit axis.color only if one was
             // explicitly provided
             (contColor && contColor !== layoutAttributes.color.dflt) ?
             contColor : font.color;

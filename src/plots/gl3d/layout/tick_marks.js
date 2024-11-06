@@ -52,9 +52,9 @@ function computeTickMarks(scene) {
                 axes.range[1] += 1;
             }
             // this is necessary to short-circuit the 'y' handling
-            // in autotick part of calcTicks... Treating all axes as 'y' in this case
-            // running the autoticks here, then setting
-            // autoticks to false to get around the 2D handling in calcTicks.
+            // in tickmode part of calcTicks... Treating all axes as 'y' in this case
+            // running the tickmode here, then setting
+            // automode to linear to get around the 2D handling in calcTicks.
             var tickModeCached = axes.tickmode;
             if(axes.tickmode === 'auto') {
                 axes.tickmode = 'linear';

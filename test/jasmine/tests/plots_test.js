@@ -131,17 +131,11 @@ describe('Test Plots', function() {
             expect(gd._fullData[0].index).toEqual(0);
             expect(gd._fullData[1].index).toEqual(1);
 
-            expect(gd._fullData[0]._expandedIndex).toEqual(0);
-            expect(gd._fullData[1]._expandedIndex).toEqual(1);
-
             expect(gd._fullData[0]._input).toBe(trace0);
             expect(gd._fullData[1]._input).toBe(trace1);
 
             expect(gd._fullData[0]._fullInput).toBe(gd._fullData[0]);
             expect(gd._fullData[1]._fullInput).toBe(gd._fullData[1]);
-
-            expect(gd._fullData[0]._expandedInput).toBe(gd._fullData[0]);
-            expect(gd._fullData[1]._expandedInput).toBe(gd._fullData[1]);
         });
 
         function testSanitizeMarginsHasBeenCalledOnlyOnce(gd) {
@@ -307,20 +301,6 @@ describe('Test Plots', function() {
                 traceOut = supplyTraceDefaults(traceIn, {type: 'scatter', hovertemplate: '%{y}'}, 0, layout);
                 expect(traceOut.hoverinfo).toBeUndefined();
             });
-        });
-    });
-
-    describe('Plots.supplyTransformDefaults', function() {
-        it('should accept an empty layout when transforms present', function() {
-            var traceOut = {y: [1], _length: 1};
-            Plots.supplyTransformDefaults({}, traceOut, {
-                _globalTransforms: [{ type: 'filter'}]
-            });
-
-            // This isn't particularly interesting. More relevant is that
-            // the above supplyTransformDefaults call didn't fail due to
-            // missing transformModules data.
-            expect(traceOut.transforms.length).toEqual(1);
         });
     });
 
@@ -579,7 +559,7 @@ describe('Test Plots', function() {
                         y: [1, 2, 1],
                     }],
                     layout: {
-                        title: 'frame A'
+                        title: { text: 'frame A' }
                     },
                     name: 'A'
                 }, null, {
@@ -587,7 +567,7 @@ describe('Test Plots', function() {
                         y: [1, 2, 3],
                     }],
                     layout: {
-                        title: 'frame B'
+                        title: { text: 'frame B' }
                     },
                     name: 'B'
                 }, {
@@ -887,6 +867,7 @@ describe('Test Plots', function() {
             gl3d: '.gl-container>div[id^="scene"]',
             geo: '.geolayer>g',
             mapbox: '.mapboxgl-map',
+            map: '.maplibregl-map',
             parcoords: '.parcoords-line-layers',
             pie: '.pielayer .trace',
             sankey: '.sankey',
@@ -899,7 +880,7 @@ describe('Test Plots', function() {
         }
 
         // opts.cartesian and opts.gl2d should be arrays of subplot ids ('xy', 'x2y2' etc)
-        // others should be counts: gl3d, geo, mapbox, parcoords, pie, ternary
+        // others should be counts: gl3d, geo, mapbox, map, parcoords, pie, ternary
         // if omitted, that subplot type is assumed to not exist
         function assertSubplots(opts, msg) {
             msg = msg || '';
@@ -971,7 +952,8 @@ describe('Test Plots', function() {
                 scene: {},
                 geo: {},
                 ternary: {},
-                mapbox: {}
+                mapbox: {},
+                map: {}
             })
             .then(function() {
                 assertSubplots({pie: 1}, 'just pie');

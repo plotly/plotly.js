@@ -48,7 +48,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         var axOut = Template.newContainer(contOut, axName);
         axOut._id = axOut._name = axName;
         axOut._attr = opts.id + '.' + axName;
-        axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
+        axOut._traceIndices = subplotData.map(function(t) { return t.index; });
 
         var dataAttr = constants.axisName2dataArray[axName];
         var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr, opts);
@@ -186,7 +186,9 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     size: dfltFontSize,
                     family: dfltFontFamily
                 },
-                noAutotickangles: axName === 'angularaxis'
+                noAutotickangles: axName === 'angularaxis',
+                noTicklabelshift: true,
+                noTicklabelstandoff: true
             });
 
             handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});

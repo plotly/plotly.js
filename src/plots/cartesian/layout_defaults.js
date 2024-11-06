@@ -46,7 +46,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // look for axes in the data
     for(i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
-        if(!traceIs(trace, 'cartesian') && !traceIs(trace, 'gl2d')) continue;
+        if(!traceIs(trace, 'cartesian')) continue;
 
         var xaName;
         if(trace.xaxis) {
@@ -143,7 +143,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     function newAxLayoutOut() {
         var traces = ax2traces[axName] || [];
-        axLayoutOut._traceIndices = traces.map(function(t) { return t._expandedIndex; });
+        axLayoutOut._traceIndices = traces.map(function(t) { return t.index; });
         axLayoutOut._annIndices = [];
         axLayoutOut._shapeIndices = [];
         axLayoutOut._selectionIndices = [];

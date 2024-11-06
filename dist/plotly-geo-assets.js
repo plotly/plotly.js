@@ -1,5 +1,5 @@
 /**
-* plotly.js v2.33.0
+* plotly.js v2.35.2
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -17,45 +17,45 @@
 return /******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 788:
+/***/ 697:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.33.0';
+exports.version = '2.35.2';
 
 /***/ }),
 
-/***/ 263:
+/***/ 253:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-exports.world_110m = __webpack_require__(920)
-exports.world_50m = __webpack_require__(464)
+exports.world_110m = __webpack_require__(527)
+exports.world_50m = __webpack_require__(26)
 
-exports.africa_110m = __webpack_require__(50)
-exports.africa_50m = __webpack_require__(528)
+exports.africa_110m = __webpack_require__(367)
+exports.africa_50m = __webpack_require__(34)
 
-exports.asia_110m = __webpack_require__(376)
-exports.asia_50m = __webpack_require__(290)
+exports.asia_110m = __webpack_require__(95)
+exports.asia_50m = __webpack_require__(546)
 
-exports.europe_110m = __webpack_require__(296)
-exports.europe_50m = __webpack_require__(976)
+exports.europe_110m = __webpack_require__(219)
+exports.europe_50m = __webpack_require__(334)
 
-exports["north-america_110m"] = __webpack_require__(496)
-exports["north-america_50m"] = __webpack_require__(886)
+exports["north-america_110m"] = __webpack_require__(485)
+exports["north-america_50m"] = __webpack_require__(932)
 
-exports["south-america_110m"] = __webpack_require__(576)
-exports["south-america_50m"] = __webpack_require__(224)
+exports["south-america_110m"] = __webpack_require__(851)
+exports["south-america_50m"] = __webpack_require__(414)
 
-exports.usa_110m = __webpack_require__(828)
-exports.usa_50m = __webpack_require__(350)
+exports.usa_110m = __webpack_require__(650)
+exports.usa_50m = __webpack_require__(213)
 
 
 /***/ }),
 
-/***/ 50:
+/***/ 367:
 /***/ (function(module) {
 
 "use strict";
@@ -63,7 +63,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 528:
+/***/ 34:
 /***/ (function(module) {
 
 "use strict";
@@ -71,7 +71,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 376:
+/***/ 95:
 /***/ (function(module) {
 
 "use strict";
@@ -79,7 +79,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 290:
+/***/ 546:
 /***/ (function(module) {
 
 "use strict";
@@ -87,7 +87,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 296:
+/***/ 219:
 /***/ (function(module) {
 
 "use strict";
@@ -95,7 +95,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 976:
+/***/ 334:
 /***/ (function(module) {
 
 "use strict";
@@ -103,7 +103,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 496:
+/***/ 485:
 /***/ (function(module) {
 
 "use strict";
@@ -111,7 +111,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 886:
+/***/ 932:
 /***/ (function(module) {
 
 "use strict";
@@ -119,7 +119,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 576:
+/***/ 851:
 /***/ (function(module) {
 
 "use strict";
@@ -127,7 +127,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 224:
+/***/ 414:
 /***/ (function(module) {
 
 "use strict";
@@ -135,7 +135,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 828:
+/***/ 650:
 /***/ (function(module) {
 
 "use strict";
@@ -143,7 +143,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 350:
+/***/ 213:
 /***/ (function(module) {
 
 "use strict";
@@ -151,7 +151,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 920:
+/***/ 527:
 /***/ (function(module) {
 
 "use strict";
@@ -159,7 +159,7 @@ module.exports = /*#__PURE__*/JSON.parse('{"type":"Topology","objects":{"coastli
 
 /***/ }),
 
-/***/ 464:
+/***/ 26:
 /***/ (function(module) {
 
 "use strict";
@@ -201,8 +201,8 @@ var __webpack_exports__ = {};
 var exports = __webpack_exports__;
 
 
-var saneTopojson = __webpack_require__(263);
-exports.version = __webpack_require__(788).version;
+var saneTopojson = __webpack_require__(253);
+exports.version = __webpack_require__(697).version;
 exports.topojson = saneTopojson;
 }();
 /******/ 	return __webpack_exports__;

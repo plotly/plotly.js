@@ -15,6 +15,7 @@ module.exports = function calc(gd, trace) {
     var displaySum = ternary.sum;
     var normSum = trace.sum || displaySum;
     var arrays = {a: trace.a, b: trace.b, c: trace.c};
+    var ids = trace.ids;
 
     var i, j, dataArray, newArray, fillArray1, fillArray2;
 
@@ -58,6 +59,9 @@ module.exports = function calc(gd, trace) {
             y = a;
             x = c - b;
             cd[i] = {x: x, y: y, a: a, b: b, c: c};
+            if (ids) {
+                cd[i].id = ids[i];
+            }
         } else cd[i] = {x: false, y: false};
     }
 
