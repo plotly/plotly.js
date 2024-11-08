@@ -470,18 +470,20 @@ exports.drawFramework = function(gd) {
             id;
 
         var plotinfo = fullLayout._plots[id];
-        if(!plotinfo) {
+        if(plotinfo) {
+            plotinfo.plotgroup = plotinfo.plotgroup.concat([d3.select(this)]);
+        } else { // repurpose plotinfo from plot without z
             plotinfo = Lib.extendFlat({}, fullLayout._plots[idWithoutZ]);
 
             if(plotinfo) {
                 plotinfo.id = id;
                 fullLayout._plots[id] = plotinfo;
                 fullLayout._subplots.cartesian.push(id);
+                plotinfo.plotgroup[1] = d3.select(this);    
             }
         }
 
         if(plotinfo) {
-            plotinfo.plotgroup = plotinfo.plotgroup.concat([d3.select(this)]);
             makeSubplotLayerAbove(gd, plotinfo);
 
             if(!hasZ) {
