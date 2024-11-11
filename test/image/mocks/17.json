@@ -611,9 +611,7 @@
     "yanchor": "auto",
     "xatype": "linear",
     "yatype": "linear",
-    "tag": "",
-    "xref": "plot",
-    "yref": "plot"
+    "tag": ""
    }
   ],
   "margin": {
