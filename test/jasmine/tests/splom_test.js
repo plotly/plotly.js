@@ -779,7 +779,7 @@ describe('Test splom interactions:', function() {
         _newPlot(gd, figLarge).then(function() {
             _assert({
                 subplotCnt: 400,
-                innerSubplotNodeCntBelow: 4,
+                innerSubplotNodeCntBelow: 0,
                 innerSubplotNodeCnt: 4,
                 hasSplomGrid: true,
                 bgCnt: 0
@@ -790,7 +790,7 @@ describe('Test splom interactions:', function() {
         .then(function() {
             _assert({
                 subplotCnt: 400,
-                innerSubplotNodeCntBelow: 4,
+                innerSubplotNodeCntBelow: 0,
                 innerSubplotNodeCnt: 4,
                 hasSplomGrid: true,
                 bgCnt: 400
@@ -801,7 +801,7 @@ describe('Test splom interactions:', function() {
         .then(function() {
             _assert({
                 subplotCnt: 400,
-                innerSubplotNodeCntBelow: 4,
+                innerSubplotNodeCntBelow: 0,
                 innerSubplotNodeCnt: 4,
                 hasSplomGrid: true,
                 bgCnt: 0
@@ -826,7 +826,10 @@ describe('Test splom interactions:', function() {
                 // from small -> large splom:
                 // no need to clear subplots children in existing subplots,
                 // new subplots though have reduced number of children.
-                innerSubplotNodeCntBelow: 4,
+                innerSubplotNodeCntBelow: function(d) {
+                    var p = d.match(SUBPLOT_PATTERN);
+                    return (p[1] > 5 || p[2] > 5) ? 0 : 4;
+                },
                 innerSubplotNodeCnt: function(d) {
                     var p = d.match(SUBPLOT_PATTERN);
                     return (p[1] > 5 || p[2] > 5) ? 4 : 13;
