@@ -748,6 +748,40 @@ function clickPointToCoord(gd, data) {
     return {x: x, y: y};
 }
 
+function stackedCoord(gd, pts) {
+    // Retrieve coordinates of clicked point on stacked traces
+
+    // Get curve data
+    var cd = gd.calcdata[pts.curveNumber];
+
+    // Get clicked point
+    var clickedPoint = cd.filter(function(item) {
+        // cd[0] holds more information than next items
+        // for stacked scatter, orientation is found in cd[0].t.orientation
+        // for bar, orientation is found in pts.fullData.orientation
+        // string category coordinates are only found in pts.x, pts.y. cd[0].x, cd[0].y are numeric
+        // item.i and pts.pointIndex are null on interpolated data
+        // pts.xaxis.d2c gives category coordinate index
+        if(pts.pointIndex !== null) {
+            return item.i === pts.pointIndex;
+        }
+        if(pts.fullData.orientation === "v" || (cd[0] && cd[0].t && cd[0].t.orientation) === "v") {
+            return item.x === pts.xaxis.d2c(pts.x);
+        }
+        if(pts.fullData.orientation === "h" || (cd[0] && cd[0].t && cd[0].t.orientation) === "h") {
+            return item.y === pts.yaxis.d2c(pts.y);
+        }
+    });
+
+    if(clickedPoint.length) {
+        var x = clickedPoint[0].x;
+        var y = clickedPoint[0].y;
+        return {x: x, y: y};
+    } else {
+        return {x: pts.x, y: pts.y};
+    }
+}
+
 function addTooltip(gd, data, userTemplate, customStyle) {
     var pts = data.points[0];
     var fullLayout = gd._fullLayout;
@@ -758,6 +792,14 @@ function addTooltip(gd, data, userTemplate, customStyle) {
 
         var x = pts.x;
         var y = (pts.y !== undefined && pts.y !== null) ? pts.y : pts.high; // fallback value for candlestick etc
+
+        // Handle stacked traces
+        // not consistent:
+        // bar plots are stacked with barmode == "stack"
+        // scatter plotas are stacked when stackgroup is set
+        if(fullLayout.barmode == "stack" || (pts.fullData && pts.fullData.stackgroup && pts.fullData.stackgroup !== "")){
+            var {x, y} = stackedCoord(gd, pts);
+        }
 
         // Handle histogram with more than one curve (bars displayed side to side)
         // This ensures the tooltip is on the clicked bar and not always on the middle bar
