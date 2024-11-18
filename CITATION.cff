@@ -8,7 +8,7 @@ authors:
   given-names: "Étienne"
 - family-names: "Samimi"
   given-names: "Mojtaba"
-title: "Open-source charting library behind Plotly"
+title: "Open source Plotly charting library"
 version: 2.35.2
 doi: 10.5281/zenodo.13964707
 date-released: 2024-09-10
