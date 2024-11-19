@@ -473,8 +473,7 @@ exports.enforce = function enforce(gd) {
             axisID = axisIDs[j];
             axes[axisID] = ax = fullLayout[id2name(axisID)];
 
-            if(ax._inputDomain) ax.domain = ax._inputDomain.slice();
-            else ax._inputDomain = ax.domain.slice();
+            ax._inputDomain = ax.domain.slice();
 
             if(!ax._inputRange) ax._inputRange = ax.range.slice();
 
