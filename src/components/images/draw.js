@@ -203,10 +203,14 @@ module.exports = function draw(gd) {
         );
     }
 
+    function imgDataFunc(d) {
+        return [d.xref, d.x, d.sizex, d.yref, d.y, d.sizey].join('_');
+    }
+
     var imagesBelow = fullLayout._imageLowerLayer.selectAll('image')
-        .data(imageDataBelow);
+        .data(imageDataBelow, imgDataFunc);
     var imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
-        .data(imageDataAbove);
+        .data(imageDataAbove, imgDataFunc);
 
     imagesBelow.enter().append('image');
     imagesAbove.enter().append('image');
