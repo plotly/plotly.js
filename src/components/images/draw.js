@@ -207,6 +207,8 @@ module.exports = function draw(gd) {
         return [d.xref, d.x, d.sizex, d.yref, d.y, d.sizey].join('_');
     }
 
+    function imgSort(a, b) { return a._index - b._index; }
+
     var imagesBelow = fullLayout._imageLowerLayer.selectAll('image')
         .data(imageDataBelow, imgDataFunc);
     var imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
@@ -226,6 +228,8 @@ module.exports = function draw(gd) {
         setImage.bind(this)(d);
         applyAttributes.bind(this)(d);
     });
+    imagesBelow.sort(imgSort);
+    imagesAbove.sort(imgSort);
 
     var allSubplots = Object.keys(fullLayout._plots);
     for(i = 0; i < allSubplots.length; i++) {
