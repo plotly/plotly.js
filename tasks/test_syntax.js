@@ -199,6 +199,7 @@ function assertFileNames() {
                 base === 'SECURITY.md' ||
                 base === 'BUILDING.md' ||
                 base === 'CUSTOM_BUNDLE.md' ||
+                base === 'CITATION.cff' ||
                 file.indexOf('mathjax') !== -1
             ) return;
 
