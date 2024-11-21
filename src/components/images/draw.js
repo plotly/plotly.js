@@ -242,7 +242,7 @@ module.exports = function draw(gd) {
         var imagesOnSubplot = subplotObj.imagelayer.selectAll('image')
             // even if there are no images on this subplot, we need to run
             // enter and exit in case there were previously
-            .data(imageDataSubplot[subplot] || []);
+            .data(imageDataSubplot[subplot] || [], imgDataFunc);
 
         imagesOnSubplot.enter().append('image');
         imagesOnSubplot.exit().remove();
@@ -251,5 +251,6 @@ module.exports = function draw(gd) {
             setImage.bind(this)(d);
             applyAttributes.bind(this)(d);
         });
+        imagesOnSubplot.sort(imgSort);
     }
 };
