@@ -56,7 +56,27 @@
     }
    }
   },
-
+  {
+    "x": ["a", "b", "c", "d", "e"],
+    "y": [7, 8, 9, 10, 11],
+    "name": "Bar 5",
+    "type": "bar",
+    "textposition": "outside",
+    "text": "path",
+    "marker": {
+     "pattern": {
+      "path": [
+        "M0,0H4V4H0Z",
+        "M0,0H6V6Z",
+        "M0,0V4H4Z",
+        "M0,0C0,2,4,2,4,4C4,6,0,6,0,8H2C2,6,6,6,6,4C6,2,2,2,2,0Z",
+        "M4,4L7,2A3.5,3.5,0,1,0,7,6Z"
+      ],
+      "fgcolor": "yellow",
+      "bgcolor": "black"
+     }
+    }
+   },
   {
    "t": ["M", "N", "O", "P"],
    "r": [1, 2, 3, 4],
