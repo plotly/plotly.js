@@ -174,14 +174,7 @@
    "x": [3, 2, 1],
    "y": ["U", "V", "W"],
    "name": "Funnel",
-   "type": "funnel",
-   "marker": {
-    "pattern": {
-     "solidity": [0.25, 0.5, 0.75],
-     "shape": ["|", "", "-"],
-     "bgcolor": "black"
-    }
-   }
+   "type": "funnel"
   }
  ],
  "layout": {
