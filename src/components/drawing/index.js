@@ -307,7 +307,6 @@ drawing.fillGroupStyle = function(s, gd, forLegend) {
 };
 
 var SYMBOLDEFS = require('./symbol_defs');
-const { marker } = require('../../traces/bar/attributes');
 
 drawing.symbolNames = [];
 drawing.symbolFuncs = [];
