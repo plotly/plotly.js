@@ -13714,7 +13714,7 @@ var Plotly = (() => {
         },
         template: {
           valType: "any",
-          editType: "calc"
+          editType: "plot"
         },
         newshape: drawNewShapeAttrs.newshape,
         activeshape: drawNewShapeAttrs.activeshape,
@@ -13738,10 +13738,10 @@ var Plotly = (() => {
     }
   });
 
-  // stylePlugin:/home/solarch/plotly/webgl/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
+  // stylePlugin:/Users/marthacryan/gitrepos/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
   var maplibre_gl_exports = {};
   var init_maplibre_gl2 = __esm({
-    "stylePlugin:/home/solarch/plotly/webgl/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
+    "stylePlugin:/Users/marthacryan/gitrepos/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       init_maplibre_gl();
     }
   });
@@ -54111,8 +54111,14 @@ var Plotly = (() => {
             gd
           );
         }
-        var imagesBelow = fullLayout._imageLowerLayer.selectAll("image").data(imageDataBelow);
-        var imagesAbove = fullLayout._imageUpperLayer.selectAll("image").data(imageDataAbove);
+        function imgDataFunc(d) {
+          return [d.xref, d.x, d.sizex, d.yref, d.y, d.sizey].join("_");
+        }
+        function imgSort(a, b) {
+          return a._index - b._index;
+        }
+        var imagesBelow = fullLayout._imageLowerLayer.selectAll("image").data(imageDataBelow, imgDataFunc);
+        var imagesAbove = fullLayout._imageUpperLayer.selectAll("image").data(imageDataAbove, imgDataFunc);
         imagesBelow.enter().append("image");
         imagesAbove.enter().append("image");
         imagesBelow.exit().remove();
@@ -54125,18 +54131,21 @@ var Plotly = (() => {
           setImage.bind(this)(d);
           applyAttributes.bind(this)(d);
         });
+        imagesBelow.sort(imgSort);
+        imagesAbove.sort(imgSort);
         var allSubplots = Object.keys(fullLayout._plots);
         for (i = 0; i < allSubplots.length; i++) {
           subplot = allSubplots[i];
           var subplotObj = fullLayout._plots[subplot];
           if (!subplotObj.imagelayer) continue;
-          var imagesOnSubplot = subplotObj.imagelayer.selectAll("image").data(imageDataSubplot[subplot] || []);
+          var imagesOnSubplot = subplotObj.imagelayer.selectAll("image").data(imageDataSubplot[subplot] || [], imgDataFunc);
           imagesOnSubplot.enter().append("image");
           imagesOnSubplot.exit().remove();
           imagesOnSubplot.each(function(d) {
             setImage.bind(this)(d);
             applyAttributes.bind(this)(d);
           });
+          imagesOnSubplot.sort(imgSort);
         }
       };
     }

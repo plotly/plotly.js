@@ -91,7 +91,7 @@ The `basic` partial bundle contains trace modules `bar`, `pie` and `scatter`.
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.6 MB | 1008.4 kB | 349.2 kB |
+| 2.6 MB | 1008.5 kB | 349.2 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-basic-3.0.0-rc.0.js
@@ -114,7 +114,7 @@ The `cartesian` partial bundle contains trace modules `bar`, `box`, `contour`, `
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.3 MB | 1.3 MB | 446.4 kB |
+| 3.3 MB | 1.3 MB | 446.5 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-cartesian-3.0.0-rc.0.js
@@ -160,7 +160,7 @@ The `gl3d` partial bundle contains trace modules `cone`, `isosurface`, `mesh3d`,
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 4.1 MB | 1.5 MB | 513.6 kB |
+| 4.1 MB | 1.5 MB | 513.7 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-gl3d-3.0.0-rc.0.js
@@ -183,7 +183,7 @@ The `gl2d` partial bundle contains trace modules `parcoords`, `scatter`, `scatte
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.4 MB | 1.3 MB | 468.9 kB |
+| 3.4 MB | 1.3 MB | 469 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-gl2d-3.0.0-rc.0.js
@@ -229,7 +229,7 @@ The `finance` partial bundle contains trace modules `bar`, `candlestick`, `funne
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.8 MB | 1.1 MB | 382.8 kB |
+| 2.8 MB | 1.1 MB | 382.9 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-finance-3.0.0-rc.0.js
