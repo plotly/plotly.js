@@ -122,7 +122,7 @@ function calcHover(pointData, x, y, trace) {
     };
 
     // that is single-item arrays_to_calcdata excerpt, since we are doing it for a single point and we don't have to do it beforehead for 1e6 points
-    di.tx = Array.isArray(trace.text) ? trace.text[id] : trace.text;
+    di.tx = Lib.isArrayOrTypedArray(trace.text) ? trace.text[id] : trace.text;
     di.htx = Array.isArray(trace.hovertext) ? trace.hovertext[id] : trace.hovertext;
     di.data = Array.isArray(trace.customdata) ? trace.customdata[id] : trace.customdata;
     di.tp = Array.isArray(trace.textposition) ? trace.textposition[id] : trace.textposition;
@@ -130,8 +130,11 @@ function calcHover(pointData, x, y, trace) {
     var font = trace.textfont;
     if(font) {
         di.ts = Lib.isArrayOrTypedArray(font.size) ? font.size[id] : font.size;
-        di.tc = Array.isArray(font.color) ? font.color[id] : font.color;
+        di.tc = Lib.isArrayOrTypedArray(font.color) ? font.color[id] : font.color;
         di.tf = Array.isArray(font.family) ? font.family[id] : font.family;
+        di.tw = Array.isArray(font.weight) ? font.weight[id] : font.weight;
+        di.ty = Array.isArray(font.style) ? font.style[id] : font.style;
+        di.tv = Array.isArray(font.variant) ? font.variant[id] : font.variant;
     }
 
     var marker = trace.marker;

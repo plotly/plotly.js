@@ -6,6 +6,7 @@ var createConeMesh = require('../../../stackgl_modules').gl_cone3d.createConeMes
 var simpleMap = require('../../lib').simpleMap;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var extractOpts = require('../../components/colorscale').extractOpts;
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var zip3 = require('../../plots/gl3d/zip3');
 
 function Cone(scene, uid) {
@@ -34,7 +35,7 @@ proto.handlePick = function(selection) {
         ];
 
         var text = this.data.hovertext || this.data.text;
-        if(Array.isArray(text) && text[selectIndex] !== undefined) {
+        if(isArrayOrTypedArray(text) && text[selectIndex] !== undefined) {
             selection.textLabel = text[selectIndex];
         } else if(text) {
             selection.textLabel = text;
@@ -78,15 +79,20 @@ function convert(scene, trace) {
     coneOpts.vertexIntensityBounds = [cOpts.min / trace._normMax, cOpts.max / trace._normMax];
     coneOpts.coneOffset = anchor2coneOffset[trace.anchor];
 
-    if(trace.sizemode === 'scaled') {
+
+    var sizemode = trace.sizemode;
+    if(sizemode === 'scaled') {
         // unitless sizeref
         coneOpts.coneSize = trace.sizeref || 0.5;
-    } else {
+    } else if(sizemode === 'absolute') {
         // sizeref here has unit of velocity
         coneOpts.coneSize = trace.sizeref && trace._normMax ?
             trace.sizeref / trace._normMax :
             0.5;
+    } else if(sizemode === 'raw') {
+        coneOpts.coneSize = trace.sizeref;
     }
+    coneOpts.coneSizemode = sizemode;
 
     var meshData = conePlot(coneOpts);
 

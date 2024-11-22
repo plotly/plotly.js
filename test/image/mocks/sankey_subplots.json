@@ -1,68 +1,69 @@
 {
-    "data": [{
-            "domain": {
-                "y": [0, 0.45]
-            },
-            "type": "sankey",
-            "orientation": "h",
-            "node": {
-                "line": {
-                    "width": 4,
-                    "color": "black"
-                },
-                "label": [
-                    "<i>Rien ne se perd,<br>rien ne se crée,<br>tout se <b>transforme</b>.</i><sub>",
-                    "H<sub>2</sub>O",
-                    "<b>e<sup>iπ</sup> = cos i + i sin π</b>"
-                ]
-            },
-            "link": {
-                "source": [0, 2],
-                "target": [1, 1],
-                "value": [120, 50],
-                "label": ["stram1", "stream2"]
-            },
-            "textfont": {
-                "color": "darkblue"
-            }
-        },
-        {
-            "domain": {
-                "y": [0.55, 1]
-            },
-            "type": "sankey",
-            "orientation": "v",
-            "node": {
-                "thickness": 50,
-                "line": {
-                    "width": 4,
-                    "color": "black"
-                },
-                "label": [
-                    "<i>Rien ne se perd,<br>rien ne se crée,<br>tout se <b>transforme</b>.</i><sub>",
-                    "H<sub>2</sub>O",
-                    "<b>e<sup>iπ</sup> = cos i + i sin π</b>"
-                ]
-            },
-            "link": {
-                "source": [0, 2],
-                "target": [1, 1],
-                "value": [120, 50],
-                "label": ["stram1", "stream2"]
-            },
-            "textfont": {
-                "color": "darkblue"
-            }
-        },
-        {
-            "visible": false,
-            "type": "sankey"
-        }
-    ],
-    "layout": {
-        "title": {"text": "Multiple Sankey plots"},
-        "width": 600,
-        "height": 600,
-        "showlegend": false
-    }
+ "data": [
+  {
+   "domain": {
+    "y": [0, 0.45]
+   },
+   "type": "sankey",
+   "orientation": "h",
+   "node": {
+    "line": {
+     "width": 4,
+     "color": "black"
+    },
+    "label": [
+     "<i>Rien ne se perd,<br>rien ne se crée,<br>tout se <b>transforme</b>.</i><sub>",
+     "H<sub>2</sub>O",
+     "<b>e<sup>iπ</sup> = cos i + i sin π</b>"
+    ]
+   },
+   "link": {
+    "source": [0, 2],
+    "target": [1, 1],
+    "value": [120, 50],
+    "label": ["stram1", "stream2"]
+   },
+   "textfont": {
+    "color": "darkblue"
+   }
+  },
+  {
+   "domain": {
+    "y": [0.55, 1]
+   },
+   "type": "sankey",
+   "orientation": "v",
+   "node": {
+    "thickness": 50,
+    "line": {
+     "width": 4,
+     "color": "black"
+    },
+    "label": [
+     "<i>Rien ne se perd,<br>rien ne se crée,<br>tout se <b>transforme</b>.</i><sub>",
+     "H<sub>2</sub>O",
+     "<b>e<sup>iπ</sup> = cos i + i sin π</b>"
+    ]
+   },
+   "link": {
+    "source": [0, 2],
+    "target": [1, 1],
+    "value": [120, 50],
+    "label": ["stram1", "stream2"]
+   },
+   "textfont": {
+    "color": "darkblue"
+   }
+  },
+  {
+   "visible": false,
+   "type": "sankey"
+  }
+ ],
+ "layout": {
+  "title": { "text": "Multiple Sankey plots" },
+  "width": 600,
+  "height": 600,
+  "showlegend": false
+ }
 }

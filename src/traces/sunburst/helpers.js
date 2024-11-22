@@ -71,7 +71,13 @@ function determineOutsideTextFont(trace, pt, layoutFont) {
     return {
         color: exports.getOutsideTextFontKey('color', trace, pt, layoutFont),
         family: exports.getOutsideTextFontKey('family', trace, pt, layoutFont),
-        size: exports.getOutsideTextFontKey('size', trace, pt, layoutFont)
+        size: exports.getOutsideTextFontKey('size', trace, pt, layoutFont),
+        weight: exports.getOutsideTextFontKey('weight', trace, pt, layoutFont),
+        style: exports.getOutsideTextFontKey('style', trace, pt, layoutFont),
+        variant: exports.getOutsideTextFontKey('variant', trace, pt, layoutFont),
+        textcase: exports.getOutsideTextFontKey('textcase', trace, pt, layoutFont),
+        lineposition: exports.getOutsideTextFontKey('lineposition', trace, pt, layoutFont),
+        shadow: exports.getOutsideTextFontKey('shadow', trace, pt, layoutFont),
     };
 }
 
@@ -96,7 +102,13 @@ function determineInsideTextFont(trace, pt, layoutFont, opts) {
     return {
         color: customColor || Color.contrast(cdi.color),
         family: exports.getInsideTextFontKey('family', trace, pt, layoutFont, opts),
-        size: exports.getInsideTextFontKey('size', trace, pt, layoutFont, opts)
+        size: exports.getInsideTextFontKey('size', trace, pt, layoutFont, opts),
+        weight: exports.getInsideTextFontKey('weight', trace, pt, layoutFont, opts),
+        style: exports.getInsideTextFontKey('style', trace, pt, layoutFont, opts),
+        variant: exports.getInsideTextFontKey('variant', trace, pt, layoutFont, opts),
+        textcase: exports.getInsideTextFontKey('textcase', trace, pt, layoutFont, opts),
+        lineposition: exports.getInsideTextFontKey('lineposition', trace, pt, layoutFont, opts),
+        shadow: exports.getInsideTextFontKey('shadow', trace, pt, layoutFont, opts),
     };
 }
 

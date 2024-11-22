@@ -25,7 +25,7 @@ var newShapeHelpers = require('../shapes/draw_newshape/helpers');
 var handleEllipse = newShapeHelpers.handleEllipse;
 var readPaths = newShapeHelpers.readPaths;
 
-var newShapes = require('../shapes/draw_newshape/newshapes');
+var newShapes = require('../shapes/draw_newshape/newshapes').newShapes;
 
 var newSelections = require('./draw_newselection/newselections');
 var activateLastSelection = require('./draw').activateLastSelection;
@@ -112,6 +112,10 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         fullLayout.newshape :
         fullLayout.newselection;
 
+    if(isDrawMode) {
+        dragOptions.hasText = newStyle.label.text || newStyle.label.texttemplate;
+    }
+
     var fillC = (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'rgba(0,0,0,0)';
 
     var strokeC = newStyle.line.color || (
@@ -146,6 +150,16 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         .attr('transform', transform)
         .attr('d', 'M0,0Z');
 
+    // create & style group for text label
+    if(isDrawMode && dragOptions.hasText) {
+        var shapeGroup = zoomLayer.select('.label-temp');
+        if(shapeGroup.empty()) {
+            shapeGroup = zoomLayer.append('g')
+                .classed('label-temp', true)
+                .classed('select-outline', true)
+                .style({ opacity: 0.8 });
+        }
+    }
 
     var throttleID = fullLayout._uid + constants.SELECTID;
     var selection = [];
@@ -168,6 +182,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             for(var q = 0; q < selections.length; q++) {
                 var s = fullLayout.selections[q];
                 if(
+                    !s ||
                     s.xref !== xRef ||
                     s.yref !== yRef
                 ) {
@@ -442,7 +457,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                 }
             }
 
-            Fx.click(gd, evt);
+            Fx.click(gd, evt, plotinfo.id);
         }).catch(Lib.error);
     };
 
@@ -582,8 +597,8 @@ function newPointNumTester(pointSelectionDef) {
         ymax: 0,
         pts: [],
         contains: function(pt, omitFirstEdge, pointNumber, searchInfo) {
-            var idxWantedTrace = pointSelectionDef.searchInfo.cd[0].trace._expandedIndex;
-            var idxActualTrace = searchInfo.cd[0].trace._expandedIndex;
+            var idxWantedTrace = pointSelectionDef.searchInfo.cd[0].trace.index;
+            var idxActualTrace = searchInfo.cd[0].trace.index;
             return idxActualTrace === idxWantedTrace &&
               pointNumber === pointSelectionDef.pointNumber;
         },
@@ -738,7 +753,7 @@ function clearSelectionsCache(dragOptions, immediateSelect) {
             var selections;
             if(
                 isSelectMode &&
-                !hasSubplot(dragOptions) // only allow cartesian - no mapbox for now
+                !hasSubplot(dragOptions) // only allow cartesian - no maps for now
             ) {
                 selections = newSelections(outlines, dragOptions);
             }
@@ -795,8 +810,8 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
             var sankeyInfo = createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]);
             searchTraces.push(sankeyInfo);
         } else {
-            if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
-            if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
+            if(xAxisIds.indexOf(trace.xaxis) === -1 && (!trace._xA || !trace._xA.overlaying)) continue;
+            if(yAxisIds.indexOf(trace.yaxis) === -1 && (!trace._yA || !trace._yA.overlaying)) continue;
 
             searchTraces.push(createSearchInfo(trace._module, cd,
               getFromId(gd, trace.xaxis), getFromId(gd, trace.yaxis)));
@@ -829,7 +844,7 @@ function extractClickedPtInfo(hoverData, searchTraces) {
 
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
-        if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
+        if(hoverDatum.fullData.index === searchInfo.cd[0].trace.index) {
             // Special case for box (and violin)
             if(hoverDatum.hoverOnBox === true) {
                 break;
@@ -1535,7 +1550,7 @@ function getFillRangeItems(dragOptions) {
     var plotinfo = dragOptions.plotinfo;
 
     return (
-        plotinfo.fillRangeItems || // allow subplots (i.e. geo, mapbox, sankey) to override fillRangeItems routine
+        plotinfo.fillRangeItems || // allow subplots (i.e. geo, mapbox, map, sankey) to override fillRangeItems routine
         makeFillRangeItems(dragOptions.xaxes.concat(dragOptions.yaxes))
     );
 }

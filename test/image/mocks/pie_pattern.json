@@ -1,0 +1,174 @@
+{
+ "data": [
+  {
+   "labels": ["Lead", "Proposal", "Finalize"],
+   "values": [100, 50, 25],
+   "type": "funnelarea",
+   "marker": {
+    "colors": ["orange", "yellow", "lightgreen"],
+    "line": {
+     "color": "lightgrey",
+     "width": 2
+    },
+    "pattern": {
+     "shape": ["+", "", "-"],
+     "fgcolor": ["darksalmon", "black", "steelblue"]
+    }
+   },
+   "textfont": { "color": ["black", "white", "black"] },
+   "domain": { "y": [0.525, 1], "x": [0.61, 0.79] }
+  },
+  {
+   "labels": ["Lead", "Proposal", "Finalize"],
+   "values": [100, 50, 25],
+   "type": "funnelarea",
+   "marker": {
+    "colors": ["orange", "yellow", "lightgreen"],
+    "line": {
+     "color": "lightgrey",
+     "width": 2
+    },
+    "pattern": {
+     "shape": ["+", "", "-"]
+    }
+   },
+   "textfont": { "color": "black" },
+   "domain": { "y": [0.525, 1], "x": [0.41, 0.59] }
+  },
+  {
+   "labels": ["Lead", "Proposal", "Finalize"],
+   "values": [100, 50, 25],
+   "type": "funnelarea",
+   "marker": {
+    "colors": ["orange", "yellow", "lightgreen"],
+    "line": {
+     "color": "lightgrey",
+     "width": 2
+    }
+   },
+   "domain": { "y": [0.525, 1], "x": [0.21, 0.39] }
+  },
+  {
+   "labels": ["Lead", "Proposal", "Finalize"],
+   "values": [100, 50, 25],
+   "type": "funnelarea",
+   "marker": {
+    "colors": ["steelblue", "steelblue", "steelblue"],
+    "line": {
+     "color": "lightgrey",
+     "width": 2
+    }
+   },
+   "domain": { "y": [0.525, 1], "x": [0.01, 0.19] }
+  },
+  {
+   "labels": ["giraffe", "orangutan", "monkey"],
+   "values": [30, 20, 50],
+   "type": "pie",
+   "marker": {
+    "colors": ["red", "green", "red"],
+    "line": {
+     "color": "lightgrey",
+     "width": 2
+    },
+    "pattern": {
+     "shape": ["+", "", "-"],
+     "fgcolor": ["darksalmon", "black", "steelblue"],
+     "bgcolor": "lightgrey"
+    }
+   },
+   "textfont": { "color": ["black", "white", "black"] },
+   "sort": false,
+   "domain": { "y": [0, 0.475], "x": [0.81, 0.99] }
+  },
+  {
+   "labels": ["giraffe", "orangutan", "monkey"],
+   "values": [30, 20, 50],
+   "type": "pie",
+   "marker": {
+    "colors": ["red", "green", "blue"],
+    "line": {
+     "color": "lightgrey",
+     "width": 4
+    },
+    "pattern": {
+     "shape": ["+", "", "-"],
+     "fgcolor": ["darksalmon", "black", "steelblue"]
+    }
+   },
+   "textfont": { "color": ["black", "white", "black"] },
+   "sort": false,
+   "domain": { "y": [0, 0.475], "x": [0.61, 0.79] }
+  },
+  {
+   "labels": ["giraffe", "orangutan", "monkey"],
+   "values": [30, 20, 50],
+   "type": "pie",
+   "marker": {
+    "colors": ["red", "green", "blue"],
+    "line": {
+     "color": "lightgrey",
+     "width": 4
+    },
+    "pattern": {
+     "shape": ["+", "", "-"]
+    }
+   },
+   "textfont": { "color": "black" },
+   "sort": false,
+   "domain": { "y": [0, 0.475], "x": [0.41, 0.59] }
+  },
+  {
+   "labels": ["giraffe", "orangutan", "monkey"],
+   "values": [30, 20, 50],
+   "type": "pie",
+   "marker": {
+    "colors": ["red", "green", "blue"],
+    "line": {
+     "color": "lightgrey",
+     "width": 4
+    }
+   },
+   "sort": false,
+   "domain": { "y": [0, 0.475], "x": [0.21, 0.39] }
+  },
+  {
+   "labels": ["giraffe", "orangutan", "monkey"],
+   "values": [30, 20, 50],
+   "type": "pie",
+   "marker": {
+    "colors": ["steelblue", "steelblue", "steelblue"],
+    "line": {
+     "color": "lightgrey",
+     "width": 4
+    }
+   },
+   "sort": false,
+   "domain": { "y": [0, 0.475], "x": [0.01, 0.19] }
+  },
+  {
+   "labels": ["Lead", "Proposal", "Finalize"],
+   "values": [100, 50, 25],
+   "type": "funnelarea",
+   "marker": {
+    "colors": ["red", "green", "red"],
+    "line": {
+     "color": "lightgrey",
+     "width": 4
+    },
+    "pattern": {
+     "shape": ["+", "", "-"],
+     "fgcolor": ["darksalmon", "black", "steelblue"],
+     "bgcolor": "lightgrey"
+    }
+   },
+   "textfont": { "color": ["black", "white", "black"] },
+   "domain": { "y": [0.525, 1], "x": [0.81, 0.99] }
+  }
+ ],
+ "layout": {
+  "title": { "text": "pie and funnelarea charts with pattern" },
+  "width": 800,
+  "height": 400
+ }
+}

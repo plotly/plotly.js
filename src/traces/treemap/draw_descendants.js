@@ -161,7 +161,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             })
             .call(helpers.setSliceCursor, gd, { isTransitioning: gd._transitioning });
 
-        slicePath.call(styleOne, pt, trace, {
+        slicePath.call(styleOne, pt, trace, gd, {
             hovered: false
         });
 
@@ -184,9 +184,13 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
         var font = Lib.ensureUniformFontSize(gd, helpers.determineTextFont(trace, pt, fullLayout.font));
 
-        sliceText.text(pt._text || ' ') // use one space character instead of a blank string to avoid jumps during transition
+
+        var text = pt._text || ' '; // use one space character instead of a blank string to avoid jumps during transition
+        var singleLineHeader = isHeader && text.indexOf('<br>') === -1;
+
+        sliceText.text(text)
             .classed('slicetext', true)
-            .attr('text-anchor', hasRight ? 'end' : (hasLeft || isHeader) ? 'start' : 'middle')
+            .attr('text-anchor', hasRight ? 'end' : (hasLeft || singleLineHeader) ? 'start' : 'middle')
             .call(Drawing.font, font)
             .call(svgTextUtils.convertToTspans, gd);
 

@@ -1,6 +1,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
 
 module.exports = {
     hasLines: function(trace) {
@@ -22,7 +23,10 @@ module.exports = {
     },
 
     isBubble: function(trace) {
-        return Lib.isPlainObject(trace.marker) &&
-            Lib.isArrayOrTypedArray(trace.marker.size);
+        var marker = trace.marker;
+        return Lib.isPlainObject(marker) && (
+            Lib.isArrayOrTypedArray(marker.size) ||
+            isTypedArraySpec(marker.size)
+        );
     }
 };

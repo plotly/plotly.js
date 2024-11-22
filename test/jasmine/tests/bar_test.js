@@ -152,9 +152,28 @@ describe('Bar.supplyDefaults', function() {
             y: [1, 2, 3]
         };
         var layout = {
-            font: {family: 'arial', color: '#AAA', size: 13}
+            font: {
+                family: 'arial',
+                color: '#AAA',
+                size: 13,
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
+            }
         };
-        var layoutFontMinusColor = {family: 'arial', size: 13};
+        var layoutFontMinusColor = {
+            family: 'arial',
+            size: 13,
+            weight: 'bold',
+            style: 'italic',
+            variant: 'small-caps',
+            textcase: 'word caps',
+            lineposition: 'under',
+            shadow: 'auto',
+        };
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -224,7 +243,7 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.ycalendar).toBe('ethiopian');
     });
 
-    it('should not include alignmentgroup/offsetgroup when barmode is not *group*', function() {
+    it('should include alignmentgroup/offsetgroup regardless of barmode', function() {
         var gd = {
             data: [{type: 'bar', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
             layout: {barmode: 'group'}
@@ -236,8 +255,8 @@ describe('Bar.supplyDefaults', function() {
 
         gd.layout.barmode = 'stack';
         supplyAllDefaults(gd);
-        expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
-        expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
+        expect(gd._fullData[0].alignmentgroup).toBe('a', 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe('1', 'offsetgroup');
     });
 
     it('should have a barmode only if it contains bars', function() {
@@ -2068,7 +2087,7 @@ describe('A bar plot', function() {
         }
 
         function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
-            var subplotLayer = d3Select('.plot');
+            var subplotLayer = d3Select('.overplot').select('.xy');
             var barLayer = subplotLayer.select('.barlayer');
 
             _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
@@ -2904,13 +2923,13 @@ function assertTraceField(calcData, prop, expectation) {
 describe('bar tweening', function() {
     var gd;
     var mock = {
-        'data': [{
-            'type': 'bar',
-            'x': ['A', 'B', 'C'],
-            'text': ['A', 'B', 'C'],
-            'textposition': 'inside',
-            'y': [24, 5, 8],
-            'error_y': {'array': [3, 2, 1]}
+        data: [{
+            type: 'bar',
+            x: ['A', 'B', 'C'],
+            text: ['A', 'B', 'C'],
+            textposition: 'inside',
+            y: [24, 5, 8],
+            error_y: {array: [3, 2, 1]}
         }]
     };
     var transitionOpts = false; // use default
@@ -2931,7 +2950,7 @@ describe('bar tweening', function() {
             [300, '.point path', 'style', 'fill', ['rgb(165, 48, 72)', 'rgb(12, 201, 72)', 'rgb(12, 48, 225)']],
             [500, '.point path', 'style', 'fill', ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']]
         ];
-        var animateOpts = {'data': [{'marker': {'color': ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}]};
+        var animateOpts = {data: [{marker: {color: ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}]};
 
         checkTransition(gd, mock, animateOpts, transitionOpts, tests)
           .then(done, done.fail);
@@ -3005,7 +3024,7 @@ describe('bar tweening', function() {
             [600, '.point path', 'style', 'stroke', ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']],
             [600, '.point path', 'style', 'stroke-width', ['20px', '20px', '20px']]
         ];
-        var animateOpts = {'data': [{'marker': {'line': {'width': 20, 'color': ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}}]};
+        var animateOpts = {data: [{marker: {line: {width: 20, color: ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}}]};
 
         checkTransition(gd, mock, animateOpts, transitionOpts, tests)
           .then(done, done.fail);
@@ -3038,7 +3057,7 @@ describe('bar tweening', function() {
                 text: ['A', 'B', 'C'],
                 textposition: 'inside',
                 y: [24, 5, 8],
-                error_y: {'array': [3, 2, 1]},
+                error_y: {array: [3, 2, 1]},
                 marker: {color: ['red', 'green', 'blue']}
             }]
         };

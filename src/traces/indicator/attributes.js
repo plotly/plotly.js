@@ -319,6 +319,7 @@ module.exports = {
             tickcolor: axesAttrs.tickcolor,
             ticklabelstep: axesAttrs.ticklabelstep,
             showticklabels: axesAttrs.showticklabels,
+            labelalias: axesAttrs.labelalias,
             tickfont: fontAttrs({
                 description: 'Sets the color bar\'s tick label font'
             }),

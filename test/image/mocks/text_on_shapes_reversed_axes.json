@@ -1,0 +1,162 @@
+{
+ "data": [
+  {
+   "x": [0, 50],
+   "y": [0, 50]
+  }
+ ],
+ "layout": {
+  "showlegend": true,
+  "width": 1000,
+  "height": 600,
+  "margin": {
+   "t": 100,
+   "b": 50,
+   "l": 100,
+   "r": 50
+  },
+  "yaxis": {
+   "autorange": "reversed"
+  },
+  "template": {
+   "layout": {
+    "shapes": [
+     {
+      "showlegend": true,
+      "label": { "text": "label" },
+      "name": "myPath",
+      "editable": true,
+      "layer": "below",
+      "line": {
+       "width": 0
+      },
+      "fillcolor": "gray",
+      "opacity": 0.5,
+      "xref": "paper",
+      "yref": "paper",
+      "path": "M0.5,0.3C0.5,0.9 0.9,0.9 0.9,0.3C0.9,0.1 0.5,0.1 0.5,0.3ZM0.6,0.4C0.6,0.5 0.66,0.5 0.66,0.4ZM0.74,0.4C0.74,0.5 0.8,0.5 0.8,0.4ZM0.6,0.3C0.63,0.2 0.77,0.2 0.8,0.3Z"
+     }
+    ]
+   }
+  },
+  "shapes": [
+   {
+    "showlegend": true,
+    "label": { "text": "label 1 (top right)", "textposition": "top right" },
+    "editable": true,
+    "layer": "below",
+    "type": "rect",
+    "line": {
+     "width": 5
+    },
+    "fillcolor": "red",
+    "opacity": 0.5,
+    "x0": 25,
+    "y0": 25,
+    "x1": 75,
+    "y1": 75
+   },
+   {
+    "showlegend": true,
+    "label": { "text": "label 2" },
+    "editable": true,
+    "type": "circle",
+    "line": {
+     "width": 5
+    },
+    "fillcolor": "green",
+    "opacity": 0.5,
+    "x0": 125,
+    "y0": 25,
+    "x1": 175,
+    "y1": 75
+   },
+   {
+    "showlegend": true,
+    "label": { "text": "label 3" },
+    "editable": true,
+    "line": {
+     "width": 5
+    },
+    "fillcolor": "blue",
+    "path": "M250,25L225,75L275,75Z"
+   },
+   {
+    "showlegend": true,
+    "label": { "text": "label 4" },
+    "editable": true,
+    "line": {
+     "width": 15
+    },
+    "path": "M250,225L225,275L275,275"
+   },
+   {
+    "showlegend": true,
+    "legendgroup": "group 1",
+    "legendgrouptitle": { "text": "group 1" },
+    "label": { "text": "label 5" },
+    "editable": true,
+    "layer": "below",
+    "path": "M320,100C390,180 290,180 360,100Z",
+    "fillcolor": "rgba(0,127,127,0.5)",
+    "line": {
+     "width": 5
+    }
+   },
+   {
+    "showlegend": true,
+    "legendgroup": "group 1",
+    "label": { "text": "label 6" },
+    "editable": true,
+    "line": {
+     "width": 5,
+     "color": "orange"
+    },
+    "fillcolor": "rgba(127,255,127,0.5)",
+    "path": "M0,100V200H50L0,300Q100,300 100,200T150,200C100,300 200,300 200,200S150,200 150,100Z"
+   },
+   {
+    "showlegend": true,
+    "legend": "legend2",
+    "label": { "text": "label 7" },
+    "editable": true,
+    "line": {
+     "width": 2
+    },
+    "fillcolor": "yellow",
+    "path": "M300,70C300,10 380,10 380,70C380,90 300,90 300,70ZM320,60C320,50 332,50 332,60ZM348,60C348,50 360,50 360,60ZM320,70C326,80 354,80 360,70Z"
+   }
+  ],
+  "dragmode": "drawline",
+  "newshape": {
+   "label": {
+    "text": "TEXT"
+   },
+   "line": {
+    "color": "pink"
+   },
+   "showlegend": true,
+   "legend": "legend2",
+   "legendgroup": "group 2",
+   "legendgrouptitle": { "text": "new shapes group" }
+  },
+  "legend2": {
+   "y": 0,
+   "bgcolor": "lightblue",
+   "title": {
+    "text": "Legend 2"
+   }
+  }
+ },
+ "config": {
+  "editable": false,
+  "modeBarButtonsToAdd": [
+   "drawline",
+   "drawopenpath",
+   "drawclosedpath",
+   "drawcircle",
+   "drawrect",
+   "eraseshape"
+  ]
+ }
+}

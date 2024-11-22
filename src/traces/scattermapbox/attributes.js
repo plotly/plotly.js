@@ -2,6 +2,7 @@
 
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var mapboxAttrs = require('../../plots/mapbox/layout_attributes');
@@ -151,7 +152,7 @@ module.exports = overrideAll({
     ),
 
     fill: scatterGeoAttrs.fill,
-    fillcolor: scatterAttrs.fillcolor,
+    fillcolor: makeFillcolorAttr(),
 
     textfont: mapboxAttrs.layers.symbol.textfont,
     textposition: mapboxAttrs.layers.symbol.textposition,

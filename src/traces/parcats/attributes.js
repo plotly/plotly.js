@@ -105,6 +105,7 @@ module.exports = {
     }),
 
     tickfont: fontAttrs({
+        autoShadowDflt: true,
         editType: 'calc',
         description: 'Sets the font for the `category` labels.'
     }),
@@ -197,6 +198,7 @@ module.exports = {
     customdata: undefined,
     hoverlabel: undefined,
     ids: undefined,
+    legend: undefined,
     legendgroup: undefined,
     legendrank: undefined,
     opacity: undefined,

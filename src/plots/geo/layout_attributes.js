@@ -78,7 +78,7 @@ var attrs = module.exports = overrideAll({
             'and `projection.rotation.lon` getting auto-filled.',
 
             'On maps with a clipped projection, setting `fitbounds` leads to `center.lon`, `center.lat`,',
-            '`projection.rotation.lon`, `projection.rotation.lat`, `lonaxis.range` and `lonaxis.range`',
+            '`projection.rotation.lon`, `projection.rotation.lat`, `lonaxis.range` and `lataxis.range`',
             'getting auto-filled.',
 
             // TODO we should auto-fill `projection.parallels` for maps

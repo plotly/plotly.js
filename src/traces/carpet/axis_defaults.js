@@ -109,11 +109,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     var title = coerce('title.text');
     if(title) {
-        Lib.coerceFont(coerce, 'title.font', {
-            family: font.family,
+        Lib.coerceFont(coerce, 'title.font', font, { overrideDflt: {
             size: Lib.bigFont(font.size),
             color: dfltFontColor
-        });
+        }});
         coerce('title.offset');
     }
 

@@ -26,21 +26,24 @@ module.exports = {
         text: {
             valType: 'string',
             editType: 'layoutstyle',
-            description: [
-                'Sets the plot\'s title.',
-                'Note that before the existence of `title.text`, the title\'s',
-                'contents used to be defined as the `title` attribute itself.',
-                'This behavior has been deprecated.'
-            ].join(' ')
+            description: 'Sets the plot\'s title.'
         },
         font: fontAttrs({
             editType: 'layoutstyle',
-            description: [
-                'Sets the title font.',
-                'Note that the title\'s font used to be customized',
-                'by the now deprecated `titlefont` attribute.'
-            ].join(' ')
+            description: 'Sets the title font.'
         }),
+        subtitle: {
+            text: {
+                valType: 'string',
+                editType: 'layoutstyle',
+                description: 'Sets the plot\'s subtitle.'
+            },
+            font: fontAttrs({
+                editType: 'layoutstyle',
+                description: 'Sets the subtitle font.'
+            }),
+            editType: 'layoutstyle',
+        },
         xref: {
             valType: 'enumerated',
             dflt: 'container',
@@ -125,6 +128,21 @@ module.exports = {
                 'Padding is muted if the respective anchor value is *middle*/*center*.'
             ].join(' ')
         }),
+        automargin: {
+            valType: 'boolean',
+            dflt: false,
+            editType: 'plot',
+            description: [
+                'Determines whether the title can automatically push the figure margins.',
+                'If `yref=\'paper\'` then the margin will expand to ensure that the title doesn\’t',
+                'overlap with the edges of the container. If `yref=\'container\'` then the margins',
+                'will ensure that the title doesn\’t overlap with the plot area, tick labels,',
+                'and axis titles. If `automargin=true` and the margins need to be expanded,',
+                'then y will be set to a default 1 and yanchor will be set to an appropriate',
+                'default to ensure that minimal margin space is needed. Note that when `yref=\'paper\'`,',
+                'only 1 or 0 are allowed y values. Invalid values will be reset to the default 1.'
+            ].join(' ')
+        },
         editType: 'layoutstyle'
     },
     uniformtext: {
@@ -433,21 +451,4 @@ module.exports = {
         ].join(' '),
         editType: 'none'
     }),
-    _deprecated: {
-        title: {
-            valType: 'string',
-            editType: 'layoutstyle',
-            description: [
-                'Value of `title` is no longer a simple *string* but a set of sub-attributes.',
-                'To set the contents of the title, please use `title.text` now.'
-            ].join(' ')
-        },
-        titlefont: fontAttrs({
-            editType: 'layoutstyle',
-            description: [
-                'Former `titlefont` is now the sub-attribute `font` of `title`.',
-                'To customize title font properties, please use `title.font` now.'
-            ].join(' ')
-        })
-    }
 };

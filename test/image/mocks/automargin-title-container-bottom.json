@@ -1,0 +1,23 @@
+{
+ "data": [
+  {
+   "showlegend": false,
+   "type": "scatter",
+   "x": [1, 2, 3],
+   "y": [4, 5, 6]
+  }
+ ],
+ "layout": {
+  "height": 300,
+  "width": 400,
+  "margin": { "t": 0, "b": 0, "l": 0, "r": 0 },
+  "xaxis": { "automargin": true, "title": { "text": "x-axis title" } },
+  "title": {
+   "automargin": true,
+   "text": "Container | pad | y=0",
+   "pad": { "t": 15, "b": 10 },
+   "y": 0,
+   "yref": "container"
+  }
+ }
+}

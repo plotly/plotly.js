@@ -1,0 +1,18 @@
+{
+ "data": [
+  {
+   "type": "scattermap",
+   "name": "white-bg",
+   "lon": [10, 20],
+   "lat": [20, 10]
+  }
+ ],
+ "layout": {
+  "width": 200,
+  "height": 200,
+  "margin": { "t": 0, "b": 0, "l": 0, "r": 0 },
+  "map": {
+   "style": "white-bg"
+  }
+ }
+}

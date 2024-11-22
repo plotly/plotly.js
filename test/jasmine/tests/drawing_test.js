@@ -422,7 +422,10 @@ describe('Drawing', function() {
         it('works with dummy nodes created in Drawing.tester', function() {
             var node = Drawing.tester.append('text')
                 .text('bananas')
-                .call(Drawing.font, '"Open Sans", verdana, arial, sans-serif', 19)
+                .call(Drawing.font, {
+                    family: '"Open Sans", verdana, arial, sans-serif',
+                    size: 19
+                })
                 .call(svgTextUtils.convertToTspans).node();
 
             expect(node.parentNode).toBe(Drawing.tester.node());
@@ -533,7 +536,7 @@ describe('gradients', function() {
                 ['rgb(68, 85, 102)'],
                 ['rgb(170, 187, 204)']);
 
-            return Plotly.restyle(gd, {'mode': 'lines'});
+            return Plotly.restyle(gd, {mode: 'lines'});
         })
         .then(function() {
             // full replot and no resulting markers at all -> no gradients

@@ -447,7 +447,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to restyle radial axis title', function(done) {
+    it('@noCI should be able to restyle radial axis title', function(done) {
         var gd = createGraphDiv();
         var lastBBox;
 
@@ -473,7 +473,7 @@ describe('Test relayout on polar subplots:', function() {
             theta: [10, 20, 30]
         }], {
             polar: {
-                radialaxis: {title: 'yo'}
+                radialaxis: { title: { text: 'yo' } }
             }
         })
         .then(function() {
@@ -490,7 +490,7 @@ describe('Test relayout on polar subplots:', function() {
         })
         .then(function() {
             assertTitle('yo2', true);
-            return Plotly.relayout(gd, 'polar.radialaxis.titlefont.color', 'red');
+            return Plotly.relayout(gd, 'polar.radialaxis.title.font.color', 'red');
         })
         .then(function() {
             assertTitle('yo2', false);

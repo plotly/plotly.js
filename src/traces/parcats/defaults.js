@@ -8,6 +8,7 @@ var handleArrayContainerDefaults = require('../../plots/array_container_defaults
 
 var attributes = require('./attributes');
 var mergeLength = require('../parcoords/merge_length');
+var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
 
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     coerce('line.shape');
@@ -44,7 +45,8 @@ function dimensionDefaults(dimensionIn, dimensionOut) {
 
         // Category level
         var arrayIn = dimensionIn.categoryarray;
-        var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0);
+        var isValidArray = (Lib.isArrayOrTypedArray(arrayIn) && arrayIn.length > 0) ||
+            isTypedArraySpec(arrayIn);
 
         var orderDefault;
         if(isValidArray) orderDefault = 'array';
@@ -93,19 +95,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('sortpaths');
     coerce('counts');
 
-    var labelfontDflt = {
-        family: layout.font.family,
-        size: Math.round(layout.font.size),
-        color: layout.font.color
-    };
+    var layoutFont = layout.font;
 
-    Lib.coerceFont(coerce, 'labelfont', labelfontDflt);
+    Lib.coerceFont(coerce, 'labelfont', layoutFont, {
+        overrideDflt: {
+            size: Math.round(layoutFont.size)
+        }
+    });
 
-    var categoryfontDefault = {
-        family: layout.font.family,
-        size: Math.round(layout.font.size / 1.2),
-        color: layout.font.color
-    };
-
-    Lib.coerceFont(coerce, 'tickfont', categoryfontDefault);
+    Lib.coerceFont(coerce, 'tickfont', layoutFont, {
+        autoShadowDflt: true,
+        overrideDflt: {
+            size: Math.round(layoutFont.size / 1.2)
+        }
+    });
 };

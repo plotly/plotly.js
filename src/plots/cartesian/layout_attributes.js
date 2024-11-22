@@ -207,20 +207,11 @@ module.exports = {
         text: {
             valType: 'string',
             editType: 'ticks',
-            description: [
-                'Sets the title of this axis.',
-                'Note that before the existence of `title.text`, the title\'s',
-                'contents used to be defined as the `title` attribute itself.',
-                'This behavior has been deprecated.'
-            ].join(' ')
+            description: 'Sets the title of this axis.'
         },
         font: fontAttrs({
             editType: 'ticks',
-            description: [
-                'Sets this axis\' title font.',
-                'Note that the title\'s font used to be customized',
-                'by the now deprecated `titlefont` attribute.'
-            ].join(' ')
+            description: 'Sets this axis\' title font.'
         }),
         standoff: {
             valType: 'number',
@@ -272,7 +263,7 @@ module.exports = {
     },
     autorange: {
         valType: 'enumerated',
-        values: [true, false, 'reversed'],
+        values: [true, false, 'reversed', 'min reversed', 'max reversed', 'min', 'max'],
         dflt: true,
         editType: 'axrange',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
@@ -280,8 +271,60 @@ module.exports = {
             'Determines whether or not the range of this axis is',
             'computed in relation to the input data.',
             'See `rangemode` for more info.',
-            'If `range` is provided, then `autorange` is set to *false*.'
+            'If `range` is provided and it has a value for both the',
+            'lower and upper bound, `autorange` is set to *false*.',
+            'Using *min* applies autorange only to set the minimum.',
+            'Using *max* applies autorange only to set the maximum.',
+            'Using *min reversed* applies autorange only to set the minimum on a reversed axis.',
+            'Using *max reversed* applies autorange only to set the maximum on a reversed axis.',
+            'Using *reversed* applies autorange on both ends and reverses the axis direction.',
         ].join(' ')
+    },
+    autorangeoptions: {
+        minallowed: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Use this value exactly as autorange minimum.'
+            ].join(' ')
+        },
+        maxallowed: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Use this value exactly as autorange maximum.'
+            ].join(' ')
+        },
+        clipmin: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Clip autorange minimum if it goes beyond this value.',
+                'Has no effect when `autorangeoptions.minallowed` is provided.'
+            ].join(' ')
+        },
+        clipmax: {
+            valType: 'any',
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Clip autorange maximum if it goes beyond this value.',
+                'Has no effect when `autorangeoptions.maxallowed` is provided.'
+            ].join(' ')
+        },
+        include: {
+            valType: 'any',
+            arrayOk: true,
+            editType: 'plot',
+            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            description: [
+                'Ensure this value is included in autorange.'
+            ].join(' ')
+        },
+        editType: 'plot'
     },
     rangemode: {
         valType: 'enumerated',
@@ -305,7 +348,7 @@ module.exports = {
             {valType: 'any', editType: 'axrange', impliedEdits: {'^autorange': false}, anim: true}
         ],
         editType: 'axrange',
-        impliedEdits: {'autorange': false},
+        impliedEdits: {autorange: false},
         anim: true,
         description: [
             'Sets the range of this axis.',
@@ -317,7 +360,24 @@ module.exports = {
             'will be accepted and converted to strings.',
             'If the axis `type` is *category*, it should be numbers,',
             'using the scale where each category is assigned a serial',
-            'number from zero in the order it appears.'
+            'number from zero in the order it appears.',
+            'Leaving either or both elements `null` impacts the default `autorange`.',
+        ].join(' ')
+    },
+    minallowed: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'^autorange': false},
+        description: [
+            'Determines the minimum range of this axis.'
+        ].join(' ')
+    },
+    maxallowed: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'^autorange': false},
+        description: [
+            'Determines the maximum range of this axis.'
         ].join(' ')
     },
     fixedrange: {
@@ -329,13 +389,29 @@ module.exports = {
             'If true, then zoom is disabled.'
         ].join(' ')
     },
+    insiderange: {
+        valType: 'info_array',
+        items: [
+            {valType: 'any', editType: 'plot'},
+            {valType: 'any', editType: 'plot'}
+        ],
+        editType: 'plot',
+        description: [
+            'Could be used to set the desired inside range of this axis',
+            '(excluding the labels) when `ticklabelposition` of',
+            'the anchored axis has *inside*.',
+            'Not implemented for axes with `type` *log*.',
+            'This would be ignored when `range` is provided.'
+        ].join(' ')
+    },
     // scaleanchor: not used directly, just put here for reference
-    // values are any opposite-letter axis id
+    // values are any opposite-letter axis id, or `false`.
     scaleanchor: {
         valType: 'enumerated',
         values: [
             constants.idRegex.x.toString(),
-            constants.idRegex.y.toString()
+            constants.idRegex.y.toString(),
+            false
         ],
         editType: 'plot',
         description: [
@@ -353,7 +429,12 @@ module.exports = {
             'and the last constraint encountered will be ignored to avoid possible',
             'inconsistent constraints via `scaleratio`.',
             'Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint',
-            'is currently forbidden.'
+            'is currently forbidden.',
+            'Setting `false` allows to remove a default constraint (occasionally,',
+            'you may need to prevent a default `scaleanchor` constraint from',
+            'being applied, eg. when having an image trace `yaxis: {scaleanchor: "x"}`',
+            'is set automatically in order for pixels to be rendered as squares,',
+            'setting `yaxis: {scaleanchor: false}` allows to remove the constraint).'
         ].join(' ')
     },
     scaleratio: {
@@ -608,6 +689,44 @@ module.exports = {
             'In other cases the default is *hide past div*.'
         ].join(' ')
     },
+    ticklabelshift: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'ticks',
+        description: [
+            'Shifts the tick labels by the specified number of pixels in parallel to the axis.',
+            'Positive values move the labels in the positive direction of the axis.'
+        ].join(' ')
+    },
+    ticklabelstandoff: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'ticks',
+        description: [
+            'Sets the standoff distance (in px) between the axis tick labels and their default position.',
+            'A positive `ticklabelstandoff` moves the labels farther away from the plot area',
+            'if `ticklabelposition` is *outside*, and deeper into the plot area if',
+            '`ticklabelposition` is *inside*. A negative `ticklabelstandoff` works in the opposite',
+            'direction, moving outside ticks towards the plot area and inside ticks towards',
+            'the outside. If the negative value is large enough, inside ticks can even end up',
+            'outside and vice versa.'
+        ].join(' ')
+    },
+    ticklabelindex: {
+        // in the future maybe add `extras: ['all', 'minor']` to allow showing labels for all ticks
+        // or for all minor ticks.
+        valType: 'integer',
+        arrayOk: true,
+        editType: 'calc',
+        description: [
+            'Only for axes with `type` *date* or *linear*.',
+            'Instead of drawing the major tick label, draw the label for the minor tick',
+            'that is n positions away from the major tick. E.g. to always draw the label for the',
+            'minor tick before each major tick, choose `ticklabelindex` -1. This is useful for date',
+            'axes with `ticklabelmode` *period* if you want to label the period that ends with each',
+            'major tick instead of the period that begins there.'
+        ].join(' ')
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
@@ -632,6 +751,21 @@ module.exports = {
         dflt: true,
         editType: 'ticks',
         description: 'Determines whether or not the tick labels are drawn.'
+    },
+    labelalias: {
+        valType: 'any',
+        dflt: false,
+        editType: 'ticks',
+        description: [
+            'Replacement text for specific tick or hover labels.',
+            'For example using {US: \'USA\', CA: \'Canada\'} changes US to USA',
+            'and CA to Canada. The labels we would have shown must match',
+            'the keys exactly, after adding any tickprefix or ticksuffix.',
+            'For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash.',
+            'That means you need to use −1 instead of -1.',
+            'labelalias can be used with any axis type, and both keys (if needed)',
+            'and values (if desired) can include html-like tags or MathJax.'
+        ].join(' ')
     },
     automargin: {
         valType: 'flaglist',
@@ -702,6 +836,20 @@ module.exports = {
             'Sets the angle of the tick labels with respect to the horizontal.',
             'For example, a `tickangle` of -90 draws the tick labels',
             'vertically.'
+        ].join(' ')
+    },
+    autotickangles: {
+        valType: 'info_array',
+        freeLength: true,
+        items: {
+            valType: 'angle'
+        },
+        dflt: [0, 30, 90],
+        editType: 'ticks',
+        description: [
+            'When `tickangle` is set to *auto*, it will be set to the first',
+            'angle in this array that is large enough to prevent label',
+            'overlap.'
         ].join(' ')
     },
     tickprefix: {
@@ -1045,6 +1193,7 @@ module.exports = {
             'max ascending', 'max descending',
             'sum ascending', 'sum descending',
             'mean ascending', 'mean descending',
+            'geometric mean ascending', 'geometric mean descending',
             'median ascending', 'median descending'
         ],
         dflt: 'trace',
@@ -1059,7 +1208,7 @@ module.exports = {
             'the *trace* mode. The unspecified categories will follow the categories in `categoryarray`.',
             'Set `categoryorder` to *total ascending* or *total descending* if order should be determined by the',
             'numerical order of the values.',
-            'Similarly, the order can be determined by the min, max, sum, mean or median of all the values.'
+            'Similarly, the order can be determined by the min, max, sum, mean, geometric mean or median of all the values.'
         ].join(' ')
     },
     categoryarray: {
@@ -1081,31 +1230,4 @@ module.exports = {
         ].join(' ')
     },
     editType: 'calc',
-
-    _deprecated: {
-        autotick: {
-            valType: 'boolean',
-            editType: 'ticks',
-            description: [
-                'Obsolete.',
-                'Set `tickmode` to *auto* for old `autotick` *true* behavior.',
-                'Set `tickmode` to *linear* for `autotick` *false*.'
-            ].join(' ')
-        },
-        title: {
-            valType: 'string',
-            editType: 'ticks',
-            description: [
-                'Value of `title` is no longer a simple *string* but a set of sub-attributes.',
-                'To set the axis\' title, please use `title.text` now.'
-            ].join(' ')
-        },
-        titlefont: fontAttrs({
-            editType: 'ticks',
-            description: [
-                'Former `titlefont` is now the sub-attribute `font` of `title`.',
-                'To customize title font properties, please use `title.font` now.'
-            ].join(' ')
-        })
-    }
 };

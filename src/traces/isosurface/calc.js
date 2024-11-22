@@ -35,7 +35,7 @@ module.exports = function calc(gd, trace) {
     trace._minValues = min;
     trace._maxValues = max;
     trace._vMin = (trace.isomin === undefined || trace.isomin === null) ? min : trace.isomin;
-    trace._vMax = (trace.isomax === undefined || trace.isomin === null) ? max : trace.isomax;
+    trace._vMax = (trace.isomax === undefined || trace.isomax === null) ? max : trace.isomax;
 
     colorscaleCalc(gd, trace, {
         vals: [trace._vMin, trace._vMax],

@@ -1,0 +1,35 @@
+{
+ "data": [
+  {
+   "colorbar": {
+    "orientation": "h",
+    "yref": "container",
+    "y": 0,
+    "yanchor": "bottom",
+    "thickness": 10,
+    "ticks": "outside",
+    "bgcolor": "rgba(255,255,0,0.5)",
+    "borderwidth": 4,
+    "bordercolor": "gray",
+    "title": {
+     "text": "Colorbar<br>title",
+     "font": {
+      "size": 16
+     }
+    }
+   },
+   "z": [[1, 3, 5], [4, 7, 10], [7, 11, 14]],
+   "type": "heatmap"
+  }
+ ],
+ "layout": {
+  "margin": { "l": 0, "r": 0, "t": 0, "b": 0 },
+  "height": 300,
+  "width": 400,
+  "xaxis": { "automargin": true, "title": { "text": "X-axis title" } },
+  "title": {
+   "text": "Colorbar with `yref='container'` | horizontal",
+   "automargin": true
+  }
+ }
+}

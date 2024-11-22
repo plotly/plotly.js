@@ -162,9 +162,28 @@ describe('Waterfall.supplyDefaults', function() {
             y: [1, 2, 3]
         };
         var layout = {
-            font: {family: 'arial', color: '#AAA', size: 13}
+            font: {
+                family: 'arial',
+                color: '#AAA',
+                size: 13,
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
+            }
         };
-        var layoutFontMinusColor = {family: 'arial', size: 13};
+        var layoutFontMinusColor = {
+            family: 'arial',
+            size: 13,
+            weight: 'bold',
+            style: 'italic',
+            variant: 'small-caps',
+            textcase: 'word caps',
+            lineposition: 'under',
+            shadow: 'auto',
+        };
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -1026,32 +1045,6 @@ describe('A waterfall plot', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to deal with transform that empty out the data coordinate arrays', function(done) {
-        Plotly.newPlot(gd, {
-            data: [{
-                type: 'waterfall',
-                x: [1, 2, 3],
-                xsrc: 'ints',
-                transforms: [{
-                    type: 'filter',
-                    target: [1, 2, 3],
-                    targetsrc: 'ints',
-                    operation: '<',
-                    value: 0
-                }]
-            }]
-        })
-        .then(function() {
-            var traceNodes = getAllTraceNodes(gd);
-            expect(traceNodes.length).toBe(0);
-
-            expect(gd.calcdata[0][0].x).toEqual(NaN);
-            expect(gd.calcdata[0][0].y).toEqual(NaN);
-            expect(gd.calcdata[0][0].isBlank).toBe(undefined);
-        })
-        .then(done, done.fail);
-    });
-
     it('should coerce text-related attributes', function(done) {
         var data = [{
             y: [10, 20, 30, 40],
@@ -1523,6 +1516,37 @@ describe('waterfall hover', function() {
                     ],
                     name: ['', '', ''],
                     axis: '0'
+                });
+            })
+            .then(done, done.fail);
+        });
+
+        it('should provide delta hovertemplate on totals similar to hovertext', function(done) {
+            gd = createGraphDiv();
+
+            function _hover() {
+                var evt = { xpx: 400, ypx: 100 };
+                Fx.hover('graph', evt, 'xy');
+            }
+
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'waterfall',
+                    y: [ 10, -4, null ],
+                    measure: [ '', '', 'total' ],
+                    texttemplate: '%{delta}',
+                    hovertemplate: '%{delta}',
+                }],
+                layout: {
+                    width: 600,
+                    height: 400
+                }
+            })
+            .then(_hover)
+            .then(function() {
+                assertHoverLabelContent({
+                    nums: '6',
+                    name: 'trace 0'
                 });
             })
             .then(done, done.fail);

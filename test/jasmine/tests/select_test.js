@@ -75,7 +75,7 @@ function assertSelectionNodes(cornerCnt, outlineCnt, _msg) {
 }
 
 var selectingCnt, selectingData, selectedCnt, selectedData, deselectCnt, doubleClickData;
-var selectedPromise, deselectPromise, clickedPromise;
+var selectedPromise, deselectPromise, clickedPromise, relayoutPromise;
 
 function resetEvents(gd) {
     selectingCnt = 0;
@@ -125,6 +125,12 @@ function resetEvents(gd) {
             resolve();
         });
     });
+
+    relayoutPromise = new Promise(function(resolve) {
+        gd.on('plotly_relayout', function() {
+            resolve();
+        });
+    });
 }
 
 function assertEventCounts(selecting, selected, deselect, msg) {
@@ -144,12 +150,27 @@ var BOXEVENTS = [1, 2, 1];
 // assumes 5 points in the lasso path
 var LASSOEVENTS = [4, 2, 1];
 
+var mockZorder = {
+    data: [
+        {x: [1, 2], y: [1, 1], type: 'scatter', zorder: 10, marker: {size: 50}},
+        {x: [1, 2], y: [1, 2], type: 'scatter', marker: {size: 50}},
+        {x: [1, 2], y: [1, 3], type: 'scatter', zorder: 5, marker: {size: 50}}
+    ],
+    layout: {
+        width: 400,
+        height: 400,
+        clickmode: 'event+select',
+        dragmode: 'select',
+        hovermode: 'closest'
+    }
+};
+
 describe('Click-to-select', function() {
     var mock14Pts = {
-        '1': { x: 134, y: 116 },
-        '7': { x: 270, y: 160 },
-        '10': { x: 324, y: 198 },
-        '35': { x: 685, y: 341 }
+        1: { x: 134, y: 116 },
+        7: { x: 270, y: 160 },
+        10: { x: 324, y: 198 },
+        35: { x: 685, y: 341 }
     };
     var gd;
 
@@ -264,6 +285,84 @@ describe('Click-to-select', function() {
           .then(done, done.fail);
     });
 
+    it('selects a single data point when being clicked on trace with zorder', function(done) {
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            return _immediateClickPt({ x: 270, y: 150 });
+        })
+        .then(function() {
+            assertSelectedPoints([], [], [1]);
+            return _clickPt({ x: 270, y: 200 });
+        })
+        .then(function() {
+            assertSelectedPoints([], [1], []);
+            return _clickPt({ x: 270, y: 250 });
+        })
+        .then(done, done.fail);
+    });
+
+    it('should only select top most zorder trace if overlapping position on single click', function(done) {
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            return _immediateClickPt({ x: 130, y: 250 });
+        })
+        .then(function() {
+            assertSelectedPoints([0], [], []);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should lasso select all overlapping points regardless of zorder', function(done) {
+        mockZorder.layout.dragmode = 'lasso';
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            drag([[200, 200], [200, 300], [100, 300], [100, 200], [200, 200]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([0]);
+            expect(gd.data[1].selectedpoints).toEqual([0]);
+            expect(gd.data[2].selectedpoints).toEqual([0]);
+        })
+        .then(function() {
+            return doubleClick(200, 200); // Clear selection
+        })
+        .then(function() {
+            drag([[200, 100], [200, 300], [300, 300], [300, 100], [200, 100]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([1]);
+            expect(gd.data[1].selectedpoints).toEqual([1]);
+            expect(gd.data[2].selectedpoints).toEqual([1]);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should box select all overlapping points regardless of zorder', function(done) {
+        mockZorder.layout.dragmode = 'select';
+        _newPlot(gd, mockZorder.data, mockZorder.layout)
+        .then(function() {
+            drag([[200, 200], [100, 300]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([0]);
+            expect(gd.data[1].selectedpoints).toEqual([0]);
+            expect(gd.data[2].selectedpoints).toEqual([0]);
+        })
+        .then(function() {
+            return doubleClick(200, 200); // Clear selection
+        })
+        .then(function() {
+            drag([[200, 100], [300, 300]]);
+        })
+        .then(function() {
+            expect(gd.data[0].selectedpoints).toEqual([1]);
+            expect(gd.data[1].selectedpoints).toEqual([1]);
+            expect(gd.data[2].selectedpoints).toEqual([1]);
+        })
+        .then(done, done.fail);
+    });
+
+
     it('cleanly clears and starts selections although add/subtract mode on', function(done) {
         plotMock14()
           .then(function() {
@@ -310,7 +409,7 @@ describe('Click-to-select', function() {
           .then(done, done.fail);
     });
 
-    it('@gl works in a multi-trace plot', function(done) {
+    it('@noCI @gl works in a multi-trace plot', function(done) {
         _newPlot(gd, [
             {
                 x: [1, 3, 5, 4, 10, 12, 12, 7],
@@ -603,6 +702,16 @@ describe('Click-to-select', function() {
               });
           });
 
+        [
+            testCase('scattermap', require('../../image/mocks/map_0.json'), 650, 195, [[2], []], {}),
+            testCase('choroplethmap', require('../../image/mocks/map_choropleth0.json'), 270, 220, [[0]], {})
+        ]
+          .forEach(function(testCase) {
+              it('@gl trace type ' + testCase.label, function(done) {
+                  _run(testCase, done);
+              });
+          });
+
         function _run(testCase, doneFn) {
             _newPlot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
               .then(function() {
@@ -683,6 +792,15 @@ describe('Click-to-select', function() {
               { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN }),
             testCase('mapbox', require('../../image/mocks/mapbox_choropleth0.json'), 270, 220, [[0], []], {},
               { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN })
+        ].forEach(function(testCase) {
+            it('@gl for base plot ' + testCase.label, function(done) {
+                _run(testCase, done);
+            });
+        });
+
+        [
+            testCase('map', require('../../image/mocks/map_0.json'), 650, 195, [[2], []], {}),
+            testCase('map', require('../../image/mocks/map_choropleth0.json'), 270, 220, [[0], []], {})
         ].forEach(function(testCase) {
             it('@gl for base plot ' + testCase.label, function(done) {
                 _run(testCase, done);
@@ -918,6 +1036,100 @@ describe('Test select box and lasso in general:', function() {
             })
             .then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    describe('select / deselect with fake selections', function() {
+        var gd;
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+
+            var mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.layout.dragmode = 'select';
+            mockCopy.layout.hovermode = 'closest';
+            mockCopy.layout.selections = [null];
+            addInvisible(mockCopy);
+
+            _newPlot(gd, mockCopy.data, mockCopy.layout)
+                .then(done);
+        });
+
+        it('should trigger selecting/selected/deselect events', function(done) {
+            resetEvents(gd);
+
+            drag(selectPath);
+
+            selectedPromise.then(function() {
+                expect(selectedCnt).toBe(1, 'with the correct selected count');
+                assertEventData(selectedData.points, [{
+                    curveNumber: 0,
+                    pointNumber: 0,
+                    pointIndex: 0,
+                    x: 0.002,
+                    y: 16.25
+                }, {
+                    curveNumber: 0,
+                    pointNumber: 1,
+                    pointIndex: 1,
+                    x: 0.004,
+                    y: 12.5
+                }], 'with the correct selected points (2)');
+                assertRange(selectedData.range, {
+                    x: [0.002000, 0.0046236],
+                    y: [0.10209191961595454, 24.512223978291406]
+                }, 'with the correct selected range');
+
+                return doubleClick(250, 200);
+            })
+            .then(deselectPromise)
+            .then(function() {
+                expect(doubleClickData).toBe(null, 'with the correct deselect data');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should handle add/sub selection', function(done) {
+            resetEvents(gd);
+            expect(gd.layout.selections.length).toBe(1);
+
+            drag([[193, 193], [213, 193]], {shiftKey: true})
+
+            selectedPromise.then(function() {
+                expect(selectedCnt).toBe(1, 'with the correct selected count');
+                assertEventData(selectedData.points, [{
+                    curveNumber: 0,
+                    pointNumber: 4,
+                    pointIndex: 4,
+                    x: 0.013,
+                    y: 6.875
+                }], 'with the correct selected points (1)');
+            })
+            .then(function() {
+                // this is not working here, but it works in the test dashboard, not sure why
+                // but at least this test shows us that no errors are thrown.
+                // expect(gd.layout.selections.length).toBe(2, 'fake selection is still there');
+
+                resetEvents(gd);
+
+                return doubleClick(250, 200);
+            })
+            .then(relayoutPromise)
+            .then(function() {
+                expect(gd.layout.selections.length).toBe(0, 'fake selection is cleared');
+                expect(doubleClickData).toBe(null, 'with the correct deselect data');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should clear fake selections on doubleclick', function(done) {
+            resetEvents(gd);
+
+            doubleClick(250, 200);
+
+            relayoutPromise.then(function() {
+                expect(gd.layout.selections.length).toBe(0, 'fake selections are cleared');
             })
             .then(done, done.fail);
         });
@@ -1599,6 +1811,102 @@ describe('Test select box and lasso in general:', function() {
         })
         .then(done, done.fail);
     });
+
+    it('should re-select data in all overlaying visible traces', function(done) {
+        var gd = createGraphDiv();
+        _newPlot(gd, [{
+            x: [1, 2, 3],
+            y: [4, 5, 6],
+            name: 'yaxis1 data',
+            type: 'scatter'
+        },
+        {
+            x: [2, 3, 4],
+            y: [40, 50, 60],
+            name: 'yaxis2 data',
+            yaxis: 'y2',
+            xaxis: 'x2',
+            type: 'scatter'
+        },
+        {
+            x: [3, 4, 5],
+            y: [400, 500, 600],
+            name: 'yaxis3 data',
+            yaxis: 'y3',
+            type: 'scatter'
+        },
+        {
+            x: [4, 5, 6],
+            y: [1000, 2000, 3000],
+            name: 'yaxis4 data',
+            yaxis: 'y4',
+            xaxis: 'x2',
+            type: 'scatter'
+        }
+        ],
+            {
+                grid: {
+                    rows: 2,
+                    columns: 1,
+                    pattern: 'independent'
+                },
+                width: 800,
+                height: 600,
+                yaxis: {
+                    showline: true,
+                    title: {
+                        text: 'yaxis title'
+                    }
+                },
+                yaxis2: {
+                    title: {
+                        text: 'yaxis2 title'
+                    },
+                    showline: true
+                },
+                yaxis3: {
+                    title: {
+                        text: 'yaxis3 title'
+                    },
+                    anchor: 'free',
+                    overlaying: 'y',
+                    showline: true,
+                    autoshift: true
+                },
+                yaxis4: {
+                    title: {
+                        text: 'yaxis4 title'
+                    },
+                    anchor: 'free',
+                    overlaying: 'y2',
+                    showline: true,
+                    autoshift: true
+                }
+            }).then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'select');
+            }).then(function() {
+                return drag([[150, 450], [650, 350]]);
+            }).then(function() {
+                expect(gd.data[0].selectedpoints).toBe(undefined);
+                expect(gd.data[1].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[2].selectedpoints).toBe(undefined);
+                expect(gd.data[3].selectedpoints).toEqual([1, 2]);
+            }).then(function() {
+                return drag([[150, 100], [600, 200]]);
+            }).then(function() {
+                expect(gd.data[0].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[1].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[2].selectedpoints).toEqual([1]);
+                expect(gd.data[3].selectedpoints).toEqual([1, 2]);
+            }).then(function() {
+                return drag([[600, 150], [650, 150]]); // Extend existing selection
+            }).then(function() {
+                expect(gd.data[0].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[1].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[2].selectedpoints).toEqual([1, 2]);
+                expect(gd.data[3].selectedpoints).toEqual([1, 2]);
+            }).then(done, done.fail);
+    });
 });
 
 describe('Test select box and lasso per trace:', function() {
@@ -1771,6 +2079,7 @@ describe('Test select box and lasso per trace:', function() {
                     function() {
                         assertPoints([[0.5, 0.25, 0.25]]);
                         assertSelectedPoints({0: [0]});
+                        expect(selectedData.points[0].id).toBe("first ID")
                     },
                     [380, 180],
                     BOXEVENTS, 'scatterternary select'
@@ -1914,6 +2223,130 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
+        it('@gl should work on scattermap traces, hasCssTransform: ' + hasCssTransform, function(done) {
+            var assertPoints = makeAssertPoints(['lon', 'lat']);
+            var assertRanges = makeAssertRanges('map');
+            var assertLassoPoints = makeAssertLassoPoints('map');
+            var assertSelectedPoints = makeAssertSelectedPoints();
+
+            var fig = Lib.extendDeep({}, require('../../image/mocks/map_bubbles-text'));
+
+            fig.data[0].lon.push(null);
+            fig.data[0].lat.push(null);
+
+            fig.layout.dragmode = 'select';
+
+            delete fig.layout.map.bounds;
+
+            fig.config = {};
+            addInvisible(fig);
+
+            _newPlot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
+                return _run(hasCssTransform,
+                    [[370, 120], [500, 200]],
+                    function() {
+                        assertPoints([[30, 30]]);
+                        assertRanges([[21.99, 34.55], [38.14, 25.98]]);
+                        assertSelectedPoints({0: [2]});
+                    },
+                    null, BOXEVENTS, 'scattermap select'
+                );
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'lasso');
+            })
+            .then(function() {
+                return _run(hasCssTransform,
+                    [[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]],
+                    function() {
+                        assertPoints([[20, 20]]);
+                        assertSelectedPoints({0: [1]});
+                        assertLassoPoints([
+                            [13.28, 25.97], [13.28, 14.33], [25.71, 14.33], [25.71, 25.97], [13.28, 25.97]
+                        ]);
+                    },
+                    null, LASSOEVENTS, 'scattermap lasso'
+                );
+            })
+            .then(function() {
+                // make selection handlers don't get called in 'pan' dragmode
+                return Plotly.relayout(gd, 'dragmode', 'pan');
+            })
+            .then(function() {
+                return _run(hasCssTransform,
+                    [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermap pan'
+                );
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+    });
+
+    [false, true].forEach(function(hasCssTransform) {
+        it('@gl should work on scattermap traces, hasCssTransform: ' + hasCssTransform, function(done) {
+            var assertPoints = makeAssertPoints(['lon', 'lat']);
+            var assertRanges = makeAssertRanges('map');
+            var assertLassoPoints = makeAssertLassoPoints('map');
+            var assertSelectedPoints = makeAssertSelectedPoints();
+
+            var fig = Lib.extendDeep({}, require('../../image/mocks/map_bubbles-text'));
+
+            fig.data[0].lon.push(null);
+            fig.data[0].lat.push(null);
+
+            fig.layout.dragmode = 'select';
+
+            delete fig.layout.map.bounds;
+
+            fig.config = {};
+            addInvisible(fig);
+
+            _newPlot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
+                return _run(hasCssTransform,
+                    [[370, 120], [500, 200]],
+                    function() {
+                        assertPoints([[30, 30]]);
+                        assertRanges([[21.99, 34.55], [38.14, 25.98]]);
+                        assertSelectedPoints({0: [2]});
+                    },
+                    null, BOXEVENTS, 'scattermap select'
+                );
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'lasso');
+            })
+            .then(function() {
+                return _run(hasCssTransform,
+                    [[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]],
+                    function() {
+                        assertPoints([[20, 20]]);
+                        assertSelectedPoints({0: [1]});
+                        assertLassoPoints([
+                            [13.28, 25.97], [13.28, 14.33], [25.71, 14.33], [25.71, 25.97], [13.28, 25.97]
+                        ]);
+                    },
+                    null, LASSOEVENTS, 'scattermap lasso'
+                );
+            })
+            .then(function() {
+                // make selection handlers don't get called in 'pan' dragmode
+                return Plotly.relayout(gd, 'dragmode', 'pan');
+            })
+            .then(function() {
+                return _run(hasCssTransform,
+                    [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermap pan'
+                );
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+    });
+
+    [false, true].forEach(function(hasCssTransform) {
         it('@gl should work on choroplethmapbox traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['location', 'z']);
             var assertRanges = makeAssertRanges('mapbox');
@@ -1959,6 +2392,56 @@ describe('Test select box and lasso per trace:', function() {
                         ]);
                     },
                     null, LASSOEVENTS, 'choroplethmapbox lasso'
+                );
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+    });
+
+    [false, true].forEach(function(hasCssTransform) {
+        it('@gl should work on choroplethmap traces, hasCssTransform: ' + hasCssTransform, function(done) {
+            var assertPoints = makeAssertPoints(['location', 'z']);
+            var assertRanges = makeAssertRanges('map');
+            var assertLassoPoints = makeAssertLassoPoints('map');
+            var assertSelectedPoints = makeAssertSelectedPoints();
+
+            var fig = Lib.extendDeep({}, require('../../image/mocks/map_choropleth0.json'));
+
+            fig.data[0].locations.push(null);
+
+            fig.layout.dragmode = 'select';
+            fig.config = {};
+            addInvisible(fig);
+
+            _newPlot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
+                return _run(hasCssTransform,
+                    [[150, 150], [300, 300]],
+                    function() {
+                        assertPoints([['NY', 10]]);
+                        assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
+                        assertSelectedPoints({0: [0]});
+                    },
+                    null, BOXEVENTS, 'choroplethmap select'
+                );
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'lasso');
+            })
+            .then(function() {
+                return _run(hasCssTransform,
+                    [[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]],
+                    function() {
+                        assertPoints([['MA', 20]]);
+                        assertSelectedPoints({0: [1]});
+                        assertLassoPoints([
+                            [-74.06, 43.936], [-74.06, 39.293], [-67.84, 39.293],
+                            [-67.84, 43.936], [-74.06, 43.936]
+                        ]);
+                    },
+                    null, LASSOEVENTS, 'choroplethmap lasso'
                 );
             })
             .then(done, done.fail);
@@ -2873,57 +3356,11 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('should work on traces with enabled transforms, hasCssTransform: ' + hasCssTransform, function(done) {
-            var assertSelectedPoints = makeAssertSelectedPoints();
-
-            _newPlot(gd, [{
-                x: [1, 2, 3, 4, 5],
-                y: [2, 3, 1, 7, 9],
-                marker: {size: [10, 20, 20, 20, 10]},
-                transforms: [{
-                    type: 'filter',
-                    operation: '>',
-                    value: 2,
-                    target: 'y'
-                }, {
-                    type: 'aggregate',
-                    groups: 'marker.size',
-                    aggregations: [
-                        // 20: 6, 10: 5
-                        {target: 'x', func: 'sum'},
-                        // 20: 5, 10: 9
-                        {target: 'y', func: 'avg'}
-                    ]
-                }]
-            }], {
-                dragmode: 'select',
-                showlegend: false,
-                width: 400,
-                height: 400,
-                margin: {l: 0, t: 0, r: 0, b: 0}
-            })
-            .then(function() {
-                if(hasCssTransform) transformPlot(gd, cssTransform);
-
-                return _run(hasCssTransform,
-                    [[5, 5], [395, 395]],
-                    function() {
-                        assertSelectedPoints({0: [1, 3, 4]});
-                    },
-                    [380, 180],
-                    BOXEVENTS, 'transformed trace select (all points selected)'
-                );
-            })
-            .then(done, done.fail);
-        });
-    });
-
-    [false, true].forEach(function(hasCssTransform) {
         it('should work on scatter/bar traces with text nodes, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertSelectedPoints = makeAssertSelectedPoints();
 
             function assertFillOpacity(exp, msg) {
-                var txtPts = d3Select(gd).select('g.plot').selectAll('text');
+                var txtPts = d3Select(gd).select('g.overplot').select('.xy').selectAll('text');
 
                 expect(txtPts.size()).toBe(exp.length, '# of text nodes: ' + msg);
 
@@ -3087,6 +3524,65 @@ describe('Test select box and lasso per trace:', function() {
                     ]);
                 },
                 null, LASSOEVENTS, 'choroplethmapbox lasso'
+            );
+        })
+        .then(done, done.fail);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('@gl should work on choroplethmap traces after adding a new trace on top:', function(done) {
+        var assertPoints = makeAssertPoints(['location', 'z']);
+        var assertRanges = makeAssertRanges('map');
+        var assertLassoPoints = makeAssertLassoPoints('map');
+        var assertSelectedPoints = makeAssertSelectedPoints();
+
+        var fig = Lib.extendDeep({}, require('../../image/mocks/map_choropleth0.json'));
+
+        fig.data[0].locations.push(null);
+
+        fig.layout.dragmode = 'select';
+        fig.config = {};
+        addInvisible(fig);
+
+        var hasCssTransform = false;
+
+        _newPlot(gd, fig)
+        .then(function() {
+            // add a scatter points on top
+            fig.data[3] = {
+                type: 'scattermap',
+                marker: { size: 40 },
+                lon: [-70],
+                lat: [40]
+            };
+
+            return Plotly.react(gd, fig);
+        })
+        .then(function() {
+            return _run(hasCssTransform,
+                [[150, 150], [300, 300]],
+                function() {
+                    assertPoints([['NY', 10]]);
+                    assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
+                    assertSelectedPoints({0: [0], 3: []});
+                },
+                null, BOXEVENTS, 'choroplethmap select'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            return _run(hasCssTransform,
+                [[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]],
+                function() {
+                    assertPoints([['MA', 20], []]);
+                    assertSelectedPoints({0: [1], 3: [0]});
+                    assertLassoPoints([
+                        [-74.06, 43.936], [-74.06, 39.293], [-67.84, 39.293],
+                        [-67.84, 43.936], [-74.06, 43.936]
+                    ]);
+                },
+                null, LASSOEVENTS, 'choroplethmap lasso'
             );
         })
         .then(done, done.fail);

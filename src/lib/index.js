@@ -62,6 +62,7 @@ lib.toLogRange = require('./to_log_range');
 lib.relinkPrivateKeys = require('./relink_private');
 
 var arrayModule = require('./array');
+lib.isArrayBuffer = arrayModule.isArrayBuffer;
 lib.isTypedArray = arrayModule.isTypedArray;
 lib.isArrayOrTypedArray = arrayModule.isArrayOrTypedArray;
 lib.isArray1D = arrayModule.isArray1D;
@@ -114,6 +115,7 @@ var statsModule = require('./stats');
 lib.aggNums = statsModule.aggNums;
 lib.len = statsModule.len;
 lib.mean = statsModule.mean;
+lib.geometricMean = statsModule.geometricMean;
 lib.median = statsModule.median;
 lib.midRange = statsModule.midRange;
 lib.variance = statsModule.variance;
@@ -187,6 +189,7 @@ lib.removeElement = domModule.removeElement;
 lib.addStyleRule = domModule.addStyleRule;
 lib.addRelatedStyleRule = domModule.addRelatedStyleRule;
 lib.deleteRelatedStyleRule = domModule.deleteRelatedStyleRule;
+lib.setStyleOnHover = domModule.setStyleOnHover;
 lib.getFullTransformMatrix = domModule.getFullTransformMatrix;
 lib.getElementTransformMatrix = domModule.getElementTransformMatrix;
 lib.getElementAndAncestors = domModule.getElementAndAncestors;
@@ -684,8 +687,8 @@ lib.getTargetArray = function(trace, transformOpts) {
 
     if(typeof target === 'string' && target) {
         var array = lib.nestedProperty(trace, target).get();
-        return Array.isArray(array) ? array : false;
-    } else if(Array.isArray(target)) {
+        return lib.isArrayOrTypedArray(array) ? array : false;
+    } else if(lib.isArrayOrTypedArray(target)) {
         return target;
     }
 
@@ -698,10 +701,12 @@ lib.getTargetArray = function(trace, transformOpts) {
  * because extend-like algorithms are hella slow
  * obj2 is assumed to already be clean of these things (including no arrays)
  */
-lib.minExtend = function(obj1, obj2) {
+function minExtend(obj1, obj2, opt) {
     var objOut = {};
     if(typeof obj2 !== 'object') obj2 = {};
-    var arrayLen = 3;
+
+    var arrayLen = opt === 'pieLike' ? -1 : 3;
+
     var keys = Object.keys(obj1);
     var i, k, v;
 
@@ -711,14 +716,18 @@ lib.minExtend = function(obj1, obj2) {
         if(k.charAt(0) === '_' || typeof v === 'function') continue;
         else if(k === 'module') objOut[k] = v;
         else if(Array.isArray(v)) {
-            if(k === 'colorscale') {
+            if(k === 'colorscale' || arrayLen === -1) {
                 objOut[k] = v.slice();
             } else {
                 objOut[k] = v.slice(0, arrayLen);
             }
         } else if(lib.isTypedArray(v)) {
-            objOut[k] = v.subarray(0, arrayLen);
-        } else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
+            if(arrayLen === -1) {
+                objOut[k] = v.subarray();
+            } else {
+                objOut[k] = v.subarray(0, arrayLen);
+            }
+        } else if(v && (typeof v === 'object')) objOut[k] = minExtend(obj1[k], obj2[k], opt);
         else objOut[k] = v;
     }
 
@@ -732,7 +741,8 @@ lib.minExtend = function(obj1, obj2) {
     }
 
     return objOut;
-};
+}
+lib.minExtend = minExtend;
 
 lib.titleCase = function(s) {
     return s.charAt(0).toUpperCase() + s.substr(1);
@@ -743,10 +753,6 @@ lib.containsAny = function(s, fragments) {
         if(s.indexOf(fragments[i]) !== -1) return true;
     }
     return false;
-};
-
-lib.isIE = function() {
-    return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
 var IS_SAFARI_REGEX = /Version\/[\d\.]+.*Safari/;
@@ -918,6 +924,11 @@ lib.objectFromPath = function(path, value) {
 var dottedPropertyRegex = /^([^\[\.]+)\.(.+)?/;
 var indexedPropertyRegex = /^([^\.]+)\[([0-9]+)\](\.)?(.+)?/;
 
+function notValid(prop) {
+    // guard against polluting __proto__ and other internals getters and setters
+    return prop.slice(0, 2) === '__';
+}
+
 lib.expandObjectPaths = function(data) {
     var match, key, prop, datum, idx, dest, trailingPath;
     if(typeof data === 'object' && !Array.isArray(data)) {
@@ -926,6 +937,7 @@ lib.expandObjectPaths = function(data) {
                 if((match = key.match(dottedPropertyRegex))) {
                     datum = data[key];
                     prop = match[1];
+                    if(notValid(prop)) continue;
 
                     delete data[key];
 
@@ -934,6 +946,8 @@ lib.expandObjectPaths = function(data) {
                     datum = data[key];
 
                     prop = match[1];
+                    if(notValid(prop)) continue;
+
                     idx = parseInt(match[2]);
 
                     delete data[key];
@@ -962,9 +976,12 @@ lib.expandObjectPaths = function(data) {
                     } else {
                         // This is the case where this property is the end of the line,
                         // e.g. xaxis.range[0]
+
+                        if(notValid(prop)) continue;
                         data[prop][idx] = lib.expandObjectPaths(datum);
                     }
                 } else {
+                    if(notValid(key)) continue;
                     data[key] = lib.expandObjectPaths(data[key]);
                 }
             }
@@ -1074,6 +1091,26 @@ lib.texttemplateString = function() {
     return templateFormatString.apply(texttemplateWarnings, arguments);
 };
 
+// Regex for parsing multiplication and division operations applied to a template key
+// Used for shape.label.texttemplate
+// Matches a key name (non-whitespace characters), followed by a * or / character, followed by a number
+// For example, the following strings are matched: `x0*2`, `slope/1.60934`, `y1*2.54`
+var MULT_DIV_REGEX = /^(\S+)([\*\/])(-?\d+(\.\d+)?)$/;
+function multDivParser(inputStr) {
+    var match = inputStr.match(MULT_DIV_REGEX);
+    if(match) return { key: match[1], op: match[2], number: Number(match[3]) };
+    return { key: inputStr, op: null, number: null };
+}
+var texttemplateWarningsForShapes = {
+    max: 10,
+    count: 0,
+    name: 'texttemplate',
+    parseMultDiv: true,
+};
+lib.texttemplateStringForShapes = function() {
+    return templateFormatString.apply(texttemplateWarningsForShapes, arguments);
+};
+
 var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
 /**
  * Substitute values from an object into a string and optionally formats them using d3-format,
@@ -1122,6 +1159,17 @@ function templateFormatString(string, labels, d3locale) {
         if(isSpaceOther || isSpaceOtherSpace) key = key.substring(1);
         if(isOtherSpace || isSpaceOtherSpace) key = key.substring(0, key.length - 1);
 
+        // Shape labels support * and / operators in template string
+        // Parse these if the parseMultDiv param is set to true
+        var parsedOp = null;
+        var parsedNumber = null;
+        if(opts.parseMultDiv) {
+            var _match = multDivParser(key);
+            key = _match.key;
+            parsedOp = _match.op;
+            parsedNumber = _match.number;
+        }
+
         var value;
         if(hasOther) {
             value = labels[key];
@@ -1145,6 +1193,12 @@ function templateFormatString(string, labels, d3locale) {
             }
         }
 
+        // Apply mult/div operation (if applicable)
+        if(value !== undefined) {
+            if(parsedOp === '*') value *= parsedNumber;
+            if(parsedOp === '/') value /= parsedNumber;
+        }
+
         if(value === undefined && opts) {
             if(opts.count < opts.max) {
                 lib.warn('Variable \'' + key + '\' in ' + opts.name + ' could not be found!');
@@ -1163,7 +1217,9 @@ function templateFormatString(string, labels, d3locale) {
             var fmt;
             if(format[0] === ':') {
                 fmt = d3locale ? d3locale.numberFormat : lib.numberFormat;
-                value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+                if(value !== '') { // e.g. skip missing data on heatmap
+                    value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
+                }
             }
 
             if(format[0] === '|') {

@@ -1,0 +1,154 @@
+{
+ "data": [
+  {
+   "type": "bar",
+   "x": ["A", "b", "c", "d", "E"],
+   "y": [null, 0.25, 0.5, 0.75, 1],
+   "text": [null, 0.25, 0.5, 0.75, 1],
+   "insidetextanchor": "middle",
+   "cliponaxis": false
+  },
+  {
+   "type": "bar",
+   "marker": {
+    "line": {
+     "width": "1e1"
+    }
+   },
+   "x": ["A", "b", "c", "d", "E"],
+   "y": [0, 0, 0.5, null, 1],
+   "text": [0, 0, 0.5, null, 1],
+   "insidetextanchor": "middle",
+   "cliponaxis": false
+  },
+  {
+   "type": "bar",
+   "x": ["A", "b", "c", "d", "E"],
+   "y": [null, 0.25, 0.5, 0.75, 1],
+   "text": [null, 0.25, 0.5, 0.75, 1],
+   "insidetextanchor": "middle",
+   "cliponaxis": false,
+   "xaxis": "x2",
+   "yaxis": "y2"
+  },
+  {
+   "type": "bar",
+   "marker": {
+    "line": {
+     "width": "1e1"
+    }
+   },
+   "x": ["A", "b", "c", "d", "E"],
+   "y": [0, 0, 0.5, null, 1],
+   "text": [0, 0, 0.5, null, 1],
+   "insidetextanchor": "middle",
+   "cliponaxis": false,
+   "xaxis": "x2",
+   "yaxis": "y2"
+  },
+  {
+   "type": "bar",
+   "orientation": "h",
+   "y": ["A", "b", "c", "d", "E"],
+   "x": [null, 0.25, 0.5, 0.75, 1],
+   "text": [null, 0.25, 0.5, 0.75, 1],
+   "insidetextanchor": "middle",
+   "cliponaxis": false,
+   "xaxis": "x3",
+   "yaxis": "y3"
+  },
+  {
+   "type": "bar",
+   "marker": {
+    "line": {
+     "width": "1e1"
+    }
+   },
+   "orientation": "h",
+   "y": ["A", "b", "c", "d", "E"],
+   "x": [0, 0, 0.5, null, 1],
+   "text": [0, 0, 0.5, null, 1],
+   "insidetextanchor": "middle",
+   "cliponaxis": false,
+   "xaxis": "x3",
+   "yaxis": "y3"
+  },
+  {
+   "type": "bar",
+   "orientation": "h",
+   "y": ["A", "b", "c", "d", "E"],
+   "x": [null, 0.25, 0.5, 0.75, 1],
+   "text": [null, 0.25, 0.5, 0.75, 1],
+   "insidetextanchor": "middle",
+   "cliponaxis": false,
+   "xaxis": "x4",
+   "yaxis": "y4"
+  },
+  {
+   "type": "bar",
+   "marker": {
+    "line": {
+     "width": "1e1"
+    }
+   },
+   "orientation": "h",
+   "y": ["A", "b", "c", "d", "E"],
+   "x": [0, 0, 0.5, null, 1],
+   "text": [0, 0, 0.5, null, 1],
+   "insidetextanchor": "middle",
+   "cliponaxis": false,
+   "xaxis": "x4",
+   "yaxis": "y4"
+  }
+ ],
+ "layout": {
+  "showlegend": true,
+  "width": 800,
+  "height": 800,
+  "dragmode": "pan",
+  "barmode": "relative",
+  "barcornerradius": "50%",
+  "xaxis": {
+   "zeroline": false,
+   "domain": [0, 0.48]
+  },
+  "xaxis2": {
+   "zeroline": false,
+   "autorange": "reversed",
+   "anchor": "y2",
+   "domain": [0.52, 1]
+  },
+  "xaxis3": {
+   "zeroline": false,
+   "anchor": "y3",
+   "domain": [0, 0.48]
+  },
+  "xaxis4": {
+   "zeroline": false,
+   "autorange": "reversed",
+   "anchor": "y4",
+   "domain": [0.52, 1]
+  },
+  "yaxis": {
+   "zeroline": false,
+   "domain": [0, 0.48]
+  },
+  "yaxis2": {
+   "zeroline": false,
+   "autorange": "reversed",
+   "anchor": "x2",
+   "domain": [0.52, 1]
+  },
+  "yaxis3": {
+   "zeroline": false,
+   "anchor": "x3",
+   "domain": [0.52, 1]
+  },
+  "yaxis4": {
+   "zeroline": false,
+   "autorange": "reversed",
+   "anchor": "x4",
+   "domain": [0, 0.48]
+  }
+ }
+}

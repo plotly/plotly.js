@@ -2,7 +2,7 @@ var path = require('path');
 var fs = require('fs-extra');
 var exec = require('child_process').exec;
 var runSeries = require('run-series');
-var glob = require('glob');
+var { glob } = require('glob');
 
 var common = require('./util/common');
 var constants = require('./util/constants');
@@ -172,10 +172,11 @@ function syncLocalesPkg(d) {
     var localeFiles;
     function listLocalFiles(cb) {
         var localeGlob = path.join(constants.pathToLib, 'locales', '*.js');
-        glob(localeGlob, function(err, _localeFiles) {
-            if(err) cb(null);
+        glob(localeGlob).then(function(_localeFiles) {
             localeFiles = _localeFiles;
             cb();
+        }).catch(function(err) {
+            cb(null);
         });
     }
 

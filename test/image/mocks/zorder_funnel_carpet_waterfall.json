@@ -1,0 +1,73 @@
+{
+ "data": [
+  {
+   "x": [-3, -2, 4],
+   "y": [2, 8, 2],
+   "name": "scatter zorder=2",
+   "type": "scatter",
+   "marker": { "size": 20 },
+   "line": { "width": 6 },
+   "zorder": 2
+  },
+  {
+   "x": [-3, -2, 2, 3],
+   "y": [2, 5, -3, -1],
+   "name": "waterfall zorder=3",
+   "type": "waterfall",
+   "zorder": 3
+  },
+  {
+   "width": 0.7,
+   "y": [4, 5, 6],
+   "x": [7, 5, 7],
+   "opacity": 1,
+   "type": "funnel",
+   "name": "funnel zorder=4",
+   "zorder": 4
+  },
+  {
+   "type": "scattercarpet",
+   "a": [4, 4.5, 5, 6],
+   "b": [2.5, 2.5, 2.5, 2.5],
+   "line": {
+    "shape": "spline",
+    "smoothing": 1,
+    "color": "orange"
+   },
+   "mode": "lines+markers",
+   "marker": {
+    "size": 15,
+    "symbol": "arrow",
+    "angleref": "previous"
+   },
+   "carpet": "c0",
+   "name": "scattercarpet zorder=3",
+   "zorder": 3
+  },
+  {
+   "type": "carpet",
+   "a": [4, 4, 5, 5, 5, 6, 6],
+   "b": [2, 3, 2, 1, 3, 1, 2],
+   "y": [3, 4, 5, 7, 8, 6, 8],
+   "aaxis": {
+    "smoothing": 1,
+    "minorgridcount": 9
+   },
+   "baxis": {
+    "smoothing": 1,
+    "minorgridcount": 9
+   },
+   "color": "red",
+   "zorder": 10,
+   "carpet": "c0",
+   "name": "carpet zorder=10"
+  }
+ ],
+ "layout": {
+  "xaxis": {
+   "title": {
+    "text": "zorder stacking"
+   }
+  }
+ }
+}

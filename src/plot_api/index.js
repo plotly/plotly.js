@@ -24,6 +24,12 @@ exports.deleteFrames = main.deleteFrames;
 exports.animate = main.animate;
 exports.setPlotConfig = main.setPlotConfig;
 
+var getGraphDiv = require('../lib/dom').getGraphDiv;
+var eraseActiveShape = require('../components/shapes/draw').eraseActiveShape;
+exports.deleteActiveShape = function(gd) {
+    return eraseActiveShape(getGraphDiv(gd));
+};
+
 exports.toImage = require('./to_image');
 exports.validate = require('./validate');
 exports.downloadImage = require('../snapshot/download');

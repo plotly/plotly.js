@@ -1,0 +1,81 @@
+{
+ "data": [
+  {
+   "type": "scatter",
+   "mode": "markers",
+   "xaxis": "x",
+   "yaxis": "y",
+   "x": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  },
+  {
+   "type": "scatter",
+   "mode": "markers",
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "x": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  },
+  {
+   "type": "scatterpolar",
+   "mode": "markers",
+   "subplot": "polar",
+   "r": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "theta": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  },
+  {
+   "type": "scatterpolar",
+   "mode": "markers",
+   "subplot": "polar2",
+   "r": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "theta": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  }
+ ],
+ "layout": {
+  "showlegend": false,
+  "width": 800,
+  "height": 800,
+  "xaxis": {
+   "anchor": "y",
+   "domain": [0, 0.45],
+   "maxallowed": 6.2,
+   "minallowed": 5.8
+  },
+  "yaxis": {
+   "anchor": "x",
+   "domain": [0, 0.45]
+  },
+  "xaxis2": {
+   "autorange": "reversed",
+   "anchor": "y2",
+   "domain": [0, 0.45],
+   "maxallowed": 6.2,
+   "minallowed": 5.8
+  },
+  "yaxis2": {
+   "anchor": "x2",
+   "domain": [0.55, 1]
+  },
+  "polar": {
+   "domain": {
+    "x": [0.55, 1],
+    "y": [0, 0.45]
+   },
+   "radialaxis": {
+    "maxallowed": 6.2,
+    "minallowed": 5.8
+   }
+  },
+  "polar2": {
+   "domain": {
+    "x": [0.55, 1],
+    "y": [0.55, 1]
+   },
+   "radialaxis": {
+    "autorange": "reversed",
+    "maxallowed": 6.2,
+    "minallowed": 5.8
+   }
+  }
+ }
+}

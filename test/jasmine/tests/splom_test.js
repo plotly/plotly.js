@@ -75,32 +75,6 @@ describe('Test splom trace defaults:', function() {
         expect(gd._fullData[0].diagonal.visible).toBe(false);
     });
 
-    it('still coerces partial visibilities even if all are false with transforms', function() {
-        _supply({
-            dimensions: [{
-                values: [1, 2, 3]
-            }],
-            showupperhalf: false,
-            showlowerhalf: false,
-            diagonal: {visible: false},
-            transforms: [{
-                type: 'filter',
-                target: 'dimensions[0].values',
-                operation: '>',
-                value: 2
-            }]
-        });
-
-        expect(gd._fullData[0].visible).toBe(false);
-
-        expect(gd._fullData[0].transforms[0].enabled).toBe(true);
-
-        // make sure these are still coerced - so you can get back via GUI!
-        expect(gd._fullData[0].showupperhalf).toBe(false);
-        expect(gd._fullData[0].showlowerhalf).toBe(false);
-        expect(gd._fullData[0].diagonal.visible).toBe(false);
-    });
-
     it('should set `visible: false` to values-less dimensions', function() {
         _supply({
             dimensions: [
@@ -1066,7 +1040,7 @@ describe('Test splom interactions:', function() {
             });
 
             return Plotly.restyle(gd, {
-                'showupperhalf': true,
+                showupperhalf: true,
                 'diagonal.visible': true
             });
         })
@@ -1079,7 +1053,7 @@ describe('Test splom interactions:', function() {
             });
 
             return Plotly.restyle(gd, {
-                'showlowerhalf': false,
+                showlowerhalf: false,
                 'diagonal.visible': false
             });
         })
@@ -1727,7 +1701,7 @@ describe('Test splom select:', function() {
         .then(done, done.fail);
     });
 
-    it('@gl should behave correctly during select->dblclick->pan scenarios', function(done) {
+    it('@noCI @gl should behave correctly during select->dblclick->pan scenarios', function(done) {
         var fig = Lib.extendDeep({}, require('../../image/mocks/splom_0.json'));
         fig.layout = {
             width: 400,

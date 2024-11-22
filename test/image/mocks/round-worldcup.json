@@ -1,0 +1,66 @@
+{
+ "data": [
+  {
+   "orientation": "h",
+   "type": "bar",
+   "marker": { "color": "lightblue" },
+   "textangle": 0,
+   "textposition": "inside",
+   "textfont": {
+    "color": "white",
+    "size": 32
+   },
+   "text": [
+    "1958 | 1962 | 1970 | 1994 | 2002 🇧🇷",
+    "1954 | 1974 | 1990 | 2014 🇩🇪",
+    "1934 | 1938 | 1982 | 2006 🇮🇹",
+    "1930 | 1950 🇺🇾",
+    "1998 | 2018 🇫🇷",
+    "1974 | 1986 🇦🇷",
+    "1966 🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+    "2010 🇪🇸"
+   ],
+   "y": [
+    "Brazil",
+    "Germany",
+    "Italy",
+    "Uruguay",
+    "France",
+    "Argentina",
+    "England",
+    "Spain"
+   ],
+   "x": [5, 4, 4, 2, 2, 2, 1, 1]
+  }
+ ],
+ "layout": {
+  "barcornerradius": "50%",
+  "title": {
+   "text": "<b>FIFA 🌎 World Cup 🏆 winners</b>",
+   "font": {
+    "size": 40,
+    "color": "gray"
+   }
+  },
+  "width": 600,
+  "height": 600,
+  "margin": {
+   "l": 20,
+   "r": 20
+  },
+  "yaxis": {
+   "ticklabelposition": "inside",
+   "autorange": "reversed"
+  },
+  "xaxis": {
+   "zeroline": false,
+   "range": [-1, 6],
+   "tickvals": [0, 1, 2, 3, 4, 5],
+   "ticktext": ["😐", "🙂", "😊", "🤨", "😃", "😎"],
+   "tickfont": { "size": 32 },
+   "title": {
+    "text": "<br><b>An interactive Plotly graph</b>"
+   }
+  }
+ }
+}

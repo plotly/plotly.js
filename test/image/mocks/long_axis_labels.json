@@ -1,65 +1,65 @@
 {
-    "data": [
-        {
-            "type": "scatter",
-            "name": "loooooong x",
-            "x": [
-                "short label 1",
-                "loooooong label 1",
-                "short label 2",
-                "loooooong label 2",
-                "short label 3",
-                "loooooong label 3",
-                "short label 4",
-                "loooooongloooooongloooooong label 4",
-                "short label 5",
-                "loooooong label 5"
-            ],
-            "y": [
-                "short label 1",
-                "loooooong label 1",
-                "short label 2",
-                "loooooong label 2",
-                "short label 3",
-                "loooooong label 3",
-                "short label 4",
-                "loooooong label 4",
-                "short label 5",
-                "loooooong label 5"
-            ]
-        },
-        {
-            "yaxis": "y2",
-            "type": "scatter",
-            "name": "loooooong y",
-            "x": ["looooooooooooonger"],
-            "y": ["loooooooo"]
-        }
-    ],
-    "layout": {
-        "xaxis": {
-            "title": {
-                "text": "X Axis Title",
-                "font": { "size": 80 }
-            },
-            "automargin": true
-        },
-        "yaxis": {
-            "title": {
-                "text": "Y Axis Title",
-                "font": { "size": 40 }
-            },
-            "ticklen": 50,
-            "automargin": true
-        },
-        "yaxis2": {
-            "title": {
-                "text": "Y2 Axis Title",
-                "font": { "size": 40 }
-            },
-            "overlaying": "y",
-            "side": "right",
-            "automargin": true
-        }
-    }
+ "data": [
+  {
+   "type": "scatter",
+   "name": "loooooong x",
+   "x": [
+    "short label 1",
+    "loooooong label 1",
+    "short label 2",
+    "loooooong label 2",
+    "short label 3",
+    "loooooong label 3",
+    "short label 4",
+    "loooooongloooooongloooooong label 4",
+    "short label 5",
+    "loooooong label 5"
+   ],
+   "y": [
+    "short label 1",
+    "loooooong label 1",
+    "short label 2",
+    "loooooong label 2",
+    "short label 3",
+    "loooooong label 3",
+    "short label 4",
+    "loooooong label 4",
+    "short label 5",
+    "loooooong label 5"
+   ]
+  },
+  {
+   "yaxis": "y2",
+   "type": "scatter",
+   "name": "loooooong y",
+   "x": ["looooooooooooonger"],
+   "y": ["loooooooo"]
+  }
+ ],
+ "layout": {
+  "xaxis": {
+   "title": {
+    "text": "X Axis Title",
+    "font": { "size": 80 }
+   },
+   "automargin": true
+  },
+  "yaxis": {
+   "title": {
+    "text": "Y Axis Title",
+    "font": { "size": 40 }
+   },
+   "ticklen": 50,
+   "automargin": true
+  },
+  "yaxis2": {
+   "title": {
+    "text": "Y2 Axis Title",
+    "font": { "size": 40 }
+   },
+   "overlaying": "y",
+   "side": "right",
+   "automargin": true
+  }
+ }
 }

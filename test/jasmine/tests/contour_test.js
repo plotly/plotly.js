@@ -120,7 +120,22 @@ describe('contour defaults', function() {
 describe('contour makeColorMap', function() {
     'use strict';
 
-    it('should make correct color map function (\'fill\' coloring case)', function() {
+    function _makeColorMap(trace) {
+        trace.type = 'contour';
+        if(trace.z === undefined) {
+            trace.z = [[0]]; // dummy data for calc to work properly
+        }
+        var gd = { data: [trace] };
+        supplyAllDefaults(gd);
+
+        var fullTrace = gd._fullData[0];
+        fullTrace._extremes = {};
+        Contour.calc(gd, fullTrace);
+
+        return makeColorMap(fullTrace);
+    }
+
+    it('should make correct color map function (\'fill\' coloring case 1)', function() {
         var trace = {
             contours: {
                 coloring: 'fill',
@@ -141,7 +156,7 @@ describe('contour makeColorMap', function() {
             ]]
         };
 
-        var colorMap = makeColorMap(trace);
+        var colorMap = _makeColorMap(trace);
 
         expect(colorMap.domain()).toEqual(
             [-1.75, -0.75, 0.25, 1.25, 2.25]
@@ -151,6 +166,56 @@ describe('contour makeColorMap', function() {
             'rgb(12,51,131)', 'rgb(10,136,186)', 'rgb(242,211,56)',
             'rgb(242,143,56)', 'rgb(217,30,30)'
         ]);
+
+        // Set lower/upper bounds of the color domain via zmin/zmax
+        trace.zmin = -5;
+        trace.zmax = 5;
+
+        colorMap = _makeColorMap(trace);
+
+        expect(colorMap.domain()).toEqual(
+            [-5, -1.75, -0.75, 0.25, 1.25, 2.25, 5]
+        );
+
+        expect(colorMap.range()).toEqual([
+            'rgb(12,51,131)', 'rgb(12,51,131)', 'rgb(10,136,186)', 'rgb(242,211,56)',
+            'rgb(242,143,56)', 'rgb(217,30,30)', 'rgb(217,30,30)'
+        ]);
+    });
+
+    it('should make correct color map function (\'fill\' coloring case 2)', function() {
+        var trace = {
+            z: [[0, 1]],
+            autocontour: true,
+            contours: {
+                coloring: 'fill'
+            },
+            colorscale: colorScales.RdBu,
+        };
+
+        var colorMap = _makeColorMap(trace);
+        var domain = colorMap.domain();
+        var range = colorMap.range();
+
+        expect(domain[0]).toBe(0);
+        expect(domain[domain.length - 1]).toBe(1);
+
+        expect(range[0]).toBe('rgb(5,10,172)');
+        expect(range[range.length - 1]).toBe('rgb(178,10,28)');
+
+        // Set lower/upper bounds of the color domain via zmin/zmax
+        trace.zmin = -1;
+        trace.zmax = 2;
+
+        colorMap = _makeColorMap(trace);
+        domain = colorMap.domain();
+        range = colorMap.range();
+
+        expect(domain[0]).toBe(trace.zmin);
+        expect(domain[domain.length - 1]).toBe(trace.zmax);
+
+        expect(range[0]).toBe('rgb(5,10,172)');
+        expect(range[range.length - 1]).toBe('rgb(178,10,28)');
     });
 
     it('should make correct color map function (\'heatmap\' coloring case)', function() {
@@ -166,7 +231,7 @@ describe('contour makeColorMap', function() {
             zmax: 6
         };
 
-        var colorMap = makeColorMap(trace);
+        var colorMap = _makeColorMap(trace);
 
         expect(colorMap.domain()).toEqual(
            [1, 2.75, 3.5, 4, 4.5, 6]
@@ -189,7 +254,7 @@ describe('contour makeColorMap', function() {
             colorscale: colorScales.RdBu
         };
 
-        var colorMap = makeColorMap(trace);
+        var colorMap = _makeColorMap(trace);
 
         expect(colorMap.domain()).toEqual(
             [1.5, 2.9, 3.5, 3.9, 4.3, 5.5]

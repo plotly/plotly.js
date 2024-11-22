@@ -339,72 +339,6 @@ describe('Plotly.validate', function() {
         );
     });
 
-    it('should work with attributes in registered transforms', function() {
-        var base = {
-            x: [-2, -1, -2, 0, 1, 2, 3],
-            y: [1, 2, 3, 1, 2, 3, 1],
-        };
-
-        var out = Plotly.validate([
-            Lib.extendFlat({}, base, {
-                transforms: [{
-                    type: 'filter',
-                    operation: '='
-                }, {
-                    type: 'filter',
-                    operation: '=',
-                    wrongKey: 'sup?'
-                }, {
-                    type: 'filter',
-                    operation: 'wrongVal'
-                },
-                    'wont-work'
-                ]
-            }),
-            Lib.extendFlat({}, base, {
-                transforms: {
-                    type: 'filter'
-                }
-            }),
-            Lib.extendFlat({}, base, {
-                transforms: [{
-                    type: 'no gonna work'
-                }]
-            }),
-        ], {
-            title: {
-                text: 'my transformed graph'
-            }
-        });
-
-        expect(out.length).toEqual(5);
-        assertErrorContent(
-            out[0], 'schema', 'data', 0,
-            ['transforms', 1, 'wrongKey'], 'transforms[1].wrongKey',
-            'In data trace 0, key transforms[1].wrongKey is not part of the schema'
-        );
-        assertErrorContent(
-            out[1], 'value', 'data', 0,
-            ['transforms', 2, 'operation'], 'transforms[2].operation',
-            'In data trace 0, key transforms[2].operation is set to an invalid value (wrongVal)'
-        );
-        assertErrorContent(
-            out[2], 'object', 'data', 0,
-            ['transforms', 3], 'transforms[3]',
-            'In data trace 0, key transforms[3] must be linked to an object container'
-        );
-        assertErrorContent(
-            out[3], 'array', 'data', 1,
-            ['transforms'], 'transforms',
-            'In data trace 1, key transforms must be linked to an array container'
-        );
-        assertErrorContent(
-            out[4], 'value', 'data', 2,
-            ['transforms', 0, 'type'], 'transforms[0].type',
-            'In data trace 2, key transforms[0].type is set to an invalid value (no gonna work)'
-        );
-    });
-
     it('should catch input errors for attribute with dynamic defaults', function() {
         var out = Plotly.validate([
             {y: [1, 2]},
@@ -637,29 +571,6 @@ describe('Plotly.validate', function() {
             autobiny: false,
             xbins: {start: 1, end: 5, size: 2},
             ybins: {size: 4}
-        }]);
-        expect(out).toBeUndefined();
-    });
-
-    it('should not attempt to crawl into nested objects of valType: \'any\' attributes', function() {
-        var out = Plotly.validate([{
-            mode: 'markers',
-            x: ['a', 'b', 'c', 'a', 'b', 'c'],
-            y: [1, 2, 3, 4, 5, 6],
-            transforms: [{
-                type: 'groupby',
-                groups: ['a', 'b', 'c'],
-                styles: [{
-                    target: 'a',
-                    value: {marker: {color: 'blue'}}
-                }, {
-                    target: 'b',
-                    value: {marker: {color: 'red'}}
-                }, {
-                    target: 'c',
-                    value: {marker: {color: 'black'}}
-                }]
-            }]
         }]);
         expect(out).toBeUndefined();
     });

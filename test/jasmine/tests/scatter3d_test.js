@@ -329,4 +329,21 @@ describe('Test scatter3d interactions:', function() {
         })
         .then(done, done.fail);
     });
+
+    it('@gl markers should be transparent when marker.opacity is 0', function(done) {
+        Plotly.newPlot(gd, [
+            {
+                type: 'scatter3d',
+                x: [0],
+                y: [0],
+                z: [0],
+                mode: 'markers',
+                marker: { opacity: 0 }
+            },
+        ])
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.glplot.objects[0].opacity).toEqual(0);
+        })
+        .then(done, done.fail);
+    });
 });

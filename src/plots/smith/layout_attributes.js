@@ -22,6 +22,7 @@ var axisTickAttrs = overrideAll({
     tickwidth: extendFlat({}, axesAttrs.tickwidth, {dflt: 2}),
     tickcolor: axesAttrs.tickcolor,
     showticklabels: axesAttrs.showticklabels,
+    labelalias: axesAttrs.labelalias,
     showtickprefix: axesAttrs.showtickprefix,
     tickprefix: axesAttrs.tickprefix,
     showticksuffix: axesAttrs.showticksuffix,

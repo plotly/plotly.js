@@ -154,9 +154,25 @@ describe('sankey tests', function() {
 
         it('\'Sankey\' layout dependent specification should have proper types',
             function() {
-                var fullTrace = _supplyWithLayout({}, {font: {family: 'Arial'}});
+                var fullTrace = _supplyWithLayout({}, {font: {
+                    family: 'Arial',
+                    weight: 'bold',
+                    style: 'italic',
+                    variant: 'small-caps',
+                    textcase: 'word caps',
+                    lineposition: 'under',
+                    shadow: '1px 1px 2px green',
+                }});
                 expect(fullTrace.textfont)
-                    .toEqual({family: 'Arial'}, 'textfont is defined');
+                    .toEqual({
+                        family: 'Arial',
+                        weight: 'bold',
+                        style: 'italic',
+                        variant: 'small-caps',
+                        textcase: 'word caps',
+                        lineposition: 'under',
+                        shadow: '1px 1px 2px green',
+                    }, 'textfont is defined');
             });
 
         it('\'line\' specifications should yield the default values',
@@ -1072,6 +1088,34 @@ describe('sankey tests', function() {
                 });
             })
             .then(done, done.fail);
+        });
+
+        it('should (un-)highlight all traces ending in a (un-)hovered node', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.newPlot(gd, mockCopy)
+                .then(function() {
+                    _hover(200, 250);
+                })
+                .then(function() {
+                    d3SelectAll('.sankey-link')
+                        .filter(function(obj) {
+                            return obj.link.label === 'stream 1';
+                        })[0].forEach(function(l) {
+                            expect(l.style.fillOpacity).toEqual('0.4');
+                        });
+                }).then(function() {
+                    mouseEvent('mouseout', 200, 250);
+                }).then(function() {
+                    d3SelectAll('.sankey-link')
+                        .filter(function(obj) {
+                            return obj.link.label === 'stream 1';
+                        })[0].forEach(function(l) {
+                            expect(l.style.fillOpacity).toEqual('0.2');
+                        });
+                })
+                .then(done, done.fail);
         });
     });
 

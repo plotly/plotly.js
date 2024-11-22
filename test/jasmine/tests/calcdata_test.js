@@ -941,9 +941,9 @@ describe('calculated data and points', function() {
             .then(function() {
                 expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'b', '1']);
                 expect(gd._fullLayout.xaxis._categoriesMap).toEqual({
-                    '1': 2,
-                    'a': 0,
-                    'b': 1
+                    1: 2,
+                    a: 0,
+                    b: 1
                 });
             })
             .then(done, done.fail);
@@ -1074,8 +1074,14 @@ describe('calculated data and points', function() {
                             if(categoryorder === 'total descending') finalOrder.reverse();
                             var expectedAgg = [['a', 7], ['b', 2], ['c', 3]];
 
-                            if(trace.type === 'ohlc' || trace.type === 'candlestick') expectedAgg = [['a', 14], ['b', 4], ['c', 6]];
-                            if(trace.type.match(/histogram/)) expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
+                            if(trace.type === 'ohlc' || trace.type === 'candlestick') {
+                                expectedAgg = [['a', 14], ['b', 4], ['c', 6]];
+                                if(categoryorder === 'total descending') finalOrder = ['a', 'c', 'b'];
+                            }
+                            if(trace.type.match(/histogram/)) {
+                                expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
+                                if(categoryorder === 'total descending') finalOrder = ['a', 'b', 'c'];
+                            }
 
                             checkAggregatedValue(baseMock, expectedAgg, finalOrder, done);
                         });
@@ -1150,6 +1156,25 @@ describe('calculated data and points', function() {
                         if(type === 'histogram2d') expectedAgg = [['a', 2 / 3], ['b', 1 / 3], ['c', 1 / 3]];
                         if(type === 'contour' || type === 'heatmap') expectedAgg = [['a', expectedAgg[0][1] / 3], ['b', expectedAgg[1][1] / 3], ['c', expectedAgg[2][1] / 3]];
                         if(type === 'histogram2dcontour') expectedAgg = [['a', 2 / 4], ['b', 1 / 4], ['c', 1 / 4]]; // TODO: this result is inintuitive
+
+                        checkAggregatedValue(baseMock, expectedAgg, false, done);
+                    });
+
+                    it('takes the geometric mean of all values per category across traces of type ' + trace.type, function(done) {
+                        if(trace.type === 'ohlc' || trace.type === 'candlestick') return done();
+
+                        var type = trace.type;
+                        var data = [7, 2, 3];
+                        var data2 = [5, 4, 2];
+                        var baseMock = { data: [makeData(type, axName, cat, data), makeData(type, axName, cat, data2)], layout: {}};
+                        baseMock.layout[axName] = { type: 'category', categoryorder: 'geometric mean ascending'};
+
+                        var expectedAgg = [['a', Math.sqrt(data[0] * data2[0])], ['b', Math.sqrt(data[1] * data2[1])], ['c', Math.sqrt(data[2] * data2[2])]];
+                        // TODO: how to actually calc these? what do these even mean?
+                        if(type === 'histogram') expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
+                        if(type === 'histogram2d') expectedAgg = [['a', 0], ['b', 0], ['c', 0]];
+                        if(type === 'contour' || type === 'heatmap') expectedAgg = [['a', 0], ['b', 0], ['c', 0]];
+                        if(type === 'histogram2dcontour') expectedAgg = [['a', 0], ['b', 0], ['c', 0]];
 
                         checkAggregatedValue(baseMock, expectedAgg, false, done);
                     });

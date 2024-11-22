@@ -56,8 +56,12 @@ proto.addSource = function(k, opts, cluster) {
             clusterMaxZoom: cluster.maxzoom,
         });
     }
-
-    this.subplot.map.addSource(this.sourceIds[k], sourceOpts);
+    var isSourceExists = this.subplot.map.getSource(this.sourceIds[k]);
+    if(isSourceExists) {
+        isSourceExists.setData(opts.geojson);
+    } else {
+        this.subplot.map.addSource(this.sourceIds[k], sourceOpts);
+    }
 };
 
 proto.setSourceData = function(k, opts) {
@@ -77,7 +81,24 @@ proto.addLayer = function(k, opts, below) {
     if(opts.filter) {
         source.filter = opts.filter;
     }
-    this.subplot.addLayer(source, below);
+    var currentLayerId = this.layerIds[k];
+    var layerExist;
+    var layers = this.subplot.getMapLayers();
+    for(var i = 0; i < layers.length; i++) {
+        if(layers[i].id === currentLayerId) {
+            layerExist = true;
+            break;
+        }
+    }
+
+    if(layerExist) {
+        this.subplot.setOptions(currentLayerId, 'setLayoutProperty', source.layout);
+        if(source.layout.visibility === 'visible') {
+            this.subplot.setOptions(currentLayerId, 'setPaintProperty', source.paint);
+        }
+    } else {
+        this.subplot.addLayer(source, below);
+    }
 };
 
 proto.update = function update(calcTrace) {

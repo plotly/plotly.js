@@ -363,7 +363,7 @@ describe('Test gl3d trace click/hover:', function() {
             }, 'initial');
 
             return Plotly.restyle(gd, {
-                'hoverinfo': [[
+                hoverinfo: [[
                     ['all', 'all', 'all'],
                     ['all', 'all', 'y'],
                     ['all', 'all', 'all']
@@ -382,7 +382,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(delay(20))
         .then(function() {
             assertEventData(1, 2, 43, 0, [1, 2], {
-                'hoverinfo': 'y',
+                hoverinfo: 'y',
                 'hoverlabel.font.color': 'cyan'
             });
             assertHoverLabelStyle(d3SelectAll('g.hovertext'), {
@@ -408,7 +408,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(delay(20))
         .then(function() {
             assertEventData(1, 2, 43, 0, [1, 2], {
-                'hoverinfo': 'y',
+                hoverinfo: 'y',
                 'hoverlabel.font.color': 'cyan',
                 'colorbar.tickvals': undefined,
                 'colorbar.ticktext': undefined

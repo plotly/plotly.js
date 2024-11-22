@@ -392,10 +392,10 @@ describe('subplot creation / deletion:', function() {
         }
 
         Plotly.newPlot(gd, [], {
-            xaxis: { title: 'X' },
-            yaxis: { title: 'Y' },
-            xaxis2: { title: 'X2', anchor: 'y2' },
-            yaxis2: { title: 'Y2', anchor: 'x2' }
+            xaxis: { title: { text: 'X' } },
+            yaxis: { title: { text: 'Y' } },
+            xaxis2: { title: { text: 'X2' }, anchor: 'y2' },
+            yaxis2: { title: { text: 'Y2' }, anchor: 'x2' }
         })
         .then(function() {
             assertOrphanSubplot(1);
@@ -415,7 +415,7 @@ describe('subplot creation / deletion:', function() {
     it('should remove unused axes when deleting traces', function(done) {
         Plotly.newPlot(gd,
             [{y: [1, 2, 3]}, {y: [10, 30, 20], yaxis: 'y2'}],
-            {yaxis2: {side: 'right', overlaying: 'y', title: 'Hi!'}}
+            { yaxis2: { side: 'right', overlaying: 'y', title: { text: 'Hi!' } }}
         )
         .then(function() {
             expect(gd.querySelectorAll('.xy2,.xy2-x,.xy2-y').length).not.toBe(0);
@@ -594,8 +594,8 @@ describe('subplot creation / deletion:', function() {
 
             // change bg colors to same semi-transparent color
             return Plotly.relayout(gd, {
-                'paper_bgcolor': 'rgba(255,0,0,0.2)',
-                'plot_bgcolor': 'rgba(255,0,0,0.2)'
+                paper_bgcolor: 'rgba(255,0,0,0.2)',
+                plot_bgcolor: 'rgba(255,0,0,0.2)'
             });
         })
         .then(function() {
@@ -609,7 +609,7 @@ describe('subplot creation / deletion:', function() {
         var fig = Lib.extendDeep({}, require('../../image/mocks/overlaying-axis-lines.json'));
 
         function _assert(xyCnt, x2y2Cnt) {
-            expect(d3Select('.subplot.xy').select('.plot').selectAll('.trace').size())
+            expect(d3Select('.subplot.xy').select('.overplot').select('.xy').selectAll('.trace').size())
                 .toBe(xyCnt, 'has correct xy subplot trace count');
             expect(d3Select('.overplot').select('.x2y2').selectAll('.trace').size())
                 .toBe(x2y2Cnt, 'has correct x2y2 oveylaid subplot trace count');
@@ -759,7 +759,7 @@ describe('subplot creation / deletion:', function() {
             _assert('x2/y2 both overlays', {
                 xtickParent: 'xaxislayer-above',
                 x2tickParent: 'x2y2-x',
-                trace0Parent: 'plot',
+                trace0Parent: 'xy',
                 trace1Parent: 'x2y2'
             });
         })
@@ -770,8 +770,8 @@ describe('subplot creation / deletion:', function() {
             _assert('x2 free / y2 overlaid', {
                 xtickParent: 'xaxislayer-above',
                 x2tickParent: 'xaxislayer-above',
-                trace0Parent: 'plot',
-                trace1Parent: 'plot'
+                trace0Parent: 'xy',
+                trace1Parent: 'x2y2'
             });
         })
         .then(function() {
@@ -781,7 +781,7 @@ describe('subplot creation / deletion:', function() {
             _assert('back to x2/y2 both overlays', {
                 xtickParent: 'xaxislayer-above',
                 x2tickParent: 'x2y2-x',
-                trace0Parent: 'plot',
+                trace0Parent: 'xy',
                 trace1Parent: 'x2y2'
             });
         })
@@ -805,8 +805,8 @@ describe('subplot creation / deletion:', function() {
         Plotly.newPlot(gd, [{
             y: [1, 2, 1]
         }], {
-            xaxis: {title: 'X'},
-            yaxis: {title: 'Y'}
+            xaxis: { title: { text: 'X' } },
+            yaxis: { title: { text: 'Y' } }
         })
         .then(function() {
             _assert([5, 4, 1], [6, 6, 1]);

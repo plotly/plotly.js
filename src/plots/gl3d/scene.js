@@ -22,7 +22,11 @@ var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
 
+var applyAutorangeOptions = require('../cartesian/autorange').applyAutorangeOptions;
+
 var STATIC_CANVAS, STATIC_CONTEXT;
+
+var tabletmode = false;
 
 function Scene(options, fullLayout) {
     // create sub container for plot
@@ -241,6 +245,10 @@ proto.initializeGLPlot = function() {
             relayoutCallback(scene);
         });
 
+        scene.glplot.canvas.addEventListener('touchstart', function() {
+            tabletmode = true;
+        });
+
         scene.glplot.canvas.addEventListener('wheel', function(e) {
             if(gd._context._scrollZoom.gl3d) {
                 if(scene.camera._ortho) {
@@ -448,7 +456,7 @@ proto.render = function() {
             pointData.bbox = bbox[0];
         }
 
-        if(selection.buttons && selection.distance < 5) {
+        if(selection.distance < 5 && (selection.buttons || tabletmode)) {
             gd.emit('plotly_click', eventData);
         } else {
             gd.emit('plotly_hover', eventData);
@@ -673,6 +681,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
             };
         }
 
+        var range;
+
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
@@ -718,14 +728,24 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 sceneBounds[1][i] += d / 32.0;
             }
 
-            if(axis.autorange === 'reversed') {
+            range = [
+                sceneBounds[0][i],
+                sceneBounds[1][i]
+            ];
+
+            range = applyAutorangeOptions(range, axis);
+
+            sceneBounds[0][i] = range[0];
+            sceneBounds[1][i] = range[1];
+
+            if(axis.isReversed()) {
                 // swap bounds:
                 var tmp = sceneBounds[0][i];
                 sceneBounds[0][i] = sceneBounds[1][i];
                 sceneBounds[1][i] = tmp;
             }
         } else {
-            var range = axis.range;
+            range = axis.range;
             sceneBounds[0][i] = axis.r2l(range[0]);
             sceneBounds[1][i] = axis.r2l(range[1]);
         }
@@ -735,10 +755,17 @@ proto.plot = function(sceneData, fullLayout, layout) {
         }
         axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
 
+        axis.range = [
+            sceneBounds[0][i],
+            sceneBounds[1][i]
+        ];
+
+        axis.limitRange();
+
         // Update plot bounds
         scene.glplot.setBounds(i, {
-            min: sceneBounds[0][i] * dataScale[i],
-            max: sceneBounds[1][i] * dataScale[i]
+            min: axis.range[0] * dataScale[i],
+            max: axis.range[1] * dataScale[i]
         });
     }
 

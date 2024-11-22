@@ -708,6 +708,52 @@ describe('Animate API details', function() {
     });
 });
 
+describe('Animate expandObjectPaths do not pollute prototype', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('should not pollute prototype - layout object', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{y: [1, 3, 2]}]
+        }).then(function() {
+            return Plotly.animate(gd, {
+                transition: {duration: 10},
+                data: [{y: [2, 3, 1]}],
+                traces: [0],
+                layout: {'__proto__.polluted': true, 'x.__proto__.polluted': true}
+            });
+        }).then(delay(100)).then(function() {
+            var a = {};
+            expect(a.polluted).toBeUndefined();
+        }).then(done, done.fail);
+    });
+
+    it('should not pollute prototype - data object', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{y: [1, 3, 2]}]
+        }).then(function() {
+            return Plotly.animate(gd, {
+                transition: {duration: 10},
+                data: [{y: [2, 3, 1], '__proto__.polluted': true}],
+                traces: [0]
+            });
+        }).then(delay(100)).then(function() {
+            var a = {};
+            expect(a.polluted).toBeUndefined();
+        }).then(done, done.fail);
+    });
+});
+
 describe('Animating multiple axes', function() {
     var gd;
 
@@ -928,28 +974,6 @@ describe('animating scatter traces', function() {
         }).then(done, done.fail);
     });
 
-    it('computes calcdata correctly when transforms are present', function(done) {
-        Plotly.newPlot(gd, {
-            data: [{
-                x: [1, 2, 3],
-                y: [1, 2, 3],
-                mode: 'markers',
-                transforms: [{
-                    type: 'sort',
-                    target: [1, 3, 2]
-                }]
-            }],
-            frames: [
-                {name: 'frame1', data: [{y: [1, 2, 3]}]},
-                {name: 'frame2', data: [{y: [3, 1, 2]}]}
-            ]
-        }).then(function() {
-            return Plotly.animate(gd, ['frame2'], {frame: {duration: 200, redraw: false}});
-        }).then(function() {
-            expect(gd.calcdata[0][0].y).toEqual(3);
-        }).then(done, done.fail);
-    });
-
     it('@flaky should animate axis ranges using the less number of steps', function(done) {
         // sanity-check that scatter points and bars are still there
         function _assertNodeCnt() {
@@ -962,7 +986,7 @@ describe('animating scatter traces', function() {
 
         // assert what Cartesian.transitionAxes does
         function getSubplotTranslate() {
-            var sp = d3Select(gd).select('.subplot.xy > .plot');
+            var sp = d3Select(gd).select('.subplot.xy > .overplot').select('.xy');
             return sp.attr('transform')
                 .split('translate(')[1].split(')')[0]
                 .split(',')

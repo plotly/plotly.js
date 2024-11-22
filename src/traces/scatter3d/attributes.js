@@ -1,6 +1,7 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
+var fontAttrs = require('../../plots/font_attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
@@ -155,11 +156,16 @@ var attrs = module.exports = overrideAll({
     ),
 
     textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
-    textfont: {
-        color: scatterAttrs.textfont.color,
-        size: scatterAttrs.textfont.size,
-        family: extendFlat({}, scatterAttrs.textfont.family, {arrayOk: false})
-    },
+    textfont: fontAttrs({
+        noFontShadow: true,
+        noFontLineposition: true,
+        noFontTextcase: true,
+        editType: 'calc',
+        colorEditType: 'style',
+        arrayOk: true,
+        variantValues: ['normal', 'small-caps'],
+        description: 'Sets the text font.'
+    }),
 
     opacity: baseAttrs.opacity,
 

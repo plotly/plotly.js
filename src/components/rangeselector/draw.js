@@ -116,8 +116,8 @@ function drawButtonRect(button, selectorLayout, d) {
     });
 
     rect.attr({
-        'rx': constants.rx,
-        'ry': constants.ry
+        rx: constants.rx,
+        ry: constants.ry
     });
 
     rect.call(Color.stroke, selectorLayout.bordercolor)

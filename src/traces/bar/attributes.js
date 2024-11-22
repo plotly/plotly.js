@@ -42,7 +42,16 @@ var marker = extendFlat({
         editType: 'style',
         description: 'Sets the opacity of the bars.'
     },
-    pattern: pattern
+    pattern: pattern,
+    cornerradius: {
+        valType: 'any',
+        editType: 'calc',
+        description: [
+            'Sets the rounding of corners. May be an integer number of pixels,',
+            'or a percentage of bar width (as a string ending in %). Defaults to `layout.barcornerradius`.',
+            'In stack or relative barmode, the first trace to set cornerradius is used for the whole stack.'
+        ].join(' ')
+    },
 });
 
 module.exports = {
@@ -217,13 +226,5 @@ module.exports = {
         textfont: scatterAttrs.unselected.textfont,
         editType: 'style'
     },
-
-    _deprecated: {
-        bardir: {
-            valType: 'enumerated',
-            editType: 'calc',
-            values: ['v', 'h'],
-            description: 'Renamed to `orientation`.'
-        }
-    }
+    zorder: scatterAttrs.zorder,
 };

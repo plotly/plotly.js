@@ -189,11 +189,11 @@ describe('scattermapbox convert', function() {
 
         // N.B repeated values have same geojson props
         expect(circleProps).toEqual([
-            { 'mcc': 'rgb(220, 220, 220)', 'mrc': 5 },
-            { 'mcc': '#444', 'mrc': 10 },
-            { 'mcc': 'rgb(178, 10, 28)', 'mrc': 0 },
-            { 'mcc': '#444', 'mrc': 0 },
-            { 'mcc': '#444', 'mrc': 0 }
+            { mcc: 'rgb(220, 220, 220)', mrc: 5 },
+            { mcc: '#444', mrc: 10 },
+            { mcc: 'rgb(178, 10, 28)', mrc: 0 },
+            { mcc: '#444', mrc: 0 },
+            { mcc: '#444', mrc: 0 }
         ], 'geojson feature properties');
     });
 
@@ -223,13 +223,13 @@ describe('scattermapbox convert', function() {
         });
 
         expect(circleProps).toEqual([
-            { 'mo': 0.5 },
-            { 'mo': 0 },
-            { 'mo': 0.25 },
+            { mo: 0.5 },
+            { mo: 0 },
+            { mo: 0.25 },
             // lat === null
             // lon === null
-            { 'mo': 0 },
-            { 'mo': 0.4 },
+            { mo: 0 },
+            { mo: 0.4 },
         ], 'geojson feature properties');
     });
 
@@ -554,14 +554,14 @@ describe('scattermapbox convert', function() {
 
     it('should generate correct output for texttemplate', function() {
         var mock = {
-            'type': 'scattermapbox',
-            'mode': 'markers+text',
-            'lon': [-73.57, -79.24, -123.06],
-            'lat': [45.5, 43.4, 49.13],
-            'text': ['Montreal', 'Toronto', 'Vancouver'],
-            'texttemplate': '%{text} (%{lon}, %{lat}): %{customdata:.2s}',
-            'textposition': 'top center',
-            'customdata': [1780000, 2930000, 675218]
+            type: 'scattermapbox',
+            mode: 'markers+text',
+            lon: [-73.57, -79.24, -123.06],
+            lat: [45.5, 43.4, 49.13],
+            text: ['Montreal', 'Toronto', 'Vancouver'],
+            texttemplate: '%{text} (%{lon}, %{lat}): %{customdata:.2s}',
+            textposition: 'top center',
+            customdata: [1780000, 2930000, 675218]
         };
         var opts = _convert(mock);
         var actualText = opts.symbol.geojson.features.map(function(f) {
@@ -1251,5 +1251,49 @@ describe('Test plotly events on a scattermapbox plot when css transform is prese
             })
             .then(done, done.fail);
         });
+    });
+});
+
+describe('scattermapbox restyle', function() {
+    var gd;
+
+    beforeAll(function() {
+        Plotly.setPlotConfig({
+            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
+        });
+
+        gd = createGraphDiv();
+    });
+
+    afterAll(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@gl should be able to update legendonly to visible', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                lat: [0, 2], lon: [0, 2],
+                type: 'scattermapbox',
+                mode: 'lines',
+                visible: 'legendonly'
+            },
+            {
+                lat: [0, 2], lon: [2, 0],
+                type: 'scattermapbox',
+                mode: 'lines',
+                visible: true
+            }
+            ], layout: {
+                mapbox: {
+                    style: 'open-street-map',
+                    zoom: 6,
+                    center: { lat: 1, lon: 1 }
+                },
+                showlegend: true
+            }
+        }).then(function() {
+            return Plotly.restyle(gd, 'visible', true);
+        }).then(done, done.fail);
     });
 });

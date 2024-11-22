@@ -99,7 +99,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 var h0 = _svgBBox.height;
 
                 newSvg.attr({
-                    'class': svgClass,
+                    class: svgClass,
                     height: h0,
                     preserveAspectRatio: 'xMinYMin meet'
                 })
@@ -330,6 +330,8 @@ var TAG_STYLES = {
     // baseline below
     sup: 'font-size:70%',
     sub: 'font-size:70%',
+    s: 'text-decoration:line-through',
+    u: 'text-decoration:underline',
     b: 'font-weight:bold',
     i: 'font-style:italic',
     a: 'cursor:pointer',

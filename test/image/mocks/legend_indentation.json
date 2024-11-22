@@ -1,0 +1,75 @@
+{
+ "data": [
+  {
+   "y": [1, 5, 3, 4, 5],
+   "name": "Scatter",
+   "type": "scatter",
+   "showlegend": true
+  },
+  {
+   "y": [1, 2, 2, 4, 3],
+   "name": "Bar",
+   "type": "bar",
+   "showlegend": true
+  },
+  {
+   "y": [1, 3, 2, 5, 5],
+   "name": "Scatter 2",
+   "type": "scatter",
+   "showlegend": true,
+   "legend": "legend2"
+  },
+  {
+   "y": [1, 2, 3, 4, 5],
+   "name": "Bar 2",
+   "type": "bar",
+   "showlegend": true,
+   "legend": "legend2"
+  },
+  {
+   "y": [5, 2, 3, 1, 4],
+   "name": "Bar 3",
+   "type": "bar",
+   "showlegend": true,
+   "legend": "legend3"
+  },
+  {
+   "y": [2, 1, 3, 4, 4],
+   "name": "Scatter 3",
+   "type": "scatter",
+   "showlegend": true,
+   "legend": "legend3"
+  }
+ ],
+ "layout": {
+  "title": { "text": "Legend Indentation" },
+  "width": 400,
+  "legend": {
+   "bgcolor": "lightblue",
+   "y": 1,
+   "indentation": 0,
+   "title": { "text": "No indent" },
+   "font": {
+    "size": 10
+   }
+  },
+  "legend2": {
+   "bgcolor": "lightgreen",
+   "y": 0.5,
+   "indentation": 30,
+   "title": { "text": "indent 30" },
+   "font": {
+    "size": 10
+   }
+  },
+  "legend3": {
+   "bgcolor": "pink",
+   "y": 0,
+   "indentation": -15,
+   "title": { "text": "indent -15" },
+   "font": {
+    "size": 10
+   }
+  }
+ }
+}

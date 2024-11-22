@@ -1,0 +1,71 @@
+{
+ "data": [
+  {
+   "x": ["giraffes", "orangutans", "monkeys", "capybaras"],
+   "y": [20, -14, 2, 18],
+   "type": "bar",
+   "texttemplate": "%{y}",
+   "textfont": { "size": 20 },
+   "marker": { "cornerradius": 15 },
+   "name": "Reversed"
+  },
+  {
+   "y": ["giraffes", "orangutans", "monkeys", "capybaras"],
+   "x": [20, -4, 1, 18],
+   "base": [1, 2, 1, 2],
+   "type": "bar",
+   "orientation": "h",
+   "texttemplate": "%{y}: %{x}",
+   "textfont": { "size": 10 },
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "name": "Normal"
+  },
+  {
+   "x": ["giraffes", "orangutans", "monkeys", "capybaras"],
+   "y": [20, -14, 2, 18],
+   "type": "bar",
+   "texttemplate": "%{y}",
+   "textfont": { "size": 10 },
+   "marker": { "cornerradius": "40%" },
+   "xaxis": "x3",
+   "yaxis": "y3",
+   "name": "Normal"
+  },
+  {
+   "x": ["giraffes", "orangutans", "monkeys", "capybaras"],
+   "y": [20, -14, 2, 10],
+   "text": ["aaaaa", "aaaaaaaaa", "aaaaaaaaa", "aaaaaaaaaaaa"],
+   "type": "bar",
+   "marker": { "cornerradius": 5000 },
+   "xaxis": "x3",
+   "yaxis": "y3",
+   "name": "Normal"
+  },
+  {
+   "y": ["giraffes", "orangutans", "monkeys", "capybaras"],
+   "x": [20, -4, 1, 18],
+   "base": [1, 2, 1, 2],
+   "type": "bar",
+   "marker": { "cornerradius": "20.5%" },
+   "orientation": "h",
+   "texttemplate": "%{y}: %{x}",
+   "textfont": { "size": 10 },
+   "insidetextanchor": "middle",
+   "xaxis": "x4",
+   "yaxis": "y4",
+   "name": "Reversed"
+  }
+ ],
+ "layout": {
+  "width": 900,
+  "height": 450,
+  "grid": { "rows": 2, "columns": 2, "pattern": "independent" },
+  "barmode": "stack",
+  "barcornerradius": "10",
+  "xaxis": { "autorange": "reversed" },
+  "yaxis": { "autorange": "reversed" },
+  "xaxis4": { "autorange": "reversed" },
+  "yaxis4": { "autorange": "reversed" }
+ }
+}

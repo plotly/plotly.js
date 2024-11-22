@@ -1,0 +1,42 @@
+{
+ "data": [
+  {
+   "x": [1, 1, 2, 2],
+   "y": [1, 2, 2, 1],
+   "type": "scatter",
+   "mode": "none",
+   "fill": "tonext",
+   "hoveron": "points+fills",
+   "fillgradient": {
+    "type": "horizontal",
+    "colorscale": [
+     [0.0, "rgba(0, 255, 0, 1)"],
+     [0.5, "rgba(0, 255, 0, 0)"],
+     [1.0, "rgba(0, 255, 0, 1)"]
+    ]
+   }
+  },
+  {
+   "x": [0, 0, 3, 3],
+   "y": [0, 4, 4, 1],
+   "type": "scatter",
+   "mode": "none",
+   "fill": "tonext",
+   "hoveron": "fills+points",
+   "fillgradient": {
+    "type": "radial",
+    "colorscale": [
+     [0.0, "rgba(255, 255, 0, 0.0)"],
+     [0.8, "rgba(255, 0, 0, 0.3)"],
+     [1.0, "rgba(255, 255, 0, 1.0)"]
+    ]
+   }
+  }
+ ],
+
+ "layout": {
+  "autosize": true,
+  "title": { "text": "Scatter traces with radial color gradient fills" },
+  "showlegend": true
+ }
+}

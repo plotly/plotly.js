@@ -1,0 +1,55 @@
+{
+ "data": [
+  {
+   "hovertemplate": "Difficult -0.123456789 | %{text}",
+   "texttemplate": "Difficult -0.123456789 | %{text}",
+   "mode": "text",
+   "text": [
+    "normal",
+    "unicase",
+    "small-caps",
+    "all-small-caps",
+    "petite-caps",
+    "all-petite-caps"
+   ],
+   "textfont": {
+    "family": "Inter",
+    "size": 16,
+    "variant": [
+     "normal",
+     "unicase",
+     "small-caps",
+     "all-small-caps",
+     "petite-caps",
+     "all-petite-caps"
+    ]
+   },
+   "x": [0, 0, 0, 0, 0, 0],
+   "y": [0, 1, 2, 3, 4, 5]
+  }
+ ],
+ "layout": {
+  "showlegend": false,
+  "margin": {
+   "l": 0,
+   "r": 0,
+   "t": 0,
+   "b": 0
+  },
+  "xaxis": {
+   "range": [-1, 1],
+   "showticklabels": false,
+   "showgrid": false,
+   "zeroline": false
+  },
+  "yaxis": {
+   "range": [5.5, -0.5],
+   "showticklabels": false,
+   "showgrid": false,
+   "zeroline": false
+  },
+  "width": 400,
+  "height": 300,
+  "hovermode": "closest"
+ }
+}

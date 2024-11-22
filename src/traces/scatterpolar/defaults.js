@@ -29,14 +29,14 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('hovertext');
     if(traceOut.hoveron !== 'fills') coerce('hovertemplate');
 
+    if(subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
+    }
+
     if(subTypes.hasLines(traceOut)) {
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {backoff: true});
         handleLineShapeDefaults(traceIn, traceOut, coerce);
         coerce('connectgaps');
-    }
-
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
     }
 
     if(subTypes.hasText(traceOut)) {
@@ -70,6 +70,15 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 function handleRThetaDefaults(traceIn, traceOut, layout, coerce) {
     var r = coerce('r');
     var theta = coerce('theta');
+
+    // TODO: handle this case outside supply defaults step
+    if(Lib.isTypedArray(r)) {
+        traceOut.r = r = Array.from(r);
+    }
+    if(Lib.isTypedArray(theta)) {
+        traceOut.theta = theta = Array.from(theta);
+    }
+
     var len;
 
     if(r) {

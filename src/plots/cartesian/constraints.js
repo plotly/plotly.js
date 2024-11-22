@@ -145,7 +145,12 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
             // special logic for coupling of range and autorange
             // if nobody explicitly specifies autorange, but someone does
             // explicitly specify range, autorange must be disabled.
-            if(attr === 'range' && val) {
+            if(attr === 'range' && val &&
+                axIn.range &&
+                axIn.range.length === 2 &&
+                axIn.range[0] !== null &&
+                axIn.range[1] !== null
+            ) {
                 hasRange = true;
             }
             if(attr === 'autorange' && val === null && hasRange) {
@@ -253,7 +258,7 @@ function handleOneAxDefaults(axIn, axOut, opts) {
         scaleanchor = Lib.coerce(axIn, axOut, {
             scaleanchor: {
                 valType: 'enumerated',
-                values: linkableAxes
+                values: linkableAxes.concat([false])
             }
         }, 'scaleanchor', scaleanchorDflt);
     }

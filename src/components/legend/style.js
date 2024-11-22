@@ -47,16 +47,17 @@ module.exports = function style(s, gd, legend) {
         var layers = Lib.ensureSingle(traceGroup, 'g', 'layers');
         layers.style('opacity', d[0].trace.opacity);
 
+        var indentation = legend.indentation;
         var valign = legend.valign;
         var lineHeight = d[0].lineHeight;
         var height = d[0].height;
-
-        if(valign === 'middle' || !lineHeight || !height) {
+        if((valign === 'middle' && indentation === 0) || !lineHeight || !height) {
             layers.attr('transform', null);
         } else {
             var factor = {top: 1, bottom: -1}[valign];
-            var markerOffsetY = factor * (0.5 * (lineHeight - height + 3));
-            layers.attr('transform', strTranslate(0, markerOffsetY));
+            var markerOffsetY = (factor * (0.5 * (lineHeight - height + 3))) || 0;
+            var markerOffsetX = legend.indentation;
+            layers.attr('transform', strTranslate(markerOffsetX, markerOffsetY));
         }
 
         var fill = layers
@@ -114,7 +115,7 @@ module.exports = function style(s, gd, legend) {
         var fillStyle = function(s) {
             if(s.size()) {
                 if(showFill) {
-                    Drawing.fillGroupStyle(s, gd);
+                    Drawing.fillGroupStyle(s, gd, true);
                 } else {
                     var gradientID = 'legendfill-' + trace.uid;
                     Drawing.gradient(s, gd, gradientID,
@@ -243,6 +244,12 @@ module.exports = function style(s, gd, legend) {
                 dEdit.ts = 10;
                 dEdit.tc = boundVal('textfont.color', pickFirst);
                 dEdit.tf = boundVal('textfont.family', pickFirst);
+                dEdit.tw = boundVal('textfont.weight', pickFirst);
+                dEdit.ty = boundVal('textfont.style', pickFirst);
+                dEdit.tv = boundVal('textfont.variant', pickFirst);
+                dEdit.tC = boundVal('textfont.textcase', pickFirst);
+                dEdit.tE = boundVal('textfont.lineposition', pickFirst);
+                dEdit.tS = boundVal('textfont.shadow', pickFirst);
             }
 
             dMod = [Lib.minExtend(d0, dEdit)];
@@ -334,6 +341,11 @@ module.exports = function style(s, gd, legend) {
         var marker = trace.marker || {};
         var markerLine = marker.line || {};
 
+        // If bar has rounded corners, round corners of legend icon
+        var pathStr = marker.cornerradius ?
+            'M6,3a3,3,0,0,1-3,3H-3a3,3,0,0,1-3-3V-3a3,3,0,0,1,3-3H3a3,3,0,0,1,3,3Z' : // Square with rounded corners
+            'M6,6H-6V-6H6Z'; // Normal square
+
         var isVisible = (!desiredType) ? Registry.traceIs(trace, 'bar') :
             (trace.visible && trace.type === desiredType);
 
@@ -341,7 +353,7 @@ module.exports = function style(s, gd, legend) {
             .selectAll('path.legend' + desiredType)
             .data(isVisible ? [d] : []);
         barpath.enter().append('path').classed('legend' + desiredType, true)
-            .attr('d', 'M6,6H-6V-6H6Z')
+            .attr('d', pathStr)
             .attr('transform', centerTransform);
         barpath.exit().remove();
 
@@ -503,16 +515,14 @@ module.exports = function style(s, gd, legend) {
         pts.exit().remove();
 
         if(pts.size()) {
-            var cont = (trace.marker || {}).line;
-            var lw = boundLineWidth(pieCastOption(cont.width, d0.pts), cont, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
+            var cont = trace.marker || {};
+            var lw = boundLineWidth(pieCastOption(cont.line.width, d0.pts), cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
 
-            var tMod = Lib.minExtend(trace, {marker: {line: {width: lw}}});
-            // since minExtend do not slice more than 3 items we need to patch line.color here
-            tMod.marker.line.color = cont.color;
+            var opt = 'pieLike';
+            var tMod = Lib.minExtend(trace, {marker: {line: {width: lw}}}, opt);
+            var d0Mod = Lib.minExtend(d0, {trace: tMod}, opt);
 
-            var d0Mod = Lib.minExtend(d0, {trace: tMod});
-
-            stylePie(pts, d0Mod, tMod);
+            stylePie(pts, d0Mod, tMod, gd);
         }
     }
 
@@ -532,12 +542,14 @@ module.exports = function style(s, gd, legend) {
                     break;
                 case 'choropleth' :
                 case 'choroplethmapbox' :
+                case 'choroplethmap' :
                     ptsData = [
                         ['M-6,-6V6H6V-6Z']
                     ];
                     useGradient = true;
                     break;
                 case 'densitymapbox' :
+                case 'densitymap' :
                     ptsData = [
                         ['M-6,0 a6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0']
                     ];
@@ -670,7 +682,6 @@ function getStyleGuide(d) {
             showGradientFill = true;
         }
     }
-
     return {
         showMarker: showMarker,
         showLine: showLine,

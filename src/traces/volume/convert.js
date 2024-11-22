@@ -3,6 +3,7 @@
 var createMesh = require('../../../stackgl_modules').gl_mesh3d;
 
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var extractOpts = require('../../components/colorscale').extractOpts;
 var zip3 = require('../../plots/gl3d/zip3');
@@ -46,7 +47,7 @@ proto.handlePick = function(selection) {
         ];
 
         var text = this.data.hovertext || this.data.text;
-        if(Array.isArray(text) && text[selectIndex] !== undefined) {
+        if(isArrayOrTypedArray(text) && text[selectIndex] !== undefined) {
             selection.textLabel = text[selectIndex];
         } else if(text) {
             selection.textLabel = text;

@@ -10,7 +10,7 @@ var resizeText = require('../bar/uniform_text').resizeText;
 var styleTextPoints = barStyle.styleTextPoints;
 
 function style(gd, cd, sel) {
-    var s = sel ? sel : d3.select(gd).selectAll('g.funnellayer').selectAll('g.trace');
+    var s = sel ? sel : d3.select(gd).selectAll('g[class^="funnellayer"]').selectAll('g.trace');
     resizeText(gd, s, 'funnel');
 
     s.style('opacity', function(d) { return d[0].trace.opacity; });

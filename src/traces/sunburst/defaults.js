@@ -4,6 +4,7 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
+var handleMarkerDefaults = require('../pie/defaults').handleMarkerDefaults;
 
 var Colorscale = require('../../components/colorscale');
 var hasColorscale = Colorscale.hasColorscale;
@@ -32,10 +33,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('level');
     coerce('maxdepth');
 
-    var lineWidth = coerce('marker.line.width');
-    if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
+    handleMarkerDefaults(traceIn, traceOut, layout, coerce);
 
-    coerce('marker.colors');
     var withColorscale = traceOut._hasColorscale = (
         hasColorscale(traceIn, 'marker', 'colors') ||
         (traceIn.marker || {}).coloraxis // N.B. special logic to consider "values" colorscales
@@ -48,7 +47,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var text = coerce('text');
     coerce('texttemplate');
-    if(!traceOut.texttemplate) coerce('textinfo', Array.isArray(text) ? 'text+label' : 'label');
+    if(!traceOut.texttemplate) coerce('textinfo', Lib.isArrayOrTypedArray(text) ? 'text+label' : 'label');
 
     coerce('hovertext');
     coerce('hovertemplate');

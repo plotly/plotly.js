@@ -37,11 +37,48 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
         isVertical ? h : w
     );
 
-    coerce('x', isVertical ? 1.02 : 0.5);
-    coerce('xanchor', isVertical ? 'left' : 'center');
+    var yref = coerce('yref');
+    var xref = coerce('xref');
+
+    var isPaperY = yref === 'paper';
+    var isPaperX = xref === 'paper';
+
+    var defaultX, defaultY, defaultYAnchor;
+    var defaultXAnchor = 'left';
+
+    if(isVertical) {
+        defaultYAnchor = 'middle';
+        defaultXAnchor = isPaperX ? 'left' : 'right';
+        defaultX = isPaperX ? 1.02 : 1;
+        defaultY = 0.5;
+    } else {
+        defaultYAnchor = isPaperY ? 'bottom' : 'top';
+        defaultXAnchor = 'center';
+        defaultX = 0.5;
+        defaultY = isPaperY ? 1.02 : 1;
+    }
+
+    Lib.coerce(colorbarIn, colorbarOut, {
+        x: {
+            valType: 'number',
+            min: isPaperX ? -2 : 0,
+            max: isPaperX ? 3 : 1,
+            dflt: defaultX,
+        }
+    }, 'x');
+
+    Lib.coerce(colorbarIn, colorbarOut, {
+        y: {
+            valType: 'number',
+            min: isPaperY ? -2 : 0,
+            max: isPaperY ? 3 : 1,
+            dflt: defaultY,
+        }
+    }, 'y');
+
+    coerce('xanchor', defaultXAnchor);
     coerce('xpad');
-    coerce('y', isVertical ? 0.5 : 1.02);
-    coerce('yanchor', isVertical ? 'middle' : 'bottom');
+    coerce('yanchor', defaultYAnchor);
     coerce('ypad');
     Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
 
@@ -72,7 +109,13 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
     var font = layout.font;
-    var opts = {outerTicks: false, font: font};
+    var opts = {
+        noAutotickangles: true,
+        noTicklabelshift: true,
+        noTicklabelstandoff: true,
+        outerTicks: false,
+        font: font
+    };
     if(ticklabelposition.indexOf('inside') !== -1) {
         opts.bgColor = 'black'; // could we instead use the average of colors in the scale?
     }
@@ -82,9 +125,10 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
 
     coerce('title.text', layout._dfltTitle.colorbar);
 
-    var tickFont = colorbarOut.tickfont;
-    var dfltTitleFont = Lib.extendFlat({}, tickFont, {
-        color: font.color,
+    var tickFont = colorbarOut.showticklabels ? colorbarOut.tickfont : font;
+
+    var dfltTitleFont = Lib.extendFlat({}, font, {
+        family: tickFont.family,
         size: Lib.bigFont(tickFont.size)
     });
     Lib.coerceFont(coerce, 'title.font', dfltTitleFont);

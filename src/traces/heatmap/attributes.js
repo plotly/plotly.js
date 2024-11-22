@@ -132,9 +132,8 @@ module.exports = extendFlat({
         description: 'Sets the text font.'
     }),
 
-    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
-}, {
-    transforms: undefined
+    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false}),
+    zorder: scatterAttrs.zorder
 },
     colorScaleAttrs('', {cLetter: 'z', autoColorDflt: false})
 );

@@ -122,12 +122,12 @@ describe('Test scattersmith hover:', function() {
 
 describe('Test scattersmith texttemplate:', function() {
     checkTextTemplate([{
-        'type': 'scattersmith',
-        'mode': 'markers+text',
-        'text': ['A', 'B', 'C'],
-        'textposition': 'top center',
-        'real': [1, 0.5, 1],
-        'imag': [0, 90, 180],
+        type: 'scattersmith',
+        mode: 'markers+text',
+        text: ['A', 'B', 'C'],
+        textposition: 'top center',
+        real: [1, 0.5, 1],
+        imag: [0, 90, 180],
     }], 'g.textpoint', [
         ['%{text}: (%{real:0.2f}, %{imag:0.1f})', ['A: (1.00, 0.0)', 'B: (0.50, 90.0)', 'C: (1.00, 180.0)']],
         [['', 'b%{imag:0.2f}', '%{imag:0.2f}'], ['', 'b90.00', '180.00']]

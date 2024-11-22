@@ -1,0 +1,82 @@
+{
+ "data": [
+  {
+   "y": [0]
+  },
+  {
+   "y": [1]
+  },
+  {
+   "y": [2]
+  },
+  {
+   "y": [3],
+   "legend": "legend2"
+  },
+  {
+   "y": [4],
+   "legend": "legend3"
+  },
+  {
+   "y": [5],
+   "legend": "legend3"
+  }
+ ],
+ "layout": {
+  "title": {
+   "text": "Multiple legends"
+  },
+  "width": 500,
+  "height": 500,
+  "yaxis": {
+   "autorange": "reversed"
+  },
+  "legend": {
+   "bgcolor": "lightgray",
+   "title": {
+    "text": "Legend"
+   }
+  },
+  "legend2": {
+   "x": -0.05,
+   "y": 0.5,
+   "xanchor": "right",
+   "yanchor": "middle",
+   "bgcolor": "lightblue",
+   "title": {
+    "text": "Legend 2"
+   }
+  },
+  "legend3": {
+   "y": 0,
+   "yanchor": "bottom",
+   "bgcolor": "yellow",
+   "title": {
+    "text": "Legend 3"
+   }
+  },
+  "hovermode": "x unified",
+  "dragmode": "drawline",
+  "newshape": {
+   "legend": "legend2",
+   "line": {
+    "color": "pink"
+   },
+   "label": {
+    "text": "new shape"
+   },
+   "showlegend": true
+  }
+ },
+ "config": {
+  "editable": true,
+  "modeBarButtonsToAdd": [
+   "drawline",
+   "drawopenpath",
+   "drawclosedpath",
+   "drawcircle",
+   "drawrect",
+   "eraseshape"
+  ]
+ }
+}

@@ -13,6 +13,8 @@ var constants = require('./constants');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
+var makeFillcolorAttr = require('./fillcolor_attribute');
+
 function axisPeriod(axis) {
     return {
         valType: 'any',
@@ -391,16 +393,62 @@ module.exports = {
             'consecutive, the later ones will be pushed down in the drawing order.'
         ].join(' ')
     },
-    fillcolor: {
-        valType: 'color',
-        editType: 'style',
-        anim: true,
+    fillcolor: makeFillcolorAttr(true),
+    fillgradient: extendFlat({
+        type: {
+            valType: 'enumerated',
+            values: ['radial', 'horizontal', 'vertical', 'none'],
+            dflt: 'none',
+            editType: 'calc',
+            description: [
+                'Sets the type/orientation of the color gradient for the fill.',
+                'Defaults to *none*.'
+            ].join(' ')
+        },
+        start: {
+            valType: 'number',
+            editType: 'calc',
+            description: [
+                'Sets the gradient start value.',
+                'It is given as the absolute position on the axis determined by',
+                'the orientiation. E.g., if orientation is *horizontal*, the',
+                'gradient will be horizontal and start from the x-position',
+                'given by start. If omitted, the gradient starts at the lowest',
+                'value of the trace along the respective axis.',
+                'Ignored if orientation is *radial*.'
+            ].join(' ')
+        },
+        stop: {
+            valType: 'number',
+            editType: 'calc',
+            description: [
+                'Sets the gradient end value.',
+                'It is given as the absolute position on the axis determined by',
+                'the orientiation. E.g., if orientation is *horizontal*, the',
+                'gradient will be horizontal and end at the x-position',
+                'given by end. If omitted, the gradient ends at the highest',
+                'value of the trace along the respective axis.',
+                'Ignored if orientation is *radial*.'
+            ].join(' ')
+        },
+        colorscale: {
+            valType: 'colorscale',
+            editType: 'style',
+            description: [
+                'Sets the fill gradient colors as a color scale.',
+                'The color scale is interpreted as a gradient',
+                'applied in the direction specified by *orientation*,',
+                'from the lowest to the highest value of the scatter',
+                'plot along that axis, or from the center to the most',
+                'distant point from it, if orientation is *radial*.'
+            ].join(' ')
+        },
+        editType: 'calc',
         description: [
-            'Sets the fill color.',
-            'Defaults to a half-transparent variant of the line color,',
-            'marker color, or marker line color, whichever is available.'
+            'Sets a fill gradient.',
+            'If not specified, the fillcolor is used instead.'
         ].join(' ')
-    },
+    }),
     fillpattern: pattern,
     marker: extendFlat({
         symbol: {
@@ -638,4 +686,14 @@ module.exports = {
         arrayOk: true,
         description: 'Sets the text font.'
     }),
+    zorder: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'plot',
+        description: [
+            'Sets the layer on which this trace is displayed, relative to',
+            'other SVG traces on the same subplot. SVG traces with higher `zorder`',
+            'appear in front of those with lower `zorder`.'
+        ].join(' ')
+    }
 };

@@ -714,9 +714,9 @@ describe('Test icicle restyle:', function() {
 
         Plotly.newPlot(gd, mock)
         .then(_assert('base', 2))
-        .then(_restyle({'visible': false}))
+        .then(_restyle({visible: false}))
         .then(_assert('both visible:false', 0))
-        .then(_restyle({'visible': true}))
+        .then(_restyle({visible: true}))
         .then(_assert('back to visible:true', 2))
         .then(done, done.fail);
     });

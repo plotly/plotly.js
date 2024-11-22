@@ -153,9 +153,28 @@ describe('Funnel.supplyDefaults', function() {
             y: [1, 2, 3]
         };
         var layout = {
-            font: {family: 'arial', color: '#AAA', size: 13}
+            font: {
+                family: 'arial',
+                color: '#AAA',
+                size: 13,
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
+            }
         };
-        var layoutFontMinusColor = {family: 'arial', size: 13};
+        var layoutFontMinusColor = {
+            family: 'arial',
+            size: 13,
+            weight: 'bold',
+            style: 'italic',
+            variant: 'small-caps',
+            textcase: 'word caps',
+            lineposition: 'under',
+            shadow: 'auto',
+        };
 
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -225,7 +244,7 @@ describe('Funnel.supplyDefaults', function() {
         expect(traceOut.ycalendar).toBe('ethiopian');
     });
 
-    it('should not include alignementgroup/offsetgroup when funnelmode is not *group*', function() {
+    it('should include alignementgroup/offsetgroup regardless of the funnelmode', function() {
         var gd = {
             data: [{type: 'funnel', y: [1], alignmentgroup: 'a', offsetgroup: '1'}],
             layout: {funnelmode: 'group'}
@@ -237,8 +256,8 @@ describe('Funnel.supplyDefaults', function() {
 
         gd.layout.funnelmode = 'stack';
         supplyAllDefaults(gd);
-        expect(gd._fullData[0].alignmentgroup).toBe(undefined, 'alignementgroup');
-        expect(gd._fullData[0].offsetgroup).toBe(undefined, 'offsetgroup');
+        expect(gd._fullData[0].alignmentgroup).toBe('a', 'alignementgroup');
+        expect(gd._fullData[0].offsetgroup).toBe('1', 'offsetgroup');
     });
 });
 
@@ -1070,35 +1089,6 @@ describe('A funnel plot', function() {
         checkTransition(gd, mockCopy, animateOpts, transitionOpts, barTests)
         .then(function() {
             return checkTransition(gd, mockCopy, animateOpts, transitionOpts, connectorTests);
-        })
-        .then(done, done.fail);
-    });
-
-    it('should be able to deal with transform that empty out the data coordinate arrays', function(done) {
-        Plotly.newPlot(gd, {
-            data: [{
-                type: 'funnel',
-                x: [1, 2, 3],
-                xsrc: 'ints',
-                transforms: [{
-                    type: 'filter',
-                    target: [1, 2, 3],
-                    targetsrc: 'ints',
-                    operation: '<',
-                    value: 0
-                }]
-            }],
-            layout: {
-                funnelmode: 'group'
-            }
-        })
-        .then(function() {
-            var traceNodes = getAllTraceNodes(gd);
-            expect(traceNodes.length).toBe(0);
-
-            expect(gd.calcdata[0][0].x).toEqual(NaN);
-            expect(gd.calcdata[0][0].y).toEqual(NaN);
-            expect(gd.calcdata[0][0].isBlank).toBe(undefined);
         })
         .then(done, done.fail);
     });

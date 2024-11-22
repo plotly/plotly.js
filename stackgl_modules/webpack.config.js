@@ -1,5 +1,4 @@
 var path = require('path');
-var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = {
     target: ['web', 'es5'],
@@ -8,8 +7,7 @@ module.exports = {
         path: path.resolve('.'),
         filename: 'index.js',
         library: {
-            name: 'Stackgl',
-            type: 'umd'
+            type: 'commonjs-module'
         }
     },
     optimization: {
@@ -24,7 +22,7 @@ module.exports = {
             }
         }, {
             test: /\.js$/,
-            include: /node_modules[\\\/]buffer[\\\/]/,
+            include: /node_modules[\\\/](buffer|is-mobile)[\\\/]/,
             use: {
                 loader: 'babel-loader',
                 options: {

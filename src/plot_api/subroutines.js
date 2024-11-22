@@ -5,6 +5,7 @@ var Registry = require('../registry');
 var Plots = require('../plots/plots');
 
 var Lib = require('../lib');
+var svgTextUtils = require('../lib/svg_text_utils');
 var clearGlCanvases = require('../lib/clear_gl_canvases');
 
 var Color = require('../components/color');
@@ -22,6 +23,8 @@ var doAutoRange = require('../plots/cartesian/autorange').doAutoRange;
 var SVG_TEXT_ANCHOR_START = 'start';
 var SVG_TEXT_ANCHOR_MIDDLE = 'middle';
 var SVG_TEXT_ANCHOR_END = 'end';
+
+var zindexSeparator = require('../plots/cartesian/constants').zindexSeparator;
 
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
@@ -60,9 +63,7 @@ function lsInner(gd) {
     exports.drawMainTitle(gd);
     ModeBar.manage(gd);
 
-    // _has('cartesian') means SVG specifically, not GL2D - but GL2D
-    // can still get here because it makes some of the SVG structure
-    // for shared features like selections.
+    // _has('cartesian') means SVG specifically
     if(!fullLayout._has('cartesian')) {
         return Plots.previousPromises(gd);
     }
@@ -134,7 +135,7 @@ function lsInner(gd) {
             var yDomain = plotinfo.yaxis.domain;
             var plotgroup = plotinfo.plotgroup;
 
-            if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
+            if(overlappingDomain(xDomain, yDomain, lowerDomains) && subplot.indexOf(zindexSeparator) === -1) {
                 var pgNode = plotgroup.node();
                 var plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
                 pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
@@ -397,23 +398,149 @@ function findCounterAxisLineWidth(ax, side, counterAx, axList) {
 }
 
 exports.drawMainTitle = function(gd) {
+    var title = gd._fullLayout.title;
     var fullLayout = gd._fullLayout;
-
     var textAnchor = getMainTitleTextAnchor(fullLayout);
     var dy = getMainTitleDy(fullLayout);
+    var y = getMainTitleY(fullLayout, dy);
+    var x = getMainTitleX(fullLayout, textAnchor);
 
     Titles.draw(gd, 'gtitle', {
         propContainer: fullLayout,
         propName: 'title.text',
+        subtitlePropName: 'title.subtitle.text',
         placeholder: fullLayout._dfltTitle.plot,
-        attributes: {
-            x: getMainTitleX(fullLayout, textAnchor),
-            y: getMainTitleY(fullLayout, dy),
+        subtitlePlaceholder: fullLayout._dfltTitle.subtitle,
+        attributes: ({
+            x: x,
+            y: y,
             'text-anchor': textAnchor,
             dy: dy
-        }
+        }),
     });
+
+    if(title.text && title.automargin) {
+        var titleObj = d3.selectAll('.gtitle');
+        var titleHeight = Drawing.bBox(d3.selectAll('.g-gtitle').node()).height;
+        var pushMargin = needsMarginPush(gd, title, titleHeight);
+        if(pushMargin > 0) {
+            applyTitleAutoMargin(gd, y, pushMargin, titleHeight);
+            // Re-position the title once we know where it needs to be
+            titleObj.attr({
+                x: x,
+                y: y,
+                'text-anchor': textAnchor,
+                dy: getMainTitleDyAdj(title.yanchor)
+            }).call(svgTextUtils.positionText, x, y);
+
+            var extraLines = (title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
+            if(extraLines) {
+                var delta = alignmentConstants.LINE_SPACING * extraLines + alignmentConstants.MID_SHIFT;
+                if(title.y === 0) {
+                    delta = -delta;
+                }
+
+                titleObj.selectAll('.line').each(function() {
+                    var newDy = +(this.getAttribute('dy')).slice(0, -2) - delta + 'em';
+                    this.setAttribute('dy', newDy);
+                });
+            }
+
+            // If there is a subtitle
+            var subtitleObj = d3.selectAll('.gtitle-subtitle');
+            if(subtitleObj.node()) {
+                // Get bottom edge of title bounding box
+                var titleBB = titleObj.node().getBBox();
+                var titleBottom = titleBB.y + titleBB.height;
+                var subtitleY = titleBottom + Titles.SUBTITLE_PADDING_EM * title.subtitle.font.size;
+                subtitleObj.attr({
+                    x: x,
+                    y: subtitleY,
+                    'text-anchor': textAnchor,
+                    dy: getMainTitleDyAdj(title.yanchor)
+                }).call(svgTextUtils.positionText, x, subtitleY);
+            }
+        }
+    }
 };
+
+
+function isOutsideContainer(gd, title, position, y, titleHeight) {
+    var plotHeight = title.yref === 'paper' ? gd._fullLayout._size.h : gd._fullLayout.height;
+    var yPosTop = Lib.isTopAnchor(title) ? y : y - titleHeight; // Standardize to the top of the title
+    var yPosRel = position === 'b' ? plotHeight - yPosTop : yPosTop; // Position relative to the top or bottom of plot
+    if((Lib.isTopAnchor(title) && position === 't') || Lib.isBottomAnchor(title) && position === 'b') {
+        return false;
+    } else {
+        return yPosRel < titleHeight;
+    }
+}
+
+function containerPushVal(position, titleY, titleYanchor, height, titleDepth) {
+    var push = 0;
+    if(titleYanchor === 'middle') {
+        push += titleDepth / 2;
+    }
+    if(position === 't') {
+        if(titleYanchor === 'top') {
+            push += titleDepth;
+        }
+        push += (height - titleY * height);
+    } else {
+        if(titleYanchor === 'bottom') {
+            push += titleDepth;
+        }
+        push += titleY * height;
+    }
+    return push;
+}
+
+function needsMarginPush(gd, title, titleHeight) {
+    var titleY = title.y;
+    var titleYanchor = title.yanchor;
+    var position = titleY > 0.5 ? 't' : 'b';
+    var curMargin = gd._fullLayout.margin[position];
+    var pushMargin = 0;
+    if(title.yref === 'paper') {
+        pushMargin = (
+            titleHeight +
+            title.pad.t +
+            title.pad.b
+        );
+    } else if(title.yref === 'container') {
+        pushMargin = (
+            containerPushVal(position, titleY, titleYanchor, gd._fullLayout.height, titleHeight) +
+            title.pad.t +
+            title.pad.b
+        );
+    }
+    if(pushMargin > curMargin) {
+        return pushMargin;
+    }
+    return 0;
+}
+
+function applyTitleAutoMargin(gd, y, pushMargin, titleHeight) {
+    var titleID = 'title.automargin';
+    var title = gd._fullLayout.title;
+    var position = title.y > 0.5 ? 't' : 'b';
+    var push = {
+        x: title.x,
+        y: title.y,
+        t: 0,
+        b: 0
+    };
+    var reservedPush = {};
+
+    if(title.yref === 'paper' && isOutsideContainer(gd, title, position, y, titleHeight)) {
+        push[position] = pushMargin;
+    } else if(title.yref === 'container') {
+        reservedPush[position] = pushMargin;
+        gd._fullLayout._reservedMargin[titleID] = reservedPush;
+    }
+    Plots.allowAutoMargin(gd, titleID);
+    Plots.autoMargin(gd, titleID, push);
+}
 
 function getMainTitleX(fullLayout, textAnchor) {
     var title = fullLayout.title;
@@ -439,7 +566,6 @@ function getMainTitleY(fullLayout, dy) {
     var title = fullLayout.title;
     var gs = fullLayout._size;
     var vPadShift = 0;
-
     if(dy === '0em' || !dy) {
         vPadShift = -title.pad.b;
     } else if(dy === alignmentConstants.CAP_SHIFT + 'em') {
@@ -456,6 +582,16 @@ function getMainTitleY(fullLayout, dy) {
             default:
                 return fullLayout.height - fullLayout.height * title.y + vPadShift;
         }
+    }
+}
+
+function getMainTitleDyAdj(yanchor) {
+    if(yanchor === 'top') {
+        return alignmentConstants.CAP_SHIFT + 0.3 + 'em';
+    } else if(yanchor === 'bottom') {
+        return '-0.3em';
+    } else {
+        return alignmentConstants.MID_SHIFT + 'em';
     }
 }
 

@@ -64,6 +64,7 @@ var attrs = module.exports = overrideAll({
     },
 
     textfont: fontAttrs({
+        autoShadowDflt: true,
         description: 'Sets the font for node labels'
     }),
 
@@ -78,7 +79,7 @@ var attrs = module.exports = overrideAll({
         },
         groups: {
             valType: 'info_array',
-            impliedEdits: {'x': [], 'y': []},
+            impliedEdits: {x: [], y: []},
             dimensions: 2,
             freeLength: true,
             dflt: [],
@@ -164,6 +165,12 @@ var attrs = module.exports = overrideAll({
             description: 'Variables `sourceLinks` and `targetLinks` are arrays of link objects.',
             keys: ['value', 'label']
         }),
+        align: {
+            valType: 'enumerated',
+            values: ['justify', 'left', 'right', 'center'],
+            dflt: 'justify',
+            description: 'Sets the alignment method used to position the nodes along the horizontal axis.'
+        },
         description: 'The nodes of the Sankey plot.'
     },
 
@@ -187,6 +194,15 @@ var attrs = module.exports = overrideAll({
             description: [
                 'Sets the `link` color. It can be a single value, or an array for specifying color for each `link`.',
                 'If `link.color` is omitted, then by default, a translucent grey link will be used.'
+            ].join(' ')
+        },
+        hovercolor: {
+            valType: 'color',
+            arrayOk: true,
+            description: [
+                'Sets the `link` hover color. It can be a single value, or an array for specifying hover colors for',
+                'each `link`. If `link.hovercolor` is omitted, then by default, links will become slightly more',
+                'opaque when hovered over.'
             ].join(' ')
         },
         customdata: {
@@ -270,4 +286,3 @@ var attrs = module.exports = overrideAll({
         description: 'The links of the Sankey plot.',
     }
 }, 'calc', 'nested');
-attrs.transforms = undefined;

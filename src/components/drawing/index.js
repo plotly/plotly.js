@@ -27,17 +27,55 @@ var drawing = module.exports = {};
 // styling functions for plot elements
 // -----------------------------------------------------
 
-drawing.font = function(s, family, size, color) {
-    // also allow the form font(s, {family, size, color})
-    if(Lib.isPlainObject(family)) {
-        color = family.color;
-        size = family.size;
-        family = family.family;
-    }
+drawing.font = function(s, font) {
+    var variant = font.variant;
+    var style = font.style;
+    var weight = font.weight;
+    var color = font.color;
+    var size = font.size;
+    var family = font.family;
+    var shadow = font.shadow;
+    var lineposition = font.lineposition;
+    var textcase = font.textcase;
+
     if(family) s.style('font-family', family);
     if(size + 1) s.style('font-size', size + 'px');
     if(color) s.call(Color.fill, color);
+
+    if(weight) s.style('font-weight', weight);
+    if(style) s.style('font-style', style);
+    if(variant) s.style('font-variant', variant);
+
+    if(textcase) s.style('text-transform', dropNone(textcase2transform(textcase)));
+    if(shadow) s.style('text-shadow', shadow === 'auto' ? svgTextUtils.makeTextShadow(Color.contrast(color)) : dropNone(shadow));
+    if(lineposition) s.style('text-decoration-line', dropNone(lineposition2decorationLine(lineposition)));
 };
+
+function dropNone(a) {
+    return a === 'none' ? undefined : a;
+}
+
+var textcase2transformOptions = {
+    normal: 'none',
+    lower: 'lowercase',
+    upper: 'uppercase',
+    'word caps': 'capitalize'
+};
+
+function textcase2transform(textcase) {
+    return textcase2transformOptions[textcase];
+}
+
+function lineposition2decorationLine(lineposition) {
+    return (
+        lineposition
+            .replace('under', 'underline')
+            .replace('over', 'overline')
+            .replace('through', 'line-through')
+            .split('+')
+            .join(' ')
+    );
+}
 
 /*
  * Positioning helpers
@@ -177,8 +215,9 @@ drawing.dashStyle = function(dash, lineWidth) {
     return dash;
 };
 
-function setFillStyle(sel, trace, gd) {
+function setFillStyle(sel, trace, gd, forLegend) {
     var markerPattern = trace.fillpattern;
+    var fillgradient = trace.fillgradient;
     var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, 0, '');
     if(patternShape) {
         var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
@@ -192,6 +231,55 @@ function setFillStyle(sel, trace, gd) {
             undefined, markerPattern.fillmode,
             patternBGColor, patternFGColor, patternFGOpacity
         );
+    } else if(fillgradient && fillgradient.type !== 'none') {
+        var direction = fillgradient.type;
+        var gradientID = 'scatterfill-' + trace.uid;
+        if(forLegend) {
+            gradientID = 'legendfill-' + trace.uid;
+        }
+
+        if(!forLegend && (fillgradient.start !== undefined || fillgradient.stop !== undefined)) {
+            var start, stop;
+            if(direction === 'horizontal') {
+                start = {
+                    x: fillgradient.start,
+                    y: 0,
+                };
+                stop = {
+                    x: fillgradient.stop,
+                    y: 0,
+                };
+            } else if(direction === 'vertical') {
+                start = {
+                    x: 0,
+                    y: fillgradient.start,
+                };
+                stop = {
+                    x: 0,
+                    y: fillgradient.stop,
+                };
+            }
+
+            start.x = trace._xA.c2p(
+                (start.x === undefined) ? trace._extremes.x.min[0].val : start.x, true
+            );
+            start.y = trace._yA.c2p(
+                (start.y === undefined) ? trace._extremes.y.min[0].val : start.y, true
+            );
+
+            stop.x = trace._xA.c2p(
+                (stop.x === undefined) ? trace._extremes.x.max[0].val : stop.x, true
+            );
+            stop.y = trace._yA.c2p(
+                (stop.y === undefined) ? trace._extremes.y.max[0].val : stop.y, true
+            );
+            sel.call(gradientWithBounds, gd, gradientID, 'linear', fillgradient.colorscale, 'fill', start, stop, true, false);
+        } else {
+            if(direction === 'horizontal') {
+                direction = direction + 'reversed';
+            }
+            sel.call(drawing.gradient, gd, gradientID, direction, fillgradient.colorscale, 'fill');
+        }
     } else if(trace.fillcolor) {
         sel.call(Color.fill, trace.fillcolor);
     }
@@ -202,17 +290,17 @@ drawing.singleFillStyle = function(sel, gd) {
     var node = d3.select(sel.node());
     var data = node.data();
     var trace = ((data[0] || [])[0] || {}).trace || {};
-    setFillStyle(sel, trace, gd);
+    setFillStyle(sel, trace, gd, false);
 };
 
-drawing.fillGroupStyle = function(s, gd) {
+drawing.fillGroupStyle = function(s, gd, forLegend) {
     s.style('stroke-width', 0)
     .each(function(d) {
         var shape = d3.select(this);
         // N.B. 'd' won't be a calcdata item when
         // fill !== 'none' on a segment-less and marker-less trace
         if(d[0].trace) {
-            setFillStyle(shape, d[0].trace, gd);
+            setFillStyle(shape, d[0].trace, gd, forLegend);
         }
     });
 };
@@ -294,16 +382,14 @@ function makePointPath(symbolNumber, r, t, s) {
     return drawing.symbolFuncs[base](r, t, s) + (symbolNumber >= 200 ? DOTPATH : '');
 }
 
-var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
-var VERTGRADIENT = {x1: 0, x2: 0, y1: 1, y2: 0};
 var stopFormatter = numberFormat('~f');
 var gradientInfo = {
-    radial: {node: 'radialGradient'},
-    radialreversed: {node: 'radialGradient', reversed: true},
-    horizontal: {node: 'linearGradient', attrs: HORZGRADIENT},
-    horizontalreversed: {node: 'linearGradient', attrs: HORZGRADIENT, reversed: true},
-    vertical: {node: 'linearGradient', attrs: VERTGRADIENT},
-    verticalreversed: {node: 'linearGradient', attrs: VERTGRADIENT, reversed: true}
+    radial: {type: 'radial'},
+    radialreversed: {type: 'radial', reversed: true},
+    horizontal: {type: 'linear', start: {x: 1, y: 0}, stop: {x: 0, y: 0}},
+    horizontalreversed: {type: 'linear', start: {x: 1, y: 0}, stop: {x: 0, y: 0}, reversed: true},
+    vertical: {type: 'linear', start: {x: 0, y: 1}, stop: {x: 0, y: 0}},
+    verticalreversed: {type: 'linear', start: {x: 0, y: 1}, stop: {x: 0, y: 0}, reversed: true}
 };
 
 /**
@@ -321,8 +407,57 @@ var gradientInfo = {
  * @param {string} prop: the property to apply to, 'fill' or 'stroke'
  */
 drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
-    var len = colorscale.length;
     var info = gradientInfo[type];
+    return gradientWithBounds(
+        sel, gd, gradientID, info.type, colorscale, prop, info.start, info.stop, false, info.reversed
+    );
+};
+
+/**
+ * gradient_with_bounds: create and apply a gradient fill for defined start and stop positions
+ *
+ * @param {object} sel: d3 selection to apply this gradient to
+ *     You can use `selection.call(Drawing.gradient, ...)`
+ * @param {DOM element} gd: the graph div `sel` is part of
+ * @param {string} gradientID: a unique (within this plot) identifier
+ *     for this gradient, so that we don't create unnecessary definitions
+ * @param {string} type: 'radial' or 'linear'. Radial goes center to edge,
+ *     horizontal goes as defined by start and stop
+ * @param {array} colorscale: as in attribute values, [[fraction, color], ...]
+ * @param {string} prop: the property to apply to, 'fill' or 'stroke'
+ * @param {object} start: start point for linear gradients, { x: number, y: number }.
+ *     Ignored if type is 'radial'.
+ * @param {object} stop: stop point for linear gradients, { x: number, y: number }.
+ *     Ignored if type is 'radial'.
+ * @param {boolean} inUserSpace: If true, start and stop give absolute values in the plot.
+ *     If false, start and stop are fractions of the traces extent along each axis.
+ * @param {boolean} reversed: If true, the gradient is reversed between normal start and stop,
+ *     i.e., the colorscale is applied in order from stop to start for linear, from edge
+ *     to center for radial gradients.
+ */
+function gradientWithBounds(sel, gd, gradientID, type, colorscale, prop, start, stop, inUserSpace, reversed) {
+    var len = colorscale.length;
+
+    var info;
+    if(type === 'linear') {
+        info = {
+            node: 'linearGradient',
+            attrs: {
+                x1: start.x,
+                y1: start.y,
+                x2: stop.x,
+                y2: stop.y,
+                gradientUnits: inUserSpace ? 'userSpaceOnUse' : 'objectBoundingBox',
+            },
+            reversed: reversed,
+        };
+    } else if(type === 'radial') {
+        info = {
+            node: 'radialGradient',
+            reversed: reversed,
+        };
+    }
+
     var colorStops = new Array(len);
     for(var i = 0; i < len; i++) {
         if(info.reversed) {
@@ -368,7 +503,7 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
         .style(prop + '-opacity', null);
 
     sel.classed('gradient_filled', true);
-};
+}
 
 /**
  * pattern: create and apply a pattern fill
@@ -428,9 +563,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = solidity * size;
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -443,9 +578,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = solidity * size;
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -461,9 +596,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = size - size * Math.sqrt(1.0 - solidity);
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -475,9 +610,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = solidity * size;
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -489,9 +624,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = solidity * size;
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -504,9 +639,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = size - size * Math.sqrt(1.0 - solidity);
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -520,11 +655,11 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             }
             patternTag = 'circle';
             patternAttrs = {
-                'cx': width / 2,
-                'cy': height / 2,
-                'r': radius,
-                'opacity': opacity,
-                'fill': fgRGB
+                cx: width / 2,
+                cy: height / 2,
+                r: radius,
+                opacity: opacity,
+                fill: fgRGB
             };
             break;
     }
@@ -549,12 +684,12 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             var el = d3.select(this);
 
             el.attr({
-                'id': fullID,
-                'width': width + 'px',
-                'height': height + 'px',
-                'patternUnits': 'userSpaceOnUse',
+                id: fullID,
+                width: width + 'px',
+                height: height + 'px',
+                patternUnits: 'userSpaceOnUse',
                 // for legends scale down patterns just a bit so that default size (i.e 8) nicely fit in small icons
-                'patternTransform': isLegend ? 'scale(0.8)' : ''
+                patternTransform: isLegend ? 'scale(0.8)' : ''
             });
 
             if(bgcolor) {
@@ -567,9 +702,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
                 rects.enter()
                     .append('rect')
                     .attr({
-                        'width': width + 'px',
-                        'height': height + 'px',
-                        'fill': bgRGB,
+                        width: width + 'px',
+                        height: height + 'px',
+                        fill: bgRGB,
                         'fill-opacity': bgAlpha,
                     });
             }
@@ -619,19 +754,21 @@ drawing.getPatternAttr = function(mp, i, dflt) {
     return mp;
 };
 
-drawing.pointStyle = function(s, trace, gd) {
+drawing.pointStyle = function(s, trace, gd, pt) {
     if(!s.size()) return;
 
     var fns = drawing.makePointStyleFns(trace);
 
     s.each(function(d) {
-        drawing.singlePointStyle(d, d3.select(this), trace, fns, gd);
+        drawing.singlePointStyle(d, d3.select(this), trace, fns, gd, pt);
     });
 };
 
-drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
+drawing.singlePointStyle = function(d, sel, trace, fns, gd, pt) {
     var marker = trace.marker;
     var markerLine = marker.line;
+
+    if(pt && pt.i >= 0 && d.i === undefined) d.i = pt.i;
 
     sel.style('opacity',
         fns.selectedOpacityFn ? fns.selectedOpacityFn(d) :
@@ -699,7 +836,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         if('mc' in d) {
             fillColor = d.mcc = fns.markerScale(d.mc);
         } else {
-            fillColor = marker.color || 'rgba(0,0,0,0)';
+            fillColor = marker.color || marker.colors || 'rgba(0,0,0,0)';
         }
 
         if(fns.selectedColorFn) {
@@ -745,14 +882,22 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
             drawing.gradient(sel, gd, gradientID, gradientType,
                 [[0, gradientColor], [1, fillColor]], 'fill');
         } else if(patternShape) {
+            var perPointPattern = false;
+            var fgcolor = markerPattern.fgcolor;
+            if(!fgcolor && pt && pt.color) {
+                fgcolor = pt.color;
+                perPointPattern = true;
+            }
+            var patternFGColor = drawing.getPatternAttr(fgcolor, d.i, (pt && pt.color) || null);
+
             var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
-            var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
             var patternFGOpacity = markerPattern.fgopacity;
             var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
             var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
-            var perPointPattern = d.mcc ||
+            perPointPattern = perPointPattern || d.mcc ||
                 Lib.isArrayOrTypedArray(markerPattern.shape) ||
                 Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
+                Lib.isArrayOrTypedArray(markerPattern.fgcolor) ||
                 Lib.isArrayOrTypedArray(markerPattern.size) ||
                 Lib.isArrayOrTypedArray(markerPattern.solidity);
 
@@ -766,7 +911,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
                 patternBGColor, patternFGColor, patternFGOpacity
             );
         } else {
-            Color.fill(sel, fillColor);
+            Lib.isArrayOrTypedArray(fillColor) ? Color.fill(sel, fillColor[d.i]) : Color.fill(sel, fillColor);
         }
 
         if(lineWidth) {
@@ -1019,10 +1164,17 @@ drawing.textPointStyle = function(s, trace, gd) {
             selectedTextColorFn(d) :
             (d.tc || trace.textfont.color);
 
-        p.call(drawing.font,
-                d.tf || trace.textfont.family,
-                fontSize,
-                fontColor)
+        p.call(drawing.font, {
+            family: d.tf || trace.textfont.family,
+            weight: d.tw || trace.textfont.weight,
+            style: d.ty || trace.textfont.style,
+            variant: d.tv || trace.textfont.variant,
+            textcase: d.tC || trace.textfont.textcase,
+            lineposition: d.tE || trace.textfont.lineposition,
+            shadow: d.tS || trace.textfont.shadow,
+            size: fontSize,
+            color: fontColor
+        })
             .text(text)
             .call(svgTextUtils.convertToTspans, gd)
             .call(textPointPosition, pos, fontSize, d.mrc);
@@ -1597,7 +1749,10 @@ function getMarkerAngle(d, trace) {
     var angle = d.ma;
 
     if(angle === undefined) {
-        angle = trace.marker.angle || 0;
+        angle = trace.marker.angle;
+        if(!angle || Lib.isArrayOrTypedArray(angle)) {
+            angle = 0;
+        }
     }
 
     var x, y;

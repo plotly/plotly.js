@@ -1,0 +1,80 @@
+{
+ "data": [
+  {
+   "type": "scattergl",
+   "hovertemplate": "Difficult -0.123456789 | %{text}",
+   "texttemplate": "Difficult -0.123456789 | %{text}",
+   "mode": "text",
+   "text": [
+    "normal",
+    "small-caps",
+    "italic",
+    "italic small-caps",
+    "bold",
+    "bold small-caps",
+    "bold italic",
+    "bold italic small-caps"
+   ],
+   "textfont": {
+    "family": "Inter",
+    "size": 16,
+    "weight": [
+     "normal",
+     "normal",
+     "normal",
+     "normal",
+     "bold",
+     "bold",
+     "bold",
+     "bold"
+    ],
+    "style": [
+     "normal",
+     "normal",
+     "italic",
+     "italic",
+     "normal",
+     "normal",
+     "italic",
+     "italic"
+    ],
+    "variant": [
+     "normal",
+     "small-caps",
+     "normal",
+     "small-caps",
+     "normal",
+     "small-caps",
+     "normal",
+     "small-caps"
+    ]
+   },
+   "x": [0, 0, 0, 0, 0, 0, 0, 0],
+   "y": [0, 1, 2, 3, 4, 5, 6, 7]
+  }
+ ],
+ "layout": {
+  "showlegend": false,
+  "margin": {
+   "l": 0,
+   "r": 0,
+   "t": 0,
+   "b": 0
+  },
+  "xaxis": {
+   "range": [-1, 1],
+   "showticklabels": false,
+   "showgrid": false,
+   "zeroline": false
+  },
+  "yaxis": {
+   "range": [7.5, -0.5],
+   "showticklabels": false,
+   "showgrid": false,
+   "zeroline": false
+  },
+  "width": 400,
+  "height": 400,
+  "hovermode": "closest"
+ }
+}

@@ -1,0 +1,88 @@
+{
+ "data": [
+  {
+   "type": "icicle",
+   "textinfo": "none",
+   "labels": ["Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+   "parents": ["Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve"],
+   "level": "Enoch",
+   "domain": { "x": [0, 0.3] },
+   "marker": {
+    "colors": [
+     "orange",
+     "steelblue",
+     "lightgrey",
+     "lightgrey",
+     "green",
+     "red",
+     "lightgrey",
+     "purple"
+    ],
+    "pattern": {
+     "shape": ".",
+     "size": 4
+    },
+    "line": {
+     "color": "lightgrey"
+    }
+   }
+  },
+  {
+   "type": "sunburst",
+   "textinfo": "none",
+   "labels": ["Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+   "parents": ["Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve"],
+   "domain": { "x": [0.35, 0.65] },
+   "marker": {
+    "colors": [
+     "orange",
+     "steelblue",
+     "lightgrey",
+     "lightgrey",
+     "green",
+     "red",
+     "lightgrey",
+     "purple"
+    ],
+    "pattern": {
+     "shape": ".",
+     "size": 4
+    },
+    "line": {
+     "color": "lightgrey"
+    }
+   }
+  },
+  {
+   "type": "treemap",
+   "textinfo": "none",
+   "labels": ["Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+   "parents": ["Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve"],
+   "domain": { "x": [0.7, 1] },
+   "marker": {
+    "colors": [
+     "orange",
+     "steelblue",
+     "lightgrey",
+     "lightgrey",
+     "green",
+     "red",
+     "lightgrey",
+     "purple"
+    ],
+    "pattern": {
+     "shape": ".",
+     "size": 4
+    },
+    "line": {
+     "color": "lightgrey"
+    }
+   }
+  }
+ ],
+ "layout": {
+  "title": { "text": "icicle, sunburst & treemap with pattern" },
+  "width": 800,
+  "height": 400
+ }
+}

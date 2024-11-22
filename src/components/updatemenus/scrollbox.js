@@ -160,12 +160,12 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
 
     if(needsHorizontalScrollBar) {
         this.hbar = hbar.attr({
-            'rx': ScrollBox.barRadius,
-            'ry': ScrollBox.barRadius,
-            'x': hbarL,
-            'y': hbarT,
-            'width': hbarW,
-            'height': hbarH
+            rx: ScrollBox.barRadius,
+            ry: ScrollBox.barRadius,
+            x: hbarL,
+            y: hbarT,
+            width: hbarW,
+            height: hbarH
         });
 
         // hbar center moves between hbarXMin and hbarXMin + hbarTranslateMax
@@ -200,12 +200,12 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
 
     if(needsVerticalScrollBar) {
         this.vbar = vbar.attr({
-            'rx': ScrollBox.barRadius,
-            'ry': ScrollBox.barRadius,
-            'x': vbarL,
-            'y': vbarT,
-            'width': vbarW,
-            'height': vbarH
+            rx: ScrollBox.barRadius,
+            ry: ScrollBox.barRadius,
+            x: vbarL,
+            y: vbarT,
+            width: vbarW,
+            height: vbarH
         });
 
         // vbar center moves between vbarYMin and vbarYMin + vbarTranslateMax

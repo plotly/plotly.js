@@ -2156,7 +2156,7 @@ describe('Test removal of gl contexts', function() {
         .then(done, done.fail);
     });
 
-    it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
+    it('@gl @noVirtualWebgl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
         var _mock = Lib.extendDeep({}, require('../../image/mocks/gl3d_marker-arrays.json'));
 
         Plotly.newPlot(gd, _mock).then(function() {

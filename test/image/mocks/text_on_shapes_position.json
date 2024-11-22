@@ -1,0 +1,536 @@
+{
+ "data": [
+  {
+   "x": [0, 10],
+   "y": [0, 10],
+   "mode": "markers"
+  }
+ ],
+ "layout": {
+  "xaxis": {
+   "title": { "text": "linear" },
+   "range": [0, 100],
+   "type": "linear",
+   "showgrid": false,
+   "zeroline": false,
+   "showticklabels": false
+  },
+  "yaxis": {
+   "title": { "text": "linear" },
+   "range": [0, 100],
+   "type": "linear",
+   "showgrid": false,
+   "zeroline": false,
+   "showticklabels": false
+  },
+  "height": 800,
+  "width": 1200,
+  "margin": { "l": 20, "r": 20, "pad": 0 },
+  "showlegend": false,
+  "shapes": [
+   {
+    "label": {
+     "text": "top left",
+     "textposition": "top left",
+     "font": { "size": 16 },
+     "padding": 5
+    },
+    "x0": 15,
+    "x1": 30,
+    "y0": 87,
+    "y1": 98,
+    "fillcolor": "#ccc"
+   },
+   {
+    "label": {
+     "text": "top center",
+     "textposition": "top center",
+     "font": { "size": 16 },
+     "padding": 5
+    },
+    "x0": 43,
+    "x1": 58,
+    "y0": 87,
+    "y1": 98,
+    "fillcolor": "#ccc"
+   },
+   {
+    "label": {
+     "text": "top right",
+     "textposition": "top right",
+     "font": { "size": 16 },
+     "padding": 5
+    },
+    "x0": 70,
+    "x1": 85,
+    "y0": 87,
+    "y1": 98,
+    "fillcolor": "#ccc"
+   },
+
+   {
+    "label": {
+     "text": "middle left",
+     "textposition": "middle left",
+     "font": { "size": 16 },
+     "padding": 5
+    },
+    "x0": 15,
+    "x1": 30,
+    "y0": 69,
+    "y1": 80,
+    "fillcolor": "#ccc"
+   },
+   {
+    "label": {
+     "text": "middle center",
+     "textposition": "middle center",
+     "font": { "size": 16 },
+     "padding": 5
+    },
+    "x0": 43,
+    "x1": 58,
+    "y0": 69,
+    "y1": 80,
+    "fillcolor": "#ccc"
+   },
+   {
+    "label": {
+     "text": "middle right",
+     "textposition": "middle right",
+     "font": { "size": 16 },
+     "padding": 5
+    },
+    "x0": 70,
+    "x1": 85,
+    "y0": 69,
+    "y1": 80,
+    "fillcolor": "#ccc"
+   },
+
+   {
+    "label": {
+     "text": "bottom left",
+     "textposition": "bottom left",
+     "font": { "size": 16 },
+     "padding": 5
+    },
+    "x0": 15,
+    "x1": 30,
+    "y0": 52,
+    "y1": 63,
+    "fillcolor": "#ccc"
+   },
+   {
+    "label": {
+     "text": "bottom center",
+     "textposition": "bottom center",
+     "font": { "size": 16 },
+     "padding": 5
+    },
+    "x0": 43,
+    "x1": 58,
+    "y0": 52,
+    "y1": 63,
+    "fillcolor": "#ccc"
+   },
+   {
+    "label": {
+     "text": "bottom right",
+     "textposition": "bottom right",
+     "font": { "size": 16 },
+     "padding": 5
+    },
+    "x0": 70,
+    "x1": 85,
+    "y0": 52,
+    "y1": 63,
+    "fillcolor": "#ccc"
+   },
+
+   {
+    "label": {
+     "text": "top <br>start +",
+     "textposition": "start",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 15,
+    "x1": 20,
+    "y0": 40,
+    "y1": 43,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "top <br>middle +",
+     "textposition": "middle",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 43,
+    "x1": 48,
+    "y0": 40,
+    "y1": 43,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "top <br>end +",
+     "textposition": "end",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 70,
+    "x1": 75,
+    "y0": 40,
+    "y1": 43,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+
+   {
+    "label": {
+     "text": "top <br>start -",
+     "textposition": "start",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 30,
+    "x1": 35,
+    "y0": 43,
+    "y1": 40,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "top <br>middle -",
+     "textposition": "middle",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 58,
+    "x1": 63,
+    "y0": 43,
+    "y1": 40,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "top <br>end -",
+     "textposition": "end",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 85,
+    "x1": 90,
+    "y0": 43,
+    "y1": 40,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+
+   {
+    "label": {
+     "text": "top <br>start + R",
+     "textposition": "start",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 15,
+    "x0": 20,
+    "y1": 30,
+    "y0": 33,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "top <br>middle + R",
+     "textposition": "middle",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 43,
+    "x0": 48,
+    "y1": 30,
+    "y0": 33,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "top <br>end + R",
+     "textposition": "end",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 70,
+    "x0": 75,
+    "y1": 30,
+    "y0": 33,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+
+   {
+    "label": {
+     "text": "top <br>start - R",
+     "textposition": "start",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 30,
+    "x0": 35,
+    "y1": 33,
+    "y0": 30,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "top <br>middle - R",
+     "textposition": "middle",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 58,
+    "x0": 63,
+    "y1": 33,
+    "y0": 30,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "top <br>end - R",
+     "textposition": "end",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 85,
+    "x0": 90,
+    "y1": 33,
+    "y0": 30,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+
+   {
+    "label": {
+     "text": "bottom <br>start +",
+     "yanchor": "top",
+     "textposition": "start",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 15,
+    "x1": 20,
+    "y0": 20,
+    "y1": 23,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "bottom <br>middle +",
+     "yanchor": "top",
+     "textposition": "middle",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 43,
+    "x1": 48,
+    "y0": 20,
+    "y1": 23,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "bottom <br>end +",
+     "yanchor": "top",
+     "textposition": "end",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 70,
+    "x1": 75,
+    "y0": 20,
+    "y1": 23,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+
+   {
+    "label": {
+     "text": "bottom <br>start -",
+     "yanchor": "top",
+     "textposition": "start",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 30,
+    "x1": 35,
+    "y0": 23,
+    "y1": 20,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "bottom <br>middle -",
+     "yanchor": "top",
+     "textposition": "middle",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 58,
+    "x1": 63,
+    "y0": 23,
+    "y1": 20,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "bottom <br>end -",
+     "yanchor": "top",
+     "textposition": "end",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x0": 85,
+    "x1": 90,
+    "y0": 23,
+    "y1": 20,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+
+   {
+    "label": {
+     "text": "bottom <br>start + R",
+     "yanchor": "top",
+     "textposition": "start",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 15,
+    "x0": 20,
+    "y1": 10,
+    "y0": 13,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "bottom <br>middle + R",
+     "yanchor": "top",
+     "textposition": "middle",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 43,
+    "x0": 48,
+    "y1": 10,
+    "y0": 13,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "bottom <br>end + R",
+     "yanchor": "top",
+     "textposition": "end",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 70,
+    "x0": 75,
+    "y1": 10,
+    "y0": 13,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+
+   {
+    "label": {
+     "text": "bottom <br>start - R",
+     "yanchor": "top",
+     "textposition": "start",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 30,
+    "x0": 35,
+    "y1": 13,
+    "y0": 10,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "bottom <br>middle - R",
+     "yanchor": "top",
+     "textposition": "middle",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 58,
+    "x0": 63,
+    "y1": 13,
+    "y0": 10,
+    "fillcolor": "#ccc",
+    "type": "line"
+   },
+   {
+    "label": {
+     "text": "bottom <br>end - R",
+     "yanchor": "top",
+     "textposition": "end",
+     "font": { "size": 16 },
+     "padding": 5,
+     "textangle": 0
+    },
+    "x1": 85,
+    "x0": 90,
+    "y1": 13,
+    "y0": 10,
+    "fillcolor": "#ccc",
+    "type": "line"
+   }
+  ]
+ },
+ "config": {
+  "editable": true,
+  "modeBarButtonsToAdd": ["drawline"]
+ }
+}

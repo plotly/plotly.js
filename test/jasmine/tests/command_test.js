@@ -449,7 +449,7 @@ describe('Plots.computeAPICommandBindings', function() {
         describe('with mixed notation', function() {
             it('containing aob + astr', function() {
                 var result = Plots.computeAPICommandBindings(gd, 'relayout', [{
-                    'width': 100,
+                    width: 100,
                     'margin.l': 10
                 }]);
                 expect(result).toEqual([

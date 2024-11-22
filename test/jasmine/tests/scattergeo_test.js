@@ -505,20 +505,20 @@ describe('scattergeo drawing', function() {
 
 describe('Test scattergeo texttemplate:', function() {
     checkTextTemplate([{
-        'type': 'scattergeo',
-        'mode': 'markers+text',
-        'lon': [-73.57, -79.24, -123.06],
-        'lat': [45.5, 43.4, 49.13],
-        'text': ['Montreal', 'Toronto', 'Vancouver']
+        type: 'scattergeo',
+        mode: 'markers+text',
+        lon: [-73.57, -79.24, -123.06],
+        lat: [45.5, 43.4, 49.13],
+        text: ['Montreal', 'Toronto', 'Vancouver']
     }], '.scattergeo text', [
         ['%{text}: %{lon}, %{lat}', ['Montreal: −73.57, 45.5', 'Toronto: −79.24, 43.4', 'Vancouver: −123.06, 49.13']]
     ]);
 
     checkTextTemplate([{
-        'type': 'scattergeo',
-        'mode': 'markers+text',
-        'locations': ['Canada'],
-        'locationmode': 'country names'
+        type: 'scattergeo',
+        mode: 'markers+text',
+        locations: ['Canada'],
+        locationmode: 'country names'
     }], '.scattergeo text', [
         ['%{location}', ['Canada']]
     ]);

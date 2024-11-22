@@ -60,6 +60,14 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
     linkTraces(gd, subplot, cdata);
 
     if(scene.dirty) {
+        if(
+            (scene.line2d || scene.error2d) &&
+            !(scene.scatter2d || scene.fill2d || scene.glText)
+        ) {
+            // Fixes shared WebGL context drawing lines only case
+            regl.clear({});
+        }
+
         // make sure scenes are created
         if(scene.error2d === true) {
             scene.error2d = createError(regl);

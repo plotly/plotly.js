@@ -256,7 +256,7 @@ function plotOne(gd, cd, element, transitionOpts) {
                 isTransitioning: gd._transitioning
             });
 
-        slicePath.call(styleOne, pt, trace);
+        slicePath.call(styleOne, pt, trace, gd);
 
         var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext');
         var sliceText = Lib.ensureSingle(sliceTextGroup, 'text', '', function(s) {

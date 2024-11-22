@@ -1,0 +1,292 @@
+{
+ "data": [
+  {
+   "xaxis": "x",
+   "yaxis": "y",
+   "x": [0, 10],
+   "y": [0, 10],
+   "mode": "markers"
+  },
+  {
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "x": ["a", "b", "c", "d", "e"],
+   "y": [1e-1, 10, 1e3, 1e5, 1e7],
+   "mode": "markers"
+  },
+  {
+   "xaxis": "x3",
+   "yaxis": "y3",
+   "x": [1e-1, 1e4],
+   "y": [1e-1, 1e6],
+   "mode": "markers"
+  },
+  {
+   "xaxis": "x4",
+   "yaxis": "y4",
+   "x": ["2021-01-01", "2023-01-01"],
+   "y": [0, 10],
+   "mode": "markers"
+  }
+ ],
+ "layout": {
+  "xaxis": {
+   "minor": {
+    "showgrid": true
+   },
+   "anchor": "y",
+   "domain": [0, 0.475],
+   "gridcolor": "white"
+  },
+  "yaxis": {
+   "minor": {
+    "showgrid": true
+   },
+   "anchor": "x",
+   "domain": [0, 0.475],
+   "gridcolor": "white"
+  },
+  "xaxis2": {
+   "minor": {
+    "showgrid": true
+   },
+   "anchor": "y2",
+   "domain": [0.525, 1],
+   "type": "category",
+   "gridcolor": "white"
+  },
+  "yaxis2": {
+   "minor": {
+    "showgrid": true
+   },
+   "anchor": "x2",
+   "domain": [0, 0.475],
+   "type": "log",
+   "gridcolor": "white"
+  },
+  "xaxis3": {
+   "minor": {
+    "showgrid": true
+   },
+   "anchor": "y3",
+   "domain": [0.525, 1],
+   "type": "log",
+   "gridcolor": "white"
+  },
+  "yaxis3": {
+   "minor": {
+    "showgrid": true
+   },
+   "anchor": "x3",
+   "domain": [0.525, 1],
+   "type": "log",
+   "gridcolor": "white"
+  },
+  "xaxis4": {
+   "minor": {
+    "showgrid": true
+   },
+   "anchor": "y4",
+   "domain": [0, 0.475],
+   "gridcolor": "white"
+  },
+  "yaxis4": {
+   "minor": {
+    "showgrid": true
+   },
+   "anchor": "x4",
+   "domain": [0.525, 1],
+   "gridcolor": "white"
+  },
+  "font": {
+   "family": "Raleway"
+  },
+  "plot_bgcolor": "lightblue",
+  "showlegend": false,
+  "width": 1000,
+  "height": 1000,
+  "shapes": [
+   {
+    "label": {
+     "texttemplate": "Paper-referenced shape<br>x0: %{x0:.2f},  x1: %{x1:.2f},  xcenter: %{xcenter:.2f},  dx: %{dx:.2f}<br>y0: %{y0:.2f},  y1: %{y1:.2f},  ycenter: %{ycenter:.2f},  dy: %{dy:.2f}",
+     "textposition": "middle left"
+    },
+    "layer": "above",
+    "xref": "paper",
+    "yref": "paper",
+    "x0": 0.2,
+    "x1": 0.6,
+    "y0": 0.15,
+    "y1": 0.05,
+    "type": "rect",
+    "opacity": 0.3,
+    "editable": true
+   },
+   {
+    "label": {
+     "texttemplate": "Here is x0 divided by 2: %{x0/2:.2f}"
+    },
+    "layer": "above",
+    "x0": 0.5,
+    "x1": 6.5,
+    "y0": 7,
+    "y1": 8.5,
+    "opacity": 0.5,
+    "fillcolor": "#05e",
+    "line": {
+     "width": 3,
+     "color": "#025",
+     "dash": "dashdot"
+    },
+    "editable": true
+   },
+   {
+    "label": {
+     "texttemplate": "Here is the slope: %{slope:.3f}"
+    },
+    "layer": "above",
+    "x0": 5,
+    "x1": 9,
+    "y0": 3.7,
+    "y1": 9,
+    "type": "line",
+    "opacity": 0.5,
+    "line": {
+     "width": 3,
+     "color": "#025"
+    },
+    "editable": true
+   },
+   {
+    "label": {
+     "texttemplate": "x0: %{x0}, x1: %{x1}<br>dy: %{dy:.2f}, dx: %{dx:.2f}<br>slope: %{slope:.2f}<br>length: %{length:.2f}<br>",
+     "textposition": "start",
+     "yanchor": "top"
+    },
+    "layer": "above",
+    "xref": "x2",
+    "yref": "y2",
+    "x0": "b",
+    "x1": "d",
+    "y0": 1e7,
+    "y1": 1e5,
+    "type": "line",
+    "opacity": 0.5,
+    "line": {
+     "width": 3,
+     "color": "#025"
+    },
+    "editable": true
+   },
+   {
+    "label": {
+     "texttemplate": "x0: %{x0}<br>x1: %{x1}<br>xcenter: %{xcenter}<br>dx: %{dx:.2f}<br>width: %{width:.2f}<br><br>y0: %{y0:.2f}<br>y1: %{y1:.2f}<br>ycenter: %{ycenter:.2f}<br>dy: %{dy:.2f}<br>height: %{height:.2f}"
+    },
+    "layer": "above",
+    "xref": "x2",
+    "yref": "y2",
+    "x0": "b",
+    "x1": "e",
+    "y0": 0.1,
+    "y1": 2e4,
+    "type": "circle",
+    "line": {
+     "width": 2,
+     "color": "#025"
+    },
+    "editable": true
+   },
+   {
+    "label": {
+     "texttemplate": "dy: %{dy:.2f}, dx: %{dx:.2f}<br>slope: %{slope:.2f}<br>length: %{length:.2f}",
+     "textposition": "start",
+     "yanchor": "top"
+    },
+    "layer": "above",
+    "xref": "x3",
+    "yref": "y3",
+    "x0": 0.2,
+    "x1": 10000,
+    "y0": 1000000,
+    "y1": 10000,
+    "type": "line",
+    "opacity": 0.5,
+    "line": {
+     "width": 3,
+     "color": "#025"
+    },
+    "editable": true
+   },
+   {
+    "label": {
+     "texttemplate": "x0: %{x0:.2f}<br>x1: %{x1:.2f}<br>xcenter: %{xcenter:.2f}<br>dx: %{dx:.2f}<br>width: %{width:.2f}<br><br>y0: %{y0:.2f}<br>y1: %{y1:.2f}<br>ycenter: %{ycenter:.2f}<br>dy: %{dy:.2f}<br>height: %{height:.2f}<br><br>length: %{length}"
+    },
+    "layer": "above",
+    "xref": "x3",
+    "yref": "y3",
+    "x0": 10,
+    "x1": 1000,
+    "y0": 0.25,
+    "y1": 10500,
+    "type": "rect",
+    "line": {
+     "width": 2,
+     "color": "#025"
+    },
+    "editable": true
+   },
+   {
+    "label": {
+     "texttemplate": "Rate = %{slope*31536000000:.3f} per year"
+    },
+    "layer": "above",
+    "xref": "x4",
+    "yref": "y4",
+    "x0": "2021-01-01",
+    "x1": "2023-01-01",
+    "y0": 2.5,
+    "y1": 6,
+    "type": "line",
+    "line": {
+     "width": 2,
+     "color": "#025"
+    },
+    "editable": true
+   },
+   {
+    "label": {
+     "texttemplate": "x0: %{x0|%m %b %Y}<br>x1: %{x1|%m %b %Y}<br>xcenter: %{xcenter|%m %b %Y}<br>dx: %{dx/86400000:d} days<br>width: %{width/86400000:d} days<br><br>y0: %{y0:.1f}<br>y1: %{y1:.1f}<br>ycenter: %{ycenter:.1f}<br>dy: %{dy:.1f}<br>height: %{height:.1f}<br>",
+     "textposition": "top left"
+    },
+    "layer": "above",
+    "xref": "x4",
+    "yref": "y4",
+    "x0": "2021-07-01",
+    "x1": "2022-07-01",
+    "y0": 2.5,
+    "y1": 10,
+    "type": "rect",
+    "line": {
+     "width": 2,
+     "color": "#025"
+    },
+    "editable": true
+   }
+  ],
+  "newshape": {
+   "label": {
+    "texttemplate": "Slope! %{slope*31536000000:.2f}"
+   }
+  }
+ },
+ "config": {
+  "modeBarButtonsToAdd": [
+   "drawline",
+   "drawopenpath",
+   "drawclosedpath",
+   "drawcircle",
+   "drawrect",
+   "eraseshape"
+  ]
+ }
+}

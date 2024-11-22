@@ -1,0 +1,32 @@
+{
+ "data": [
+  {
+   "type": "scatter",
+   "name": "svg - `RED`",
+   "x": [1, 2, 3, 4],
+   "y": [10, 15, 13, 17],
+   "mode": "markers",
+   "marker": {
+    "color": "RED",
+    "size": 12
+   }
+  },
+  {
+   "type": "scattergl",
+   "name": "GL - `BLUE`",
+   "x": [1, 2, 3, 4],
+   "y": [9, 14, 12, 16],
+   "mode": "markers",
+   "marker": {
+    "color": "BLUE",
+    "size": 12
+   }
+  }
+ ],
+ "layout": {
+  "title": {
+   "text": "ScatterGL named-colors should be case-insensitive"
+  },
+  "showlegend": true
+ }
+}

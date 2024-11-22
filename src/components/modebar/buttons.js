@@ -51,11 +51,6 @@ modeBarButtons.toImage = {
 
         Lib.notifier(_(gd, 'Taking snapshot - this may take a few seconds'), 'long');
 
-        if(opts.format !== 'svg' && Lib.isIE()) {
-            Lib.notifier(_(gd, 'IE only supports svg.  Changing format to svg.'), 'long');
-            opts.format = 'svg';
-        }
-
         ['filename', 'width', 'height', 'scale'].forEach(function(key) {
             if(key in toImageButtonOptions) {
                 opts[key] = toImageButtonOptions[key];
@@ -271,12 +266,16 @@ function handleCartesian(gd, ev) {
                 if(val === 'auto') {
                     aobj[axName + '.autorange'] = true;
                 } else if(val === 'reset') {
-                    if(ax._rangeInitial === undefined) {
+                    if(ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined) {
                         aobj[axName + '.autorange'] = true;
+                    } else if(ax._rangeInitial0 === undefined) {
+                        aobj[axName + '.autorange'] = ax._autorangeInitial;
+                        aobj[axName + '.range'] = [null, ax._rangeInitial1];
+                    } else if(ax._rangeInitial1 === undefined) {
+                        aobj[axName + '.range'] = [ax._rangeInitial0, null];
+                        aobj[axName + '.autorange'] = ax._autorangeInitial;
                     } else {
-                        var rangeInitial = ax._rangeInitial.slice();
-                        aobj[axName + '.range[0]'] = rangeInitial[0];
-                        aobj[axName + '.range[1]'] = rangeInitial[1];
+                        aobj[axName + '.range'] = [ax._rangeInitial0, ax._rangeInitial1];
                     }
 
                     // N.B. "reset" also resets showspikes
@@ -555,18 +554,6 @@ function handleGeo(gd, ev) {
     }
 }
 
-modeBarButtons.hoverClosestGl2d = {
-    name: 'hoverClosestGl2d',
-    _cat: 'hoverclosest',
-    title: function(gd) { return _(gd, 'Toggle show closest data on hover'); },
-    attr: 'hovermode',
-    val: null,
-    toggle: true,
-    icon: Icons.tooltip_basic,
-    gravity: 'ne',
-    click: toggleHover
-};
-
 modeBarButtons.hoverClosestPie = {
     name: 'hoverClosestPie',
     _cat: 'hoverclosest',
@@ -648,6 +635,7 @@ modeBarButtons.resetViews = {
 
         resetView(gd, 'geo');
         resetView(gd, 'mapbox');
+        resetView(gd, 'map');
     }
 };
 
@@ -691,6 +679,17 @@ modeBarButtons.resetViewMapbox = {
     }
 };
 
+modeBarButtons.resetViewMap = {
+    name: 'resetViewMap',
+    _cat: 'resetView',
+    title: function(gd) { return _(gd, 'Reset view'); },
+    attr: 'reset',
+    icon: Icons.home,
+    click: function(gd) {
+        resetView(gd, 'map');
+    }
+};
+
 modeBarButtons.zoomInMapbox = {
     name: 'zoomInMapbox',
     _cat: 'zoomin',
@@ -699,6 +698,16 @@ modeBarButtons.zoomInMapbox = {
     val: 'in',
     icon: Icons.zoom_plus,
     click: handleMapboxZoom
+};
+
+modeBarButtons.zoomInMap = {
+    name: 'zoomInMap',
+    _cat: 'zoomin',
+    title: function(gd) { return _(gd, 'Zoom in'); },
+    attr: 'zoom',
+    val: 'in',
+    icon: Icons.zoom_plus,
+    click: handleMapZoom
 };
 
 modeBarButtons.zoomOutMapbox = {
@@ -711,11 +720,29 @@ modeBarButtons.zoomOutMapbox = {
     click: handleMapboxZoom
 };
 
+modeBarButtons.zoomOutMap = {
+    name: 'zoomOutMap',
+    _cat: 'zoomout',
+    title: function(gd) { return _(gd, 'Zoom out'); },
+    attr: 'zoom',
+    val: 'out',
+    icon: Icons.zoom_minus,
+    click: handleMapZoom
+};
+
 function handleMapboxZoom(gd, ev) {
+    _handleMapZoom(gd, ev, 'mapbox');
+}
+
+function handleMapZoom(gd, ev) {
+    _handleMapZoom(gd, ev, 'map');
+}
+
+function _handleMapZoom(gd, ev, mapType) {
     var button = ev.currentTarget;
     var val = button.getAttribute('data-val');
     var fullLayout = gd._fullLayout;
-    var subplotIds = fullLayout._subplots.mapbox || [];
+    var subplotIds = fullLayout._subplots[mapType] || [];
     var scalar = 1.05;
     var aObj = {};
 

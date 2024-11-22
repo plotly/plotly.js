@@ -1,5 +1,7 @@
 'use strict';
 
+var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
+
 function findCategories(ax, opts) {
     var dataAttr = opts.dataAttr || ax._id.charAt(0);
     var lookup = {};
@@ -49,7 +51,8 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     if(containerOut.type !== 'category') return;
 
     var arrayIn = containerIn.categoryarray;
-    var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0);
+    var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0) ||
+        isTypedArraySpec(arrayIn);
 
     // override default 'categoryorder' value when non-empty array is supplied
     var orderDefault;

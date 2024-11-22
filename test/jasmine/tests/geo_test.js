@@ -919,7 +919,7 @@ describe('Test geo interactions', function() {
 
             it('should not be triggered when pt *location* does not have matching feature', function(done) {
                 var update = {
-                    'locations': [['CAN', 'AAA', 'USA']]
+                    locations: [['CAN', 'AAA', 'USA']]
                 };
 
                 Plotly.restyle(gd, update).then(function() {
@@ -1545,7 +1545,7 @@ describe('Test geo interactions', function() {
         Plotly.react(gd, figWorld)
         .then(function() {
             _assertViewInitial('world scope', {
-                'fitbounds': false,
+                fitbounds: false,
                 'center.lon': 0,
                 'center.lat': 0,
                 'projection.scale': 1,
@@ -1555,7 +1555,7 @@ describe('Test geo interactions', function() {
         .then(function() { return Plotly.react(gd, figUSA); })
         .then(function() {
             _assertViewInitial('react to usa scope', {
-                'fitbounds': false,
+                fitbounds: false,
                 'center.lon': -96.6,
                 'center.lat': 38.7,
                 'projection.scale': 1
@@ -1564,7 +1564,7 @@ describe('Test geo interactions', function() {
         .then(function() { return Plotly.react(gd, figNA); })
         .then(function() {
             _assertViewInitial('react to NA scope', {
-                'fitbounds': false,
+                fitbounds: false,
                 'center.lon': -112.5,
                 'center.lat': 45,
                 'projection.scale': 1
@@ -1573,7 +1573,7 @@ describe('Test geo interactions', function() {
         .then(function() { return Plotly.react(gd, figWorld); })
         .then(function() {
             _assertViewInitial('react back to world scope', {
-                'fitbounds': false,
+                fitbounds: false,
                 'center.lon': 0,
                 'center.lat': 0,
                 'projection.scale': 1,
@@ -2796,8 +2796,8 @@ describe('plotly_relayouting', function() {
 
     var mocks = {
         'non-clipped': require('../../image/mocks/geo_winkel-tripel'),
-        'clipped': require('../../image/mocks/geo_orthographic'),
-        'scoped': require('../../image/mocks/geo_europe-bubbles')
+        clipped: require('../../image/mocks/geo_orthographic'),
+        scoped: require('../../image/mocks/geo_europe-bubbles')
     };
     ['non-clipped', 'clipped', 'scoped'].forEach(function(zoomHandler) {
         ['pan'].forEach(function(dragmode) {
