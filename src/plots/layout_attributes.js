@@ -402,7 +402,7 @@ module.exports = {
     },
     template: {
         valType: 'any',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Default attributes to be applied to the plot. Templates can be',
             'created from existing plots using `Plotly.makeTemplate`, or',
