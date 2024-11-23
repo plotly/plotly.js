@@ -78,7 +78,6 @@
     }
    },
   {
-   "t": ["M", "N", "O", "P"],
    "r": [1, 2, 3, 4],
    "type": "barpolar",
    "name": "Barpolar 1",
@@ -91,7 +90,6 @@
    }
   },
   {
-   "t": ["M", "N", "O", "P"],
    "r": [2, 3, 4, 1],
    "type": "barpolar",
    "name": "Barpolar 2",
@@ -104,7 +102,6 @@
    }
   },
   {
-   "t": ["M", "N", "O", "P"],
    "r": [3, 4, 1, 2],
    "type": "barpolar",
    "name": "Barpolar 3",
@@ -117,7 +114,6 @@
    }
   },
   {
-   "t": ["M", "N", "O", "P"],
    "r": [4, 1, 2, 3],
    "type": "barpolar",
    "name": "Barpolar 4",
