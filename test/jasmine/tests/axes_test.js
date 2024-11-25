@@ -1796,7 +1796,7 @@ describe('Test axes', function() {
                 'input range, ' + msg + ': ' + ax.range);
         }
 
-        it('can change _inputDomain on call to react when template is present', function(done) {
+        it('can change axis domain on call to react when template is present', function(done) {
             Plotly.newPlot(gd,
                 [{z: [[0, 1], [2, 3]], type: 'heatmap'}],
                 { template: {}, xaxis: { domain: [0,1], scaleanchor: 'y' } }
