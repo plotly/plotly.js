@@ -1796,6 +1796,25 @@ describe('Test axes', function() {
                 'input range, ' + msg + ': ' + ax.range);
         }
 
+        it('can change _inputDomain on call to react when template is present', function(done) {
+            Plotly.newPlot(gd,
+                [{z: [[0, 1], [2, 3]], type: 'heatmap'}],
+                { template: {}, xaxis: { domain: [0,1], scaleanchor: 'y' } }
+            ).then(function() {
+                assertRangeDomain('xaxis', [-1.451851851851852,2.4518518518518517], [0, 1], [0, 1]);
+            })
+            .then(function() {
+                return Plotly.react(gd, 
+                    [{z: [[0, 1], [2, 3]], type: 'heatmap'}],
+                    { template: {}, xaxis: { domain: [0.1, 0.9] } }
+                );
+            })
+            .then(function() {
+                assertRangeDomain('xaxis', [-0.5,1.5], [0.1, 0.9], [0.1, 0.9]);
+            })
+            .then(done, done.fail);
+        });
+
         it('can change per-axis constrain:domain/range and constraintoward', function(done) {
             Plotly.newPlot(gd,
                 // start with a heatmap as it has no padding so calculations are easy
