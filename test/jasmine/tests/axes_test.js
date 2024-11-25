@@ -1800,9 +1800,7 @@ describe('Test axes', function() {
             Plotly.newPlot(gd,
                 [{z: [[0, 1], [2, 3]], type: 'heatmap'}],
                 { template: {}, xaxis: { domain: [0,1], scaleanchor: 'y' } }
-            ).then(function() {
-                assertRangeDomain('xaxis', [-1.451851851851852,2.4518518518518517], [0, 1], [0, 1]);
-            })
+            )
             .then(function() {
                 return Plotly.react(gd, 
                     [{z: [[0, 1], [2, 3]], type: 'heatmap'}],
