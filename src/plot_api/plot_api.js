@@ -2831,6 +2831,9 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
                 // what you're asking for HAS changed, so clear _inputDomain and let us start from scratch
                 newFullLayout[key]._inputDomain = null;
             }
+            // We skip the else case (newDomain !== oldInputDomain && newDomain === oldDomain)
+            // because it's likely that if the newDomain and oldDomain are the same, the user
+            // passed in the same layout object and we should keep the _inputDomain.
         }
     }
 
