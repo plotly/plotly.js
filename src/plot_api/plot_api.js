@@ -2811,6 +2811,32 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
         return PlotSchema.getLayoutValObject(newFullLayout, parts);
     }
 
+    // Clear out any _inputDomain that's no longer valid
+    for (var key in newFullLayout) {
+        if (!key.startsWith('xaxis') && !key.startsWith('yaxis')) {
+            continue;
+        }
+        if (!oldFullLayout[key]) {
+            continue;
+        }
+        var newDomain = newFullLayout[key].domain;
+        var oldDomain = oldFullLayout[key].domain;
+        var oldInputDomain = oldFullLayout[key]._inputDomain;
+        if (oldFullLayout[key]._inputDomain) {
+            if (newDomain[0] === oldInputDomain[0] && newDomain[1] === oldInputDomain[1]) {
+                // what you're asking for hasn't changed, so let plotly.js start with what it
+                // concluded last time and iterate from there
+                newFullLayout[key].domain = oldFullLayout[key].domain;
+            } else if (newDomain[0] !== oldDomain[0] || newDomain[1] !== oldDomain[1]) {
+                // what you're asking for HAS changed, so clear _inputDomain and let us start from scratch
+                newFullLayout[key]._inputDomain = null;
+            }
+            // We skip the else case (newDomain !== oldInputDomain && newDomain === oldDomain)
+            // because it's likely that if the newDomain and oldDomain are the same, the user
+            // passed in the same layout object and we should keep the _inputDomain.
+        }
+    }
+
     var diffOpts = {
         getValObject: getLayoutValObject,
         flags: flags,
@@ -2861,11 +2887,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         // track cartesian axes with altered ranges
         if(AX_RANGE_RE.test(astr) || AX_AUTORANGE_RE.test(astr)) {
             flags.rangesAltered[outerparts[0]] = 1;
-        }
-
-        // clear _inputDomain on cartesian axes with altered domains
-        if(AX_DOMAIN_RE.test(astr)) {
-            nestedProperty(newContainer, '_inputDomain').set(null);
         }
 
         // track datarevision changes
