@@ -141,14 +141,17 @@ exports.lataxisSpan = {
     '*': 180
 };
 
+var world = {
+    lonaxisRange: [-180, 180],
+    lataxisRange: [-90, 90],
+    projType: 'equirectangular',
+    projRotate: [0, 0, 0]
+};
+
 // defaults for each scope
 exports.scopeDefaults = {
-    world: {
-        lonaxisRange: [-180, 180],
-        lataxisRange: [-90, 90],
-        projType: 'equirectangular',
-        projRotate: [0, 0, 0]
-    },
+    un: world,
+    world: world,
     usa: {
         lonaxisRange: [-180, -50],
         lataxisRange: [15, 80],

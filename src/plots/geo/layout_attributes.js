@@ -104,7 +104,7 @@ var attrs = module.exports = overrideAll({
     scope: {
         valType: 'enumerated',
         values: sortObjectKeys(constants.scopeDefaults),
-        dflt: 'world',
+        dflt: 'un',
         description: 'Set the scope of the map.'
     },
     projection: {

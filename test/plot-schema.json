@@ -2540,7 +2540,7 @@
     "role": "object",
     "scope": {
      "description": "Set the scope of the map.",
-     "dflt": "world",
+     "dflt": "un",
      "editType": "plot",
      "valType": "enumerated",
      "values": [
@@ -2549,6 +2549,7 @@
       "europe",
       "north america",
       "south america",
+      "un",
       "usa",
       "world"
      ]

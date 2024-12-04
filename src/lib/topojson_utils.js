@@ -13,7 +13,15 @@ topojsonUtils.getTopojsonName = function(geoLayout) {
 };
 
 topojsonUtils.getTopojsonPath = function(topojsonURL, topojsonName) {
-    return topojsonURL + topojsonName + '.json';
+    var path = topojsonURL;
+
+    if(topojsonName.startsWith('un_')) {
+        path += 'un';
+    } else {
+        path += topojsonName;
+    }
+
+    return path + '.json';
 };
 
 topojsonUtils.getTopojsonFeatures = function(trace, topojson) {
