@@ -9,10 +9,16 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.35.3] -- 2024-12-13
+
+### Fixed
+ - Set height and width on the `.plotly-container` div to 100% [[#7314](https://github.com/plotly/plotly.js/pull/7314)]
+
+
 ## [2.35.2] -- 2024-09-10
 
 ### Fixed
-- Fix require path to maplibre-gl.css (regression introduced in 2.35.1) [[#7146](https://github.com/plotly/plotly.js/pull/7146)],
+ - Fix require path to maplibre-gl.css (regression introduced in 2.35.1) [[#7146](https://github.com/plotly/plotly.js/pull/7146)],
   with thanks to @birkskyum for the contribution!
 
 
