@@ -3671,7 +3671,15 @@ function makePlotFramework(gd) {
     fullLayout._container.enter()
         .insert('div', ':first-child')
         .classed('plot-container', true)
-        .classed('plotly', true);
+        .classed('plotly', true)
+        // The plot container should always take the full with the height of its
+        // parent (the graph div). This ensures that for responsive plots
+        // without a height or width set, the paper div will take up the full
+        // height & width of the graph div.
+        .style({
+            width: "100%",
+            height: "100%"
+        });
 
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
