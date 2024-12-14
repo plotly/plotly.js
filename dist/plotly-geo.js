@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.35.2
+* plotly.js (geo) v2.35.3
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -34726,7 +34726,25 @@ function makePlotFramework(gd) {
 
   // Plot container
   fullLayout._container = gd3.selectAll('.plot-container').data([0]);
-  fullLayout._container.enter().insert('div', ':first-child').classed('plot-container', true).classed('plotly', true);
+  fullLayout._container.enter().insert('div', ':first-child').classed('plot-container', true).classed('plotly', true)
+  // The plot container should always take the full with the height of its
+  // parent (the graph div). This ensures that for responsive plots
+  // without a height or width set, the paper div will take up the full
+  // height & width of the graph div. 
+  // So, for responsive plots without a height or width set, if the plot
+  // container's height is left to 'auto', its height will be dictated by
+  // its childrens' height. (The plot container's only child is the paper
+  // div.) 
+  // In this scenario, the paper div's height will be set to 100%,
+  // which will be 100% of the plot container's auto height. That is
+  // meaninglesss, so the browser will use the paper div's children to set
+  // the height of the plot container instead. However, the paper div's
+  // children do not have any height, because they are all positioned
+  // absolutely, and therefore take up no space.
+  .style({
+    width: "100%",
+    height: "100%"
+  });
 
   // Make the svg container
   fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
@@ -36042,6 +36060,15 @@ function lsInner(gd) {
   var pad = gs.p;
   var axList = Axes.list(gd, '', true);
   var i, subplot, plotinfo, ax, xa, ya;
+
+  // Set the width and height of the paper div ('.svg-container') in
+  // accordance with the users configuration and layout. 
+  // If the plot is responsive and the user has not set a width/height, then
+  // the width/height of the paper div is set to 100% to fill the parent
+  // container. 
+  // We can't leave the height or width unset because all of the contents of
+  // the paper div are positioned absolutely (and will therefore not take up
+  // any space).
   fullLayout._paperdiv.style({
     width: gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroWidth && !gd.layout.width ? '100%' : fullLayout.width + 'px',
     height: gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroHeight && !gd.layout.height ? '100%' : fullLayout.height + 'px'
@@ -62157,7 +62184,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.35.2';
+exports.version = '2.35.3';
 
 /***/ }),
 
