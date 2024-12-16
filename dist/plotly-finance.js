@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v3.0.0-rc.1
+* plotly.js (finance) v3.0.0-rc.2
 * Copyright 2012-2024, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -42,7 +42,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.0.0-rc.1";
+      exports.version = "3.0.0-rc.2";
     }
   });
 
@@ -22704,8 +22704,10 @@ var Plotly = (() => {
             pointData.distance = 0;
           } else pointData.index = false;
         } else {
-          for (var i = 0; i < cd.length; i++) {
-            var newDistance = distfn(cd[i]);
+          var newDistance = Infinity;
+          var len = cd.length;
+          for (var i = 0; i < len; i++) {
+            newDistance = distfn(cd[i]);
             if (newDistance <= pointData.distance) {
               pointData.index = i;
               pointData.distance = newDistance;
@@ -46394,7 +46396,10 @@ var Plotly = (() => {
         fullLayout._calcInverseTransform = calcInverseTransform;
         fullLayout._calcInverseTransform(gd);
         fullLayout._container = gd3.selectAll(".plot-container").data([0]);
-        fullLayout._container.enter().insert("div", ":first-child").classed("plot-container", true).classed("plotly", true);
+        fullLayout._container.enter().insert("div", ":first-child").classed("plot-container", true).classed("plotly", true).style({
+          width: "100%",
+          height: "100%"
+        });
         fullLayout._paperdiv = fullLayout._container.selectAll(".svg-container").data([0]);
         fullLayout._paperdiv.enter().append("div").classed("user-select-none", true).classed("svg-container", true).style("position", "relative");
         fullLayout._glcontainer = fullLayout._paperdiv.selectAll(".gl-container").data([{}]);
