@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.35.3] -- 2024-12-13
+
+### Fixed
+ - Set height and width on the `.plotly-container` div to 100% [[#7314](https://github.com/plotly/plotly.js/pull/7314)]
+
+
 ## [3.0.0-rc.1] -- 2024-11-27
 
 ### Removed
