@@ -18,7 +18,10 @@ function plot(gd, geo, calcData) {
     var gTraces = Lib.makeTraceGroups(scatterLayer, calcData, 'trace scattergeo');
 
     function removeBADNUM(d, node) {
-        if(d.lonlat[0] === BADNUM) {
+        if(
+            d.lonlat &&
+            d.lonlat[0] === BADNUM
+        ) {
             d3.select(node).remove();
         }
     }
@@ -98,12 +101,13 @@ function calcGeoJSON(calcTrace, fullLayout) {
         lonArray = [bboxGeojson[0], bboxGeojson[2]];
         latArray = [bboxGeojson[1], bboxGeojson[3]];
     } else {
-        lonArray = new Array(len);
-        latArray = new Array(len);
+        lonArray = [];
+        latArray = [];
         for(i = 0; i < len; i++) {
             calcPt = calcTrace[i];
-            lonArray[i] = calcPt.lonlat[0];
-            latArray[i] = calcPt.lonlat[1];
+            if(!calcPt.lonlat) continue;
+            lonArray.push(calcPt.lonlat[0]);
+            latArray.push(calcPt.lonlat[1]);
         }
 
         opts.ppad = calcMarkerSize(trace, len);
