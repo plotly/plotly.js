@@ -17,6 +17,7 @@ topojsonUtils.getTopojsonPath = function(topojsonURL, topojsonName) {
 
     if(topojsonName.startsWith('un_')) {
         path += 'un';
+        return 'https://raw.githubusercontent.com/etpinard/sane-topojson/refs/heads/un-borders/dist/un.json';
     } else {
         path += topojsonName;
     }
