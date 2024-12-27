@@ -33,7 +33,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     // no other scopes are allowed for 'albers usa' projection
     if(isAlbersUsa) scope = geoLayoutOut.scope = 'usa';
 
-    var isScoped = geoLayoutOut._isScoped = (scope !== 'world');
+    var isScoped = geoLayoutOut._isScoped = (scope !== 'world' && scope !== 'un');
     var isSatellite = geoLayoutOut._isSatellite = projType === 'satellite';
     var isConic = geoLayoutOut._isConic = projType.indexOf('conic') !== -1 || projType === 'albers';
     var isClipped = geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];

@@ -63,6 +63,13 @@ function locationToFeature(locationmode, location, features) {
         for(i = 0; i < filteredFeatures.length; i++) {
             f = filteredFeatures[i];
             if(f.id === locationId) return f;
+            if(
+                f.properties &&
+                f.properties.iso3cd === locationId
+            ) {
+                // TODO: we may need to collect all the polygons instead?
+                return f;
+            }
         }
 
         loggers.log([
@@ -77,7 +84,7 @@ function locationToFeature(locationmode, location, features) {
 function feature2polygons(feature) {
     var geometry = feature.geometry;
     var coords = geometry.coordinates;
-    var loc = feature.id;
+    var loc = feature.properties.iso3cd || feature.id;
 
     var polygons = [];
     var appendPolygon, j, k, m;
@@ -172,6 +179,9 @@ function feature2polygons(feature) {
             for(j = 0; j < coords.length; j++) {
                 appendPolygon(coords[j]);
             }
+            break;
+        case 'LineString':
+            appendPolygon(coords);
             break;
     }
 
