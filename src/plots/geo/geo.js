@@ -625,6 +625,8 @@ proto._render = function() {
     var k;
 
     function translatePoints(d) {
+        if(!d.lonlat) return null;
+
         var lonlatPx = projection(d.lonlat);
         return lonlatPx ?
             strTranslate(lonlatPx[0], lonlatPx[1]) :
@@ -685,6 +687,8 @@ function getProjection(geoLayout) {
     }
 
     projection.isLonLatOverEdges = function(lonlat) {
+        if(!lonlat) return false;
+
         if(projection(lonlat) === null) {
             return true;
         }
