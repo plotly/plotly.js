@@ -18,12 +18,12 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var project = geo.project;
 
     function distFn(d) {
-        var lonlat = d.lonlat;
+        var _lonlat = d.lonlat;
 
-        if(lonlat[0] === BADNUM) return Infinity;
-        if(isLonLatOverEdges(lonlat)) return Infinity;
+        if(_lonlat[0] === BADNUM) return Infinity;
+        if(isLonLatOverEdges(_lonlat)) return Infinity;
 
-        var pt = project(lonlat);
+        var pt = project(_lonlat);
         var px = project([xval, yval]);
         var dx = Math.abs(pt[0] - px[0]);
         var dy = Math.abs(pt[1] - px[1]);
