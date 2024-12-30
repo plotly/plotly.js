@@ -20,7 +20,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     function distFn(d) {
         var _lonlat = d.lonlat;
 
-        if(_lonlat[0] === BADNUM) return Infinity;
+        if(!_lonlat || _lonlat[0] === BADNUM) return Infinity;
         if(isLonLatOverEdges(_lonlat)) return Infinity;
 
         var pt = project(_lonlat);
