@@ -553,6 +553,7 @@ proto.makeFramework = function() {
 
     // sane lonlat to px
     _this.project = function(v) {
+        if(!v) return [null, null];
         var px = _this.projection(v);
         return px ?
             [px[0] - _this.xaxis._offset, px[1] - _this.yaxis._offset] :

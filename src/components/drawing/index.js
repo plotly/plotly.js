@@ -1775,6 +1775,7 @@ function getMarkerAngle(d, trace) {
         }
 
         if(trace._geo) {
+            if(!d.latlon) return null;
             var lon = d.lonlat[0];
             var lat = d.lonlat[1];
 
