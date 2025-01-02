@@ -41,6 +41,8 @@ function locationToFeature(locationmode, location, features) {
     var filteredFeatures;
     var f, i;
 
+    var allParts = [];
+
     if(locationId) {
         if(locationmode === 'USA-states') {
             // Filter out features out in USA
@@ -67,8 +69,7 @@ function locationToFeature(locationmode, location, features) {
                 f.properties &&
                 f.properties.iso3cd === locationId
             ) {
-                // TODO: we may need to collect all the polygons instead?
-                return f;
+                allParts.push(f);
             }
         }
 
@@ -78,10 +79,35 @@ function locationToFeature(locationmode, location, features) {
         ].join(' '));
     }
 
+    if(allParts.length) {
+        return allParts; //[allParts.length - 1];
+    }
+
     return false;
 }
 
 function feature2polygons(feature) {
+    if(!Array.isArray(feature)) {
+        return _feature2polygons(feature);
+    }
+
+    var polygons;
+    for(var i = 0; i < feature.length; i++) {
+        var pts = _feature2polygons(feature[i]);
+
+        if(pts.length) {
+            if(!polygons) {
+                polygons = pts;
+            } else {
+                polygons.push(polygon.tester(pts));
+            }
+        }
+    }
+
+    return polygons;
+}
+
+function _feature2polygons(feature) {
     var geometry = feature.geometry;
     var coords = geometry.coordinates;
     var loc = feature.properties.iso3cd || feature.id;
@@ -373,9 +399,35 @@ function fetchTraceGeoData(calcData) {
     return promises;
 }
 
+
+function computeBbox(d) {
+    if(!Array.isArray(d)) {
+        return _computeBbox(d);
+    }
+
+    var minLon = Infinity;
+    var maxLon = -Infinity;
+    var minLat = Infinity;
+    var maxLat = -Infinity;
+
+    for(var i = 0; i < d.length; i++) {
+        var p = _computeBbox(d[i]);
+
+        minLon = Math.min(minLon, p[0]);
+        minLat = Math.min(minLat, p[1]);
+        maxLon = Math.max(maxLon, p[2]);
+        maxLat = Math.max(maxLat, p[3]);
+    }
+
+    return [
+        minLon, minLat,
+        maxLon, maxLat
+    ];
+}
+
 // TODO `turf/bbox` gives wrong result when the input feature/geometry
 // crosses the anti-meridian. We should try to implement our own bbox logic.
-function computeBbox(d) {
+function _computeBbox(d) {
     return turfBbox(d);
 }
 
