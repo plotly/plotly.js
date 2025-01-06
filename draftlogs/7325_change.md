@@ -1,0 +1,1 @@
+- Update `color-rgba` from 2.1.1 to 3.0.0 to fix hsl color conversion bug [[#7325](https://github.com/plotly/plotly.js/pull/7325)]
