@@ -16,3 +16,4 @@ tags
 !.circleci
 !.gitignore
 !.npmignore
+!.github
