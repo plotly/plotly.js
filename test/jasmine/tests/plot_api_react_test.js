@@ -183,7 +183,7 @@ describe('@noCIdep Plotly.react', function() {
         Plotly.newPlot(gd, data, layout)
         .then(countPlots)
         .then(function() {
-            layout.title.text = 'XXXXX';
+            layout.title = { text: 'XXXXX' };
             layout.hovermode = 'closest';
             data[0].marker = {color: 'rgb(0, 100, 200)'};
             return Plotly.react(gd, data, layout);
