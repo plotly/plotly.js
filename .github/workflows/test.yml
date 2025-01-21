@@ -27,4 +27,7 @@ jobs:
     - run: npm run pretest
     - run: npm ci
     - run: npm run cibuild
-    - run: ./tasks/noci_test.sh
+    - name: Run headless test
+      uses: coactions/setup-xvfb@v1
+      with:
+        run: ./tasks/noci_test.sh
