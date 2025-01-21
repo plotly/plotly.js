@@ -816,8 +816,8 @@ describe('sankey tests', function() {
 
                 var g = d3Select('.hovertext');
                 var pos = g.node().getBoundingClientRect();
-                expect(pos.x).toBeCloseTo(279, -1.5, 'it should have correct x position');
-                expect(pos.y).toBeCloseTo(500, -1.5, 'it should have correct y position');
+                expect(pos.x).toBeCloseTo(279, -1.5);
+                expect(pos.y).toBeCloseTo(500, -1.5);
             })
             .then(done, done.fail);
         });
