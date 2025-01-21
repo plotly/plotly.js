@@ -1513,7 +1513,7 @@ function assertLabel(content, style) {
 
 function assertMultipleLabels(contentArray, styleArray) {
     var g = d3SelectAll('.hovertext');
-    expect(g.size()).toEqual(contentArray.length, 'wrong number of hoverlabels, expected to find ' + contentArray.length);
+    expect(g.size()).toEqual(contentArray.length);
     g.each(function(el, i) {
         _assertLabelGroup(d3Select(this), contentArray[i], styleArray[i]);
     });
