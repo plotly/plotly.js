@@ -455,7 +455,7 @@ describe('Plotly.react transitions:', function() {
             ]);
         })
         .then(function() {
-            layout.title = 'FIGURE';
+            layout.title.text = 'FIGURE';
             return Plotly.react(gd, data, layout);
         })
         .then(function() {
