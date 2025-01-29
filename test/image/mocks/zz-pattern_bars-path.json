@@ -1,0 +1,218 @@
+{
+ "data": [
+  {
+   "x": ["a", "b", "c", "d", "e"],
+   "y": [1, 2, 3, 4, 5],
+   "name": "Bar 1",
+   "type": "bar",
+   "textposition": "outside",
+   "text": "bgcolor",
+   "marker": {
+    "pattern": {
+     "shape": "/",
+     "bgcolor": ["", "lightblue", "blue", "darkblue", "black"]
+    }
+   }
+  },
+  {
+   "x": ["a", "b", "c", "d", "e"],
+   "y": [2, 3, 4, 5, 6],
+   "name": "Bar 2",
+   "type": "bar",
+   "textposition": "outside",
+   "text": "shape",
+   "marker": {
+    "pattern": {
+     "shape": ["|", "/", "-", "\\", "|"]
+    }
+   }
+  },
+  {
+   "x": ["a", "b", "c", "d", "e"],
+   "y": [3, 4, 5, 6, 7],
+   "name": "Bar 3",
+   "type": "bar",
+   "textposition": "outside",
+   "text": "size",
+   "marker": {
+    "pattern": {
+     "shape": "x",
+     "size": [4, 6, 8, 10, 12]
+    }
+   }
+  },
+  {
+   "x": ["a", "b", "c", "d", "e"],
+   "y": [6, 7, 8, 9, 10],
+   "name": "Bar 4",
+   "type": "bar",
+   "textposition": "outside",
+   "text": "solidity",
+   "marker": {
+    "pattern": {
+     "shape": ".",
+     "bgcolor": "yellow",
+     "solidity": [0.1, 0.3, 0.5, 0.7, 0.9]
+    }
+   }
+  },
+  {
+    "x": ["a", "b", "c", "d", "e"],
+    "y": [7, 8, 9, 10, 11],
+    "name": "Bar 5",
+    "type": "bar",
+    "textposition": "outside",
+    "text": "path",
+    "marker": {
+     "pattern": {
+      "path": [
+        "M0,0H4V4H0Z",
+        "M0,0H6V6Z",
+        "M0,0V4H4Z",
+        "M0,0C0,2,4,2,4,4C4,6,0,6,0,8H2C2,6,6,6,6,4C6,2,2,2,2,0Z",
+        "M4,4L7,2A3.5,3.5,0,1,0,7,6Z"
+      ],
+      "fgcolor": "yellow",
+      "bgcolor": "black"
+     }
+    }
+   },
+  {
+   "r": [1, 2, 3, 4],
+   "type": "barpolar",
+   "name": "Barpolar 1",
+   "marker": {
+    "color": "red",
+    "pattern": {
+     "shape": "+",
+     "size": [1, 2, 3, 4]
+    }
+   }
+  },
+  {
+   "r": [2, 3, 4, 1],
+   "type": "barpolar",
+   "name": "Barpolar 2",
+   "marker": {
+    "color": "rgba(0,127,0,0.5)",
+    "pattern": {
+     "shape": "x",
+     "solidity": 0.75
+    }
+   }
+  },
+  {
+   "r": [3, 4, 1, 2],
+   "type": "barpolar",
+   "name": "Barpolar 3",
+   "marker": {
+    "color": "blue",
+    "pattern": {
+     "shape": ["|", "-", "|", "-"],
+     "solidity": 0.5
+    }
+   }
+  },
+  {
+   "r": [4, 1, 2, 3],
+   "type": "barpolar",
+   "name": "Barpolar 4",
+   "marker": {
+    "color": "orange",
+    "pattern": {
+     "shape": ".",
+     "bgcolor": "yellow",
+     "solidity": [0.2, 0.8, 0.6, 0.4]
+    }
+   }
+  },
+
+  {
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "y": ["A", "A", "A", "A", "B", "B", "C"],
+   "name": "Histogram 1",
+   "type": "histogram",
+   "marker": {
+    "color": "yellow",
+    "line": {
+     "color": "black",
+     "width": 2
+    },
+    "pattern": {
+     "bgcolor": "blue",
+     "shape": "."
+    }
+   }
+  },
+  {
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "y": ["C", "C", "C", "C", "B", "B", "A"],
+   "name": "Histogram 2",
+   "type": "histogram",
+   "marker": {
+    "color": "yellow",
+    "line": {
+     "color": "red",
+     "width": 4
+    },
+    "pattern": {
+     "bgcolor": "rgba(255, 127,0,0.5)",
+     "shape": "x"
+    }
+   }
+  },
+
+  {
+   "xaxis": "x3",
+   "yaxis": "y3",
+   "x": [3, 2, 1],
+   "y": ["U", "V", "W"],
+   "name": "Funnel",
+   "type": "funnel"
+  }
+ ],
+ "layout": {
+  "title": {
+   "text": "pattern options"
+  },
+  "width": 1000,
+  "height": 600,
+
+  "xaxis": {
+   "domain": [0, 1]
+  },
+  "yaxis": {
+   "range": [0, 11],
+   "domain": [0, 0.475]
+  },
+
+  "polar": {
+   "domain": {
+    "x": [0.35, 0.65],
+    "y": [0.525, 1]
+   }
+  },
+
+  "xaxis2": {
+   "anchor": "y2",
+   "gridcolor": "black",
+   "gridwidth": 2,
+   "domain": [0, 0.3]
+  },
+  "yaxis2": {
+   "anchor": "x2",
+   "domain": [0.525, 1]
+  },
+
+  "xaxis3": {
+   "anchor": "y3",
+   "domain": [0.7, 1]
+  },
+  "yaxis3": {
+   "anchor": "x3",
+   "domain": [0.525, 1]
+  }
+ }
+}
