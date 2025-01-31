@@ -1996,7 +1996,10 @@ describe('Test select box and lasso per trace:', function() {
 
         return function(expected) {
             var msg = '(call #' + callNumber + ') lasso points ';
-            var lassoPoints = selectedData.lassoPoints || {};
+            var lassoPoints = {};
+            if (selectedData && selectedData.lassoPoints) {
+                lassoPoints = selectedData.lassoPoints;
+            }
 
             if(subplot) {
                 expect(lassoPoints[subplot] || [])

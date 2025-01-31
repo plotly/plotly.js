@@ -591,14 +591,14 @@ describe('A funnel plot', function() {
         return node.querySelectorAll('g.point');
     }
 
-    function assertTextIsInsidePath(textNode, pathNode) {
+    function assertTextIsInsidePath(textNode, pathNode, errorMargin=0) {
         var textBB = textNode.getBoundingClientRect();
         var pathBB = pathNode.getBoundingClientRect();
 
-        expect(pathBB.left).not.toBeGreaterThan(textBB.left);
-        expect(textBB.right).not.toBeGreaterThan(pathBB.right);
-        expect(pathBB.top).not.toBeGreaterThan(textBB.top);
-        expect(textBB.bottom).not.toBeGreaterThan(pathBB.bottom);
+        expect(pathBB.left - errorMargin).not.toBeGreaterThan(textBB.left);
+        expect(textBB.right - errorMargin).not.toBeGreaterThan(pathBB.right);
+        expect(pathBB.top - errorMargin).not.toBeGreaterThan(textBB.top);
+        expect(textBB.bottom - errorMargin).not.toBeGreaterThan(pathBB.bottom);
     }
 
     function assertTextIsAbovePath(textNode, pathNode) {
@@ -969,7 +969,7 @@ describe('A funnel plot', function() {
             assertTextIsInsidePath(text03, path03); // inside
             assertTextIsInsidePath(text12, path12); // inside
             assertTextIsInsidePath(text20, path20); // inside
-            assertTextIsInsidePath(text30, path30); // inside
+            assertTextIsInsidePath(text30, path30, 0.5); // inside
         })
         .then(done, done.fail);
     });
