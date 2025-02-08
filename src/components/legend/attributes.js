@@ -33,23 +33,17 @@ module.exports = {
         editType: 'legend',
         description: 'Sets the color of the border enclosing the legend.'
     },
-    hmaxheightratio: {
-        valType: 'number',
-        min: 2,
-        dflt: 2,
-        role: 'style',
-        editType: 'legend',
-        description: [
-	    'Sets the max height ratio (layout / ratio) of the visible legend when horizontaly aligned.',
-	    'Default value is 2; the legend will take up to 50% of the layout height before displaying a scrollbar',
-	].join(' ')
-    },
     hmaxheight: {
         valType: 'number',
         min: 0,
+        dflt: 0.5,
         role: 'style',
         editType: 'legend',
-        description: 'Sets the max height (in px) of the horizontaly aligned legend.'
+        description: [
+            'If greater than one, it sets the max height (in px) of the horizontaly aligned legend.',
+            'Otherwise, it sets the max height ratio (layout * ratio) of the visible legend when horizontaly aligned.',
+            'Default value is 0.5; the legend will take up to 50% of the layout height before displaying a scrollbar'
+        ].join(' ')
     },
     borderwidth: {
         valType: 'number',
