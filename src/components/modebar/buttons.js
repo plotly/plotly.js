@@ -256,12 +256,15 @@ function handleCartesian(gd, ev) {
         var mag = (val === 'in') ? 0.5 : 2;
         var r0 = (1 + mag) / 2;
         var r1 = (1 - mag) / 2;
-        var axName;
+        var axName, allowed;
 
         for(i = 0; i < axList.length; i++) {
             ax = axList[i];
+            allowed = ax.modebarbuttons === 'all' || ax.modebarbuttons.indexOf(
+                (val === 'auto' || val === 'reset') ? 'auto' : 'inout'
+            ) !== -1;
 
-            if(!ax.fixedrange) {
+            if(allowed && !ax.fixedrange) {
                 axName = ax._name;
                 if(val === 'auto') {
                     aobj[axName + '.autorange'] = true;

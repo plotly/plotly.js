@@ -269,7 +269,7 @@ function areAllAxesFixed(fullLayout) {
     var axList = axisIds.list({_fullLayout: fullLayout}, null, true);
 
     for(var i = 0; i < axList.length; i++) {
-        if(!axList[i].fixedrange) {
+        if(!axList[i].fixedrange && axList[i].modebarbuttons !== 'none') {
             return false;
         }
     }
