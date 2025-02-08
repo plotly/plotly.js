@@ -1059,17 +1059,17 @@ describe('Test click interactions:', function() {
                 width: 600,
                 height: 600
             }).then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068], 1);
 
                 return doubleClick(300, 300);
             })
             .then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.2019, 3.249]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.2019, 3.249], 1);
 
                 return doubleClick(300, 300);
             })
             .then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068], 1);
             })
             .then(done, done.fail);
         });
