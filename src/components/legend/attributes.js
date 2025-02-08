@@ -42,7 +42,7 @@ module.exports = {
         description: [
             'If greater than one, it sets the max height (in px) of the horizontaly aligned legend.',
             'Otherwise, it sets the max height ratio (layout * ratio) of the visible legend when horizontaly aligned.',
-            'Default value is 0.5; the legend will take up to 50% of the layout height before displaying a scrollbar'
+            'Default value is 0.5; the legend will take up to 50% of the layout height before displaying a scrollbar.'
         ].join(' ')
     },
     borderwidth: {
