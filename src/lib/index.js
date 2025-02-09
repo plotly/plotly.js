@@ -1069,7 +1069,7 @@ lib.templateString = function(string, obj) {
             getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
             v = getterCache[key](true);  // true means don't replace undefined with null
         }
-        return lib.isValidTextValue(v) ? v : '';
+        return (v !== undefined) ? v : '';
     });
 };
 
@@ -1306,9 +1306,9 @@ lib.fillText = function(calcPt, trace, contOut) {
     if(lib.isValidTextValue(tx)) return fill(tx);
 };
 
-// accept anything but undefined - was all truthy values and 0 (which gets cast to '0' in the hover labels)
+// accept all truthy values and 0 (which gets cast to '0' in the hover labels)
 lib.isValidTextValue = function(v) {
-    return v !== undefined;
+    return v || v === 0;
 };
 
 /**
