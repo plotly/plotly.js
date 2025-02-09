@@ -417,7 +417,7 @@ describe('mapbox credentials', function() {
         }], {
             mapbox: {
                 accesstoken: MAPBOX_ACCESS_TOKEN,
-                style: 'mapbox://styles/plotly-js-tests/ck4og36lx0vnj1cpdl8y0cr8m'
+                style: 'mapbox://styles/examples/cke97f49z5rlg19l310b7uu7j'
             }
         }).catch(function() {
             cnt++;
