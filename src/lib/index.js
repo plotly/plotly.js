@@ -1067,7 +1067,7 @@ lib.templateString = function(string, obj) {
             v = obj[key];
         } else {
             getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
-            v = getterCache[key]();
+            v = getterCache[key](true);  // true means don't replace undefined with null
         }
         return lib.isValidTextValue(v) ? v : '';
     });
@@ -1132,9 +1132,6 @@ function templateFormatString(string, labels, d3locale) {
     var opts = this;
     var args = arguments;
     if(!labels) labels = {};
-    // Not all that useful, but cache nestedProperty instantiation
-    // just in case it speeds things up *slightly*:
-    var getterCache = {};
 
     return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, rawKey, format) {
         var isOther =
@@ -1185,9 +1182,8 @@ function templateFormatString(string, labels, d3locale) {
                 }
 
                 if(!SIMPLE_PROPERTY_REGEX.test(key)) {
-                    value = lib.nestedProperty(obj, key).get();
-                    value = getterCache[key] || lib.nestedProperty(obj, key).get();
-                    if(value) getterCache[key] = value;
+                    // true here means don't convert null to undefined
+                    value = lib.nestedProperty(obj, key).get(true);
                 }
                 if(value !== undefined) break;
             }
@@ -1310,9 +1306,9 @@ lib.fillText = function(calcPt, trace, contOut) {
     if(lib.isValidTextValue(tx)) return fill(tx);
 };
 
-// accept all truthy values and 0 (which gets cast to '0' in the hover labels)
+// accept anything but undefined - was all truthy values and 0 (which gets cast to '0' in the hover labels)
 lib.isValidTextValue = function(v) {
-    return v || v === 0;
+    return v !== undefined;
 };
 
 /**

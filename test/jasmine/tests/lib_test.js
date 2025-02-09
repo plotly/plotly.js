@@ -2443,6 +2443,14 @@ describe('Test lib.js:', function() {
         it('should work with the number *0* (nested case)', function() {
             expect(Lib.templateString('%{x.y}', {x: {y: 0}})).toEqual('0');
         });
+
+        it('preserves null and NaN', function() {
+            expect(Lib.templateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
+        });
     });
 
     describe('hovertemplateString', function() {
@@ -2469,6 +2477,16 @@ describe('Test lib.js:', function() {
 
         it('should work with the number *0* (nested case)', function() {
             expect(Lib.hovertemplateString('%{x.y}', {}, locale, {x: {y: 0}})).toEqual('0');
+        });
+
+        it('preserves null and NaN', function() {
+            expect(Lib.hovertemplateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {},
+                locale,
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
         });
 
         it('subtitutes multiple matches', function() {
@@ -2535,6 +2553,16 @@ describe('Test lib.js:', function() {
 
         it('looks for default label if no format is provided', function() {
             expect(Lib.texttemplateString('y: %{y}', {yLabel: '0.1'}, locale, {y: 0.123})).toEqual('y: 0.1');
+        });
+
+        it('preserves null and NaN', function() {
+            expect(Lib.texttemplateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {},
+                locale,
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
         });
 
         it('warns user up to 10 times if a variable cannot be found', function() {
