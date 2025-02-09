@@ -337,7 +337,7 @@ function drawOne(gd, opts) {
                 legend.on('wheel', function() {
                     scrollBoxY = Lib.constrain(
                         legendObj._scrollY +
-                            ((d3.event.deltaY / scrollBarYMax) * scrollBoxYMax),
+                            ((d3.event.deltaY / scrollBoxYMax) * scrollBarYMax),
                         0, scrollBoxYMax);
                     scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
                     if(scrollBoxY !== 0 && scrollBoxY !== scrollBoxYMax) {
