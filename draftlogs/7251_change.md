@@ -1,1 +1,0 @@
- - Cleanup remaining code that was there to support the Internet Explorer [[#7251](https://github.com/plotly/plotly.js/pull/7251)]

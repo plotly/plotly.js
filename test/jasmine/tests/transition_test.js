@@ -106,7 +106,7 @@ describe('Plots.transition', function() {
             var pythonLogo = 'https://images.plot.ly/language-icons/api-home/python-logo.png';
 
             function imageel() {
-                return gd._fullLayout._imageUpperLayer.select('image').node();
+                return gd._fullLayout._imageUpperLayer.node().querySelector('image');
             }
             function imagesrc() {
                 return imageel().getAttribute('href');
