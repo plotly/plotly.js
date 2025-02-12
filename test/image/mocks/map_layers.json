@@ -189,7 +189,7 @@
     {
      "sourcetype": "raster",
      "source": [
-      "https://img.nj.gov/imagerywms/Natural2020?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=Natural2020"
+      "https://img.nj.gov/imagerywms/Natural2020?bbox={bbox-epsg-3857}&format=image/png&service=WMS&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=Natural2020"
      ],
      "below": "aeroway-line"
     },
