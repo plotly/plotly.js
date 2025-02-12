@@ -73,7 +73,7 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
         var showZeroLine = coerce('zeroline', opts.showGrid || !!zeroLineColor || !!zeroLineWidth);
 
         if(!showZeroLine) {
-            delete containerOut.zerolineLayer;
+            delete containerOut.zerolinelayer;
             delete containerOut.zerolinecolor;
             delete containerOut.zerolinewidth;
         }
