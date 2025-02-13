@@ -3401,7 +3401,6 @@
      "dflt": 0.5,
      "editType": "legend",
      "min": 0,
-     "role": "style",
      "valType": "number"
     },
     "indentation": {
