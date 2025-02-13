@@ -779,15 +779,6 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
         legendObj._maxHeight = Math.max(gs.h, 30);
     }
 
-    console.log({
-        isBelowPlotArea,
-        isAbovePlotArea,
-        hmaxheight: legendObj.hmaxheight,
-        fullLayout_height: fullLayout.height,
-        gs_h: gs.h,
-        legendObj_maxHeight: legendObj._maxHeight
-    })
-
     var toggleRectWidth = 0;
     legendObj._width = 0;
     legendObj._height = 0;
