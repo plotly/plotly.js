@@ -37,7 +37,6 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 0.5,
-        role: 'style',
         editType: 'legend',
         description: [
             'If greater than one, it sets the max height (in px) of the horizontaly aligned legend.',
