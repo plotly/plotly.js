@@ -819,8 +819,8 @@ describe('geojson / topojson utils', function() {
         var topojson = GeoAssets.topojson[topojsonName];
 
         var shouldPass = [
-            'Virgin Islands (U.S.)',
-            ' Virgin   Islands (U.S.) '
+            'Virgin Islands, U.S.',
+            ' Virgin   Islands, U.S. '
         ];
 
         shouldPass.forEach(function(str) {
