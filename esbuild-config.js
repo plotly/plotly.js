@@ -23,6 +23,7 @@ module.exports = {
     },
     define: {
         global: 'window',
+        'define.amd': 'false',
     },
     target: 'es2016',
     logLevel: 'info',
