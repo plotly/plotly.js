@@ -2811,6 +2811,32 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
         return PlotSchema.getLayoutValObject(newFullLayout, parts);
     }
 
+    // Clear out any _inputDomain that's no longer valid
+    for (var key in newFullLayout) {
+        if (!key.startsWith('xaxis') && !key.startsWith('yaxis')) {
+            continue;
+        }
+        if (!oldFullLayout[key]) {
+            continue;
+        }
+        var newDomain = newFullLayout[key].domain;
+        var oldDomain = oldFullLayout[key].domain;
+        var oldInputDomain = oldFullLayout[key]._inputDomain;
+        if (oldFullLayout[key]._inputDomain) {
+            if (newDomain[0] === oldInputDomain[0] && newDomain[1] === oldInputDomain[1]) {
+                // what you're asking for hasn't changed, so let plotly.js start with what it
+                // concluded last time and iterate from there
+                newFullLayout[key].domain = oldFullLayout[key].domain;
+            } else if (newDomain[0] !== oldDomain[0] || newDomain[1] !== oldDomain[1]) {
+                // what you're asking for HAS changed, so clear _inputDomain and let us start from scratch
+                newFullLayout[key]._inputDomain = null;
+            }
+            // We skip the else case (newDomain !== oldInputDomain && newDomain === oldDomain)
+            // because it's likely that if the newDomain and oldDomain are the same, the user
+            // passed in the same layout object and we should keep the _inputDomain.
+        }
+    }
+
     var diffOpts = {
         getValObject: getLayoutValObject,
         flags: flags,
@@ -2861,11 +2887,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         // track cartesian axes with altered ranges
         if(AX_RANGE_RE.test(astr) || AX_AUTORANGE_RE.test(astr)) {
             flags.rangesAltered[outerparts[0]] = 1;
-        }
-
-        // clear _inputDomain on cartesian axes with altered domains
-        if(AX_DOMAIN_RE.test(astr)) {
-            nestedProperty(newContainer, '_inputDomain').set(null);
         }
 
         // track datarevision changes
@@ -3650,7 +3671,25 @@ function makePlotFramework(gd) {
     fullLayout._container.enter()
         .insert('div', ':first-child')
         .classed('plot-container', true)
-        .classed('plotly', true);
+        .classed('plotly', true)
+        // The plot container should always take the full with the height of its
+        // parent (the graph div). This ensures that for responsive plots
+        // without a height or width set, the paper div will take up the full
+        // height & width of the graph div. 
+        // So, for responsive plots without a height or width set, if the plot
+        // container's height is left to 'auto', its height will be dictated by
+        // its childrens' height. (The plot container's only child is the paper
+        // div.) 
+        // In this scenario, the paper div's height will be set to 100%,
+        // which will be 100% of the plot container's auto height. That is
+        // meaninglesss, so the browser will use the paper div's children to set
+        // the height of the plot container instead. However, the paper div's
+        // children do not have any height, because they are all positioned
+        // absolutely, and therefore take up no space.
+        .style({
+            width: "100%",
+            height: "100%"
+        });
 
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);

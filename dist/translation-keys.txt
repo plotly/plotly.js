@@ -24,7 +24,7 @@ Erase active shape                                     // components/modebar/but
 Lasso Select                                           // components/modebar/buttons.js:121
 Orbital rotation                                       // components/modebar/buttons.js:341
 Pan                                                    // components/modebar/buttons.js:101
-Produced with Plotly.js                                // components/modebar/modebar.js:323
+Produced with Plotly.js                                // components/modebar/modebar.js:324
 Reset                                                  // components/modebar/buttons.js:514
 Reset axes                                             // components/modebar/buttons.js:213
 Reset camera to default                                // components/modebar/buttons.js:380

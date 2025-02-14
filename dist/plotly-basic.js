@@ -1,6 +1,6 @@
 /**
-* plotly.js (basic) v3.0.0-rc.0
-* Copyright 2012-2024, Plotly, Inc.
+* plotly.js (basic) v3.0.0
+* Copyright 2012-2025, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
@@ -38,7 +38,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.0.0-rc.0";
+      exports.version = "3.0.0";
     }
   });
 
@@ -12768,11 +12768,14 @@ var Plotly = (() => {
         var style = document.getElementById(id);
         if (style) removeElement(style);
       }
-      function setStyleOnHover(selector, activeSelector, childSelector, activeStyle, inactiveStyle) {
+      function setStyleOnHover(selector, activeSelector, childSelector, activeStyle, inactiveStyle, element) {
         var activeStyleParts = activeStyle.split(":");
         var inactiveStyleParts = inactiveStyle.split(":");
         var eventAddedAttrName = "data-btn-style-event-added";
-        document.querySelectorAll(selector).forEach(function(el) {
+        if (!element) {
+          element = document;
+        }
+        element.querySelectorAll(selector).forEach(function(el) {
           if (!el.getAttribute(eventAddedAttrName)) {
             el.addEventListener("mouseenter", function() {
               var childEl = this.querySelector(childSelector);
@@ -13734,10 +13737,10 @@ var Plotly = (() => {
     }
   });
 
-  // stylePlugin:/home/solarch/plotly/webgl/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
+  // stylePlugin:/Users/alex/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
   var maplibre_gl_exports = {};
   var init_maplibre_gl2 = __esm({
-    "stylePlugin:/home/solarch/plotly/webgl/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
+    "stylePlugin:/Users/alex/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       init_maplibre_gl();
     }
   });
@@ -22700,8 +22703,10 @@ var Plotly = (() => {
             pointData.distance = 0;
           } else pointData.index = false;
         } else {
-          for (var i = 0; i < cd.length; i++) {
-            var newDistance = distfn(cd[i]);
+          var newDistance = Infinity;
+          var len = cd.length;
+          for (var i = 0; i < len; i++) {
+            newDistance = distfn(cd[i]);
             if (newDistance <= pointData.distance) {
               pointData.index = i;
               pointData.distance = newDistance;
@@ -37152,7 +37157,6 @@ var Plotly = (() => {
         document.querySelectorAll(groupSelector).forEach(function(group) {
           group.style.backgroundColor = style.bgcolor;
         });
-        Lib.setStyleOnHover("#" + modeBarId + " .modebar-btn", ".active", ".icon path", "fill: " + style.activecolor, "fill: " + style.color);
         var needsNewButtons = !this.hasButtons(buttons);
         var needsNewLogo = this.hasLogo !== context.displaylogo;
         var needsNewLocale = this.locale !== context.locale;
@@ -37174,6 +37178,7 @@ var Plotly = (() => {
           }
         }
         this.updateActiveButton();
+        Lib.setStyleOnHover("#" + modeBarId + " .modebar-btn", ".active", ".icon path", "fill: " + style.activecolor, "fill: " + style.color, this.element);
       };
       proto.updateButtons = function(buttons) {
         var _this = this;
@@ -45835,6 +45840,24 @@ var Plotly = (() => {
         function getLayoutValObject(parts) {
           return PlotSchema.getLayoutValObject(newFullLayout, parts);
         }
+        for (var key in newFullLayout) {
+          if (!key.startsWith("xaxis") && !key.startsWith("yaxis")) {
+            continue;
+          }
+          if (!oldFullLayout[key]) {
+            continue;
+          }
+          var newDomain = newFullLayout[key].domain;
+          var oldDomain = oldFullLayout[key].domain;
+          var oldInputDomain = oldFullLayout[key]._inputDomain;
+          if (oldFullLayout[key]._inputDomain) {
+            if (newDomain[0] === oldInputDomain[0] && newDomain[1] === oldInputDomain[1]) {
+              newFullLayout[key].domain = oldFullLayout[key].domain;
+            } else if (newDomain[0] !== oldDomain[0] || newDomain[1] !== oldDomain[1]) {
+              newFullLayout[key]._inputDomain = null;
+            }
+          }
+        }
         var diffOpts = {
           getValObject: getLayoutValObject,
           flags,
@@ -45873,9 +45896,6 @@ var Plotly = (() => {
           }
           if (AX_RANGE_RE.test(astr) || AX_AUTORANGE_RE.test(astr)) {
             flags.rangesAltered[outerparts[0]] = 1;
-          }
-          if (AX_DOMAIN_RE.test(astr)) {
-            nestedProperty(newContainer, "_inputDomain").set(null);
           }
           if (key === "datarevision") {
             flags.newDataRevision = 1;
@@ -46375,7 +46395,10 @@ var Plotly = (() => {
         fullLayout._calcInverseTransform = calcInverseTransform;
         fullLayout._calcInverseTransform(gd);
         fullLayout._container = gd3.selectAll(".plot-container").data([0]);
-        fullLayout._container.enter().insert("div", ":first-child").classed("plot-container", true).classed("plotly", true);
+        fullLayout._container.enter().insert("div", ":first-child").classed("plot-container", true).classed("plotly", true).style({
+          width: "100%",
+          height: "100%"
+        });
         fullLayout._paperdiv = fullLayout._container.selectAll(".svg-container").data([0]);
         fullLayout._paperdiv.enter().append("div").classed("user-select-none", true).classed("svg-container", true).style("position", "relative");
         fullLayout._glcontainer = fullLayout._paperdiv.selectAll(".gl-container").data([{}]);
@@ -54107,8 +54130,14 @@ var Plotly = (() => {
             gd
           );
         }
-        var imagesBelow = fullLayout._imageLowerLayer.selectAll("image").data(imageDataBelow);
-        var imagesAbove = fullLayout._imageUpperLayer.selectAll("image").data(imageDataAbove);
+        function imgDataFunc(d) {
+          return [d.xref, d.x, d.sizex, d.yref, d.y, d.sizey].join("_");
+        }
+        function imgSort(a, b) {
+          return a._index - b._index;
+        }
+        var imagesBelow = fullLayout._imageLowerLayer.selectAll("image").data(imageDataBelow, imgDataFunc);
+        var imagesAbove = fullLayout._imageUpperLayer.selectAll("image").data(imageDataAbove, imgDataFunc);
         imagesBelow.enter().append("image");
         imagesAbove.enter().append("image");
         imagesBelow.exit().remove();
@@ -54121,18 +54150,21 @@ var Plotly = (() => {
           setImage.bind(this)(d);
           applyAttributes.bind(this)(d);
         });
+        imagesBelow.sort(imgSort);
+        imagesAbove.sort(imgSort);
         var allSubplots = Object.keys(fullLayout._plots);
         for (i = 0; i < allSubplots.length; i++) {
           subplot = allSubplots[i];
           var subplotObj = fullLayout._plots[subplot];
           if (!subplotObj.imagelayer) continue;
-          var imagesOnSubplot = subplotObj.imagelayer.selectAll("image").data(imageDataSubplot[subplot] || []);
+          var imagesOnSubplot = subplotObj.imagelayer.selectAll("image").data(imageDataSubplot[subplot] || [], imgDataFunc);
           imagesOnSubplot.enter().append("image");
           imagesOnSubplot.exit().remove();
           imagesOnSubplot.each(function(d) {
             setImage.bind(this)(d);
             applyAttributes.bind(this)(d);
           });
+          imagesOnSubplot.sort(imgSort);
         }
       };
     }
