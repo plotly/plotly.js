@@ -876,15 +876,6 @@ describe('@noCIdep Plotly.react', function() {
         });
     });
 
-    mockLists.mapbox.forEach(function(mockSpec) {
-        it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbox mocks)', function(done) {
-            Plotly.setPlotConfig({
-                mapboxAccessToken: MAPBOX_ACCESS_TOKEN
-            });
-            _runReactMock(mockSpec, done);
-        });
-    });
-
     mockLists.map.forEach(function(mockSpec) {
         it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (map mocks)', function(done) {
             Plotly.setPlotConfig({});
