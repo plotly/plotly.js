@@ -60,9 +60,6 @@ proto.update = function(graphInfo, buttons) {
     document.querySelectorAll(groupSelector).forEach(function(group) {
         group.style.backgroundColor = style.bgcolor;
     });
-    // set styles on hover using event listeners instead of inline CSS that's not allowed by strict CSP's
-    Lib.setStyleOnHover('#' + modeBarId + ' .modebar-btn', '.active', '.icon path', 'fill: ' + style.activecolor, 'fill: ' + style.color);
-
     // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons);
     var needsNewLogo = (this.hasLogo !== context.displaylogo);
@@ -92,6 +89,10 @@ proto.update = function(graphInfo, buttons) {
     }
 
     this.updateActiveButton();
+
+    // set styles on hover using event listeners instead of inline CSS that's not allowed by strict CSP's
+    Lib.setStyleOnHover('#' + modeBarId + ' .modebar-btn', '.active', '.icon path', 'fill: ' + style.activecolor, 'fill: ' + style.color, this.element);
+
 };
 
 proto.updateButtons = function(buttons) {

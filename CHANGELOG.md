@@ -9,7 +9,7 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
-## [3.0.0-rc.2] -- 2024-12-16
+## [3.0.0] -- 2025-01-27
 
 ### Removed
  - Drop support for passing a string to the `title` attribute, and drop support for deprecated attributes `titlefont`, `titleposition`, `titleside`, and `titleoffset` (use `title.text`, `title.font`, `title.side`, `title.offset` instead)[[#7212](https://github.com/plotly/plotly.js/pull/7212)]
@@ -639,7 +639,7 @@ Drop support for deprecated `bardir` attribute (use `orientation` instead) [[#72
 ## [2.15.1] -- 2022-10-11
 
 ### Fixed
- - Fix latest version of plotly.js main module on npm 
+ - Fix latest version of plotly.js main module on npm
 
 
 ## [2.15.0] -- 2022-10-06
@@ -658,9 +658,9 @@ Drop support for deprecated `bardir` attribute (use `orientation` instead) [[#72
  - Fix automargin to update axis titles in redraws [[#6312](https://github.com/plotly/plotly.js/pull/6312)]
  - Fix exporting patterns with transparent color [[#6318](https://github.com/plotly/plotly.js/pull/6318)]
  - Fix exporting text on empty slices [[#6335](https://github.com/plotly/plotly.js/pull/6335)]
- - Disable interactions for `treemap`, `icicle`, `sunburst`, `pie`, `funnelarea`, 
+ - Disable interactions for `treemap`, `icicle`, `sunburst`, `pie`, `funnelarea`,
    `parcats`, `parcoords` and `sankey` traces when `staticPlot` is set to true [[#6296](https://github.com/plotly/plotly.js/pull/6296)]
-   
+
 
 ## [2.14.0] -- 2022-08-10
 

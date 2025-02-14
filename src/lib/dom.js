@@ -101,12 +101,14 @@ function deleteRelatedStyleRule(uid) {
  * @param {string} activeStyle    style that has to be applied when 'hovered' or 'active'
  * @param {string} inactiveStyle    style that has to be applied when not 'hovered' nor 'active'
  */
-function setStyleOnHover(selector, activeSelector, childSelector, activeStyle, inactiveStyle) {
+function setStyleOnHover(selector, activeSelector, childSelector, activeStyle, inactiveStyle, element) {
     var activeStyleParts = activeStyle.split(':');
     var inactiveStyleParts = inactiveStyle.split(':');
     var eventAddedAttrName = 'data-btn-style-event-added';
-
-    document.querySelectorAll(selector).forEach(function(el) {
+    if (!element) {
+        element = document;
+    }
+    element.querySelectorAll(selector).forEach(function(el) {
         if(!el.getAttribute(eventAddedAttrName)) {
             // Emulate ":hover" CSS style using JS event handlers to set the
             // style in a strict CSP-compliant manner.
