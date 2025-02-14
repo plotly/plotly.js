@@ -221,30 +221,38 @@ dragElement.init = function init(options) {
         if(gd._dragged) {
             if(options.doneFn) options.doneFn();
         } else {
-            if(options.clickFn) options.clickFn(numClicks, initialEvent);
+            // If you're in a shadow DOM the target here gets pushed
+            // up to the container in the main DOM. (why only here? IDK)
+            // Don't make an event at all, just an object that looks like one,
+            // since the shadow DOM puts restrictions on what can go in the event,
+            // but copy as much as possible since it will be passed on to
+            // plotly_click handlers
+            var clickEvent;
+            if (initialEvent.target === initialTarget) {
+                clickEvent = initialEvent;
+            } else {
+                clickEvent = {
+                    target: initialTarget,
+                    srcElement: initialTarget,
+                    toElement: initialTarget
+                };
+                Object.keys(initialEvent)
+                    .concat(Object.keys(initialEvent.__proto__))
+                    .forEach(k => {
+                        var v = initialEvent[k];
+                        if (!clickEvent[k] && (typeof v !== 'function')) {
+                            clickEvent[k] = v;
+                        }
+                    });
+            }
+            if(options.clickFn) options.clickFn(numClicks, clickEvent);
 
             // If we haven't dragged, this should be a click. But because of the
             // coverSlip changing the element, the natural system might not generate one,
             // so we need to make our own. But right clicks don't normally generate
             // click events, only contextmenu events, which happen on mousedown.
             if(!rightClick) {
-                var e2;
-
-                try {
-                    e2 = new MouseEvent('click', e);
-                } catch(err) {
-                    var offset = pointerOffset(e);
-                    e2 = document.createEvent('MouseEvents');
-                    e2.initMouseEvent('click',
-                        e.bubbles, e.cancelable,
-                        e.view, e.detail,
-                        e.screenX, e.screenY,
-                        offset[0], offset[1],
-                        e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
-                        e.button, e.relatedTarget);
-                }
-
-                initialTarget.dispatchEvent(e2);
+                initialTarget.dispatchEvent(new MouseEvent('click', e));
             }
         }
 
