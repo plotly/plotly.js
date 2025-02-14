@@ -28,6 +28,16 @@ exports.pattern = {
             'By default, no pattern is used for filling the area.',
         ].join(' ')
     },
+    path: {
+        valType: 'string',
+        arrayOk: true,
+        editType: 'style',
+        description: [
+            'Sets a custom path for pattern fill.',
+            'Use with no `shape` or `solidity`, provide an SVG path string for',
+            'the regions of the square from (0,0) to (`size`,`size`) to color.'
+        ].join(' ')
+    },
     fillmode: {
         valType: 'enumerated',
         values: ['replace', 'overlay'],
