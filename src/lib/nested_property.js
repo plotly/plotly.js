@@ -87,7 +87,7 @@ function npGet(cont, parts) {
                 allSame = true;
                 out = [];
                 for(j = 0; j < curCont.length; j++) {
-                    out[j] = npGet(curCont[j], parts.slice(i + 1))();
+                    out[j] = npGet(curCont[j], parts.slice(i + 1))(retainNull);
                     if(out[j] !== out[0]) allSame = false;
                 }
                 return allSame ? out[0] : out;

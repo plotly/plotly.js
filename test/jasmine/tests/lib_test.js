@@ -340,11 +340,12 @@ describe('Test lib.js:', function() {
         });
 
         it('should access properties of objects in an array with index -1', function() {
-            var obj = {arr: [{a: 1}, {a: 2}, {b: 3}]};
+            var obj = {arr: [{a: 1}, {a: null}, {b: 3}]};
             var prop = np(obj, 'arr[-1].a');
 
-            expect(prop.get()).toEqual([1, 2, undefined]);
-            expect(obj).toEqual({arr: [{a: 1}, {a: 2}, {b: 3}]});
+            expect(prop.get()).toEqual([1, undefined, undefined]);
+            expect(prop.get(true)).toEqual([1, null, undefined]);
+            expect(obj).toEqual({arr: [{a: 1}, {a: null}, {b: 3}]});
 
             prop.set(5);
             expect(prop.get()).toBe(5);
