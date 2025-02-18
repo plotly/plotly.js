@@ -4,7 +4,7 @@ var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
 var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 var numberFormat = Lib.numberFormat;
-var rgba = require('color-rgba');
+var rgba = require('color-rgba').default;
 
 var Axes = require('../../plots/cartesian/axes');
 var strRotate = Lib.strRotate;
