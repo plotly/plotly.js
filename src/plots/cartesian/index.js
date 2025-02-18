@@ -614,6 +614,12 @@ function makeSubplotLayer(gd, plotinfo) {
             plotinfo.overplot = ensureSingle(plotgroup, 'g', 'overplot');
             plotinfo.plot = ensureSingle(plotinfo.overplot, 'g', id);
 
+            if(mainplotinfo && hasMultipleZ) {
+                plotinfo.zerolinelayerAbove = mainplotinfo.zerolinelayerAbove;
+            } else {
+                plotinfo.zerolinelayerAbove = ensureSingle(plotgroup, 'g', 'zerolinelayer-above');
+            }
+
             if(!hasZ) {
                 plotinfo.xlines = ensureSingle(plotgroup, 'path', 'xlines-above');
                 plotinfo.ylines = ensureSingle(plotgroup, 'path', 'ylines-above');
@@ -643,6 +649,7 @@ function makeSubplotLayer(gd, plotinfo) {
         plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
         plotinfo.gridlayer = mainplotinfo.gridlayer;
         plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+        plotinfo.zerolinelayerAbove = mainplotinfo.zerolinelayerAbove;
 
         ensureSingle(mainplotinfo.overlinesBelow, 'path', xId);
         ensureSingle(mainplotinfo.overlinesBelow, 'path', yId);
