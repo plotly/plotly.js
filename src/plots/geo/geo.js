@@ -484,7 +484,11 @@ proto.updateFx = function(fullLayout, geoLayout) {
 
     if(dragMode === 'pan') {
         bgRect.node().onmousedown = null;
-        bgRect.call(createGeoZoom(_this, geoLayout));
+        const zoom = createGeoZoom(_this, geoLayout)
+        bgRect.call(zoom);
+        // TODO: Figure out how to restrict when this transition occurs. Or is it a no-op if nothing has changed?
+        // Trigger transition to handle if minscale attribute isn't 0
+        zoom.event(bgRect.transition())
         bgRect.on('dblclick.zoom', zoomReset);
         if(!gd._context._scrollZoom.geo) {
             bgRect.on('wheel.zoom', null);
@@ -709,6 +713,15 @@ function getProjection(geoLayout) {
 
     projection.precision(constants.precision);
 
+    // https://d3js.org/d3-zoom#zoom_scaleExtent
+    projection.scaleExtent = () => {
+        let { minscale, maxscale } = projLayout;
+        maxscale = maxscale === -1 ? Infinity : maxscale;
+        const max = Math.max(minscale, maxscale);
+        const min = Math.min(minscale, maxscale);
+        return [100 * min, 100 * max];
+    };
+    
     if(geoLayout._isSatellite) {
         projection.tilt(projLayout.tilt).distance(projLayout.distance);
     }
