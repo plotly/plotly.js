@@ -133,7 +133,10 @@ function zoomNonClipped(geo, projection) {
     function handleZoomstart() {
         d3.select(this).style(zoomstartStyle);
 
-        mouse0 = d3.mouse(this);
+        const { bottom, left, right, top } = this.getBoundingClientRect()
+        mouse0 = d3.event.sourceEvent
+            ? d3.mouse(this)
+            : [(left + right) / 2, (bottom + top) / 2];
         rotate0 = projection.rotate();
         translate0 = projection.translate();
         lastRotate = rotate0;
@@ -141,8 +144,10 @@ function zoomNonClipped(geo, projection) {
     }
 
     function handleZoom() {
-        mouse1 = d3.mouse(this);
-
+        const { bottom, left, right, top } = this.getBoundingClientRect()
+        mouse1 = d3.event.sourceEvent
+            ? d3.mouse(this)
+            : [(left + right) / 2, (bottom + top) / 2];
         if(outside(mouse0)) {
             zoom.scale(projection.scale());
             zoom.translate(projection.translate());
@@ -211,7 +216,10 @@ function zoomClipped(geo, projection) {
     zoom.on('zoomstart', function() {
         d3.select(this).style(zoomstartStyle);
 
-        var mouse0 = d3.mouse(this);
+        const { bottom, left, right, top } = this.getBoundingClientRect()
+        let mouse0 = d3.event.sourceEvent
+            ? d3.mouse(this)
+            : [(left + right) / 2, (bottom + top) / 2];
         var rotate0 = projection.rotate();
         var lastRotate = rotate0;
         var translate0 = projection.translate();
@@ -220,7 +228,10 @@ function zoomClipped(geo, projection) {
         zoomPoint = position(projection, mouse0);
 
         zoomOn.call(zoom, 'zoom', function() {
-            var mouse1 = d3.mouse(this);
+            const { bottom, left, right, top } = this.getBoundingClientRect()
+            let mouse1 = d3.event.sourceEvent
+                ? d3.mouse(this)
+                : [(left + right) / 2, (bottom + top) / 2];
 
             projection.scale(view.k = d3.event.scale);
 
