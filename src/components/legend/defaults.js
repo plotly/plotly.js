@@ -188,7 +188,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
     coerce('xanchor', defaultXAnchor);
     coerce('yanchor', defaultYAnchor);
-    coerce('hmaxheight');
+    coerce('maxheight', isHorizontal ? 0.5 : 1);
     coerce('valign');
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 

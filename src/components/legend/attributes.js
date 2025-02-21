@@ -33,15 +33,16 @@ module.exports = {
         editType: 'legend',
         description: 'Sets the color of the border enclosing the legend.'
     },
-    hmaxheight: {
+    maxheight: {
         valType: 'number',
         min: 0,
-        dflt: 0.5,
         editType: 'legend',
         description: [
-            'If greater than one, it sets the max height (in px) of the horizontaly aligned legend.',
-            'Otherwise, it sets the max height ratio (layout * ratio) of the visible legend when horizontaly aligned.',
-            'Default value is 0.5; the legend will take up to 50% of the layout height before displaying a scrollbar.'
+            'Sets the max height (in px) of the legend, or max height ratio (reference height * ratio) if less than one.',
+            'Default value is: 0.5 for horizontal legends; 1 for vertical legends. The minimum allowed height is 30px.',
+            'For a ratio of 0.5, the legend will take up to 50% of the reference height before displaying a scrollbar.',
+            'The reference height is the full layout height except for vertically oriented legends with',
+            'a `yref` of `"paper"`, where the reference height is the plot height.'
         ].join(' ')
     },
     borderwidth: {

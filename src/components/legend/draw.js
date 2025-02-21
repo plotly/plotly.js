@@ -769,15 +769,9 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var traceGroupGap = legendObj.tracegroupgap;
     var legendGroupWidths = {};
 
-    // - if below/above plot area, give it the user defined maximum potential margin-push value
-    // - otherwise, extend the height of the plot area
-    if (isBelowPlotArea || isAbovePlotArea) {
-        legendObj._maxHeight = legendObj.hmaxheight > 1
-            ? legendObj.hmaxheight
-            : fullLayout.height * legendObj.hmaxheight;
-    } else { 
-        legendObj._maxHeight = Math.max(gs.h, 30);
-    }
+    var { maxheight, orientation, yref } = legendObj;
+    var heightToBeScaled = orientation === "v" && yref === "paper" ? gs.h : fullLayout.height;
+    legendObj._maxHeight = Math.max(maxheight > 1 ? maxheight : maxheight * heightToBeScaled, 30);
 
     var toggleRectWidth = 0;
     legendObj._width = 0;
