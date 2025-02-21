@@ -484,7 +484,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
 
     if(dragMode === 'pan') {
         bgRect.node().onmousedown = null;
-        const zoom = createGeoZoom(_this, geoLayout)
+        var zoom = createGeoZoom(_this, geoLayout)
         bgRect.call(zoom);
         // TODO: Figure out how to restrict when this transition occurs. Or is it a no-op if nothing has changed?
         // Trigger transition to handle if minscale attribute isn't 0
@@ -715,10 +715,10 @@ function getProjection(geoLayout) {
 
     // https://d3js.org/d3-zoom#zoom_scaleExtent
     projection.scaleExtent = () => {
-        let { minscale, maxscale } = projLayout;
-        maxscale = maxscale === -1 ? Infinity : maxscale;
-        const max = Math.max(minscale, maxscale);
-        const min = Math.min(minscale, maxscale);
+        var minscale = projLayout.minscale;
+        var maxscale = projLayout.maxscale === -1 ? Infinity : projLayout.maxscale;
+        var max = Math.max(minscale, maxscale);
+        var min = Math.min(minscale, maxscale);
         return [100 * min, 100 * max];
     };
     
