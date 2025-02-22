@@ -133,10 +133,10 @@ function zoomNonClipped(geo, projection) {
     function handleZoomstart() {
         d3.select(this).style(zoomstartStyle);
 
-        var rect = this.getBoundingClientRect()
+        var rect = this.getBBox()
         mouse0 = d3.event.sourceEvent
             ? d3.mouse(this)
-            : [(rect.left + rect.right) / 2, (rect.bottom + rect.top) / 2];
+            : [rect.x + rect.width / 2, rect.y + rect.height / 2];
         rotate0 = projection.rotate();
         translate0 = projection.translate();
         lastRotate = rotate0;
@@ -144,10 +144,10 @@ function zoomNonClipped(geo, projection) {
     }
 
     function handleZoom() {
-        var rect = this.getBoundingClientRect()
+        var rect = this.getBBox()
         mouse1 = d3.event.sourceEvent
             ? d3.mouse(this)
-            : [(rect.left + rect.right) / 2, (rect.bottom + rect.top) / 2];
+            : [rect.x + rect.width / 2, rect.y + rect.height / 2];
         if(outside(mouse0)) {
             zoom.scale(projection.scale());
             zoom.translate(projection.translate());
@@ -216,10 +216,10 @@ function zoomClipped(geo, projection) {
     zoom.on('zoomstart', function() {
         d3.select(this).style(zoomstartStyle);
 
-        var rect = this.getBoundingClientRect()
+        var rect = this.getBBox()
         var mouse0 = d3.event.sourceEvent
             ? d3.mouse(this)
-            : [(rect.left + rect.right) / 2, (rect.bottom + rect.top) / 2];
+            : [rect.x + rect.width / 2, rect.y + rect.height / 2];
         var rotate0 = projection.rotate();
         var lastRotate = rotate0;
         var translate0 = projection.translate();
@@ -228,10 +228,10 @@ function zoomClipped(geo, projection) {
         zoomPoint = position(projection, mouse0);
 
         zoomOn.call(zoom, 'zoom', function() {
-            var rect = this.getBoundingClientRect()
+            var rect = this.getBBox()
             var mouse1 = d3.event.sourceEvent
                 ? d3.mouse(this)
-                : [(rect.left + rect.right) / 2, (rect.bottom + rect.top) / 2];
+                : [rect.x + rect.width / 2, rect.y + rect.height / 2];
 
             projection.scale(view.k = d3.event.scale);
 

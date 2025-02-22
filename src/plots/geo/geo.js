@@ -488,7 +488,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
         bgRect.call(zoom);
         // TODO: Figure out how to restrict when this transition occurs. Or is it a no-op if nothing has changed?
         // Trigger transition to handle if minscale attribute isn't 0
-        zoom.event(bgRect.transition())
+        zoom.event(bgRect)
         bgRect.on('dblclick.zoom', zoomReset);
         if(!gd._context._scrollZoom.geo) {
             bgRect.on('wheel.zoom', null);
