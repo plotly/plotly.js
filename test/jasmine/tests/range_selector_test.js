@@ -1,17 +1,17 @@
-var RangeSelector = require('@src/components/rangeselector');
-var getUpdateObject = require('@src/components/rangeselector/get_update_object');
+var RangeSelector = require('../../../src/components/rangeselector');
+var getUpdateObject = require('../../../src/components/rangeselector/get_update_object');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Color = require('@src/components/color');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Color = require('../../../src/components/color');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var getRectCenter = require('../assets/get_rect_center');
 var mouseEvent = require('../assets/mouse_event');
-var setConvert = require('@src/plots/cartesian/set_convert');
+var setConvert = require('../../../src/plots/cartesian/set_convert');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
 
@@ -459,7 +459,7 @@ describe('range selector getUpdateObject:', function() {
 describe('range selector interactions:', function() {
     'use strict';
 
-    var mock = require('@mocks/range_selector.json');
+    var mock = require('../../image/mocks/range_selector.json');
 
     var gd, mockCopy;
 
@@ -618,7 +618,7 @@ describe('range selector interactions:', function() {
 describe('range selector automargin', function() {
     'use strict';
 
-    var mock = require('@mocks/range_selector.json');
+    var mock = require('../../image/mocks/range_selector.json');
 
     var gd, mockCopy;
 

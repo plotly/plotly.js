@@ -1,0 +1,127 @@
+{
+ "data": [
+  {
+   "x": [1, 2, 3],
+   "y": [4, 5, 6],
+   "name": "yaxis1 data",
+   "type": "scatter"
+  },
+  {
+   "x": [2, 3, 4],
+   "y": [4, 5, 6],
+   "name": "yaxis2 data",
+   "yaxis": "y2",
+   "type": "scatter"
+  },
+  {
+   "x": [3, 4, 5],
+   "y": [4, 5, 6],
+   "name": "yaxis3 data",
+   "yaxis": "y3",
+   "type": "scatter"
+  },
+  {
+   "x": [4, 5, 6],
+   "y": [1, 2, 3],
+   "name": "yaxis4 data",
+   "yaxis": "y4",
+   "type": "scatter"
+  },
+  {
+   "x": [5, 6, 7],
+   "y": [1, 2, 3],
+   "name": "yaxis5 data",
+   "yaxis": "y5",
+   "type": "scatter"
+  },
+  {
+   "x": [5, 6, 7],
+   "y": [1, 2, 3],
+   "name": "yaxis6 data",
+   "yaxis": "y6",
+   "type": "scatter"
+  }
+ ],
+ "layout": {
+  "title": {
+   "text": "multiple y-axes example"
+  },
+  "width": 800,
+  "yaxis": {
+   "showline": true,
+   "ticklen": 15,
+   "automargin": true,
+   "linewidth": 10,
+   "tickfont": { "size": 8 },
+   "tickformat": ".5f",
+   "title": {
+    "text": "yaxis",
+    "standoff": 30,
+    "font": { "size": 8 }
+   }
+  },
+  "yaxis2": {
+   "overlaying": "y",
+   "showline": true,
+   "side": "right",
+   "automargin": true,
+   "linewidth": 40,
+   "ticklen": 20,
+   "ticks": "inside",
+   "tickformat": ".1f",
+   "title": { "text": "yaxis 2" }
+  },
+  "yaxis3": {
+   "anchor": "free",
+   "overlaying": "y",
+   "showline": true,
+   "autoshift": true,
+   "linewidth": 20,
+   "ticklen": 30,
+   "side": "right",
+   "tickfont": { "size": 24 },
+   "tickformat": ".2f",
+   "title": {
+    "text": "yaxis 3",
+    "standoff": 0,
+    "font": { "size": 24 }
+   }
+  },
+  "yaxis4": {
+   "anchor": "free",
+   "overlaying": "y",
+   "showline": true,
+   "autoshift": true,
+   "side": "right",
+   "linewidth": 0,
+   "ticklen": 20,
+   "ticks": "inside",
+   "tickformat": ".2f"
+  },
+  "yaxis5": {
+   "anchor": "free",
+   "overlaying": "y",
+   "showline": true,
+   "autoshift": true,
+   "linewidth": 0,
+   "tickformat": ".2f",
+   "title": { "text": "yaxis 5" }
+  },
+  "yaxis6": {
+   "anchor": "free",
+   "overlaying": "y",
+   "showline": true,
+   "autoshift": true,
+   "linewidth": 0,
+   "side": "right",
+   "tickfont": { "size": 24 },
+   "tickformat": ".2f",
+   "title": { "text": "yaxis 6" }
+  },
+  "legend": {
+   "x": 1,
+   "xanchor": "right",
+   "y": 1
+  }
+ }
+}

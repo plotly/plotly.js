@@ -33,9 +33,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var bignumberFontSize;
     if(traceOut._hasNumber) {
         coerce('number.valueformat');
-        coerce('number.font.color', layout.font.color);
-        coerce('number.font.family', layout.font.family);
-        coerce('number.font.size');
+        var numberFontDflt = Lib.extendFlat({}, layout.font);
+        numberFontDflt.size = undefined;
+        Lib.coerceFont(coerce, 'number.font', numberFontDflt);
         if(traceOut.number.font.size === undefined) {
             traceOut.number.font.size = cn.defaultNumberFontSize;
             auto[0] = true;
@@ -48,9 +48,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     // delta attributes
     var deltaFontSize;
     if(traceOut._hasDelta) {
-        coerce('delta.font.color', layout.font.color);
-        coerce('delta.font.family', layout.font.family);
-        coerce('delta.font.size');
+        var deltaFontDflt = Lib.extendFlat({}, layout.font);
+        deltaFontDflt.size = undefined;
+        Lib.coerceFont(coerce, 'delta.font', deltaFontDflt);
         if(traceOut.delta.font.size === undefined) {
             traceOut.delta.font.size = (traceOut._hasNumber ? 0.5 : 1) * (bignumberFontSize || cn.defaultNumberFontSize);
             auto[1] = true;
@@ -63,14 +63,16 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce('delta.decreasing.symbol');
         coerce('delta.decreasing.color');
         coerce('delta.position');
+        coerce('delta.prefix');
+        coerce('delta.suffix');
         deltaFontSize = traceOut.delta.font.size;
     }
     traceOut._scaleNumbers = (!traceOut._hasNumber || auto[0]) && (!traceOut._hasDelta || auto[1]) || false;
 
     // Title attributes
-    coerce('title.font.color', layout.font.color);
-    coerce('title.font.family', layout.font.family);
-    coerce('title.font.size', 0.25 * (bignumberFontSize || deltaFontSize || cn.defaultNumberFontSize));
+    var titleFontDflt = Lib.extendFlat({}, layout.font);
+    titleFontDflt.size = 0.25 * (bignumberFontSize || deltaFontSize || cn.defaultNumberFontSize);
+    Lib.coerceFont(coerce, 'title.font', titleFontDflt);
     coerce('title.text');
 
     // Gauge attributes
@@ -127,7 +129,13 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerceGaugeAxis('visible');
         traceOut._range = coerceGaugeAxis('range', traceOut._range);
 
-        var opts = {outerTicks: true};
+        var opts = {
+            font: layout.font,
+            noAutotickangles: true,
+            outerTicks: true,
+            noTicklabelshift: true,
+            noTicklabelstandoff: true
+        };
         handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');
         handlePrefixSuffixDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
         handleTickLabelDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);

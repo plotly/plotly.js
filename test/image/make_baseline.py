@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import plotly.io as pio
+from convert_b64 import arraysToB64
 
 args = []
 if len(sys.argv) == 2 :
@@ -10,21 +11,49 @@ elif len(sys.argv) > 1 :
     args = sys.argv
 
 root = os.getcwd()
+
+virtual_webgl = os.path.join(root, 'node_modules', 'virtual-webgl', 'src', 'virtual-webgl.js')
+plotlyjs = os.path.join(root, 'build', 'plotly.js')
+plotlyjs_with_virtual_webgl = os.path.join(root, 'build', 'plotly_with_virtual-webgl.js')
+
 dirIn = os.path.join(root, 'test', 'image', 'mocks')
 dirOut = os.path.join(root, 'build', 'test_images')
+
+# N.B. equal is the falg to write to baselines not test_images
 
 if '=' in args :
     args = args[args.index('=') + 1:]
     dirOut = os.path.join(root, 'test', 'image', 'baselines')
-    print('output to', dirOut)
 
+if 'mathjax3=' in sys.argv :
+    dirOut = os.path.join(root, 'test', 'image', 'baselines')
+
+print('output to', dirOut)
+
+mathjax_version = 2
+if 'mathjax3' in sys.argv or 'mathjax3=' in sys.argv :
+    # until https://github.com/plotly/Kaleido/issues/124 is addressed
+    # we are uanble to use local mathjax v3 installed in node_modules
+    # for now let's download it from the internet:
+    pio.kaleido.scope.mathjax = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js'
+    mathjax_version = 3
+    print('Kaleido using MathJax v3')
+
+virtual_webgl_version = 0 # i.e. virtual-webgl is not used
+if 'virtual-webgl' in sys.argv or 'virtual-webgl=' in sys.argv :
+    virtual_webgl_version = 1
+    print('using virtual-webgl for WebGL v1')
+
+    with open(plotlyjs_with_virtual_webgl, 'w') as fileOut:
+        for filename in [virtual_webgl, plotlyjs]:
+            with open(filename, 'r') as fileIn:
+                for line in fileIn:
+                    fileOut.write(line)
+
+    plotlyjs = plotlyjs_with_virtual_webgl
+
+pio.kaleido.scope.plotlyjs = plotlyjs
 pio.templates.default = 'none'
-pio.kaleido.scope.plotlyjs = os.path.join(root, 'build', 'plotly.js')
-# TODO: specify local mathjax and plotly-geo-assets files?
-
-_credentials = open(os.path.join(root, 'build', 'credentials.json'), 'r')
-pio.kaleido.scope.mapbox_access_token = json.load(_credentials)['MAPBOX_ACCESS_TOKEN']
-_credentials.close()
 
 ALL_MOCKS = [os.path.splitext(a)[0] for a in os.listdir(dirIn) if a.endswith('.json')]
 ALL_MOCKS.sort()
@@ -34,36 +63,9 @@ if len(args) > 0 :
 else :
     allNames = ALL_MOCKS
 
-# gl2d pointcloud and other non-regl gl2d mock(s)
-# must be tested in certain order to work on CircleCI;
-#
-# gl-shader appears to conflict with regl.
-# We suspect that the lone gl context on CircleCI is
-# having issues with dealing with the two different
-# program binding algorithm.
-#
-# The problem will be solved by switching all our
-# WebGL-based trace types to regl.
-#
-# More info here:
-# https://github.com/plotly/plotly.js/pull/1037
-
-LAST = [
-    'gl2d_pointcloud-basic',
-    'gl2d_heatmapgl',
-    'gl2d_heatmapgl_discrete'
-]
-
-HAD = [item in allNames for item in LAST]
-
-allNames = [a for a in allNames if a not in LAST]
-
-allNames += [item for item, had_item in zip(LAST, HAD) if had_item]
-
 # unable to generate baselines for the following mocks
 blacklist = [
-    'mapbox_density0-legend',
-    'mapbox_osm-style'
+    'map_stamen-style',
 ]
 allNames = [a for a in allNames if a not in blacklist]
 
@@ -73,7 +75,11 @@ if len(allNames) == 0 :
 
 failed = []
 for name in allNames :
-    print(name)
+    outName = name
+    if mathjax_version == 3 :
+        outName = 'mathjax3___' + name
+
+    print(outName)
 
     created = False
 
@@ -92,10 +98,16 @@ for name in allNames :
                     if 'height' in layout :
                         height = layout['height']
 
+            if 'b64' in sys.argv or 'b64=' in sys.argv or 'b64-json' in sys.argv :
+                newFig = dict()
+                arraysToB64(fig, newFig)
+                fig = newFig
+                if 'b64-json' in sys.argv and attempt == 0 : print(json.dumps(fig, indent = 2))
+
             try :
                 pio.write_image(
                     fig=fig,
-                    file=os.path.join(dirOut, name + '.png'),
+                    file=os.path.join(dirOut, outName + '.png'),
                     width=width,
                     height=height,
                     validate=False
@@ -106,7 +118,7 @@ for name in allNames :
                 if attempt < MAX_RETRY :
                     print('retry', attempt + 1, '/', MAX_RETRY)
                 else :
-                    failed.append(name)
+                    failed.append(outName)
 
         if(created) : break
 

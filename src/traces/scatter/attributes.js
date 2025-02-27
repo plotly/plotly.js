@@ -6,11 +6,14 @@ var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplat
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var dash = require('../../components/drawing/attributes').dash;
+var pattern = require('../../components/drawing/attributes').pattern;
 
 var Drawing = require('../../components/drawing');
 var constants = require('./constants');
 
 var extendFlat = require('../../lib/extend').extendFlat;
+
+var makeFillcolorAttr = require('./fillcolor_attribute');
 
 function axisPeriod(axis) {
     return {
@@ -122,6 +125,29 @@ module.exports = {
     xhoverformat: axisHoverFormat('x'),
     yhoverformat: axisHoverFormat('y'),
 
+    offsetgroup: {
+        valType: 'string',
+        dflt: '',
+        editType: 'calc',
+        description: [
+            'Set several traces linked to the same position axis',
+            'or matching axes to the same',
+            'offsetgroup where bars of the same position coordinate will line up.'
+        ].join(' ')
+    },
+
+    alignmentgroup: {
+        valType: 'string',
+        dflt: '',
+        editType: 'calc',
+        description: [
+            'Set several traces linked to the same position axis',
+            'or matching axes to the same',
+            'alignmentgroup. This controls whether bars compute their positional',
+            'range dependently or independently.'
+        ].join(' ')
+    },
+
     stackgroup: {
         valType: 'string',
         dflt: '',
@@ -145,7 +171,9 @@ module.exports = {
         values: ['v', 'h'],
         editType: 'calc',
         description: [
-            'Only relevant when `stackgroup` is used, and only the first',
+            'Only relevant in the following cases:',
+            '1. when `scattermode` is set to *group*.',
+            '2. when `stackgroup` is used, and only the first',
             '`orientation` found in the `stackgroup` will be used - including',
             'if `visible` is *legendonly* but not if it is `false`. Sets the',
             'stacking direction. With *v* (*h*), the y (x) values of subsequent',
@@ -291,6 +319,18 @@ module.exports = {
             ].join(' ')
         },
         dash: extendFlat({}, dash, {editType: 'style'}),
+        backoff: { // we want to have a similar option for the start of the line
+            valType: 'number',
+            min: 0,
+            dflt: 'auto',
+            arrayOk: true,
+            editType: 'plot',
+            description: [
+                'Sets the line back off from the end point of the nth line segment (in px).',
+                'This option is useful e.g. to avoid overlap with arrowhead markers.',
+                'With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.'
+            ].join(' ')
+        },
         simplify: {
             valType: 'boolean',
             dflt: true,
@@ -353,16 +393,63 @@ module.exports = {
             'consecutive, the later ones will be pushed down in the drawing order.'
         ].join(' ')
     },
-    fillcolor: {
-        valType: 'color',
-        editType: 'style',
-        anim: true,
+    fillcolor: makeFillcolorAttr(true),
+    fillgradient: extendFlat({
+        type: {
+            valType: 'enumerated',
+            values: ['radial', 'horizontal', 'vertical', 'none'],
+            dflt: 'none',
+            editType: 'calc',
+            description: [
+                'Sets the type/orientation of the color gradient for the fill.',
+                'Defaults to *none*.'
+            ].join(' ')
+        },
+        start: {
+            valType: 'number',
+            editType: 'calc',
+            description: [
+                'Sets the gradient start value.',
+                'It is given as the absolute position on the axis determined by',
+                'the orientiation. E.g., if orientation is *horizontal*, the',
+                'gradient will be horizontal and start from the x-position',
+                'given by start. If omitted, the gradient starts at the lowest',
+                'value of the trace along the respective axis.',
+                'Ignored if orientation is *radial*.'
+            ].join(' ')
+        },
+        stop: {
+            valType: 'number',
+            editType: 'calc',
+            description: [
+                'Sets the gradient end value.',
+                'It is given as the absolute position on the axis determined by',
+                'the orientiation. E.g., if orientation is *horizontal*, the',
+                'gradient will be horizontal and end at the x-position',
+                'given by end. If omitted, the gradient ends at the highest',
+                'value of the trace along the respective axis.',
+                'Ignored if orientation is *radial*.'
+            ].join(' ')
+        },
+        colorscale: {
+            valType: 'colorscale',
+            editType: 'style',
+            description: [
+                'Sets the fill gradient colors as a color scale.',
+                'The color scale is interpreted as a gradient',
+                'applied in the direction specified by *orientation*,',
+                'from the lowest to the highest value of the scatter',
+                'plot along that axis, or from the center to the most',
+                'distant point from it, if orientation is *radial*.'
+            ].join(' ')
+        },
+        editType: 'calc',
         description: [
-            'Sets the fill color.',
-            'Defaults to a half-transparent variant of the line color,',
-            'marker color, or marker line color, whichever is available.'
+            'Sets a fill gradient.',
+            'If not specified, the fillcolor is used instead.'
         ].join(' ')
-    },
+    }),
+    fillpattern: pattern,
     marker: extendFlat({
         symbol: {
             valType: 'enumerated',
@@ -386,6 +473,41 @@ module.exports = {
             editType: 'style',
             anim: true,
             description: 'Sets the marker opacity.'
+        },
+        angle: {
+            valType: 'angle',
+            dflt: 0,
+            arrayOk: true,
+            editType: 'plot',
+            anim: false, // TODO: possibly set to true in future
+            description: [
+                'Sets the marker angle in respect to `angleref`.'
+            ].join(' ')
+        },
+        angleref: {
+            valType: 'enumerated',
+            values: ['previous', 'up'],
+            dflt: 'up',
+            editType: 'plot',
+            anim: false,
+            description: [
+                'Sets the reference for marker angle.',
+                'With *previous*, angle 0 points along the line from the previous point to this one.',
+                'With *up*, angle 0 points toward the top of the screen.'
+            ].join(' ')
+        },
+        standoff: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            arrayOk: true,
+            editType: 'plot',
+            anim: true,
+            description: [
+                'Moves the marker away from the data point in the direction of `angle` (in px).',
+                'This can be useful for example if you have another marker at this',
+                'location and you want to point an arrowhead marker at it.'
+            ].join(' ')
         },
         size: {
             valType: 'number',
@@ -564,4 +686,14 @@ module.exports = {
         arrayOk: true,
         description: 'Sets the text font.'
     }),
+    zorder: {
+        valType: 'integer',
+        dflt: 0,
+        editType: 'plot',
+        description: [
+            'Sets the layer on which this trace is displayed, relative to',
+            'other SVG traces on the same subplot. SVG traces with higher `zorder`',
+            'appear in front of those with lower `zorder`.'
+        ].join(' ')
+    }
 };

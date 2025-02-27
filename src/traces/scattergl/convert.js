@@ -6,6 +6,7 @@ var rgba = require('color-normalize');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 var Drawing = require('../../components/drawing');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
 
@@ -50,11 +51,11 @@ function convertStyle(gd, trace) {
     }
 
     if(subTypes.hasMarkers(trace)) {
-        opts.marker = convertMarkerStyle(trace);
-        opts.markerSel = convertMarkerSelection(trace, trace.selected);
-        opts.markerUnsel = convertMarkerSelection(trace, trace.unselected);
+        opts.marker = convertMarkerStyle(gd, trace);
+        opts.markerSel = convertMarkerSelection(gd, trace, trace.selected);
+        opts.markerUnsel = convertMarkerSelection(gd, trace, trace.unselected);
 
-        if(!trace.unselected && Lib.isArrayOrTypedArray(trace.marker.opacity)) {
+        if(!trace.unselected && isArrayOrTypedArray(trace.marker.opacity)) {
             var mo = trace.marker.opacity;
             opts.markerUnsel.opacity = new Array(mo.length);
             for(i = 0; i < mo.length; i++) {
@@ -102,10 +103,13 @@ function convertTextStyle(gd, trace) {
     var count = trace._length;
     var textfontIn = trace.textfont;
     var textpositionIn = trace.textposition;
-    var textPos = Array.isArray(textpositionIn) ? textpositionIn : [textpositionIn];
+    var textPos = isArrayOrTypedArray(textpositionIn) ? textpositionIn : [textpositionIn];
     var tfc = textfontIn.color;
     var tfs = textfontIn.size;
     var tff = textfontIn.family;
+    var tfw = textfontIn.weight;
+    var tfy = textfontIn.style;
+    var tfv = textfontIn.variant;
     var optsOut = {};
     var i;
     var plotGlPixelRatio = gd._context.plotGlPixelRatio;
@@ -130,7 +134,7 @@ function convertTextStyle(gd, trace) {
             optsOut.text.push(Lib.texttemplateString(txt(i), labels, d3locale, pointValues, d, meta));
         }
     } else {
-        if(Array.isArray(trace.text) && trace.text.length < count) {
+        if(isArrayOrTypedArray(trace.text) && trace.text.length < count) {
             // if text array is shorter, we'll need to append to it, so let's slice to prevent mutating
             optsOut.text = trace.text.slice();
         } else {
@@ -138,7 +142,7 @@ function convertTextStyle(gd, trace) {
         }
     }
     // pad text array with empty strings
-    if(Array.isArray(optsOut.text)) {
+    if(isArrayOrTypedArray(optsOut.text)) {
         for(i = optsOut.text.length; i < count; i++) {
             optsOut.text[i] = '';
         }
@@ -174,7 +178,7 @@ function convertTextStyle(gd, trace) {
         }
     }
 
-    if(Array.isArray(tfc)) {
+    if(isArrayOrTypedArray(tfc)) {
         optsOut.color = new Array(count);
         for(i = 0; i < count; i++) {
             optsOut.color[i] = tfc[i];
@@ -183,7 +187,13 @@ function convertTextStyle(gd, trace) {
         optsOut.color = tfc;
     }
 
-    if(Lib.isArrayOrTypedArray(tfs) || Array.isArray(tff)) {
+    if(
+        isArrayOrTypedArray(tfs) ||
+        Array.isArray(tff) ||
+        isArrayOrTypedArray(tfw) ||
+        Array.isArray(tfy) ||
+        Array.isArray(tfv)
+    ) {
         // if any textfont param is array - make render a batch
         optsOut.font = new Array(count);
         for(i = 0; i < count; i++) {
@@ -191,68 +201,105 @@ function convertTextStyle(gd, trace) {
 
             fonti.size = (
                 Lib.isTypedArray(tfs) ? tfs[i] :
-                Array.isArray(tfs) ? (
+                isArrayOrTypedArray(tfs) ? (
                     isNumeric(tfs[i]) ? tfs[i] : 0
                 ) : tfs
             ) * plotGlPixelRatio;
 
             fonti.family = Array.isArray(tff) ? tff[i] : tff;
+            fonti.weight = weightFallBack(isArrayOrTypedArray(tfw) ? tfw[i] : tfw);
+            fonti.style = Array.isArray(tfy) ? tfy[i] : tfy;
+            fonti.variant = Array.isArray(tfv) ? tfv[i] : tfv;
         }
     } else {
         // if both are single values, make render fast single-value
-        optsOut.font = {size: tfs * plotGlPixelRatio, family: tff};
+        optsOut.font = {
+            size: tfs * plotGlPixelRatio,
+            family: tff,
+            weight: weightFallBack(tfw),
+            style: tfy,
+            variant: tfv
+        };
     }
 
     return optsOut;
 }
 
+// scattergl rendering pipeline has limited support of numeric weight values
+// Here we map the numbers to be either bold or normal.
+function weightFallBack(w) {
+    if(w <= 1000) {
+        return w > 500 ? 'bold' : 'normal';
+    }
+    return w;
+}
 
-function convertMarkerStyle(trace) {
+function convertMarkerStyle(gd, trace) {
     var count = trace._length;
     var optsIn = trace.marker;
     var optsOut = {};
     var i;
 
-    var multiSymbol = Lib.isArrayOrTypedArray(optsIn.symbol);
-    var multiColor = Lib.isArrayOrTypedArray(optsIn.color);
-    var multiLineColor = Lib.isArrayOrTypedArray(optsIn.line.color);
-    var multiOpacity = Lib.isArrayOrTypedArray(optsIn.opacity);
-    var multiSize = Lib.isArrayOrTypedArray(optsIn.size);
-    var multiLineWidth = Lib.isArrayOrTypedArray(optsIn.line.width);
+    var multiSymbol = isArrayOrTypedArray(optsIn.symbol);
+    var multiAngle = isArrayOrTypedArray(optsIn.angle);
+    var multiColor = isArrayOrTypedArray(optsIn.color);
+    var multiLineColor = isArrayOrTypedArray(optsIn.line.color);
+    var multiOpacity = isArrayOrTypedArray(optsIn.opacity);
+    var multiSize = isArrayOrTypedArray(optsIn.size);
+    var multiLineWidth = isArrayOrTypedArray(optsIn.line.width);
 
     var isOpen;
     if(!multiSymbol) isOpen = helpers.isOpenSymbol(optsIn.symbol);
 
     // prepare colors
-    if(multiSymbol || multiColor || multiLineColor || multiOpacity) {
+    if(multiSymbol || multiColor || multiLineColor || multiOpacity || multiAngle) {
+        optsOut.symbols = new Array(count);
+        optsOut.angles = new Array(count);
         optsOut.colors = new Array(count);
         optsOut.borderColors = new Array(count);
 
+        var symbols = optsIn.symbol;
+        var angles = optsIn.angle;
         var colors = formatColor(optsIn, optsIn.opacity, count);
         var borderColors = formatColor(optsIn.line, optsIn.opacity, count);
 
-        if(!Array.isArray(borderColors[0])) {
+        if(!isArrayOrTypedArray(borderColors[0])) {
             var borderColor = borderColors;
             borderColors = Array(count);
             for(i = 0; i < count; i++) {
                 borderColors[i] = borderColor;
             }
         }
-        if(!Array.isArray(colors[0])) {
+        if(!isArrayOrTypedArray(colors[0])) {
             var color = colors;
             colors = Array(count);
             for(i = 0; i < count; i++) {
                 colors[i] = color;
             }
         }
+        if(!isArrayOrTypedArray(symbols)) {
+            var symbol = symbols;
+            symbols = Array(count);
+            for(i = 0; i < count; i++) {
+                symbols[i] = symbol;
+            }
+        }
+        if(!isArrayOrTypedArray(angles)) {
+            var angle = angles;
+            angles = Array(count);
+            for(i = 0; i < count; i++) {
+                angles[i] = angle;
+            }
+        }
 
+        optsOut.symbols = symbols;
+        optsOut.angles = angles;
         optsOut.colors = colors;
         optsOut.borderColors = borderColors;
 
         for(i = 0; i < count; i++) {
             if(multiSymbol) {
-                var symbol = optsIn.symbol[i];
-                isOpen = helpers.isOpenSymbol(symbol);
+                isOpen = helpers.isOpenSymbol(optsIn.symbol[i]);
             }
             if(isOpen) {
                 borderColors[i] = colors[i].slice();
@@ -262,6 +309,14 @@ function convertMarkerStyle(trace) {
         }
 
         optsOut.opacity = trace.opacity;
+
+        optsOut.markers = new Array(count);
+        for(i = 0; i < count; i++) {
+            optsOut.markers[i] = getSymbolSdf({
+                mx: optsOut.symbols[i],
+                ma: optsOut.angles[i]
+            }, trace);
+        }
     } else {
         if(isOpen) {
             optsOut.color = rgba(optsIn.color, 'uint8');
@@ -273,16 +328,11 @@ function convertMarkerStyle(trace) {
         }
 
         optsOut.opacity = trace.opacity * optsIn.opacity;
-    }
 
-    // prepare symbols
-    if(multiSymbol) {
-        optsOut.markers = new Array(count);
-        for(i = 0; i < count; i++) {
-            optsOut.markers[i] = getSymbolSdf(optsIn.symbol[i]);
-        }
-    } else {
-        optsOut.marker = getSymbolSdf(optsIn.symbol);
+        optsOut.marker = getSymbolSdf({
+            mx: optsIn.symbol,
+            ma: optsIn.angle
+        }, trace);
     }
 
     // prepare sizes
@@ -330,14 +380,14 @@ function convertMarkerStyle(trace) {
     return optsOut;
 }
 
-function convertMarkerSelection(trace, target) {
+function convertMarkerSelection(gd, trace, target) {
     var optsIn = trace.marker;
     var optsOut = {};
 
     if(!target) return optsOut;
 
     if(target.marker && target.marker.symbol) {
-        optsOut = convertMarkerStyle(Lib.extendFlat({}, optsIn, target.marker));
+        optsOut = convertMarkerStyle(gd, Lib.extendFlat({}, optsIn, target.marker));
     } else if(target.marker) {
         if(target.marker.size) optsOut.size = target.marker.size;
         if(target.marker.color) optsOut.colors = target.marker.color;
@@ -389,7 +439,8 @@ var SYMBOL_STROKE = constants.SYMBOL_STROKE;
 var SYMBOL_SDF = {};
 var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
 
-function getSymbolSdf(symbol) {
+function getSymbolSdf(d, trace) {
+    var symbol = d.mx;
     if(symbol === 'circle') return null;
 
     var symbolPath, symbolSdf;
@@ -400,13 +451,17 @@ function getSymbolSdf(symbol) {
 
     var isDot = helpers.isDotSymbol(symbol);
 
+    // until we may handle angles in shader?
+    if(d.ma) symbol += '_' + d.ma;
+
     // get symbol sdf from cache or generate it
     if(SYMBOL_SDF[symbol]) return SYMBOL_SDF[symbol];
 
+    var angle = Drawing.getMarkerAngle(d, trace);
     if(isDot && !symbolNoDot) {
-        symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE;
+        symbolPath = symbolFunc(SYMBOL_SIZE * 1.1, angle) + SYMBOL_SVG_CIRCLE;
     } else {
-        symbolPath = symbolFunc(SYMBOL_SIZE);
+        symbolPath = symbolFunc(SYMBOL_SIZE, angle);
     }
 
     symbolSdf = svgSdf(symbolPath, {
@@ -415,6 +470,7 @@ function getSymbolSdf(symbol) {
         viewBox: [-SYMBOL_SIZE, -SYMBOL_SIZE, SYMBOL_SIZE, SYMBOL_SIZE],
         stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
     });
+
     SYMBOL_SDF[symbol] = symbolSdf;
 
     return symbolSdf || null;
@@ -545,8 +601,8 @@ function convertLinePositions(gd, trace, positions) {
 
 function convertErrorBarPositions(gd, trace, positions, x, y) {
     var makeComputeError = Registry.getComponentMethod('errorbars', 'makeComputeError');
-    var xa = AxisIDs.getFromId(gd, trace.xaxis);
-    var ya = AxisIDs.getFromId(gd, trace.yaxis);
+    var xa = AxisIDs.getFromId(gd, trace.xaxis, 'x');
+    var ya = AxisIDs.getFromId(gd, trace.yaxis, 'y');
     var count = positions.length / 2;
     var out = {};
 
@@ -613,12 +669,12 @@ function convertTextPosition(gd, trace, textOpts, markerOpts) {
 
         for(i = 0; i < count; i++) {
             var ms = markerOpts.sizes ? markerOpts.sizes[i] : markerOpts.size;
-            var fs = Array.isArray(fontOpts) ? fontOpts[i].size : fontOpts.size;
+            var fs = isArrayOrTypedArray(fontOpts) ? fontOpts[i].size : fontOpts.size;
 
-            var a = Array.isArray(align) ?
+            var a = isArrayOrTypedArray(align) ?
                 (align.length > 1 ? align[i] : align[0]) :
                 align;
-            var b = Array.isArray(baseline) ?
+            var b = isArrayOrTypedArray(baseline) ?
                 (baseline.length > 1 ? baseline[i] : baseline[0]) :
                 baseline;
 

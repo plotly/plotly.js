@@ -1,0 +1,69 @@
+{
+ "data": [
+  {
+   "x": [1, 2, 3, 4, 5],
+   "y": [0.1, 0.3, 0.2, 0.8, 0.7],
+   "stackgroup": "one",
+   "fillpattern": {
+    "fillmode": "overlay",
+    "shape": "/"
+   }
+  },
+  {
+   "x": [1, 2, 3, 4, 5],
+   "y": [0.3, 0.2, 0.1, 0.1, 0.2],
+   "stackgroup": "one",
+   "fillpattern": {
+    "fillmode": "overlay",
+    "shape": "\\"
+   }
+  },
+  {
+   "x": [1, 2, 3, 4, 5],
+   "y": [0.8, 0.8, 0.6, 0.7, 0.4],
+   "stackgroup": "one",
+   "fillpattern": {
+    "fillmode": "overlay",
+    "shape": "."
+   }
+  },
+
+  {
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "x": [1, 2, 3, 4, 5, 6],
+   "y": [0.1, 0.3, 0.4, 1.1, 0.8, 0.3],
+   "fill": "tozeroy",
+   "fillpattern": {
+    "fillmode": "replace",
+    "solidity": 0.4,
+    "size": 12,
+    "shape": "-"
+   }
+  },
+  {
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "x": [1, 2, 3, 4, 5, 6],
+   "y": [0.8, 0.7, 0.1, 0.6, 0.7, 0.8],
+   "fill": "tonexty",
+   "fillpattern": {
+    "fillmode": "replace",
+    "solidity": 0.4,
+    "size": 12,
+    "shape": "|"
+   }
+  }
+ ],
+ "layout": {
+  "title": { "text": "Pattern fill for scatter" },
+  "width": 800,
+  "height": 400,
+
+  "grid": {
+   "rows": 1,
+   "columns": 2,
+   "pattern": "independent"
+  }
+ }
+}

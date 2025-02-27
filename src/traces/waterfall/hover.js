@@ -31,16 +31,14 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
 
     var size = (di.isSum) ? di.b + di.s : di.rawS;
 
-    if(!di.isSum) {
-        point.initial = di.b + di.s - size;
-        point.delta = size;
-        point.final = point.initial + point.delta;
+    point.initial = di.b + di.s - size;
+    point.delta = size;
+    point.final = point.initial + point.delta;
 
-        var v = formatNumber(Math.abs(point.delta));
-        point.deltaLabel = size < 0 ? '(' + v + ')' : v;
-        point.finalLabel = formatNumber(point.final);
-        point.initialLabel = formatNumber(point.initial);
-    }
+    var v = formatNumber(Math.abs(point.delta));
+    point.deltaLabel = size < 0 ? '(' + v + ')' : v;
+    point.finalLabel = formatNumber(point.final);
+    point.initialLabel = formatNumber(point.initial);
 
     var hoverinfo = di.hi || trace.hoverinfo;
     var text = [];

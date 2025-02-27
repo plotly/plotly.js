@@ -1,5 +1,5 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 var strTranslate = Lib.strTranslate;
 
 var d3Select = require('../../strict-d3').select;
@@ -17,7 +17,7 @@ var CALLBACK_DELAY = 3000;
 
 // Testing constants
 // =================
-var basicMock = Lib.extendDeep({}, require('@mocks/parcats_basic.json'));
+var basicMock = Lib.extendDeep({}, require('../../image/mocks/parcats_basic.json'));
 var margin = basicMock.layout.margin;
 var domain = basicMock.data[0].domain;
 
@@ -166,7 +166,7 @@ describe('Basic parcats trace', function() {
     // --------
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/parcats_basic.json'));
+        mock = Lib.extendDeep({}, require('../../image/mocks/parcats_basic.json'));
     });
 
     afterEach(destroyGraphDiv);
@@ -313,7 +313,7 @@ describe('Dimension reordered parcats trace', function() {
     // --------
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/parcats_reordered.json'));
+        mock = Lib.extendDeep({}, require('../../image/mocks/parcats_reordered.json'));
     });
 
     afterEach(destroyGraphDiv);
@@ -480,7 +480,7 @@ describe('Drag to reordered dimensions', function() {
     // --------
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/parcats_basic_freeform.json'));
+        mock = Lib.extendDeep({}, require('../../image/mocks/parcats_basic_freeform.json'));
     });
 
     afterEach(destroyGraphDiv);
@@ -762,7 +762,7 @@ describe('Drag to reordered categories', function() {
     // --------
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/parcats_basic_freeform.json'));
+        mock = Lib.extendDeep({}, require('../../image/mocks/parcats_basic_freeform.json'));
     });
 
     afterEach(destroyGraphDiv);
@@ -1131,7 +1131,7 @@ describe('Click events', function() {
     // --------
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/parcats_basic_freeform.json'));
+        mock = Lib.extendDeep({}, require('../../image/mocks/parcats_basic_freeform.json'));
     });
 
     afterEach(destroyGraphDiv);
@@ -1294,7 +1294,7 @@ describe('Click events with hoveron color', function() {
     // --------
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/parcats_hoveron_color.json'));
+        mock = Lib.extendDeep({}, require('../../image/mocks/parcats_hoveron_color.json'));
     });
 
     afterEach(destroyGraphDiv);
@@ -1395,7 +1395,7 @@ describe('Hover events', function() {
     // --------
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/parcats_basic_freeform.json'));
+        mock = Lib.extendDeep({}, require('../../image/mocks/parcats_basic_freeform.json'));
     });
 
     afterEach(destroyGraphDiv);
@@ -1547,7 +1547,7 @@ describe('Hover events with hoveron color', function() {
     // --------
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/parcats_hoveron_color.json'));
+        mock = Lib.extendDeep({}, require('../../image/mocks/parcats_hoveron_color.json'));
     });
 
     afterEach(destroyGraphDiv);
@@ -1691,7 +1691,7 @@ describe('Parcats hover:', function() {
         gd = createGraphDiv();
 
         var fig = Lib.extendDeep({},
-            s.mock || require('@mocks/parcats_basic.json')
+            s.mock || require('../../image/mocks/parcats_basic.json')
         );
         if(s.patch) fig = s.patch(fig);
 

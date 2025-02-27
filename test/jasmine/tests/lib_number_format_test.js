@@ -1,4 +1,4 @@
-var numberFormat = require('@src/lib').numberFormat;
+var numberFormat = require('../../../src/lib').numberFormat;
 
 describe('number format', function() {
     'use strict';

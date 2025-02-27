@@ -19,6 +19,7 @@ var markerLineAttrs = extendFlat(colorScaleAttrs('marker.line', {editTypeOverrid
 
 var markerAttrs = extendFlat(colorScaleAttrs('marker'), {
     symbol: scatterMarkerAttrs.symbol,
+    angle: scatterMarkerAttrs.angle,
     size: extendFlat({}, scatterMarkerAttrs.size, {editType: 'markerSize'}),
     sizeref: scatterMarkerAttrs.sizeref,
     sizemin: scatterMarkerAttrs.sizemin,

@@ -1,0 +1,19 @@
+{
+ "data": [
+  {
+   "x": ["giraffes", "orangutans", "monkeys"],
+   "y": [20, 14, 23],
+   "name": "SF Zoo"
+  },
+  {
+   "x": ["giraffes", "orangutans", "monkeys"],
+   "y": [12, 18, 29],
+   "name": "LA Zoo"
+  }
+ ],
+ "layout": {
+  "width": 600,
+  "height": 400,
+  "scattermode": "group"
+ }
+}

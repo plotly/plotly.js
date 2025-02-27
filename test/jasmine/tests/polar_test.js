@@ -1,7 +1,7 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Polar = require('@src/plots/polar');
-var constants = require('@src/plots/polar/constants');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Polar = require('../../../src/plots/polar');
+var constants = require('../../../src/plots/polar/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -223,7 +223,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should be able to reorder axis layers when relayout\'ing *layer*', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_line.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_line.json'));
         var dflt = constants.layerNames;
 
         function _assert(expected) {
@@ -281,7 +281,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should be able to relayout axis types', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         Plotly.newPlot(gd, fig).then(function() {
             expect(gd._fullLayout.polar._subplot.viewInitial['radialaxis.range'])
@@ -310,7 +310,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should be propagate angular settings down to tick labels', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
         var pos0 = [];
         var pos1 = [];
 
@@ -335,7 +335,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should be able to relayout angular ticks layout', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         function check(cnt, expected) {
             var ticks = d3SelectAll('path.angularaxistick');
@@ -370,7 +370,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should be able to toggle axis features', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         function assertCnt(selector, expected, msg) {
             var sel = d3Select(gd).selectAll(selector);
@@ -447,7 +447,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to restyle radial axis title', function(done) {
+    it('@noCI should be able to restyle radial axis title', function(done) {
         var gd = createGraphDiv();
         var lastBBox;
 
@@ -473,7 +473,7 @@ describe('Test relayout on polar subplots:', function() {
             theta: [10, 20, 30]
         }], {
             polar: {
-                radialaxis: {title: 'yo'}
+                radialaxis: { title: { text: 'yo' } }
             }
         })
         .then(function() {
@@ -490,7 +490,7 @@ describe('Test relayout on polar subplots:', function() {
         })
         .then(function() {
             assertTitle('yo2', true);
-            return Plotly.relayout(gd, 'polar.radialaxis.titlefont.color', 'red');
+            return Plotly.relayout(gd, 'polar.radialaxis.title.font.color', 'red');
         })
         .then(function() {
             assertTitle('yo2', false);
@@ -504,7 +504,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should clean up its framework, clip paths and info layers when getting deleted', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
         var traces = Lib.extendDeep([], fig.data);
         var inds = traces.map(function(_, i) { return i; });
 
@@ -762,7 +762,7 @@ describe('Test polar interactions:', function() {
     };
 
     it('should trigger hover/unhover/click/doubleclick events', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
         var ptPos = [250, 200];
         var blankPos = [200, 120];
         var marginPos = [20, 20];
@@ -854,7 +854,7 @@ describe('Test polar interactions:', function() {
     });
 
     it('should respond to drag interactions on plot area', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         // to avoid dragging on hover labels
         fig.layout.hovermode = false;
@@ -961,8 +961,8 @@ describe('Test polar interactions:', function() {
         .then(done, done.fail);
     });
 
-    it('should response to drag interactions on radial drag area', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+    it('should respond to drag interactions on radial drag area', function(done) {
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         // to avoid dragging on hover labels
         fig.layout.hovermode = false;
@@ -1044,8 +1044,8 @@ describe('Test polar interactions:', function() {
         .then(done, done.fail);
     });
 
-    it('should response to drag interactions on inner radial drag area', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+    it('should respond to drag interactions on inner radial drag area', function(done) {
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
         fig.layout.polar.hole = 0.2;
         // to avoid dragging on hover labels
         fig.layout.hovermode = false;
@@ -1082,8 +1082,8 @@ describe('Test polar interactions:', function() {
         .then(done, done.fail);
     });
 
-    it('should response to drag interactions on angular drag area', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+    it('should respond to drag interactions on angular drag area', function(done) {
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         // to avoid dragging on hover labels
         fig.layout.hovermode = false;
@@ -1146,6 +1146,282 @@ describe('Test polar interactions:', function() {
         .then(done, done.fail);
     });
 
+    describe('dragmode === false', function() {
+        it('should not respond to drag interactions on plot area when dragmode === false', function(done) {
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
+            // adjust margins so that middle of plot area is at 300x300
+            // with its middle at [200,200]
+            fig.layout.width = 400;
+            fig.layout.height = 400;
+            fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
+
+            var mid = [200, 200];
+            var resetNumber = 0;
+
+            function _drag(p0, dp) {
+                var node = d3Select('.polar > .draglayer > .maindrag').node();
+                return drag({node: node, dpos: dp, pos0: p0});
+            }
+
+            function _assertRange(rng, msg) {
+                expect(gd._fullLayout.polar.radialaxis.range).toBeCloseToArray(rng, 1, msg);
+            }
+
+            function _assertBase(extra) {
+                var msg = 'base range' + (extra ? ' ' + extra : '');
+                _assertRange([0, 11.1], msg);
+            }
+
+            function _reset() {
+                resetNumber++;
+
+                var extra = '(reset ' + resetNumber + ')';
+                _assertBase(extra);
+                expect(eventCnts.plotly_doubleclick).toBe(0, 'doubleclick event #' + extra);
+            }
+
+            _plot(fig)
+            .then(_assertBase)
+            .then(function() { return Plotly.relayout(gd, 'dragmode', false); })
+            .then(function() { return _drag(mid, [50, 50]); })
+            .then(function() {
+                _assertBase('from center move toward bottom-right');
+            })
+            .then(delay(20))
+            .then(function() { return _doubleClick(mid); })
+            .then(delay(20))
+            .then(_reset)
+            .then(function() { return _drag(mid, [-50, -50]); })
+            .then(function() {
+                _assertBase('from center move toward top-left');
+            })
+            .then(delay(20))
+            .then(function() { return _doubleClick(mid); })
+            .then(delay(20))
+            .then(_reset)
+            .then(function() { return _drag([mid[0] + 30, mid[0] - 30], [50, -50]); })
+            .then(function() {
+                _assertBase('from quadrant #1 move top-right');
+            })
+            .then(delay(20))
+            .then(function() { return _doubleClick(mid); })
+            .then(delay(20))
+            .then(_reset)
+            .then(function() { return _drag([345, 200], [-50, 0]); })
+            .then(function() {
+                _assertBase('from right edge move left');
+            })
+            .then(delay(20))
+            .then(function() { return _doubleClick(mid); })
+            .then(delay(20))
+            .then(_reset)
+            .then(function() { return _drag(mid, [10, 10]);})
+            .then(function() { _assertBase('from center to not far enough'); })
+            .then(function() { return _drag([mid[0] + 30, mid[0] - 30], [-10, 0]);})
+            .then(function() { _assertBase('from quadrant #1 to not far enough'); })
+            .then(function() { return _drag([345, 200], [-10, 0]);})
+            .then(function() { _assertBase('from right edge to not far enough'); })
+            .then(function() {
+                expect(eventCnts.plotly_relayout)
+                    .toBe(1, 'no new relayout events after *not far enough* cases');
+            })
+            .then(delay(20))
+            .then(function() { return _doubleClick(mid); })
+            .then(delay(20))
+            .then(_reset)
+            .then(function() { return Plotly.relayout(gd, 'polar.hole', 0.2); })
+            .then(function() { return _drag([mid[0] + 30, mid[0] - 30], [50, -50]); })
+            .then(function() {
+                _assertRange([0, 11.4], 'with polar.hole>0, from quadrant #1 move top-right');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should not respond to drag interactions on radial drag area when dragmode === false', function(done) {
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
+            // adjust margins so that middle of plot area is at 300x300
+            // with its middle at [200,200]
+            fig.layout.width = 400;
+            fig.layout.height = 400;
+            fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
+
+            var dragPos0 = [375, 200];
+            var resetNumber = 0;
+
+            // use 'special' drag method - as we need two mousemove events
+            // to activate the radial drag mode
+            function _drag(p0, dp) {
+                var node = d3Select('.polar > .draglayer > .radialdrag').node();
+                return drag({node: node, dpos: dp, pos0: p0, nsteps: 2});
+            }
+
+            function _assert(rng, angle, evtRng1, evtAngle, msg) {
+                expect(gd._fullLayout.polar.radialaxis.range)
+                    .toBeCloseToArray(rng, 1, msg + ' - range');
+                expect(gd._fullLayout.polar.radialaxis.angle)
+                    .toBeCloseTo(angle, 1, msg + ' - angle');
+
+                if(evtRng1 !== null) {
+                    expect(eventData['polar.radialaxis.range[1]'])
+                        .toBeCloseTo(evtRng1, 1, msg + ' - range[1] event data');
+                }
+                if(evtAngle !== null) {
+                    expect(eventData['polar.radialaxis.angle'])
+                        .toBeCloseTo(evtAngle, 1, msg + ' - angle event data');
+                }
+            }
+
+            function _assertBase(extra) {
+                extra = extra ? ' ' + extra : '';
+                _assert([0, 11.1], 0, null, null, 'base' + extra);
+            }
+
+            function _reset() {
+                return delay(100)()
+                    .then(function() { return _doubleClick([200, 200]); })
+                    .then(function() {
+                        resetNumber++;
+
+                        var extra = '(reset ' + resetNumber + ')';
+                        _assertBase(extra);
+                        expect(eventCnts.plotly_doubleclick).toBe(0, 'doubleclick event #' + extra);
+                    });
+            }
+
+            _plot(fig)
+            .then(_assertBase)
+            .then(function() { return Plotly.relayout(gd, 'dragmode', false); })
+            .then(function() { return _drag(dragPos0, [-50, 0]); })
+            .then(function() {
+                _assertBase('move inward');
+            })
+            .then(_reset)
+            .then(function() { return _drag(dragPos0, [50, 0]); })
+            .then(function() {
+                _assertBase('move outward');
+            })
+            .then(_reset)
+            .then(function() { return _drag(dragPos0, [0, -50]); })
+            .then(function() {
+                _assertBase('move counterclockwise');
+            })
+            .then(_reset)
+            .then(function() { return _drag(dragPos0, [0, 50]); })
+            .then(function() {
+                _assertBase('move clockwise');
+            })
+            .then(_reset)
+            .then(function() {
+                expect(eventCnts.plotly_relayout).toBe(1, 'total # of relayout events');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should not respond to drag interactions on inner radial drag area when dragmode === false', function(done) {
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
+            fig.layout.polar.hole = 0.2;
+            // adjust margins so that middle of plot area is at 300x300
+            // with its middle at [200,200]
+            fig.layout.width = 400;
+            fig.layout.height = 400;
+            fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
+
+            var dragPos0 = [200, 200];
+
+            // use 'special' drag method - as we need two mousemove events
+            // to activate the radial drag mode
+            function _drag(p0, dp) {
+                var node = d3Select('.polar > .draglayer > .radialdrag-inner').node();
+                return drag({node: node, dpos: dp, pos0: p0, nsteps: 2});
+            }
+
+            function _assert(rng, msg) {
+                expect(gd._fullLayout.polar.radialaxis.range)
+                    .toBeCloseToArray(rng, 1, msg + ' - range');
+            }
+
+            function _assertBase(extra) {
+                extra = extra ? ' ' + extra : '';
+                _assert([0, 11.4], 'base' + extra);
+            }
+
+            _plot(fig)
+            .then(_assertBase)
+            .then(function() { return Plotly.relayout(gd, 'dragmode', false); })
+            .then(function() { return _drag(dragPos0, [-50, 0]); })
+            .then(function() {
+                _assertBase('move inward');
+            })
+            .then(function() { return Plotly.relayout(gd, 'polar.radialaxis.autorange', true); })
+            .then(function() { return _drag(dragPos0, [50, 0]); })
+            .then(function() {
+                _assertBase('move outward');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should not respond to drag interactions on angular drag area when dragmode === false', function(done) {
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
+            // adjust margins so that middle of plot area is at 300x300
+            // with its middle at [200,200]
+            fig.layout.width = 400;
+            fig.layout.height = 400;
+            fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
+
+            var dragPos0 = [350, 150];
+            var resetNumber = 0;
+
+            function _drag(p0, dp) {
+                var node = d3Select('.polar > .draglayer > .angulardrag').node();
+                return drag({node: node, dpos: dp, pos0: p0});
+            }
+
+            function _assert(rot, msg, noEvent) {
+                expect(gd._fullLayout.polar.angularaxis.rotation)
+                    .toBeCloseTo(rot, 1, msg + ' - rotation');
+                if(!noEvent) {
+                    expect(eventData['polar.angularaxis.rotation'])
+                        .toBeCloseTo(rot, 1, msg + ' - rotation event data');
+                }
+            }
+
+            function _assertBase(extra) {
+                extra = extra ? ' ' + extra : '';
+                _assert(0, 'base' + extra, true);
+            }
+
+            function _reset() {
+                return delay(100)()
+                    .then(function() { return _doubleClick([200, 200]); })
+                    .then(function() {
+                        resetNumber++;
+
+                        var extra = '(reset ' + resetNumber + ')';
+                        _assertBase(extra);
+                        expect(eventCnts.plotly_doubleclick).toBe(0, 'doubleclick event #' + extra);
+                    });
+            }
+
+            _plot(fig)
+            .then(_assertBase)
+            .then(function() { return Plotly.relayout(gd, 'dragmode', false); })
+            .then(function() { return _drag(dragPos0, [-20, -20]); })
+            .then(function() {
+                _assertBase('move counterclockwise');
+            })
+            .then(_reset)
+            .then(function() { return _drag(dragPos0, [20, 20]); })
+            .then(function() {
+                _assertBase('move clockwise');
+            })
+            .then(_reset)
+            .then(function() {
+                expect(eventCnts.plotly_relayout).toBe(1, 'total # of relayout events');
+            })
+            .then(done, done.fail);
+        });
+    });
+
     describe('should update scene during drag interactions on radial and angular drag area', function() {
         var objs = ['scatter2d', 'line2d'];
         var scene, gl, nTraces;
@@ -1202,7 +1478,7 @@ describe('Test polar interactions:', function() {
 
         specs.forEach(function(s) {
             it('@gl - ' + s.desc, function(done) {
-                var fig = Lib.extendDeep({}, require('@mocks/glpolar_scatter.json'));
+                var fig = Lib.extendDeep({}, require('../../image/mocks/glpolar_scatter.json'));
                 scene = null;
                 gl = null;
 
@@ -1246,7 +1522,7 @@ describe('Test polar interactions:', function() {
         it('should emit events on radial drag area', function(done) {
             var events = []; var path = [[375, 200], [-100, 0]]; var nsteps = 10;
             var relayoutEvents = [];
-            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
             // to avoid dragging on hover labels
             fig.layout.hovermode = false;
 
@@ -1287,7 +1563,7 @@ describe('Test polar interactions:', function() {
         it('should emit events on inner radial drag area', function(done) {
             var events = []; var path = [[150, 250], [175, 250]];
             var relayoutEvents = [];
-            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
             function _drag(p0, dp, nsteps) {
                 var node = d3Select('.polar > .draglayer > .maindrag').node();
@@ -1318,7 +1594,7 @@ describe('Test polar interactions:', function() {
 
         it('should emit events on angular drag area', function(done) {
             var events = []; var relayoutEvents = []; var nsteps = 10;
-            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
             function _drag(p0, dp, nsteps) {
                 var node = d3Select('.polar > .draglayer > .angulardrag').node();

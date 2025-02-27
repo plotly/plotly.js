@@ -16,7 +16,7 @@ module.exports = {
     name: extendFlat({}, boxAttrs.name, {
         description: [
             'Sets the trace name.',
-            'The trace name appear as the legend item and on hover.',
+            'The trace name appears as the legend item and on hover.',
             'For violin traces, the name will also be used for the position',
             'coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are',
             'missing and the position axis is categorical.',
@@ -64,7 +64,7 @@ module.exports = {
             '*width* means each violin has the same (max) width',
             '*count* means the violins are scaled by the number of sample points making',
             'up each violin.'
-        ].join('')
+        ].join(' ')
     },
 
     spanmode: {
@@ -153,6 +153,8 @@ module.exports = {
     text: boxAttrs.text,
     hovertext: boxAttrs.hovertext,
     hovertemplate: boxAttrs.hovertemplate,
+
+    quartilemethod: boxAttrs.quartilemethod,
 
     box: {
         visible: {
@@ -252,5 +254,6 @@ module.exports = {
             'Do the hover effects highlight individual violins',
             'or sample points or the kernel density estimate or any combination of them?'
         ].join(' ')
-    }
+    },
+    zorder: boxAttrs.zorder
 };

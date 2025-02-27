@@ -5,7 +5,7 @@
 var Fuse = require('fuse.js/dist/fuse.common.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 var credentials = require('../../build/credentials.json');
-var Lib = require('@src/lib');
+var Lib = require('../../src/lib');
 
 require('./perf');
 
@@ -268,3 +268,5 @@ function handleOnLoad() {
     Tabs.setPlotConfig();
     plotFromHash();
 }
+
+module.exports = Tabs;

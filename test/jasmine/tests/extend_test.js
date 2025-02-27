@@ -1,4 +1,4 @@
-var extendModule = require('@src/lib/extend.js');
+var extendModule = require('../../../src/lib/extend.js');
 var extendFlat = extendModule.extendFlat;
 var extendDeep = extendModule.extendDeep;
 var extendDeepAll = extendModule.extendDeepAll;

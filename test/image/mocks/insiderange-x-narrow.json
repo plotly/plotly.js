@@ -1,0 +1,104 @@
+{
+ "data": [
+  {
+   "xaxis": "x",
+   "yaxis": "y",
+   "y": [1000, 10, 100, 1]
+  },
+  {
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "y": [1000, 10, 100, 1]
+  },
+  {
+   "xaxis": "x3",
+   "yaxis": "y3",
+   "x": [2000, 2001, 2002, 2003],
+   "y": [1000, 10, 100, 1]
+  },
+  {
+   "xaxis": "x4",
+   "yaxis": "y4",
+   "x": [2000, 2001, 2002, 2003],
+   "y": [1000, 10, 100, 1]
+  }
+ ],
+ "layout": {
+  "xaxis": {
+   "insiderange": [1, 2],
+   "anchor": "y",
+   "domain": [0, 0.45],
+   "gridcolor": "white"
+  },
+  "yaxis": {
+   "anchor": "x",
+   "domain": [0, 0.45],
+   "side": "right",
+   "ticks": "inside",
+   "ticklabelposition": "inside",
+   "ticklen": 8,
+   "tickwidth": 3,
+   "gridcolor": "white"
+  },
+  "xaxis2": {
+   "insiderange": [2, 1],
+   "anchor": "y2",
+   "domain": [0, 0.45],
+   "gridcolor": "white"
+  },
+  "yaxis2": {
+   "anchor": "x2",
+   "domain": [0.55, 1],
+   "side": "left",
+   "ticks": "inside",
+   "ticklabelposition": "inside",
+   "ticklen": 8,
+   "tickwidth": 3,
+   "gridcolor": "white"
+  },
+  "xaxis3": {
+   "type": "date",
+   "insiderange": ["2001-01", "2002-01"],
+   "anchor": "y3",
+   "domain": [0.55, 1],
+   "gridcolor": "white"
+  },
+  "yaxis3": {
+   "anchor": "x3",
+   "domain": [0, 0.45],
+   "side": "right",
+   "ticks": "inside",
+   "ticklabelposition": "inside",
+   "ticklen": 8,
+   "tickwidth": 3,
+   "gridcolor": "white"
+  },
+  "xaxis4": {
+   "type": "date",
+   "insiderange": ["2002-01", "2001-01"],
+   "anchor": "y4",
+   "domain": [0.55, 1],
+   "gridcolor": "white"
+  },
+  "yaxis4": {
+   "anchor": "x4",
+   "domain": [0.55, 1],
+   "side": "left",
+   "ticks": "inside",
+   "ticklabelposition": "inside",
+   "ticklen": 8,
+   "tickwidth": 3,
+   "gridcolor": "white"
+  },
+  "plot_bgcolor": "lightblue",
+  "showlegend": false,
+  "width": 300,
+  "height": 900,
+  "margin": {
+   "t": 60,
+   "b": 60,
+   "l": 60,
+   "r": 60
+  }
+ }
+}

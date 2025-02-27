@@ -33,7 +33,7 @@ module.exports = function toSVG(gd, format, scale) {
     var toppaper = fullLayout._toppaper;
     var width = fullLayout.width;
     var height = fullLayout.height;
-    var i, k;
+    var i;
 
     // make background color a rect in the svg, then revert after scraping
     // all other alterations have been dealt with by properly preparing the svg
@@ -104,34 +104,37 @@ module.exports = function toSVG(gd, format, scale) {
             if(ff && ff.indexOf('"') !== -1) {
                 txt.style('font-family', ff.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
             }
-        });
 
-    var queryParts = [];
-    if(fullLayout._gradientUrlQueryParts) {
-        for(k in fullLayout._gradientUrlQueryParts) queryParts.push(k);
-    }
-
-    if(fullLayout._patternUrlQueryParts) {
-        for(k in fullLayout._patternUrlQueryParts) queryParts.push(k);
-    }
-
-    if(queryParts.length) {
-        svg.selectAll(queryParts.join(',')).each(function() {
-            var pt = d3.select(this);
-
-            // similar to font family styles above,
-            // we must remove " after the SVG DOM has been serialized
-            var fill = this.style.fill;
-            if(fill && fill.indexOf('url(') !== -1) {
-                pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+            // Drop normal font-weight, font-style and font-variant to reduce the size
+            var fw = this.style.fontWeight;
+            if(fw && (fw === 'normal' || fw === '400')) { // font-weight 400 is similar to normal
+                txt.style('font-weight', undefined);
             }
-
-            var stroke = this.style.stroke;
-            if(stroke && stroke.indexOf('url(') !== -1) {
-                pt.style('stroke', stroke.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+            var fs = this.style.fontStyle;
+            if(fs && fs === 'normal') {
+                txt.style('font-style', undefined);
+            }
+            var fv = this.style.fontVariant;
+            if(fv && fv === 'normal') {
+                txt.style('font-variant', undefined);
             }
         });
-    }
+
+    svg.selectAll('.gradient_filled,.pattern_filled').each(function() {
+        var pt = d3.select(this);
+
+        // similar to font family styles above,
+        // we must remove " after the SVG DOM has been serialized
+        var fill = this.style.fill;
+        if(fill && fill.indexOf('url(') !== -1) {
+            pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+        }
+
+        var stroke = this.style.stroke;
+        if(stroke && stroke.indexOf('url(') !== -1) {
+            pt.style('stroke', stroke.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+        }
+    });
 
     if(format === 'pdf' || format === 'eps') {
         // these formats make the extra line MathJax adds around symbols look super thick in some cases
@@ -139,11 +142,6 @@ module.exports = function toSVG(gd, format, scale) {
         svg.selectAll('#MathJax_SVG_glyphs path')
             .attr('stroke-width', 0);
     }
-
-    // fix for IE namespacing quirk?
-    // http://stackoverflow.com/questions/19610089/unwanted-namespaces-on-svg-markup-when-using-xmlserializer-in-javascript-with-ie
-    svg.node().setAttributeNS(xmlnsNamespaces.xmlns, 'xmlns', xmlnsNamespaces.svg);
-    svg.node().setAttributeNS(xmlnsNamespaces.xmlns, 'xmlns:xlink', xmlnsNamespaces.xlink);
 
     if(format === 'svg' && scale) {
         svg.attr('width', scale * width);
@@ -157,27 +155,6 @@ module.exports = function toSVG(gd, format, scale) {
 
     // Fix quotations around font strings and gradient URLs
     s = s.replace(DUMMY_REGEX, '\'');
-
-    // Do we need this process now that IE9 and IE10 are not supported?
-
-    // IE is very strict, so we will need to clean
-    //  svg with the following regex
-    //  yes this is messy, but do not know a better way
-    // Even with this IE will not work due to tainted canvas
-    //  see https://github.com/kangax/fabric.js/issues/1957
-    //      http://stackoverflow.com/questions/18112047/canvas-todataurl-working-in-all-browsers-except-ie10
-    // Leave here just in case the CORS/tainted IE issue gets resolved
-    if(Lib.isIE()) {
-        // replace double quote with single quote
-        s = s.replace(/"/gi, '\'');
-        // url in svg are single quoted
-        //   since we changed double to single
-        //   we'll need to change these to double-quoted
-        s = s.replace(/(\('#)([^']*)('\))/gi, '(\"#$2\")');
-        // font names with spaces will be escaped single-quoted
-        //   we'll need to change these to double-quoted
-        s = s.replace(/(\\')/gi, '\"');
-    }
 
     return s;
 };

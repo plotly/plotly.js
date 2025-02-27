@@ -1,0 +1,21 @@
+{
+ "data": [
+  {
+   "type": "sankey",
+   "node": {
+    "label": ["0", "1", "2", "3", "4", "5"],
+    "align": "center"
+   },
+   "link": {
+    "source": [0, 1, 4, 2, 1],
+    "target": [1, 4, 5, 4, 3],
+    "value": [4, 2, 3, 1, 2]
+   }
+  }
+ ],
+ "layout": {
+  "title": { "text": "Sankey with center aligned nodes" },
+  "width": 800,
+  "height": 800
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "data": [
+  {
+   "name": "bar",
+   "x": ["A", "B", "C", "D"],
+   "y": [50, 70, 90, 35],
+   "type": "bar"
+  }
+ ],
+ "layout": {
+  "xaxis": {
+   "type": "category",
+   "insiderange": [1, 2]
+  },
+  "yaxis": {
+   "side": "right",
+   "ticklabelposition": "inside top"
+  },
+  "width": 400
+ }
+}

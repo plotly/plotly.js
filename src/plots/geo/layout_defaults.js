@@ -21,7 +21,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
 function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     var subplotData = getSubplotData(opts.fullData, 'geo', opts.id);
-    var traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
+    var traceIndices = subplotData.map(function(t) { return t.index; });
 
     var resolution = coerce('resolution');
     var scope = coerce('scope');
@@ -87,6 +87,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         if(show) {
             coerce(axisName + '.gridcolor');
             coerce(axisName + '.gridwidth');
+            coerce(axisName + '.griddash');
         }
 
         // mock axis for autorange computations

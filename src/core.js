@@ -31,10 +31,9 @@ register(require('./traces/scatter'));
 
 // register all registrable components modules
 register([
-    require('./components/legend'),
-    require('./components/fx'), // fx needs to come after legend
     require('./components/annotations'),
     require('./components/annotations3d'),
+    require('./components/selections'),
     require('./components/shapes'),
     require('./components/images'),
     require('./components/updatemenus'),
@@ -45,6 +44,8 @@ register([
     require('./components/errorbars'),
     require('./components/colorscale'),
     require('./components/colorbar'),
+    require('./components/legend'), // legend needs to come after shape | legend defaults depends on shapes
+    require('./components/fx'), // fx needs to come after legend | unified hover defaults depends on legends
     require('./components/modebar')
 ]);
 

@@ -1,11 +1,11 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
-var textchartMock = require('@mocks/text_chart_arrays.json');
+var textchartMock = require('../../image/mocks/text_chart_arrays.json');
 var LONG_TIMEOUT_INTERVAL = 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 describe('Plotly.downloadImage', function() {
@@ -83,54 +83,6 @@ describe('Plotly.downloadImage', function() {
             expect(document.createElement).toHaveBeenCalledWith('canvas');
             expect(gd._snapshotInProgress)
                 .toBe(undefined, 'should not attach _snapshotInProgress to figure objects');
-        })
-        .then(done, done.fail);
-    }, LONG_TIMEOUT_INTERVAL);
-
-    it('should produce the right SVG output in IE', function(done) {
-        // mock up IE behavior
-        spyOn(Lib, 'isIE').and.callFake(function() { return true; });
-        spyOn(slzProto, 'serializeToString').and.callFake(function() {
-            return serializeToString.apply(this, arguments)
-                .replace(/(\(#)([^")]*)(\))/gi, '(\"#$2\")');
-        });
-        var savedBlob;
-        window.navigator.msSaveBlob = function(blob) { savedBlob = blob; };
-
-        var expectedStart = '<svg class=\'main-svg\' xmlns=\'http://www.w3.org/2000/svg\' xmlns:xlink=\'http://www.w3.org/1999/xlink\'';
-        var plotClip = /clip-path='url\("#clip[0-9a-f]{6}xyplot"\)/;
-        var legendClip = /clip-path=\'url\("#legend[0-9a-f]{6}"\)/;
-
-        Plotly.newPlot(gd, textchartMock.data, textchartMock.layout)
-        .then(function(gd) {
-            savedBlob = undefined;
-            return Plotly.downloadImage(gd, {
-                format: 'svg',
-                height: 300,
-                width: 300,
-                filename: 'plotly_download'
-            });
-        })
-        .then(function() {
-            if(savedBlob === undefined) {
-                fail('undefined saveBlob');
-            }
-
-            return new Promise(function(resolve, reject) {
-                var reader = new FileReader();
-                reader.onloadend = function() {
-                    var res = reader.result;
-
-                    expect(res.substr(0, expectedStart.length)).toBe(expectedStart);
-                    expect(res.match(plotClip)).not.toBe(null);
-                    expect(res.match(legendClip)).not.toBe(null);
-
-                    resolve();
-                };
-                reader.onerror = function(e) { reject(e); };
-
-                reader.readAsText(savedBlob);
-            });
         })
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);

@@ -4,6 +4,9 @@ build/*
 !build/plotcss.js
 !build/README.md
 
+dist/*.LICENSE.txt
+dist/*.css
+
 npm-debug.log*
 *.sublime*
 *~
@@ -13,5 +16,3 @@ tags
 !.circleci
 !.gitignore
 !.npmignore
-!.eslintrc
-!.eslintignore

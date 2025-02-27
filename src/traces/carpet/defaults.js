@@ -14,7 +14,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
     traceOut._clipPathId = 'clip' + traceOut.uid + 'carpet';
 
     var defaultColor = coerce('color', colorAttrs.defaultLine);
-    Lib.coerceFont(coerce, 'font');
+    Lib.coerceFont(coerce, 'font', fullLayout.font);
 
     coerce('carpet');
 
@@ -45,4 +45,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
     if(traceOut._cheater) {
         coerce('cheaterslope');
     }
+    coerce('zorder');
 };

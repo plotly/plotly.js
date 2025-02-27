@@ -26,9 +26,9 @@ var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 var Plots = require('../plots');
 
 var getFromId = require('./axis_ids').getFromId;
-var prepSelect = require('./select').prepSelect;
-var clearSelect = require('./select').clearSelect;
-var selectOnClick = require('./select').selectOnClick;
+var prepSelect = require('../../components/selections').prepSelect;
+var clearOutline = require('../../components/selections').clearOutline;
+var selectOnClick = require('../../components/selections').selectOnClick;
 var scaleZoom = require('./scale_zoom');
 
 var constants = require('./constants');
@@ -87,6 +87,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // scaling factors from css transform
     var scaleX;
     var scaleY;
+
+    // offset the x location of the box if needed
+    x += plotinfo.yaxis._shift;
 
     function recomputeAxisLists() {
         xa0 = plotinfo.xaxis;
@@ -231,9 +234,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     updateSubplots([0, 0, pw, ph]);
                     dragOptions.moveFn(dragDataNow.dx, dragDataNow.dy);
                 }
-
-                // TODO should we try to "re-select" under select/lasso modes?
-                // probably best to wait for https://github.com/plotly/plotly.js/issues/1851
             }
         };
     };
@@ -242,7 +242,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // clear selection polygon cache (if any)
         dragOptions.plotinfo.selection = false;
         // clear selection outlines
-        clearSelect(gd);
+        clearOutline(gd);
     }
 
     function clickFn(numClicks, evt) {
@@ -565,6 +565,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(xActive === 'ew' || yActive === 'ns') {
             var spDx = xActive ? -dx : 0;
             var spDy = yActive ? -dy : 0;
+
             if(matches.isSubplotConstrained) {
                 if(xActive && yActive) {
                     var frac = (dx / pw - dy / ph) / 2;
@@ -727,15 +728,25 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
         }
 
+        function pushActiveAxIdsSynced(axList, axisType) {
+            for(i = 0; i < axList.length; i++) {
+                var axListI = axList[i];
+                var axListIType = axListI[axisType];
+                if(!axListI.fixedrange && axListIType.tickmode === 'sync') activeAxIds.push(axListIType._id);
+            }
+        }
+
         if(editX) {
             pushActiveAxIds(xaxes);
             pushActiveAxIds(links.xaxes);
             pushActiveAxIds(matches.xaxes);
+            pushActiveAxIdsSynced(plotinfo.overlays, 'xaxis');
         }
         if(editY) {
             pushActiveAxIds(yaxes);
             pushActiveAxIds(links.yaxes);
             pushActiveAxIds(matches.yaxes);
+            pushActiveAxIdsSynced(plotinfo.overlays, 'yaxis');
         }
 
         updates = {};
@@ -762,7 +773,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(matches.yaxes) axList = axList.concat(matches.yaxes);
 
         var attrs = {};
-        var ax, i, rangeInitial;
+        var ax, i;
 
         // For reset+autosize mode:
         // If *any* of the main axes is not at its initial range
@@ -774,11 +785,17 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
-                if((ax._rangeInitial && (
-                        ax.range[0] !== ax._rangeInitial[0] ||
-                        ax.range[1] !== ax._rangeInitial[1]
+                var r0 = ax._rangeInitial0;
+                var r1 = ax._rangeInitial1;
+                var hasRangeInitial =
+                    r0 !== undefined ||
+                    r1 !== undefined;
+
+                if((hasRangeInitial && (
+                        (r0 !== undefined && r0 !== ax.range[0]) ||
+                        (r1 !== undefined && r1 !== ax.range[1])
                     )) ||
-                    (!ax._rangeInitial && !ax.autorange)
+                    (!hasRangeInitial && ax.autorange !== true)
                 ) {
                     doubleClickConfig = 'reset';
                     break;
@@ -808,12 +825,19 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 ax = axList[i];
 
                 if(!ax.fixedrange) {
-                    if(!ax._rangeInitial) {
-                        attrs[ax._name + '.autorange'] = true;
+                    var axName = ax._name;
+
+                    var autorangeInitial = ax._autorangeInitial;
+                    if(ax._rangeInitial0 === undefined && ax._rangeInitial1 === undefined) {
+                        attrs[axName + '.autorange'] = true;
+                    } else if(ax._rangeInitial0 === undefined) {
+                        attrs[axName + '.autorange'] = autorangeInitial;
+                        attrs[axName + '.range'] = [null, ax._rangeInitial1];
+                    } else if(ax._rangeInitial1 === undefined) {
+                        attrs[axName + '.range'] = [ax._rangeInitial0, null];
+                        attrs[axName + '.autorange'] = autorangeInitial;
                     } else {
-                        rangeInitial = ax._rangeInitial;
-                        attrs[ax._name + '.range[0]'] = rangeInitial[0];
-                        attrs[ax._name + '.range[1]'] = rangeInitial[1];
+                        attrs[axName + '.range'] = [ax._rangeInitial0, ax._rangeInitial1];
                     }
                 }
             }
@@ -862,8 +886,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 ya = sp.yaxis;
 
                 if(sp._scene) {
+                    if(xa.limitRange) xa.limitRange();
+                    if(ya.limitRange) ya.limitRange();
+
                     var xrng = Lib.simpleMap(xa.range, xa.r2l);
                     var yrng = Lib.simpleMap(ya.range, ya.r2l);
+
                     sp._scene.update({range: [xrng[0], yrng[0], xrng[1], yrng[1]]});
                 }
             }
@@ -905,6 +933,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     clipDx = scaleAndGetShift(xa, xScaleFactor2);
                 }
 
+                if(xScaleFactor2 > 1 && (
+                    (xa.maxallowed !== undefined && editX === (xa.range[0] < xa.range[1] ? 'e' : 'w')) ||
+                    (xa.minallowed !== undefined && editX === (xa.range[0] < xa.range[1] ? 'w' : 'e'))
+                )) {
+                    xScaleFactor2 = 1;
+                    clipDx = 0;
+                }
+
                 if(editY2) {
                     yScaleFactor2 = yScaleFactor;
                     clipDy = ns || matches.isSubplotConstrained ? viewBox[1] : getShift(ya, yScaleFactor2);
@@ -919,6 +955,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 } else {
                     yScaleFactor2 = getLinkedScaleFactor(ya, xScaleFactor, yScaleFactor);
                     clipDy = scaleAndGetShift(ya, yScaleFactor2);
+                }
+
+                if(yScaleFactor2 > 1 && (
+                    (ya.maxallowed !== undefined && editY === (ya.range[0] < ya.range[1] ? 'n' : 's')) ||
+                    (ya.minallowed !== undefined && editY === (ya.range[0] < ya.range[1] ? 's' : 'n'))
+                )) {
+                    yScaleFactor2 = 1;
+                    clipDy = 0;
                 }
 
                 // don't scale at all if neither axis is scalable here
@@ -1086,6 +1130,8 @@ function dragAxList(axList, pix) {
                     axi.l2r(axi._rl[1] - pix / axi._m)
                 ];
             }
+
+            if(axi.limitRange) axi.limitRange();
         }
     }
 }
@@ -1116,7 +1162,7 @@ function makeZoombox(zoomlayer, lum, xs, ys, path0) {
     return zoomlayer.append('path')
         .attr('class', 'zoombox')
         .style({
-            'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+            fill: lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
             'stroke-width': 0
         })
         .attr('transform', strTranslate(xs, ys))

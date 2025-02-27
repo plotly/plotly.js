@@ -1,0 +1,51 @@
+{
+ "data": [
+  {
+   "x": [1, 2, 3, 4],
+   "y": [10, 15, 13, 17],
+   "mode": "markers",
+   "type": "scatter",
+   "marker": {
+    "opacity": 0.5
+   }
+  },
+  {
+   "x": [2, 3, 4, 5],
+   "y": [16, 5, 11, 9],
+   "mode": "lines",
+   "type": "scatter",
+   "opacity": 0.5
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [12, 9, 15, 12],
+   "mode": "lines+markers",
+   "type": "scatter",
+   "opacity": 0.707,
+   "marker": {
+    "opacity": 0.707
+   }
+  },
+  {
+   "x": [1, 2, 3],
+   "y": [1, 2, 3],
+   "opacity": 0.2,
+   "line": { "width": 10, "color": "red" },
+   "marker": { "size": 20, "color": "blue" }
+  }
+ ],
+ "layout": {
+  "yaxis": {
+   "title": { "text": "yaxis", "standoff": 0 },
+   "side": "right",
+   "showticklabels": false,
+   "domain": [0, 1]
+  },
+  "xaxis": {
+   "title": { "text": "xaxis", "standoff": 0 },
+   "side": "top",
+   "showticklabels": false,
+   "domain": [0, 1]
+  }
+ }
+}

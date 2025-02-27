@@ -1,0 +1,40 @@
+{
+ "data": [
+  {
+   "type": "carpet",
+   "a": [0, 5e-7, 1e-6],
+   "b": [0, 500000, 1000000],
+   "y": [
+    [1, 1.32287, 1.73205],
+    [1.32287, 1.58113, 1.93649],
+    [1.73205, 1.93649, 2.23606]
+   ],
+   "aaxis": {
+    "minorgridcount": 3,
+    "gridcolor": "black",
+    "minorgridcolor": "red",
+    "griddash": "dot",
+    "minorgriddash": "dash"
+   },
+   "baxis": {
+    "labelalias": { "0": "ZERO<sup>2</sup>" },
+    "minorgridcount": 3,
+    "gridcolor": "black",
+    "minorgridcolor": "red",
+    "griddash": "dash",
+    "minorgriddash": "dot"
+   }
+  }
+ ],
+ "layout": {
+  "width": 500,
+  "height": 500,
+  "margin": {
+   "t": 40,
+   "r": 20,
+   "b": 40,
+   "l": 40
+  },
+  "dragmode": "pan"
+ }
+}

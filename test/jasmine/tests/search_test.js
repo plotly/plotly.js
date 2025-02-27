@@ -1,4 +1,4 @@
-var Lib = require('@src/lib');
+var Lib = require('../../../src/lib');
 
 describe('Test search.js:', function() {
     'use strict';

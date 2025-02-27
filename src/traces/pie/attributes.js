@@ -8,6 +8,7 @@ var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplat
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var pattern = require('../../components/drawing/attributes').pattern;
 
 var textFontAttrs = fontAttrs({
     editType: 'plot',
@@ -89,6 +90,7 @@ module.exports = {
             },
             editType: 'calc'
         },
+        pattern: pattern,
         editType: 'calc'
     },
 
@@ -203,17 +205,10 @@ module.exports = {
             description: [
                 'Sets the title of the chart.',
                 'If it is empty, no title is displayed.',
-                'Note that before the existence of `title.text`, the title\'s',
-                'contents used to be defined as the `title` attribute itself.',
-                'This behavior has been deprecated.'
             ].join(' ')
         },
         font: extendFlat({}, textFontAttrs, {
-            description: [
-                'Sets the font used for `title`.',
-                'Note that the title\'s font used to be set',
-                'by the now deprecated `titlefont` attribute.'
-            ].join(' ')
+            description: 'Sets the font used for `title`.'
         }),
         position: {
             valType: 'enumerated',
@@ -225,8 +220,6 @@ module.exports = {
             editType: 'plot',
             description: [
                 'Specifies the location of the `title`.',
-                'Note that the title\'s position used to be set',
-                'by the now deprecated `titleposition` attribute.'
             ].join(' ')
         },
 
@@ -276,9 +269,7 @@ module.exports = {
         ].join(' ')
     },
     rotation: {
-        valType: 'number',
-        min: -360,
-        max: 360,
+        valType: 'angle',
         dflt: 0,
         editType: 'calc',
         description: [
@@ -301,30 +292,4 @@ module.exports = {
             'or an array to highlight one or more slices.'
         ].join(' ')
     },
-
-    _deprecated: {
-        title: {
-            valType: 'string',
-            dflt: '',
-            editType: 'calc',
-            description: [
-                'Deprecated in favor of `title.text`.',
-                'Note that value of `title` is no longer a simple',
-                '*string* but a set of sub-attributes.'
-            ].join(' ')
-        },
-        titlefont: extendFlat({}, textFontAttrs, {
-            description: 'Deprecated in favor of `title.font`.'
-        }),
-        titleposition: {
-            valType: 'enumerated',
-            values: [
-                'top left', 'top center', 'top right',
-                'middle center',
-                'bottom left', 'bottom center', 'bottom right'
-            ],
-            editType: 'calc',
-            description: 'Deprecated in favor of `title.position`.'
-        }
-    }
 };

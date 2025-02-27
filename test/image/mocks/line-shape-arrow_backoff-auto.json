@@ -1,0 +1,110 @@
+{
+ "data": [
+  {
+   "line": {
+    "width": 5,
+    "shape": "linear"
+   },
+   "mode": "lines+markers",
+   "name": "'linear'",
+   "type": "scatter",
+   "marker": {
+    "angleref": "previous",
+    "symbol": "arrow-wide",
+    "size": 20
+   },
+   "x": [1, 2, null, 2, 3, null, 3, 4, null, 4, 5],
+   "y": [1, 3, null, 3, 2, null, 2, 3, null, 3, 1]
+  },
+  {
+   "line": {
+    "width": 5,
+    "shape": "spline"
+   },
+   "mode": "lines+markers",
+   "name": "'spline'",
+   "type": "scatter",
+   "marker": {
+    "angleref": "previous",
+    "symbol": "arrow-wide",
+    "size": 20
+   },
+   "x": [1, 2, 3, 4, 5],
+   "y": [6, 8, 7, 8, 6]
+  },
+  {
+   "line": {
+    "width": 5,
+    "shape": "vhv"
+   },
+   "mode": "lines+markers",
+   "name": "'vhv'",
+   "type": "scatter",
+   "marker": {
+    "angleref": "previous",
+    "symbol": "arrow-wide",
+    "size": 20
+   },
+   "x": [1, 2, null, 2, 3, null, 3, 4, null, 4, 5],
+   "y": [11, 13, null, 13, 12, null, 12, 13, null, 13, 11]
+  },
+  {
+   "line": {
+    "width": 5,
+    "shape": "hvh"
+   },
+   "mode": "lines+markers",
+   "name": "'hvh'",
+   "type": "scatter",
+   "marker": {
+    "angleref": "previous",
+    "symbol": "arrow-wide",
+    "size": 20
+   },
+   "x": [1, 2, null, 2, 3, null, 3, 4, null, 4, 5],
+   "y": [16, 18, null, 18, 17, null, 17, 18, null, 18, 16]
+  },
+  {
+   "line": {
+    "width": 5,
+    "shape": "vh"
+   },
+   "mode": "lines+markers",
+   "name": "'vh'",
+   "type": "scatter",
+   "marker": {
+    "angleref": "previous",
+    "symbol": "arrow-wide",
+    "size": 20
+   },
+   "x": [1, 2, null, 2, 3, null, 3, 4, null, 4, 5],
+   "y": [21, 23, null, 23, 22, null, 22, 23, null, 23, 21]
+  },
+  {
+   "line": {
+    "width": 5,
+    "shape": "hv"
+   },
+   "mode": "lines+markers",
+   "name": "'hv'",
+   "type": "scatter",
+   "marker": {
+    "angleref": "previous",
+    "symbol": "arrow-wide",
+    "size": 20
+   },
+   "x": [1, 2, null, 2, 3, null, 3, 4, null, 4, 5],
+   "y": [26, 28, null, 28, 27, null, 27, 28, null, 28, 26]
+  }
+ ],
+ "layout": {
+  "title": {
+   "text": "line shape and arrows with auto backoff"
+  },
+  "legend": {
+   "orientation": "h"
+  },
+  "height": 700,
+  "width": 700
+ }
+}

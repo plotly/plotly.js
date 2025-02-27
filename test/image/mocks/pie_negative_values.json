@@ -1,0 +1,39 @@
+{
+ "data": [
+  {
+   "labels": [
+    "Apples",
+    "Apples",
+    "Bananas",
+    "Oranges",
+    "Pears",
+    "Pears",
+    "Apples",
+    "Pears"
+   ],
+   "type": "pie",
+   "domain": { "x": [0, 0.4] }
+  },
+  {
+   "labels": [
+    "Apples",
+    "Apples",
+    "Bananas",
+    "Oranges",
+    "Pears",
+    "Pears",
+    "Apples",
+    "Pears"
+   ],
+   "values": [10, -20, 20, 40, 10, -20, 70, 5],
+   "marker": { "colors": ["", "", "#ccc"] },
+   "type": "pie",
+   "domain": { "x": [0.5, 1] },
+   "textinfo": "label+value+percent"
+  }
+ ],
+ "layout": {
+  "height": 300,
+  "width": 500
+ }
+}

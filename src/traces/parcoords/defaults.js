@@ -95,16 +95,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     // make default font size 10px (default is 12),
     // scale linearly with global font size
-    var fontDflt = {
-        family: layout.font.family,
-        size: Math.round(layout.font.size / 1.2),
-        color: layout.font.color
-    };
+    var fontDflt = Lib.extendFlat({}, layout.font, {
+        size: Math.round(layout.font.size / 1.2)
+    });
 
     Lib.coerceFont(coerce, 'labelfont', fontDflt);
-    Lib.coerceFont(coerce, 'tickfont', fontDflt);
+    Lib.coerceFont(coerce, 'tickfont', fontDflt, { autoShadowDflt: true });
     Lib.coerceFont(coerce, 'rangefont', fontDflt);
 
     coerce('labelangle');
     coerce('labelside');
+
+    coerce('unselected.line.color');
+    coerce('unselected.line.opacity');
 };

@@ -23,7 +23,7 @@ function styleTextSelection(cd) {
         var stc = selOpts.color;
         var utc = unselOpts.color;
         var base = baseOpts.color;
-        var hasArrayBase = Array.isArray(base);
+        var hasArrayBase = Lib.isArrayOrTypedArray(base);
         opts.color = new Array(trace._length);
 
         for(i = 0; i < els.length; i++) {

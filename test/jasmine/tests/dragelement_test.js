@@ -1,4 +1,4 @@
-var dragElement = require('@src/components/dragelement');
+var dragElement = require('../../../src/components/dragelement');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;

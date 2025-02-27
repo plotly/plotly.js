@@ -1,0 +1,64 @@
+{
+ "data": [
+  {
+   "x": [1, 2, 3],
+   "y": [4, 5, 6],
+   "name": "yaxis1 data",
+   "type": "scatter"
+  },
+  {
+   "x": [2, 3, 4],
+   "y": [4, 5, 6],
+   "name": "yaxis2 data",
+   "yaxis": "y2",
+   "type": "scatter"
+  },
+  {
+   "x": [3, 4, 5],
+   "y": [4, 5, 6],
+   "name": "yaxis3 data",
+   "yaxis": "y3",
+   "type": "scatter"
+  },
+  {
+   "x": [4, 5, 6],
+   "y": [1, 2, 3],
+   "name": "yaxis4 data",
+   "yaxis": "y4",
+   "type": "scatter"
+  }
+ ],
+ "layout": {
+  "title": {
+   "text": "multiple y-axes example"
+  },
+  "xaxis": { "domain": [0.25, 0.75] },
+  "width": 800,
+  "yaxis": {
+   "showline": true,
+   "title": { "text": "axis 1" }
+  },
+  "yaxis2": {
+   "overlaying": "y",
+   "showline": true,
+   "side": "right",
+   "title": { "text": "axis 2" }
+  },
+  "yaxis3": {
+   "anchor": "free",
+   "overlaying": "y",
+   "showline": true,
+   "autoshift": true,
+   "side": "right",
+   "title": { "text": "axis 3" }
+  },
+  "yaxis4": {
+   "anchor": "free",
+   "overlaying": "y",
+   "showline": true,
+   "autoshift": true,
+   "side": "left",
+   "title": { "text": "axis 4" }
+  }
+ }
+}

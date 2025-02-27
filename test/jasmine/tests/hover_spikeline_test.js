@@ -1,9 +1,9 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var Fx = require('@src/components/fx');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Fx = require('../../../src/components/fx');
+var Lib = require('../../../src/lib');
 
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -21,7 +21,7 @@ describe('spikeline hover', function() {
     afterEach(destroyGraphDiv);
 
     function makeMock(spikemode, hovermode) {
-        var _mock = Lib.extendDeep({}, require('@mocks/19.json'));
+        var _mock = Lib.extendDeep({}, require('../../image/mocks/19.json'));
         _mock.layout.xaxis.spikesnap = 'data';
         _mock.layout.xaxis.showspikes = true;
         _mock.layout.xaxis.spikemode = spikemode;
@@ -422,7 +422,7 @@ describe('spikeline hover', function() {
     });
 
     it('correctly select the closest bar even when setting spikedistance to -1 (case of x hovermode)', function(done) {
-        var mock = require('@mocks/bar_stack-with-gaps');
+        var mock = require('../../image/mocks/bar_stack-with-gaps');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.xaxis.showspikes = true;
         mockCopy.layout.yaxis.showspikes = true;
@@ -445,7 +445,7 @@ describe('spikeline hover', function() {
     });
 
     it('correctly select the closest bar even when setting spikedistance to -1 (case of closest hovermode)', function(done) {
-        var mock = require('@mocks/bar_stack-with-gaps');
+        var mock = require('../../image/mocks/bar_stack-with-gaps');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.xaxis.showspikes = true;
         mockCopy.layout.yaxis.showspikes = true;

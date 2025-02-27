@@ -1,0 +1,23 @@
+{
+ "data": [
+  {
+   "type": "heatmap",
+   "x": [0.0001, 0.001, 0.01],
+   "y": [0.0001, 0.001, 0.01],
+   "z": [[1, 2, 3], [3, 2, 1], [7, 2, 7]]
+  }
+ ],
+ "layout": {
+  "title": { "text": "log scale heatmap" },
+  "xaxis": {
+   "type": "log"
+  },
+  "yaxis": {
+   "type": "log"
+  },
+  "height": 598,
+  "width": 1080,
+  "autosize": true,
+  "showlegend": false
+ }
+}

@@ -19,6 +19,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
     var tex = (!_context.attr('data-notex')) &&
+        gd && gd._context.typesetMath &&
         (typeof MathJax !== 'undefined') &&
         str.match(FIND_TEX);
 
@@ -98,7 +99,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 var h0 = _svgBBox.height;
 
                 newSvg.attr({
-                    'class': svgClass,
+                    class: svgClass,
                     height: h0,
                     preserveAspectRatio: 'xMinYMin meet'
                 })
@@ -173,70 +174,154 @@ function cleanEscapesForTex(s) {
         .replace(GT_MATCH, '\\gt ');
 }
 
+var inlineMath = [['$', '$'], ['\\(', '\\)']];
+
 function texToSVG(_texString, _config, _callback) {
+    var MathJaxVersion = parseInt(
+        (MathJax.version || '').split('.')[0]
+    );
+
+    if(
+        MathJaxVersion !== 2 &&
+        MathJaxVersion !== 3
+    ) {
+        Lib.warn('No MathJax version:', MathJax.version);
+        return;
+    }
+
     var originalRenderer,
         originalConfig,
         originalProcessSectionDelay,
         tmpDiv;
 
-    MathJax.Hub.Queue(
-    function() {
+    var setConfig2 = function() {
         originalConfig = Lib.extendDeepAll({}, MathJax.Hub.config);
 
         originalProcessSectionDelay = MathJax.Hub.processSectionDelay;
         if(MathJax.Hub.processSectionDelay !== undefined) {
-            // MathJax 2.5+
+            // MathJax 2.5+ but not 3+
             MathJax.Hub.processSectionDelay = 0;
         }
 
         return MathJax.Hub.Config({
             messageStyle: 'none',
             tex2jax: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']]
+                inlineMath: inlineMath
             },
             displayAlign: 'left',
         });
-    },
-    function() {
-        // Get original renderer
+    };
+
+    var setConfig3 = function() {
+        originalConfig = Lib.extendDeepAll({}, MathJax.config);
+
+        if(!MathJax.config.tex) {
+            MathJax.config.tex = {};
+        }
+
+        MathJax.config.tex.inlineMath = inlineMath;
+    };
+
+    var setRenderer2 = function() {
         originalRenderer = MathJax.Hub.config.menuSettings.renderer;
         if(originalRenderer !== 'SVG') {
             return MathJax.Hub.setRenderer('SVG');
         }
-    },
-    function() {
+    };
+
+    var setRenderer3 = function() {
+        originalRenderer = MathJax.config.startup.output;
+        if(originalRenderer !== 'svg') {
+            MathJax.config.startup.output = 'svg';
+        }
+    };
+
+    var initiateMathJax = function() {
         var randomID = 'math-output-' + Lib.randstr({}, 64);
         tmpDiv = d3.select('body').append('div')
             .attr({id: randomID})
-            .style({visibility: 'hidden', position: 'absolute'})
-            .style({'font-size': _config.fontSize + 'px'})
+            .style({
+                visibility: 'hidden',
+                position: 'absolute',
+                'font-size': _config.fontSize + 'px'
+            })
             .text(cleanEscapesForTex(_texString));
 
-        return MathJax.Hub.Typeset(tmpDiv.node());
-    },
-    function() {
-        var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
+        var tmpNode = tmpDiv.node();
 
-        if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()) {
+        return MathJaxVersion === 2 ?
+            MathJax.Hub.Typeset(tmpNode) :
+            MathJax.typeset([tmpNode]);
+    };
+
+    var finalizeMathJax = function() {
+        var sel = tmpDiv.select(
+            MathJaxVersion === 2 ? '.MathJax_SVG' : '.MathJax'
+        );
+
+        var node = !sel.empty() && tmpDiv.select('svg').node();
+        if(!node) {
             Lib.log('There was an error in the tex syntax.', _texString);
             _callback();
         } else {
-            var svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
-            _callback(tmpDiv.select('.MathJax_SVG'), glyphDefs, svgBBox);
+            var nodeBBox = node.getBoundingClientRect();
+            var glyphDefs;
+            if(MathJaxVersion === 2) {
+                glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
+            } else {
+                glyphDefs = sel.select('defs');
+            }
+            _callback(sel, glyphDefs, nodeBBox);
         }
 
         tmpDiv.remove();
+    };
 
+    var resetRenderer2 = function() {
         if(originalRenderer !== 'SVG') {
             return MathJax.Hub.setRenderer(originalRenderer);
         }
-    },
-    function() {
+    };
+
+    var resetRenderer3 = function() {
+        if(originalRenderer !== 'svg') {
+            MathJax.config.startup.output = originalRenderer;
+        }
+    };
+
+    var resetConfig2 = function() {
         if(originalProcessSectionDelay !== undefined) {
             MathJax.Hub.processSectionDelay = originalProcessSectionDelay;
         }
         return MathJax.Hub.Config(originalConfig);
-    });
+    };
+
+    var resetConfig3 = function() {
+        MathJax.config = originalConfig;
+    };
+
+    if(MathJaxVersion === 2) {
+        MathJax.Hub.Queue(
+            setConfig2,
+            setRenderer2,
+            initiateMathJax,
+            finalizeMathJax,
+            resetRenderer2,
+            resetConfig2
+        );
+    } else if(MathJaxVersion === 3) {
+        setConfig3();
+        setRenderer3();
+        MathJax.startup.defaultReady();
+
+        MathJax.startup.promise.then(function() {
+            initiateMathJax();
+            finalizeMathJax();
+
+            resetRenderer3();
+            resetConfig3();
+        });
+    }
 }
 
 var TAG_STYLES = {
@@ -245,6 +330,8 @@ var TAG_STYLES = {
     // baseline below
     sup: 'font-size:70%',
     sub: 'font-size:70%',
+    s: 'text-decoration:line-through',
+    u: 'text-decoration:underline',
     b: 'font-weight:bold',
     i: 'font-style:italic',
     a: 'cursor:pointer',

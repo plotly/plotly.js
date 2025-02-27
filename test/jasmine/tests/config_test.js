@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -385,6 +385,12 @@ describe('config argument', function() {
             .then(done, done.fail);
         });
 
+        it('should make subtitles editable', function(done) {
+            initPlot('titleText')
+            .then(checkIfEditable('gtitle-subtitle', 'Click to enter Plot subtitle'))
+            .then(done, done.fail);
+        });
+
         it('should make x axes labels editable', function(done) {
             initPlot('axisTitleText')
             .then(checkIfEditable('g-xtitle', 'Click to enter X axis title'))
@@ -429,7 +435,7 @@ describe('config argument', function() {
     });
 
     describe('axis drag handles attribute', function() {
-        var mock = require('@mocks/14.json');
+        var mock = require('../../image/mocks/14.json');
 
         var gd;
         var mockCopy;
@@ -468,7 +474,7 @@ describe('config argument', function() {
     });
 
     describe('axis range entry attribute', function() {
-        var mock = require('@mocks/14.json');
+        var mock = require('../../image/mocks/14.json');
 
         var gd, mockCopy;
 
@@ -848,9 +854,10 @@ describe('config argument', function() {
 
         it('should fill in scrollZoom default', function(done) {
             plot(undefined).then(function() {
-                expect(gd._context.scrollZoom).toBe('gl3d+geo+mapbox');
-                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context.scrollZoom).toBe('gl3d+geo+map');
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, map: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
+                expect(gd._context._scrollZoom.mapbox).toBe(undefined, 'no mapbox!');
             })
             .then(done, done.fail);
         });
@@ -858,7 +865,7 @@ describe('config argument', function() {
         it('should fill in blank scrollZoom value', function(done) {
             plot({scrollZoom: null}).then(function() {
                 expect(gd._context.scrollZoom).toBe(null);
-                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1, map: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
             .then(done, done.fail);
@@ -867,7 +874,7 @@ describe('config argument', function() {
         it('should honor scrollZoom:true', function(done) {
             plot({scrollZoom: true}).then(function() {
                 expect(gd._context.scrollZoom).toBe(true);
-                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1});
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1, map: 1});
             })
             .then(done, done.fail);
         });
@@ -880,10 +887,18 @@ describe('config argument', function() {
             .then(done, done.fail);
         });
 
-        it('should honor scrollZoom flaglist', function(done) {
+        it('should honor scrollZoom flaglist (mapbox and cartesian)', function(done) {
             plot({scrollZoom: 'mapbox+cartesian'}).then(function() {
                 expect(gd._context.scrollZoom).toBe('mapbox+cartesian');
                 expect(gd._context._scrollZoom).toEqual({mapbox: 1, cartesian: 1});
+            })
+            .then(done, done.fail);
+        });
+
+        it('should honor scrollZoom flaglist (map and cartesian)', function(done) {
+            plot({scrollZoom: 'map+cartesian'}).then(function() {
+                expect(gd._context.scrollZoom).toBe('map+cartesian');
+                expect(gd._context._scrollZoom).toEqual({map: 1, cartesian: 1});
             })
             .then(done, done.fail);
         });

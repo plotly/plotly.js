@@ -13,7 +13,7 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
 
     if(z === undefined || !z.length) return 0;
 
-    if(Lib.isArray1D(traceIn.z)) {
+    if(Lib.isArray1D(z)) {
         x = coerce(xName);
         y = coerce(yName);
 
@@ -35,8 +35,6 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
 
         traceOut._length = null;
     }
-
-    if(traceIn.type === 'heatmapgl') return true; // skip calendars until we handle them in those traces
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, [xName, yName], layout);

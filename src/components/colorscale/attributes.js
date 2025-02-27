@@ -77,7 +77,7 @@ module.exports = function colorScaleAttrs(context, opts) {
     }
 
     var effectDesc = onlyIfNumerical ?
-        ' Has an effect only if ' + colorAttrFull + 'is set to a numerical array.' :
+        ' Has an effect only if ' + colorAttrFull + ' is set to a numerical array.' :
         '';
 
     var auto = cLetter + 'auto';
@@ -102,11 +102,11 @@ module.exports = function colorScaleAttrs(context, opts) {
             editType: editTypeOverride || 'style',
             description: [
                 'Sets the', context, 'color.',
-                ' It accepts either a specific color',
-                ' or an array of numbers that are mapped to the colorscale',
-                ' relative to the max and min values of the array or relative to',
-                ' ' + minmaxFull + ' if set.'
-            ].join('')
+                'It accepts either a specific color',
+                'or an array of numbers that are mapped to the colorscale',
+                'relative to the max and min values of the array or relative to',
+                minmaxFull, 'if set.'
+            ].join(' ')
         };
 
         if(opts.anim) {
@@ -121,11 +121,10 @@ module.exports = function colorScaleAttrs(context, opts) {
         impliedEdits: autoImpliedEdits,
         description: [
             'Determines whether or not the color domain is computed',
-            ' with respect to the input data (here ' + colorAttrFull + ') or the bounds set in',
-            ' ', minmaxFull,
-            ' ', effectDesc,
-            ' Defaults to `false` when ', minmaxFull, ' are set by the user.'
-        ].join('')
+            'with respect to the input data (here ' + colorAttrFull + ') or the bounds set in',
+            minmaxFull + effectDesc,
+            'Defaults to `false` when', minmaxFull, 'are set by the user.'
+        ].join(' ')
     };
 
     attrs[min] = {
@@ -134,11 +133,10 @@ module.exports = function colorScaleAttrs(context, opts) {
         editType: editTypeOverride || 'plot',
         impliedEdits: minmaxImpliedEdits,
         description: [
-            'Sets the lower bound of the color domain.',
-            effectDesc,
-            ' Value should have the same units as ', colorAttrFull,
-            ' and if set, ', maxFull, ' must be set as well.'
-        ].join('')
+            'Sets the lower bound of the color domain.' + effectDesc,
+            'Value should have the same units as', colorAttrFull,
+            'and if set,', maxFull, 'must be set as well.'
+        ].join(' ')
     };
 
     attrs[max] = {
@@ -147,11 +145,10 @@ module.exports = function colorScaleAttrs(context, opts) {
         editType: editTypeOverride || 'plot',
         impliedEdits: minmaxImpliedEdits,
         description: [
-            'Sets the upper bound of the color domain.',
-            effectDesc,
-            ' Value should have the same units as ', colorAttrFull,
-            ' and if set, ', minFull, ' must be set as well.'
-        ].join('')
+            'Sets the upper bound of the color domain.' + effectDesc,
+            'Value should have the same units as', colorAttrFull,
+            'and if set,', minFull, 'must be set as well.'
+        ].join(' ')
     };
 
     attrs[mid] = {
@@ -160,12 +157,11 @@ module.exports = function colorScaleAttrs(context, opts) {
         editType: 'calc',
         impliedEdits: autoImpliedEdits,
         description: [
-            'Sets the mid-point of the color domain by scaling ', minFull,
-            ' and/or ', maxFull, ' to be equidistant to this point.',
-            effectDesc,
-            ' Value should have the same units as ', colorAttrFull, '. ',
-            'Has no effect when ', autoFull, ' is `false`.'
-        ].join('')
+            'Sets the mid-point of the color domain by scaling', minFull,
+            'and/or', maxFull, 'to be equidistant to this point.' + effectDesc,
+            'Value should have the same units as', colorAttrFull + '.',
+            'Has no effect when', autoFull, 'is `false`.'
+        ].join(' ')
     };
 
     attrs.colorscale = {
@@ -174,19 +170,18 @@ module.exports = function colorScaleAttrs(context, opts) {
         dflt: colorscaleDflt,
         impliedEdits: {autocolorscale: false},
         description: [
-            'Sets the colorscale.',
-            effectDesc,
-            ' The colorscale must be an array containing',
-            ' arrays mapping a normalized value to an',
-            ' rgb, rgba, hex, hsl, hsv, or named color string.',
-            ' At minimum, a mapping for the lowest (0) and highest (1)',
-            ' values are required. For example,',
-            ' `[[0, \'rgb(0,0,255)\'], [1, \'rgb(255,0,0)\']]`.',
-            ' To control the bounds of the colorscale in color space,',
-            ' use', minmaxFull, '.',
-            ' Alternatively, `colorscale` may be a palette name string',
-            ' of the following list: ' + paletteStr + '.'
-        ].join('')
+            'Sets the colorscale.' + effectDesc,
+            'The colorscale must be an array containing',
+            'arrays mapping a normalized value to an',
+            'rgb, rgba, hex, hsl, hsv, or named color string.',
+            'At minimum, a mapping for the lowest (0) and highest (1)',
+            'values are required. For example,',
+            '`[[0, \'rgb(0,0,255)\'], [1, \'rgb(255,0,0)\']]`.',
+            'To control the bounds of the colorscale in color space,',
+            'use', minmaxFull + '.',
+            'Alternatively, `colorscale` may be a palette name string',
+            'of the following list: ' + paletteStr + '.'
+        ].join(' ')
     };
 
     attrs.autocolorscale = {
@@ -197,12 +192,11 @@ module.exports = function colorScaleAttrs(context, opts) {
         impliedEdits: {colorscale: undefined},
         description: [
             'Determines whether the colorscale is a default palette (`autocolorscale: true`)',
-            ' or the palette determined by ', code(contextHead + 'colorscale'), '.',
-            effectDesc,
-            ' In case `colorscale` is unspecified or `autocolorscale` is true, the default ',
-            ' palette will be chosen according to whether numbers in the `color` array are',
-            ' all positive, all negative or mixed.'
-        ].join('')
+            'or the palette determined by', code(contextHead + 'colorscale') + '.' + effectDesc,
+            'In case `colorscale` is unspecified or `autocolorscale` is true, the default',
+            'palette will be chosen according to whether numbers in the `color` array are',
+            'all positive, all negative or mixed.'
+        ].join(' ')
     };
 
     attrs.reversescale = {
@@ -210,11 +204,10 @@ module.exports = function colorScaleAttrs(context, opts) {
         dflt: false,
         editType: 'plot',
         description: [
-            'Reverses the color mapping if true.',
-            effectDesc,
-            ' If true, ', minFull, ' will correspond to the last color',
-            ' in the array and ', maxFull, ' will correspond to the first color.'
-        ].join('')
+            'Reverses the color mapping if true.' + effectDesc,
+            'If true,', minFull, 'will correspond to the last color',
+            'in the array and', maxFull, 'will correspond to the first color.'
+        ].join(' ')
     };
 
     if(!noScale) {
@@ -223,9 +216,8 @@ module.exports = function colorScaleAttrs(context, opts) {
             dflt: showScaleDflt,
             editType: 'calc',
             description: [
-                'Determines whether or not a colorbar is displayed for this trace.',
-                effectDesc
-            ].join('')
+                'Determines whether or not a colorbar is displayed for this trace.' + effectDesc
+            ].join(' ')
         };
 
         attrs.colorbar = colorbarAttrs;

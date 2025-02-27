@@ -1,7 +1,7 @@
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/core');
-var PlotlyContour = require('@lib/contour');
+var Plotly = require('../../../lib/core');
+var PlotlyContour = require('../../../lib/contour');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -12,7 +12,7 @@ describe('Bundle with contour', function() {
 
     Plotly.register(PlotlyContour);
 
-    var mock = require('@mocks/contour_scatter.json');
+    var mock = require('../../image/mocks/contour_scatter.json');
 
     beforeEach(function(done) {
         Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);

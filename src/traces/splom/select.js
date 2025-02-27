@@ -1,6 +1,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var pushUnique = Lib.pushUnique;
 var subTypes = require('../scatter/subtypes');
 var helpers = require('./helpers');
 
@@ -27,7 +28,7 @@ module.exports = function select(searchInfo, selectionTester) {
     var ypx = stash.ypx[yi];
     var x = cdata[xi];
     var y = cdata[yi];
-    var els = [];
+    var els = (searchInfo.scene.selectBatch || []).slice();
     var unels = [];
 
     // degenerate polygon does not enable selection
@@ -35,12 +36,15 @@ module.exports = function select(searchInfo, selectionTester) {
     if(selectionTester !== false && !selectionTester.degenerate) {
         for(var i = 0; i < x.length; i++) {
             if(selectionTester.contains([xpx[i], ypx[i]], null, i, searchInfo)) {
-                els.push(i);
                 selection.push({
                     pointNumber: i,
                     x: x[i],
                     y: y[i]
                 });
+
+                pushUnique(els, i);
+            } else if(els.indexOf(i) !== -1) {
+                pushUnique(els, i);
             } else {
                 unels.push(i);
             }

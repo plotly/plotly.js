@@ -21,7 +21,13 @@ module.exports = {
     hovertext: scatterPolarAttrs.hovertext,
     hovertemplate: scatterPolarAttrs.hovertemplate,
 
-    line: scatterGlAttrs.line,
+    line: {
+        color: scatterGlAttrs.line.color,
+        width: scatterGlAttrs.line.width,
+        dash: scatterGlAttrs.line.dash,
+        editType: 'calc'
+    },
+
     connectgaps: scatterGlAttrs.connectgaps,
 
     marker: scatterGlAttrs.marker,

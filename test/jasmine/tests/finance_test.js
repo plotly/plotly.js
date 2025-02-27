@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -53,67 +53,6 @@ describe('finance charts defaults:', function() {
         expect(out.data.length).toEqual(2);
         // not sure this test is really necessary anymore, since these are real traces...
         expect(out._fullData.length).toEqual(2);
-    });
-
-    it('should not mutate user data', function() {
-        var trace0 = Lib.extendDeep({}, mock0, {
-            type: 'ohlc'
-        });
-
-        var trace1 = Lib.extendDeep({}, mock1, {
-            type: 'candlestick'
-        });
-
-        var out = _supply([trace0, trace1]);
-        expect(out.data[0]).toBe(trace0);
-        expect(out.data[0].transforms).toBeUndefined();
-        expect(out.data[1]).toBe(trace1);
-        expect(out.data[1].transforms).toBeUndefined();
-
-        // ... and in an idempotent way
-
-        var out2 = _supply(out.data);
-        expect(out2.data[0]).toBe(trace0);
-        expect(out2.data[0].transforms).toBeUndefined();
-        expect(out2.data[1]).toBe(trace1);
-        expect(out2.data[1].transforms).toBeUndefined();
-    });
-
-    it('should work with transforms', function() {
-        var trace0 = Lib.extendDeep({}, mock1, {
-            type: 'ohlc',
-            transforms: [{
-                type: 'filter'
-            }]
-        });
-
-        var trace1 = Lib.extendDeep({}, mock0, {
-            type: 'candlestick',
-            transforms: [{
-                type: 'filter'
-            }]
-        });
-
-        var out = _supply([trace0, trace1]);
-
-        expect(out.data.length).toEqual(2);
-        expect(out._fullData.length).toEqual(2);
-
-        var transformTypesIn = out.data.map(function(trace) {
-            return trace.transforms.map(function(opts) {
-                return opts.type;
-            });
-        });
-
-        expect(transformTypesIn).toEqual([ ['filter'], ['filter'] ]);
-
-        var transformTypesOut = out._fullData.map(function(fullTrace) {
-            return fullTrace.transforms.map(function(opts) {
-                return opts.type;
-            });
-        });
-
-        expect(transformTypesOut).toEqual([ ['filter'], ['filter'] ]);
     });
 
     it('should not slice data arrays but record minimum supplied length', function() {
@@ -444,110 +383,6 @@ describe('finance charts calc', function() {
         expect(mapGet(out[1], 'dir')).toEqual(directions);
         expect(mapGet(out[0], 'empty')).toEqual(empties);
         expect(mapGet(out[1], 'empty')).toEqual(empties);
-    });
-
-    it('should work with *filter* transforms', function() {
-        var trace0 = Lib.extendDeep({}, mock1, {
-            type: 'ohlc',
-            tickwidth: 0.05,
-            transforms: [{
-                type: 'filter',
-                operation: '>',
-                target: 'open',
-                value: 33
-            }]
-        });
-
-        var trace1 = Lib.extendDeep({}, mock1, {
-            type: 'candlestick',
-            transforms: [{
-                type: 'filter',
-                operation: '{}',
-                target: 'x',
-                value: ['2016-09-01', '2016-09-10']
-            }]
-        });
-
-        var out = _calc([trace0, trace1]);
-
-        expect(out.length).toEqual(2);
-
-        expect(out[0].x).toEqual([
-            '2016-09-01', '2016-09-02', '2016-09-03', '2016-09-05', '2016-09-06', '2016-09-07', '2016-09-10'
-        ]);
-        expect(out[0].open).toEqual([
-            33.01, 33.31, 33.50, 34.12, 33.05, 33.31, 33.50
-        ]);
-
-        expect(out[1].x).toEqual([
-            '2016-09-01', '2016-09-10'
-        ]);
-        expect(out[1].close).toEqual([
-            34.10, 33.70
-        ]);
-    });
-
-    it('should work with *groupby* transforms (ohlc)', function() {
-        var opts = {
-            type: 'groupby',
-            groups: ['b', 'b', 'b', 'a'],
-        };
-
-        var trace0 = Lib.extendDeep({}, mock1, {
-            type: 'ohlc',
-            tickwidth: 0.05,
-            transforms: [opts]
-        });
-
-        var out = _calc([trace0]);
-
-        expect(out.length).toBe(2);
-
-        expect(out[0].name).toBe('b');
-        expect(out[0].x).toEqual([
-            '2016-09-01', '2016-09-02', '2016-09-03'
-        ]);
-        expect(out[0].open).toEqual([
-            33.01, 33.31, 33.5
-        ]);
-
-        expect(out[1].name).toBe('a');
-        expect(out[1].x).toEqual([
-            '2016-09-04'
-        ]);
-        expect(out[1].open).toEqual([
-            32.06
-        ]);
-    });
-
-    it('should work with *groupby* transforms (candlestick)', function() {
-        var opts = {
-            type: 'groupby',
-            groups: ['a', 'b', 'b', 'a'],
-        };
-
-        var trace0 = Lib.extendDeep({}, mock1, {
-            type: 'candlestick',
-            transforms: [opts]
-        });
-
-        var out = _calc([trace0]);
-
-        expect(out[0].name).toEqual('a');
-        expect(out[0].x).toEqual([
-            '2016-09-01', '2016-09-04'
-        ]);
-        expect(out[0].open).toEqual([
-            33.01, 32.06
-        ]);
-
-        expect(out[1].name).toEqual('b');
-        expect(out[1].x).toEqual([
-            '2016-09-02', '2016-09-03'
-        ]);
-        expect(out[1].open).toEqual([
-            33.31, 33.5
-        ]);
     });
 
     it('should use the smallest trace minimum x difference to convert *tickwidth* to data coords for all traces attached to a given x-axis', function() {
@@ -1044,6 +879,48 @@ describe('finance charts updates:', function() {
         .then(function() {
             expect(countOHLCTraces()).toBe(1, '# of ohlc traces');
             expect(countBoxTraces()).toBe(1, '# of candlestick traces');
+        })
+        .then(done, done.fail);
+    });
+
+    it('should clear empty candlestick boxes using react', function(done) {
+        var type = 'candlestick';
+        var x = [0, 1];
+
+        var steps = [{
+            data: [{
+                close: [132, null],
+                high: [204, 20],
+                low: [30, 193],
+                open: [78, 79],
+                type: type,
+                x: x
+            }],
+            layout: {}
+        },
+        {
+            data: [{
+                close: [140, 78],
+                high: [91, 117],
+                low: [115, 78],
+                open: [null, 97],
+                type: type,
+                x: x
+            }],
+            layout: {}
+        }];
+
+        Plotly.newPlot(gd, steps[0])
+        .then(function() {
+            return Plotly.react(gd, steps[1]);
+        }).then(function() {
+            expect(
+                d3Select('g.cartesianlayer')
+                .selectAll('g.trace.boxes')
+                .selectAll('path')
+                .node()
+                .getAttribute('d')
+            ).toEqual('M0,0Z');
         })
         .then(done, done.fail);
     });

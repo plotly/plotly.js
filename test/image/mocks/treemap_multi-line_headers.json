@@ -1,0 +1,34 @@
+{
+ "data": [
+  {
+   "labels": [
+    "parent2",
+    "parent1<br>Long text on second line",
+    "item2",
+    "item1"
+   ],
+   "name": "",
+   "parents": ["", "", "parent2", "parent1<br>Long text on second line"],
+   "values": [0, 0, 200, 500],
+   "type": "treemap",
+   "textposition": "middle center",
+   "texttemplate": "<b>%{label}</b>",
+   "textfont": {
+    "textcase": "word caps",
+    "lineposition": "under",
+    "shadow": "auto",
+    "size": 20
+   }
+  }
+ ],
+ "layout": {
+  "margin": {
+   "t": 50,
+   "b": 10,
+   "l": 10,
+   "r": 10
+  },
+  "height": 200,
+  "width": 500
+ }
+}

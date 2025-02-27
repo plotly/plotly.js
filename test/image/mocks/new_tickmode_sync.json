@@ -1,0 +1,69 @@
+{
+ "data": [
+  {
+   "name": "Apples",
+   "type": "bar",
+   "x": ["2000-01", "2000-02", "2000-03", "2000-04", "2000-05"],
+   "y": [232, 2506, 470, 1864, -190]
+  },
+  {
+   "name": "Oranges",
+   "type": "scatter",
+   "x": ["A", "B", "C", "D", "E"],
+   "y": [0, 0.4, 0.1, 0.3, 0.2],
+   "yaxis": "y2",
+   "xaxis": "x2"
+  }
+ ],
+ "layout": {
+  "margin": {
+   "t": 40,
+   "r": 70,
+   "b": 40,
+   "l": 70
+  },
+  "width": 700,
+  "showlegend": false,
+  "xaxis": {
+   "showgrid": true,
+   "ticklen": 10,
+   "tickwidth": 3,
+   "ticklabelmode": "period"
+  },
+  "xaxis2": {
+   "anchor": "y2",
+   "side": "top",
+   "overlaying": "x",
+   "tickmode": "sync",
+   "ticklen": 10,
+   "tickwidth": 3
+  },
+  "yaxis": {
+   "title": {
+    "text": "Apples"
+   },
+   "side": "left",
+   "range": [0, 2500],
+   "ticklen": 10,
+   "tickwidth": 3,
+   "minor": {
+    "showgrid": true
+   }
+  },
+  "yaxis2": {
+   "title": {
+    "text": "Oranges"
+   },
+   "side": "right",
+   "range": [0, 0.5],
+   "ticklen": 10,
+   "tickwidth": 3,
+   "overlaying": "y",
+   "tickmode": "sync",
+   "minor": {
+    "showgrid": true
+   },
+   "zeroline": false
+  }
+ }
+}

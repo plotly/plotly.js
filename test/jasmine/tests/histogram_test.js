@@ -1,14 +1,14 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Registry = require('@src/registry');
-var setConvert = require('@src/plots/cartesian/set_convert');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Registry = require('../../../src/registry');
+var setConvert = require('../../../src/plots/cartesian/set_convert');
 
-var supplyDefaults = require('@src/traces/histogram/defaults');
-var supplyDefaults2D = require('@src/traces/histogram2d/defaults');
-var supplyDefaults2DC = require('@src/traces/histogram2dcontour/defaults');
-var calc = require('@src/traces/histogram/calc').calc;
-var getBinSpanLabelRound = require('@src/traces/histogram/bin_label_vals');
+var supplyDefaults = require('../../../src/traces/histogram/defaults');
+var supplyDefaults2D = require('../../../src/traces/histogram2d/defaults');
+var supplyDefaults2DC = require('../../../src/traces/histogram2dcontour/defaults');
+var calc = require('../../../src/traces/histogram/calc').calc;
+var getBinSpanLabelRound = require('../../../src/traces/histogram/bin_label_vals');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -16,7 +16,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 
 
 var checkEventData = require('../assets/check_event_data');
-var constants = require('@src/traces/histogram/constants');
+var constants = require('../../../src/traces/histogram/constants');
 
 describe('Test histogram', function() {
     'use strict';
@@ -863,7 +863,7 @@ describe('Test histogram', function() {
         });
 
         it('harmonizes start/end value of bins when all traces are autobinned', function(done) {
-            var mock = require('@mocks/histogram_overlay-bingroup');
+            var mock = require('../../image/mocks/histogram_overlay-bingroup');
             var gd = createGraphDiv();
             Plotly.newPlot(gd, mock)
                 .then(function(gd) {
@@ -1543,6 +1543,6 @@ describe('getBinSpanLabelRound', function() {
 });
 
 describe('event data', function() {
-    var mock = require('@mocks/hist_category');
+    var mock = require('../../image/mocks/hist_category');
     checkEventData(mock, 100, 200, constants.eventDataKeys);
 });

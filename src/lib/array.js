@@ -1,4 +1,7 @@
 'use strict';
+var b64decode = require('base64-arraybuffer').decode;
+
+var isPlainObject = require('./is_plain_object');
 
 var isArray = Array.isArray;
 
@@ -47,6 +50,140 @@ exports.ensureArray = function(out, n) {
 
     return out;
 };
+
+var typedArrays = {
+    u1c: typeof Uint8ClampedArray === 'undefined' ? undefined :
+                Uint8ClampedArray, // not supported in numpy?
+
+    i1: typeof Int8Array === 'undefined' ? undefined :
+               Int8Array,
+
+    u1: typeof Uint8Array === 'undefined' ? undefined :
+               Uint8Array,
+
+    i2: typeof Int16Array === 'undefined' ? undefined :
+               Int16Array,
+
+    u2: typeof Uint16Array === 'undefined' ? undefined :
+               Uint16Array,
+
+    i4: typeof Int32Array === 'undefined' ? undefined :
+               Int32Array,
+
+    u4: typeof Uint32Array === 'undefined' ? undefined :
+               Uint32Array,
+
+    f4: typeof Float32Array === 'undefined' ? undefined :
+               Float32Array,
+
+    f8: typeof Float64Array === 'undefined' ? undefined :
+               Float64Array,
+
+    /* TODO: potentially add Big Int
+
+    i8: typeof BigInt64Array === 'undefined' ? undefined :
+               BigInt64Array,
+
+    u8: typeof BigUint64Array === 'undefined' ? undefined :
+               BigUint64Array,
+    */
+};
+
+typedArrays.uint8c = typedArrays.u1c;
+typedArrays.uint8 = typedArrays.u1;
+typedArrays.int8 = typedArrays.i1;
+typedArrays.uint16 = typedArrays.u2;
+typedArrays.int16 = typedArrays.i2;
+typedArrays.uint32 = typedArrays.u4;
+typedArrays.int32 = typedArrays.i4;
+typedArrays.float32 = typedArrays.f4;
+typedArrays.float64 = typedArrays.f8;
+
+function isArrayBuffer(a) {
+    return a.constructor === ArrayBuffer;
+}
+exports.isArrayBuffer = isArrayBuffer;
+
+exports.decodeTypedArraySpec = function(vIn) {
+    var out = [];
+    var v = coerceTypedArraySpec(vIn);
+    var dtype = v.dtype;
+
+    var T = typedArrays[dtype];
+    if(!T) throw new Error('Error in dtype: "' + dtype + '"');
+    var BYTES_PER_ELEMENT = T.BYTES_PER_ELEMENT;
+
+    var buffer = v.bdata;
+    if(!isArrayBuffer(buffer)) {
+        buffer = b64decode(buffer);
+    }
+    var shape = v.shape === undefined ?
+        // detect 1-d length
+        [buffer.byteLength / BYTES_PER_ELEMENT] :
+        // convert number to string and split to array
+        ('' + v.shape).split(',');
+
+    shape.reverse(); // i.e. to match numpy order
+    var ndim = shape.length;
+
+    var nj, j;
+    var ni = +shape[0];
+
+    var rowBytes = BYTES_PER_ELEMENT * ni;
+    var pos = 0;
+
+    if(ndim === 1) {
+        out = new T(buffer);
+    } else if(ndim === 2) {
+        nj = +shape[1];
+        for(j = 0; j < nj; j++) {
+            out[j] = new T(buffer, pos, ni);
+            pos += rowBytes;
+        }
+    } else if(ndim === 3) {
+        nj = +shape[1];
+        var nk = +shape[2];
+        for(var k = 0; k < nk; k++) {
+            out[k] = [];
+            for(j = 0; j < nj; j++) {
+                out[k][j] = new T(buffer, pos, ni);
+                pos += rowBytes;
+            }
+        }
+    } else {
+        throw new Error('ndim: ' + ndim + 'is not supported with the shape:"' + v.shape + '"');
+    }
+
+    // attach bdata, dtype & shape to array for json export
+    out.bdata = v.bdata;
+    out.dtype = v.dtype;
+    out.shape = shape.reverse().join(',');
+
+    vIn._inputArray = out;
+
+    return out;
+};
+
+exports.isTypedArraySpec = function(v) {
+    return (
+        isPlainObject(v) &&
+        v.hasOwnProperty('dtype') && (typeof v.dtype === 'string') &&
+
+        v.hasOwnProperty('bdata') && (typeof v.bdata === 'string' || isArrayBuffer(v.bdata)) &&
+
+        (v.shape === undefined || (
+            v.hasOwnProperty('shape') && (typeof v.shape === 'string' || typeof v.shape === 'number')
+        ))
+    );
+};
+
+function coerceTypedArraySpec(v) {
+    return {
+        bdata: v.bdata,
+        dtype: v.dtype,
+        shape: v.shape
+    };
+}
 
 /*
  * TypedArray-compatible concatenation of n arrays

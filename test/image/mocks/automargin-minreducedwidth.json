@@ -1,0 +1,48 @@
+{
+ "data": [
+  {
+   "name": "< D E A T H >",
+   "marker": { "color": "red" },
+   "y": [
+    "A n t o n i o   V i v a l d i",
+    "J o h a n n   S e b a s t i a n   B a c h",
+    "W o l f g a n g   A m a d e u s   M o z a r t",
+    "L u d w i g   v a n   B e e t h o v e n"
+   ],
+   "x": ["1741", "1750", "1791", "1827"]
+  },
+  {
+   "name": "< B I R T H >",
+   "marker": { "color": "blue" },
+   "y": [
+    "A n t o n i o   V i v a l d i",
+    "J o h a n n   S e b a s t i a n   B a c h",
+    "W o l f g a n g   A m a d e u s   M o z a r t",
+    "L u d w i g   v a n   B e e t h o v e n"
+   ],
+   "x": ["1678", "1685", "1756", "1770"]
+  }
+ ],
+ "layout": {
+  "showlegend": false,
+  "title": {
+   "text": "Longest and shortest<br>names and time periods"
+  },
+  "width": 240,
+  "height": 200,
+  "minreducedwidth": 55,
+  "margin": {
+   "t": 80,
+   "b": 20,
+   "l": 20,
+   "r": 20
+  },
+  "xaxis": {
+   "type": "date",
+   "automargin": true
+  },
+  "yaxis": {
+   "automargin": true
+  }
+ }
+}

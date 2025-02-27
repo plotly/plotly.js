@@ -1,11 +1,11 @@
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 
-var Colorscale = require('@src/components/colorscale');
+var Colorscale = require('../../../src/components/colorscale');
 
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
-var Heatmap = require('@src/traces/heatmap');
-var Scatter = require('@src/traces/scatter');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
+var Heatmap = require('../../../src/traces/heatmap');
+var Scatter = require('../../../src/traces/scatter');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;

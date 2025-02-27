@@ -1,13 +1,13 @@
-var Annotations = require('@src/components/annotations');
+var Annotations = require('../../../src/components/annotations');
 
-var Plotly = require('@lib/index');
-var Queue = require('@src/lib/queue');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Loggers = require('@src/lib/loggers');
-var Axes = require('@src/plots/cartesian/axes');
-var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
-var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
+var Plotly = require('../../../lib/index');
+var Queue = require('../../../src/lib/queue');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Loggers = require('../../../src/lib/loggers');
+var Axes = require('../../../src/plots/cartesian/axes');
+var HOVERMINTIME = require('../../../src/components/fx').constants.HOVERMINTIME;
+var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -170,7 +170,7 @@ describe('Test annotations', function() {
 describe('annotations relayout', function() {
     'use strict';
 
-    var mock = require('@mocks/annotations.json');
+    var mock = require('../../image/mocks/annotations.json');
     var gd;
 
     // there is 1 visible: false item
@@ -611,7 +611,7 @@ describe('annotations autorange', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/annotations-autorange.json'));
+        mock = Lib.extendDeep({}, require('../../image/mocks/annotations-autorange.json'));
     });
 
     afterEach(destroyGraphDiv);
@@ -1441,7 +1441,17 @@ describe('annotation effects', function() {
             expect(gd._fullLayout.annotations[0].hoverlabel).toEqual({
                 bgcolor: '#444',
                 bordercolor: '#fff',
-                font: {family: 'Arial, sans-serif', size: 13, color: '#fff'}
+                font: {
+                    family: 'Arial, sans-serif',
+                    size: 13,
+                    color: '#fff',
+                    weight: 'normal',
+                    style: 'normal',
+                    variant: 'normal',
+                    textcase: 'normal',
+                    lineposition: 'none',
+                    shadow: 'none',
+                }
             });
 
             return assertHoverLabels([[pos0, 'bananas'], [pos1, ''], [pos2, '']],
@@ -1463,7 +1473,17 @@ describe('annotation effects', function() {
                 'annotations[0].hoverlabel': {
                     bgcolor: '#800',
                     bordercolor: '#008',
-                    font: {family: 'courier', size: 50, color: '#080'}
+                    font: {
+                        family: 'courier',
+                        size: 50,
+                        color: '#080',
+                        weight: 'normal',
+                        style: 'normal',
+                        variant: 'normal',
+                        textcase: 'normal',
+                        lineposition: 'none',
+                        shadow: 'none',
+                    }
                 },
                 'annotations[1].hovertext': 'chicken'
             });
@@ -1472,7 +1492,17 @@ describe('annotation effects', function() {
             expect(gd._fullLayout.annotations[0].hoverlabel).toEqual({
                 bgcolor: '#800',
                 bordercolor: '#008',
-                font: {family: 'courier', size: 50, color: '#080'}
+                font: {
+                    family: 'courier',
+                    size: 50,
+                    color: '#080',
+                    weight: 'normal',
+                    style: 'normal',
+                    variant: 'normal',
+                    textcase: 'normal',
+                    lineposition: 'none',
+                    shadow: 'none',
+                }
             });
 
             return assertHoverLabels([[pos0, 'bananas'], [pos1, 'chicken'], [pos2, '']],

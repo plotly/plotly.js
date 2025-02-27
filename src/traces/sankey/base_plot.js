@@ -7,7 +7,7 @@ var fxAttrs = require('../../components/fx/layout_attributes');
 
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../../components/dragelement');
-var prepSelect = require('../../plots/cartesian/select').prepSelect;
+var prepSelect = require('../../components/selections').prepSelect;
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 
@@ -48,6 +48,7 @@ function subplotUpdateFx(gd, index) {
     var dragMode = fullLayout.dragmode;
     var cursor = fullLayout.dragmode === 'pan' ? 'move' : 'crosshair';
     var bgRect = trace._bgRect;
+    if(!bgRect) return;
 
     if(dragMode === 'pan' || dragMode === 'zoom') return;
 

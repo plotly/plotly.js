@@ -80,6 +80,8 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
 };
 
 function plotOne(gd, cd, element, transitionOpts) {
+    var isStatic = gd._context.staticPlot;
+
     var fullLayout = gd._fullLayout;
     var hasTransition = !fullLayout.uniformtext.mode && helpers.hasTransition(transitionOpts);
 
@@ -219,7 +221,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         var sliceTop = d3.select(this);
 
         var slicePath = Lib.ensureSingle(sliceTop, 'path', 'surface', function(s) {
-            s.style('pointer-events', 'all');
+            s.style('pointer-events', isStatic ? 'none' : 'all');
         });
 
         pt.rpx0 = y2rpx(pt.y0);
@@ -254,7 +256,7 @@ function plotOne(gd, cd, element, transitionOpts) {
                 isTransitioning: gd._transitioning
             });
 
-        slicePath.call(styleOne, pt, trace);
+        slicePath.call(styleOne, pt, trace, gd);
 
         var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext');
         var sliceText = Lib.ensureSingle(sliceTextGroup, 'text', '', function(s) {

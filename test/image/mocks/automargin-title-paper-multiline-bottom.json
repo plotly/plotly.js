@@ -1,0 +1,22 @@
+{
+ "data": [
+  {
+   "showlegend": false,
+   "type": "scatter",
+   "x": [1, 2, 3],
+   "y": [4, 5, 6]
+  }
+ ],
+ "layout": {
+  "height": 300,
+  "width": 400,
+  "margin": { "t": 0, "b": 0, "l": 0, "r": 0 },
+  "title": {
+   "automargin": true,
+   "text": "Paper<br>Multi-line",
+   "pad": { "t": 15, "b": 10 },
+   "yref": "paper",
+   "y": 0
+  }
+ }
+}

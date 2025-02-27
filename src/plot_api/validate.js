@@ -94,39 +94,6 @@ module.exports = function validate(data, layout) {
         }
 
         crawl(traceIn, traceOut, traceSchema, errorList, base);
-
-        var transformsIn = traceIn.transforms;
-        var transformsOut = traceOut.transforms;
-
-        if(transformsIn) {
-            if(!isArray(transformsIn)) {
-                errorList.push(format('array', base, ['transforms']));
-            }
-
-            base.push('transforms');
-
-            for(var j = 0; j < transformsIn.length; j++) {
-                var path = ['transforms', j];
-                var transformType = transformsIn[j].type;
-
-                if(!isPlainObject(transformsIn[j])) {
-                    errorList.push(format('object', base, path));
-                    continue;
-                }
-
-                var transformSchema = schema.transforms[transformType] ?
-                    schema.transforms[transformType].attributes :
-                    {};
-
-                // add 'type' to transform schema to validate the transform type
-                transformSchema.type = {
-                    valType: 'enumerated',
-                    values: Object.keys(schema.transforms)
-                };
-
-                crawl(transformsIn[j], transformsOut[j], transformSchema, errorList, base, path);
-            }
-        }
     }
 
     var layoutOut = gd._fullLayout;
@@ -145,9 +112,6 @@ function crawl(objIn, objOut, schema, list, base, path) {
 
     for(var i = 0; i < keys.length; i++) {
         var k = keys[i];
-
-        // transforms are handled separately
-        if(k === 'transforms') continue;
 
         var p = path.slice();
         p.push(k);

@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
-var constants = require('@src/traces/sunburst/constants');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Drawing = require('../../../src/components/drawing');
+var constants = require('../../../src/traces/sunburst/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -734,7 +734,7 @@ describe('Test sunburst hover lifecycle:', function() {
     }
 
     it('should fire the correct events', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/sunburst_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
@@ -809,7 +809,7 @@ describe('Test sunburst clicks:', function() {
     }
 
     it('should trigger animation when clicking on branches', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/sunburst_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
@@ -839,7 +839,7 @@ describe('Test sunburst clicks:', function() {
     });
 
     it('should trigger plotly_click event when clicking on root node', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/sunburst_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
@@ -867,7 +867,7 @@ describe('Test sunburst clicks:', function() {
     });
 
     it('should trigger plotly_click event when clicking on leaf node', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/sunburst_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
@@ -895,7 +895,7 @@ describe('Test sunburst clicks:', function() {
     });
 
     it('should not trigger animation when graph is transitioning', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/sunburst_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
@@ -954,7 +954,7 @@ describe('Test sunburst clicks:', function() {
     });
 
     it('should be able to override default click behavior using plotly_sunburstclick handler ()', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/sunburst_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners({turnOffAnimation: true}))
@@ -991,7 +991,7 @@ describe('Test sunburst restyle:', function() {
     }
 
     it('should be able to toggle visibility', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/sunburst_first.json'));
 
         function _assert(msg, exp) {
             return function() {
@@ -1002,15 +1002,15 @@ describe('Test sunburst restyle:', function() {
 
         Plotly.newPlot(gd, mock)
         .then(_assert('base', 2))
-        .then(_restyle({'visible': false}))
+        .then(_restyle({visible: false}))
         .then(_assert('both visible:false', 0))
-        .then(_restyle({'visible': true}))
+        .then(_restyle({visible: true}))
         .then(_assert('back to visible:true', 2))
         .then(done, done.fail);
     });
 
     it('should be able to restyle *maxdepth* and *level* w/o recomputing the hierarchy', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/sunburst_coffee.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/sunburst_coffee.json'));
 
         function _assert(msg, exp) {
             return function() {
@@ -1556,7 +1556,7 @@ describe('Test sunburst interactions edge cases', function() {
     afterEach(destroyGraphDiv);
 
     it('should keep tracking hover labels and hover events after *calc* edits', function(done) {
-        var mock = Lib.extendFlat({}, require('@mocks/sunburst_first.json'));
+        var mock = Lib.extendFlat({}, require('../../image/mocks/sunburst_first.json'));
         var hoverCnt = 0;
         var unhoverCnt = 0;
 
@@ -1636,7 +1636,7 @@ describe('Test sunburst interactions edge cases', function() {
     });
 
     it('should transition sunburst traces only', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/display-text_zero-number.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/display-text_zero-number.json'));
         mock.data[0].visible = false;
 
         function _assert(msg, exp) {
@@ -1670,7 +1670,7 @@ describe('Test sunburst interactions edge cases', function() {
     });
 
     it('should be able to transition sunburst traces via `Plotly.react`', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/display-text_zero-number.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/display-text_zero-number.json'));
         mock.layout.transition = {duration: 200};
 
         spyOn(Plots, 'transitionFromReact').and.callThrough();

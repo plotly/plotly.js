@@ -1,0 +1,111 @@
+{
+ "data": [
+  {
+   "type": "scatter3d",
+   "hovertemplate": "Difficult -0.123456789 | %{text}",
+   "texttemplate": "Difficult -0.123456789 | %{text}",
+   "mode": "text",
+   "text": [
+    "normal",
+    "small-caps",
+    "italic",
+    "italic small-caps",
+    "bold",
+    "bold small-caps",
+    "bold italic",
+    "bold italic small-caps"
+   ],
+   "textfont": {
+    "family": "Inter",
+    "size": 16,
+    "weight": [
+     "normal",
+     "normal",
+     "normal",
+     "normal",
+     "bold",
+     "bold",
+     "bold",
+     "bold"
+    ],
+    "style": [
+     "normal",
+     "normal",
+     "italic",
+     "italic",
+     "normal",
+     "normal",
+     "italic",
+     "italic"
+    ],
+    "variant": [
+     "normal",
+     "small-caps",
+     "normal",
+     "small-caps",
+     "normal",
+     "small-caps",
+     "normal",
+     "small-caps"
+    ]
+   },
+   "z": [0, 0, 0, 0, 0, 0, 0, 0],
+   "x": [0, 0, 0, 0, 0, 0, 0, 0],
+   "y": [-3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 3.5]
+  }
+ ],
+ "layout": {
+  "showlegend": false,
+  "margin": {
+   "l": 0,
+   "r": 0,
+   "t": 0,
+   "b": 0
+  },
+  "scene": {
+   "xaxis": {
+    "showticklabels": false,
+    "showgrid": false,
+    "zeroline": false
+   },
+   "yaxis": {
+    "showticklabels": false,
+    "showgrid": false,
+    "zeroline": false
+   },
+   "zaxis": {
+    "showticklabels": false,
+    "showgrid": false,
+    "zeroline": false
+   },
+   "aspectratio": {
+    "x": 1.5,
+    "y": 1.5,
+    "z": 1.5
+   },
+   "camera": {
+    "projection": {
+     "type": "orthographic"
+    },
+    "eye": {
+     "x": 0,
+     "y": 0,
+     "z": 10
+    },
+    "center": {
+     "x": 0,
+     "y": 0,
+     "z": 0
+    },
+    "up": {
+     "x": 0,
+     "y": 1,
+     "z": 0
+    }
+   }
+  },
+  "width": 400,
+  "height": 400,
+  "hovermode": "closest"
+ }
+}

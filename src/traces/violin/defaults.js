@@ -48,4 +48,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var meanLineWidth = coerce2('meanline.width', lineWidth);
     var meanLineVisible = coerce('meanline.visible', Boolean(meanLineColor || meanLineWidth));
     if(!meanLineVisible) traceOut.meanline = {visible: false};
+
+    coerce('quartilemethod');
+    coerce('zorder');
 };

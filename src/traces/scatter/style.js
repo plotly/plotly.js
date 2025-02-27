@@ -27,7 +27,7 @@ function style(gd) {
         .call(Drawing.lineGroupStyle);
 
     s.selectAll('g.trace path.js-fill')
-        .call(Drawing.fillGroupStyle);
+        .call(Drawing.fillGroupStyle, gd, false);
 
     Registry.getComponentMethod('errorbars', 'style')(s);
 }

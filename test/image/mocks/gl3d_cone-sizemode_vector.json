@@ -1,0 +1,65 @@
+{
+ "data": [
+  {
+   "type": "cone",
+   "x": [1, 2, 3],
+   "y": [1, 2, 3],
+   "z": [1, 2, 3],
+   "u": [1, 0, 0],
+   "v": [0, 3, 0],
+   "w": [0, 0, 2],
+   "sizemode": "raw",
+   "anchor": "tip",
+   "colorbar": {
+    "title": { "text": "raw<br>sizeref: 1" },
+    "x": 0,
+    "xanchor": "right"
+   }
+  },
+  {
+   "type": "cone",
+   "x": [1, 2, 3],
+   "y": [1, 2, 3],
+   "z": [1, 2, 3],
+   "u": [0.5, 0, 0],
+   "v": [0, 1.5, 0],
+   "w": [0, 0, 1],
+   "sizemode": "raw",
+   "anchor": "tip",
+   "colorbar": {
+    "title": { "text": "rawr<br>sizeref: 1" }
+   },
+   "scene": "scene2"
+  }
+ ],
+ "layout": {
+  "scene": {
+   "domain": { "x": [0, 0.5] },
+   "aspectratio": {
+    "x": 1.5,
+    "y": 1.5,
+    "z": 1.5
+   },
+   "camera": {
+    "projection": { "type": "orthographic" },
+    "up": { "x": 0, "y": 1, "z": 0 },
+    "eye": { "x": 0, "y": 0, "z": 3 }
+   }
+  },
+  "scene2": {
+   "domain": { "x": [0.5, 1] },
+   "aspectratio": {
+    "x": 1.5,
+    "y": 1.5,
+    "z": 1.5
+   },
+   "camera": {
+    "projection": { "type": "orthographic" },
+    "up": { "x": 0, "y": 1, "z": 0 },
+    "eye": { "x": 0, "y": 0, "z": 3 }
+   }
+  },
+  "width": 1000,
+  "height": 500
+ }
+}

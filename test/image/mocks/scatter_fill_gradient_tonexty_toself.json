@@ -1,0 +1,78 @@
+{
+ "data": [
+  {
+   "x": [0, 2],
+   "y": [1, 2.5],
+   "type": "scatter",
+   "mode": "none",
+   "fill": "tonexty",
+   "fillcolor": "rgba(0, 255, 0, .5)",
+   "fillgradient": {
+    "type": "horizontal",
+    "colorscale": [
+     [0.0, "rgba(0, 255, 0, 1)"],
+     [0.5, "rgba(0, 255, 0, 0)"],
+     [1.0, "rgba(0, 255, 0, 1)"]
+    ],
+    "start": 0,
+    "stop": 1
+   },
+   "name": "greenthing",
+   "hoveron": "fills+points"
+  },
+  {
+   "x": [0, 0.75, 1.5, 2],
+   "y": [1, 2, 2.5, 2.8],
+   "type": "scatter",
+   "mode": "none",
+   "fill": "tonexty",
+   "hoveron": "fills+points",
+   "fillgradient": {
+    "type": "horizontal",
+    "colorscale": [
+     [0.0, "rgba(255, 255, 0, 1.0)"],
+     [0.6, "rgba(255, 255, 0, 1.0)"],
+     [1.0, "rgba(255, 255, 0, 0.3)"]
+    ]
+   },
+   "name": "yellow"
+  },
+  {
+   "x": [0, 1, 1, 0.5, 0],
+   "y": [5, 5, 2, 1.5, 0],
+   "type": "scatter",
+   "mode": "none",
+   "fill": "toself",
+   "fillgradient": {
+    "type": "vertical",
+    "colorscale": [[0.0, "rgba(255, 0, 0, 0.8)"], [1.0, "rgba(0, 0, 255, 0.9)"]]
+   },
+   "fillcolor": "rgb(255, 0, 0)",
+   "hoveron": "fills"
+  },
+  {
+   "x": [1.1, 2, 2, 1.1],
+   "y": [5, 5, 3, 2.1],
+   "type": "scatter",
+   "mode": "none",
+   "fill": "toself",
+   "fillgradient": {
+    "type": "vertical",
+    "colorscale": [
+     [0.0, "rgba(255, 0, 0, 0.8)"],
+     [1.0, "rgba(0, 0, 255, 0.9)"]
+    ],
+    "start": 0,
+    "stop": 5
+   },
+   "fillcolor": "rgb(255, 0, 0)",
+   "hoveron": "fills"
+  }
+ ],
+
+ "layout": {
+  "autosize": true,
+  "title": { "text": "Scatter traces with linear color gradient fills" },
+  "showlegend": true
+ }
+}

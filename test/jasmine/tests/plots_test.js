@@ -1,7 +1,7 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Registry = require('@src/registry');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Registry = require('../../../src/registry');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -131,17 +131,11 @@ describe('Test Plots', function() {
             expect(gd._fullData[0].index).toEqual(0);
             expect(gd._fullData[1].index).toEqual(1);
 
-            expect(gd._fullData[0]._expandedIndex).toEqual(0);
-            expect(gd._fullData[1]._expandedIndex).toEqual(1);
-
             expect(gd._fullData[0]._input).toBe(trace0);
             expect(gd._fullData[1]._input).toBe(trace1);
 
             expect(gd._fullData[0]._fullInput).toBe(gd._fullData[0]);
             expect(gd._fullData[1]._fullInput).toBe(gd._fullData[1]);
-
-            expect(gd._fullData[0]._expandedInput).toBe(gd._fullData[0]);
-            expect(gd._fullData[1]._expandedInput).toBe(gd._fullData[1]);
         });
 
         function testSanitizeMarginsHasBeenCalledOnlyOnce(gd) {
@@ -209,7 +203,7 @@ describe('Test Plots', function() {
             layoutOut,
             expected;
 
-        var formatObj = require('@src/locale-en').format;
+        var formatObj = require('../../../src/locale-en').format;
 
         function supplyLayoutDefaults(layoutIn, layoutOut) {
             layoutOut._dfltTitle = {
@@ -307,20 +301,6 @@ describe('Test Plots', function() {
                 traceOut = supplyTraceDefaults(traceIn, {type: 'scatter', hovertemplate: '%{y}'}, 0, layout);
                 expect(traceOut.hoverinfo).toBeUndefined();
             });
-        });
-    });
-
-    describe('Plots.supplyTransformDefaults', function() {
-        it('should accept an empty layout when transforms present', function() {
-            var traceOut = {y: [1], _length: 1};
-            Plots.supplyTransformDefaults({}, traceOut, {
-                _globalTransforms: [{ type: 'filter'}]
-            });
-
-            // This isn't particularly interesting. More relevant is that
-            // the above supplyTransformDefaults call didn't fail due to
-            // missing transformModules data.
-            expect(traceOut.transforms.length).toEqual(1);
         });
     });
 
@@ -579,7 +559,7 @@ describe('Test Plots', function() {
                         y: [1, 2, 1],
                     }],
                     layout: {
-                        title: 'frame A'
+                        title: { text: 'frame A' }
                     },
                     name: 'A'
                 }, null, {
@@ -587,7 +567,7 @@ describe('Test Plots', function() {
                         y: [1, 2, 3],
                     }],
                     layout: {
-                        title: 'frame B'
+                        title: { text: 'frame B' }
                     },
                     name: 'B'
                 }, {
@@ -645,7 +625,7 @@ describe('Test Plots', function() {
     });
 
     describe('getSubplotCalcData', function() {
-        var getSubplotCalcData = require('@src/plots/get_data').getSubplotCalcData;
+        var getSubplotCalcData = require('../../../src/plots/get_data').getSubplotCalcData;
 
         var trace0 = { geo: 'geo2' };
         var trace1 = { subplot: 'ternary10' };
@@ -817,7 +797,7 @@ describe('Test Plots', function() {
         afterEach(destroyGraphDiv);
 
         it('should call reused style modules only once per graph', function(done) {
-            var Drawing = require('@src/components/drawing');
+            var Drawing = require('../../../src/components/drawing');
 
             Plotly.newPlot(gd, [{
                 mode: 'markers',
@@ -887,6 +867,7 @@ describe('Test Plots', function() {
             gl3d: '.gl-container>div[id^="scene"]',
             geo: '.geolayer>g',
             mapbox: '.mapboxgl-map',
+            map: '.maplibregl-map',
             parcoords: '.parcoords-line-layers',
             pie: '.pielayer .trace',
             sankey: '.sankey',
@@ -899,7 +880,7 @@ describe('Test Plots', function() {
         }
 
         // opts.cartesian and opts.gl2d should be arrays of subplot ids ('xy', 'x2y2' etc)
-        // others should be counts: gl3d, geo, mapbox, parcoords, pie, ternary
+        // others should be counts: gl3d, geo, mapbox, map, parcoords, pie, ternary
         // if omitted, that subplot type is assumed to not exist
         function assertSubplots(opts, msg) {
             msg = msg || '';
@@ -971,7 +952,8 @@ describe('Test Plots', function() {
                 scene: {},
                 geo: {},
                 ternary: {},
-                mapbox: {}
+                mapbox: {},
+                map: {}
             })
             .then(function() {
                 assertSubplots({pie: 1}, 'just pie');
@@ -1322,6 +1304,52 @@ describe('grids', function() {
             // change row OR column, the other keeps its previous default
             checkDomain(gd._fullData[0], 1, 0, [0.6, 1], [0.6, 1]);
             checkDomain(gd._fullLayout.geo, 0, 1, [0, 0.4], [0, 0.4]);
+        })
+        .then(done, done.fail);
+    });
+});
+
+describe('Test Plots with automargin and minreducedwidth/height', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should resize the plot area when tweaking min-reduced width & height', function(done) {
+        function assert(attr, exp) {
+            var xy = d3Select('rect.nsewdrag')[0][0];
+            expect(xy.getAttribute(attr)).toEqual(exp);
+        }
+
+        function assertClose(attr, exp) {
+            var xy = d3Select('rect.nsewdrag')[0][0];
+            expect(xy.getAttribute(attr)).toBeCloseTo(exp, -1);
+        }
+
+        var fig = require('../../image/mocks/automargin-minreducedheight.json');
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            assertClose('height', '55');
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'minreducedheight', 100);
+        })
+        .then(function() {
+            assert('height', '100');
+        })
+        .then(function() {
+            // force tickangle to 90 so when we increase the width the x axis labels
+            // don't revert to 30 degrees, giving us a larger height
+            // this is a cool effect, but not what we're testing here!
+            return Plotly.relayout(gd, {minreducedwidth: 100, 'xaxis.tickangle': 90});
+        })
+        .then(function() {
+            assert('width', '100');
+            assert('height', '100');
         })
         .then(done, done.fail);
     });

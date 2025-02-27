@@ -39,10 +39,10 @@ exports.getSubplotCalcData = function(calcData, type, subplotId) {
  * @param {array} calcdata: as in gd.calcdata
  * @param {object|string|fn} arg1:
  *  the plotting module, or its name, or its plot method
- *
+ * @param {int} arg2: (optional) zorder to filter on
  * @return {array[array]} [foundCalcdata, remainingCalcdata]
  */
-exports.getModuleCalcData = function(calcdata, arg1) {
+exports.getModuleCalcData = function(calcdata, arg1, arg2) {
     var moduleCalcData = [];
     var remainingCalcData = [];
 
@@ -57,10 +57,12 @@ exports.getModuleCalcData = function(calcdata, arg1) {
     if(!plotMethod) {
         return [moduleCalcData, calcdata];
     }
+    var zorder = arg2;
 
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
+        var filterByZ = (trace.zorder !== undefined);
         // N.B.
         // - 'legendonly' traces do not make it past here
         // - skip over 'visible' traces that got trimmed completely during calc transforms
@@ -70,7 +72,7 @@ exports.getModuleCalcData = function(calcdata, arg1) {
         // would suggest), but by 'module plot method' so that if some traces
         // share the same module plot method (e.g. bar and histogram), we
         // only call it one!
-        if(trace._module.plot === plotMethod) {
+        if(trace._module && trace._module.plot === plotMethod && (!filterByZ || trace.zorder === zorder)) {
             moduleCalcData.push(cd);
         } else {
             remainingCalcData.push(cd);
@@ -97,22 +99,10 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
     var subplotData = [];
     var trace, subplotX, subplotY;
 
-    if(type === 'gl2d') {
-        var spmatch = subplotId.match(SUBPLOT_PATTERN);
-        subplotX = 'x' + spmatch[1];
-        subplotY = 'y' + spmatch[2];
-    }
-
     for(var i = 0; i < data.length; i++) {
         trace = data[i];
 
-        if(type === 'gl2d' && Registry.traceIs(trace, 'gl2d')) {
-            if(trace[attr[0]] === subplotX && trace[attr[1]] === subplotY) {
-                subplotData.push(trace);
-            }
-        } else {
-            if(trace[attr] === subplotId) subplotData.push(trace);
-        }
+        if(trace[attr] === subplotId) subplotData.push(trace);
     }
 
     return subplotData;

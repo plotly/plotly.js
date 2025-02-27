@@ -1,0 +1,140 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+	"organizeImports": { "enabled": true },
+	"files": {
+		"maxSize": 10000000,
+		"include": [
+			"src",
+			"lib",
+			"test",
+			"tasks",
+			"devtools"
+		],
+		"ignore": [
+			"test/plot-schema.json",
+			"dist",
+			"stackgl_modules",
+			"node_modules",
+			"build",
+			"tasks/test_amdefine.js",
+			"tasks/test_requirejs.js",
+			"test/jasmine/assets/jquery-1.8.3.min.js"
+		]
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": false,
+			"complexity": {
+				"noExtraBooleanCast": "error",
+				"noMultipleSpacesInRegularExpressionLiterals": "error",
+				"noUselessCatch": "error",
+				"noWith": "error",
+				"useLiteralKeys": "error"
+			},
+			"correctness": {
+				"noConstAssign": "error",
+				"noConstantCondition": "error",
+				"noEmptyCharacterClassInRegex": "error",
+				"noEmptyPattern": "error",
+				"noGlobalObjectCalls": "error",
+				"noInnerDeclarations": "off",
+				"noInvalidConstructorSuper": "error",
+				"noInvalidUseBeforeDeclaration": "error",
+				"noNewSymbol": "error",
+				"noNonoctalDecimalEscape": "error",
+				"noPrecisionLoss": "error",
+				"noSelfAssign": "error",
+				"noSetterReturn": "error",
+				"noSwitchDeclarations": "off",
+				"noUndeclaredVariables": "off",
+				"noUnreachable": "error",
+				"noUnreachableSuper": "error",
+				"noUnsafeFinally": "error",
+				"noUnsafeOptionalChaining": "error",
+				"noUnusedLabels": "error",
+				"noUnusedVariables": "off",
+				"useIsNan": "error",
+				"useValidForDirection": "error",
+				"useYield": "error"
+			},
+			"style": {
+				"useBlockStatements": "off",
+				"useSingleVarDeclarator": "off",
+				"noVar": "off"
+			},
+			"suspicious": {
+				"noAssignInExpressions": "off",
+				"noAsyncPromiseExecutor": "error",
+				"noCatchAssign": "error",
+				"noClassAssign": "error",
+				"noCompareNegZero": "error",
+				"noConsoleLog": "off",
+				"noControlCharactersInRegex": "error",
+				"noDebugger": "error",
+				"noDoubleEquals": "off",
+				"noDuplicateCase": "error",
+				"noDuplicateClassMembers": "error",
+				"noDuplicateObjectKeys": "error",
+				"noDuplicateParameters": "error",
+				"noEmptyBlockStatements": "off",
+				"noFallthroughSwitchClause": "off",
+				"noFunctionAssign": "error",
+				"noGlobalAssign": "error",
+				"noImportAssign": "error",
+				"noMisleadingCharacterClass": "error",
+				"noPrototypeBuiltins": "off",
+				"noRedeclare": "off",
+				"noShadowRestrictedNames": "off",
+				"noUnsafeNegation": "error",
+				"useGetterReturn": "error",
+				"useValidTypeof": "error"
+			}
+		},
+		"ignore": [
+			"**/stackgl_modules",
+			"**/node_modules",
+			"**/dist",
+			"**/build",
+			"tasks/test_amdefine.js",
+			"tasks/test_requirejs.js",
+			"test/jasmine/assets/jquery-1.8.3.min.js"
+		]
+	},
+	"javascript": {
+		"globals": [
+			"Promise",
+			"Float32Array",
+			"Uint8ClampedArray",
+			"Int32Array",
+			"ArrayBuffer",
+			"Uint16Array",
+			"DataView",
+			"Float64Array",
+			"Int16Array",
+			"Uint8Array",
+			"Int8Array",
+			"Uint32Array"
+		],
+		"formatter": {
+			"quoteStyle": "single",
+			"trailingCommas": "none",
+			"indentStyle": "space",
+			"indentWidth": 4,
+			"lineEnding": "lf",
+			"lineWidth": 120
+		}
+	},
+	"json": {
+		"linter": {
+			"enabled": true
+		},
+		"formatter": {
+			"enabled": true,
+			"indentStyle": "space",
+			"indentWidth": 1,
+			"lineEnding": "lf",
+			"lineWidth": 80
+		}
+	}
+}

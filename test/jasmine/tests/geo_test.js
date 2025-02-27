@@ -1,11 +1,11 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
-var Geo = require('@src/plots/geo');
-var GeoAssets = require('@src/assets/geo_assets');
-var constants = require('@src/plots/geo/constants');
-var geoLocationUtils = require('@src/lib/geo_location_utils');
-var topojsonUtils = require('@src/lib/topojson_utils');
+var Geo = require('../../../src/plots/geo');
+var GeoAssets = require('../../../src/assets/geo_assets');
+var constants = require('../../../src/plots/geo/constants');
+var geoLocationUtils = require('../../../src/lib/geo_location_utils');
+var topojsonUtils = require('../../../src/lib/topojson_utils');
 
 var d3 = require('@plotly/d3');
 var d3Select = require('../../strict-d3').select;
@@ -19,8 +19,8 @@ var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var drag = require('../assets/drag');
 
-var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
-var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
+var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doubleClickDelay;
+var HOVERMINTIME = require('../../../src/components/fx').constants.HOVERMINTIME;
 
 // use local topojson files
 Plotly.setPlotConfig({
@@ -836,7 +836,7 @@ describe('Test geo interactions', function() {
     afterEach(destroyGraphDiv);
 
     describe('mock geo_first.json', function() {
-        var mock = require('@mocks/geo_first.json');
+        var mock = require('../../image/mocks/geo_first.json');
         var gd;
 
         function mouseEventScatterGeo(type) {
@@ -919,7 +919,7 @@ describe('Test geo interactions', function() {
 
             it('should not be triggered when pt *location* does not have matching feature', function(done) {
                 var update = {
-                    'locations': [['CAN', 'AAA', 'USA']]
+                    locations: [['CAN', 'AAA', 'USA']]
                 };
 
                 Plotly.restyle(gd, update).then(function() {
@@ -1371,7 +1371,7 @@ describe('Test geo interactions', function() {
 
     it('should not throw during hover when out-of-range pts are present in *albers usa* map', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/geo_scattergeo-out-of-usa.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_scattergeo-out-of-usa.json'));
         fig.layout.width = 700;
         fig.layout.height = 500;
 
@@ -1384,7 +1384,7 @@ describe('Test geo interactions', function() {
 
     it('should clear hover label when cursor slips off subplot', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/geo_orthographic.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_orthographic.json'));
 
         function _assert(msg, hoverLabelCnt) {
             expect(d3SelectAll('g.hovertext').size())
@@ -1424,7 +1424,7 @@ describe('Test geo interactions', function() {
 
     it('should not confuse positions on either side of the globe', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/geo_orthographic.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_orthographic.json'));
 
         fig.data[0].visible = false;
         fig.layout.geo.projection.rotation = {lon: -75, lat: 90};
@@ -1545,7 +1545,7 @@ describe('Test geo interactions', function() {
         Plotly.react(gd, figWorld)
         .then(function() {
             _assertViewInitial('world scope', {
-                'fitbounds': false,
+                fitbounds: false,
                 'center.lon': 0,
                 'center.lat': 0,
                 'projection.scale': 1,
@@ -1555,7 +1555,7 @@ describe('Test geo interactions', function() {
         .then(function() { return Plotly.react(gd, figUSA); })
         .then(function() {
             _assertViewInitial('react to usa scope', {
-                'fitbounds': false,
+                fitbounds: false,
                 'center.lon': -96.6,
                 'center.lat': 38.7,
                 'projection.scale': 1
@@ -1564,7 +1564,7 @@ describe('Test geo interactions', function() {
         .then(function() { return Plotly.react(gd, figNA); })
         .then(function() {
             _assertViewInitial('react to NA scope', {
-                'fitbounds': false,
+                fitbounds: false,
                 'center.lon': -112.5,
                 'center.lat': 45,
                 'projection.scale': 1
@@ -1573,7 +1573,7 @@ describe('Test geo interactions', function() {
         .then(function() { return Plotly.react(gd, figWorld); })
         .then(function() {
             _assertViewInitial('react back to world scope', {
-                'fitbounds': false,
+                fitbounds: false,
                 'center.lon': 0,
                 'center.lat': 0,
                 'projection.scale': 1,
@@ -1688,7 +1688,7 @@ describe('Test geo interactions', function() {
         }
 
         it('- no base layers + lon/lat traces', function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/geo_skymap.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/geo_skymap.json'));
 
             Plotly.newPlot(gd, fig)
             .then(_assert(0))
@@ -1737,7 +1737,7 @@ describe('Test geo interactions', function() {
 });
 
 describe('Test event property of interactions on a geo plot:', function() {
-    var mock = require('@mocks/geo_scattergeo-locations.json');
+    var mock = require('../../image/mocks/geo_scattergeo-locations.json');
 
     var mockCopy, gd;
 
@@ -2133,7 +2133,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         var fig;
 
         beforeEach(function() {
-            fig = Lib.extendDeep({}, require('@mocks/geo_winkel-tripel'));
+            fig = Lib.extendDeep({}, require('../../image/mocks/geo_winkel-tripel'));
             fig.layout.width = 700;
             fig.layout.height = 500;
             fig.layout.dragmode = 'pan';
@@ -2290,7 +2290,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         var fig;
 
         beforeEach(function() {
-            fig = Lib.extendDeep({}, require('@mocks/geo_orthographic'));
+            fig = Lib.extendDeep({}, require('../../image/mocks/geo_orthographic'));
             fig.layout.dragmode = 'pan';
 
             // of layout width = height = 500
@@ -2437,7 +2437,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         var fig;
 
         beforeEach(function() {
-            fig = Lib.extendDeep({}, require('@mocks/geo_europe-bubbles'));
+            fig = Lib.extendDeep({}, require('../../image/mocks/geo_europe-bubbles'));
             fig.layout.geo.resolution = 110;
             fig.layout.dragmode = 'pan';
 
@@ -2575,7 +2575,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
     });
 
     it('should work for *albers usa* projections', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_choropleth-usa'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_choropleth-usa'));
         fig.layout.dragmode = 'pan';
 
         // layout width = 870
@@ -2655,7 +2655,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
 
     it('should guard against undefined projection.invert result in some projections', function(done) {
         // e.g. aitoff
-        var fig = Lib.extendDeep({}, require('@mocks/geo_aitoff-sinusoidal.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_aitoff-sinusoidal.json'));
         fig.layout.dragmode = 'pan';
         delete fig.layout.geo2;
         fig.data = [fig.data[0]];
@@ -2673,7 +2673,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
     });
 
     it('should respect scrollZoom config option', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_winkel-tripel'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_winkel-tripel'));
         fig.layout.width = 700;
         fig.layout.height = 500;
         fig.layout.dragmode = 'pan';
@@ -2732,6 +2732,43 @@ describe('Test geo zoom/pan/drag interactions:', function() {
     });
 });
 
+describe('Test geo interactions update marker angles:', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    function getPath() {
+        return d3Select('.scattergeo .point').node().getAttribute('d');
+    }
+
+    it('update angles when panning', function(done) {
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_conic-conformal'));
+        fig.layout.width = 700;
+        fig.layout.height = 500;
+        fig.layout.dragmode = 'pan';
+
+        var initialPath, newPath;
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            initialPath = getPath();
+
+            return drag({path: [[300, 200], [350, 250], [400, 300]], noCover: true});
+        })
+        .then(function() {
+            newPath = getPath();
+            expect(newPath).toEqual('M0,0L18.238949470790537,8.206139299448276L19.579067739888885,-4.081679364776507Z');
+
+            expect(newPath).not.toEqual(initialPath);
+            expect(newPath).toEqual('M0,0L18.238949470790537,8.206139299448276L19.579067739888885,-4.081679364776507Z');
+            expect(initialPath).toEqual('M0,0L-1.5033314641545745,19.94341982983066L10.506227353572104,17.01820163222463Z');
+        })
+        .then(done, done.fail);
+    });
+});
+
 describe('plotly_relayouting', function() {
     var gd;
     var events;
@@ -2758,9 +2795,9 @@ describe('plotly_relayouting', function() {
     };
 
     var mocks = {
-        'non-clipped': require('@mocks/geo_winkel-tripel'),
-        'clipped': require('@mocks/geo_orthographic'),
-        'scoped': require('@mocks/geo_europe-bubbles')
+        'non-clipped': require('../../image/mocks/geo_winkel-tripel'),
+        clipped: require('../../image/mocks/geo_orthographic'),
+        scoped: require('../../image/mocks/geo_europe-bubbles')
     };
     ['non-clipped', 'clipped', 'scoped'].forEach(function(zoomHandler) {
         ['pan'].forEach(function(dragmode) {

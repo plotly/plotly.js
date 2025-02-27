@@ -1,8 +1,7 @@
 'use strict';
 
-var Lib = require('../lib');
-var extendFlat = Lib.extendFlat;
-var isPlainObject = Lib.isPlainObject;
+var extendFlat = require('../lib/extend').extendFlat;
+var isPlainObject = require('../lib/is_plain_object');
 
 var traceOpts = {
     valType: 'flaglist',

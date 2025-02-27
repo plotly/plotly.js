@@ -58,11 +58,12 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
             Color.contrast(hoverBG)
         );
 
-        Lib.coerceFont(coerce, 'hoverlabel.font', {
-            family: globalHoverLabel.font.family,
-            size: globalHoverLabel.font.size,
-            color: globalHoverLabel.font.color || hoverBorder
-        });
+        var fontDflt = Lib.extendFlat({}, globalHoverLabel.font);
+        if(!fontDflt.color) {
+            fontDflt.color = hoverBorder;
+        }
+
+        Lib.coerceFont(coerce, 'hoverlabel.font', fontDflt);
     }
 
     coerce('captureevents', !!hoverText);

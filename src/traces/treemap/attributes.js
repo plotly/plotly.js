@@ -9,6 +9,7 @@ var pieAttrs = require('../pie/attributes');
 var sunburstAttrs = require('../sunburst/attributes');
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
+var pattern = require('../../components/drawing/attributes').pattern;
 
 module.exports = {
     labels: sunburstAttrs.labels,
@@ -46,7 +47,7 @@ module.exports = {
             dflt: 1,
             editType: 'plot',
             description: [
-                'When using *squarify* `packing` algorithm, according to https://github.com/d3/d3-hierarchy/blob/master/README.md#squarify_ratio',
+                'When using *squarify* `packing` algorithm, according to https://github.com/d3/d3-hierarchy/blob/v3.1.1/README.md#squarify_ratio',
                 'this option specifies the desired aspect ratio of the generated rectangles.',
                 'The ratio must be specified as a number greater than or equal to one.',
                 'Note that the orientation of the generated rectangles (tall or wide)',
@@ -123,6 +124,8 @@ module.exports = {
 
         colors: sunburstAttrs.marker.colors,
 
+        pattern: pattern,
+
         depthfade: {
             valType: 'enumerated',
             values: [true, false, 'reversed'],
@@ -141,7 +144,17 @@ module.exports = {
 
         line: sunburstAttrs.marker.line,
 
-        editType: 'calc'
+        cornerradius: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            editType: 'plot',
+            description: [
+                'Sets the maximum rounding of corners (in px).'
+            ].join(' ')
+        },
+
+        editType: 'calc',
     },
         colorScaleAttrs('marker', {
             colorAttr: 'colors',

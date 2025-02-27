@@ -1,16 +1,16 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Registry = require('@src/registry');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Registry = require('../../../src/registry');
 function _doPlot(gd, fig) {
     return Registry.call('_doPlot', gd, fig.data, fig.layout);
 }
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-var Plots = require('@src/plots/plots');
-var Parcoords = require('@src/traces/parcoords');
-var attributes = require('@src/traces/parcoords/attributes');
-var PC = require('@src/traces/parcoords/constants');
+var Plots = require('../../../src/plots/plots');
+var Parcoords = require('../../../src/traces/parcoords');
+var attributes = require('../../../src/traces/parcoords/attributes');
+var PC = require('../../../src/traces/parcoords/constants');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var delay = require('../assets/delay');
@@ -21,19 +21,19 @@ var click = require('../assets/click');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var readPixel = require('../assets/read_pixel');
 
-var mock3 = require('@mocks/gl2d_parcoords_style_labels.json');
+var mock3 = require('../../image/mocks/gl2d_parcoords_style_labels.json');
 
 // mock with two dimensions (one panel); special case, e.g. left and right panel is obv. the same
-var mock2 = require('@mocks/gl2d_parcoords_2.json');
+var mock2 = require('../../image/mocks/gl2d_parcoords_2.json');
 
 // mock with one dimension (zero panels); special case, as no panel can be rendered
-var mock1 = require('@mocks/gl2d_parcoords_1.json');
+var mock1 = require('../../image/mocks/gl2d_parcoords_1.json');
 
 // mock with zero dimensions; special case, as no dimension can be rendered
 var mock0 = Lib.extendDeep({}, mock1);
 mock0.data[0].dimensions = [];
 
-var mock = Lib.extendDeep({}, require('@mocks/gl2d_parcoords_large.json'));
+var mock = Lib.extendDeep({}, require('../../image/mocks/gl2d_parcoords_large.json'));
 var lineStart = 30;
 var lineCount = 10;
 mock.data[0].dimensions.forEach(function(d) {
@@ -92,7 +92,13 @@ describe('parcoords initialization tests', function() {
             gd.layout.font = {
                 family: 'Gravitas',
                 size: 20,
-                color: 'blue'
+                color: 'blue',
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: '1px 1px 2px green',
             };
 
             supplyAllDefaults(gd);
@@ -100,7 +106,13 @@ describe('parcoords initialization tests', function() {
             var expected = {
                 family: 'Gravitas',
                 size: 17,
-                color: 'blue'
+                color: 'blue',
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: '1px 1px 2px green',
             };
 
             expect(gd._fullData[0].labelfont).toEqual(expected);
@@ -889,6 +901,128 @@ describe('parcoords Lifecycle methods', function() {
             expect(newRGB).toBeLessThan(255, 'not all white');
 
             expect(newRGB).toBe(oldRGB, 'no change to context');
+        })
+        .then(done, done.fail);
+    });
+
+    it('@gl unselected.line.color `Plotly.restyle` should change context layer line.color', function(done) {
+        var testLayer = '.gl-canvas-context';
+
+        var list1 = [];
+        var list2 = [];
+        for(var i = 0; i <= 100; i++) {
+            list1[i] = i;
+            list2[i] = 100 - i;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'parcoords',
+            dimensions: [{
+                constraintrange: [1, 10],
+                values: list1
+            }, {
+                values: list2
+            }],
+            line: {color: '#0F0'},
+            unselected: {line: {color: '#F00'}}
+        }], {
+            margin: {
+                t: 0,
+                b: 0,
+                l: 0,
+                r: 0
+            },
+            width: 300,
+            height: 200
+        })
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+            expect(rgb[0]).not.toBe(0, 'red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            return Plotly.restyle(gd, 'unselected.line.color', '#00F');
+        })
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).not.toBe(0, 'blue');
+
+            return Plotly.restyle(gd, 'unselected.line.color', 'rgba(0,0,0,0)');
+        })
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).toBe(0, 'no blue');
+        })
+        .then(done, done.fail);
+    });
+
+    it('@gl unselected.line.color `Plotly.react` should change line.color and unselected.line.color', function(done) {
+        var unselectedLayer = '.gl-canvas-context';
+        var selectedLayer = '.gl-canvas-focus';
+
+        var list1 = [];
+        var list2 = [];
+        for(var i = 0; i <= 100; i++) {
+            list1[i] = i;
+            list2[i] = 100 - i;
+        }
+
+        var fig = {
+            data: [{
+                type: 'parcoords',
+                dimensions: [{
+                    constraintrange: [1, 10],
+                    values: list1
+                }, {
+                    values: list2
+                }],
+                line: {color: '#0F0'},
+                unselected: {line: {color: '#F00'}}
+            }],
+            layout: {
+                margin: {
+                    t: 0,
+                    b: 0,
+                    l: 0,
+                    r: 0
+                },
+                width: 300,
+                height: 200
+            }
+        };
+
+        var rgb;
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            rgb = getAvgPixelByChannel(unselectedLayer);
+            expect(rgb[0]).not.toBe(0, 'red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            rgb = getAvgPixelByChannel(selectedLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).not.toBe(0, 'green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            fig.data[0].line.color = '#FF0';
+            fig.data[0].unselected.line.color = '#00F';
+            return Plotly.react(gd, fig);
+        })
+        .then(function() {
+            rgb = getAvgPixelByChannel(selectedLayer);
+            expect(rgb[0]).not.toBe(0, 'red');
+            expect(rgb[1]).not.toBe(0, 'green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            rgb = getAvgPixelByChannel(unselectedLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).not.toBe(0, 'blue');
         })
         .then(done, done.fail);
     });

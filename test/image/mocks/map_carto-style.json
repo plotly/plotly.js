@@ -1,0 +1,35 @@
+{
+ "data": [
+  {
+   "type": "scattermap",
+   "name": "carto-positron",
+   "lon": [10, 20],
+   "lat": [20, 10]
+  },
+  {
+   "type": "scattermap",
+   "name": "carto-darkmatter",
+   "lon": [10, 20],
+   "lat": [20, 10],
+   "subplot": "map2"
+  }
+ ],
+ "layout": {
+  "grid": { "rows": 1, "columns": 2 },
+
+  "legend": {
+   "x": 0,
+   "y": 1,
+   "yanchor": "bottom"
+  },
+
+  "map": {
+   "domain": { "row": 0, "column": 0 },
+   "style": "carto-positron"
+  },
+  "map2": {
+   "domain": { "row": 0, "column": 1 },
+   "style": "carto-darkmatter"
+  }
+ }
+}

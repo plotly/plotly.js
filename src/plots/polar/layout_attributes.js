@@ -13,7 +13,8 @@ var axisLineGridAttr = overrideAll({
     linewidth: axesAttrs.linewidth,
     showgrid: extendFlat({}, axesAttrs.showgrid, {dflt: true}),
     gridcolor: axesAttrs.gridcolor,
-    gridwidth: axesAttrs.gridwidth
+    gridwidth: axesAttrs.gridwidth,
+    griddash: axesAttrs.griddash
 
     // TODO add spike* attributes down the road
 
@@ -22,7 +23,7 @@ var axisLineGridAttr = overrideAll({
 }, 'plot', 'from-root');
 
 var axisTickAttrs = overrideAll({
-    tickmode: axesAttrs.tickmode,
+    tickmode: axesAttrs.minor.tickmode,
     nticks: axesAttrs.nticks,
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
@@ -34,6 +35,7 @@ var axisTickAttrs = overrideAll({
     tickcolor: axesAttrs.tickcolor,
     ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
+    labelalias: axesAttrs.labelalias,
     showtickprefix: axesAttrs.showtickprefix,
     tickprefix: axesAttrs.tickprefix,
     showticksuffix: axesAttrs.showticksuffix,
@@ -56,6 +58,14 @@ var radialAxisAttrs = {
     }),
     autotypenumbers: axesAttrs.autotypenumbers,
 
+    autorangeoptions: {
+        minallowed: axesAttrs.autorangeoptions.minallowed,
+        maxallowed: axesAttrs.autorangeoptions.maxallowed,
+        clipmin: axesAttrs.autorangeoptions.clipmin,
+        clipmax: axesAttrs.autorangeoptions.clipmax,
+        include: axesAttrs.autorangeoptions.include,
+        editType: 'plot'
+    },
     autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
     rangemode: {
         valType: 'enumerated',
@@ -71,6 +81,8 @@ var radialAxisAttrs = {
             'of the input data (same behavior as for cartesian axes).'
         ].join(' ')
     },
+    minallowed: extendFlat({}, axesAttrs.minallowed, {editType: 'plot'}),
+    maxallowed: extendFlat({}, axesAttrs.maxallowed, {editType: 'plot'}),
     range: extendFlat({}, axesAttrs.range, {
         items: [
             {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
@@ -92,6 +104,8 @@ var radialAxisAttrs = {
             'Defaults to the first `polar.sector` angle.'
         ].join(' ')
     },
+
+    autotickangles: axesAttrs.autotickangles,
 
     side: {
         valType: 'enumerated',
@@ -132,11 +146,6 @@ var radialAxisAttrs = {
     },
 
     editType: 'calc',
-
-    _deprecated: {
-        title: axesAttrs._deprecated.title,
-        titlefont: axesAttrs._deprecated.titlefont
-    }
 };
 
 extendFlat(

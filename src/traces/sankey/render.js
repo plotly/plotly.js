@@ -35,6 +35,12 @@ function sankeyModel(layout, d, traceIndex) {
     var horizontal = trace.orientation === 'h';
     var nodePad = trace.node.pad;
     var nodeThickness = trace.node.thickness;
+    var nodeAlign = {
+        justify: d3Sankey.sankeyJustify,
+        left: d3Sankey.sankeyLeft,
+        right: d3Sankey.sankeyRight,
+        center: d3Sankey.sankeyCenter
+    }[trace.node.align];
 
     var width = layout.width * (domain.x[1] - domain.x[0]);
     var height = layout.height * (domain.y[1] - domain.y[0]);
@@ -61,6 +67,7 @@ function sankeyModel(layout, d, traceIndex) {
       .nodeId(function(d) {
           return d.pointNumber;
       })
+      .nodeAlign(nodeAlign)
       .nodes(nodes)
       .links(links);
 
@@ -271,6 +278,7 @@ function sankeyModel(layout, d, traceIndex) {
         nodeLineWidth: trace.node.line.width,
         linkLineColor: trace.link.line.color,
         linkLineWidth: trace.link.line.width,
+        linkArrowLength: trace.link.arrowlen,
         valueFormat: trace.valueformat,
         valueSuffix: trace.valuesuffix,
         textFont: trace.textfont,
@@ -291,6 +299,7 @@ function sankeyModel(layout, d, traceIndex) {
 
 function linkModel(d, l, i) {
     var tc = tinycolor(l.color);
+    var htc = tinycolor(l.hovercolor);
     var basicKey = l.source.label + '|' + l.target.label;
     var key = basicKey + '__' + i;
 
@@ -306,9 +315,12 @@ function linkModel(d, l, i) {
         link: l,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
+        tinyColorHoverHue: Color.tinyRGB(htc),
+        tinyColorHoverAlpha: htc.getAlpha(),
         linkPath: linkPath,
         linkLineColor: d.linkLineColor,
         linkLineWidth: d.linkLineWidth,
+        linkArrowLength: d.linkArrowLength,
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
@@ -318,121 +330,170 @@ function linkModel(d, l, i) {
     };
 }
 
-function createCircularClosedPathString(link) {
+function createCircularClosedPathString(link, arrowLen) {
     // Using coordinates computed by d3-sankey-circular
     var pathString = '';
     var offset = link.width / 2;
     var coords = link.circularPathData;
-    if(link.circularLinkType === 'top') {
-        // Top path
+    var isSourceBeforeTarget = coords.sourceX + coords.verticalBuffer < coords.targetX;
+    var isPathOverlapped = (coords.rightFullExtent - coords.rightLargeArcRadius - arrowLen) <= (coords.leftFullExtent - offset)
+     var diff = Math.abs(coords.rightFullExtent- coords.leftFullExtent - offset) < offset ;
+    if (link.circularLinkType === 'top') {
         pathString =
-          // start at the left of the target node
-          'M ' +
-          coords.targetX + ' ' + (coords.targetY + offset) + ' ' +
-          'L' +
-          coords.rightInnerExtent + ' ' + (coords.targetY + offset) +
-          'A' +
-          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightSmallArcRadius + offset) + ' 0 0 1 ' +
-          (coords.rightFullExtent - offset) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
-          'L' +
-          (coords.rightFullExtent - offset) + ' ' + coords.verticalRightInnerExtent +
-          'A' +
-          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 1 ' +
-          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
-          'L' +
-          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
-          'A' +
-          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftLargeArcRadius + offset) + ' 0 0 1 ' +
-          (coords.leftFullExtent + offset) + ' ' + coords.verticalLeftInnerExtent +
-          'L' +
-          (coords.leftFullExtent + offset) + ' ' + (coords.sourceY - coords.leftSmallArcRadius) +
-          'A' +
-          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 1 ' +
-          coords.leftInnerExtent + ' ' + (coords.sourceY + offset) +
-          'L' +
-          coords.sourceX + ' ' + (coords.sourceY + offset) +
+            // start at the left of the target node
+            'M ' +
+            (coords.targetX - arrowLen) + ' ' + (coords.targetY + offset) + ' ' +
+            'L ' +
+            (coords.rightInnerExtent - arrowLen) + ' ' + (coords.targetY + offset) +
+            'A ' +
+            (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightSmallArcRadius + offset) + ' 0 0 1 ' +
+            (coords.rightFullExtent - offset - arrowLen) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
+            'L ' + (coords.rightFullExtent - offset - arrowLen) + ' ' + coords.verticalRightInnerExtent;
 
-          // Walking back
-          'L' +
-          coords.sourceX + ' ' + (coords.sourceY - offset) +
-          'L' +
-          coords.leftInnerExtent + ' ' + (coords.sourceY - offset) +
-          'A' +
-          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftSmallArcRadius - offset) + ' 0 0 0 ' +
-          (coords.leftFullExtent - offset) + ' ' + (coords.sourceY - coords.leftSmallArcRadius) +
-          'L' +
-          (coords.leftFullExtent - offset) + ' ' + coords.verticalLeftInnerExtent +
-          'A' +
-          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftLargeArcRadius - offset) + ' 0 0 0 ' +
-          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
-          'L' +
-          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
-          'A' +
-          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightLargeArcRadius - offset) + ' 0 0 0 ' +
-          (coords.rightFullExtent + offset) + ' ' + coords.verticalRightInnerExtent +
-          'L' +
-          (coords.rightFullExtent + offset) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
-          'A' +
-          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 0 ' +
-          coords.rightInnerExtent + ' ' + (coords.targetY - offset) +
-          'L' +
-          coords.targetX + ' ' + (coords.targetY - offset) +
-          'Z';
+        if (isSourceBeforeTarget && isPathOverlapped) {
+            pathString += ' A ' +
+                (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 1 ' +
+                (coords.rightFullExtent + offset - arrowLen - (coords.rightLargeArcRadius - offset)) + ' ' +
+                (coords.verticalRightInnerExtent - (coords.rightLargeArcRadius + offset)) +
+                ' L ' +
+                (coords.rightFullExtent + offset - (coords.rightLargeArcRadius - offset) - arrowLen) + ' ' +
+                (coords.verticalRightInnerExtent - (coords.rightLargeArcRadius + offset)) +
+                ' A ' +
+                (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftLargeArcRadius + offset) + ' 0 0 1 ' +
+                (coords.leftFullExtent + offset) + ' ' + coords.verticalRightInnerExtent;  
+        } else if (isSourceBeforeTarget) {
+            pathString += ' A ' +
+                (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightLargeArcRadius - offset) + ' 0 0 0 ' +
+                (coords.rightFullExtent - offset - arrowLen - (coords.rightLargeArcRadius - offset)) + ' ' +
+                (coords.verticalRightInnerExtent - (coords.rightLargeArcRadius - offset)) +
+                ' L ' +
+                (coords.leftFullExtent + offset + (coords.rightLargeArcRadius - offset)) + ' ' +
+                (coords.verticalRightInnerExtent - (coords.rightLargeArcRadius - offset)) +
+                ' A ' +
+                (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftLargeArcRadius - offset) + ' 0 0 0 ' +
+                (coords.leftFullExtent + offset) + ' ' + coords.verticalLeftInnerExtent;
+        } else {
+            pathString += ' A ' +
+                (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 1 ' +
+                (coords.rightInnerExtent - arrowLen) + ' ' + (coords.verticalFullExtent - offset) +
+                ' L ' +
+                coords.leftInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+                ' A ' +
+                (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftLargeArcRadius + offset) + ' 0 0 1 ' +
+                (coords.leftFullExtent + offset) + ' ' + coords.verticalLeftInnerExtent;
+        }
+
+        pathString += ' L ' +
+            (coords.leftFullExtent + offset) + ' ' + (coords.sourceY - coords.leftSmallArcRadius) +
+            ' A ' +
+            (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 1 ' +
+            coords.leftInnerExtent + ' ' + (coords.sourceY + offset) +
+            ' L ' +
+            coords.sourceX + ' ' + (coords.sourceY + offset) +
+
+            // Walking back
+            ' L ' +
+            coords.sourceX + ' ' + (coords.sourceY - offset) +
+            ' L ' +
+            coords.leftInnerExtent + ' ' + (coords.sourceY - offset) +
+            ' A ' +
+            (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftSmallArcRadius - offset) + ' 0 0 0 ' +
+            (coords.leftFullExtent - offset) + ' ' + (coords.sourceY - coords.leftSmallArcRadius) +
+            ' L ' +
+            (coords.leftFullExtent - offset) + ' ' + coords.verticalLeftInnerExtent;
+
+        if (isSourceBeforeTarget && isPathOverlapped) {
+            pathString += ' A ' +
+                (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 0 ' +
+                (coords.leftFullExtent - offset) + ' ' + (coords.verticalFullExtent + offset) +
+                'L' + (coords.rightFullExtent + offset - arrowLen) + ' ' + (coords.verticalFullExtent + offset) +
+                ' A ' +
+                (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 0 ' +
+                (coords.rightFullExtent + offset - arrowLen) + ' ' + coords.verticalRightInnerExtent;
+        } else if (isSourceBeforeTarget) {
+            pathString += ' A ' +
+                (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 1 ' +
+                (coords.leftFullExtent + offset) + ' ' + (coords.verticalFullExtent - offset) +
+                ' L ' +
+                (coords.rightFullExtent - offset - arrowLen) + ' ' + (coords.verticalFullExtent - offset) +
+                ' A ' +
+                (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 1 ' +
+                (coords.rightFullExtent + offset - arrowLen) + ' ' + coords.verticalRightInnerExtent;
+        } else {
+            pathString += ' A ' +
+                (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftLargeArcRadius - offset) + ' 0 0 0 ' +
+                coords.leftInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+                ' L ' +
+                (coords.rightInnerExtent - arrowLen) + ' ' + (coords.verticalFullExtent + offset) +
+                ' A ' +
+                (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightLargeArcRadius - offset) + ' 0 0 0 ' +
+                (coords.rightFullExtent + offset - arrowLen) + ' ' + coords.verticalRightInnerExtent;
+        }
+
+        pathString += ' L ' +
+            (coords.rightFullExtent + offset - arrowLen) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
+            ' A ' +
+            (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 0 ' +
+            (coords.rightInnerExtent - arrowLen) + ' ' + (coords.targetY - offset) +
+            ' L ' +
+            (coords.targetX - arrowLen) + ' ' + (coords.targetY - offset) +
+            (arrowLen > 0 ? ' L ' + coords.targetX + ' ' + coords.targetY : '') +
+            'Z';
     } else {
-        // Bottom path
         pathString =
-          // start at the left of the target node
-          'M ' +
-          coords.targetX + ' ' + (coords.targetY - offset) + ' ' +
-          'L' +
-          coords.rightInnerExtent + ' ' + (coords.targetY - offset) +
-          'A' +
-          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightSmallArcRadius + offset) + ' 0 0 0 ' +
-          (coords.rightFullExtent - offset) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
-          'L' +
-          (coords.rightFullExtent - offset) + ' ' + coords.verticalRightInnerExtent +
-          'A' +
-          (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 0 ' +
-          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
-          'L' +
-          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
-          'A' +
-          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftLargeArcRadius + offset) + ' 0 0 0 ' +
-          (coords.leftFullExtent + offset) + ' ' + coords.verticalLeftInnerExtent +
-          'L' +
-          (coords.leftFullExtent + offset) + ' ' + (coords.sourceY + coords.leftSmallArcRadius) +
-          'A' +
-          (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 0 ' +
-          coords.leftInnerExtent + ' ' + (coords.sourceY - offset) +
-          'L' +
-          coords.sourceX + ' ' + (coords.sourceY - offset) +
+            'M ' + (coords.targetX - arrowLen) + ' ' + (coords.targetY - offset) + ' ' +
+            ' L ' + (coords.rightInnerExtent - arrowLen) + ' ' + (coords.targetY - offset) +
+            ' A ' + (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightSmallArcRadius + offset) + ' 0 0 0 ' + (coords.rightFullExtent - offset - arrowLen) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
+            ' L ' + (coords.rightFullExtent - offset - arrowLen) + ' ' + coords.verticalRightInnerExtent;
 
-          // Walking back
-          'L' +
-          coords.sourceX + ' ' + (coords.sourceY + offset) +
-          'L' +
-          coords.leftInnerExtent + ' ' + (coords.sourceY + offset) +
-          'A' +
-          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftSmallArcRadius - offset) + ' 0 0 1 ' +
-          (coords.leftFullExtent - offset) + ' ' + (coords.sourceY + coords.leftSmallArcRadius) +
-          'L' +
-          (coords.leftFullExtent - offset) + ' ' + coords.verticalLeftInnerExtent +
-          'A' +
-          (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftLargeArcRadius - offset) + ' 0 0 1 ' +
-          coords.leftInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
-          'L' +
-          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
-          'A' +
-          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightLargeArcRadius - offset) + ' 0 0 1 ' +
-          (coords.rightFullExtent + offset) + ' ' + coords.verticalRightInnerExtent +
-          'L' +
-          (coords.rightFullExtent + offset) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
-          'A' +
-          (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 1 ' +
-          coords.rightInnerExtent + ' ' + (coords.targetY + offset) +
-          'L' +
-          coords.targetX + ' ' + (coords.targetY + offset) +
-          'Z';
+        if (isSourceBeforeTarget && isPathOverlapped) {
+            pathString += ' A ' + (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 0 ' +
+                (coords.rightInnerExtent - offset - arrowLen) + ' ' + (coords.verticalFullExtent + offset) +
+                ' L ' + (coords.rightFullExtent + offset - arrowLen - (coords.rightLargeArcRadius - offset)) + ' ' + (coords.verticalFullExtent + offset) +
+                ' A ' + (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 0 ' +
+                (coords.leftFullExtent + offset) + ' ' + coords.verticalLeftInnerExtent;  
+        } else if (isSourceBeforeTarget) {
+            pathString += ' A ' + (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 1 ' +
+                (coords.rightFullExtent - arrowLen - offset - (coords.rightLargeArcRadius - offset)) + ' ' + (coords.verticalFullExtent - offset) +
+                ' L ' + (coords.leftFullExtent + offset + (coords.rightLargeArcRadius - offset)) + ' ' + (coords.verticalFullExtent - offset) +
+                ' A ' + (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 1 ' +
+                (coords.leftFullExtent + offset) + ' ' + coords.verticalLeftInnerExtent;
+        } else {
+            pathString += ' A ' + (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 0 ' + (coords.rightInnerExtent - arrowLen) + ' ' + (coords.verticalFullExtent + offset) +
+                ' L ' + coords.leftInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+                ' A ' + (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftLargeArcRadius + offset) + ' 0 0 0 ' + (coords.leftFullExtent + offset) + ' ' + coords.verticalLeftInnerExtent;
+        }
+
+        pathString += ' L ' + (coords.leftFullExtent + offset) + ' ' + (coords.sourceY + coords.leftSmallArcRadius) +
+            ' A ' + (coords.leftLargeArcRadius + offset) + ' ' + (coords.leftSmallArcRadius + offset) + ' 0 0 0 ' + coords.leftInnerExtent + ' ' + (coords.sourceY - offset) +
+            ' L ' + coords.sourceX + ' ' + (coords.sourceY - offset) +
+
+            // Walking back
+            ' L ' + coords.sourceX + ' ' + (coords.sourceY + offset) +
+            ' L ' + coords.leftInnerExtent + ' ' + (coords.sourceY + offset) +
+            ' A ' + (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftSmallArcRadius - offset) + ' 0 0 1 ' + (coords.leftFullExtent - offset) + ' ' + (coords.sourceY + coords.leftSmallArcRadius) +
+            ' L ' + (coords.leftFullExtent - offset) + ' ' + coords.verticalLeftInnerExtent;
+
+        if (isSourceBeforeTarget && isPathOverlapped) {
+            pathString +=
+                ' A ' + (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 1 ' +
+                (coords.leftFullExtent - offset - (coords.rightLargeArcRadius - offset)) + ' ' + (coords.verticalFullExtent - offset) +
+                ' L ' + (coords.rightFullExtent + offset - arrowLen + (coords.rightLargeArcRadius - offset)) + ' ' + (coords.verticalFullExtent - offset) +
+                ' A ' + (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 1 ' +
+                (coords.rightFullExtent + offset - arrowLen) + ' ' + coords.verticalRightInnerExtent; 
+        } else if (isSourceBeforeTarget) {
+            pathString += ' A ' + (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 0 ' + (coords.leftFullExtent + offset) + ' ' + (coords.verticalFullExtent + offset) +
+                ' L ' + (coords.rightFullExtent - arrowLen - offset) + ' ' + (coords.verticalFullExtent + offset) +
+                ' A ' + (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 0 ' + (coords.rightFullExtent + offset - arrowLen) + ' ' + coords.verticalRightInnerExtent;
+        } else {
+            pathString += ' A ' + (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftLargeArcRadius - offset) + ' 0 0 1 ' + coords.leftInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+                ' L ' + (coords.rightInnerExtent - arrowLen) + ' ' + (coords.verticalFullExtent - offset) +
+                ' A ' + (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightLargeArcRadius - offset) + ' 0 0 1 ' + (coords.rightFullExtent + offset - arrowLen) + ' ' + coords.verticalRightInnerExtent;
+        }
+
+        pathString += ' L ' + (coords.rightFullExtent + offset - arrowLen) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
+            ' A ' + (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 1 ' + (coords.rightInnerExtent - arrowLen) + ' ' + (coords.targetY + offset) +
+            ' L ' + (coords.targetX - arrowLen) + ' ' + (coords.targetY + offset) + (arrowLen > 0 ? ' L ' + coords.targetX + ' ' + coords.targetY : '') + 'Z';
     }
     return pathString;
 }
@@ -440,11 +501,16 @@ function createCircularClosedPathString(link) {
 function linkPath() {
     var curvature = 0.5;
     function path(d) {
+        var arrowLen = d.linkArrowLength;
         if(d.link.circular) {
-            return createCircularClosedPathString(d.link);
+            return createCircularClosedPathString(d.link, arrowLen);
         } else {
+            var maxArrowLength = Math.abs((d.link.target.x0 - d.link.source.x1) / 2);
+            if(arrowLen > maxArrowLength) {
+                arrowLen = maxArrowLength;
+            }
             var x0 = d.link.source.x1;
-            var x1 = d.link.target.x0;
+            var x1 = d.link.target.x0 - arrowLen;
             var xi = interpolateNumber(x0, x1);
             var x2 = xi(curvature);
             var x3 = xi(1 - curvature);
@@ -452,15 +518,17 @@ function linkPath() {
             var y0b = d.link.y0 + d.link.width / 2;
             var y1a = d.link.y1 - d.link.width / 2;
             var y1b = d.link.y1 + d.link.width / 2;
-            return 'M' + x0 + ',' + y0a +
-                 'C' + x2 + ',' + y0a +
-                 ' ' + x3 + ',' + y1a +
-                 ' ' + x1 + ',' + y1a +
-                 'L' + x1 + ',' + y1b +
-                 'C' + x3 + ',' + y1b +
-                 ' ' + x2 + ',' + y0b +
-                 ' ' + x0 + ',' + y0b +
-                 'Z';
+            var start = 'M' + x0 + ',' + y0a;
+            var upperCurve = 'C' + x2 + ',' + y0a +
+                ' ' + x3 + ',' + y1a +
+                ' ' + x1 + ',' + y1a;
+            var lowerCurve = 'C' + x3 + ',' + y1b +
+                ' ' + x2 + ',' + y0b +
+                ' ' + x0 + ',' + y0b;
+
+            var rightEnd = arrowLen > 0 ? 'L' + (x1 + arrowLen) + ',' + (y1a + d.link.width / 2) : '';
+            rightEnd += 'L' + x1 + ',' + y1b;
+            return start + upperCurve + rightEnd + lowerCurve + 'Z';
         }
     }
     return path;
@@ -793,6 +861,8 @@ function switchToSankeyFormat(nodes) {
 
 // scene graph
 module.exports = function(gd, svg, calcData, layout, callbacks) {
+    var isStatic = gd._context.staticPlot;
+
     // To prevent animation on first render
     var firstRender = false;
     Lib.ensureSingle(gd._fullLayout._infolayer, 'g', 'first-render', function() {
@@ -819,7 +889,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .style('position', 'absolute')
         .style('left', 0)
         .style('shape-rendering', 'geometricPrecision')
-        .style('pointer-events', 'auto')
+        .style('pointer-events', isStatic ? 'none' : 'auto')
         .attr('transform', sankeyTransform);
 
     sankey.each(function(d, i) {
@@ -832,7 +902,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
         // Style dragbox
         gd._fullData[i]._bgRect
-          .style('pointer-events', 'all')
+          .style('pointer-events', isStatic ? 'none' : 'all')
           .attr('width', d.width)
           .attr('height', d.height)
           .attr('x', d.translateX)
@@ -977,7 +1047,6 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             Drawing.font(e, d.textFont);
             svgTextUtils.convertToTspans(e, gd);
         })
-        .style('text-shadow', svgTextUtils.makeTextShadow(gd._fullLayout.paper_bgcolor))
         .attr('text-anchor', function(d) {
             return (d.horizontal && d.left) ? 'end' : 'start';
         })

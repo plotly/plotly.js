@@ -26,6 +26,9 @@ var proto = ChoroplethMapbox.prototype;
 
 proto.update = function(calcTrace) {
     this._update(convert(calcTrace));
+
+    // link ref for quick update during selections
+    calcTrace[0].trace._glTrace = this;
 };
 
 proto.updateOnSelect = function(calcTrace) {

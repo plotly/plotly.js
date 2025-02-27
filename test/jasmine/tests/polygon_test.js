@@ -1,4 +1,4 @@
-var polygon = require('@src/lib/polygon');
+var polygon = require('../../../src/lib/polygon');
 
 var polygonTester = polygon.tester;
 var isBent = polygon.isSegmentBent;

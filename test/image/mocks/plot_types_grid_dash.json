@@ -1,0 +1,147 @@
+{
+ "data": [
+  {
+   "x": [1, 2, 3],
+   "y": [2, 1, 2]
+  },
+  {
+   "type": "scattersmith",
+   "real": [0, 0, 1, 1, 2, 5, 10],
+   "imag": [0, 1, 0, -2, -2, -5, -10],
+   "subplot": "smith"
+  },
+  {
+   "type": "scatterpolar",
+   "r": [2, 3, 4, 5, 2],
+   "theta": [90, 180, 250, 300, 90],
+   "subplot": "polar"
+  },
+  {
+   "type": "scattergeo",
+   "mode": "markers+lines",
+   "lon": [-100, 0, 100],
+   "lat": [-45, 0, 45]
+  },
+  {
+   "type": "scatterternary",
+   "a": [2, 1, 1],
+   "b": [1, 2, 1],
+   "c": [1, 1, 2.12345],
+   "subplot": "ternary"
+  }
+ ],
+ "layout": {
+  "xaxis": {
+   "domain": [0, 0.33],
+   "type": "linear",
+   "range": [0.8719530783206721, 3.128046921679328],
+   "autorange": true,
+   "griddash": "longdash",
+   "gridcolor": "black"
+  },
+  "yaxis": {
+   "domain": [0, 0.5],
+   "type": "linear",
+   "range": [0.9202898550724637, 2.079710144927536],
+   "autorange": true,
+   "griddash": "dashdot",
+   "gridcolor": "black"
+  },
+  "smith": {
+   "realaxis": {
+    "tickfont": {
+     "size": 8
+    },
+    "griddash": "dot",
+    "gridcolor": "black"
+   },
+   "imaginaryaxis": {
+    "tickfont": {
+     "size": 8
+    },
+    "griddash": "dash",
+    "gridcolor": "black"
+   },
+   "domain": {
+    "x": [0.33, 0.66],
+    "y": [0.5, 1]
+   }
+  },
+  "polar": {
+   "sector": [0, 360],
+   "domain": {
+    "x": [0, 0.33],
+    "y": [0.55, 1]
+   },
+   "radialaxis": {
+    "tickfont": {
+     "size": 8
+    },
+    "griddash": "4px,10px,2px,2px",
+    "gridcolor": "black"
+   },
+   "angularaxis": {
+    "tickfont": {
+     "size": 8
+    },
+    "rotation": -90,
+    "direction": "clockwise",
+    "griddash": "dot",
+    "gridcolor": "black"
+   }
+  },
+  "geo": {
+   "domain": {
+    "x": [0.35, 0.66],
+    "y": [0, 0.5]
+   },
+   "lataxis": {
+    "showgrid": true,
+    "griddash": "dash",
+    "gridcolor": "black"
+   },
+   "lonaxis": {
+    "showgrid": true,
+    "griddash": "dot",
+    "gridcolor": "black"
+   }
+  },
+  "ternary": {
+   "domain": {
+    "x": [0.7, 1],
+    "y": [0, 1]
+   },
+   "aaxis": {
+    "title": {
+     "text": "A"
+    },
+    "griddash": "longdashdot",
+    "gridcolor": "black"
+   },
+   "baxis": {
+    "title": {
+     "text": "B"
+    },
+    "griddash": "40px",
+    "gridcolor": "black"
+   },
+   "caxis": {
+    "title": {
+     "text": "C"
+    },
+    "griddash": "dashdot",
+    "gridcolor": "black"
+   }
+  },
+  "margin": {
+   "t": 25,
+   "l": 25,
+   "r": 25,
+   "b": 25
+  },
+  "showlegend": false,
+  "height": 450,
+  "width": 1000,
+  "autosize": true
+ }
+}

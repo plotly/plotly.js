@@ -26,6 +26,19 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     coerce('bearing');
     coerce('pitch');
 
+    var west = coerce('bounds.west');
+    var east = coerce('bounds.east');
+    var south = coerce('bounds.south');
+    var north = coerce('bounds.north');
+    if(
+        west === undefined ||
+        east === undefined ||
+        south === undefined ||
+        north === undefined
+    ) {
+        delete containerOut.bounds;
+    }
+
     handleArrayContainerDefaults(containerIn, containerOut, {
         name: 'layers',
         handleItemDefaults: handleLayerDefaults
@@ -90,7 +103,12 @@ function handleLayerDefaults(layerIn, layerOut) {
             coerce('symbol.iconsize');
 
             coerce('symbol.text');
-            Lib.coerceFont(coerce, 'symbol.textfont');
+            Lib.coerceFont(coerce, 'symbol.textfont', undefined, {
+                noFontVariant: true,
+                noFontShadow: true,
+                noFontLineposition: true,
+                noFontTextcase: true,
+            });
             coerce('symbol.textposition');
             coerce('symbol.placement');
         }

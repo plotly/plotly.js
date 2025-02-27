@@ -3,7 +3,7 @@
 var Registry = require('../../registry');
 var helpers = require('./helpers');
 
-module.exports = function getLegendData(calcdata, opts) {
+module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
     var inHover = opts._inHover;
     var grouped = helpers.isGrouped(opts);
     var reversed = helpers.isReversed(opts);
@@ -16,7 +16,10 @@ module.exports = function getLegendData(calcdata, opts) {
     var maxNameLength = 0;
     var i, j;
 
-    function addOneItem(legendGroup, legendItem) {
+    function addOneItem(legendId, legendGroup, legendItem) {
+        if(opts.visible === false) return;
+        if(hasMultipleLegends && legendId !== opts._id) return;
+
         // each '' legend group is treated as a separate group
         if(legendGroup === '' || !helpers.isGrouped(opts)) {
             // TODO: check this against fullData legendgroups?
@@ -38,6 +41,7 @@ module.exports = function getLegendData(calcdata, opts) {
         var cd = calcdata[i];
         var cd0 = cd[0];
         var trace = cd0.trace;
+        var lid = trace.legend;
         var lgroup = trace.legendgroup;
 
         if(!inHover && (!trace.visible || !trace.showlegend)) continue;
@@ -49,7 +53,7 @@ module.exports = function getLegendData(calcdata, opts) {
                 var labelj = cd[j].label;
 
                 if(!slicesShown[lgroup][labelj]) {
-                    addOneItem(lgroup, {
+                    addOneItem(lid, lgroup, {
                         label: labelj,
                         color: cd[j].color,
                         i: cd[j].i,
@@ -62,7 +66,7 @@ module.exports = function getLegendData(calcdata, opts) {
                 }
             }
         } else {
-            addOneItem(lgroup, cd0);
+            addOneItem(lid, lgroup, cd0);
             maxNameLength = Math.max(maxNameLength, (trace.name || '').length);
         }
     }

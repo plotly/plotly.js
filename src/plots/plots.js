@@ -4,6 +4,7 @@ var d3 = require('@plotly/d3');
 var timeFormatLocale = require('d3-time-format').timeFormatLocale;
 var formatLocale = require('d3-format').formatLocale;
 var isNumeric = require('fast-isnumeric');
+var b64encode = require('base64-arraybuffer');
 
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
@@ -13,7 +14,8 @@ var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
 
 var axisIDs = require('./cartesian/axis_ids');
-var clearSelect = require('./cartesian/handle_outline').clearSelect;
+var clearOutline = require('../components/shapes/handle_outline').clearOutline;
+var scatterAttrs = require('../traces/scatter/layout_attributes');
 
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
@@ -32,11 +34,6 @@ plots.attributes = require('./attributes');
 plots.attributes.type.values = plots.allTypes;
 plots.fontAttrs = require('./font_attributes');
 plots.layoutAttributes = require('./layout_attributes');
-
-// TODO make this a plot attribute?
-plots.fontWeight = 'normal';
-
-var transformsRegistry = plots.transformsRegistry;
 
 var commandModule = require('./command');
 plots.executeAPICommand = commandModule.executeAPICommand;
@@ -132,7 +129,7 @@ plots.addLinks = function(gd) {
         s.style({
             'font-family': '"Open Sans", Arial, sans-serif',
             'font-size': '12px',
-            'fill': Color.defaultLine,
+            fill: Color.defaultLine,
             'pointer-events': 'all'
         })
         .each(function() {
@@ -149,7 +146,7 @@ plots.addLinks = function(gd) {
 
     // If text's width is bigger than the layout
     // Check that text is a child node or document.body
-    // because otherwise IE/Edge might throw an exception
+    // because otherwise Edge might throw an exception
     // when calling getComputedTextLength().
     // Apparently offsetParent is null for invisibles.
     if(document.body.contains(text) && text.getComputedTextLength() >= (fullLayout.width - 20)) {
@@ -184,7 +181,7 @@ function positionPlayWithData(gd, container) {
     var link = container.append('a')
         .attr({
             'xlink:xlink:href': '#',
-            'class': 'link--impt link--embedview',
+            class: 'link--impt link--embedview',
             'font-weight': 'bold'
         })
         .text(gd._context.linkText + ' ' + String.fromCharCode(187));
@@ -253,9 +250,7 @@ var extraFormatKeys = [
  * @param {object} opts
  * @param {boolean} opts.skipUpdateCalc: normally if the existing gd.calcdata looks
  *   compatible with the new gd._fullData we finish by linking the new _fullData traces
- *   to the old gd.calcdata, so it's correctly set if we're not going to recalc. But also,
- *   if there are calcTransforms on the trace, we first remap data arrays from the old full
- *   trace into the new one. Use skipUpdateCalc to defer this (needed by Plotly.react)
+ *   to the old gd.calcdata, so it's correctly set if we're not going to recalc.
  *
  * gd.data, gd.layout:
  *   are precisely what the user specified (except as modified by cleanData/cleanLayout),
@@ -317,6 +312,7 @@ plots.supplyDefaults = function(gd, opts) {
     // When editable=false the two behave the same, no title is drawn.
     newFullLayout._dfltTitle = {
         plot: _(gd, 'Click to enter Plot title'),
+        subtitle: _(gd, 'Click to enter Plot subtitle'),
         x: _(gd, 'Click to enter X axis title'),
         y: _(gd, 'Click to enter Y axis title'),
         colorbar: _(gd, 'Click to enter Colorscale title'),
@@ -397,7 +393,6 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._traceUids = getTraceUids(oldFullData, newData);
 
     // then do the data
-    newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
     plots.supplyDataDefaults(newData, newFullData, newLayout, newFullLayout);
 
     // redo grid size defaults with info about splom x/y axes,
@@ -461,12 +456,10 @@ plots.supplyDefaults = function(gd, opts) {
     // clean subplots and other artifacts from previous plot calls
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
-    var hadGL2D = !!(oldFullLayout._has && oldFullLayout._has('gl2d'));
-    var hasGL2D = !!(newFullLayout._has && newFullLayout._has('gl2d'));
     var hadCartesian = !!(oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = !!(newFullLayout._has && newFullLayout._has('cartesian'));
-    var hadBgLayer = hadCartesian || hadGL2D;
-    var hasBgLayer = hasCartesian || hasGL2D;
+    var hadBgLayer = hadCartesian;
+    var hasBgLayer = hasCartesian;
     if(hadBgLayer && !hasBgLayer) {
         // remove bgLayer
         oldFullLayout._bgLayer.remove();
@@ -481,7 +474,7 @@ plots.supplyDefaults = function(gd, opts) {
     // we should try to come up with a better solution when implementing
     // https://github.com/plotly/plotly.js/issues/1851
     if(oldFullLayout._zoomlayer && !gd._dragging) {
-        clearSelect({ // mock old gd
+        clearOutline({ // mock old gd
             _fullLayout: oldFullLayout
         });
     }
@@ -855,7 +848,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         _fullLayout: newFullLayout
     };
 
-    var ids = newSubplotList.cartesian.concat(newSubplotList.gl2d || []);
+    var ids = newSubplotList.cartesian || [];
 
     for(i = 0; i < ids.length; i++) {
         var id = ids[i];
@@ -1095,59 +1088,9 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
         fullTrace.index = i;
         fullTrace._input = trace;
-        fullTrace._expandedIndex = cnt;
+        fullTrace._fullInput = fullTrace;
 
-        if(fullTrace.transforms && fullTrace.transforms.length) {
-            var sdInvisible = trace.visible !== false && fullTrace.visible === false;
-
-            var expandedTraces = applyTransforms(fullTrace, dataOut, layout, fullLayout);
-
-            for(var j = 0; j < expandedTraces.length; j++) {
-                var expandedTrace = expandedTraces[j];
-
-                // No further templating during transforms.
-                var fullExpandedTrace = {
-                    _template: fullTrace._template,
-                    type: fullTrace.type,
-                    // set uid using parent uid and expanded index
-                    // to promote consistency between update calls
-                    uid: fullTrace.uid + j
-                };
-
-                // If the first supplyDefaults created `visible: false`,
-                // clear it before running supplyDefaults a second time,
-                // because sometimes there are items we still want to coerce
-                // inside trace modules before determining that the trace is
-                // again `visible: false`, for example partial visibilities
-                // in `splom` traces.
-                if(sdInvisible && expandedTrace.visible === false) {
-                    delete expandedTrace.visible;
-                }
-
-                plots.supplyTraceDefaults(expandedTrace, fullExpandedTrace, cnt, fullLayout, i);
-
-                // relink private (i.e. underscore) keys expanded trace to full expanded trace so
-                // that transform supply-default methods can set _ keys for future use.
-                relinkPrivateKeys(fullExpandedTrace, expandedTrace);
-
-                // add info about parent data trace
-                fullExpandedTrace.index = i;
-                fullExpandedTrace._input = trace;
-                fullExpandedTrace._fullInput = fullTrace;
-
-                // add info about the expanded data
-                fullExpandedTrace._expandedIndex = cnt;
-                fullExpandedTrace._expandedInput = expandedTrace;
-
-                pushModule(fullExpandedTrace);
-            }
-        } else {
-            // add identify refs for consistency with transformed traces
-            fullTrace._fullInput = fullTrace;
-            fullTrace._expandedInput = fullTrace;
-
-            pushModule(fullTrace);
-        }
+        pushModule(fullTrace);
 
         if(Registry.traceIs(fullTrace, 'carpetAxis')) {
             carpetIndex[fullTrace.carpet] = fullTrace;
@@ -1283,28 +1226,20 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             var subplots = layout._subplots;
             var subplotId = '';
 
-            if(
-                visible ||
-                basePlotModule.name !== 'gl2d' // for now just drop empty gl2d subplots
-                // TODO - currently if we draw an empty gl2d subplot, it draws
-                // nothing then gets stuck and you can't get it back without newPlot
-                // sort this out in the regl refactor?
-            ) {
-                if(Array.isArray(subplotAttr)) {
-                    for(i = 0; i < subplotAttr.length; i++) {
-                        var attri = subplotAttr[i];
-                        var vali = Lib.coerce(traceIn, traceOut, subplotAttrs, attri);
+            if(Array.isArray(subplotAttr)) {
+                for(i = 0; i < subplotAttr.length; i++) {
+                    var attri = subplotAttr[i];
+                    var vali = Lib.coerce(traceIn, traceOut, subplotAttrs, attri);
 
-                        if(subplots[attri]) Lib.pushUnique(subplots[attri], vali);
-                        subplotId += vali;
-                    }
-                } else {
-                    subplotId = Lib.coerce(traceIn, traceOut, subplotAttrs, subplotAttr);
+                    if(subplots[attri]) Lib.pushUnique(subplots[attri], vali);
+                    subplotId += vali;
                 }
+            } else {
+                subplotId = Lib.coerce(traceIn, traceOut, subplotAttrs, subplotAttr);
+            }
 
-                if(subplots[basePlotModule.name]) {
-                    Lib.pushUnique(subplots[basePlotModule.name], subplotId);
-                }
+            if(subplots[basePlotModule.name]) {
+                Lib.pushUnique(subplots[basePlotModule.name], subplotId);
             }
         }
     }
@@ -1320,6 +1255,8 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
                 'showlegend'
             );
 
+            coerce('legend');
+            coerce('legendwidth');
             coerce('legendgroup');
             coerce('legendgrouptitle.text');
             coerce('legendrank');
@@ -1353,107 +1290,15 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
         }
 
         if(_module && _module.selectPoints) {
-            coerce('selectedpoints');
+            var selectedpoints = coerce('selectedpoints');
+            if(Lib.isTypedArray(selectedpoints)) {
+                traceOut.selectedpoints = Array.from(selectedpoints);
+            }
         }
-
-        plots.supplyTransformDefaults(traceIn, traceOut, layout);
     }
 
     return traceOut;
 };
-
-/**
- * hasMakesDataTransform: does this trace have a transform that makes its own
- * data, either by grabbing it from somewhere else or by creating it from input
- * parameters? If so, we should still keep going with supplyDefaults
- * even if the trace is invisible, which may just be because it has no data yet.
- */
-function hasMakesDataTransform(trace) {
-    var transforms = trace.transforms;
-    if(Array.isArray(transforms) && transforms.length) {
-        for(var i = 0; i < transforms.length; i++) {
-            var ti = transforms[i];
-            var _module = ti._module || transformsRegistry[ti.type];
-            if(_module && _module.makesData) return true;
-        }
-    }
-    return false;
-}
-
-plots.hasMakesDataTransform = hasMakesDataTransform;
-
-plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
-    // For now we only allow transforms on 1D traces, ie those that specify a _length.
-    // If we were to implement 2D transforms, we'd need to have each transform
-    // describe its own applicability and disable itself when it doesn't apply.
-    // Also allow transforms that make their own data, but not in globalTransforms
-    if(!(traceOut._length || hasMakesDataTransform(traceIn))) return;
-
-    var globalTransforms = layout._globalTransforms || [];
-    var transformModules = layout._transformModules || [];
-
-    if(!Array.isArray(traceIn.transforms) && globalTransforms.length === 0) return;
-
-    var containerIn = traceIn.transforms || [];
-    var transformList = globalTransforms.concat(containerIn);
-    var containerOut = traceOut.transforms = [];
-
-    for(var i = 0; i < transformList.length; i++) {
-        var transformIn = transformList[i];
-        var type = transformIn.type;
-        var _module = transformsRegistry[type];
-        var transformOut;
-
-        /*
-         * Supply defaults may run twice. First pass runs all supply defaults steps
-         * and adds the _module to any output transforms.
-         * If transforms exist another pass is run so that any generated traces also
-         * go through supply defaults. This has the effect of rerunning
-         * supplyTransformDefaults. If the transform does not have a `transform`
-         * function it could not have generated any new traces and the second stage
-         * is unnecessary. We detect this case with the following variables.
-         */
-        var isFirstStage = !(transformIn._module && transformIn._module === _module);
-        var doLaterStages = _module && typeof _module.transform === 'function';
-
-        if(!_module) Lib.warn('Unrecognized transform type ' + type + '.');
-
-        if(_module && _module.supplyDefaults && (isFirstStage || doLaterStages)) {
-            transformOut = _module.supplyDefaults(transformIn, traceOut, layout, traceIn);
-            transformOut.type = type;
-            transformOut._module = _module;
-
-            Lib.pushUnique(transformModules, _module);
-        } else {
-            transformOut = Lib.extendFlat({}, transformIn);
-        }
-
-        containerOut.push(transformOut);
-    }
-};
-
-function applyTransforms(fullTrace, fullData, layout, fullLayout) {
-    var container = fullTrace.transforms;
-    var dataOut = [fullTrace];
-
-    for(var i = 0; i < container.length; i++) {
-        var transform = container[i];
-        var _module = transformsRegistry[transform.type];
-
-        if(_module && _module.transform) {
-            dataOut = _module.transform(dataOut, {
-                transform: transform,
-                fullTrace: fullTrace,
-                fullData: fullData,
-                layout: layout,
-                fullLayout: fullLayout,
-                transformIndex: i
-            });
-        }
-    }
-
-    return dataOut;
-}
 
 plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     function coerce(attr, dflt) {
@@ -1472,21 +1317,54 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     var font = Lib.coerceFont(coerce, 'font');
     var fontSize = font.size;
 
-    Lib.coerceFont(coerce, 'title.font', Lib.extendFlat({}, font, {
+    Lib.coerceFont(coerce, 'title.font', font, { overrideDflt: {
         size: Math.round(fontSize * 1.4)
-    }));
+    }});
 
     coerce('title.text', layoutOut._dfltTitle.plot);
     coerce('title.xref');
-    coerce('title.yref');
-    coerce('title.x');
-    coerce('title.y');
-    coerce('title.xanchor');
-    coerce('title.yanchor');
+    var titleYref = coerce('title.yref');
     coerce('title.pad.t');
     coerce('title.pad.r');
     coerce('title.pad.b');
     coerce('title.pad.l');
+    var titleAutomargin = coerce('title.automargin');
+
+    coerce('title.x');
+    coerce('title.xanchor');
+    coerce('title.y');
+    coerce('title.yanchor');
+
+    coerce('title.subtitle.text', layoutOut._dfltTitle.subtitle);
+    Lib.coerceFont(coerce, 'title.subtitle.font', font, {
+        overrideDflt: {
+            size: Math.round(layoutOut.title.font.size * 0.7)
+        }
+    });
+
+    if(titleAutomargin) {
+        // when automargin=true
+        // title.y is 1 or 0 if paper ref
+        // 'auto' is not supported for either title.y or title.yanchor
+
+        // TODO: mention this smart default in the title.y and title.yanchor descriptions
+
+        if(titleYref === 'paper') {
+            if(layoutOut.title.y !== 0) layoutOut.title.y = 1;
+
+            if(layoutOut.title.yanchor === 'auto') {
+                layoutOut.title.yanchor = layoutOut.title.y === 0 ? 'top' : 'bottom';
+            }
+        }
+
+        if(titleYref === 'container') {
+            if(layoutOut.title.y === 'auto') layoutOut.title.y = 1;
+
+            if(layoutOut.title.yanchor === 'auto') {
+                layoutOut.title.yanchor = layoutOut.title.y < 0.5 ? 'bottom' : 'top';
+            }
+        }
+    }
 
     var uniformtextMode = coerce('uniformtext.mode');
     if(uniformtextMode) {
@@ -1506,6 +1384,9 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('width');
     coerce('height');
+    coerce('minreducedwidth');
+    coerce('minreducedheight');
+
     coerce('margin.l');
     coerce('margin.r');
     coerce('margin.t');
@@ -1539,6 +1420,11 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
         'supplyDrawNewShapeDefaults'
     )(layoutIn, layoutOut, coerce);
 
+    Registry.getComponentMethod(
+        'selections',
+        'supplyDrawNewSelectionDefaults'
+    )(layoutIn, layoutOut, coerce);
+
     coerce('meta');
 
     // do not include defaults in fullLayout when users do not set transition
@@ -1557,6 +1443,8 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
         'fx',
         'supplyLayoutGlobalDefaults'
     )(layoutIn, layoutOut, coerce);
+
+    Lib.coerce(layoutIn, layoutOut, scatterAttrs, 'scattermode');
 };
 
 function getComputedSize(attr) {
@@ -1850,15 +1738,12 @@ function initMargins(fullLayout) {
     }
     if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
     if(!fullLayout._pushmarginIds) fullLayout._pushmarginIds = {};
+    if(!fullLayout._reservedMargin) fullLayout._reservedMargin = {};
 }
 
 // non-negotiable - this is the smallest height we will allow users to specify via explicit margins
 var MIN_SPECIFIED_WIDTH = 2;
 var MIN_SPECIFIED_HEIGHT = 2;
-
-// could be exposed as an option - the smallest we will allow automargin to shrink a larger plot
-var MIN_REDUCED_WIDTH = 64;
-var MIN_REDUCED_HEIGHT = 64;
 
 /**
  * autoMargin: called by components that may need to expand the margins to
@@ -1880,17 +1765,19 @@ plots.autoMargin = function(gd, id, o) {
     var width = fullLayout.width;
     var height = fullLayout.height;
     var margin = fullLayout.margin;
+    var minreducedwidth = fullLayout.minreducedwidth;
+    var minreducedheight = fullLayout.minreducedheight;
 
     var minFinalWidth = Lib.constrain(
         width - margin.l - margin.r,
         MIN_SPECIFIED_WIDTH,
-        MIN_REDUCED_WIDTH
+        minreducedwidth
     );
 
     var minFinalHeight = Lib.constrain(
         height - margin.t - margin.b,
         MIN_SPECIFIED_HEIGHT,
-        MIN_REDUCED_HEIGHT
+        minreducedheight
     );
 
     var maxSpaceW = Math.max(0, width - minFinalWidth);
@@ -1948,6 +1835,17 @@ plots.autoMargin = function(gd, id, o) {
     }
 };
 
+function needsRedrawForShift(gd) {
+    if('_redrawFromAutoMarginCount' in gd._fullLayout) {
+        return false;
+    }
+    var axList = axisIDs.list(gd, '', true);
+    for(var ax in axList) {
+        if(axList[ax].autoshift || axList[ax].shift) return true;
+    }
+    return false;
+}
+
 plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
     var width = fullLayout.width;
@@ -1958,6 +1856,7 @@ plots.doAutoMargin = function(gd) {
 
     var gs = fullLayout._size;
     var margin = fullLayout.margin;
+    var reservedMargins = {t: 0, b: 0, l: 0, r: 0};
     var oldMargins = Lib.extendFlat({}, gs);
 
     // adjust margins for outside components
@@ -1969,12 +1868,21 @@ plots.doAutoMargin = function(gd) {
     var mb = margin.b;
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
+    var minreducedwidth = fullLayout.minreducedwidth;
+    var minreducedheight = fullLayout.minreducedheight;
 
-    if(fullLayout.margin.autoexpand !== false) {
+    if(margin.autoexpand !== false) {
         for(var k in pushMargin) {
             if(!pushMarginIds[k]) delete pushMargin[k];
         }
 
+        var margins = gd._fullLayout._reservedMargin;
+        for(var key in margins) {
+            for(var side in margins[key]) {
+                var val = margins[key][side];
+                reservedMargins[side] = Math.max(reservedMargins[side], val);
+            }
+        }
         // fill in the requested margins
         pushMargin.base = {
             l: {val: 0, size: ml},
@@ -1983,9 +1891,23 @@ plots.doAutoMargin = function(gd) {
             b: {val: 0, size: mb}
         };
 
+
+        // make sure that the reservedMargin is the minimum needed
+        for(var s in reservedMargins) {
+            var autoMarginPush = 0;
+            for(var m in pushMargin) {
+                if(m !== 'base') {
+                    if(isNumeric(pushMargin[m][s].size)) {
+                        autoMarginPush = pushMargin[m][s].size > autoMarginPush ? pushMargin[m][s].size : autoMarginPush;
+                    }
+                }
+            }
+            var extraMargin = Math.max(0, (margin[s] - autoMarginPush));
+            reservedMargins[s] = Math.max(0, reservedMargins[s] - extraMargin);
+        }
+
         // now cycle through all the combinations of l and r
         // (and t and b) to find the required margins
-
         for(var k1 in pushMargin) {
             var pushleft = pushMargin[k1].l || {};
             var pushbottom = pushMargin[k1].b || {};
@@ -1993,14 +1915,16 @@ plots.doAutoMargin = function(gd) {
             var pl = pushleft.size;
             var fb = pushbottom.val;
             var pb = pushbottom.size;
+            var availableWidth = width - reservedMargins.r - reservedMargins.l;
+            var availableHeight = height - reservedMargins.t - reservedMargins.b;
 
             for(var k2 in pushMargin) {
                 if(isNumeric(pl) && pushMargin[k2].r) {
                     var fr = pushMargin[k2].r.val;
                     var pr = pushMargin[k2].r.size;
                     if(fr > fl) {
-                        var newL = (pl * fr + (pr - width) * fl) / (fr - fl);
-                        var newR = (pr * (1 - fl) + (pl - width) * (1 - fr)) / (fr - fl);
+                        var newL = (pl * fr + (pr - availableWidth) * fl) / (fr - fl);
+                        var newR = (pr * (1 - fl) + (pl - availableWidth) * (1 - fr)) / (fr - fl);
                         if(newL + newR > ml + mr) {
                             ml = newL;
                             mr = newR;
@@ -2012,8 +1936,8 @@ plots.doAutoMargin = function(gd) {
                     var ft = pushMargin[k2].t.val;
                     var pt = pushMargin[k2].t.size;
                     if(ft > fb) {
-                        var newB = (pb * ft + (pt - height) * fb) / (ft - fb);
-                        var newT = (pt * (1 - fb) + (pb - height) * (1 - ft)) / (ft - fb);
+                        var newB = (pb * ft + (pt - availableHeight) * fb) / (ft - fb);
+                        var newT = (pt * (1 - fb) + (pb - availableHeight) * (1 - ft)) / (ft - fb);
                         if(newB + newT > mb + mt) {
                             mb = newB;
                             mt = newT;
@@ -2027,13 +1951,13 @@ plots.doAutoMargin = function(gd) {
     var minFinalWidth = Lib.constrain(
         width - margin.l - margin.r,
         MIN_SPECIFIED_WIDTH,
-        MIN_REDUCED_WIDTH
+        minreducedwidth
     );
 
     var minFinalHeight = Lib.constrain(
         height - margin.t - margin.b,
         MIN_SPECIFIED_HEIGHT,
-        MIN_REDUCED_HEIGHT
+        minreducedheight
     );
 
     var maxSpaceW = Math.max(0, width - minFinalWidth);
@@ -2055,16 +1979,17 @@ plots.doAutoMargin = function(gd) {
         }
     }
 
-    gs.l = Math.round(ml);
-    gs.r = Math.round(mr);
-    gs.t = Math.round(mt);
-    gs.b = Math.round(mb);
+
+    gs.l = Math.round(ml) + reservedMargins.l;
+    gs.r = Math.round(mr) + reservedMargins.r;
+    gs.t = Math.round(mt) + reservedMargins.t;
+    gs.b = Math.round(mb) + reservedMargins.b;
     gs.p = Math.round(margin.pad);
     gs.w = Math.round(width) - gs.l - gs.r;
     gs.h = Math.round(height) - gs.t - gs.b;
 
     // if things changed and we're not already redrawing, trigger a redraw
-    if(!fullLayout._replotting && plots.didMarginChange(oldMargins, gs)) {
+    if(!fullLayout._replotting && (plots.didMarginChange(oldMargins, gs) || needsRedrawForShift(gd))) {
         if('_redrawFromAutoMarginCount' in fullLayout) {
             fullLayout._redrawFromAutoMarginCount++;
         } else {
@@ -2202,11 +2127,29 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
             return o;
         }
 
-        if(Array.isArray(d)) {
+        var dIsArray = Array.isArray(d);
+        var dIsTypedArray = Lib.isTypedArray(d);
+
+        if((dIsArray || dIsTypedArray) && d.dtype && d.shape) {
+            var bdata = d.bdata;
+            return stripObj({
+                dtype: d.dtype,
+                shape: d.shape,
+
+                bdata:
+                    // case of ArrayBuffer
+                    Lib.isArrayBuffer(bdata) ? b64encode.encode(bdata) :
+                    // case of b64 string
+                    bdata
+
+            }, keepFunction);
+        }
+
+        if(dIsArray) {
             return d.map(function(x) {return stripObj(x, keepFunction);});
         }
 
-        if(Lib.isTypedArray(d)) {
+        if(dIsTypedArray) {
             return Lib.simpleMap(d, Lib.identity);
         }
 
@@ -2416,7 +2359,7 @@ plots.recomputeFrameHash = function(gd) {
  *
  * This exists so that we can extendDeepNoArrays and avoid stepping into data
  * arrays without knowledge of the plot schema, but so that we may also manually
- * recurse into known container arrays, such as transforms.
+ * recurse into known container arrays.
  *
  * See extendTrace and extendLayout below for usage.
  */
@@ -2901,6 +2844,7 @@ function _transition(gd, transitionOpts, opts) {
         interruptPreviousTransitions,
         opts.prepareFn,
         plots.rehover,
+        plots.reselect,
         executeTransitions
     ];
 
@@ -3092,7 +3036,7 @@ plots.doCalcdata = function(gd, traces) {
     Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
-var sortAxisCategoriesByValueRegex = /(total|sum|min|max|mean|median) (ascending|descending)/;
+var sortAxisCategoriesByValueRegex = /(total|sum|min|max|mean|geometric mean|median) (ascending|descending)/;
 
 function sortAxisCategoriesByValue(axList, gd) {
     var affectedTraces = [];
@@ -3122,13 +3066,22 @@ function sortAxisCategoriesByValue(axList, gd) {
     }
 
     var aggFn = {
-        'min': function(values) {return Lib.aggNums(Math.min, null, values);},
-        'max': function(values) {return Lib.aggNums(Math.max, null, values);},
-        'sum': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
-        'total': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
-        'mean': function(values) {return Lib.mean(values);},
-        'median': function(values) {return Lib.median(values);}
+        min: function(values) {return Lib.aggNums(Math.min, null, values);},
+        max: function(values) {return Lib.aggNums(Math.max, null, values);},
+        sum: function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
+        total: function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
+        mean: function(values) {return Lib.mean(values);},
+        'geometric mean': function(values) {return Lib.geometricMean(values);},
+        median: function(values) {return Lib.median(values);}
     };
+
+    function sortAscending(a, b) {
+        return a[1] - b[1];
+    }
+
+    function sortDescending(a, b) {
+        return b[1] - a[1];
+    }
 
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
@@ -3251,9 +3204,7 @@ function sortAxisCategoriesByValue(axList, gd) {
             }
 
             // Sort by aggregated value
-            categoriesAggregatedValue.sort(function(a, b) {
-                return a[1] - b[1];
-            });
+            categoriesAggregatedValue.sort(order === 'descending' ? sortDescending : sortAscending);
 
             ax._categoriesAggregatedValue = categoriesAggregatedValue;
 
@@ -3261,11 +3212,6 @@ function sortAxisCategoriesByValue(axList, gd) {
             ax._initialCategories = categoriesAggregatedValue.map(function(c) {
                 return c[0];
             });
-
-            // Reverse if descending
-            if(order === 'descending') {
-                ax._initialCategories.reverse();
-            }
 
             // Sort all matching axes
             affectedTraces = affectedTraces.concat(ax.sortByInitialCategories());
@@ -3355,6 +3301,19 @@ plots.redrag = function(gd) {
     if(gd._fullLayout._redrag) {
         gd._fullLayout._redrag();
     }
+};
+
+plots.reselect = function(gd) {
+    var fullLayout = gd._fullLayout;
+
+    var A = (gd.layout || {}).selections;
+    var B = fullLayout._previousSelections;
+    fullLayout._previousSelections = A;
+
+    var mayEmitSelected = fullLayout._reselect ||
+        JSON.stringify(A) !== JSON.stringify(B);
+
+    Registry.getComponentMethod('selections', 'reselect')(gd, mayEmitSelected);
 };
 
 plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subplotLayout) {

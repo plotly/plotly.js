@@ -1,0 +1,29 @@
+{
+ "data": [
+  {
+   "colorscale": "Reds",
+   "text": [
+    ["One", "Two", "Three"],
+    ["Four", "Five", "Six"],
+    ["Seven", "Eight", "Nine"]
+   ],
+   "texttemplate": "%{text}",
+   "x": [0, 1, 2],
+   "y": [0, 1, 2],
+   "z": [[null, 2, 3], [4, null, 6], [7, 8, null]],
+   "type": "heatmap"
+  }
+ ],
+ "layout": {
+  "font": {
+   "textcase": "word caps",
+   "lineposition": "under",
+   "shadow": "auto"
+  },
+  "title": {
+   "text": "Heatmap text color should contrast with<br>background on cells with missing data"
+  },
+  "width": 400,
+  "height": 400
+ }
+}

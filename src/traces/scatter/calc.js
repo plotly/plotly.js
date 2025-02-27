@@ -14,8 +14,8 @@ var calcSelection = require('./calc_selection');
 
 function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x');
-    var ya = Axes.getFromId(gd, trace.yaxis || 'y');
+    var xa = trace._xA = Axes.getFromId(gd, trace.xaxis || 'x', 'x');
+    var ya = trace._yA = Axes.getFromId(gd, trace.yaxis || 'y', 'y');
     var origX = xa.makeCalcdata(trace, 'x');
     var origY = ya.makeCalcdata(trace, 'y');
     var xObj = alignPeriod(trace, xa, 'x', origX);
@@ -36,7 +36,7 @@ function calc(gd, trace) {
     var yAttr = 'y';
     var posAttr;
     if(stackGroupOpts) {
-        Lib.pushUnique(stackGroupOpts.traceIndices, trace._expandedIndex);
+        Lib.pushUnique(stackGroupOpts.traceIndices, trace.index);
         isV = stackGroupOpts.orientation === 'v';
 
         // size, like we use for bar

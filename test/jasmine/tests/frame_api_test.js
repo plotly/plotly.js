@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Queue = require('@src/lib/queue');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Queue = require('../../../src/lib/queue');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');

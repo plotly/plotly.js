@@ -1,0 +1,36 @@
+{
+ "data": [
+  {
+   "showlegend": true,
+   "showscale": false,
+   "type": "densitymap",
+   "name": "w/ reversescale:true",
+   "lon": [10, 20, 30],
+   "lat": [15, 25, 35],
+   "z": [1, 3, 2],
+   "zmid": 0,
+   "reversescale": true,
+   "radius": 50,
+   "below": ""
+  },
+  {
+   "showlegend": true,
+   "showscale": false,
+   "type": "densitymap",
+   "name": "w/0 z data",
+   "lon": [-10, -20, -30],
+   "lat": [15, 25, 35],
+   "zmin": 0,
+   "zauto": false,
+   "radius": [50, 100, 10]
+  }
+ ],
+ "layout": {
+  "map": {
+   "style": "light",
+   "center": { "lat": 20 }
+  },
+  "width": 600,
+  "height": 400
+ }
+}

@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var ScatterTernary = require('@src/traces/scatterternary');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var ScatterTernary = require('../../../src/traces/scatterternary');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -303,7 +303,7 @@ describe('scatterternary calc', function() {
 describe('scatterternary plot and hover', function() {
     'use strict';
 
-    var mock = require('@mocks/ternary_simple.json');
+    var mock = require('../../image/mocks/ternary_simple.json');
 
     afterAll(destroyGraphDiv);
 
@@ -431,7 +431,7 @@ describe('scatterternary hover', function() {
     });
 
     it('should always display hoverlabel when hovertemplate is defined', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/ternary_simple.json'));
 
         Plotly.newPlot(gd, fig)
         .then(function() {
@@ -454,7 +454,9 @@ describe('Test scatterternary *cliponaxis*', function() {
 
     it('should show/hide point/text/errorbars in clipped and non-clipped layers', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/ternary_markers.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/ternary_markers.json'));
+        // use simple markers here
+        delete fig.data[0].marker;
 
         function _assert(layerClips, nodeDisplays, lineClips) {
             var frontLayer = d3Select('.frontplot');
@@ -555,12 +557,12 @@ describe('Test scatterternary *cliponaxis*', function() {
 
 describe('Test scatterternary texttemplate:', function() {
     checkTextTemplate([{
-        'type': 'scatterternary',
-        'a': [3, 2, 5],
-        'b': [2, 5, 2],
-        'c': [5, 2, 2 ],
-        'mode': 'markers+text',
-        'text': ['A', 'B', 'C']
+        type: 'scatterternary',
+        a: [3, 2, 5],
+        b: [2, 5, 2],
+        c: [5, 2, 2 ],
+        mode: 'markers+text',
+        text: ['A', 'B', 'C']
     }], 'g.textpoint', [
         ['%{text} (%{a:.1f}, %{b:.1f}, %{c:.1f})', ['A (3.0, 2.0, 5.0)', 'B (2.0, 5.0, 2.0)', 'C (5.0, 2.0, 2.0)']]
     ]);

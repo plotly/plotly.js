@@ -9,8 +9,10 @@ module.exports = {
     isBubble: subtypes.isBubble,
 
     attributes: require('./attributes'),
+    layoutAttributes: require('./layout_attributes'),
     supplyDefaults: require('./defaults'),
     crossTraceDefaults: require('./cross_trace_defaults'),
+    supplyLayoutDefaults: require('./layout_defaults'),
     calc: require('./calc').calc,
     crossTraceCalc: require('./cross_trace_calc'),
     arraysToCalcdata: require('./arrays_to_calcdata'),

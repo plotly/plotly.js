@@ -1,13 +1,13 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var Fx = require('@src/components/fx');
-var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
+var Plotly = require('../../../lib/index');
+var Fx = require('../../../src/components/fx');
+var Lib = require('../../../src/lib');
+var Drawing = require('../../../src/components/drawing');
 
-var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
-var MINUS_SIGN = require('@src/constants/numerical').MINUS_SIGN;
+var HOVERMINTIME = require('../../../src/components/fx').constants.HOVERMINTIME;
+var MINUS_SIGN = require('../../../src/constants/numerical').MINUS_SIGN;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -26,7 +26,9 @@ var assertElemRightTo = customAssertions.assertElemRightTo;
 var assertElemTopsAligned = customAssertions.assertElemTopsAligned;
 var assertElemInside = customAssertions.assertElemInside;
 
-var groupTitlesMock = require('@mocks/legendgroup-titles');
+var groupTitlesMock = require('../../image/mocks/legendgroup-titles');
+
+var splomLogMock = require('../../image/mocks/splom_log');
 
 function touch(path, options) {
     var len = path.length;
@@ -79,7 +81,7 @@ describe('Fx.hover:', function() {
 describe('hover info', function() {
     'use strict';
 
-    var mock = require('@mocks/14.json');
+    var mock = require('../../image/mocks/14.json');
     var evt = { xpx: 355, ypx: 150 };
 
     afterEach(destroyGraphDiv);
@@ -895,7 +897,7 @@ describe('hover info', function() {
         });
 
         it('should get the right content and color for contour constraints', function(done) {
-            var contourConstraints = require('@mocks/contour_constraints.json');
+            var contourConstraints = require('../../image/mocks/contour_constraints.json');
             var fig = Lib.extendDeep({}, contourConstraints);
             fig.layout.hovermode = 'x';
 
@@ -1513,7 +1515,7 @@ describe('hover info', function() {
 
     describe('overflowing hover labels', function() {
         var trace = {y: [1, 2, 3], text: ['', 'a<br>b<br>c', '']};
-        var data = [trace, trace, trace, trace, trace, trace, trace];
+        var data = [trace, trace, trace, trace, trace, trace, trace, trace, trace, trace];
         var layout = {
             width: 600, height: 600, showlegend: false,
             margin: {l: 100, r: 100, t: 100, b: 100},
@@ -1531,17 +1533,86 @@ describe('hover info', function() {
             return d3Select(gd).selectAll('g.hovertext').size();
         }
 
-        it('shows as many labels as will fit on the div, not on the subplot', function(done) {
+        it('shows as many labels as will fit on the div, not on the subplot, when labels do not overlap the axis label', function(done) {
             _hoverNatural(gd, 200, 200);
 
-            expect(labelCount()).toBe(7);
+            expect(labelCount()).toBe(8);
 
             Plotly.relayout(gd, {'yaxis.domain': [0.48, 0.52]})
             .then(function() {
                 _hoverNatural(gd, 150, 200);
                 _hoverNatural(gd, 200, 200);
 
-                expect(labelCount()).toBe(7);
+                expect(labelCount()).toBe(8);
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    describe('overlapping hover labels', function() {
+        var trace = {y: [1, 2, 3], x: ['01.01.2020', '02.01.2020', '03.01.2020'], text: ['', 'a<br>b<br>c', '']};
+        var data = [trace, trace, trace, trace, trace, trace, trace, trace, trace, trace];
+        var layout = {
+            width: 600, height: 600, showlegend: false,
+            margin: {l: 100, r: 100, t: 100, b: 100},
+            hovermode: 'x'
+        };
+
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.newPlot(gd, data, layout).then(done);
+        });
+
+        function labelCount() {
+            return d3Select(gd).selectAll('g.hovertext').size();
+        }
+
+        it('does not show labels that would overlap the axis hover label', function(done) {
+            _hoverNatural(gd, 200, 200);
+
+            expect(labelCount()).toBe(6);
+
+            Plotly.relayout(gd, {'yaxis.domain': [0.48, 0.52]})
+            .then(function() {
+                _hoverNatural(gd, 150, 200);
+                _hoverNatural(gd, 200, 200);
+
+                expect(labelCount()).toBe(4);
+            })
+            .then(done, done.fail);
+        });
+    });
+    describe('overlapping hover labels of different lengths', function() {
+        var data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(function(v) {return {x: [100, 200, 300], y: [v, v + 1, v + 2]};});
+        var layout = {
+            width: 500, height: 400, showlegend: false,
+            margin: {l: 100, r: 100, t: 100, b: 100},
+            hovermode: 'x'
+        };
+
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.newPlot(gd, data, layout).then(done);
+        });
+
+        function labelCount() {
+            return d3Select(gd).selectAll('g.hovertext').size();
+        }
+
+        it('does not show labels that would overlap the axis hover label', function(done) {
+            _hoverNatural(gd, 130, 100);
+
+            expect(labelCount()).toBe(14);
+
+            Plotly.relayout(gd, {'yaxis.domain': [0.2, 0.8]})
+            .then(function() {
+                _hoverNatural(gd, 130, 100);
+
+                expect(labelCount()).toBe(12);
             })
             .then(done, done.fail);
         });
@@ -1595,6 +1666,10 @@ describe('hover info', function() {
 
             var overlap = Math.min(maxA, maxB) - Math.max(minA, minB);
             return Math.max(0, overlap);
+        }
+
+        function labelCount() {
+            return d3Select(gd).selectAll('g.hovertext').size();
         }
 
         it('centered-aligned, should render labels inside boxes', function(done) {
@@ -1715,6 +1790,59 @@ describe('hover info', function() {
                   .toBeWithin(2, 1);
             })
             .then(done, done.fail);
+        });
+
+        it('does not overlap lebels for different trace types', function(done) {
+            function trace(name, type, delta) {
+                return {
+                    name: name,
+                    type: type,
+                    y: [0 + delta, 1 + delta, 2 + delta],
+                    x: ['CAT 1', 'CAT 2', 'CAT 3'],
+                };
+            }
+
+            var scatterName = 'scatter_';
+            var barName = 'bar_';
+            var data = [];
+            var i;
+            for(i = 0; i < 3; i++) {
+                data.push(trace(barName + i, 'bar', 0.0));
+                data.push(trace(scatterName + i, 'scatter', 0.1));
+            }
+            var layout = {
+                width: 600,
+                height: 400,
+                hovermode: 'x',
+            };
+
+            Plotly.newPlot(gd, data, layout)
+                .then(function() {
+                    _hoverNatural(gd, 200, 200);
+                })
+                .then(function() {
+                    expect(labelCount()).toBe(6);
+                })
+                .then(function() {
+                    var nodes = [];
+                    for(i = 0; i < 3; i++) {
+                        nodes.push(hoverInfoNodes(barName + i).secondaryBox.getBoundingClientRect());
+                        nodes.push(hoverInfoNodes(scatterName + i).secondaryBox.getBoundingClientRect());
+                    }
+                    nodes.sort(function(a, b) { return a.top - b.top; });
+
+                    for(i = 0; i < 5; i++) {
+                        expect(
+                calcLineOverlap(
+                    nodes[i].top,
+                    nodes[i].bottom,
+                    nodes[i + 1].top,
+                    nodes[i + 1].bottom
+                )
+                ).toBeWithin(2, 1);
+                    }
+                })
+              .then(done, done.fail);
         });
     });
 
@@ -2090,7 +2218,7 @@ describe('hover info', function() {
 
     it('should fallback to regular hover content when hoveron does not support hovertemplate', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/scatter_fill_self_next.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/scatter_fill_self_next.json'));
 
         fig.data.forEach(function(trace) {
             trace.hoveron = 'points+fills';
@@ -2212,7 +2340,7 @@ describe('hover info on stacked subplots', function() {
 
     describe('hover info on stacked subplots with shared x-axis', function() {
         var mock = Lib.extendDeep({},
-            require('@mocks/stacked_coupled_subplots.json'),
+            require('../../image/mocks/stacked_coupled_subplots.json'),
             {data: [
                 // Tweak the mock so the higher subplot sometimes has points
                 // higher *within the subplot*, sometimes lower.
@@ -2278,7 +2406,7 @@ describe('hover info on stacked subplots', function() {
     });
 
     describe('hover info on stacked subplots with shared y-axis', function() {
-        var mock = Lib.extendDeep(require('@mocks/stacked_subplots_shared_yaxis.json'));
+        var mock = Lib.extendDeep(require('../../image/mocks/stacked_subplots_shared_yaxis.json'));
         mock.data[0].name = 'Who put the bomp in the bomp bah bomp bah bomp';
         mock.data[0].hoverlabel = {namelength: -1};
         mock.data[1].name = 'Who put the ram in the rama lama ding dong';
@@ -2333,6 +2461,421 @@ describe('hover info on stacked subplots', function() {
     });
 });
 
+describe('hover on subplots when hoversubplots is set to *single* and x hovermodes', function() {
+    'use strict';
+
+    var mock = {
+        layout: {
+            hoversubplots: 'single',
+            hovermode: 'x',
+            yaxis2: {
+                anchor: 'x',
+                overlaying: 'y'
+            }
+        },
+
+        data: [
+            {
+                y: [1, 2, 3]
+            },
+            {
+                y: [1, 3, 2],
+                yaxis: 'y2'
+            }
+        ],
+    };
+
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, mock).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('hovermode: *x* | *x unified* with hoversubplots: *axis*', function() {
+        var pos = 0;
+        var subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(1);
+        assertHoverLabelContent({
+            nums: '1',
+            name: 'trace 0',
+            axis: String(pos)
+        });
+
+        pos = 0;
+        subplot = 'xy2';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(1);
+        assertHoverLabelContent({
+            nums: '1',
+            name: 'trace 1',
+            axis: String(pos)
+        });
+
+        Plotly.relayout(gd, 'hovermode', 'x unified');
+        pos = 0;
+        subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(1);
+    });
+});
+
+function assertFirstPointOn(gd, xaxisId, yaxisId) {
+    // first point should be on the main subplot
+    expect(gd._hoverdata[0].xaxis._id).toBe(xaxisId);
+    expect(gd._hoverdata[0].yaxis._id).toBe(yaxisId);
+}
+
+describe('hover on subplots when hoversubplots is set to *axis* and x hovermodes', function() {
+    'use strict';
+
+    var mock = {
+        layout: {
+            hoversubplots: 'axis',
+            hovermode: 'x',
+            grid: {
+                rows: 3,
+                columns: 2,
+                pattern: 'coupled'
+            }
+        },
+
+        data: [
+            {
+                y: [1, 2, 3]
+            },
+            {
+                y: [10, 20, 30],
+                yaxis: 'y2'
+            },
+            {
+                y: [100, 200, 300],
+                yaxis: 'y3'
+            },
+            {
+                y: [10, 20, 30],
+                xaxis: 'x2',
+                yaxis: 'y2'
+            }
+        ],
+    };
+
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, mock).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('hovermode: *x* | *x unified* with hoversubplots: *axis*', function() {
+        var pos = 0;
+        var subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x', 'y');
+
+        assertHoverLabelContent({
+            nums: ['1', '10', '100'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String([pos])
+        });
+
+        pos = 1;
+        subplot = 'xy2';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+
+        assertFirstPointOn(gd, 'x', 'y2');
+
+        expect(gd._hoverdata.length).toBe(3);
+        assertHoverLabelContent({
+            nums: ['2', '20', '200'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String(pos)
+        });
+
+        pos = 2;
+        subplot = 'xy3';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+
+        assertFirstPointOn(gd, 'x', 'y3');
+
+        expect(gd._hoverdata.length).toBe(3);
+        assertHoverLabelContent({
+            nums: ['3', '30', '300'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String(pos)
+        });
+
+        Plotly.relayout(gd, 'hovermode', 'x unified');
+        pos = 0;
+        subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x', 'y');
+    });
+});
+
+describe('hover on subplots when hoversubplots is set to *axis* and y hovermodes', function() {
+    'use strict';
+
+    var mock = {
+        layout: {
+            hoversubplots: 'axis',
+            hovermode: 'y',
+            grid: {
+                rows: 2,
+                columns: 3,
+                pattern: 'coupled'
+            }
+        },
+
+        data: [
+            {
+                x: [1, 2, 3]
+            },
+            {
+                x: [10, 20, 30],
+                xaxis: 'x2'
+            },
+            {
+                x: [100, 200, 300],
+                xaxis: 'x3'
+            },
+            {
+                x: [10, 20, 30],
+                xaxis: 'x2',
+                yaxis: 'y2'
+            }
+        ],
+    };
+
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, mock).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('hovermode: *y* | *y unified* with hoversubplots: *axis*', function() {
+        var pos = 0;
+        var subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {yval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x', 'y');
+
+        assertHoverLabelContent({
+            nums: ['1', '10', '100'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String([pos])
+        });
+
+        pos = 1;
+        subplot = 'x2y';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {yval: pos}, subplot);
+
+        expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x2', 'y');
+
+        assertHoverLabelContent({
+            nums: ['2', '20', '200'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String(pos)
+        });
+
+        pos = 2;
+        subplot = 'x3y';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {yval: pos}, subplot);
+
+        expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x3', 'y');
+
+        assertHoverLabelContent({
+            nums: ['3', '30', '300'],
+            name: ['trace 0', 'trace 1', 'trace 2'],
+            axis: String(pos)
+        });
+
+        Plotly.relayout(gd, 'hovermode', 'y unified');
+        pos = 0;
+        subplot = 'xy';
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {yval: pos}, subplot);
+        expect(gd._hoverdata.length).toBe(3);
+
+        assertFirstPointOn(gd, 'x', 'y');
+    });
+});
+
+describe('splom hover on subplots when hoversubplots is set to *axis* and (x|y) hovermodes', function() {
+    'use strict';
+
+    var mock = Lib.extendDeep({}, splomLogMock);
+    mock.layout.hovermode = 'x';
+    mock.layout.hoversubplots = 'axis';
+
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, mock).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('splom hoversubplots: *axis*', function() {
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {x: 200, y: 200}, 'xy');
+        assertFirstPointOn(gd, 'x', 'y');
+        expect(gd._hoverdata.length).toBe(2);
+        assertHoverLabelContent({
+            nums: ['100', '100k'],
+            name: ['', ''],
+            axis: '100'
+        });
+
+        Plotly.relayout(gd, 'hovermode', 'x unified');
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {x: 200, y: 200}, 'xy');
+        assertFirstPointOn(gd, 'x', 'y');
+        expect(gd._hoverdata.length).toBe(2);
+
+        Plotly.relayout(gd, 'hovermode', 'y unified');
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {x: 200, y: 200}, 'xy');
+        assertFirstPointOn(gd, 'x', 'y');
+        expect(gd._hoverdata.length).toBe(2);
+    });
+});
+
+describe('splom hover *axis* hoversubplots splom points on same position should pick points with same index', function() {
+    'use strict';
+
+    var mock = {
+        data: [{
+            type: 'splom',
+            dimensions: [{
+                values: [1, 1, 1, 1]
+            }, {
+                values: [1, 2, 3, 4]
+            }, {
+                values: [1, 2, 3, 4]
+            }, {
+                values: [1, null, 3, 4]
+            }
+            ]}],
+        layout: {
+            hoversubplots: 'axis',
+            hovermode: 'x',
+            width: 600,
+            height: 600
+        }
+    };
+
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, mock).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('splom *axis* hoversubplots', function() {
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'xy');
+        assertFirstPointOn(gd, 'x', 'y');
+        expect(gd._hoverdata.length).toBe(4);
+        assertHoverLabelContent({
+            nums: ['1', '1', '1', '1'],
+            name: ['', '', '', ''],
+            axis: '1'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'xy2');
+        assertFirstPointOn(gd, 'x', 'y2');
+        expect(gd._hoverdata.length).toBe(3);
+        assertHoverLabelContent({
+            nums: ['1', '2', '2'],
+            name: ['', '', ''],
+            axis: '1'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'xy3');
+        assertFirstPointOn(gd, 'x', 'y3');
+        expect(gd._hoverdata.length).toBe(3);
+        assertHoverLabelContent({
+            nums: ['1', '2', '2'],
+            name: ['', '', ''],
+            axis: '1'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'xy4');
+        assertFirstPointOn(gd, 'x', 'y4');
+        expect(gd._hoverdata.length).toBe(4);
+        assertHoverLabelContent({
+            nums: ['1', '3', '3', '3'],
+            name: ['', '', '', ''],
+            axis: '1'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'x2y');
+        assertFirstPointOn(gd, 'x2', 'y');
+        expect(gd._hoverdata.length).toBe(4);
+        assertHoverLabelContent({
+            nums: ['1', '3', '3', '3'],
+            name: ['', '', '', ''],
+            axis: '3'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'x3y');
+        assertFirstPointOn(gd, 'x3', 'y');
+        expect(gd._hoverdata.length).toBe(4);
+        assertHoverLabelContent({
+            nums: ['1', '3', '3', '3'],
+            name: ['', '', '', ''],
+            axis: '3'
+        });
+
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {}, 'x4y');
+        assertFirstPointOn(gd, 'x4', 'y');
+        expect(gd._hoverdata.length).toBe(4);
+        assertHoverLabelContent({
+            nums: ['1', '3', '3', '3'],
+            name: ['', '', '', ''],
+            axis: '3'
+        });
+    });
+});
+
+
 describe('hover on many lines+bars', function() {
     'use strict';
 
@@ -2375,7 +2918,7 @@ describe('hover info on overlaid subplots', function() {
     afterEach(destroyGraphDiv);
 
     it('should respond to hover', function(done) {
-        var mock = require('@mocks/autorange-tozero-rangemode.json');
+        var mock = require('../../image/mocks/autorange-tozero-rangemode.json');
         mock.layout.hovermode = 'x';
 
         Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(function() {
@@ -2477,7 +3020,7 @@ describe('hover on fill', function() {
     }
 
     it('should always show one label in the right place', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/scatter_fill_self_next.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/scatter_fill_self_next.json'));
         mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
         mock.layout.hovermode = 'x';
 
@@ -2519,7 +3062,7 @@ describe('hover on fill', function() {
     });
 
     it('should work for scatterternary too', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/ternary_fill.json'));
         var gd = createGraphDiv();
 
         Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
@@ -2555,7 +3098,7 @@ describe('hover on fill', function() {
     });
 
     it('should act like closest mode on ternary when cartesian is in compare mode', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/ternary_fill.json'));
         mock.layout.hovermode = 'x';
         var gd = createGraphDiv();
 
@@ -2633,7 +3176,7 @@ describe('Hover on multicategory axes', function() {
     });
 
     it('should work on heatmap traces', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/heatmap_multicategory.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/heatmap_multicategory.json'));
         fig.data = [fig.data[0]];
         fig.layout.width = 500;
         fig.layout.height = 500;
@@ -2664,6 +3207,32 @@ describe('Hover on multicategory axes', function() {
         })
         .then(done, done.fail);
     });
+
+    it('should work with series', function(done) {
+        var fig = Lib.extendDeep({}, require('../../image/mocks/multicategory_series.json'));
+        fig.data = [fig.data[0]];
+        fig.layout.width = 500;
+        fig.layout.height = 500;
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            expect(eventData.x).toEqual(['High', 4]);
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'hovertemplate', '%{z} @ %{x} | %{y}');
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            expect(eventData.x).toEqual(['High', 4]);
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('hover on traces with (x|y)period positioning', function() {
@@ -2684,7 +3253,7 @@ describe('hover on traces with (x|y)period positioning', function() {
     }
 
     it('shows hover info for scatter, bar, waterfall, funnel, heatmap and contour traces', function(done) {
-        Plotly.newPlot(gd, require('@mocks/period_positioning.json'))
+        Plotly.newPlot(gd, require('../../image/mocks/period_positioning.json'))
         .then(function() { _hover(110, 390); })
         .then(function() {
             assertHoverLabelContent({
@@ -2814,7 +3383,7 @@ describe('hover on traces with (x|y)period positioning', function() {
     });
 
     it('shows hover info for box, ohlc, candlestick traces', function(done) {
-        Plotly.newPlot(gd, require('@mocks/period_positioning2.json'))
+        Plotly.newPlot(gd, require('../../image/mocks/period_positioning2.json'))
         .then(function() { _hover(110, 390); })
         .then(function() {
             assertHoverLabelContent({
@@ -2857,21 +3426,25 @@ describe('hover on traces with (x|y)period positioning', function() {
         .then(function() { _hover(385, 355); })
         .then(function() {
             assertHoverLabelContent({
-                name: ['', '', '', 'box (v)', ''],
+                name: ['', '', '', 'box (v)', '', '', ''],
                 nums: [
                     '(Jan 2001, min: 2)',
+                    '(Jan 2001, lower fence: 2)',
                     '(Jan 2001, q1: 4)',
-                    '(Jan 2001, q3: 8)',
                     '(Jan 2001, median: 6)',
-                    '(Jan 2001, max: 10)',
+                    '(Jan 2001, q3: 8)',
+                    '(Jan 2001, upper fence: 10)',
+                    '(Jan 2001, max: 10)'
                 ]
             });
         })
         .then(function() { _hover(475, 120); })
         .then(function() {
             assertHoverLabelContent({
-                name: ['', '', '', '', 'box (h)'],
+                name: ['', '', '', '', '', '', 'box (h)'],
                 nums: [
+                    '(upper fence: 8, Jan 2004)',
+                    '(lower fence: 0, Jan 2004)',
                     '(max: 8, Jan 2004)',
                     '(min: 0, Jan 2004)',
                     '(q1: 2, Jan 2004)',
@@ -2885,7 +3458,7 @@ describe('hover on traces with (x|y)period positioning', function() {
     });
 
     it('shows hover info and hovertemplate for bar and scatter traces using (start | middle | end) alignments and different periods', function(done) {
-        Plotly.newPlot(gd, require('@mocks/period_positioning4.json'))
+        Plotly.newPlot(gd, require('../../image/mocks/period_positioning4.json'))
         .then(function() { _hover(65, 425); })
         .then(function() {
             assertHoverLabelContent({
@@ -4012,13 +4585,16 @@ describe('Test hover label custom styling:', function() {
 describe('hover distance', function() {
     'use strict';
 
-    var mock = require('@mocks/19.json');
+    var mock = require('../../image/mocks/19.json');
 
     afterEach(destroyGraphDiv);
 
     describe('closest hovermode', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'closest';
+        // use simple markers here
+        delete mockCopy.data[0].marker;
+        delete mockCopy.data[1].marker;
 
         beforeEach(function(done) {
             Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
@@ -4302,6 +4878,67 @@ describe('hover distance', function() {
                 })
                 .then(done, done.fail);
         });
+
+        it('correctly format the epoch timestamp in a given hover format', function(done) {
+            var x = ['1970-01-01 00:00:00'];
+            var mock = {
+                data: [{type: 'scatter', x: x, y: [1]}],
+                layout: {width: 400, height: 400, xaxis: {hoverformat: '%H:%M:%S'}}
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(function(gd) {
+                    Fx.hover(gd, {xpx: 120, ypx: 110});
+                    assertHoverLabelContent({nums: '(00:00:00, 1)'});
+                })
+                .then(done, done.fail);
+        });
+    });
+});
+
+describe('hover working with zorder', function() {
+    'use strict';
+
+    var mock = {
+        data: [{
+            zorder: 100,
+            marker: {size: 50},
+            text: ['A', 'B'],
+            y: [0, 1]
+        }, {
+            marker: {size: 50},
+            text: ['C', 'D'],
+            y: [2, 1]
+        }],
+        layout: {
+            width: 400,
+            height: 400,
+            showlegend: false,
+            hovermode: 'closest'
+        }
+    };
+
+    afterEach(destroyGraphDiv);
+
+    beforeEach(function(done) {
+        Plotly.newPlot(createGraphDiv(), mock).then(done);
+    });
+
+    it('pick the trace on top', function() {
+        var gd = document.getElementById('graph');
+        Fx.hover('graph', {xval: 1}, 'xy');
+
+        expect(gd._hoverdata.length).toEqual(1);
+
+        assertHoverLabelContent({
+            nums: '(1, 1)\nB',
+            name: 'trace 0'
+        });
+
+        var hoverTrace = gd._hoverdata[0];
+        expect(hoverTrace.text).toEqual('B');
+        expect(hoverTrace.curveNumber).toEqual(0);
+        expect(hoverTrace.pointNumber).toEqual(1);
     });
 });
 
@@ -4418,7 +5055,7 @@ describe('hover labels z-position', function() {
     });
 
     afterEach(destroyGraphDiv);
-    var mock = require('@mocks/14.json');
+    var mock = require('../../image/mocks/14.json');
 
     it('is above the modebar', function(done) {
         Plotly.newPlot(gd, mock).then(function() {
@@ -4508,10 +5145,10 @@ describe('dragmode: false', function() {
 describe('hovermode: (x|y)unified', function() {
     var gd;
     var mock = {
-        'data': [
-          {'y': [0, 3, 6, 4, 10, 2, 3, 5, 4, 0, 5]},
-          {'y': [0, 4, 7, 8, 10, 6, 3, 3, 4, 0, 5], }
-        ], 'layout': {'showlegend': false, 'hovermode': 'x unified'}};
+        data: [
+          {y: [0, 3, 6, 4, 10, 2, 3, 5, 4, 0, 5]},
+          {y: [0, 4, 7, 8, 10, 6, 3, 3, 4, 0, 5], }
+        ], layout: {showlegend: false, hovermode: 'x unified'}};
 
     beforeEach(function() {
         gd = createGraphDiv();
@@ -4574,7 +5211,7 @@ describe('hovermode: (x|y)unified', function() {
     }
 
     it('set smart defaults for spikeline in x unified', function(done) {
-        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'x unified', 'xaxis': {'color': 'red'}})
+        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {hovermode: 'x unified', xaxis: {color: 'red'}})
             .then(function(gd) {
                 expect(gd._fullLayout.hovermode).toBe('x unified');
                 var ax = gd._fullLayout.xaxis;
@@ -4590,7 +5227,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('set smart defaults for spikeline in y unified', function(done) {
-        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'y unified', 'yaxis': {'color': 'red'}})
+        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {hovermode: 'y unified', yaxis: {color: 'red'}})
             .then(function(gd) {
                 expect(gd._fullLayout.hovermode).toBe('y unified');
                 var ax = gd._fullLayout.yaxis;
@@ -4648,6 +5285,40 @@ describe('hovermode: (x|y)unified', function() {
         .then(done, done.fail);
     });
 
+    it('should not fail if only hoverinfo: "none" are current visible', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'A',
+                x: [1, 100],
+                y: [1, 1]
+            }, {
+                name: 'B',
+                y: [1],
+                x: [50],
+                hoverinfo: 'none'
+            }],
+            layout: {
+                xaxis: {range: [40, 60]},
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            expect(gd._hoverdata, undefined);
+            assertHoverLabelContent({});
+        })
+        .then(done, done.fail);
+    });
+
     it('y unified should work for x/y cartesian traces', function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'y unified';
@@ -4688,7 +5359,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('x unified should work for x/y cartesian traces with legendgroup', function(done) {
-        var mockLegendGroup = require('@mocks/legendgroup.json');
+        var mockLegendGroup = require('../../image/mocks/legendgroup.json');
         var mockCopy = Lib.extendDeep({}, mockLegendGroup);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -4697,7 +5368,13 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertLabel({title: '3', items: [
                     'trace 0 : 2',
+                    'min: 1',
+                    'lower fence: 1',
+                    'q1: 1',
                     'trace 1 : median: 1',
+                    'q3: 1',
+                    'upper fence: 1',
+                    'max: 1',
                     'trace 3 : 2',
                     'trace 2 : 2',
                     'trace 5 : 2',
@@ -5836,7 +6513,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should have the same traceorder as the legend', function(done) {
-        var mock = require('@mocks/stacked_area.json');
+        var mock = require('../../image/mocks/stacked_area.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         var expectation = ['top : 1', 'middle : 6', 'bottom : 0'];
@@ -5856,7 +6533,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should order items based on trace index as in the legend', function(done) {
-        var mock = require('@mocks/29.json');
+        var mock = require('../../image/mocks/29.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5874,7 +6551,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should work for finance traces', function(done) {
-        var mockOhlc = require('@mocks/finance_multicategory.json');
+        var mockOhlc = require('../../image/mocks/finance_multicategory.json');
         var mockCopy = Lib.extendDeep({}, mockOhlc);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5890,7 +6567,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should work for "legend_horizontal_autowrap"', function(done) {
-        var mock = require('@mocks/legend_horizontal_autowrap.json');
+        var mock = require('../../image/mocks/legend_horizontal_autowrap.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5904,7 +6581,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should style scatter symbols accordingly', function(done) {
-        var mock = require('@mocks/marker_colorscale_template.json');
+        var mock = require('../../image/mocks/marker_colorscale_template.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5922,7 +6599,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should style bar symbols accordingly', function(done) {
-        var mock = require('@mocks/bar-marker-line-colorscales.json');
+        var mock = require('../../image/mocks/bar-marker-line-colorscales.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5940,7 +6617,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should style funnel symbols accordingly', function(done) {
-        var mock = require('@mocks/funnel_custom.json');
+        var mock = require('../../image/mocks/funnel_custom.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5956,7 +6633,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should style waterfall symbols correctly', function(done) {
-        var mock = require('@mocks/waterfall_custom.json');
+        var mock = require('../../image/mocks/waterfall_custom.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -6004,7 +6681,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 // Set legend.bgcolor which should win over paper_bgcolor
                 return Plotly.relayout(gd, {
-                    'showlegend': true,
+                    showlegend: true,
                     'legend.bgcolor': bgcolor[1],
                     'legend.bordercolor': bgcolor[1]
                 });
@@ -6081,7 +6758,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 // Set legend.font which should win over layout font
                 return Plotly.relayout(gd, {
-                    'showlegend': true,
+                    showlegend: true,
                     'legend.font.size': 15,
                     'legend.font.family': 'Helvetica',
                     'legend.font.color': 'rgb(20, 20, 20)'
@@ -6286,7 +6963,18 @@ describe('hover on traces with (x|y)hoverformat', function() {
         {type: 'scattergl', nums: '(02/01/2000, 1.00)'},
         {type: 'histogram', nums: '(02/01/2000, 1.00)'},
         {type: 'bar', nums: '(02/01/2000, 1.00)'},
-        {type: 'box', nums: '(02/01/2000, median: 1.00)'},
+        {type: 'box',
+            name: ['', '', '', '', '', '', ''],
+            nums: [
+                '(02/01/2000, median: 1.00)',
+                '(02/01/2000, max: 1.00)',
+                '(02/01/2000, upper fence: 1.00)',
+                '(02/01/2000, q3: 1.00)',
+                '(02/01/2000, q1: 1.00)',
+                '(02/01/2000, lower fence: 1.00)',
+                '(02/01/2000, min: 1.00)'
+            ]
+        },
         {type: 'ohlc', nums: '02/01/2000\nopen: 4.00\nhigh: 5.00\nlow: 2.00\nclose: 3.00  ▼'},
         {type: 'candlestick', nums: '02/01/2000\nopen: 4.00\nhigh: 5.00\nlow: 2.00\nclose: 3.00  ▼'},
         {type: 'waterfall', nums: '(02/01/2000, 1.00)\n1.00 ▲\nInitial: 0.00'},
@@ -6310,7 +6998,7 @@ describe('hover on traces with (x|y)hoverformat', function() {
             .then(function() { _hover(200, 200); })
             .then(function() {
                 assertHoverLabelContent({
-                    name: '',
+                    name: t.name ? t.name : '',
                     nums: t.nums
                 });
             })

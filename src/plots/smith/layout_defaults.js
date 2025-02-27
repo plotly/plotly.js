@@ -17,6 +17,9 @@ var constants = require('./constants');
 var axisNames = constants.axisNames;
 
 var makeImagDflt = memoize(function(realTickvals) {
+    // TODO: handle this case outside supply defaults step
+    if(Lib.isTypedArray(realTickvals)) realTickvals = Array.from(realTickvals);
+
     return realTickvals.slice().reverse().map(function(x) { return -x; })
         .concat([0])
         .concat(realTickvals);
@@ -45,7 +48,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         var axOut = Template.newContainer(contOut, axName);
         axOut._id = axOut._name = axName;
         axOut._attr = opts.id + '.' + axName;
-        axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
+        axOut._traceIndices = subplotData.map(function(t) { return t.index; });
 
         var visible = coerceAxis('visible');
 
@@ -69,6 +72,9 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 coerceAxis('tickvals', imagTickvalsDflt);
             }
 
+            // TODO: handle this case outside supply defaults step
+            if(Lib.isTypedArray(axOut.tickvals)) axOut.tickvals = Array.from(axOut.tickvals);
+
             var dfltColor;
             var dfltFontColor;
             var dfltFontSize;
@@ -83,6 +89,9 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             }
 
             handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
+                noAutotickangles: true,
+                noTicklabelshift: true,
+                noTicklabelstandoff: true,
                 noTicklabelstep: true,
                 noAng: !isRealAxis,
                 noExp: true,

@@ -77,12 +77,14 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 #### Prerequisites
 
 - git
-- [node.js](https://nodejs.org/en/). We recommend using node.js v16.x.
+- [node.js](https://nodejs.org/en/). We recommend using node.js v18.x.
   Upgrading and managing node versions can be easily done using
   [`nvm`](https://github.com/creationix/nvm) or its Windows alternatives.
-- [`npm`](https://www.npmjs.com/) v7.x and up to ensure that the
+- [`npm`](https://www.npmjs.com/) v10.x and up to ensure that the
   [`package-lock.json`](https://docs.npmjs.com/files/package-lock.json) file is
   used and updated correctly.
+- [`python3`](https://www.python.org/downloads/)
+Note: for M1 mac users specifically, you might need to install some [extra dependencies](https://github.com/Automattic/node-canvas/issues/1733#issuecomment-761703018). 
 
 #### Step 1: Fork the plotly.js repository, clone your fork and step into it
 
@@ -116,11 +118,7 @@ npm run pretest
 npm start
 ```
 
-This command bundles up the source files with source maps using
-[browserify](https://github.com/substack/node-browserify), starts a
-[watchify](https://github.com/substack/watchify) file watcher (making the your
-dev plotly.js bundle update every time a source file is saved) and opens up a
-tab in your browser.
+This command bundles up the source files and opens up a tab in your browser.
 
 #### Step 6: Open up the console and start developing
 
@@ -161,6 +159,23 @@ npm run schema
 > If you are editing attribute descriptions or implementing a new feature this file located in the test folder records the proposed changes to the API. Note that there is another plot-schema.json file located in the dist folder, which should only be updated by the maintainers at release time.
 
 **IMPORTANT:** please do not change and commit any files in the "dist" folder
+
+#### Step 9: REGL - Review & commit potential changes to precompiled regl shaders
+
+If you are implementing a new feature that involves regl shaders, or if you are
+making changes that affect the usage of regl shaders, you would need to run
+
+```bash
+npm run regl-codegen
+```
+
+to regenerate the regl code. This opens a browser window, runs through all
+traces with 'regl' in the tags, and stores the captured code into 
+[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen). If no updates are necessary, it would be a no-op, but
+if there are changes, you would need to commit them.
+
+This is needed because regl performs codegen in runtime which breaks CSP
+compliance, and so for strict builds we pre-generate regl shader code here.
 
 #### Other npm scripts that may be of interest in development
 
@@ -325,7 +340,7 @@ This will produce the following plot, and say you want to simulate a selection p
 
 The trace modules (found in [`src/traces`](https://github.com/plotly/plotly.js/tree/master/src/traces))
 are defined as plain objects with functions and constants attached to them in an index file
-(e.g. `src/traces/scatter/index.js`). The trace modules are "registered" undo the `Registry` object
+(e.g. `src/traces/scatter/index.js`). The trace modules are "registered" under the `Registry` object
 (found in [`src/registry.js`](https://github.com/plotly/plotly.js/blob/master/src/registry.js)) using
 `Plotly.register` (as done in the index files in `dist/`).
 
@@ -376,7 +391,3 @@ Other methods used by some trace modules:
 
 Check if ok, with `npm run lint`
 
-- See [eslintrc](https://github.com/plotly/plotly.js/blob/master/.eslintrc) and
-  the eslint [list of rules](http://eslint.org/docs/rules/) for more details.
-- Rules listed in the eslintrc file with the ignore flag `0` are the recommended
-  rules for new code added.

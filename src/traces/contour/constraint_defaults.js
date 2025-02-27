@@ -8,6 +8,7 @@ var addOpacity = Color.addOpacity;
 var opacity = Color.opacity;
 
 var filterOps = require('../../constants/filter_ops');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var CONSTRAINT_REDUCTION = filterOps.CONSTRAINT_REDUCTION;
 var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
 
@@ -50,7 +51,7 @@ function handleConstraintValueDefaults(coerce, contours) {
         // Requires an array of two numbers:
         coerce('contours.value', [0, 1]);
 
-        if(!Array.isArray(contours.value)) {
+        if(!isArrayOrTypedArray(contours.value)) {
             if(isNumeric(contours.value)) {
                 zvalue = parseFloat(contours.value);
                 contours.value = [zvalue, zvalue + 1];
@@ -73,7 +74,7 @@ function handleConstraintValueDefaults(coerce, contours) {
         coerce('contours.value', 0);
 
         if(!isNumeric(contours.value)) {
-            if(Array.isArray(contours.value)) {
+            if(isArrayOrTypedArray(contours.value)) {
                 contours.value = parseFloat(contours.value[0]);
             } else {
                 contours.value = 0;

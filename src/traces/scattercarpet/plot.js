@@ -8,12 +8,23 @@ module.exports = function plot(gd, plotinfoproxy, data, layer) {
     var i, trace, node;
 
     var carpet = data[0][0].carpet;
+
+    var xaxis = Axes.getFromId(gd, carpet.xaxis || 'x');
+    var yaxis = Axes.getFromId(gd, carpet.yaxis || 'y');
+
     // mimic cartesian plotinfo
     var plotinfo = {
-        xaxis: Axes.getFromId(gd, carpet.xaxis || 'x'),
-        yaxis: Axes.getFromId(gd, carpet.yaxis || 'y'),
+        xaxis: xaxis,
+        yaxis: yaxis,
         plot: plotinfoproxy.plot,
     };
+
+    for(i = 0; i < data.length; i++) {
+        trace = data[i][0].trace;
+
+        trace._xA = xaxis;
+        trace._yA = yaxis;
+    }
 
     scatterPlot(gd, plotinfo, data, layer);
 

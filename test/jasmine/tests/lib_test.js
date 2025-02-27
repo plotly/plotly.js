@@ -1,12 +1,12 @@
-var Lib = require('@src/lib');
-var setCursor = require('@src/lib/setcursor');
-var overrideCursor = require('@src/lib/override_cursor');
-var config = require('@src/plot_api/plot_config').dfltConfig;
+var Lib = require('../../../src/lib');
+var setCursor = require('../../../src/lib/setcursor');
+var overrideCursor = require('../../../src/lib/override_cursor');
+var config = require('../../../src/plot_api/plot_config').dfltConfig;
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -123,6 +123,24 @@ describe('Test lib.js:', function() {
             var input = ['1', '2'];
             var res = Lib.mean(input);
             expect(res).toEqual(1.5);
+        });
+    });
+
+    describe('geometricMean() should', function() {
+        it('toss out non-numerics (strings)', function() {
+            var input = [1, 2, 'apple', 'orange'];
+            var res = Lib.geometricMean(input);
+            expect(res).toBeCloseTo(1.414, 3);
+        });
+        it('toss out non-numerics (NaN)', function() {
+            var input = [1, 2, NaN];
+            var res = Lib.geometricMean(input);
+            expect(res).toBeCloseTo(1.414, 3);
+        });
+        it('evaluate numbers which are passed around as text strings:', function() {
+            var input = ['1', '2'];
+            var res = Lib.geometricMean(input);
+            expect(res).toBeCloseTo(1.414, 3);
         });
     });
 
@@ -322,11 +340,12 @@ describe('Test lib.js:', function() {
         });
 
         it('should access properties of objects in an array with index -1', function() {
-            var obj = {arr: [{a: 1}, {a: 2}, {b: 3}]};
+            var obj = {arr: [{a: 1}, {a: null}, {b: 3}]};
             var prop = np(obj, 'arr[-1].a');
 
-            expect(prop.get()).toEqual([1, 2, undefined]);
-            expect(obj).toEqual({arr: [{a: 1}, {a: 2}, {b: 3}]});
+            expect(prop.get()).toEqual([1, undefined, undefined]);
+            expect(prop.get(true)).toEqual([1, null, undefined]);
+            expect(obj).toEqual({arr: [{a: 1}, {a: null}, {b: 3}]});
 
             prop.set(5);
             expect(prop.get()).toBe(5);
@@ -468,7 +487,9 @@ describe('Test lib.js:', function() {
 
         it('should fail on a bad property string', function() {
             var badStr = [
-                [], {}, false, undefined, null, NaN, Infinity
+                [], {}, false, undefined, null, NaN, Infinity,
+                // should guard against prototype pollution
+                'x.__proto__.polluted', 'x.y.__proto__.polluted'
             ];
 
             function badProp(i) {
@@ -1033,14 +1054,26 @@ describe('Test lib.js:', function() {
         var defaultFont = {
             family: '"Open sans", verdana, arial, sans-serif, DEFAULT',
             size: 314159,
-            color: 'neon pink with sparkles'
+            color: 'neon pink with sparkles',
+            weight: 'bold',
+            style: 'italic',
+            variant: 'small-caps',
+            textcase: 'word caps',
+            lineposition: 'under',
+            shadow: 'auto',
         };
 
         var attributes = {
             fontWithDefault: {
                 family: extendFlat({}, fontAttrs.family, {dflt: defaultFont.family}),
                 size: extendFlat({}, fontAttrs.size, {dflt: defaultFont.size}),
-                color: extendFlat({}, fontAttrs.color, {dflt: defaultFont.color})
+                color: extendFlat({}, fontAttrs.color, {dflt: defaultFont.color}),
+                weight: extendFlat({}, fontAttrs.weight, {dflt: defaultFont.weight}),
+                style: extendFlat({}, fontAttrs.style, {dflt: defaultFont.style}),
+                variant: extendFlat({}, fontAttrs.variant, {dflt: defaultFont.variant}),
+                textcase: extendFlat({}, fontAttrs.textcase, {dflt: defaultFont.textcase}),
+                lineposition: extendFlat({}, fontAttrs.lineposition, {dflt: defaultFont.lineposition}),
+                shadow: extendFlat({}, fontAttrs.shadow, {dflt: defaultFont.shadow})
             },
             fontNoDefault: fontAttrs
         };
@@ -1067,7 +1100,17 @@ describe('Test lib.js:', function() {
 
         it('should fill in defaults for bad inputs', function() {
             containerIn = {
-                fontWithDefault: {family: '', size: 'a million', color: 42}
+                fontWithDefault: {
+                    family: '',
+                    size: 'a million',
+                    color: 42,
+                    weight: 'BIG',
+                    style: 'Nice',
+                    variant: false,
+                    textcase: true,
+                    lineposition: false,
+                    shadow: false,
+                }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
                 .toEqual(defaultFont);
@@ -1080,24 +1123,253 @@ describe('Test lib.js:', function() {
             var badSize = 'ginormous';
             var goodColor = 'red';
             var badColor = 'a dark and stormy night';
+            var goodWeight = 'bold';
+            var badWeight = 'heavy';
+            var goodStyle = 'italic';
+            var badStyle = '';
+            var goodVariant = 'small-caps';
+            var badVariant = false;
+
+            var goodTextcase = 'word caps';
+            var badTextcase = true;
+            var goodLineposition = 'under';
+            var badLineposition = 'underline';
+            var goodShadow = 'auto';
+            var badShadow = false;
 
             containerIn = {
-                fontWithDefault: {family: goodFamily, size: badSize, color: badColor}
+                fontWithDefault: {
+                    family: goodFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
+                }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({family: goodFamily, size: defaultFont.size, color: defaultFont.color});
+                .toEqual({
+                    family: goodFamily,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
+                });
 
             containerIn = {
-                fontWithDefault: {family: badFamily, size: goodSize, color: badColor}
+                fontWithDefault: {
+                    family: badFamily,
+                    size: goodSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
+                }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({family: defaultFont.family, size: goodSize, color: defaultFont.color});
+                .toEqual({
+                    family: defaultFont.family,
+                    size: goodSize,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
+                });
 
             containerIn = {
-                fontWithDefault: {family: badFamily, size: badSize, color: goodColor}
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: goodColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
+                }
             };
             expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({family: defaultFont.family, size: defaultFont.size, color: goodColor});
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: goodColor,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: goodWeight,
+                    style: badStyle,
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: goodWeight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: goodStyle,
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: goodStyle,
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: goodVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: goodVariant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant,
+                    textcase: goodTextcase,
+                    lineposition: badLineposition,
+                    shadow: badShadow
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant,
+                    textcase: goodTextcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: defaultFont.shadow
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: goodLineposition,
+                    shadow: badShadow
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: goodLineposition,
+                    shadow: defaultFont.shadow
+                });
+
+            containerIn = {
+                fontWithDefault: {
+                    family: badFamily,
+                    size: badSize,
+                    color: badColor,
+                    weight: badWeight,
+                    style: badStyle,
+                    variant: badVariant,
+                    textcase: badTextcase,
+                    lineposition: badLineposition,
+                    shadow: goodShadow
+                }
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({
+                    family: defaultFont.family,
+                    size: defaultFont.size,
+                    color: defaultFont.color,
+                    weight: defaultFont.weight,
+                    style: defaultFont.style,
+                    variant: defaultFont.variant,
+                    textcase: defaultFont.textcase,
+                    lineposition: defaultFont.lineposition,
+                    shadow: goodShadow
+                });
         });
     });
 
@@ -1582,9 +1854,7 @@ describe('Test lib.js:', function() {
                 -Number.MAX_VALUE, -Number.MIN_VALUE
             ];
 
-            if(!Lib.isIE()) {
-                vals.push(Number.EPSILON, -Number.EPSILON);
-            }
+            vals.push(Number.EPSILON, -Number.EPSILON);
 
             vals.forEach(function(v) {
                 expect(Lib.cleanNumber(v)).toBe(v);
@@ -2172,7 +2442,15 @@ describe('Test lib.js:', function() {
         });
 
         it('should work with the number *0* (nested case)', function() {
-            expect(Lib.templateString('%{x.y}', {'x': {y: 0}})).toEqual('0');
+            expect(Lib.templateString('%{x.y}', {x: {y: 0}})).toEqual('0');
+        });
+
+        it('preserves null and NaN', function() {
+            expect(Lib.templateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
         });
     });
 
@@ -2199,7 +2477,17 @@ describe('Test lib.js:', function() {
         });
 
         it('should work with the number *0* (nested case)', function() {
-            expect(Lib.hovertemplateString('%{x.y}', {}, locale, {'x': {y: 0}})).toEqual('0');
+            expect(Lib.hovertemplateString('%{x.y}', {}, locale, {x: {y: 0}})).toEqual('0');
+        });
+
+        it('preserves null and NaN', function() {
+            expect(Lib.hovertemplateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {},
+                locale,
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
         });
 
         it('subtitutes multiple matches', function() {
@@ -2268,6 +2556,16 @@ describe('Test lib.js:', function() {
             expect(Lib.texttemplateString('y: %{y}', {yLabel: '0.1'}, locale, {y: 0.123})).toEqual('y: 0.1');
         });
 
+        it('preserves null and NaN', function() {
+            expect(Lib.texttemplateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {},
+                locale,
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
+        });
+
         it('warns user up to 10 times if a variable cannot be found', function() {
             spyOn(Lib, 'warn').and.callThrough();
             Lib.texttemplateString('%{idontexist}', {});
@@ -2316,7 +2614,7 @@ describe('Test lib.js:', function() {
         });
 
         it('puts simple subplots in the right order', function() {
-            ['scene', 'geo', 'ternary', 'mapbox'].forEach(function(v) {
+            ['scene', 'geo', 'ternary', 'mapbox', 'map'].forEach(function(v) {
                 var a = [v + '100', v + '43', v, v + '10', v + '2'];
                 a.sort(Lib.subplotSort);
                 expect(a).toEqual([v, v + '2', v + '10', v + '43', v + '100']);

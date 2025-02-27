@@ -123,9 +123,9 @@ function getMainBundleInfo() {
         '> The minified version of each partial bundle is also published to npm in a separate "dist-min" package.',
         '',
         [
-            '> The strict partial bundle includes everything except the traces that require function constructors.',
-            'Over time we hope to include more of the remaining trace types here, after which we intend to work on other strict CSP issues',
-            'such as inline CSS that we may not be able to include in the main bundle.',
+            '> The strict bundle now includes all traces, but the regl-based traces are built differently to avoid function constructors.',
+            'This results in about a 10% larger bundle size, which is why this method is not used by default.',
+            'Over time we intend to use the strict bundle to work on other strict CSP issues such as inline CSS.'
         ].join(' '),
         '',
         '---',

@@ -1,5 +1,6 @@
 'use strict';
 
+var Drawing = require('../../components/drawing');
 var numConstants = require('../../constants/numerical');
 var BADNUM = numConstants.BADNUM;
 var LOG_CLIP = numConstants.LOG_CLIP;
@@ -12,17 +13,20 @@ var constants = require('./constants');
 
 
 module.exports = function linePoints(d, opts) {
+    var trace = opts.trace || {};
     var xa = opts.xaxis;
     var ya = opts.yaxis;
     var xLog = xa.type === 'log';
     var yLog = ya.type === 'log';
     var xLen = xa._length;
     var yLen = ya._length;
+    var backoff = opts.backoff;
+    var marker = trace.marker;
     var connectGaps = opts.connectGaps;
     var baseTolerance = opts.baseTolerance;
     var shape = opts.shape;
     var linear = shape === 'linear';
-    var fill = opts.fill && opts.fill !== 'none';
+    var fill = trace.fill && trace.fill !== 'none';
     var segments = [];
     var minTolerance = constants.minTolerance;
     var len = d.length;
@@ -275,7 +279,17 @@ module.exports = function linePoints(d, opts) {
         lastXEdge = lastYEdge = 0;
     }
 
+    var arrayMarker = Lib.isArrayOrTypedArray(marker);
+
     function addPt(pt) {
+        if(pt && backoff) {
+            pt.i = i;
+            pt.d = d;
+            pt.trace = trace;
+            pt.marker = arrayMarker ? marker[pt.i] : marker;
+            pt.backoff = backoff;
+        }
+
         latestXFrac = pt[0] / xLen;
         latestYFrac = pt[1] / yLen;
         // Are we more than maxScreensAway off-screen any direction?
@@ -444,6 +458,37 @@ module.exports = function linePoints(d, opts) {
         if(lastFarPt) updateEdge([lastXEdge || lastFarPt[0], lastYEdge || lastFarPt[1]]);
 
         segments.push(pts.slice(0, pti));
+    }
+
+
+    var lastShapeChar = shape.slice(shape.length - 1);
+    if(backoff && lastShapeChar !== 'h' && lastShapeChar !== 'v') {
+        var trimmed = false;
+        var n = -1;
+        var newSegments = [];
+
+        for(var j = 0; j < segments.length; j++) {
+            for(var k = 0; k < segments[j].length - 1; k++) {
+                var start = segments[j][k];
+                var end = segments[j][k + 1];
+
+                var xy = Drawing.applyBackoff(end, start);
+                if(
+                    xy[0] !== end[0] ||
+                    xy[1] !== end[1]
+                ) {
+                    trimmed = true;
+                }
+                if(!newSegments[n + 1]) {
+                    n++;
+                    newSegments[n] = [
+                        start, [xy[0], xy[1]]
+                    ];
+                }
+            }
+        }
+
+        return trimmed ? newSegments : segments;
     }
 
     return segments;

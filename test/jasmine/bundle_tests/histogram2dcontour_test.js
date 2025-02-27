@@ -1,8 +1,8 @@
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/core');
-var PlotlyHistogram2dContour = require('@lib/histogram2dcontour');
-var PlotlyHistogram = require('@lib/histogram');
+var Plotly = require('../../../lib/core');
+var PlotlyHistogram2dContour = require('../../../lib/histogram2dcontour');
+var PlotlyHistogram = require('../../../lib/histogram');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -13,7 +13,7 @@ describe('Bundle with histogram2dcontour and histogram', function() {
 
     Plotly.register([PlotlyHistogram2dContour, PlotlyHistogram]);
 
-    var mock = require('@mocks/2dhistogram_contour_subplots.json');
+    var mock = require('../../image/mocks/2dhistogram_contour_subplots.json');
 
     beforeEach(function(done) {
         Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);

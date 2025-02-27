@@ -2,6 +2,7 @@
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 var constants = require('./constants');
 
 module.exports = function hoverPoints(pointData, xval, yval) {
@@ -24,7 +25,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     if(trace._hasZ) {
         pixel = cd0.z[ny][nx];
     } else if(trace._hasSource) {
-        pixel = trace._canvas.el.getContext('2d').getImageData(nx, ny, 1, 1).data;
+        pixel = trace._canvas.el.getContext('2d', {willReadFrequently: true}).getImageData(nx, ny, 1, 1).data;
     }
 
     // return early if pixel is undefined
@@ -54,9 +55,9 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     }
 
     var text;
-    if(Array.isArray(trace.hovertext) && Array.isArray(trace.hovertext[ny])) {
+    if(isArrayOrTypedArray(trace.hovertext) && isArrayOrTypedArray(trace.hovertext[ny])) {
         text = trace.hovertext[ny][nx];
-    } else if(Array.isArray(trace.text) && Array.isArray(trace.text[ny])) {
+    } else if(isArrayOrTypedArray(trace.text) && isArrayOrTypedArray(trace.text[ny])) {
         text = trace.text[ny][nx];
     }
 
@@ -79,8 +80,8 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         zLabelVal: zLabel,
         text: text,
         hovertemplateLabels: {
-            'zLabel': zLabel,
-            'colorLabel': colorstring,
+            zLabel: zLabel,
+            colorLabel: colorstring,
             'color[0]Label': c[0] + s[0],
             'color[1]Label': c[1] + s[1],
             'color[2]Label': c[2] + s[2],

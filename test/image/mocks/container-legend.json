@@ -1,0 +1,84 @@
+{
+ "data": [
+  {
+   "y": [0]
+  },
+  {
+   "y": [1]
+  },
+  {
+   "y": [2]
+  },
+  {
+   "y": [3],
+   "legend": "legend2"
+  },
+  {
+   "y": [4],
+   "legend": "legend3"
+  },
+  {
+   "y": [5],
+   "legend": "legend3"
+  }
+ ],
+ "layout": {
+  "font": {
+   "textcase": "word caps",
+   "lineposition": "under",
+   "shadow": "auto"
+  },
+  "margin": { "t": 0, "b": 0, "r": 0, "l": 0 },
+  "title": {
+   "text": "Multiple legends | Legends 1 & 2 with container ref",
+   "automargin": true,
+   "yref": "container"
+  },
+  "width": 500,
+  "height": 500,
+  "yaxis": {
+   "autorange": "reversed",
+   "title": {
+    "text": "Long axis title with standoff",
+    "font": { "size": 24 },
+    "standoff": 25
+   },
+   "side": "right",
+   "automargin": true
+  },
+  "xaxis": { "title": { "text": "Xaxis title" }, "automargin": true },
+  "legend": {
+   "bgcolor": "lightgray",
+   "xref": "container",
+   "title": {
+    "text": "Legend"
+   }
+  },
+  "legend2": {
+   "x": 0,
+   "y": 0.5,
+   "xanchor": "right",
+   "yanchor": "top",
+   "bgcolor": "lightblue",
+   "title": {
+    "text": "Legend 2"
+   }
+  },
+  "legend3": {
+   "y": 0,
+   "x": 0.5,
+   "orientation": "h",
+   "yref": "container",
+   "xref": "container",
+   "xanchor": "center",
+   "bgcolor": "yellow",
+   "title": {
+    "text": "Legend 3"
+   }
+  },
+  "hovermode": "x unified"
+ },
+ "config": {
+  "editable": true
+ }
+}

@@ -77,7 +77,7 @@ function zoomScoped(geo, projection) {
         projection
             .scale(d3.event.scale)
             .translate(d3.event.translate);
-        geo.render();
+        geo.render(true);
 
         var center = projection.invert(geo.midPt);
         geo.graphDiv.emit('plotly_relayouting', {
@@ -162,7 +162,7 @@ function zoomNonClipped(geo, projection) {
         }
 
         didZoom = true;
-        geo.render();
+        geo.render(true);
 
         var rotate = projection.rotate();
         var center = projection.invert(geo.midPt);
@@ -268,7 +268,7 @@ function zoomClipped(geo, projection) {
         sync(geo, projection, syncCb);
     })
     .on('zoom.redraw', function() {
-        geo.render();
+        geo.render(true);
 
         var _rotate = projection.rotate();
         geo.graphDiv.emit('plotly_relayouting', {

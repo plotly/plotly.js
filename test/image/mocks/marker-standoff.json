@@ -1,0 +1,257 @@
+{
+ "data": [
+  {
+   "mode": "markers+lines",
+   "line": {
+    "width": 5,
+    "backoff": [30, 20]
+   },
+   "marker": {
+    "standoff": [5, 20, null, 20, 10],
+    "angleref": "previous",
+    "symbol": "arrow",
+    "size": 20
+   },
+   "x": [1, 2, null, 2, 3],
+   "y": [3, 1, null, 1, 2]
+  },
+  {
+   "mode": "markers+text",
+   "marker": {
+    "opacity": 1,
+    "size": [10, 40, 20]
+   },
+   "text": [10, 40, 20],
+   "textposition": ["right", "center", "top"],
+   "x": [1, 2, 3],
+   "y": [3, 1, 2]
+  },
+  {
+   "type": "scattergeo",
+   "mode": "markers+lines",
+   "line": { "width": 5 },
+   "marker": {
+    "standoff": [5, 20, 10, 2.5],
+    "angleref": "previous",
+    "symbol": "arrow-wide",
+    "size": 20
+   },
+   "lon": [-30, 0, 30, 15],
+   "lat": [20, -5, 10, -20]
+  },
+  {
+   "type": "scattergeo",
+   "mode": "markers+text",
+   "marker": {
+    "opacity": 1,
+    "size": [10, 40, 20, 5]
+   },
+   "text": [10, 40, 20, 5],
+   "textposition": ["right", "center", "top", "bottom"],
+   "lon": [-30, 0, 30, 15],
+   "lat": [20, -5, 10, -20]
+  },
+  {
+   "type": "scatterternary",
+   "mode": "markers+lines",
+   "line": {
+    "width": 5,
+    "backoff": [30, 20]
+   },
+   "marker": {
+    "standoff": [5, 20, null, 20, 10],
+    "angleref": "previous",
+    "symbol": "arrow-wide",
+    "size": 20
+   },
+   "a": [2, 1, null, 1, 1],
+   "b": [1, 2, null, 2, 1],
+   "c": [1, 1, null, 1, 2]
+  },
+  {
+   "type": "scatterternary",
+   "mode": "markers+text",
+   "marker": {
+    "opacity": 1,
+    "size": [10, 40, 20]
+   },
+   "text": [10, 40, 20],
+   "textposition": ["right", "center", "top"],
+   "a": [2, 1, 1],
+   "b": [1, 2, 1],
+   "c": [1, 1, 2]
+  },
+  {
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "type": "carpet",
+   "a": [4, 4, 4, 4.5, 4.5, 4.5, 5, 5, 5, 6, 6, 6],
+   "b": [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3],
+   "y": [2, 3.5, 4, 3, 4.5, 5, 5.5, 6.5, 7.5, 8, 8.5, 10],
+   "aaxis": {
+    "tickprefix": "a = ",
+    "ticksuffix": "m",
+    "smoothing": 1,
+    "minorgridcount": 9
+   },
+   "baxis": {
+    "tickprefix": "b = ",
+    "ticksuffix": "Pa",
+    "smoothing": 1,
+    "minorgridcount": 9
+   },
+   "carpet": "c0"
+  },
+  {
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "type": "scattercarpet",
+   "mode": "markers+lines",
+   "line": {
+    "width": 5,
+    "backoff": [30, 20]
+   },
+   "marker": {
+    "standoff": [5, 20, null, 20, 10],
+    "angleref": "previous",
+    "symbol": "arrow",
+    "size": 20
+   },
+   "a": [4, 5, null, 5, 6],
+   "b": [2.5, 2.5, null, 2.5, 2.5],
+   "carpet": "c0"
+  },
+  {
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "type": "scattercarpet",
+   "mode": "markers+text",
+   "marker": {
+    "opacity": 1,
+    "size": [10, 40, 20]
+   },
+   "text": [10, 40, 20],
+   "textposition": ["right", "center", "top"],
+   "a": [4, 5, 6],
+   "b": [2.5, 2.5, 2.5],
+   "carpet": "c0"
+  },
+  {
+   "subplot": "polar",
+   "type": "scatterpolar",
+   "mode": "markers+lines",
+   "line": {
+    "width": 5,
+    "backoff": [30, 20]
+   },
+   "marker": {
+    "standoff": [5, 20, null, 20, 10],
+    "angleref": "previous",
+    "symbol": "arrow",
+    "size": 20
+   },
+   "r": [1, 2, null, 2, 3],
+   "theta": [270, 90, null, 90, 180]
+  },
+  {
+   "subplot": "polar",
+   "type": "scatterpolar",
+   "mode": "markers+text",
+   "marker": {
+    "opacity": 1,
+    "size": [10, 40, 20]
+   },
+   "text": [10, 40, 20],
+   "textposition": ["right", "center", "top"],
+   "r": [1, 2, 3],
+   "theta": [270, 90, 180]
+  },
+  {
+   "subplot": "smith",
+   "type": "scattersmith",
+   "mode": "markers+lines",
+   "line": {
+    "width": 5,
+    "backoff": [30, 20]
+   },
+   "marker": {
+    "standoff": [5, 20, null, 20, 10],
+    "angleref": "previous",
+    "symbol": "arrow-wide",
+    "size": 20
+   },
+   "real": [1, 2, null, 2, 0.5],
+   "imag": [-0.5, 1, null, 1, 1]
+  },
+  {
+   "subplot": "smith",
+   "type": "scattersmith",
+   "mode": "markers+text",
+   "marker": {
+    "opacity": 1,
+    "size": [10, 40, 20]
+   },
+   "text": [10, 40, 20],
+   "textposition": ["right", "center", "top"],
+   "real": [1, 2, 0.5],
+   "imag": [-0.5, 1, 1]
+  }
+ ],
+ "layout": {
+  "xaxis": {
+   "domain": [0, 0.3]
+  },
+  "yaxis": {
+   "domain": [0, 0.45]
+  },
+  "xaxis2": {
+   "anchor": "y2",
+   "domain": [0.35, 0.65]
+  },
+  "yaxis2": {
+   "anchor": "x2",
+   "domain": [0.55, 1]
+  },
+  "geo": {
+   "projection": {
+    "type": "satellite"
+   },
+   "domain": {
+    "x": [0.35, 0.65],
+    "y": [0, 0.45]
+   }
+  },
+  "ternary": {
+   "domain": {
+    "x": [0, 0.3],
+    "y": [0.55, 1]
+   },
+   "aaxis": {
+    "title": { "text": "A" }
+   },
+   "baxis": {
+    "title": { "text": "B" }
+   },
+   "caxis": {
+    "title": { "text": "C" }
+   }
+  },
+  "polar": {
+   "domain": {
+    "x": [0.7, 1],
+    "y": [0, 0.45]
+   }
+  },
+  "smith": {
+   "domain": {
+    "x": [0.7, 1],
+    "y": [0.55, 1]
+   }
+  },
+  "height": 900,
+  "width": 1200,
+  "legend": {
+   "orientation": "h"
+  }
+ }
+}

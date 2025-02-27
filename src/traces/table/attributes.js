@@ -89,8 +89,8 @@ var attrs = module.exports = overrideAll({
                 dflt: 'white',
                 description: [
                     'Sets the cell fill color. It accepts either a specific color',
-                    ' or an array of colors or a 2D array of colors.'
-                ].join('')
+                    'or an array of colors or a 2D array of colors.'
+                ].join(' ')
             }
         },
 
@@ -157,12 +157,11 @@ var attrs = module.exports = overrideAll({
                 dflt: 'white',
                 description: [
                     'Sets the cell fill color. It accepts either a specific color',
-                    ' or an array of colors or a 2D array of colors.'
-                ].join('')
+                    'or an array of colors or a 2D array of colors.'
+                ].join(' ')
             }
         },
 
         font: extendFlat({}, fontAttrs({arrayOk: true}))
     }
 }, 'calc', 'from-root');
-attrs.transforms = undefined;

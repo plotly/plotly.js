@@ -1,0 +1,32 @@
+{
+ "data": [
+  {
+   "legendgroup": "A",
+   "name": "Long label in group A",
+   "y": [1, 2, 3, 4]
+  },
+  {
+   "legendgroup": "B",
+   "name": "b1",
+   "y": [2, 3, 4, 1]
+  },
+  {
+   "legendgroup": "B",
+   "name": "Very long label in another group",
+   "y": [3, 4, 1, 2]
+  },
+  {
+   "legendgroup": "B",
+   "name": "b3",
+   "y": [4, 1, 2, 3]
+  }
+ ],
+ "layout": {
+  "paper_bgcolor": "lightblue",
+  "height": 350,
+  "width": 350,
+  "legend": {
+   "orientation": "h"
+  }
+ }
+}

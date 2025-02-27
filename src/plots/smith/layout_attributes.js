@@ -13,7 +13,8 @@ var axisLineGridAttr = overrideAll({
     linewidth: axesAttrs.linewidth,
     showgrid: extendFlat({}, axesAttrs.showgrid, {dflt: true}),
     gridcolor: axesAttrs.gridcolor,
-    gridwidth: axesAttrs.gridwidth
+    gridwidth: axesAttrs.gridwidth,
+    griddash: axesAttrs.griddash
 }, 'plot', 'from-root');
 
 var axisTickAttrs = overrideAll({
@@ -21,6 +22,7 @@ var axisTickAttrs = overrideAll({
     tickwidth: extendFlat({}, axesAttrs.tickwidth, {dflt: 2}),
     tickcolor: axesAttrs.tickcolor,
     showticklabels: axesAttrs.showticklabels,
+    labelalias: axesAttrs.labelalias,
     showtickprefix: axesAttrs.showtickprefix,
     tickprefix: axesAttrs.tickprefix,
     showticksuffix: axesAttrs.showticksuffix,

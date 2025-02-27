@@ -2,6 +2,7 @@
 
 var colorAttrs = require('../../components/color/attributes');
 var domainAttrs = require('../domain').attributes;
+var dash = require('../../components/drawing/attributes').dash;
 var constants = require('./constants');
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var sortObjectKeys = require('../../lib/sort_object_keys');
@@ -50,7 +51,8 @@ var geoAxesAttrs = {
         description: [
             'Sets the graticule\'s stroke width (in px).'
         ].join(' ')
-    }
+    },
+    griddash: dash
 };
 
 var attrs = module.exports = overrideAll({
@@ -76,7 +78,7 @@ var attrs = module.exports = overrideAll({
             'and `projection.rotation.lon` getting auto-filled.',
 
             'On maps with a clipped projection, setting `fitbounds` leads to `center.lon`, `center.lat`,',
-            '`projection.rotation.lon`, `projection.rotation.lat`, `lonaxis.range` and `lonaxis.range`',
+            '`projection.rotation.lon`, `projection.rotation.lat`, `lonaxis.range` and `lataxis.range`',
             'getting auto-filled.',
 
             // TODO we should auto-fill `projection.parallels` for maps

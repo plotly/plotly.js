@@ -10,6 +10,7 @@ var Colorscale = require('../../components/colorscale');
 var Drawing = require('../../components/drawing');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var subTypes = require('../scatter/subtypes');
+var isSupportedFont = require('./constants').isSupportedFont;
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
@@ -26,11 +27,12 @@ module.exports = function convert(gd, calcTrace) {
     var hasText = subTypes.hasText(trace);
     var hasCircles = (hasMarkers && trace.marker.symbol === 'circle');
     var hasSymbols = (hasMarkers && trace.marker.symbol !== 'circle');
+    var hasCluster = trace.cluster && trace.cluster.enabled;
 
-    var fill = initContainer();
-    var line = initContainer();
-    var circle = initContainer();
-    var symbol = initContainer();
+    var fill = initContainer('fill');
+    var line = initContainer('line');
+    var circle = initContainer('circle');
+    var symbol = initContainer('symbol');
 
     var opts = {
         fill: fill,
@@ -74,12 +76,39 @@ module.exports = function convert(gd, calcTrace) {
         var circleOpts = makeCircleOpts(calcTrace);
         circle.geojson = circleOpts.geojson;
         circle.layout.visibility = 'visible';
+        if(hasCluster) {
+            circle.filter = ['!', ['has', 'point_count']];
+            opts.cluster = {
+                type: 'circle',
+                filter: ['has', 'point_count'],
+                layout: {visibility: 'visible'},
+                paint: {
+                    'circle-color': arrayifyAttribute(trace.cluster.color, trace.cluster.step),
+                    'circle-radius': arrayifyAttribute(trace.cluster.size, trace.cluster.step),
+                    'circle-opacity': arrayifyAttribute(trace.cluster.opacity, trace.cluster.step),
+                },
+            };
+            opts.clusterCount = {
+                type: 'symbol',
+                filter: ['has', 'point_count'],
+                paint: {},
+                layout: {
+                    'text-field': '{point_count_abbreviated}',
+                    'text-font': getTextFont(trace),
+                    'text-size': 12
+                }
+            };
+        }
 
         Lib.extendFlat(circle.paint, {
             'circle-color': circleOpts.mcc,
             'circle-radius': circleOpts.mrc,
             'circle-opacity': circleOpts.mo
         });
+    }
+
+    if(hasCircles && hasCluster) {
+        circle.filter = ['!', ['has', 'point_count']];
     }
 
     if(hasSymbols || hasText) {
@@ -126,10 +155,8 @@ module.exports = function convert(gd, calcTrace) {
             Lib.extendFlat(symbol.layout, {
                 'text-size': trace.textfont.size,
                 'text-anchor': textOpts.anchor,
-                'text-offset': textOpts.offset
-
-                // TODO font family
-                // 'text-font': symbol.textfont.family.split(', '),
+                'text-offset': textOpts.offset,
+                'text-font': getTextFont(trace)
             });
 
             Lib.extendFlat(symbol.paint, {
@@ -142,10 +169,12 @@ module.exports = function convert(gd, calcTrace) {
     return opts;
 };
 
-function initContainer() {
+function initContainer(type) {
     return {
+        type: type,
         geojson: geoJsonUtils.makeBlank(),
         layout: { visibility: 'none' },
+        filter: null,
         paint: {}
     };
 }
@@ -200,7 +229,8 @@ function makeCircleOpts(calcTrace) {
 
         features.push({
             type: 'Feature',
-            geometry: {type: 'Point', coordinates: lonlat},
+            id: i + 1,
+            geometry: { type: 'Point', coordinates: lonlat },
             properties: props
         });
     }
@@ -322,4 +352,76 @@ function blankFillFunc() { return ''; }
 // only need to check lon (OR lat)
 function isBADNUM(lonlat) {
     return lonlat[0] === BADNUM;
+}
+
+function arrayifyAttribute(values, step) {
+    var newAttribute;
+    if(Lib.isArrayOrTypedArray(values) && Lib.isArrayOrTypedArray(step)) {
+        newAttribute = ['step', ['get', 'point_count'], values[0]];
+
+        for(var idx = 1; idx < values.length; idx++) {
+            newAttribute.push(step[idx - 1], values[idx]);
+        }
+    } else {
+        newAttribute = values;
+    }
+    return newAttribute;
+}
+
+function getTextFont(trace) {
+    var font = trace.textfont;
+    var family = font.family;
+    var style = font.style;
+    var weight = font.weight;
+
+    var parts = family.split(' ');
+    var isItalic = parts[parts.length - 1] === 'Italic';
+    if(isItalic) parts.pop();
+    isItalic = isItalic || style === 'italic';
+
+    var str = parts.join(' ');
+    if(weight === 'bold' && parts.indexOf('Bold') === -1) {
+        str += ' Bold';
+    } else if(weight <= 1000) { // numeric font-weight
+        // See supportedFonts
+
+        if(parts[0] === 'Metropolis') {
+            str = 'Metropolis';
+            if(weight > 850) str += ' Black';
+            else if(weight > 750) str += ' Extra Bold';
+            else if(weight > 650) str += ' Bold';
+            else if(weight > 550) str += ' Semi Bold';
+            else if(weight > 450) str += ' Medium';
+            else if(weight > 350) str += ' Regular';
+            else if(weight > 250) str += ' Light';
+            else if(weight > 150) str += ' Extra Light';
+            else str += ' Thin';
+        } else if(parts.slice(0, 2).join(' ') === 'Open Sans') {
+            str = 'Open Sans';
+            if(weight > 750) str += ' Extrabold';
+            else if(weight > 650) str += ' Bold';
+            else if(weight > 550) str += ' Semibold';
+            else if(weight > 350) str += ' Regular';
+            else str += ' Light';
+        } else if(parts.slice(0, 3).join(' ') === 'Klokantech Noto Sans') {
+            str = 'Klokantech Noto Sans';
+            if(parts[3] === 'CJK') str += ' CJK';
+            str += (weight > 500) ? ' Bold' : ' Regular';
+        }
+    }
+
+    if(isItalic) str += ' Italic';
+
+    if(str === 'Open Sans Regular Italic') str = 'Open Sans Italic';
+    else if(str === 'Open Sans Regular Bold') str = 'Open Sans Bold';
+    else if(str === 'Open Sans Regular Bold Italic') str = 'Open Sans Bold Italic';
+    else if(str === 'Klokantech Noto Sans Regular Italic') str = 'Klokantech Noto Sans Italic';
+
+    // Ensure the result is a supported font
+    if(!isSupportedFont(str)) {
+        str = family;
+    }
+
+    var textFont = str.split(', ');
+    return textFont;
 }

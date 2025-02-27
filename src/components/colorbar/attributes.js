@@ -57,12 +57,25 @@ module.exports = overrideAll({
     },
     x: {
         valType: 'number',
-        min: -2,
-        max: 3,
         description: [
-            'Sets the x position of the color bar (in plot fraction).',
-            'Defaults to 1.02 when `orientation` is *v* and',
-            '0.5 when `orientation` is *h*.'
+            'Sets the x position with respect to `xref` of the color bar (in plot fraction).',
+            'When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and',
+            '0.5 when `orientation` is *h*.',
+            'When `xref` is *container*, defaults to *1* when `orientation` is *v* and',
+            '0.5 when `orientation` is *h*.',
+            'Must be between *0* and *1* if `xref` is *container*',
+            'and between *-2* and *3* if `xref` is *paper*.'
+        ].join(' ')
+    },
+    xref: {
+        valType: 'enumerated',
+        dflt: 'paper',
+        values: ['container', 'paper'],
+        editType: 'layoutstyle',
+        description: [
+            'Sets the container `x` refers to.',
+            '*container* spans the entire `width` of the plot.',
+            '*paper* refers to the width of the plotting area only.'
         ].join(' ')
     },
     xanchor: {
@@ -84,13 +97,26 @@ module.exports = overrideAll({
     },
     y: {
         valType: 'number',
-        min: -2,
-        max: 3,
         description: [
-            'Sets the y position of the color bar (in plot fraction).',
-            'Defaults to 0.5 when `orientation` is *v* and',
-            '1.02 when `orientation` is *h*.'
+            'Sets the y position with respect to `yref` of the color bar (in plot fraction).',
+            'When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and',
+            '1.02 when `orientation` is *h*.',
+            'When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and',
+            '1 when `orientation` is *h*.',
+            'Must be between *0* and *1* if `yref` is *container*',
+            'and between *-2* and *3* if `yref` is *paper*.'
         ].join(' ')
+    },
+    yref: {
+        valType: 'enumerated',
+        dflt: 'paper',
+        values: ['container', 'paper'],
+        editType: 'layoutstyle',
+        description: [
+            'Sets the container `y` refers to.',
+            '*container* spans the entire `height` of the plot.',
+            '*paper* refers to the height of the plotting area only.'
+        ].join(' '),
     },
     yanchor: {
         valType: 'enumerated',
@@ -129,7 +155,7 @@ module.exports = overrideAll({
         description: 'Sets the color of padded area.'
     },
     // tick and title properties named and function exactly as in axes
-    tickmode: axesAttrs.tickmode,
+    tickmode: axesAttrs.minor.tickmode,
     nticks: axesAttrs.nticks,
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
@@ -168,6 +194,7 @@ module.exports = overrideAll({
     tickcolor: axesAttrs.tickcolor,
     ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
+    labelalias: axesAttrs.labelalias,
     tickfont: fontAttrs({
         description: 'Sets the color bar\'s tick label font'
     }),
@@ -185,19 +212,10 @@ module.exports = overrideAll({
     title: {
         text: {
             valType: 'string',
-            description: [
-                'Sets the title of the color bar.',
-                'Note that before the existence of `title.text`, the title\'s',
-                'contents used to be defined as the `title` attribute itself.',
-                'This behavior has been deprecated.'
-            ].join(' ')
+            description: 'Sets the title of the color bar.'
         },
         font: fontAttrs({
-            description: [
-                'Sets this color bar\'s title font.',
-                'Note that the title\'s font used to be set',
-                'by the now deprecated `titlefont` attribute.'
-            ].join(' ')
+            description: 'Sets this color bar\'s title font.'
         }),
         side: {
             valType: 'enumerated',
@@ -207,29 +225,7 @@ module.exports = overrideAll({
                 'with respect to the color bar.',
                 'Defaults to *top* when `orientation` if *v* and ',
                 'defaults to *right* when `orientation` if *h*.',
-                'Note that the title\'s location used to be set',
-                'by the now deprecated `titleside` attribute.'
             ].join(' ')
         }
     },
-
-    _deprecated: {
-        title: {
-            valType: 'string',
-            description: [
-                'Deprecated in favor of color bar\'s `title.text`.',
-                'Note that value of color bar\'s `title` is no longer a simple',
-                '*string* but a set of sub-attributes.'
-            ].join(' ')
-        },
-        titlefont: fontAttrs({
-            description: 'Deprecated in favor of color bar\'s `title.font`.'
-        }),
-        titleside: {
-            valType: 'enumerated',
-            values: ['right', 'top', 'bottom'],
-            dflt: 'top',
-            description: 'Deprecated in favor of color bar\'s `title.side`.'
-        }
-    }
 }, 'colorbars', 'from-root');

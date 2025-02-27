@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
-var Axes = require('@src/plots/cartesian/axes');
-var SUBPLOT_PATTERN = require('@src/plots/cartesian/constants').SUBPLOT_PATTERN;
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
+var Axes = require('../../../src/plots/cartesian/axes');
+var SUBPLOT_PATTERN = require('../../../src/plots/cartesian/constants').SUBPLOT_PATTERN;
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -16,6 +16,24 @@ var doubleClick = require('../assets/double_click');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+
+function _newPlot(gd, arg2, arg3, arg4) {
+    var fig;
+    if(Array.isArray(arg2)) {
+        fig = {
+            data: arg2,
+            layout: arg3,
+            config: arg4
+        };
+    } else fig = arg2;
+
+    if(!fig.layout) fig.layout = {};
+    if(!fig.layout.newselection) fig.layout.newselection = {};
+    fig.layout.newselection.mode = 'gradual';
+    // complex ouline creation are mainly tested in "gradual" mode here
+
+    return Plotly.newPlot(gd, fig);
+}
 
 describe('Test splom trace defaults:', function() {
     var gd;
@@ -50,32 +68,6 @@ describe('Test splom trace defaults:', function() {
         });
 
         expect(gd._fullData[0].visible).toBe(false);
-
-        // make sure these are still coerced - so you can get back via GUI!
-        expect(gd._fullData[0].showupperhalf).toBe(false);
-        expect(gd._fullData[0].showlowerhalf).toBe(false);
-        expect(gd._fullData[0].diagonal.visible).toBe(false);
-    });
-
-    it('still coerces partial visibilities even if all are false with transforms', function() {
-        _supply({
-            dimensions: [{
-                values: [1, 2, 3]
-            }],
-            showupperhalf: false,
-            showlowerhalf: false,
-            diagonal: {visible: false},
-            transforms: [{
-                type: 'filter',
-                target: 'dimensions[0].values',
-                operation: '>',
-                value: 2
-            }]
-        });
-
-        expect(gd._fullData[0].visible).toBe(false);
-
-        expect(gd._fullData[0].transforms[0].enabled).toBe(true);
 
         // make sure these are still coerced - so you can get back via GUI!
         expect(gd._fullData[0].showupperhalf).toBe(false);
@@ -669,9 +661,9 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should destroy gl objects on Plots.cleanPlot', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
 
-        Plotly.newPlot(gd, fig).then(function() {
+        _newPlot(gd, fig).then(function() {
             expect(gd._fullLayout._splomGrid).toBeDefined();
             expect(gd._fullLayout._splomScenes).toBeDefined();
             expect(Object.keys(gd._fullLayout._splomScenes).length).toBe(1);
@@ -686,7 +678,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl when hasOnlyLargeSploms, should create correct regl-line2d data for grid', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
         var cnt = 1;
 
         function _assert(dims) {
@@ -702,7 +694,7 @@ describe('Test splom interactions:', function() {
             cnt++;
         }
 
-        Plotly.newPlot(gd, fig).then(function() {
+        _newPlot(gd, fig).then(function() {
             _assert([1198, 16558, 3358, 118]);
             return Plotly.restyle(gd, 'showupperhalf', false);
         })
@@ -739,7 +731,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should update properly in-and-out of hasOnlyLargeSploms regime', function(done) {
-        var figLarge = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var figLarge = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
         var dimsLarge = figLarge.data[0].dimensions;
         var dimsSmall = dimsLarge.slice(0, 5);
         var cnt = 1;
@@ -774,7 +766,7 @@ describe('Test splom interactions:', function() {
             cnt++;
         }
 
-        Plotly.newPlot(gd, figLarge).then(function() {
+        _newPlot(gd, figLarge).then(function() {
             _assert({
                 subplotCnt: 400,
                 innerSubplotNodeCnt: 4,
@@ -807,7 +799,7 @@ describe('Test splom interactions:', function() {
         .then(function() {
             _assert({
                 subplotCnt: 25,
-                innerSubplotNodeCnt: 17,
+                innerSubplotNodeCnt: 18,
                 hasSplomGrid: false,
                 bgCnt: 0
             });
@@ -826,8 +818,8 @@ describe('Test splom interactions:', function() {
             // from large -> small splom:
             // grid layer would be above xaxis layer,
             // if we didn't clear subplot children.
-            expect(gridIndex).toBe(1, '<g.gridlayer> index');
-            expect(xaxisIndex).toBe(14, '<g.xaxislayer-above> index');
+            expect(gridIndex).toBe(2, '<g.gridlayer> index');
+            expect(xaxisIndex).toBe(15, '<g.xaxislayer-above> index');
 
             return Plotly.restyle(gd, 'dimensions', [dimsLarge]);
         })
@@ -839,7 +831,7 @@ describe('Test splom interactions:', function() {
                 // new subplots though have reduced number of children.
                 innerSubplotNodeCnt: function(d) {
                     var p = d.match(SUBPLOT_PATTERN);
-                    return (p[1] > 5 || p[2] > 5) ? 4 : 17;
+                    return (p[1] > 5 || p[2] > 5) ? 4 : 18;
                 },
                 hasSplomGrid: true,
                 bgCnt: 0
@@ -849,7 +841,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should correctly move axis layers when relayouting *grid.(x|y)side*', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_upper-nodiag.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_upper-nodiag.json'));
 
         function _assert(exp) {
             var g = d3Select(gd).select('g.cartesianlayer');
@@ -863,7 +855,7 @@ describe('Test splom interactions:', function() {
             }
         }
 
-        Plotly.newPlot(gd, fig).then(function() {
+        _newPlot(gd, fig).then(function() {
             expect(gd._fullLayout.grid.xside).toBe('bottom', 'sanity check dflt grid.xside');
             expect(gd._fullLayout.grid.yside).toBe('left', 'sanity check dflt grid.yside');
 
@@ -890,7 +882,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should work with typed arrays', function(done) {
-        Plotly.newPlot(gd, [{
+        _newPlot(gd, [{
             type: 'splom',
             dimensions: [{
                 label: 'A',
@@ -904,7 +896,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should toggle trace correctly', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_iris.json'));
 
         function _assert(msg, exp) {
             var splomScenes = gd._fullLayout._splomScenes;
@@ -917,7 +909,7 @@ describe('Test splom interactions:', function() {
             }
         }
 
-        Plotly.newPlot(gd, fig).then(function() {
+        _newPlot(gd, fig).then(function() {
             var splomScenes = gd._fullLayout._splomScenes;
             for(var k in splomScenes) {
                 spyOn(splomScenes[k], 'draw').and.callThrough();
@@ -940,7 +932,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@noCI @gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_iris.json'));
         fig.layout.showlegend = false;
 
         function assertDims(msg, w, h) {
@@ -972,7 +964,7 @@ describe('Test splom interactions:', function() {
 
         spyOn(Lib, 'log');
 
-        Plotly.newPlot(gd, fig).then(function() {
+        _newPlot(gd, fig).then(function() {
             assertFnCall('base', {
                 cleanPlot: 1,       // called once from inside Plots.supplyDefaults
                 supplyDefaults: 1,
@@ -1039,7 +1031,7 @@ describe('Test splom interactions:', function() {
             }]
         }];
 
-        Plotly.newPlot(gd, data).then(function() {
+        _newPlot(gd, data).then(function() {
             _assertAxisTypes('no upper half / no diagonal', {
                 xaxes: ['linear', 'category', undefined, null],
                 fullXaxes: ['linear', 'category', 'category', null],
@@ -1048,7 +1040,7 @@ describe('Test splom interactions:', function() {
             });
 
             return Plotly.restyle(gd, {
-                'showupperhalf': true,
+                showupperhalf: true,
                 'diagonal.visible': true
             });
         })
@@ -1061,7 +1053,7 @@ describe('Test splom interactions:', function() {
             });
 
             return Plotly.restyle(gd, {
-                'showlowerhalf': false,
+                showlowerhalf: false,
                 'diagonal.visible': false
             });
         })
@@ -1077,7 +1069,7 @@ describe('Test splom interactions:', function() {
     });
 
     it('@gl should not fail when editing graph with visible:false traces', function(done) {
-        Plotly.newPlot(gd, [{
+        _newPlot(gd, [{
             type: 'splom',
             dimensions: [{values: []}, {values: []}]
         }, {
@@ -1157,10 +1149,10 @@ describe('Test splom update switchboard:', function() {
     }
 
     it('@gl should trigger minimal sequence for axis range updates (large splom case)', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
         var matrix, regl, splomGrid;
 
-        Plotly.newPlot(gd, fig).then(function() {
+        _newPlot(gd, fig).then(function() {
             var fullLayout = gd._fullLayout;
             var trace = gd._fullData[0];
             var scene = fullLayout._splomScenes[trace.uid];
@@ -1200,10 +1192,10 @@ describe('Test splom update switchboard:', function() {
     });
 
     it('@gl should trigger minimal sequence for marker style updates', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_0.json'));
         var scene, matrix, regl;
 
-        Plotly.newPlot(gd, fig).then(function() {
+        _newPlot(gd, fig).then(function() {
             var fullLayout = gd._fullLayout;
             var trace = gd._fullData[0];
             scene = fullLayout._splomScenes[trace.uid];
@@ -1356,7 +1348,7 @@ describe('Test splom hover:', function() {
         gd = createGraphDiv();
 
         var fig = Lib.extendDeep({},
-            s.mock || require('@mocks/splom_iris.json')
+            s.mock || require('../../image/mocks/splom_iris.json')
         );
 
         if(s.patch) {
@@ -1365,7 +1357,7 @@ describe('Test splom hover:', function() {
 
         var pos = s.pos || [200, 100];
 
-        return Plotly.newPlot(gd, fig).then(function() {
+        return _newPlot(gd, fig).then(function() {
             var to = setTimeout(function() {
                 failTest('no event data received');
                 done();
@@ -1424,7 +1416,7 @@ describe('Test splom hover:', function() {
         evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
     }, {
         desc: 'on log axes',
-        mock: require('@mocks/splom_log.json'),
+        mock: require('../../image/mocks/splom_log.json'),
         patch: function(fig) {
             fig.layout.margin = {t: 0, l: 0, b: 0, r: 0};
             fig.layout.width = 400;
@@ -1438,7 +1430,7 @@ describe('Test splom hover:', function() {
         evtPts: [{x: 10, y: 100, pointNumber: 0}]
     }, {
         desc: 'on date axes',
-        mock: require('@mocks/splom_dates.json'),
+        mock: require('../../image/mocks/splom_dates.json'),
         patch: function(fig) {
             fig.layout = {
                 hovermode: 'x',
@@ -1504,7 +1496,7 @@ describe('Test splom drag:', function() {
     }
 
     it('@gl should update scattermatrix ranges on pan', function(done) {
-        var fig = require('@mocks/splom_iris.json');
+        var fig = require('../../image/mocks/splom_iris.json');
         fig.layout.dragmode = 'pan';
 
         var xaxes = ['xaxis', 'xaxis2', 'xaxis3'];
@@ -1521,7 +1513,7 @@ describe('Test splom drag:', function() {
             });
         }
 
-        Plotly.newPlot(gd, fig)
+        _newPlot(gd, fig)
         .then(function() {
             var uid = gd._fullData[0].uid;
             var scene = gd._fullLayout._splomScenes[uid];
@@ -1586,7 +1578,7 @@ describe('Test splom select:', function() {
 
             var to = setTimeout(function() {
                 reject('fail: plotly_selected not emitter');
-            }, 300);
+            }, 700);
 
             gd.once('plotly_selected', function(d) {
                 clearTimeout(to);
@@ -1602,7 +1594,7 @@ describe('Test splom select:', function() {
     }
 
     it('@gl should emit correct event data and draw selection outlines', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_0.json'));
         fig.layout = {
             dragmode: 'select',
             width: 400,
@@ -1628,7 +1620,7 @@ describe('Test splom select:', function() {
                 .toBe(otherExp.selectionOutlineCnt, 'selection outline cnt' + msg);
         }
 
-        Plotly.newPlot(gd, fig)
+        _newPlot(gd, fig)
         .then(function() { return _select([[5, 5], [195, 195]]); })
         .then(function() {
             _assert('first', [
@@ -1637,27 +1629,21 @@ describe('Test splom select:', function() {
                 {pointNumber: 2, x: 3, y: 3}
             ], {
                 subplot: 'xy',
-                selectionOutlineCnt: 2
+                selectionOutlineCnt: 1
             });
         })
         .then(function() { return _select([[50, 50], [100, 100]]); })
         .then(function() {
             _assert('second', [
-                {pointNumber: 1, x: 2, y: 2}
-            ], {
-                subplot: 'xy',
-                selectionOutlineCnt: 2
-            });
-        })
-        .then(function() { return _select([[5, 195], [100, 100]], {shiftKey: true}); })
-        .then(function() {
-            _assert('multi-select', [
+                // new points
+                {pointNumber: 1, x: 2, y: 2},
+
+                // remain from previous selection
                 {pointNumber: 0, x: 1, y: 1},
-                {pointNumber: 1, x: 2, y: 2}
+                {pointNumber: 2, x: 3, y: 3}
             ], {
                 subplot: 'xy',
-                // still '2' as the selection get merged
-                selectionOutlineCnt: 2
+                selectionOutlineCnt: 1
             });
         })
         .then(function() { return _select([[205, 205], [395, 395]]); })
@@ -1669,24 +1655,14 @@ describe('Test splom select:', function() {
             ], {
                 subplot: 'x2y2',
                 // outlines from previous subplot are cleared!
-                selectionOutlineCnt: 2
-            });
-        })
-        .then(function() { return _select([[50, 50], [100, 100]]); })
-        .then(function() {
-            _assert('multi-select across other subplot (prohibited for now)', [
-                {pointNumber: 1, x: 2, y: 2}
-            ], {
-                subplot: 'xy',
-                // outlines from previous subplot are cleared!
-                selectionOutlineCnt: 2
+                selectionOutlineCnt: 1
             });
         })
         .then(done, done.fail);
     });
 
     it('@gl should redraw splom traces before scattergl trace (if any)', function(done) {
-        var fig = require('@mocks/splom_with-cartesian.json');
+        var fig = require('../../image/mocks/splom_with-cartesian.json');
         fig.layout.dragmode = 'select';
         fig.layout.width = 400;
         fig.layout.height = 400;
@@ -1699,7 +1675,7 @@ describe('Test splom select:', function() {
         var splomCnt = 0;
         var scatterglScene, splomScene;
 
-        Plotly.newPlot(gd, fig).then(function() {
+        _newPlot(gd, fig).then(function() {
             var fullLayout = gd._fullLayout;
             scatterglScene = fullLayout._plots.xy._scene;
             splomScene = fullLayout._splomScenes[gd._fullData[1].uid];
@@ -1725,8 +1701,8 @@ describe('Test splom select:', function() {
         .then(done, done.fail);
     });
 
-    it('@gl should behave correctly during select->dblclick->pan scenarios', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
+    it('@noCI @gl should behave correctly during select->dblclick->pan scenarios', function(done) {
+        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_0.json'));
         fig.layout = {
             width: 400,
             height: 400,
@@ -1748,7 +1724,7 @@ describe('Test splom select:', function() {
             scene.matrix.draw.calls.reset();
         }
 
-        Plotly.newPlot(gd, fig).then(function() {
+        _newPlot(gd, fig).then(function() {
             uid = gd._fullData[0].uid;
             scene = gd._fullLayout._splomScenes[uid];
             spyOn(scene.matrix, 'update').and.callThrough();
@@ -1789,7 +1765,7 @@ describe('Test splom select:', function() {
                 updateCnt: 0,
                 drawCnt: 0,      // nothing here, this is a 'modebar' edit
                 matrixTraces: 2,
-                selectBatch: [1],
+                selectBatch: [],
                 unselectBatch: [0, 2]
             });
         })
@@ -1799,7 +1775,7 @@ describe('Test splom select:', function() {
                 updateCnt: 1,
                 drawCnt: 1,       // a 'plot' edit (again)
                 matrixTraces: 2,
-                selectBatch: [1],
+                selectBatch: [],
                 unselectBatch: [0, 2]
             });
         })
@@ -1826,7 +1802,7 @@ describe('Test splom select:', function() {
         .then(done, done.fail);
     });
 
-    it('@gl should be able to select and then clear using API', function(done) {
+    it('@gl should be able to select', function(done) {
         function _assert(msg, exp) {
             return function() {
                 var uid = gd._fullData[0].uid;
@@ -1836,7 +1812,7 @@ describe('Test splom select:', function() {
             };
         }
 
-        Plotly.newPlot(gd, [{
+        _newPlot(gd, [{
             type: 'splom',
             dimensions: [{
                 values: [1, 2, 3]
@@ -1857,11 +1833,6 @@ describe('Test splom select:', function() {
         .then(_assert('after selection', {
             selectBatch: [1],
             unselectBatch: [0, 2]
-        }))
-        .then(function() { return Plotly.restyle(gd, 'selectedpoints', null); })
-        .then(_assert('after API clear', {
-            selectBatch: [],
-            unselectBatch: []
         }))
         .then(done, done.fail);
     });

@@ -1,0 +1,23 @@
+{
+ "data": [
+  {
+   "type": "sankey",
+   "orientation": "v",
+   "node": {
+    "pad": 5,
+    "label": ["0", "1", "2", "3", "4", "5", "6"]
+   },
+   "link": {
+    "arrowlen": 20,
+    "source": [0, 0, 1, 2, 5, 4, 3],
+    "target": [5, 3, 4, 3, 0, 2, 2],
+    "value": [1, 2, 1, 1, 1, 1, 1]
+   }
+  }
+ ],
+ "layout": {
+  "title": { "text": "Sankey with circular data and arrows" },
+  "width": 800,
+  "height": 800
+ }
+}

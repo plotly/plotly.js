@@ -28,6 +28,7 @@ module.exports = {
             width: extendFlat({}, pieAttrs.marker.line.width, {dflt: 1}),
             editType: 'calc'
         },
+        pattern: pieAttrs.marker.pattern,
         editType: 'calc'
     },
 

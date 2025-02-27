@@ -1,0 +1,24 @@
+{
+ "data": [
+  {
+   "type": "sankey",
+   "arrangement": "freeform",
+   "node": {
+    "label": ["0", "1", "2"],
+    "x": [1, 2, 3],
+    "y": [0, 0, 0]
+   },
+   "link": {
+    "arrowlen": 40,
+    "source": [0, 1, 2],
+    "target": [1, 2, 0],
+    "value": [10, 9, 1]
+   }
+  }
+ ],
+ "layout": {
+  "title": { "text": "Sankey with little space" },
+  "width": 400,
+  "height": 400
+ }
+}

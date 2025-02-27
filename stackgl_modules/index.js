@@ -1,161 +1,32 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.stackgl = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(_glvis_,module,exports){
-'use strict'
+/******/ (function() { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
 
-exports.byteLength = byteLength
-exports.toByteArray = toByteArray
-exports.fromByteArray = fromByteArray
+/***/ 1964:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var lookup = []
-var revLookup = []
-var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+module.exports = {
+  alpha_shape: __webpack_require__(3502),
+  convex_hull: __webpack_require__(7352),
+  delaunay_triangulate: __webpack_require__(7642),
+  gl_cone3d: __webpack_require__(6405),
+  gl_error3d: __webpack_require__(9165),
+  gl_line3d: __webpack_require__(5714),
+  gl_mesh3d: __webpack_require__(7201),
+  gl_plot3d: __webpack_require__(4100),
+  gl_scatter3d: __webpack_require__(8418),
+  gl_streamtube3d: __webpack_require__(7815),
+  gl_surface3d: __webpack_require__(9499),
+  ndarray: __webpack_require__(9618),
+  ndarray_linear_interpolate: __webpack_require__(4317)
+};
 
-var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-for (var i = 0, len = code.length; i < len; ++i) {
-  lookup[i] = code[i]
-  revLookup[code.charCodeAt(i)] = i
-}
+/***/ }),
 
-// Support decoding URL-safe base64 strings, as Node.js does.
-// See: https://en.wikipedia.org/wiki/Base64#URL_applications
-revLookup['-'.charCodeAt(0)] = 62
-revLookup['_'.charCodeAt(0)] = 63
+/***/ 4793:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-function getLens (b64) {
-  var len = b64.length
-
-  if (len % 4 > 0) {
-    throw new Error('Invalid string. Length must be a multiple of 4')
-  }
-
-  // Trim off extra bytes after placeholder bytes are found
-  // See: https://github.com/beatgammit/base64-js/issues/42
-  var validLen = b64.indexOf('=')
-  if (validLen === -1) validLen = len
-
-  var placeHoldersLen = validLen === len
-    ? 0
-    : 4 - (validLen % 4)
-
-  return [validLen, placeHoldersLen]
-}
-
-// base64 is 4/3 + up to two characters of the original data
-function byteLength (b64) {
-  var lens = getLens(b64)
-  var validLen = lens[0]
-  var placeHoldersLen = lens[1]
-  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
-}
-
-function _byteLength (b64, validLen, placeHoldersLen) {
-  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
-}
-
-function toByteArray (b64) {
-  var tmp
-  var lens = getLens(b64)
-  var validLen = lens[0]
-  var placeHoldersLen = lens[1]
-
-  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
-
-  var curByte = 0
-
-  // if there are placeholders, only get up to the last complete 4 chars
-  var len = placeHoldersLen > 0
-    ? validLen - 4
-    : validLen
-
-  var i
-  for (i = 0; i < len; i += 4) {
-    tmp =
-      (revLookup[b64.charCodeAt(i)] << 18) |
-      (revLookup[b64.charCodeAt(i + 1)] << 12) |
-      (revLookup[b64.charCodeAt(i + 2)] << 6) |
-      revLookup[b64.charCodeAt(i + 3)]
-    arr[curByte++] = (tmp >> 16) & 0xFF
-    arr[curByte++] = (tmp >> 8) & 0xFF
-    arr[curByte++] = tmp & 0xFF
-  }
-
-  if (placeHoldersLen === 2) {
-    tmp =
-      (revLookup[b64.charCodeAt(i)] << 2) |
-      (revLookup[b64.charCodeAt(i + 1)] >> 4)
-    arr[curByte++] = tmp & 0xFF
-  }
-
-  if (placeHoldersLen === 1) {
-    tmp =
-      (revLookup[b64.charCodeAt(i)] << 10) |
-      (revLookup[b64.charCodeAt(i + 1)] << 4) |
-      (revLookup[b64.charCodeAt(i + 2)] >> 2)
-    arr[curByte++] = (tmp >> 8) & 0xFF
-    arr[curByte++] = tmp & 0xFF
-  }
-
-  return arr
-}
-
-function tripletToBase64 (num) {
-  return lookup[num >> 18 & 0x3F] +
-    lookup[num >> 12 & 0x3F] +
-    lookup[num >> 6 & 0x3F] +
-    lookup[num & 0x3F]
-}
-
-function encodeChunk (uint8, start, end) {
-  var tmp
-  var output = []
-  for (var i = start; i < end; i += 3) {
-    tmp =
-      ((uint8[i] << 16) & 0xFF0000) +
-      ((uint8[i + 1] << 8) & 0xFF00) +
-      (uint8[i + 2] & 0xFF)
-    output.push(tripletToBase64(tmp))
-  }
-  return output.join('')
-}
-
-function fromByteArray (uint8) {
-  var tmp
-  var len = uint8.length
-  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
-  var parts = []
-  var maxChunkLength = 16383 // must be multiple of 3
-
-  // go through the array every three bytes, we'll deal with trailing stuff later
-  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-    parts.push(encodeChunk(
-      uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)
-    ))
-  }
-
-  // pad the end with zeros, but make sure to not forget the extra bytes
-  if (extraBytes === 1) {
-    tmp = uint8[len - 1]
-    parts.push(
-      lookup[tmp >> 2] +
-      lookup[(tmp << 4) & 0x3F] +
-      '=='
-    )
-  } else if (extraBytes === 2) {
-    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
-    parts.push(
-      lookup[tmp >> 10] +
-      lookup[(tmp >> 4) & 0x3F] +
-      lookup[(tmp << 2) & 0x3F] +
-      '='
-    )
-  }
-
-  return parts.join('')
-}
-
-},{}],2:[function(_glvis_,module,exports){
-
-},{}],3:[function(_glvis_,module,exports){
-(function (Buffer){(function (){
+"use strict";
+var __webpack_unused_export__;
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -164,17 +35,31 @@ function fromByteArray (uint8) {
  */
 /* eslint-disable no-proto */
 
-'use strict'
 
-var base64 = _glvis_('base64-js')
-var ieee754 = _glvis_('ieee754')
 
-exports.Buffer = Buffer
-exports.SlowBuffer = SlowBuffer
-exports.INSPECT_MAX_BYTES = 50
-
-var K_MAX_LENGTH = 0x7fffffff
-exports.kMaxLength = K_MAX_LENGTH
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _possibleConstructorReturn(t, e) { if (e && ("object" == _typeof(e) || "function" == typeof e)) return e; if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined"); return _assertThisInitialized(t); }
+function _assertThisInitialized(e) { if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); return e; }
+function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+function _getPrototypeOf(t) { return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) { return t.__proto__ || Object.getPrototypeOf(t); }, _getPrototypeOf(t); }
+function _inherits(t, e) { if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function"); t.prototype = Object.create(e && e.prototype, { constructor: { value: t, writable: !0, configurable: !0 } }), Object.defineProperty(t, "prototype", { writable: !1 }), e && _setPrototypeOf(t, e); }
+function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var base64 = __webpack_require__(7507);
+var ieee754 = __webpack_require__(3778);
+var customInspectSymbol = typeof Symbol === 'function' && typeof Symbol['for'] === 'function' // eslint-disable-line dot-notation
+? Symbol['for']('nodejs.util.inspect.custom') // eslint-disable-line dot-notation
+: null;
+exports.hp = Buffer;
+__webpack_unused_export__ = SlowBuffer;
+exports.IS = 50;
+var K_MAX_LENGTH = 0x7fffffff;
+__webpack_unused_export__ = K_MAX_LENGTH;
 
 /**
  * If `Buffer.TYPED_ARRAY_SUPPORT`:
@@ -190,51 +75,48 @@ exports.kMaxLength = K_MAX_LENGTH
  * (See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438). IE 10 lacks support
  * for __proto__ and has a buggy typed array implementation.
  */
-Buffer.TYPED_ARRAY_SUPPORT = typedArraySupport()
-
-if (!Buffer.TYPED_ARRAY_SUPPORT && typeof console !== 'undefined' &&
-    typeof console.error === 'function') {
-  console.error(
-    'This browser lacks typed array (Uint8Array) support which is required by ' +
-    '`buffer` v5.x. Use `buffer` v4.x if you require old browser support.'
-  )
+Buffer.TYPED_ARRAY_SUPPORT = typedArraySupport();
+if (!Buffer.TYPED_ARRAY_SUPPORT && typeof console !== 'undefined' && typeof console.error === 'function') {
+  console.error('This browser lacks typed array (Uint8Array) support which is required by ' + '`buffer` v5.x. Use `buffer` v4.x if you require old browser support.');
 }
-
-function typedArraySupport () {
+function typedArraySupport() {
   // Can typed array instances can be augmented?
   try {
-    var arr = new Uint8Array(1)
-    arr.__proto__ = { __proto__: Uint8Array.prototype, foo: function () { return 42 } }
-    return arr.foo() === 42
+    var arr = new Uint8Array(1);
+    var proto = {
+      foo: function foo() {
+        return 42;
+      }
+    };
+    Object.setPrototypeOf(proto, Uint8Array.prototype);
+    Object.setPrototypeOf(arr, proto);
+    return arr.foo() === 42;
   } catch (e) {
-    return false
+    return false;
   }
 }
-
 Object.defineProperty(Buffer.prototype, 'parent', {
   enumerable: true,
-  get: function () {
-    if (!Buffer.isBuffer(this)) return undefined
-    return this.buffer
+  get: function get() {
+    if (!Buffer.isBuffer(this)) return undefined;
+    return this.buffer;
   }
-})
-
+});
 Object.defineProperty(Buffer.prototype, 'offset', {
   enumerable: true,
-  get: function () {
-    if (!Buffer.isBuffer(this)) return undefined
-    return this.byteOffset
+  get: function get() {
+    if (!Buffer.isBuffer(this)) return undefined;
+    return this.byteOffset;
   }
-})
-
-function createBuffer (length) {
+});
+function createBuffer(length) {
   if (length > K_MAX_LENGTH) {
-    throw new RangeError('The value "' + length + '" is invalid for option "size"')
+    throw new RangeError('The value "' + length + '" is invalid for option "size"');
   }
   // Return an augmented `Uint8Array` instance
-  var buf = new Uint8Array(length)
-  buf.__proto__ = Buffer.prototype
-  return buf
+  var buf = new Uint8Array(length);
+  Object.setPrototypeOf(buf, Buffer.prototype);
+  return buf;
 }
 
 /**
@@ -247,78 +129,47 @@ function createBuffer (length) {
  * The `Uint8Array` prototype remains unmodified.
  */
 
-function Buffer (arg, encodingOrOffset, length) {
+function Buffer(arg, encodingOrOffset, length) {
   // Common case.
   if (typeof arg === 'number') {
     if (typeof encodingOrOffset === 'string') {
-      throw new TypeError(
-        'The "string" argument must be of type string. Received type number'
-      )
+      throw new TypeError('The "string" argument must be of type string. Received type number');
     }
-    return allocUnsafe(arg)
+    return allocUnsafe(arg);
   }
-  return from(arg, encodingOrOffset, length)
+  return from(arg, encodingOrOffset, length);
 }
+Buffer.poolSize = 8192; // not used by this implementation
 
-// Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
-if (typeof Symbol !== 'undefined' && Symbol.species != null &&
-    Buffer[Symbol.species] === Buffer) {
-  Object.defineProperty(Buffer, Symbol.species, {
-    value: null,
-    configurable: true,
-    enumerable: false,
-    writable: false
-  })
-}
-
-Buffer.poolSize = 8192 // not used by this implementation
-
-function from (value, encodingOrOffset, length) {
+function from(value, encodingOrOffset, length) {
   if (typeof value === 'string') {
-    return fromString(value, encodingOrOffset)
+    return fromString(value, encodingOrOffset);
   }
-
   if (ArrayBuffer.isView(value)) {
-    return fromArrayLike(value)
+    return fromArrayView(value);
   }
-
   if (value == null) {
-    throw TypeError(
-      'The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' +
-      'or Array-like Object. Received type ' + (typeof value)
-    )
+    throw new TypeError('The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' + 'or Array-like Object. Received type ' + _typeof(value));
   }
-
-  if (isInstance(value, ArrayBuffer) ||
-      (value && isInstance(value.buffer, ArrayBuffer))) {
-    return fromArrayBuffer(value, encodingOrOffset, length)
+  if (isInstance(value, ArrayBuffer) || value && isInstance(value.buffer, ArrayBuffer)) {
+    return fromArrayBuffer(value, encodingOrOffset, length);
   }
-
+  if (typeof SharedArrayBuffer !== 'undefined' && (isInstance(value, SharedArrayBuffer) || value && isInstance(value.buffer, SharedArrayBuffer))) {
+    return fromArrayBuffer(value, encodingOrOffset, length);
+  }
   if (typeof value === 'number') {
-    throw new TypeError(
-      'The "value" argument must not be of type number. Received type number'
-    )
+    throw new TypeError('The "value" argument must not be of type number. Received type number');
   }
-
-  var valueOf = value.valueOf && value.valueOf()
+  var valueOf = value.valueOf && value.valueOf();
   if (valueOf != null && valueOf !== value) {
-    return Buffer.from(valueOf, encodingOrOffset, length)
+    return Buffer.from(valueOf, encodingOrOffset, length);
   }
-
-  var b = fromObject(value)
-  if (b) return b
-
-  if (typeof Symbol !== 'undefined' && Symbol.toPrimitive != null &&
-      typeof value[Symbol.toPrimitive] === 'function') {
-    return Buffer.from(
-      value[Symbol.toPrimitive]('string'), encodingOrOffset, length
-    )
+  var b = fromObject(value);
+  if (b) return b;
+  if (typeof Symbol !== 'undefined' && Symbol.toPrimitive != null && typeof value[Symbol.toPrimitive] === 'function') {
+    return Buffer.from(value[Symbol.toPrimitive]('string'), encodingOrOffset, length);
   }
-
-  throw new TypeError(
-    'The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' +
-    'or Array-like Object. Received type ' + (typeof value)
-  )
+  throw new TypeError('The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' + 'or Array-like Object. Received type ' + _typeof(value));
 }
 
 /**
@@ -330,36 +181,32 @@ function from (value, encodingOrOffset, length) {
  * Buffer.from(arrayBuffer[, byteOffset[, length]])
  **/
 Buffer.from = function (value, encodingOrOffset, length) {
-  return from(value, encodingOrOffset, length)
-}
+  return from(value, encodingOrOffset, length);
+};
 
 // Note: Change prototype *after* Buffer.from is defined to workaround Chrome bug:
 // https://github.com/feross/buffer/pull/148
-Buffer.prototype.__proto__ = Uint8Array.prototype
-Buffer.__proto__ = Uint8Array
-
-function assertSize (size) {
+Object.setPrototypeOf(Buffer.prototype, Uint8Array.prototype);
+Object.setPrototypeOf(Buffer, Uint8Array);
+function assertSize(size) {
   if (typeof size !== 'number') {
-    throw new TypeError('"size" argument must be of type number')
+    throw new TypeError('"size" argument must be of type number');
   } else if (size < 0) {
-    throw new RangeError('The value "' + size + '" is invalid for option "size"')
+    throw new RangeError('The value "' + size + '" is invalid for option "size"');
   }
 }
-
-function alloc (size, fill, encoding) {
-  assertSize(size)
+function alloc(size, fill, encoding) {
+  assertSize(size);
   if (size <= 0) {
-    return createBuffer(size)
+    return createBuffer(size);
   }
   if (fill !== undefined) {
     // Only pay attention to encoding if it's a string. This
     // prevents accidentally sending in a number that would
-    // be interpretted as a start offset.
-    return typeof encoding === 'string'
-      ? createBuffer(size).fill(fill, encoding)
-      : createBuffer(size).fill(fill)
+    // be interpreted as a start offset.
+    return typeof encoding === 'string' ? createBuffer(size).fill(fill, encoding) : createBuffer(size).fill(fill);
   }
-  return createBuffer(size)
+  return createBuffer(size);
 }
 
 /**
@@ -367,158 +214,137 @@ function alloc (size, fill, encoding) {
  * alloc(size[, fill[, encoding]])
  **/
 Buffer.alloc = function (size, fill, encoding) {
-  return alloc(size, fill, encoding)
-}
-
-function allocUnsafe (size) {
-  assertSize(size)
-  return createBuffer(size < 0 ? 0 : checked(size) | 0)
+  return alloc(size, fill, encoding);
+};
+function allocUnsafe(size) {
+  assertSize(size);
+  return createBuffer(size < 0 ? 0 : checked(size) | 0);
 }
 
 /**
  * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
  * */
 Buffer.allocUnsafe = function (size) {
-  return allocUnsafe(size)
-}
+  return allocUnsafe(size);
+};
 /**
  * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
  */
 Buffer.allocUnsafeSlow = function (size) {
-  return allocUnsafe(size)
-}
-
-function fromString (string, encoding) {
+  return allocUnsafe(size);
+};
+function fromString(string, encoding) {
   if (typeof encoding !== 'string' || encoding === '') {
-    encoding = 'utf8'
+    encoding = 'utf8';
   }
-
   if (!Buffer.isEncoding(encoding)) {
-    throw new TypeError('Unknown encoding: ' + encoding)
+    throw new TypeError('Unknown encoding: ' + encoding);
   }
-
-  var length = byteLength(string, encoding) | 0
-  var buf = createBuffer(length)
-
-  var actual = buf.write(string, encoding)
-
+  var length = byteLength(string, encoding) | 0;
+  var buf = createBuffer(length);
+  var actual = buf.write(string, encoding);
   if (actual !== length) {
     // Writing a hex string, for example, that contains invalid characters will
     // cause everything after the first invalid character to be ignored. (e.g.
     // 'abxxcd' will be treated as 'ab')
-    buf = buf.slice(0, actual)
+    buf = buf.slice(0, actual);
   }
-
-  return buf
+  return buf;
 }
-
-function fromArrayLike (array) {
-  var length = array.length < 0 ? 0 : checked(array.length) | 0
-  var buf = createBuffer(length)
+function fromArrayLike(array) {
+  var length = array.length < 0 ? 0 : checked(array.length) | 0;
+  var buf = createBuffer(length);
   for (var i = 0; i < length; i += 1) {
-    buf[i] = array[i] & 255
+    buf[i] = array[i] & 255;
   }
-  return buf
+  return buf;
 }
-
-function fromArrayBuffer (array, byteOffset, length) {
+function fromArrayView(arrayView) {
+  if (isInstance(arrayView, Uint8Array)) {
+    var copy = new Uint8Array(arrayView);
+    return fromArrayBuffer(copy.buffer, copy.byteOffset, copy.byteLength);
+  }
+  return fromArrayLike(arrayView);
+}
+function fromArrayBuffer(array, byteOffset, length) {
   if (byteOffset < 0 || array.byteLength < byteOffset) {
-    throw new RangeError('"offset" is outside of buffer bounds')
+    throw new RangeError('"offset" is outside of buffer bounds');
   }
-
   if (array.byteLength < byteOffset + (length || 0)) {
-    throw new RangeError('"length" is outside of buffer bounds')
+    throw new RangeError('"length" is outside of buffer bounds');
   }
-
-  var buf
+  var buf;
   if (byteOffset === undefined && length === undefined) {
-    buf = new Uint8Array(array)
+    buf = new Uint8Array(array);
   } else if (length === undefined) {
-    buf = new Uint8Array(array, byteOffset)
+    buf = new Uint8Array(array, byteOffset);
   } else {
-    buf = new Uint8Array(array, byteOffset, length)
+    buf = new Uint8Array(array, byteOffset, length);
   }
 
   // Return an augmented `Uint8Array` instance
-  buf.__proto__ = Buffer.prototype
-  return buf
+  Object.setPrototypeOf(buf, Buffer.prototype);
+  return buf;
 }
-
-function fromObject (obj) {
+function fromObject(obj) {
   if (Buffer.isBuffer(obj)) {
-    var len = checked(obj.length) | 0
-    var buf = createBuffer(len)
-
+    var len = checked(obj.length) | 0;
+    var buf = createBuffer(len);
     if (buf.length === 0) {
-      return buf
+      return buf;
     }
-
-    obj.copy(buf, 0, 0, len)
-    return buf
+    obj.copy(buf, 0, 0, len);
+    return buf;
   }
-
   if (obj.length !== undefined) {
     if (typeof obj.length !== 'number' || numberIsNaN(obj.length)) {
-      return createBuffer(0)
+      return createBuffer(0);
     }
-    return fromArrayLike(obj)
+    return fromArrayLike(obj);
   }
-
   if (obj.type === 'Buffer' && Array.isArray(obj.data)) {
-    return fromArrayLike(obj.data)
+    return fromArrayLike(obj.data);
   }
 }
-
-function checked (length) {
+function checked(length) {
   // Note: cannot use `length < K_MAX_LENGTH` here because that fails when
   // length is NaN (which is otherwise coerced to zero.)
   if (length >= K_MAX_LENGTH) {
-    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-                         'size: 0x' + K_MAX_LENGTH.toString(16) + ' bytes')
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' + 'size: 0x' + K_MAX_LENGTH.toString(16) + ' bytes');
   }
-  return length | 0
+  return length | 0;
 }
-
-function SlowBuffer (length) {
-  if (+length != length) { // eslint-disable-line eqeqeq
-    length = 0
+function SlowBuffer(length) {
+  if (+length != length) {
+    // eslint-disable-line eqeqeq
+    length = 0;
   }
-  return Buffer.alloc(+length)
+  return Buffer.alloc(+length);
 }
-
-Buffer.isBuffer = function isBuffer (b) {
-  return b != null && b._isBuffer === true &&
-    b !== Buffer.prototype // so Buffer.isBuffer(Buffer.prototype) will be false
-}
-
-Buffer.compare = function compare (a, b) {
-  if (isInstance(a, Uint8Array)) a = Buffer.from(a, a.offset, a.byteLength)
-  if (isInstance(b, Uint8Array)) b = Buffer.from(b, b.offset, b.byteLength)
+Buffer.isBuffer = function isBuffer(b) {
+  return b != null && b._isBuffer === true && b !== Buffer.prototype; // so Buffer.isBuffer(Buffer.prototype) will be false
+};
+Buffer.compare = function compare(a, b) {
+  if (isInstance(a, Uint8Array)) a = Buffer.from(a, a.offset, a.byteLength);
+  if (isInstance(b, Uint8Array)) b = Buffer.from(b, b.offset, b.byteLength);
   if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
-    throw new TypeError(
-      'The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array'
-    )
+    throw new TypeError('The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array');
   }
-
-  if (a === b) return 0
-
-  var x = a.length
-  var y = b.length
-
+  if (a === b) return 0;
+  var x = a.length;
+  var y = b.length;
   for (var i = 0, len = Math.min(x, y); i < len; ++i) {
     if (a[i] !== b[i]) {
-      x = a[i]
-      y = b[i]
-      break
+      x = a[i];
+      y = b[i];
+      break;
     }
   }
-
-  if (x < y) return -1
-  if (y < x) return 1
-  return 0
-}
-
-Buffer.isEncoding = function isEncoding (encoding) {
+  if (x < y) return -1;
+  if (y < x) return 1;
+  return 0;
+};
+Buffer.isEncoding = function isEncoding(encoding) {
   switch (String(encoding).toLowerCase()) {
     case 'hex':
     case 'utf8':
@@ -531,96 +357,91 @@ Buffer.isEncoding = function isEncoding (encoding) {
     case 'ucs-2':
     case 'utf16le':
     case 'utf-16le':
-      return true
+      return true;
     default:
-      return false
+      return false;
   }
-}
-
-Buffer.concat = function concat (list, length) {
+};
+Buffer.concat = function concat(list, length) {
   if (!Array.isArray(list)) {
-    throw new TypeError('"list" argument must be an Array of Buffers')
+    throw new TypeError('"list" argument must be an Array of Buffers');
   }
-
   if (list.length === 0) {
-    return Buffer.alloc(0)
+    return Buffer.alloc(0);
   }
-
-  var i
+  var i;
   if (length === undefined) {
-    length = 0
+    length = 0;
     for (i = 0; i < list.length; ++i) {
-      length += list[i].length
+      length += list[i].length;
     }
   }
-
-  var buffer = Buffer.allocUnsafe(length)
-  var pos = 0
+  var buffer = Buffer.allocUnsafe(length);
+  var pos = 0;
   for (i = 0; i < list.length; ++i) {
-    var buf = list[i]
+    var buf = list[i];
     if (isInstance(buf, Uint8Array)) {
-      buf = Buffer.from(buf)
+      if (pos + buf.length > buffer.length) {
+        if (!Buffer.isBuffer(buf)) buf = Buffer.from(buf);
+        buf.copy(buffer, pos);
+      } else {
+        Uint8Array.prototype.set.call(buffer, buf, pos);
+      }
+    } else if (!Buffer.isBuffer(buf)) {
+      throw new TypeError('"list" argument must be an Array of Buffers');
+    } else {
+      buf.copy(buffer, pos);
     }
-    if (!Buffer.isBuffer(buf)) {
-      throw new TypeError('"list" argument must be an Array of Buffers')
-    }
-    buf.copy(buffer, pos)
-    pos += buf.length
+    pos += buf.length;
   }
-  return buffer
-}
-
-function byteLength (string, encoding) {
+  return buffer;
+};
+function byteLength(string, encoding) {
   if (Buffer.isBuffer(string)) {
-    return string.length
+    return string.length;
   }
   if (ArrayBuffer.isView(string) || isInstance(string, ArrayBuffer)) {
-    return string.byteLength
+    return string.byteLength;
   }
   if (typeof string !== 'string') {
-    throw new TypeError(
-      'The "string" argument must be one of type string, Buffer, or ArrayBuffer. ' +
-      'Received type ' + typeof string
-    )
+    throw new TypeError('The "string" argument must be one of type string, Buffer, or ArrayBuffer. ' + 'Received type ' + _typeof(string));
   }
-
-  var len = string.length
-  var mustMatch = (arguments.length > 2 && arguments[2] === true)
-  if (!mustMatch && len === 0) return 0
+  var len = string.length;
+  var mustMatch = arguments.length > 2 && arguments[2] === true;
+  if (!mustMatch && len === 0) return 0;
 
   // Use a for loop to avoid recursion
-  var loweredCase = false
+  var loweredCase = false;
   for (;;) {
     switch (encoding) {
       case 'ascii':
       case 'latin1':
       case 'binary':
-        return len
+        return len;
       case 'utf8':
       case 'utf-8':
-        return utf8ToBytes(string).length
+        return utf8ToBytes(string).length;
       case 'ucs2':
       case 'ucs-2':
       case 'utf16le':
       case 'utf-16le':
-        return len * 2
+        return len * 2;
       case 'hex':
-        return len >>> 1
+        return len >>> 1;
       case 'base64':
-        return base64ToBytes(string).length
+        return base64ToBytes(string).length;
       default:
         if (loweredCase) {
-          return mustMatch ? -1 : utf8ToBytes(string).length // assume utf8
+          return mustMatch ? -1 : utf8ToBytes(string).length; // assume utf8
         }
-        encoding = ('' + encoding).toLowerCase()
-        loweredCase = true
+        encoding = ('' + encoding).toLowerCase();
+        loweredCase = true;
     }
   }
 }
-Buffer.byteLength = byteLength
-
-function slowToString (encoding, start, end) {
-  var loweredCase = false
+Buffer.byteLength = byteLength;
+function slowToString(encoding, start, end) {
+  var loweredCase = false;
 
   // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
   // property of a typed array.
@@ -630,61 +451,50 @@ function slowToString (encoding, start, end) {
   // undefined is handled specially as per ECMA-262 6th Edition,
   // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
   if (start === undefined || start < 0) {
-    start = 0
+    start = 0;
   }
   // Return early if start > this.length. Done here to prevent potential uint32
   // coercion fail below.
   if (start > this.length) {
-    return ''
+    return '';
   }
-
   if (end === undefined || end > this.length) {
-    end = this.length
+    end = this.length;
   }
-
   if (end <= 0) {
-    return ''
+    return '';
   }
 
-  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
-  end >>>= 0
-  start >>>= 0
-
+  // Force coercion to uint32. This will also coerce falsey/NaN values to 0.
+  end >>>= 0;
+  start >>>= 0;
   if (end <= start) {
-    return ''
+    return '';
   }
-
-  if (!encoding) encoding = 'utf8'
-
+  if (!encoding) encoding = 'utf8';
   while (true) {
     switch (encoding) {
       case 'hex':
-        return hexSlice(this, start, end)
-
+        return hexSlice(this, start, end);
       case 'utf8':
       case 'utf-8':
-        return utf8Slice(this, start, end)
-
+        return utf8Slice(this, start, end);
       case 'ascii':
-        return asciiSlice(this, start, end)
-
+        return asciiSlice(this, start, end);
       case 'latin1':
       case 'binary':
-        return latin1Slice(this, start, end)
-
+        return latin1Slice(this, start, end);
       case 'base64':
-        return base64Slice(this, start, end)
-
+        return base64Slice(this, start, end);
       case 'ucs2':
       case 'ucs-2':
       case 'utf16le':
       case 'utf-16le':
-        return utf16leSlice(this, start, end)
-
+        return utf16leSlice(this, start, end);
       default:
-        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-        encoding = (encoding + '').toLowerCase()
-        loweredCase = true
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding);
+        encoding = (encoding + '').toLowerCase();
+        loweredCase = true;
     }
   }
 }
@@ -695,138 +505,120 @@ function slowToString (encoding, start, end) {
 // copies of the 'buffer' package in use. This method works even for Buffer
 // instances that were created from another copy of the `buffer` package.
 // See: https://github.com/feross/buffer/issues/154
-Buffer.prototype._isBuffer = true
-
-function swap (b, n, m) {
-  var i = b[n]
-  b[n] = b[m]
-  b[m] = i
+Buffer.prototype._isBuffer = true;
+function swap(b, n, m) {
+  var i = b[n];
+  b[n] = b[m];
+  b[m] = i;
 }
-
-Buffer.prototype.swap16 = function swap16 () {
-  var len = this.length
+Buffer.prototype.swap16 = function swap16() {
+  var len = this.length;
   if (len % 2 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 16-bits')
+    throw new RangeError('Buffer size must be a multiple of 16-bits');
   }
   for (var i = 0; i < len; i += 2) {
-    swap(this, i, i + 1)
+    swap(this, i, i + 1);
   }
-  return this
-}
-
-Buffer.prototype.swap32 = function swap32 () {
-  var len = this.length
+  return this;
+};
+Buffer.prototype.swap32 = function swap32() {
+  var len = this.length;
   if (len % 4 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 32-bits')
+    throw new RangeError('Buffer size must be a multiple of 32-bits');
   }
   for (var i = 0; i < len; i += 4) {
-    swap(this, i, i + 3)
-    swap(this, i + 1, i + 2)
+    swap(this, i, i + 3);
+    swap(this, i + 1, i + 2);
   }
-  return this
-}
-
-Buffer.prototype.swap64 = function swap64 () {
-  var len = this.length
+  return this;
+};
+Buffer.prototype.swap64 = function swap64() {
+  var len = this.length;
   if (len % 8 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 64-bits')
+    throw new RangeError('Buffer size must be a multiple of 64-bits');
   }
   for (var i = 0; i < len; i += 8) {
-    swap(this, i, i + 7)
-    swap(this, i + 1, i + 6)
-    swap(this, i + 2, i + 5)
-    swap(this, i + 3, i + 4)
+    swap(this, i, i + 7);
+    swap(this, i + 1, i + 6);
+    swap(this, i + 2, i + 5);
+    swap(this, i + 3, i + 4);
   }
-  return this
+  return this;
+};
+Buffer.prototype.toString = function toString() {
+  var length = this.length;
+  if (length === 0) return '';
+  if (arguments.length === 0) return utf8Slice(this, 0, length);
+  return slowToString.apply(this, arguments);
+};
+Buffer.prototype.toLocaleString = Buffer.prototype.toString;
+Buffer.prototype.equals = function equals(b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer');
+  if (this === b) return true;
+  return Buffer.compare(this, b) === 0;
+};
+Buffer.prototype.inspect = function inspect() {
+  var str = '';
+  var max = exports.IS;
+  str = this.toString('hex', 0, max).replace(/(.{2})/g, '$1 ').trim();
+  if (this.length > max) str += ' ... ';
+  return '<Buffer ' + str + '>';
+};
+if (customInspectSymbol) {
+  Buffer.prototype[customInspectSymbol] = Buffer.prototype.inspect;
 }
-
-Buffer.prototype.toString = function toString () {
-  var length = this.length
-  if (length === 0) return ''
-  if (arguments.length === 0) return utf8Slice(this, 0, length)
-  return slowToString.apply(this, arguments)
-}
-
-Buffer.prototype.toLocaleString = Buffer.prototype.toString
-
-Buffer.prototype.equals = function equals (b) {
-  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
-  if (this === b) return true
-  return Buffer.compare(this, b) === 0
-}
-
-Buffer.prototype.inspect = function inspect () {
-  var str = ''
-  var max = exports.INSPECT_MAX_BYTES
-  str = this.toString('hex', 0, max).replace(/(.{2})/g, '$1 ').trim()
-  if (this.length > max) str += ' ... '
-  return '<Buffer ' + str + '>'
-}
-
-Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+Buffer.prototype.compare = function compare(target, start, end, thisStart, thisEnd) {
   if (isInstance(target, Uint8Array)) {
-    target = Buffer.from(target, target.offset, target.byteLength)
+    target = Buffer.from(target, target.offset, target.byteLength);
   }
   if (!Buffer.isBuffer(target)) {
-    throw new TypeError(
-      'The "target" argument must be one of type Buffer or Uint8Array. ' +
-      'Received type ' + (typeof target)
-    )
+    throw new TypeError('The "target" argument must be one of type Buffer or Uint8Array. ' + 'Received type ' + _typeof(target));
   }
-
   if (start === undefined) {
-    start = 0
+    start = 0;
   }
   if (end === undefined) {
-    end = target ? target.length : 0
+    end = target ? target.length : 0;
   }
   if (thisStart === undefined) {
-    thisStart = 0
+    thisStart = 0;
   }
   if (thisEnd === undefined) {
-    thisEnd = this.length
+    thisEnd = this.length;
   }
-
   if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
-    throw new RangeError('out of range index')
+    throw new RangeError('out of range index');
   }
-
   if (thisStart >= thisEnd && start >= end) {
-    return 0
+    return 0;
   }
   if (thisStart >= thisEnd) {
-    return -1
+    return -1;
   }
   if (start >= end) {
-    return 1
+    return 1;
   }
-
-  start >>>= 0
-  end >>>= 0
-  thisStart >>>= 0
-  thisEnd >>>= 0
-
-  if (this === target) return 0
-
-  var x = thisEnd - thisStart
-  var y = end - start
-  var len = Math.min(x, y)
-
-  var thisCopy = this.slice(thisStart, thisEnd)
-  var targetCopy = target.slice(start, end)
-
+  start >>>= 0;
+  end >>>= 0;
+  thisStart >>>= 0;
+  thisEnd >>>= 0;
+  if (this === target) return 0;
+  var x = thisEnd - thisStart;
+  var y = end - start;
+  var len = Math.min(x, y);
+  var thisCopy = this.slice(thisStart, thisEnd);
+  var targetCopy = target.slice(start, end);
   for (var i = 0; i < len; ++i) {
     if (thisCopy[i] !== targetCopy[i]) {
-      x = thisCopy[i]
-      y = targetCopy[i]
-      break
+      x = thisCopy[i];
+      y = targetCopy[i];
+      break;
     }
   }
-
-  if (x < y) return -1
-  if (y < x) return 1
-  return 0
-}
+  if (x < y) return -1;
+  if (y < x) return 1;
+  return 0;
+};
 
 // Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
 // OR the last index of `val` in `buffer` at offset <= `byteOffset`.
@@ -837,982 +629,1047 @@ Buffer.prototype.compare = function compare (target, start, end, thisStart, this
 // - byteOffset - an index into `buffer`; will be clamped to an int32
 // - encoding - an optional encoding, relevant is val is a string
 // - dir - true for indexOf, false for lastIndexOf
-function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+function bidirectionalIndexOf(buffer, val, byteOffset, encoding, dir) {
   // Empty buffer means no match
-  if (buffer.length === 0) return -1
+  if (buffer.length === 0) return -1;
 
   // Normalize byteOffset
   if (typeof byteOffset === 'string') {
-    encoding = byteOffset
-    byteOffset = 0
+    encoding = byteOffset;
+    byteOffset = 0;
   } else if (byteOffset > 0x7fffffff) {
-    byteOffset = 0x7fffffff
+    byteOffset = 0x7fffffff;
   } else if (byteOffset < -0x80000000) {
-    byteOffset = -0x80000000
+    byteOffset = -0x80000000;
   }
-  byteOffset = +byteOffset // Coerce to Number.
+  byteOffset = +byteOffset; // Coerce to Number.
   if (numberIsNaN(byteOffset)) {
     // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
-    byteOffset = dir ? 0 : (buffer.length - 1)
+    byteOffset = dir ? 0 : buffer.length - 1;
   }
 
   // Normalize byteOffset: negative offsets start from the end of the buffer
-  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset;
   if (byteOffset >= buffer.length) {
-    if (dir) return -1
-    else byteOffset = buffer.length - 1
+    if (dir) return -1;else byteOffset = buffer.length - 1;
   } else if (byteOffset < 0) {
-    if (dir) byteOffset = 0
-    else return -1
+    if (dir) byteOffset = 0;else return -1;
   }
 
   // Normalize val
   if (typeof val === 'string') {
-    val = Buffer.from(val, encoding)
+    val = Buffer.from(val, encoding);
   }
 
   // Finally, search either indexOf (if dir is true) or lastIndexOf
   if (Buffer.isBuffer(val)) {
     // Special case: looking for empty string/buffer always fails
     if (val.length === 0) {
-      return -1
+      return -1;
     }
-    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir);
   } else if (typeof val === 'number') {
-    val = val & 0xFF // Search for a byte value [0-255]
+    val = val & 0xFF; // Search for a byte value [0-255]
     if (typeof Uint8Array.prototype.indexOf === 'function') {
       if (dir) {
-        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset);
       } else {
-        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset);
       }
     }
-    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+    return arrayIndexOf(buffer, [val], byteOffset, encoding, dir);
   }
-
-  throw new TypeError('val must be string, number or Buffer')
+  throw new TypeError('val must be string, number or Buffer');
 }
-
-function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
-  var indexSize = 1
-  var arrLength = arr.length
-  var valLength = val.length
-
+function arrayIndexOf(arr, val, byteOffset, encoding, dir) {
+  var indexSize = 1;
+  var arrLength = arr.length;
+  var valLength = val.length;
   if (encoding !== undefined) {
-    encoding = String(encoding).toLowerCase()
-    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
-        encoding === 'utf16le' || encoding === 'utf-16le') {
+    encoding = String(encoding).toLowerCase();
+    if (encoding === 'ucs2' || encoding === 'ucs-2' || encoding === 'utf16le' || encoding === 'utf-16le') {
       if (arr.length < 2 || val.length < 2) {
-        return -1
+        return -1;
       }
-      indexSize = 2
-      arrLength /= 2
-      valLength /= 2
-      byteOffset /= 2
+      indexSize = 2;
+      arrLength /= 2;
+      valLength /= 2;
+      byteOffset /= 2;
     }
   }
-
-  function read (buf, i) {
+  function read(buf, i) {
     if (indexSize === 1) {
-      return buf[i]
+      return buf[i];
     } else {
-      return buf.readUInt16BE(i * indexSize)
+      return buf.readUInt16BE(i * indexSize);
     }
   }
-
-  var i
+  var i;
   if (dir) {
-    var foundIndex = -1
+    var foundIndex = -1;
     for (i = byteOffset; i < arrLength; i++) {
       if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
-        if (foundIndex === -1) foundIndex = i
-        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
+        if (foundIndex === -1) foundIndex = i;
+        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize;
       } else {
-        if (foundIndex !== -1) i -= i - foundIndex
-        foundIndex = -1
+        if (foundIndex !== -1) i -= i - foundIndex;
+        foundIndex = -1;
       }
     }
   } else {
-    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
+    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength;
     for (i = byteOffset; i >= 0; i--) {
-      var found = true
+      var found = true;
       for (var j = 0; j < valLength; j++) {
         if (read(arr, i + j) !== read(val, j)) {
-          found = false
-          break
+          found = false;
+          break;
         }
       }
-      if (found) return i
+      if (found) return i;
     }
   }
-
-  return -1
+  return -1;
 }
-
-Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
-  return this.indexOf(val, byteOffset, encoding) !== -1
-}
-
-Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
-  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
-}
-
-Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
-  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
-}
-
-function hexWrite (buf, string, offset, length) {
-  offset = Number(offset) || 0
-  var remaining = buf.length - offset
+Buffer.prototype.includes = function includes(val, byteOffset, encoding) {
+  return this.indexOf(val, byteOffset, encoding) !== -1;
+};
+Buffer.prototype.indexOf = function indexOf(val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, true);
+};
+Buffer.prototype.lastIndexOf = function lastIndexOf(val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, false);
+};
+function hexWrite(buf, string, offset, length) {
+  offset = Number(offset) || 0;
+  var remaining = buf.length - offset;
   if (!length) {
-    length = remaining
+    length = remaining;
   } else {
-    length = Number(length)
+    length = Number(length);
     if (length > remaining) {
-      length = remaining
+      length = remaining;
     }
   }
-
-  var strLen = string.length
-
+  var strLen = string.length;
   if (length > strLen / 2) {
-    length = strLen / 2
+    length = strLen / 2;
   }
-  for (var i = 0; i < length; ++i) {
-    var parsed = parseInt(string.substr(i * 2, 2), 16)
-    if (numberIsNaN(parsed)) return i
-    buf[offset + i] = parsed
+  var i;
+  for (i = 0; i < length; ++i) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16);
+    if (numberIsNaN(parsed)) return i;
+    buf[offset + i] = parsed;
   }
-  return i
+  return i;
 }
-
-function utf8Write (buf, string, offset, length) {
-  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
+function utf8Write(buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length);
 }
-
-function asciiWrite (buf, string, offset, length) {
-  return blitBuffer(asciiToBytes(string), buf, offset, length)
+function asciiWrite(buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length);
 }
-
-function latin1Write (buf, string, offset, length) {
-  return asciiWrite(buf, string, offset, length)
+function base64Write(buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length);
 }
-
-function base64Write (buf, string, offset, length) {
-  return blitBuffer(base64ToBytes(string), buf, offset, length)
+function ucs2Write(buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length);
 }
-
-function ucs2Write (buf, string, offset, length) {
-  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
-}
-
-Buffer.prototype.write = function write (string, offset, length, encoding) {
+Buffer.prototype.write = function write(string, offset, length, encoding) {
   // Buffer#write(string)
   if (offset === undefined) {
-    encoding = 'utf8'
-    length = this.length
-    offset = 0
-  // Buffer#write(string, encoding)
+    encoding = 'utf8';
+    length = this.length;
+    offset = 0;
+    // Buffer#write(string, encoding)
   } else if (length === undefined && typeof offset === 'string') {
-    encoding = offset
-    length = this.length
-    offset = 0
-  // Buffer#write(string, offset[, length][, encoding])
+    encoding = offset;
+    length = this.length;
+    offset = 0;
+    // Buffer#write(string, offset[, length][, encoding])
   } else if (isFinite(offset)) {
-    offset = offset >>> 0
+    offset = offset >>> 0;
     if (isFinite(length)) {
-      length = length >>> 0
-      if (encoding === undefined) encoding = 'utf8'
+      length = length >>> 0;
+      if (encoding === undefined) encoding = 'utf8';
     } else {
-      encoding = length
-      length = undefined
+      encoding = length;
+      length = undefined;
     }
   } else {
-    throw new Error(
-      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
-    )
+    throw new Error('Buffer.write(string, encoding, offset[, length]) is no longer supported');
   }
-
-  var remaining = this.length - offset
-  if (length === undefined || length > remaining) length = remaining
-
-  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
-    throw new RangeError('Attempt to write outside buffer bounds')
+  var remaining = this.length - offset;
+  if (length === undefined || length > remaining) length = remaining;
+  if (string.length > 0 && (length < 0 || offset < 0) || offset > this.length) {
+    throw new RangeError('Attempt to write outside buffer bounds');
   }
-
-  if (!encoding) encoding = 'utf8'
-
-  var loweredCase = false
+  if (!encoding) encoding = 'utf8';
+  var loweredCase = false;
   for (;;) {
     switch (encoding) {
       case 'hex':
-        return hexWrite(this, string, offset, length)
-
+        return hexWrite(this, string, offset, length);
       case 'utf8':
       case 'utf-8':
-        return utf8Write(this, string, offset, length)
-
+        return utf8Write(this, string, offset, length);
       case 'ascii':
-        return asciiWrite(this, string, offset, length)
-
       case 'latin1':
       case 'binary':
-        return latin1Write(this, string, offset, length)
-
+        return asciiWrite(this, string, offset, length);
       case 'base64':
         // Warning: maxLength not taken into account in base64Write
-        return base64Write(this, string, offset, length)
-
+        return base64Write(this, string, offset, length);
       case 'ucs2':
       case 'ucs-2':
       case 'utf16le':
       case 'utf-16le':
-        return ucs2Write(this, string, offset, length)
-
+        return ucs2Write(this, string, offset, length);
       default:
-        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-        encoding = ('' + encoding).toLowerCase()
-        loweredCase = true
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding);
+        encoding = ('' + encoding).toLowerCase();
+        loweredCase = true;
     }
   }
-}
-
-Buffer.prototype.toJSON = function toJSON () {
+};
+Buffer.prototype.toJSON = function toJSON() {
   return {
     type: 'Buffer',
     data: Array.prototype.slice.call(this._arr || this, 0)
-  }
-}
-
-function base64Slice (buf, start, end) {
+  };
+};
+function base64Slice(buf, start, end) {
   if (start === 0 && end === buf.length) {
-    return base64.fromByteArray(buf)
+    return base64.fromByteArray(buf);
   } else {
-    return base64.fromByteArray(buf.slice(start, end))
+    return base64.fromByteArray(buf.slice(start, end));
   }
 }
-
-function utf8Slice (buf, start, end) {
-  end = Math.min(buf.length, end)
-  var res = []
-
-  var i = start
+function utf8Slice(buf, start, end) {
+  end = Math.min(buf.length, end);
+  var res = [];
+  var i = start;
   while (i < end) {
-    var firstByte = buf[i]
-    var codePoint = null
-    var bytesPerSequence = (firstByte > 0xEF) ? 4
-      : (firstByte > 0xDF) ? 3
-        : (firstByte > 0xBF) ? 2
-          : 1
-
+    var firstByte = buf[i];
+    var codePoint = null;
+    var bytesPerSequence = firstByte > 0xEF ? 4 : firstByte > 0xDF ? 3 : firstByte > 0xBF ? 2 : 1;
     if (i + bytesPerSequence <= end) {
-      var secondByte, thirdByte, fourthByte, tempCodePoint
-
+      var secondByte = void 0,
+        thirdByte = void 0,
+        fourthByte = void 0,
+        tempCodePoint = void 0;
       switch (bytesPerSequence) {
         case 1:
           if (firstByte < 0x80) {
-            codePoint = firstByte
+            codePoint = firstByte;
           }
-          break
+          break;
         case 2:
-          secondByte = buf[i + 1]
+          secondByte = buf[i + 1];
           if ((secondByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | secondByte & 0x3F;
             if (tempCodePoint > 0x7F) {
-              codePoint = tempCodePoint
+              codePoint = tempCodePoint;
             }
           }
-          break
+          break;
         case 3:
-          secondByte = buf[i + 1]
-          thirdByte = buf[i + 2]
+          secondByte = buf[i + 1];
+          thirdByte = buf[i + 2];
           if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | thirdByte & 0x3F;
             if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
-              codePoint = tempCodePoint
+              codePoint = tempCodePoint;
             }
           }
-          break
+          break;
         case 4:
-          secondByte = buf[i + 1]
-          thirdByte = buf[i + 2]
-          fourthByte = buf[i + 3]
+          secondByte = buf[i + 1];
+          thirdByte = buf[i + 2];
+          fourthByte = buf[i + 3];
           if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | fourthByte & 0x3F;
             if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
-              codePoint = tempCodePoint
+              codePoint = tempCodePoint;
             }
           }
       }
     }
-
     if (codePoint === null) {
       // we did not generate a valid codePoint so insert a
       // replacement char (U+FFFD) and advance only 1 byte
-      codePoint = 0xFFFD
-      bytesPerSequence = 1
+      codePoint = 0xFFFD;
+      bytesPerSequence = 1;
     } else if (codePoint > 0xFFFF) {
       // encode to utf16 (surrogate pair dance)
-      codePoint -= 0x10000
-      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
-      codePoint = 0xDC00 | codePoint & 0x3FF
+      codePoint -= 0x10000;
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800);
+      codePoint = 0xDC00 | codePoint & 0x3FF;
     }
-
-    res.push(codePoint)
-    i += bytesPerSequence
+    res.push(codePoint);
+    i += bytesPerSequence;
   }
-
-  return decodeCodePointsArray(res)
+  return decodeCodePointsArray(res);
 }
 
 // Based on http://stackoverflow.com/a/22747272/680742, the browser with
 // the lowest limit is Chrome, with 0x10000 args.
 // We go 1 magnitude less, for safety
-var MAX_ARGUMENTS_LENGTH = 0x1000
-
-function decodeCodePointsArray (codePoints) {
-  var len = codePoints.length
+var MAX_ARGUMENTS_LENGTH = 0x1000;
+function decodeCodePointsArray(codePoints) {
+  var len = codePoints.length;
   if (len <= MAX_ARGUMENTS_LENGTH) {
-    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+    return String.fromCharCode.apply(String, codePoints); // avoid extra slice()
   }
 
   // Decode in chunks to avoid "call stack size exceeded".
-  var res = ''
-  var i = 0
+  var res = '';
+  var i = 0;
   while (i < len) {
-    res += String.fromCharCode.apply(
-      String,
-      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
-    )
+    res += String.fromCharCode.apply(String, codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH));
   }
-  return res
+  return res;
 }
-
-function asciiSlice (buf, start, end) {
-  var ret = ''
-  end = Math.min(buf.length, end)
-
+function asciiSlice(buf, start, end) {
+  var ret = '';
+  end = Math.min(buf.length, end);
   for (var i = start; i < end; ++i) {
-    ret += String.fromCharCode(buf[i] & 0x7F)
+    ret += String.fromCharCode(buf[i] & 0x7F);
   }
-  return ret
+  return ret;
 }
-
-function latin1Slice (buf, start, end) {
-  var ret = ''
-  end = Math.min(buf.length, end)
-
+function latin1Slice(buf, start, end) {
+  var ret = '';
+  end = Math.min(buf.length, end);
   for (var i = start; i < end; ++i) {
-    ret += String.fromCharCode(buf[i])
+    ret += String.fromCharCode(buf[i]);
   }
-  return ret
+  return ret;
 }
-
-function hexSlice (buf, start, end) {
-  var len = buf.length
-
-  if (!start || start < 0) start = 0
-  if (!end || end < 0 || end > len) end = len
-
-  var out = ''
+function hexSlice(buf, start, end) {
+  var len = buf.length;
+  if (!start || start < 0) start = 0;
+  if (!end || end < 0 || end > len) end = len;
+  var out = '';
   for (var i = start; i < end; ++i) {
-    out += toHex(buf[i])
+    out += hexSliceLookupTable[buf[i]];
   }
-  return out
+  return out;
 }
-
-function utf16leSlice (buf, start, end) {
-  var bytes = buf.slice(start, end)
-  var res = ''
-  for (var i = 0; i < bytes.length; i += 2) {
-    res += String.fromCharCode(bytes[i] + (bytes[i + 1] * 256))
+function utf16leSlice(buf, start, end) {
+  var bytes = buf.slice(start, end);
+  var res = '';
+  // If bytes.length is odd, the last 8 bits must be ignored (same as node.js)
+  for (var i = 0; i < bytes.length - 1; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256);
   }
-  return res
+  return res;
 }
-
-Buffer.prototype.slice = function slice (start, end) {
-  var len = this.length
-  start = ~~start
-  end = end === undefined ? len : ~~end
-
+Buffer.prototype.slice = function slice(start, end) {
+  var len = this.length;
+  start = ~~start;
+  end = end === undefined ? len : ~~end;
   if (start < 0) {
-    start += len
-    if (start < 0) start = 0
+    start += len;
+    if (start < 0) start = 0;
   } else if (start > len) {
-    start = len
+    start = len;
   }
-
   if (end < 0) {
-    end += len
-    if (end < 0) end = 0
+    end += len;
+    if (end < 0) end = 0;
   } else if (end > len) {
-    end = len
+    end = len;
   }
-
-  if (end < start) end = start
-
-  var newBuf = this.subarray(start, end)
+  if (end < start) end = start;
+  var newBuf = this.subarray(start, end);
   // Return an augmented `Uint8Array` instance
-  newBuf.__proto__ = Buffer.prototype
-  return newBuf
-}
+  Object.setPrototypeOf(newBuf, Buffer.prototype);
+  return newBuf;
+};
 
 /*
  * Need to make sure that buffer isn't trying to write out of bounds.
  */
-function checkOffset (offset, ext, length) {
-  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
-  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
+function checkOffset(offset, ext, length) {
+  if (offset % 1 !== 0 || offset < 0) throw new RangeError('offset is not uint');
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length');
 }
-
-Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var val = this[offset]
-  var mul = 1
-  var i = 0
+Buffer.prototype.readUintLE = Buffer.prototype.readUIntLE = function readUIntLE(offset, byteLength, noAssert) {
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+  var val = this[offset];
+  var mul = 1;
+  var i = 0;
   while (++i < byteLength && (mul *= 0x100)) {
-    val += this[offset + i] * mul
+    val += this[offset + i] * mul;
   }
-
-  return val
-}
-
-Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
+  return val;
+};
+Buffer.prototype.readUintBE = Buffer.prototype.readUIntBE = function readUIntBE(offset, byteLength, noAssert) {
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
   if (!noAssert) {
-    checkOffset(offset, byteLength, this.length)
+    checkOffset(offset, byteLength, this.length);
   }
-
-  var val = this[offset + --byteLength]
-  var mul = 1
+  var val = this[offset + --byteLength];
+  var mul = 1;
   while (byteLength > 0 && (mul *= 0x100)) {
-    val += this[offset + --byteLength] * mul
+    val += this[offset + --byteLength] * mul;
   }
-
-  return val
-}
-
-Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 1, this.length)
-  return this[offset]
-}
-
-Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  return this[offset] | (this[offset + 1] << 8)
-}
-
-Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  return (this[offset] << 8) | this[offset + 1]
-}
-
-Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return ((this[offset]) |
-      (this[offset + 1] << 8) |
-      (this[offset + 2] << 16)) +
-      (this[offset + 3] * 0x1000000)
-}
-
-Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset] * 0x1000000) +
-    ((this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    this[offset + 3])
-}
-
-Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var val = this[offset]
-  var mul = 1
-  var i = 0
+  return val;
+};
+Buffer.prototype.readUint8 = Buffer.prototype.readUInt8 = function readUInt8(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 1, this.length);
+  return this[offset];
+};
+Buffer.prototype.readUint16LE = Buffer.prototype.readUInt16LE = function readUInt16LE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  return this[offset] | this[offset + 1] << 8;
+};
+Buffer.prototype.readUint16BE = Buffer.prototype.readUInt16BE = function readUInt16BE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  return this[offset] << 8 | this[offset + 1];
+};
+Buffer.prototype.readUint32LE = Buffer.prototype.readUInt32LE = function readUInt32LE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return (this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16) + this[offset + 3] * 0x1000000;
+};
+Buffer.prototype.readUint32BE = Buffer.prototype.readUInt32BE = function readUInt32BE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return this[offset] * 0x1000000 + (this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3]);
+};
+Buffer.prototype.readBigUInt64LE = defineBigIntMethod(function readBigUInt64LE(offset) {
+  offset = offset >>> 0;
+  validateNumber(offset, 'offset');
+  var first = this[offset];
+  var last = this[offset + 7];
+  if (first === undefined || last === undefined) {
+    boundsError(offset, this.length - 8);
+  }
+  var lo = first + this[++offset] * Math.pow(2, 8) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 24);
+  var hi = this[++offset] + this[++offset] * Math.pow(2, 8) + this[++offset] * Math.pow(2, 16) + last * Math.pow(2, 24);
+  return BigInt(lo) + (BigInt(hi) << BigInt(32));
+});
+Buffer.prototype.readBigUInt64BE = defineBigIntMethod(function readBigUInt64BE(offset) {
+  offset = offset >>> 0;
+  validateNumber(offset, 'offset');
+  var first = this[offset];
+  var last = this[offset + 7];
+  if (first === undefined || last === undefined) {
+    boundsError(offset, this.length - 8);
+  }
+  var hi = first * Math.pow(2, 24) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + this[++offset];
+  var lo = this[++offset] * Math.pow(2, 24) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + last;
+  return (BigInt(hi) << BigInt(32)) + BigInt(lo);
+});
+Buffer.prototype.readIntLE = function readIntLE(offset, byteLength, noAssert) {
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+  var val = this[offset];
+  var mul = 1;
+  var i = 0;
   while (++i < byteLength && (mul *= 0x100)) {
-    val += this[offset + i] * mul
+    val += this[offset + i] * mul;
   }
-  mul *= 0x80
-
-  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
-  return val
-}
-
-Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var i = byteLength
-  var mul = 1
-  var val = this[offset + --i]
+  mul *= 0x80;
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength);
+  return val;
+};
+Buffer.prototype.readIntBE = function readIntBE(offset, byteLength, noAssert) {
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+  var i = byteLength;
+  var mul = 1;
+  var val = this[offset + --i];
   while (i > 0 && (mul *= 0x100)) {
-    val += this[offset + --i] * mul
+    val += this[offset + --i] * mul;
   }
-  mul *= 0x80
+  mul *= 0x80;
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength);
+  return val;
+};
+Buffer.prototype.readInt8 = function readInt8(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 1, this.length);
+  if (!(this[offset] & 0x80)) return this[offset];
+  return (0xff - this[offset] + 1) * -1;
+};
+Buffer.prototype.readInt16LE = function readInt16LE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  var val = this[offset] | this[offset + 1] << 8;
+  return val & 0x8000 ? val | 0xFFFF0000 : val;
+};
+Buffer.prototype.readInt16BE = function readInt16BE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  var val = this[offset + 1] | this[offset] << 8;
+  return val & 0x8000 ? val | 0xFFFF0000 : val;
+};
+Buffer.prototype.readInt32LE = function readInt32LE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16 | this[offset + 3] << 24;
+};
+Buffer.prototype.readInt32BE = function readInt32BE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return this[offset] << 24 | this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3];
+};
+Buffer.prototype.readBigInt64LE = defineBigIntMethod(function readBigInt64LE(offset) {
+  offset = offset >>> 0;
+  validateNumber(offset, 'offset');
+  var first = this[offset];
+  var last = this[offset + 7];
+  if (first === undefined || last === undefined) {
+    boundsError(offset, this.length - 8);
+  }
+  var val = this[offset + 4] + this[offset + 5] * Math.pow(2, 8) + this[offset + 6] * Math.pow(2, 16) + (last << 24); // Overflow
 
-  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
-  return val
+  return (BigInt(val) << BigInt(32)) + BigInt(first + this[++offset] * Math.pow(2, 8) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 24));
+});
+Buffer.prototype.readBigInt64BE = defineBigIntMethod(function readBigInt64BE(offset) {
+  offset = offset >>> 0;
+  validateNumber(offset, 'offset');
+  var first = this[offset];
+  var last = this[offset + 7];
+  if (first === undefined || last === undefined) {
+    boundsError(offset, this.length - 8);
+  }
+  var val = (first << 24) +
+  // Overflow
+  this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + this[++offset];
+  return (BigInt(val) << BigInt(32)) + BigInt(this[++offset] * Math.pow(2, 24) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + last);
+});
+Buffer.prototype.readFloatLE = function readFloatLE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return ieee754.read(this, offset, true, 23, 4);
+};
+Buffer.prototype.readFloatBE = function readFloatBE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return ieee754.read(this, offset, false, 23, 4);
+};
+Buffer.prototype.readDoubleLE = function readDoubleLE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 8, this.length);
+  return ieee754.read(this, offset, true, 52, 8);
+};
+Buffer.prototype.readDoubleBE = function readDoubleBE(offset, noAssert) {
+  offset = offset >>> 0;
+  if (!noAssert) checkOffset(offset, 8, this.length);
+  return ieee754.read(this, offset, false, 52, 8);
+};
+function checkInt(buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance');
+  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds');
+  if (offset + ext > buf.length) throw new RangeError('Index out of range');
 }
-
-Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 1, this.length)
-  if (!(this[offset] & 0x80)) return (this[offset])
-  return ((0xff - this[offset] + 1) * -1)
-}
-
-Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  var val = this[offset] | (this[offset + 1] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
-}
-
-Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  var val = this[offset + 1] | (this[offset] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
-}
-
-Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset]) |
-    (this[offset + 1] << 8) |
-    (this[offset + 2] << 16) |
-    (this[offset + 3] << 24)
-}
-
-Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset] << 24) |
-    (this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    (this[offset + 3])
-}
-
-Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-  return ieee754.read(this, offset, true, 23, 4)
-}
-
-Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 4, this.length)
-  return ieee754.read(this, offset, false, 23, 4)
-}
-
-Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 8, this.length)
-  return ieee754.read(this, offset, true, 52, 8)
-}
-
-Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
-  offset = offset >>> 0
-  if (!noAssert) checkOffset(offset, 8, this.length)
-  return ieee754.read(this, offset, false, 52, 8)
-}
-
-function checkInt (buf, value, offset, ext, max, min) {
-  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
-  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
-  if (offset + ext > buf.length) throw new RangeError('Index out of range')
-}
-
-Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
+Buffer.prototype.writeUintLE = Buffer.prototype.writeUIntLE = function writeUIntLE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
   if (!noAssert) {
-    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-    checkInt(this, value, offset, byteLength, maxBytes, 0)
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1;
+    checkInt(this, value, offset, byteLength, maxBytes, 0);
   }
-
-  var mul = 1
-  var i = 0
-  this[offset] = value & 0xFF
+  var mul = 1;
+  var i = 0;
+  this[offset] = value & 0xFF;
   while (++i < byteLength && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
+    this[offset + i] = value / mul & 0xFF;
   }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  byteLength = byteLength >>> 0
+  return offset + byteLength;
+};
+Buffer.prototype.writeUintBE = Buffer.prototype.writeUIntBE = function writeUIntBE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  byteLength = byteLength >>> 0;
   if (!noAssert) {
-    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-    checkInt(this, value, offset, byteLength, maxBytes, 0)
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1;
+    checkInt(this, value, offset, byteLength, maxBytes, 0);
   }
-
-  var i = byteLength - 1
-  var mul = 1
-  this[offset + i] = value & 0xFF
+  var i = byteLength - 1;
+  var mul = 1;
+  this[offset + i] = value & 0xFF;
   while (--i >= 0 && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
+    this[offset + i] = value / mul & 0xFF;
   }
-
-  return offset + byteLength
+  return offset + byteLength;
+};
+Buffer.prototype.writeUint8 = Buffer.prototype.writeUInt8 = function writeUInt8(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0);
+  this[offset] = value & 0xff;
+  return offset + 1;
+};
+Buffer.prototype.writeUint16LE = Buffer.prototype.writeUInt16LE = function writeUInt16LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
+  this[offset] = value & 0xff;
+  this[offset + 1] = value >>> 8;
+  return offset + 2;
+};
+Buffer.prototype.writeUint16BE = Buffer.prototype.writeUInt16BE = function writeUInt16BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
+  this[offset] = value >>> 8;
+  this[offset + 1] = value & 0xff;
+  return offset + 2;
+};
+Buffer.prototype.writeUint32LE = Buffer.prototype.writeUInt32LE = function writeUInt32LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
+  this[offset + 3] = value >>> 24;
+  this[offset + 2] = value >>> 16;
+  this[offset + 1] = value >>> 8;
+  this[offset] = value & 0xff;
+  return offset + 4;
+};
+Buffer.prototype.writeUint32BE = Buffer.prototype.writeUInt32BE = function writeUInt32BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
+  this[offset] = value >>> 24;
+  this[offset + 1] = value >>> 16;
+  this[offset + 2] = value >>> 8;
+  this[offset + 3] = value & 0xff;
+  return offset + 4;
+};
+function wrtBigUInt64LE(buf, value, offset, min, max) {
+  checkIntBI(value, min, max, buf, offset, 7);
+  var lo = Number(value & BigInt(0xffffffff));
+  buf[offset++] = lo;
+  lo = lo >> 8;
+  buf[offset++] = lo;
+  lo = lo >> 8;
+  buf[offset++] = lo;
+  lo = lo >> 8;
+  buf[offset++] = lo;
+  var hi = Number(value >> BigInt(32) & BigInt(0xffffffff));
+  buf[offset++] = hi;
+  hi = hi >> 8;
+  buf[offset++] = hi;
+  hi = hi >> 8;
+  buf[offset++] = hi;
+  hi = hi >> 8;
+  buf[offset++] = hi;
+  return offset;
 }
-
-Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
-  this[offset] = (value & 0xff)
-  return offset + 1
+function wrtBigUInt64BE(buf, value, offset, min, max) {
+  checkIntBI(value, min, max, buf, offset, 7);
+  var lo = Number(value & BigInt(0xffffffff));
+  buf[offset + 7] = lo;
+  lo = lo >> 8;
+  buf[offset + 6] = lo;
+  lo = lo >> 8;
+  buf[offset + 5] = lo;
+  lo = lo >> 8;
+  buf[offset + 4] = lo;
+  var hi = Number(value >> BigInt(32) & BigInt(0xffffffff));
+  buf[offset + 3] = hi;
+  hi = hi >> 8;
+  buf[offset + 2] = hi;
+  hi = hi >> 8;
+  buf[offset + 1] = hi;
+  hi = hi >> 8;
+  buf[offset] = hi;
+  return offset + 8;
 }
-
-Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  this[offset] = (value & 0xff)
-  this[offset + 1] = (value >>> 8)
-  return offset + 2
-}
-
-Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  this[offset] = (value >>> 8)
-  this[offset + 1] = (value & 0xff)
-  return offset + 2
-}
-
-Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  this[offset + 3] = (value >>> 24)
-  this[offset + 2] = (value >>> 16)
-  this[offset + 1] = (value >>> 8)
-  this[offset] = (value & 0xff)
-  return offset + 4
-}
-
-Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  this[offset] = (value >>> 24)
-  this[offset + 1] = (value >>> 16)
-  this[offset + 2] = (value >>> 8)
-  this[offset + 3] = (value & 0xff)
-  return offset + 4
-}
-
-Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset >>> 0
+Buffer.prototype.writeBigUInt64LE = defineBigIntMethod(function writeBigUInt64LE(value) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  return wrtBigUInt64LE(this, value, offset, BigInt(0), BigInt('0xffffffffffffffff'));
+});
+Buffer.prototype.writeBigUInt64BE = defineBigIntMethod(function writeBigUInt64BE(value) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  return wrtBigUInt64BE(this, value, offset, BigInt(0), BigInt('0xffffffffffffffff'));
+});
+Buffer.prototype.writeIntLE = function writeIntLE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
   if (!noAssert) {
-    var limit = Math.pow(2, (8 * byteLength) - 1)
-
-    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+    var limit = Math.pow(2, 8 * byteLength - 1);
+    checkInt(this, value, offset, byteLength, limit - 1, -limit);
   }
-
-  var i = 0
-  var mul = 1
-  var sub = 0
-  this[offset] = value & 0xFF
+  var i = 0;
+  var mul = 1;
+  var sub = 0;
+  this[offset] = value & 0xFF;
   while (++i < byteLength && (mul *= 0x100)) {
     if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
-      sub = 1
+      sub = 1;
     }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+    this[offset + i] = (value / mul >> 0) - sub & 0xFF;
   }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset >>> 0
+  return offset + byteLength;
+};
+Buffer.prototype.writeIntBE = function writeIntBE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
   if (!noAssert) {
-    var limit = Math.pow(2, (8 * byteLength) - 1)
-
-    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+    var limit = Math.pow(2, 8 * byteLength - 1);
+    checkInt(this, value, offset, byteLength, limit - 1, -limit);
   }
-
-  var i = byteLength - 1
-  var mul = 1
-  var sub = 0
-  this[offset + i] = value & 0xFF
+  var i = byteLength - 1;
+  var mul = 1;
+  var sub = 0;
+  this[offset + i] = value & 0xFF;
   while (--i >= 0 && (mul *= 0x100)) {
     if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
-      sub = 1
+      sub = 1;
     }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+    this[offset + i] = (value / mul >> 0) - sub & 0xFF;
   }
-
-  return offset + byteLength
+  return offset + byteLength;
+};
+Buffer.prototype.writeInt8 = function writeInt8(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
+  if (value < 0) value = 0xff + value + 1;
+  this[offset] = value & 0xff;
+  return offset + 1;
+};
+Buffer.prototype.writeInt16LE = function writeInt16LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+  this[offset] = value & 0xff;
+  this[offset + 1] = value >>> 8;
+  return offset + 2;
+};
+Buffer.prototype.writeInt16BE = function writeInt16BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+  this[offset] = value >>> 8;
+  this[offset + 1] = value & 0xff;
+  return offset + 2;
+};
+Buffer.prototype.writeInt32LE = function writeInt32LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+  this[offset] = value & 0xff;
+  this[offset + 1] = value >>> 8;
+  this[offset + 2] = value >>> 16;
+  this[offset + 3] = value >>> 24;
+  return offset + 4;
+};
+Buffer.prototype.writeInt32BE = function writeInt32BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+  if (value < 0) value = 0xffffffff + value + 1;
+  this[offset] = value >>> 24;
+  this[offset + 1] = value >>> 16;
+  this[offset + 2] = value >>> 8;
+  this[offset + 3] = value & 0xff;
+  return offset + 4;
+};
+Buffer.prototype.writeBigInt64LE = defineBigIntMethod(function writeBigInt64LE(value) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  return wrtBigUInt64LE(this, value, offset, -BigInt('0x8000000000000000'), BigInt('0x7fffffffffffffff'));
+});
+Buffer.prototype.writeBigInt64BE = defineBigIntMethod(function writeBigInt64BE(value) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  return wrtBigUInt64BE(this, value, offset, -BigInt('0x8000000000000000'), BigInt('0x7fffffffffffffff'));
+});
+function checkIEEE754(buf, value, offset, ext, max, min) {
+  if (offset + ext > buf.length) throw new RangeError('Index out of range');
+  if (offset < 0) throw new RangeError('Index out of range');
 }
-
-Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
-  if (value < 0) value = 0xff + value + 1
-  this[offset] = (value & 0xff)
-  return offset + 1
-}
-
-Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  this[offset] = (value & 0xff)
-  this[offset + 1] = (value >>> 8)
-  return offset + 2
-}
-
-Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  this[offset] = (value >>> 8)
-  this[offset + 1] = (value & 0xff)
-  return offset + 2
-}
-
-Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
-  this[offset] = (value & 0xff)
-  this[offset + 1] = (value >>> 8)
-  this[offset + 2] = (value >>> 16)
-  this[offset + 3] = (value >>> 24)
-  return offset + 4
-}
-
-Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
-  value = +value
-  offset = offset >>> 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
-  if (value < 0) value = 0xffffffff + value + 1
-  this[offset] = (value >>> 24)
-  this[offset + 1] = (value >>> 16)
-  this[offset + 2] = (value >>> 8)
-  this[offset + 3] = (value & 0xff)
-  return offset + 4
-}
-
-function checkIEEE754 (buf, value, offset, ext, max, min) {
-  if (offset + ext > buf.length) throw new RangeError('Index out of range')
-  if (offset < 0) throw new RangeError('Index out of range')
-}
-
-function writeFloat (buf, value, offset, littleEndian, noAssert) {
-  value = +value
-  offset = offset >>> 0
+function writeFloat(buf, value, offset, littleEndian, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
   if (!noAssert) {
-    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38);
   }
-  ieee754.write(buf, value, offset, littleEndian, 23, 4)
-  return offset + 4
+  ieee754.write(buf, value, offset, littleEndian, 23, 4);
+  return offset + 4;
 }
-
-Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
-  return writeFloat(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
-  return writeFloat(this, value, offset, false, noAssert)
-}
-
-function writeDouble (buf, value, offset, littleEndian, noAssert) {
-  value = +value
-  offset = offset >>> 0
+Buffer.prototype.writeFloatLE = function writeFloatLE(value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert);
+};
+Buffer.prototype.writeFloatBE = function writeFloatBE(value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert);
+};
+function writeDouble(buf, value, offset, littleEndian, noAssert) {
+  value = +value;
+  offset = offset >>> 0;
   if (!noAssert) {
-    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308);
   }
-  ieee754.write(buf, value, offset, littleEndian, 52, 8)
-  return offset + 8
+  ieee754.write(buf, value, offset, littleEndian, 52, 8);
+  return offset + 8;
 }
-
-Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
-  return writeDouble(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
-  return writeDouble(this, value, offset, false, noAssert)
-}
+Buffer.prototype.writeDoubleLE = function writeDoubleLE(value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert);
+};
+Buffer.prototype.writeDoubleBE = function writeDoubleBE(value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert);
+};
 
 // copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
-Buffer.prototype.copy = function copy (target, targetStart, start, end) {
-  if (!Buffer.isBuffer(target)) throw new TypeError('argument should be a Buffer')
-  if (!start) start = 0
-  if (!end && end !== 0) end = this.length
-  if (targetStart >= target.length) targetStart = target.length
-  if (!targetStart) targetStart = 0
-  if (end > 0 && end < start) end = start
+Buffer.prototype.copy = function copy(target, targetStart, start, end) {
+  if (!Buffer.isBuffer(target)) throw new TypeError('argument should be a Buffer');
+  if (!start) start = 0;
+  if (!end && end !== 0) end = this.length;
+  if (targetStart >= target.length) targetStart = target.length;
+  if (!targetStart) targetStart = 0;
+  if (end > 0 && end < start) end = start;
 
   // Copy 0 bytes; we're done
-  if (end === start) return 0
-  if (target.length === 0 || this.length === 0) return 0
+  if (end === start) return 0;
+  if (target.length === 0 || this.length === 0) return 0;
 
   // Fatal error conditions
   if (targetStart < 0) {
-    throw new RangeError('targetStart out of bounds')
+    throw new RangeError('targetStart out of bounds');
   }
-  if (start < 0 || start >= this.length) throw new RangeError('Index out of range')
-  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+  if (start < 0 || start >= this.length) throw new RangeError('Index out of range');
+  if (end < 0) throw new RangeError('sourceEnd out of bounds');
 
   // Are we oob?
-  if (end > this.length) end = this.length
+  if (end > this.length) end = this.length;
   if (target.length - targetStart < end - start) {
-    end = target.length - targetStart + start
+    end = target.length - targetStart + start;
   }
-
-  var len = end - start
-
+  var len = end - start;
   if (this === target && typeof Uint8Array.prototype.copyWithin === 'function') {
     // Use built-in when available, missing from IE11
-    this.copyWithin(targetStart, start, end)
-  } else if (this === target && start < targetStart && targetStart < end) {
-    // descending copy from end
-    for (var i = len - 1; i >= 0; --i) {
-      target[i + targetStart] = this[i + start]
-    }
+    this.copyWithin(targetStart, start, end);
   } else {
-    Uint8Array.prototype.set.call(
-      target,
-      this.subarray(start, end),
-      targetStart
-    )
+    Uint8Array.prototype.set.call(target, this.subarray(start, end), targetStart);
   }
-
-  return len
-}
+  return len;
+};
 
 // Usage:
 //    buffer.fill(number[, offset[, end]])
 //    buffer.fill(buffer[, offset[, end]])
 //    buffer.fill(string[, offset[, end]][, encoding])
-Buffer.prototype.fill = function fill (val, start, end, encoding) {
+Buffer.prototype.fill = function fill(val, start, end, encoding) {
   // Handle string cases:
   if (typeof val === 'string') {
     if (typeof start === 'string') {
-      encoding = start
-      start = 0
-      end = this.length
+      encoding = start;
+      start = 0;
+      end = this.length;
     } else if (typeof end === 'string') {
-      encoding = end
-      end = this.length
+      encoding = end;
+      end = this.length;
     }
     if (encoding !== undefined && typeof encoding !== 'string') {
-      throw new TypeError('encoding must be a string')
+      throw new TypeError('encoding must be a string');
     }
     if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
-      throw new TypeError('Unknown encoding: ' + encoding)
+      throw new TypeError('Unknown encoding: ' + encoding);
     }
     if (val.length === 1) {
-      var code = val.charCodeAt(0)
-      if ((encoding === 'utf8' && code < 128) ||
-          encoding === 'latin1') {
+      var code = val.charCodeAt(0);
+      if (encoding === 'utf8' && code < 128 || encoding === 'latin1') {
         // Fast path: If `val` fits into a single byte, use that numeric value.
-        val = code
+        val = code;
       }
     }
   } else if (typeof val === 'number') {
-    val = val & 255
+    val = val & 255;
+  } else if (typeof val === 'boolean') {
+    val = Number(val);
   }
 
   // Invalid ranges are not set to a default, so can range check early.
   if (start < 0 || this.length < start || this.length < end) {
-    throw new RangeError('Out of range index')
+    throw new RangeError('Out of range index');
   }
-
   if (end <= start) {
-    return this
+    return this;
   }
-
-  start = start >>> 0
-  end = end === undefined ? this.length : end >>> 0
-
-  if (!val) val = 0
-
-  var i
+  start = start >>> 0;
+  end = end === undefined ? this.length : end >>> 0;
+  if (!val) val = 0;
+  var i;
   if (typeof val === 'number') {
     for (i = start; i < end; ++i) {
-      this[i] = val
+      this[i] = val;
     }
   } else {
-    var bytes = Buffer.isBuffer(val)
-      ? val
-      : Buffer.from(val, encoding)
-    var len = bytes.length
+    var bytes = Buffer.isBuffer(val) ? val : Buffer.from(val, encoding);
+    var len = bytes.length;
     if (len === 0) {
-      throw new TypeError('The value "' + val +
-        '" is invalid for argument "value"')
+      throw new TypeError('The value "' + val + '" is invalid for argument "value"');
     }
     for (i = 0; i < end - start; ++i) {
-      this[i + start] = bytes[i % len]
+      this[i + start] = bytes[i % len];
     }
   }
+  return this;
+};
 
-  return this
+// CUSTOM ERRORS
+// =============
+
+// Simplified versions from Node, changed for Buffer-only usage
+var errors = {};
+function E(sym, getMessage, Base) {
+  errors[sym] = /*#__PURE__*/function (_Base) {
+    function NodeError() {
+      var _this;
+      _classCallCheck(this, NodeError);
+      _this = _callSuper(this, NodeError);
+      Object.defineProperty(_this, 'message', {
+        value: getMessage.apply(_this, arguments),
+        writable: true,
+        configurable: true
+      });
+
+      // Add the error code to the name to include it in the stack trace.
+      _this.name = "".concat(_this.name, " [").concat(sym, "]");
+      // Access the stack to generate the error message including the error code
+      // from the name.
+      _this.stack; // eslint-disable-line no-unused-expressions
+      // Reset the name to the actual name.
+      delete _this.name;
+      return _this;
+    }
+    _inherits(NodeError, _Base);
+    return _createClass(NodeError, [{
+      key: "code",
+      get: function get() {
+        return sym;
+      },
+      set: function set(value) {
+        Object.defineProperty(this, 'code', {
+          configurable: true,
+          enumerable: true,
+          value: value,
+          writable: true
+        });
+      }
+    }, {
+      key: "toString",
+      value: function toString() {
+        return "".concat(this.name, " [").concat(sym, "]: ").concat(this.message);
+      }
+    }]);
+  }(Base);
+}
+E('ERR_BUFFER_OUT_OF_BOUNDS', function (name) {
+  if (name) {
+    return "".concat(name, " is outside of buffer bounds");
+  }
+  return 'Attempt to access memory outside buffer bounds';
+}, RangeError);
+E('ERR_INVALID_ARG_TYPE', function (name, actual) {
+  return "The \"".concat(name, "\" argument must be of type number. Received type ").concat(_typeof(actual));
+}, TypeError);
+E('ERR_OUT_OF_RANGE', function (str, range, input) {
+  var msg = "The value of \"".concat(str, "\" is out of range.");
+  var received = input;
+  if (Number.isInteger(input) && Math.abs(input) > Math.pow(2, 32)) {
+    received = addNumericalSeparator(String(input));
+  } else if (typeof input === 'bigint') {
+    received = String(input);
+    if (input > Math.pow(BigInt(2), BigInt(32)) || input < -Math.pow(BigInt(2), BigInt(32))) {
+      received = addNumericalSeparator(received);
+    }
+    received += 'n';
+  }
+  msg += " It must be ".concat(range, ". Received ").concat(received);
+  return msg;
+}, RangeError);
+function addNumericalSeparator(val) {
+  var res = '';
+  var i = val.length;
+  var start = val[0] === '-' ? 1 : 0;
+  for (; i >= start + 4; i -= 3) {
+    res = "_".concat(val.slice(i - 3, i)).concat(res);
+  }
+  return "".concat(val.slice(0, i)).concat(res);
+}
+
+// CHECK FUNCTIONS
+// ===============
+
+function checkBounds(buf, offset, byteLength) {
+  validateNumber(offset, 'offset');
+  if (buf[offset] === undefined || buf[offset + byteLength] === undefined) {
+    boundsError(offset, buf.length - (byteLength + 1));
+  }
+}
+function checkIntBI(value, min, max, buf, offset, byteLength) {
+  if (value > max || value < min) {
+    var n = typeof min === 'bigint' ? 'n' : '';
+    var range;
+    if (byteLength > 3) {
+      if (min === 0 || min === BigInt(0)) {
+        range = ">= 0".concat(n, " and < 2").concat(n, " ** ").concat((byteLength + 1) * 8).concat(n);
+      } else {
+        range = ">= -(2".concat(n, " ** ").concat((byteLength + 1) * 8 - 1).concat(n, ") and < 2 ** ") + "".concat((byteLength + 1) * 8 - 1).concat(n);
+      }
+    } else {
+      range = ">= ".concat(min).concat(n, " and <= ").concat(max).concat(n);
+    }
+    throw new errors.ERR_OUT_OF_RANGE('value', range, value);
+  }
+  checkBounds(buf, offset, byteLength);
+}
+function validateNumber(value, name) {
+  if (typeof value !== 'number') {
+    throw new errors.ERR_INVALID_ARG_TYPE(name, 'number', value);
+  }
+}
+function boundsError(value, length, type) {
+  if (Math.floor(value) !== value) {
+    validateNumber(value, type);
+    throw new errors.ERR_OUT_OF_RANGE(type || 'offset', 'an integer', value);
+  }
+  if (length < 0) {
+    throw new errors.ERR_BUFFER_OUT_OF_BOUNDS();
+  }
+  throw new errors.ERR_OUT_OF_RANGE(type || 'offset', ">= ".concat(type ? 1 : 0, " and <= ").concat(length), value);
 }
 
 // HELPER FUNCTIONS
 // ================
 
-var INVALID_BASE64_RE = /[^+/0-9A-Za-z-_]/g
-
-function base64clean (str) {
+var INVALID_BASE64_RE = /[^+/0-9A-Za-z-_]/g;
+function base64clean(str) {
   // Node takes equal signs as end of the Base64 encoding
-  str = str.split('=')[0]
+  str = str.split('=')[0];
   // Node strips out invalid characters like \n and \t from the string, base64-js does not
-  str = str.trim().replace(INVALID_BASE64_RE, '')
+  str = str.trim().replace(INVALID_BASE64_RE, '');
   // Node converts strings with length < 2 to ''
-  if (str.length < 2) return ''
+  if (str.length < 2) return '';
   // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
   while (str.length % 4 !== 0) {
-    str = str + '='
+    str = str + '=';
   }
-  return str
+  return str;
 }
-
-function toHex (n) {
-  if (n < 16) return '0' + n.toString(16)
-  return n.toString(16)
-}
-
-function utf8ToBytes (string, units) {
-  units = units || Infinity
-  var codePoint
-  var length = string.length
-  var leadSurrogate = null
-  var bytes = []
-
+function utf8ToBytes(string, units) {
+  units = units || Infinity;
+  var codePoint;
+  var length = string.length;
+  var leadSurrogate = null;
+  var bytes = [];
   for (var i = 0; i < length; ++i) {
-    codePoint = string.charCodeAt(i)
+    codePoint = string.charCodeAt(i);
 
     // is surrogate component
     if (codePoint > 0xD7FF && codePoint < 0xE000) {
@@ -1821,422 +1678,161 @@ function utf8ToBytes (string, units) {
         // no lead yet
         if (codePoint > 0xDBFF) {
           // unexpected trail
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-          continue
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+          continue;
         } else if (i + 1 === length) {
           // unpaired lead
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-          continue
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+          continue;
         }
 
         // valid lead
-        leadSurrogate = codePoint
-
-        continue
+        leadSurrogate = codePoint;
+        continue;
       }
 
       // 2 leads in a row
       if (codePoint < 0xDC00) {
-        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-        leadSurrogate = codePoint
-        continue
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+        leadSurrogate = codePoint;
+        continue;
       }
 
       // valid surrogate pair
-      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000;
     } else if (leadSurrogate) {
       // valid bmp char, but last char was a lead
-      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
     }
-
-    leadSurrogate = null
+    leadSurrogate = null;
 
     // encode utf8
     if (codePoint < 0x80) {
-      if ((units -= 1) < 0) break
-      bytes.push(codePoint)
+      if ((units -= 1) < 0) break;
+      bytes.push(codePoint);
     } else if (codePoint < 0x800) {
-      if ((units -= 2) < 0) break
-      bytes.push(
-        codePoint >> 0x6 | 0xC0,
-        codePoint & 0x3F | 0x80
-      )
+      if ((units -= 2) < 0) break;
+      bytes.push(codePoint >> 0x6 | 0xC0, codePoint & 0x3F | 0x80);
     } else if (codePoint < 0x10000) {
-      if ((units -= 3) < 0) break
-      bytes.push(
-        codePoint >> 0xC | 0xE0,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
-      )
+      if ((units -= 3) < 0) break;
+      bytes.push(codePoint >> 0xC | 0xE0, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
     } else if (codePoint < 0x110000) {
-      if ((units -= 4) < 0) break
-      bytes.push(
-        codePoint >> 0x12 | 0xF0,
-        codePoint >> 0xC & 0x3F | 0x80,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
-      )
+      if ((units -= 4) < 0) break;
+      bytes.push(codePoint >> 0x12 | 0xF0, codePoint >> 0xC & 0x3F | 0x80, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
     } else {
-      throw new Error('Invalid code point')
+      throw new Error('Invalid code point');
     }
   }
-
-  return bytes
+  return bytes;
 }
-
-function asciiToBytes (str) {
-  var byteArray = []
+function asciiToBytes(str) {
+  var byteArray = [];
   for (var i = 0; i < str.length; ++i) {
     // Node's code seems to be doing this and not & 0x7F..
-    byteArray.push(str.charCodeAt(i) & 0xFF)
+    byteArray.push(str.charCodeAt(i) & 0xFF);
   }
-  return byteArray
+  return byteArray;
 }
-
-function utf16leToBytes (str, units) {
-  var c, hi, lo
-  var byteArray = []
+function utf16leToBytes(str, units) {
+  var c, hi, lo;
+  var byteArray = [];
   for (var i = 0; i < str.length; ++i) {
-    if ((units -= 2) < 0) break
-
-    c = str.charCodeAt(i)
-    hi = c >> 8
-    lo = c % 256
-    byteArray.push(lo)
-    byteArray.push(hi)
+    if ((units -= 2) < 0) break;
+    c = str.charCodeAt(i);
+    hi = c >> 8;
+    lo = c % 256;
+    byteArray.push(lo);
+    byteArray.push(hi);
   }
-
-  return byteArray
+  return byteArray;
 }
-
-function base64ToBytes (str) {
-  return base64.toByteArray(base64clean(str))
+function base64ToBytes(str) {
+  return base64.toByteArray(base64clean(str));
 }
-
-function blitBuffer (src, dst, offset, length) {
-  for (var i = 0; i < length; ++i) {
-    if ((i + offset >= dst.length) || (i >= src.length)) break
-    dst[i + offset] = src[i]
+function blitBuffer(src, dst, offset, length) {
+  var i;
+  for (i = 0; i < length; ++i) {
+    if (i + offset >= dst.length || i >= src.length) break;
+    dst[i + offset] = src[i];
   }
-  return i
+  return i;
 }
 
 // ArrayBuffer or Uint8Array objects from other contexts (i.e. iframes) do not pass
 // the `instanceof` check but they should be treated as of that type.
 // See: https://github.com/feross/buffer/issues/166
-function isInstance (obj, type) {
-  return obj instanceof type ||
-    (obj != null && obj.constructor != null && obj.constructor.name != null &&
-      obj.constructor.name === type.name)
+function isInstance(obj, type) {
+  return obj instanceof type || obj != null && obj.constructor != null && obj.constructor.name != null && obj.constructor.name === type.name;
 }
-function numberIsNaN (obj) {
+function numberIsNaN(obj) {
   // For IE11 support
-  return obj !== obj // eslint-disable-line no-self-compare
+  return obj !== obj; // eslint-disable-line no-self-compare
 }
 
-}).call(this)}).call(this,_glvis_("buffer").Buffer)
-},{"base64-js":1,"buffer":3,"ieee754":4}],4:[function(_glvis_,module,exports){
-exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m
-  var eLen = (nBytes * 8) - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var nBits = -7
-  var i = isLE ? (nBytes - 1) : 0
-  var d = isLE ? -1 : 1
-  var s = buffer[offset + i]
-
-  i += d
-
-  e = s & ((1 << (-nBits)) - 1)
-  s >>= (-nBits)
-  nBits += eLen
-  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
-
-  m = e & ((1 << (-nBits)) - 1)
-  e >>= (-nBits)
-  nBits += mLen
-  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
-
-  if (e === 0) {
-    e = 1 - eBias
-  } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity)
-  } else {
-    m = m + Math.pow(2, mLen)
-    e = e - eBias
-  }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-}
-
-exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c
-  var eLen = (nBytes * 8) - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-  var i = isLE ? 0 : (nBytes - 1)
-  var d = isLE ? 1 : -1
-  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
-  value = Math.abs(value)
-
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0
-    e = eMax
-  } else {
-    e = Math.floor(Math.log(value) / Math.LN2)
-    if (value * (c = Math.pow(2, -e)) < 1) {
-      e--
-      c *= 2
-    }
-    if (e + eBias >= 1) {
-      value += rt / c
-    } else {
-      value += rt * Math.pow(2, 1 - eBias)
-    }
-    if (value * c >= 2) {
-      e++
-      c /= 2
-    }
-
-    if (e + eBias >= eMax) {
-      m = 0
-      e = eMax
-    } else if (e + eBias >= 1) {
-      m = ((value * c) - 1) * Math.pow(2, mLen)
-      e = e + eBias
-    } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-      e = 0
+// Create lookup table for `toString('hex')`
+// See: https://github.com/feross/buffer/issues/219
+var hexSliceLookupTable = function () {
+  var alphabet = '0123456789abcdef';
+  var table = new Array(256);
+  for (var i = 0; i < 16; ++i) {
+    var i16 = i * 16;
+    for (var j = 0; j < 16; ++j) {
+      table[i16 + j] = alphabet[i] + alphabet[j];
     }
   }
+  return table;
+}();
 
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
-  e = (e << mLen) | m
-  eLen += mLen
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
-  buffer[offset + i - d] |= s * 128
+// Return not function with Error if BigInt not supported
+function defineBigIntMethod(fn) {
+  return typeof BigInt === 'undefined' ? BufferBigIntNotDefined : fn;
+}
+function BufferBigIntNotDefined() {
+  throw new Error('BigInt not supported');
 }
 
-},{}],5:[function(_glvis_,module,exports){
-// shim for using process in browser
-var process = module.exports = {};
+/***/ }),
 
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
+/***/ 9216:
+/***/ (function(module) {
 
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
+"use strict";
 
 
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
+module.exports = isMobile;
+module.exports.isMobile = isMobile;
+module.exports["default"] = isMobile;
+var mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|samsungbrowser.*mobile|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
+var notMobileRE = /CrOS/;
+var tabletRE = /android|ipad|playbook|silk/i;
+function isMobile(opts) {
+  if (!opts) opts = {};
+  var ua = opts.ua;
+  if (!ua && typeof navigator !== 'undefined') ua = navigator.userAgent;
+  if (ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
+    ua = ua.headers['user-agent'];
+  }
+  if (typeof ua !== 'string') return false;
+  var result = mobileRE.test(ua) && !notMobileRE.test(ua) || !!opts.tablet && tabletRE.test(ua);
+  if (!result && opts.tablet && opts.featureDetect && navigator && navigator.maxTouchPoints > 1 && ua.indexOf('Macintosh') !== -1 && ua.indexOf('Safari') !== -1) {
+    result = true;
+  }
+  return result;
 }
 
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
+/***/ }),
 
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
+/***/ 6296:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
+"use strict";
 
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],6:[function(_glvis_,module,exports){
-module.exports = {
-    alpha_shape: _glvis_('alpha-shape'),
-    convex_hull: _glvis_('convex-hull'),
-    delaunay_triangulate: _glvis_('delaunay-triangulate'),
-    gl_cone3d: _glvis_('gl-cone3d'),
-    gl_error3d: _glvis_('gl-error3d'),
-    gl_heatmap2d: _glvis_('gl-heatmap2d'),
-    gl_line3d: _glvis_('gl-line3d'),
-    gl_mesh3d: _glvis_('gl-mesh3d'),
-    gl_plot2d: _glvis_('gl-plot2d'),
-    gl_plot3d: _glvis_('gl-plot3d'),
-    gl_pointcloud2d: _glvis_('gl-pointcloud2d'),
-    gl_scatter3d: _glvis_('gl-scatter3d'),
-    gl_select_box: _glvis_('gl-select-box'),
-    gl_spikes2d: _glvis_('gl-spikes2d'),
-    gl_streamtube3d: _glvis_('gl-streamtube3d'),
-    gl_surface3d: _glvis_('gl-surface3d'),
-    ndarray: _glvis_('ndarray'),
-    ndarray_linear_interpolate: _glvis_('ndarray-linear-interpolate'),
-};
-
-},{"alpha-shape":12,"convex-hull":58,"delaunay-triangulate":63,"gl-cone3d":79,"gl-error3d":84,"gl-heatmap2d":88,"gl-line3d":91,"gl-mesh3d":112,"gl-plot2d":118,"gl-plot3d":121,"gl-pointcloud2d":123,"gl-scatter3d":128,"gl-select-box":130,"gl-spikes2d":139,"gl-streamtube3d":143,"gl-surface3d":145,"ndarray":259,"ndarray-linear-interpolate":253}],7:[function(_glvis_,module,exports){
-'use strict'
 
 module.exports = createViewController
 
-var createTurntable = _glvis_('turntable-camera-controller')
-var createOrbit     = _glvis_('orbit-camera-controller')
-var createMatrix    = _glvis_('matrix-camera-controller')
+var createTurntable = __webpack_require__(7261)
+var createOrbit     = __webpack_require__(9977)
+var createMatrix    = __webpack_require__(1811)
 
 function ViewController(controllers, mode) {
   this._controllerNames = Object.keys(controllers)
@@ -2385,12 +1981,18 @@ function createViewController(options) {
     matrix: matrix
   }, mode)
 }
-},{"matrix-camera-controller":245,"orbit-camera-controller":263,"turntable-camera-controller":305}],8:[function(_glvis_,module,exports){
-'use strict'
 
-var weakMap      = typeof WeakMap === 'undefined' ? _glvis_('weak-map') : WeakMap
-var createBuffer = _glvis_('gl-buffer')
-var createVAO    = _glvis_('gl-vao')
+/***/ }),
+
+/***/ 7169:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var weakMap      = typeof WeakMap === 'undefined' ? __webpack_require__(1538) : WeakMap
+var createBuffer = __webpack_require__(2762)
+var createVAO    = __webpack_require__(8116)
 
 var TriangleCache = new weakMap()
 
@@ -2416,8 +2018,13 @@ function createABigTriangle(gl) {
 
 module.exports = createABigTriangle
 
-},{"gl-buffer":78,"gl-vao":150,"weak-map":313}],9:[function(_glvis_,module,exports){
-var padLeft = _glvis_('pad-left')
+
+/***/ }),
+
+/***/ 1085:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var padLeft = __webpack_require__(1371)
 
 module.exports = addLineNumbers
 function addLineNumbers (string, start, delim) {
@@ -2434,12 +2041,18 @@ function addLineNumbers (string, start, delim) {
   }).join('\n')
 }
 
-},{"pad-left":264}],10:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3952:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = affineHull
 
-var orient = _glvis_('robust-orientation')
+var orient = __webpack_require__(3250)
 
 function linearlyIndependent(points, d) {
   var nhull = new Array(d+1)
@@ -2486,13 +2099,19 @@ function affineHull(points) {
   }
   return index
 }
-},{"robust-orientation":284}],11:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 5995:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = alphaComplex
 
-var delaunay = _glvis_('delaunay-triangulate')
-var circumradius = _glvis_('circumradius')
+var delaunay = __webpack_require__(7642)
+var circumradius = __webpack_require__(6037)
 
 function alphaComplex(alpha, points) {
   return delaunay(points).filter(function(cell) {
@@ -2503,26 +2122,42 @@ function alphaComplex(alpha, points) {
     return circumradius(simplex) * alpha < 1
   })
 }
-},{"circumradius":49,"delaunay-triangulate":63}],12:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3502:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = alphaShape
 
-var ac = _glvis_('alpha-complex')
-var bnd = _glvis_('simplicial-complex-boundary')
+var ac = __webpack_require__(5995)
+var bnd = __webpack_require__(9127)
 
 function alphaShape(alpha, points) {
   return bnd(ac(alpha, points))
 }
-},{"alpha-complex":11,"simplicial-complex-boundary":290}],13:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6468:
+/***/ (function(module) {
+
 module.exports = function _atob(str) {
   return atob(str)
 }
 
-},{}],14:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2642:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = barycentric
 
-var solve = _glvis_('robust-linear-solve')
+var solve = __webpack_require__(727)
 
 function reduce(x) {
   var r = 0
@@ -2565,10 +2200,174 @@ function barycentric(simplex, point) {
   }
   return y
 }
-},{"robust-linear-solve":283}],15:[function(_glvis_,module,exports){
-'use strict'
 
-var rationalize = _glvis_('./lib/rationalize')
+/***/ }),
+
+/***/ 7507:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
+
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
+}
+
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
+
+function getLens (b64) {
+  var len = b64.length
+
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
+
+  // Trim off extra bytes after placeholder bytes are found
+  // See: https://github.com/beatgammit/base64-js/issues/42
+  var validLen = b64.indexOf('=')
+  if (validLen === -1) validLen = len
+
+  var placeHoldersLen = validLen === len
+    ? 0
+    : 4 - (validLen % 4)
+
+  return [validLen, placeHoldersLen]
+}
+
+// base64 is 4/3 + up to two characters of the original data
+function byteLength (b64) {
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function _byteLength (b64, validLen, placeHoldersLen) {
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function toByteArray (b64) {
+  var tmp
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+
+  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
+
+  var curByte = 0
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  var len = placeHoldersLen > 0
+    ? validLen - 4
+    : validLen
+
+  var i
+  for (i = 0; i < len; i += 4) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 18) |
+      (revLookup[b64.charCodeAt(i + 1)] << 12) |
+      (revLookup[b64.charCodeAt(i + 2)] << 6) |
+      revLookup[b64.charCodeAt(i + 3)]
+    arr[curByte++] = (tmp >> 16) & 0xFF
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 2) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 2) |
+      (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 1) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 10) |
+      (revLookup[b64.charCodeAt(i + 1)] << 4) |
+      (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] +
+    lookup[num >> 12 & 0x3F] +
+    lookup[num >> 6 & 0x3F] +
+    lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp =
+      ((uint8[i] << 16) & 0xFF0000) +
+      ((uint8[i + 1] << 8) & 0xFF00) +
+      (uint8[i + 2] & 0xFF)
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 2] +
+      lookup[(tmp << 4) & 0x3F] +
+      '=='
+    )
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 10] +
+      lookup[(tmp >> 4) & 0x3F] +
+      lookup[(tmp << 2) & 0x3F] +
+      '='
+    )
+  }
+
+  return parts.join('')
+}
+
+
+/***/ }),
+
+/***/ 3865:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var rationalize = __webpack_require__(869)
 
 module.exports = add
 
@@ -2578,8 +2377,14 @@ function add(a, b) {
     a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":25}],16:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 1318:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = cmp
 
@@ -2587,10 +2392,16 @@ function cmp(a, b) {
     return a[0].mul(b[1]).cmp(b[0].mul(a[1]))
 }
 
-},{}],17:[function(_glvis_,module,exports){
-'use strict'
 
-var rationalize = _glvis_('./lib/rationalize')
+/***/ }),
+
+/***/ 8697:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var rationalize = __webpack_require__(869)
 
 module.exports = div
 
@@ -2598,15 +2409,21 @@ function div(a, b) {
   return rationalize(a[0].mul(b[1]), a[1].mul(b[0]))
 }
 
-},{"./lib/rationalize":25}],18:[function(_glvis_,module,exports){
-'use strict'
 
-var isRat = _glvis_('./is-rat')
-var isBN = _glvis_('./lib/is-bn')
-var num2bn = _glvis_('./lib/num-to-bn')
-var str2bn = _glvis_('./lib/str-to-bn')
-var rationalize = _glvis_('./lib/rationalize')
-var div = _glvis_('./div')
+/***/ }),
+
+/***/ 7842:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var isRat = __webpack_require__(6330)
+var isBN = __webpack_require__(1533)
+var num2bn = __webpack_require__(2651)
+var str2bn = __webpack_require__(6768)
+var rationalize = __webpack_require__(869)
+var div = __webpack_require__(8697)
 
 module.exports = makeRational
 
@@ -2660,10 +2477,16 @@ function makeRational(numer, denom) {
   return rationalize(a, b)
 }
 
-},{"./div":17,"./is-rat":19,"./lib/is-bn":23,"./lib/num-to-bn":24,"./lib/rationalize":25,"./lib/str-to-bn":26}],19:[function(_glvis_,module,exports){
-'use strict'
 
-var isBN = _glvis_('./lib/is-bn')
+/***/ }),
+
+/***/ 6330:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var isBN = __webpack_require__(1533)
 
 module.exports = isRat
 
@@ -2671,10 +2494,16 @@ function isRat(x) {
   return Array.isArray(x) && x.length === 2 && isBN(x[0]) && isBN(x[1])
 }
 
-},{"./lib/is-bn":23}],20:[function(_glvis_,module,exports){
-'use strict'
 
-var BN = _glvis_('bn.js')
+/***/ }),
+
+/***/ 5716:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var BN = __webpack_require__(6859)
 
 module.exports = sign
 
@@ -2682,10 +2511,16 @@ function sign (x) {
   return x.cmp(new BN(0))
 }
 
-},{"bn.js":33}],21:[function(_glvis_,module,exports){
-'use strict'
 
-var sign = _glvis_('./bn-sign')
+/***/ }),
+
+/***/ 1369:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var sign = __webpack_require__(5716)
 
 module.exports = bn2num
 
@@ -2707,11 +2542,17 @@ function bn2num(b) {
   return sign(b) * out
 }
 
-},{"./bn-sign":20}],22:[function(_glvis_,module,exports){
-'use strict'
 
-var db = _glvis_('double-bits')
-var ctz = _glvis_('bit-twiddle').countTrailingZeros
+/***/ }),
+
+/***/ 4025:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var db = __webpack_require__(2361)
+var ctz = (__webpack_require__(8828).countTrailingZeros)
 
 module.exports = ctzNumber
 
@@ -2728,10 +2569,16 @@ function ctzNumber(x) {
   return h + 32
 }
 
-},{"bit-twiddle":32,"double-bits":64}],23:[function(_glvis_,module,exports){
-'use strict'
 
-var BN = _glvis_('bn.js')
+/***/ }),
+
+/***/ 1533:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var BN = __webpack_require__(6859)
 
 module.exports = isBN
 
@@ -2741,11 +2588,17 @@ function isBN(x) {
   return x && typeof x === 'object' && Boolean(x.words)
 }
 
-},{"bn.js":33}],24:[function(_glvis_,module,exports){
-'use strict'
 
-var BN = _glvis_('bn.js')
-var db = _glvis_('double-bits')
+/***/ }),
+
+/***/ 2651:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var BN = __webpack_require__(6859)
+var db = __webpack_require__(2361)
 
 module.exports = num2bn
 
@@ -2758,11 +2611,17 @@ function num2bn(x) {
   }
 }
 
-},{"bn.js":33,"double-bits":64}],25:[function(_glvis_,module,exports){
-'use strict'
 
-var num2bn = _glvis_('./num-to-bn')
-var sign = _glvis_('./bn-sign')
+/***/ }),
+
+/***/ 869:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var num2bn = __webpack_require__(2651)
+var sign = __webpack_require__(5716)
 
 module.exports = rationalize
 
@@ -2786,10 +2645,16 @@ function rationalize(numer, denom) {
   return [ numer, denom ]
 }
 
-},{"./bn-sign":20,"./num-to-bn":24}],26:[function(_glvis_,module,exports){
-'use strict'
 
-var BN = _glvis_('bn.js')
+/***/ }),
+
+/***/ 6768:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var BN = __webpack_require__(6859)
 
 module.exports = str2BN
 
@@ -2797,10 +2662,16 @@ function str2BN(x) {
   return new BN(x)
 }
 
-},{"bn.js":33}],27:[function(_glvis_,module,exports){
-'use strict'
 
-var rationalize = _glvis_('./lib/rationalize')
+/***/ }),
+
+/***/ 6504:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var rationalize = __webpack_require__(869)
 
 module.exports = mul
 
@@ -2808,10 +2679,16 @@ function mul(a, b) {
   return rationalize(a[0].mul(b[0]), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":25}],28:[function(_glvis_,module,exports){
-'use strict'
 
-var bnsign = _glvis_('./lib/bn-sign')
+/***/ }),
+
+/***/ 7721:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bnsign = __webpack_require__(5716)
 
 module.exports = sign
 
@@ -2819,10 +2696,16 @@ function sign(x) {
   return bnsign(x[0]) * bnsign(x[1])
 }
 
-},{"./lib/bn-sign":20}],29:[function(_glvis_,module,exports){
-'use strict'
 
-var rationalize = _glvis_('./lib/rationalize')
+/***/ }),
+
+/***/ 5572:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var rationalize = __webpack_require__(869)
 
 module.exports = sub
 
@@ -2830,11 +2713,17 @@ function sub(a, b) {
   return rationalize(a[0].mul(b[1]).sub(a[1].mul(b[0])), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":25}],30:[function(_glvis_,module,exports){
-'use strict'
 
-var bn2num = _glvis_('./lib/bn-to-num')
-var ctz = _glvis_('./lib/ctz')
+/***/ }),
+
+/***/ 946:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bn2num = __webpack_require__(1369)
+var ctz = __webpack_require__(4025)
 
 module.exports = roundRat
 
@@ -2868,8 +2757,14 @@ function roundRat (f) {
   }
 }
 
-},{"./lib/bn-to-num":21,"./lib/ctz":22}],31:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 2478:
+/***/ (function(module) {
+
+"use strict";
+
 
 // (a, y, c, l, h) = (array, y[, cmp, lo, hi])
 
@@ -2938,7 +2833,13 @@ module.exports = {
   eq: function(a, y, c, l, h) { return norm(a, y, c, l, h, eq)}
 }
 
-},{}],32:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8828:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
 /**
  * Bit twiddling hacks for JavaScript.
  *
@@ -2948,7 +2849,7 @@ module.exports = {
  *    http://graphics.stanford.edu/~seander/bithacks.html
  */
 
-"use strict"; "use restrict";
+ "use restrict";
 
 //Number of bits in an integer
 var INT_BITS = 32;
@@ -3144,7 +3045,13 @@ exports.nextCombination = function(v) {
 }
 
 
-},{}],33:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6859:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
 (function (module, exports) {
   'use strict';
 
@@ -3200,7 +3107,7 @@ exports.nextCombination = function(v) {
     if (typeof window !== 'undefined' && typeof window.Buffer !== 'undefined') {
       Buffer = window.Buffer;
     } else {
-      Buffer = _glvis_('buffer').Buffer;
+      Buffer = (__webpack_require__(7790).Buffer);
     }
   } catch (e) {
   }
@@ -6590,10 +6497,16 @@ exports.nextCombination = function(v) {
     var res = this.imod(a._invmp(this.m).mul(this.r2));
     return res._forceRed(this);
   };
-})(typeof module === 'undefined' || module, this);
+})( false || module, this);
 
-},{"buffer":2}],34:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 6204:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = boundary
 
@@ -6628,14 +6541,20 @@ function boundary (cells) {
   return result
 }
 
-},{}],35:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 6867:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = boxIntersectWrapper
 
-var pool = _glvis_('typedarray-pool')
-var sweep = _glvis_('./lib/sweep')
-var boxIntersectIter = _glvis_('./lib/intersect')
+var pool = __webpack_require__(1888)
+var sweep = __webpack_require__(855)
+var boxIntersectIter = __webpack_require__(7150)
 
 function boxEmpty(d, box) {
   for(var j=0; j<d; ++j) {
@@ -6766,8 +6685,14 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
       throw new Error('box-intersect: Invalid arguments')
   }
 }
-},{"./lib/intersect":37,"./lib/sweep":41,"typedarray-pool":308}],36:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2455:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 
 function full() {
   function bruteForceRedFull(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi) {
@@ -6906,19 +6831,25 @@ function bruteForcePlanner(isFull) {
 
 exports.partial = bruteForcePlanner(false)
 exports.full    = bruteForcePlanner(true)
-},{}],37:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 7150:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = boxIntersectIter
 
-var pool = _glvis_('typedarray-pool')
-var bits = _glvis_('bit-twiddle')
-var bruteForce = _glvis_('./brute')
+var pool = __webpack_require__(1888)
+var bits = __webpack_require__(8828)
+var bruteForce = __webpack_require__(2455)
 var bruteForcePartial = bruteForce.partial
 var bruteForceFull = bruteForce.full
-var sweep = _glvis_('./sweep')
-var findMedian = _glvis_('./median')
-var genPartition = _glvis_('./partition')
+var sweep = __webpack_require__(855)
+var findMedian = __webpack_require__(3545)
+var genPartition = __webpack_require__(8105)
 
 //Twiddle parameters
 var BRUTE_FORCE_CUTOFF    = 128       //Cut off for brute force search
@@ -7395,12 +7326,18 @@ function boxIntersectIter(
     }
   }
 }
-},{"./brute":36,"./median":38,"./partition":39,"./sweep":41,"bit-twiddle":32,"typedarray-pool":308}],38:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3545:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = findMedian
 
-var genPartition = _glvis_('./partition')
+var genPartition = __webpack_require__(8105)
 
 var partitionStartLessThan = genPartition('lo<p0')
 
@@ -7538,8 +7475,14 @@ function findMedian(d, axis, start, end, boxes, ids) {
     start, mid, boxes, ids,
     boxes[elemSize*mid+axis])
 }
-},{"./partition":39}],39:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 8105:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = genPartition
 
@@ -7652,8 +7595,14 @@ function lo_lessThan_p0_and_p1_lessThan_hi(a, b, c, d, e, f, p0, p1) {
   return m
 }
 
-},{}],40:[function(_glvis_,module,exports){
-'use strict';
+
+/***/ }),
+
+/***/ 4192:
+/***/ (function(module) {
+
+"use strict";
+
 
 //This code is extracted from ndarray-sort
 //It is inlined here as a temporary workaround
@@ -7889,8 +7838,14 @@ function quickSort(left, right, data) {
     quickSort(less, great, data);
   }
 }
-},{}],41:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 855:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = {
   init:           sqInit,
@@ -7900,9 +7855,9 @@ module.exports = {
   scanComplete:   scanComplete
 }
 
-var pool  = _glvis_('typedarray-pool')
-var bits  = _glvis_('bit-twiddle')
-var isort = _glvis_('./sort')
+var pool  = __webpack_require__(1888)
+var bits  = __webpack_require__(8828)
+var isort = __webpack_require__(4192)
 
 //Flag for blue
 var BLUE_FLAG = (1<<28)
@@ -8324,13 +8279,19 @@ red_loop:
     }
   }
 }
-},{"./sort":40,"bit-twiddle":32,"typedarray-pool":308}],42:[function(_glvis_,module,exports){
-'use strict'
 
-var monotoneTriangulate = _glvis_('./lib/monotone')
-var makeIndex = _glvis_('./lib/triangulation')
-var delaunayFlip = _glvis_('./lib/delaunay')
-var filterTriangulation = _glvis_('./lib/filter')
+/***/ }),
+
+/***/ 2538:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var monotoneTriangulate = __webpack_require__(8902)
+var makeIndex = __webpack_require__(5542)
+var delaunayFlip = __webpack_require__(2272)
+var filterTriangulation = __webpack_require__(5023)
 
 module.exports = cdt2d
 
@@ -8408,11 +8369,17 @@ function cdt2d(points, edges, options) {
   }
 }
 
-},{"./lib/delaunay":43,"./lib/filter":44,"./lib/monotone":45,"./lib/triangulation":46}],43:[function(_glvis_,module,exports){
-'use strict'
 
-var inCircle = _glvis_('robust-in-sphere')[4]
-var bsearch = _glvis_('binary-search-bounds')
+/***/ }),
+
+/***/ 2272:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var inCircle = (__webpack_require__(2646)[4])
+var bsearch = __webpack_require__(2478)
 
 module.exports = delaunayRefine
 
@@ -8525,10 +8492,16 @@ function delaunayRefine(points, triangulation) {
   }
 }
 
-},{"binary-search-bounds":31,"robust-in-sphere":282}],44:[function(_glvis_,module,exports){
-'use strict'
 
-var bsearch = _glvis_('binary-search-bounds')
+/***/ }),
+
+/***/ 5023:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bsearch = __webpack_require__(2478)
 
 module.exports = classifyFaces
 
@@ -8707,11 +8680,17 @@ function classifyFaces(triangulation, target, infinity) {
   return result
 }
 
-},{"binary-search-bounds":31}],45:[function(_glvis_,module,exports){
-'use strict'
 
-var bsearch = _glvis_('binary-search-bounds')
-var orient = _glvis_('robust-orientation')[3]
+/***/ }),
+
+/***/ 8902:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bsearch = __webpack_require__(2478)
+var orient = (__webpack_require__(3250)[3])
 
 var EVENT_POINT = 0
 var EVENT_END   = 1
@@ -8896,10 +8875,16 @@ function monotoneTriangulate(points, edges) {
   return cells
 }
 
-},{"binary-search-bounds":31,"robust-orientation":284}],46:[function(_glvis_,module,exports){
-'use strict'
 
-var bsearch = _glvis_('binary-search-bounds')
+/***/ }),
+
+/***/ 5542:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bsearch = __webpack_require__(2478)
 
 module.exports = createTriangulation
 
@@ -9002,8 +8987,14 @@ function createTriangulation(numVerts, edges) {
   return new Triangulation(stars, edges)
 }
 
-},{"binary-search-bounds":31}],47:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2419:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = orientation
 
@@ -9021,11 +9012,17 @@ function orientation(s) {
   return p
 }
 
-},{}],48:[function(_glvis_,module,exports){
-"use strict"
 
-var dup = _glvis_("dup")
-var solve = _glvis_("robust-linear-solve")
+/***/ }),
+
+/***/ 3628:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var dup = __webpack_require__(1338)
+var solve = __webpack_require__(727)
 
 function dot(a, b) {
   var s = 0.0
@@ -9090,10 +9087,15 @@ function circumcenter(points) {
 
 circumcenter.barycenetric = barycentricCircumcenter
 module.exports = circumcenter
-},{"dup":65,"robust-linear-solve":283}],49:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6037:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = circumradius
 
-var circumcenter = _glvis_('circumcenter')
+var circumcenter = __webpack_require__(3628)
 
 function circumradius(points) {
   var center = circumcenter(points)
@@ -9106,21 +9108,27 @@ function circumradius(points) {
   }
   return Math.sqrt(avgDist / points.length)
 }
-},{"circumcenter":48}],50:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 332:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = cleanPSLG
 
-var UnionFind = _glvis_('union-find')
-var boxIntersect = _glvis_('box-intersect')
-var segseg = _glvis_('robust-segment-intersect')
-var rat = _glvis_('big-rat')
-var ratCmp = _glvis_('big-rat/cmp')
-var ratToFloat = _glvis_('big-rat/to-float')
-var ratVec = _glvis_('rat-vec')
-var nextafter = _glvis_('nextafter')
+var UnionFind = __webpack_require__(1755)
+var boxIntersect = __webpack_require__(6867)
+var segseg = __webpack_require__(1125)
+var rat = __webpack_require__(7842)
+var ratCmp = __webpack_require__(1318)
+var ratToFloat = __webpack_require__(946)
+var ratVec = __webpack_require__(5838)
+var nextafter = __webpack_require__(1278)
 
-var solveIntersection = _glvis_('./lib/rat-seg-intersect')
+var solveIntersection = __webpack_require__(3637)
 
 // Bounds on a rational number when rounded to a float
 function boundRat (r) {
@@ -9489,18 +9497,24 @@ function cleanPSLG (points, edges, colors) {
   return modified
 }
 
-},{"./lib/rat-seg-intersect":51,"big-rat":18,"big-rat/cmp":16,"big-rat/to-float":30,"box-intersect":35,"nextafter":260,"rat-vec":273,"robust-segment-intersect":287,"union-find":309}],51:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3637:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = solveIntersection
 
-var ratMul = _glvis_('big-rat/mul')
-var ratDiv = _glvis_('big-rat/div')
-var ratSub = _glvis_('big-rat/sub')
-var ratSign = _glvis_('big-rat/sign')
-var rvSub = _glvis_('rat-vec/sub')
-var rvAdd = _glvis_('rat-vec/add')
-var rvMuls = _glvis_('rat-vec/muls')
+var ratMul = __webpack_require__(6504)
+var ratDiv = __webpack_require__(8697)
+var ratSub = __webpack_require__(5572)
+var ratSign = __webpack_require__(7721)
+var rvSub = __webpack_require__(544)
+var rvAdd = __webpack_require__(2653)
+var rvMuls = __webpack_require__(8987)
 
 function ratPerp (a, b) {
   return ratSub(ratMul(a[0], b[1]), ratMul(a[1], b[0]))
@@ -9533,7 +9547,12 @@ function solveIntersection (a, b, c, d) {
   return r
 }
 
-},{"big-rat/div":17,"big-rat/mul":27,"big-rat/sign":28,"big-rat/sub":29,"rat-vec/add":272,"rat-vec/muls":274,"rat-vec/sub":275}],52:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3642:
+/***/ (function(module) {
+
 module.exports={
 	"jet":[{"index":0,"rgb":[0,0,131]},{"index":0.125,"rgb":[0,60,170]},{"index":0.375,"rgb":[5,255,255]},{"index":0.625,"rgb":[255,255,0]},{"index":0.875,"rgb":[250,0,0]},{"index":1,"rgb":[128,0,0]}],
 
@@ -9624,16 +9643,22 @@ module.exports={
 	"cubehelix": [{"index":0,"rgb":[0,0,0]},{"index":0.07,"rgb":[22,5,59]},{"index":0.13,"rgb":[60,4,105]},{"index":0.2,"rgb":[109,1,135]},{"index":0.27,"rgb":[161,0,147]},{"index":0.33,"rgb":[210,2,142]},{"index":0.4,"rgb":[251,11,123]},{"index":0.47,"rgb":[255,29,97]},{"index":0.53,"rgb":[255,54,69]},{"index":0.6,"rgb":[255,85,46]},{"index":0.67,"rgb":[255,120,34]},{"index":0.73,"rgb":[255,157,37]},{"index":0.8,"rgb":[241,191,57]},{"index":0.87,"rgb":[224,220,93]},{"index":0.93,"rgb":[218,241,142]},{"index":1,"rgb":[227,253,198]}]
 };
 
-},{}],53:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6729:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
 /*
  * Ben Postlethwaite
  * January 2013
  * License MIT
  */
-'use strict';
 
-var colorScale = _glvis_('./colorScale');
-var lerp = _glvis_('lerp')
+
+var colorScale = __webpack_require__(3642);
+var lerp = __webpack_require__(395)
 
 module.exports = createColormap;
 
@@ -9769,16 +9794,22 @@ function rgbaStr (rgba) {
     return 'rgba(' + rgba.join(',') + ')';
 }
 
-},{"./colorScale":52,"lerp":240}],54:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 3140:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = compareAngle
 
-var orient = _glvis_("robust-orientation")
-var sgn = _glvis_("signum")
-var twoSum = _glvis_("two-sum")
-var robustProduct = _glvis_("robust-product")
-var robustSum = _glvis_("robust-sum")
+var orient = __webpack_require__(3250)
+var sgn = __webpack_require__(8572)
+var twoSum = __webpack_require__(9362)
+var robustProduct = __webpack_require__(5382)
+var robustSum = __webpack_require__(8210)
 
 function testInterior(a, b, c) {
   var x0 = twoSum(a[0], -b[0])
@@ -9855,15 +9886,26 @@ function compareAngle(a, b, c, d) {
     }
   }
 }
-},{"robust-orientation":284,"robust-product":285,"robust-sum":289,"signum":55,"two-sum":307}],55:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 8572:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = function signum(x) {
   if(x < 0) { return -1 }
   if(x > 0) { return 1 }
   return 0.0
 }
-},{}],56:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8507:
+/***/ (function(module) {
+
 module.exports = compareCells
 
 var min = Math.min
@@ -9919,11 +9961,17 @@ function compareCells(a, b) {
   }
 }
 
-},{}],57:[function(_glvis_,module,exports){
-'use strict'
 
-var compareCells = _glvis_('compare-cell')
-var parity = _glvis_('cell-orientation')
+/***/ }),
+
+/***/ 3788:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var compareCells = __webpack_require__(8507)
+var parity = __webpack_require__(2419)
 
 module.exports = compareOrientedCells
 
@@ -9931,12 +9979,18 @@ function compareOrientedCells(a, b) {
   return compareCells(a, b) || parity(a) - parity(b)
 }
 
-},{"cell-orientation":47,"compare-cell":56}],58:[function(_glvis_,module,exports){
-"use strict"
 
-var convexHull1d = _glvis_('./lib/ch1d')
-var convexHull2d = _glvis_('./lib/ch2d')
-var convexHullnd = _glvis_('./lib/chnd')
+/***/ }),
+
+/***/ 7352:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var convexHull1d = __webpack_require__(5721)
+var convexHull2d = __webpack_require__(4750)
+var convexHullnd = __webpack_require__(2690)
 
 module.exports = convexHull
 
@@ -9957,8 +10011,14 @@ function convexHull(points) {
   }
   return convexHullnd(points, d)
 }
-},{"./lib/ch1d":59,"./lib/ch2d":60,"./lib/chnd":61}],59:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 5721:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = convexHull1d
 
@@ -9981,12 +10041,18 @@ function convexHull1d(points) {
     return [[lo]]
   }
 }
-},{}],60:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 4750:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = convexHull2D
 
-var monotoneHull = _glvis_('monotone-convex-hull-2d')
+var monotoneHull = __webpack_require__(3090)
 
 function convexHull2D(points) {
   var hull = monotoneHull(points)
@@ -10004,13 +10070,19 @@ function convexHull2D(points) {
   return edges
 }
 
-},{"monotone-convex-hull-2d":246}],61:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2690:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = convexHullnD
 
-var ich = _glvis_('incremental-convex-hull')
-var aff = _glvis_('affine-hull')
+var ich = __webpack_require__(8954)
+var aff = __webpack_require__(3952)
 
 function permute(points, front) {
   var n = points.length
@@ -10065,8 +10137,14 @@ function convexHullnD(points, d) {
     return invPermute(nhull, ah)
   }
 }
-},{"affine-hull":10,"incremental-convex-hull":233}],62:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 4769:
+/***/ (function(module) {
+
+"use strict";
+
 
 function dcubicHermite(p0, v0, p1, v1, t, f) {
   var dh00 = 6*t*t-6*t,
@@ -10105,11 +10183,17 @@ function cubicHermite(p0, v0, p1, v1, t, f) {
 
 module.exports = cubicHermite
 module.exports.derivative = dcubicHermite
-},{}],63:[function(_glvis_,module,exports){
-"use strict"
 
-var ch = _glvis_("incremental-convex-hull")
-var uniq = _glvis_("uniq")
+/***/ }),
+
+/***/ 7642:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var ch = __webpack_require__(8954)
+var uniq = __webpack_require__(1682)
 
 module.exports = triangulate
 
@@ -10265,8 +10349,12 @@ function triangulate(points, includePointAtInfinity) {
 
   return hull
 }
-},{"incremental-convex-hull":233,"uniq":310}],64:[function(_glvis_,module,exports){
-(function (Buffer){(function (){
+
+/***/ }),
+
+/***/ 2361:
+/***/ (function(module) {
+
 var hasTypedArrays = false
 if(typeof Float64Array !== "undefined") {
   var DOUBLE_VIEW = new Float64Array(1)
@@ -10368,9 +10456,14 @@ module.exports.denormalized = function(n) {
   var hi = module.exports.hi(n)
   return !(hi & 0x7ff00000)
 }
-}).call(this)}).call(this,_glvis_("buffer").Buffer)
-},{"buffer":3}],65:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 1338:
+/***/ (function(module) {
+
+"use strict";
+
 
 function dupe_array(count, value, i) {
   var c = count[i]|0
@@ -10419,12 +10512,18 @@ function dupe(count, value) {
 }
 
 module.exports = dupe
-},{}],66:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 3134:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = edgeToAdjacency
 
-var uniq = _glvis_("uniq")
+var uniq = __webpack_require__(1682)
 
 function edgeToAdjacency(edges, numVertices) {
   var numEdges = edges.length
@@ -10453,8 +10552,14 @@ function edgeToAdjacency(edges, numVertices) {
   }
   return adj
 }
-},{"uniq":310}],67:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 5033:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = extractPlanes
 
@@ -10470,13 +10575,19 @@ function extractPlanes(M, zNear, zFar) {
     [ zf*M[12] - M[8], zf*M[13] - M[9], zf*M[14] - M[10], zf*M[15] - M[11] ]
   ]
 }
-},{}],68:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 9215:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createFilteredVector
 
-var cubicHermite = _glvis_('cubic-hermite')
-var bsearch = _glvis_('binary-search-bounds')
+var cubicHermite = __webpack_require__(4769)
+var bsearch = __webpack_require__(2478)
 
 function clamp(lo, hi, x) {
   return Math.min(hi, Math.max(lo, x))
@@ -10763,8 +10874,14 @@ function createFilteredVector(initState, initVelocity, initTime) {
   }
 }
 
-},{"binary-search-bounds":31,"cubic-hermite":62}],69:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 3840:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = createRBTree
 
@@ -11760,22 +11877,39 @@ function defaultCompare(a, b) {
 function createRBTree(compare) {
   return new RedBlackTree(compare || defaultCompare, null)
 }
-},{}],70:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3837:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createAxes
 
-var createText        = _glvis_('./lib/text.js')
-var createLines       = _glvis_('./lib/lines.js')
-var createBackground  = _glvis_('./lib/background.js')
-var getCubeProperties = _glvis_('./lib/cube.js')
-var Ticks             = _glvis_('./lib/ticks.js')
+var createText        = __webpack_require__(4935)
+var createLines       = __webpack_require__(501)
+var createBackground  = __webpack_require__(5304)
+var getCubeProperties = __webpack_require__(6429)
+var Ticks             = __webpack_require__(6444)
 
 var identity = new Float32Array([
   1, 0, 0, 0,
   0, 1, 0, 0,
   0, 0, 1, 0,
   0, 0, 0, 1])
+
+var ab = ArrayBuffer
+var dv = DataView
+
+function isTypedArray(a) {
+    return ab.isView(a) && !(a instanceof dv)
+}
+
+function isArrayOrTypedArray(a) {
+    return Array.isArray(a) || isTypedArray(a)
+}
 
 function copyVec3(a, b) {
   a[0] = b[0]
@@ -11797,6 +11931,9 @@ function Axes(gl) {
 
   this.tickEnable     = [ true, true, true ]
   this.tickFont       = [ 'sans-serif', 'sans-serif', 'sans-serif' ]
+  this.tickFontStyle   = [ 'normal', 'normal', 'normal' ]
+  this.tickFontWeight  = [ 'normal', 'normal', 'normal' ]
+  this.tickFontVariant = [ 'normal', 'normal', 'normal' ]
   this.tickSize       = [ 12, 12, 12 ]
   this.tickAngle      = [ 0, 0, 0 ]
   this.tickAlign      = [ 'auto', 'auto', 'auto' ]
@@ -11810,7 +11947,10 @@ function Axes(gl) {
 
   this.labels         = [ 'x', 'y', 'z' ]
   this.labelEnable    = [ true, true, true ]
-  this.labelFont      = 'sans-serif'
+  this.labelFont      = [ 'sans-serif', 'sans-serif', 'sans-serif' ]
+  this.labelFontStyle   = [ 'normal', 'normal', 'normal' ]
+  this.labelFontWeight  = [ 'normal', 'normal', 'normal' ]
+  this.labelFontVariant = [ 'normal', 'normal', 'normal' ]
   this.labelSize      = [ 20, 20, 20 ]
   this.labelAngle     = [ 0, 0, 0 ]
   this.labelAlign     = [ 'auto', 'auto', 'auto' ]
@@ -11858,8 +11998,8 @@ proto.update = function(options) {
       var opt = options[name]
       var prev = this[name]
       var next
-      if(nest ? (Array.isArray(opt) && Array.isArray(opt[0])) :
-                 Array.isArray(opt) ) {
+      if(nest ? (isArrayOrTypedArray(opt) && isArrayOrTypedArray(opt[0])) :
+                 isArrayOrTypedArray(opt) ) {
         this[name] = next = [ cons(opt[0]), cons(opt[1]), cons(opt[2]) ]
       } else {
         this[name] = next = [ cons(opt), cons(opt), cons(opt) ]
@@ -11877,7 +12017,7 @@ proto.update = function(options) {
   var BOOLEAN = parseOption.bind(this, false, Boolean)
   var STRING  = parseOption.bind(this, false, String)
   var COLOR   = parseOption.bind(this, true, function(v) {
-    if(Array.isArray(v)) {
+    if(isArrayOrTypedArray(v)) {
       if(v.length === 3) {
         return [ +v[0], +v[1], +v[2], 1.0 ]
       } else if(v.length === 4) {
@@ -11947,9 +12087,13 @@ i_loop:
 
   //Parse tick properties
   BOOLEAN('tickEnable')
-  if(STRING('tickFont')) {
-    ticksUpdate = true  //If font changes, must rebuild vbo
-  }
+
+  //If font changes, must rebuild vbo
+  if(STRING('tickFont')) ticksUpdate = true
+  if(STRING('tickFontStyle')) ticksUpdate = true
+  if(STRING('tickFontWeight')) ticksUpdate = true
+  if(STRING('tickFontVariant')) ticksUpdate = true
+
   NUMBER('tickSize')
   NUMBER('tickAngle')
   NUMBER('tickPad')
@@ -11957,9 +12101,12 @@ i_loop:
 
   //Axis labels
   var labelUpdate = STRING('labels')
-  if(STRING('labelFont')) {
-    labelUpdate = true
-  }
+
+  if(STRING('labelFont')) labelUpdate = true
+  if(STRING('labelFontStyle')) labelUpdate = true
+  if(STRING('labelFontWeight')) labelUpdate = true
+  if(STRING('labelFontVariant')) labelUpdate = true
+
   BOOLEAN('labelEnable')
   NUMBER('labelSize')
   NUMBER('labelPad')
@@ -11992,22 +12139,64 @@ i_loop:
   BOOLEAN('backgroundEnable')
   COLOR('backgroundColor')
 
+  var labelFontOpts = [
+    {
+      family: this.labelFont[0],
+      style: this.labelFontStyle[0],
+      weight: this.labelFontWeight[0],
+      variant: this.labelFontVariant[0],
+    },
+    {
+      family: this.labelFont[1],
+      style: this.labelFontStyle[1],
+      weight: this.labelFontWeight[1],
+      variant: this.labelFontVariant[1],
+    },
+    {
+      family: this.labelFont[2],
+      style: this.labelFontStyle[2],
+      weight: this.labelFontWeight[2],
+      variant: this.labelFontVariant[2],
+    }
+  ]
+
+  var tickFontOpts = [
+    {
+      family: this.tickFont[0],
+      style: this.tickFontStyle[0],
+      weight: this.tickFontWeight[0],
+      variant: this.tickFontVariant[0],
+    },
+    {
+      family: this.tickFont[1],
+      style: this.tickFontStyle[1],
+      weight: this.tickFontWeight[1],
+      variant: this.tickFontVariant[1],
+    },
+    {
+      family: this.tickFont[2],
+      style: this.tickFontStyle[2],
+      weight: this.tickFontWeight[2],
+      variant: this.tickFontVariant[2],
+    }
+  ]
+
   //Update text if necessary
   if(!this._text) {
     this._text = createText(
       this.gl,
       this.bounds,
       this.labels,
-      this.labelFont,
+      labelFontOpts,
       this.ticks,
-      this.tickFont)
+      tickFontOpts)
   } else if(this._text && (labelUpdate || ticksUpdate)) {
     this._text.update(
       this.bounds,
       this.labels,
-      this.labelFont,
+      labelFontOpts,
       this.ticks,
-      this.tickFont)
+      tickFontOpts)
   }
 
   //Update lines if necessary
@@ -12368,14 +12557,20 @@ function createAxes(gl, options) {
   return axes
 }
 
-},{"./lib/background.js":71,"./lib/cube.js":72,"./lib/lines.js":73,"./lib/text.js":75,"./lib/ticks.js":76}],71:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 5304:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createBackgroundCube
 
-var createBuffer = _glvis_('gl-buffer')
-var createVAO    = _glvis_('gl-vao')
-var createShader = _glvis_('./shaders').bg
+var createBuffer = __webpack_require__(2762)
+var createVAO    = __webpack_require__(8116)
+var createShader = (__webpack_require__(1879).bg)
 
 function BackgroundCube(gl, buffer, vao, shader) {
   this.gl = gl
@@ -12481,15 +12676,21 @@ function createBackgroundCube(gl) {
   return new BackgroundCube(gl, buffer, vao, shader)
 }
 
-},{"./shaders":74,"gl-buffer":78,"gl-vao":150}],72:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 6429:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = getCubeEdges
 
-var bits      = _glvis_('bit-twiddle')
-var multiply  = _glvis_('gl-mat4/multiply')
-var splitPoly = _glvis_('split-polygon')
-var orient    = _glvis_('robust-orientation')
+var bits      = __webpack_require__(8828)
+var multiply  = __webpack_require__(6760)
+var splitPoly = __webpack_require__(5202)
+var orient    = __webpack_require__(3250)
 
 var mvp        = new Array(16)
 var pCubeVerts = new Array(8)
@@ -12723,14 +12924,20 @@ function getCubeEdges(model, view, projection, bounds, ortho) {
   //Return result
   return CUBE_RESULT
 }
-},{"bit-twiddle":32,"gl-mat4/multiply":100,"robust-orientation":284,"split-polygon":300}],73:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 501:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports    = createLines
 
-var createBuffer  = _glvis_('gl-buffer')
-var createVAO     = _glvis_('gl-vao')
-var createShader  = _glvis_('./shaders').line
+var createBuffer  = __webpack_require__(2762)
+var createVAO     = __webpack_require__(8116)
+var createShader  = (__webpack_require__(1879)/* .line */ .n)
 
 var MAJOR_AXIS = [0,0,0]
 var MINOR_AXIS = [0,0,0]
@@ -12933,29 +13140,35 @@ function createLines(gl, bounds, ticks) {
   return new Lines(gl, vertBuf, vao, shader, tickCount, tickOffset, gridCount, gridOffset)
 }
 
-},{"./shaders":74,"gl-buffer":78,"gl-vao":150}],74:[function(_glvis_,module,exports){
-'use strict'
 
-var glslify = _glvis_('glslify')
-var createShader = _glvis_('gl-shader')
+/***/ }),
 
-var lineVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, majorAxis, minorAxis, screenAxis;\nuniform float lineWidth;\nuniform vec2 screenShape;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nvoid main() {\n  vec3 major = position.x * majorAxis;\n  vec3 minor = position.y * minorAxis;\n\n  vec3 vPosition = major + minor + offset;\n  vec3 pPosition = project(vPosition);\n  vec3 offset = project(vPosition + screenAxis * position.z);\n\n  vec2 screen = normalize((offset - pPosition).xy * screenShape) / screenShape;\n\n  gl_Position = vec4(pPosition + vec3(0.5 * screen * lineWidth, 0), 1.0);\n}\n"])
+/***/ 1879:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var glslify = __webpack_require__(3236)
+var createShader = __webpack_require__(9405)
+
+var lineVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, majorAxis, minorAxis, screenAxis;\nuniform float lineWidth;\nuniform vec2 screenShape;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * (view * (model * vec4(p, 1.0)));\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nvoid main() {\n  vec3 major = position.x * majorAxis;\n  vec3 minor = position.y * minorAxis;\n\n  vec3 vPosition = major + minor + offset;\n  vec3 pPosition = project(vPosition);\n  vec3 offset = project(vPosition + screenAxis * position.z);\n\n  vec2 screen = normalize((offset - pPosition).xy * screenShape) / screenShape;\n\n  gl_Position = vec4(pPosition + vec3(0.5 * screen * lineWidth, 0), 1.0);\n}\n"])
 var lineFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
-exports.line = function(gl) {
+exports.n = function(gl) {
   return createShader(gl, lineVert, lineFrag, null, [
     {name: 'position', type: 'vec3'}
   ])
 }
 
-var textVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, axis, alignDir, alignOpt;\nuniform float scale, angle, pixelScale;\nuniform vec2 resolution;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * view * model * vec4(p, 1.0);\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nfloat computeViewAngle(vec3 a, vec3 b) {\n  vec3 A = project(a);\n  vec3 B = project(b);\n\n  return atan(\n    (B.y - A.y) * resolution.y,\n    (B.x - A.x) * resolution.x\n  );\n}\n\nconst float PI = 3.141592;\nconst float TWO_PI = 2.0 * PI;\nconst float HALF_PI = 0.5 * PI;\nconst float ONE_AND_HALF_PI = 1.5 * PI;\n\nint option = int(floor(alignOpt.x + 0.001));\nfloat hv_ratio =       alignOpt.y;\nbool enableAlign =    (alignOpt.z != 0.0);\n\nfloat mod_angle(float a) {\n  return mod(a, PI);\n}\n\nfloat positive_angle(float a) {\n  return mod_angle((a < 0.0) ?\n    a + TWO_PI :\n    a\n  );\n}\n\nfloat look_upwards(float a) {\n  float b = positive_angle(a);\n  return ((b > HALF_PI) && (b <= ONE_AND_HALF_PI)) ?\n    b - PI :\n    b;\n}\n\nfloat look_horizontal_or_vertical(float a, float ratio) {\n  // ratio controls the ratio between being horizontal to (vertical + horizontal)\n  // if ratio is set to 0.5 then it is 50%, 50%.\n  // when using a higher ratio e.g. 0.75 the result would\n  // likely be more horizontal than vertical.\n\n  float b = positive_angle(a);\n\n  return\n    (b < (      ratio) * HALF_PI) ? 0.0 :\n    (b < (2.0 - ratio) * HALF_PI) ? -HALF_PI :\n    (b < (2.0 + ratio) * HALF_PI) ? 0.0 :\n    (b < (4.0 - ratio) * HALF_PI) ? HALF_PI :\n                                    0.0;\n}\n\nfloat roundTo(float a, float b) {\n  return float(b * floor((a + 0.5 * b) / b));\n}\n\nfloat look_round_n_directions(float a, int n) {\n  float b = positive_angle(a);\n  float div = TWO_PI / float(n);\n  float c = roundTo(b, div);\n  return look_upwards(c);\n}\n\nfloat applyAlignOption(float rawAngle, float delta) {\n  return\n    (option >  2) ? look_round_n_directions(rawAngle + delta, option) :       // option 3-n: round to n directions\n    (option == 2) ? look_horizontal_or_vertical(rawAngle + delta, hv_ratio) : // horizontal or vertical\n    (option == 1) ? rawAngle + delta :       // use free angle, and flip to align with one direction of the axis\n    (option == 0) ? look_upwards(rawAngle) : // use free angle, and stay upwards\n    (option ==-1) ? 0.0 :                    // useful for backward compatibility, all texts remains horizontal\n                    rawAngle;                // otherwise return back raw input angle\n}\n\nbool isAxisTitle = (axis.x == 0.0) &&\n                   (axis.y == 0.0) &&\n                   (axis.z == 0.0);\n\nvoid main() {\n  //Compute world offset\n  float axisDistance = position.z;\n  vec3 dataPosition = axisDistance * axis + offset;\n\n  float beta = angle; // i.e. user defined attributes for each tick\n\n  float axisAngle;\n  float clipAngle;\n  float flip;\n\n  if (enableAlign) {\n    axisAngle = (isAxisTitle) ? HALF_PI :\n                      computeViewAngle(dataPosition, dataPosition + axis);\n    clipAngle = computeViewAngle(dataPosition, dataPosition + alignDir);\n\n    axisAngle += (sin(axisAngle) < 0.0) ? PI : 0.0;\n    clipAngle += (sin(clipAngle) < 0.0) ? PI : 0.0;\n\n    flip = (dot(vec2(cos(axisAngle), sin(axisAngle)),\n                vec2(sin(clipAngle),-cos(clipAngle))) > 0.0) ? 1.0 : 0.0;\n\n    beta += applyAlignOption(clipAngle, flip * PI);\n  }\n\n  //Compute plane offset\n  vec2 planeCoord = position.xy * pixelScale;\n\n  mat2 planeXform = scale * mat2(\n     cos(beta), sin(beta),\n    -sin(beta), cos(beta)\n  );\n\n  vec2 viewOffset = 2.0 * planeXform * planeCoord / resolution;\n\n  //Compute clip position\n  vec3 clipPosition = project(dataPosition);\n\n  //Apply text offset in clip coordinates\n  clipPosition += vec3(viewOffset, 0.0);\n\n  //Done\n  gl_Position = vec4(clipPosition, 1.0);\n}"])
+var textVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\nuniform vec3 offset, axis, alignDir, alignOpt;\nuniform float scale, angle, pixelScale;\nuniform vec2 resolution;\n\nvec3 project(vec3 p) {\n  vec4 pp = projection * (view * (model * vec4(p, 1.0)));\n  return pp.xyz / max(pp.w, 0.0001);\n}\n\nfloat computeViewAngle(vec3 a, vec3 b) {\n  vec3 A = project(a);\n  vec3 B = project(b);\n\n  return atan(\n    (B.y - A.y) * resolution.y,\n    (B.x - A.x) * resolution.x\n  );\n}\n\nconst float PI = 3.141592;\nconst float TWO_PI = 2.0 * PI;\nconst float HALF_PI = 0.5 * PI;\nconst float ONE_AND_HALF_PI = 1.5 * PI;\n\nint option = int(floor(alignOpt.x + 0.001));\nfloat hv_ratio =       alignOpt.y;\nbool enableAlign =    (alignOpt.z != 0.0);\n\nfloat mod_angle(float a) {\n  return mod(a, PI);\n}\n\nfloat positive_angle(float a) {\n  return mod_angle((a < 0.0) ?\n    a + TWO_PI :\n    a\n  );\n}\n\nfloat look_upwards(float a) {\n  float b = positive_angle(a);\n  return ((b > HALF_PI) && (b <= ONE_AND_HALF_PI)) ?\n    b - PI :\n    b;\n}\n\nfloat look_horizontal_or_vertical(float a, float ratio) {\n  // ratio controls the ratio between being horizontal to (vertical + horizontal)\n  // if ratio is set to 0.5 then it is 50%, 50%.\n  // when using a higher ratio e.g. 0.75 the result would\n  // likely be more horizontal than vertical.\n\n  float b = positive_angle(a);\n\n  return\n    (b < (      ratio) * HALF_PI) ? 0.0 :\n    (b < (2.0 - ratio) * HALF_PI) ? -HALF_PI :\n    (b < (2.0 + ratio) * HALF_PI) ? 0.0 :\n    (b < (4.0 - ratio) * HALF_PI) ? HALF_PI :\n                                    0.0;\n}\n\nfloat roundTo(float a, float b) {\n  return float(b * floor((a + 0.5 * b) / b));\n}\n\nfloat look_round_n_directions(float a, int n) {\n  float b = positive_angle(a);\n  float div = TWO_PI / float(n);\n  float c = roundTo(b, div);\n  return look_upwards(c);\n}\n\nfloat applyAlignOption(float rawAngle, float delta) {\n  return\n    (option >  2) ? look_round_n_directions(rawAngle + delta, option) :       // option 3-n: round to n directions\n    (option == 2) ? look_horizontal_or_vertical(rawAngle + delta, hv_ratio) : // horizontal or vertical\n    (option == 1) ? rawAngle + delta :       // use free angle, and flip to align with one direction of the axis\n    (option == 0) ? look_upwards(rawAngle) : // use free angle, and stay upwards\n    (option ==-1) ? 0.0 :                    // useful for backward compatibility, all texts remains horizontal\n                    rawAngle;                // otherwise return back raw input angle\n}\n\nbool isAxisTitle = (axis.x == 0.0) &&\n                   (axis.y == 0.0) &&\n                   (axis.z == 0.0);\n\nvoid main() {\n  //Compute world offset\n  float axisDistance = position.z;\n  vec3 dataPosition = axisDistance * axis + offset;\n\n  float beta = angle; // i.e. user defined attributes for each tick\n\n  float axisAngle;\n  float clipAngle;\n  float flip;\n\n  if (enableAlign) {\n    axisAngle = (isAxisTitle) ? HALF_PI :\n                      computeViewAngle(dataPosition, dataPosition + axis);\n    clipAngle = computeViewAngle(dataPosition, dataPosition + alignDir);\n\n    axisAngle += (sin(axisAngle) < 0.0) ? PI : 0.0;\n    clipAngle += (sin(clipAngle) < 0.0) ? PI : 0.0;\n\n    flip = (dot(vec2(cos(axisAngle), sin(axisAngle)),\n                vec2(sin(clipAngle),-cos(clipAngle))) > 0.0) ? 1.0 : 0.0;\n\n    beta += applyAlignOption(clipAngle, flip * PI);\n  }\n\n  //Compute plane offset\n  vec2 planeCoord = position.xy * pixelScale;\n\n  mat2 planeXform = scale * mat2(\n     cos(beta), sin(beta),\n    -sin(beta), cos(beta)\n  );\n\n  vec2 viewOffset = 2.0 * planeXform * planeCoord / resolution;\n\n  //Compute clip position\n  vec3 clipPosition = project(dataPosition);\n\n  //Apply text offset in clip coordinates\n  clipPosition += vec3(viewOffset, 0.0);\n\n  //Done\n  gl_Position = vec4(clipPosition, 1.0);\n}\n"])
 var textFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = color;\n}"])
-exports.text = function(gl) {
+exports.Q = function(gl) {
   return createShader(gl, textVert, textFrag, null, [
     {name: 'position', type: 'vec3'}
   ])
 }
 
-var bgVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection;\nuniform vec3 enable;\nuniform vec3 bounds[2];\n\nvarying vec3 colorChannel;\n\nvoid main() {\n\n  vec3 signAxis = sign(bounds[1] - bounds[0]);\n\n  vec3 realNormal = signAxis * normal;\n\n  if(dot(realNormal, enable) > 0.0) {\n    vec3 minRange = min(bounds[0], bounds[1]);\n    vec3 maxRange = max(bounds[0], bounds[1]);\n    vec3 nPosition = mix(minRange, maxRange, 0.5 * (position + 1.0));\n    gl_Position = projection * view * model * vec4(nPosition, 1.0);\n  } else {\n    gl_Position = vec4(0,0,0,0);\n  }\n\n  colorChannel = abs(realNormal);\n}"])
+var bgVert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection;\nuniform vec3 enable;\nuniform vec3 bounds[2];\n\nvarying vec3 colorChannel;\n\nvoid main() {\n\n  vec3 signAxis = sign(bounds[1] - bounds[0]);\n\n  vec3 realNormal = signAxis * normal;\n\n  if(dot(realNormal, enable) > 0.0) {\n    vec3 minRange = min(bounds[0], bounds[1]);\n    vec3 maxRange = max(bounds[0], bounds[1]);\n    vec3 nPosition = mix(minRange, maxRange, 0.5 * (position + 1.0));\n    gl_Position = projection * (view * (model * vec4(nPosition, 1.0)));\n  } else {\n    gl_Position = vec4(0,0,0,0);\n  }\n\n  colorChannel = abs(realNormal);\n}\n"])
 var bgFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 colors[3];\n\nvarying vec3 colorChannel;\n\nvoid main() {\n  gl_FragColor = colorChannel.x * colors[0] +\n                 colorChannel.y * colors[1] +\n                 colorChannel.z * colors[2];\n}"])
 exports.bg = function(gl) {
   return createShader(gl, bgVert, bgFrag, null, [
@@ -12964,16 +13177,21 @@ exports.bg = function(gl) {
   ])
 }
 
-},{"gl-shader":132,"glslify":231}],75:[function(_glvis_,module,exports){
-(function (process){(function (){
-"use strict"
+
+/***/ }),
+
+/***/ 4935:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createTextSprites
 
-var createBuffer  = _glvis_('gl-buffer')
-var createVAO     = _glvis_('gl-vao')
-var vectorizeText = _glvis_('vectorize-text')
-var createShader  = _glvis_('./shaders').text
+var createBuffer  = __webpack_require__(2762)
+var createVAO     = __webpack_require__(8116)
+var vectorizeText = __webpack_require__(4359)
+var createShader  = (__webpack_require__(1879)/* .text */ .Q)
 
 var globals = window || process.global || {}
 var __TEXT_CACHE  = globals.__TEXT_CACHE || {}
@@ -13026,15 +13244,25 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
   var data = []
 
   function addItem(t, text, font, size, lineSpacing, styletags) {
-    var fontcache = __TEXT_CACHE[font]
+    var fontKey = [
+      font.style,
+      font.weight,
+      font.variant,
+      font.family
+    ].join('_')
+
+    var fontcache = __TEXT_CACHE[fontKey]
     if(!fontcache) {
-      fontcache = __TEXT_CACHE[font] = {}
+      fontcache = __TEXT_CACHE[fontKey] = {}
     }
     var mesh = fontcache[text]
     if(!mesh) {
       mesh = fontcache[text] = tryVectorizeText(text, {
         triangles: true,
-        font: font,
+        font: font.family,
+        fontStyle: font.style,
+        fontWeight: font.weight,
+        fontVariant: font.variant,
         textAlign: 'center',
         textBaseline: 'middle',
         lineSpacing: lineSpacing,
@@ -13086,10 +13314,18 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
       if(!ticks[d][i].text) {
         continue
       }
+
+      var font = {
+        family: ticks[d][i].font || tickFont[d].family,
+        style: tickFont[d].fontStyle || tickFont[d].style,
+        weight: tickFont[d].fontWeight || tickFont[d].weight,
+        variant: tickFont[d].fontVariant || tickFont[d].variant,
+      }
+
       addItem(
         ticks[d][i].x,
         ticks[d][i].text,
-        ticks[d][i].font || tickFont,
+        font,
         ticks[d][i].fontSize || 12,
         lineSpacing,
         styletags
@@ -13185,9 +13421,14 @@ function createTextSprites(
   return result
 }
 
-}).call(this)}).call(this,_glvis_('_process'))
-},{"./shaders":74,"_process":5,"gl-buffer":78,"gl-vao":150,"vectorize-text":311}],76:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 6444:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 
 exports.create   = defaultTicks
 exports.equal    = ticksEqual
@@ -13267,17 +13508,23 @@ function ticksEqual(ticksA, ticksB) {
   }
   return true
 }
-},{}],77:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 5445:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = axesProperties
 
-var getPlanes   = _glvis_("extract-frustum-planes")
-var splitPoly   = _glvis_("split-polygon")
-var cubeParams  = _glvis_("./lib/cube.js")
-var m4mul       = _glvis_("gl-mat4/multiply")
-var m4transpose = _glvis_("gl-mat4/transpose")
-var v4transformMat4 = _glvis_("gl-vec4/transformMat4")
+var getPlanes   = __webpack_require__(5033)
+var splitPoly   = __webpack_require__(5202)
+var cubeParams  = __webpack_require__(6429)
+var m4mul       = __webpack_require__(6760)
+var m4transpose = __webpack_require__(5665)
+var v4transformMat4 = __webpack_require__(5352)
 
 var identity    = new Float32Array([
     1, 0, 0, 0,
@@ -13411,12 +13658,18 @@ i_loop:
   return ranges
 }
 
-},{"./lib/cube.js":72,"extract-frustum-planes":67,"gl-mat4/multiply":100,"gl-mat4/transpose":109,"gl-vec4/transformMat4":221,"split-polygon":300}],78:[function(_glvis_,module,exports){
-"use strict"
 
-var pool = _glvis_("typedarray-pool")
-var ops = _glvis_("ndarray-ops")
-var ndarray = _glvis_("ndarray")
+/***/ }),
+
+/***/ 2762:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var pool = __webpack_require__(1888)
+var ops = __webpack_require__(5298)
+var ndarray = __webpack_require__(9618)
 
 var SUPPORTED_TYPES = [
   "uint8",
@@ -13565,10 +13818,16 @@ function createBuffer(gl, data, type, usage) {
 
 module.exports = createBuffer
 
-},{"ndarray":259,"ndarray-ops":254,"typedarray-pool":308}],79:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6405:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 "use strict";
 
-var vec3 = _glvis_('gl-vec3');
+
+var vec3 = __webpack_require__(2931);
 
 module.exports = function(vectorfield, bounds) {
 	var positions = vectorfield.positions;
@@ -13602,6 +13861,7 @@ module.exports = function(vectorfield, bounds) {
 	var positionVectors = [];
 	var vectorScale = Infinity;
 	var skipIt = false;
+	var rawSizemodemode = vectorfield.coneSizemode === 'raw';
 	for (var i = 0; i < positions.length; i++) {
 		var p = positions[i];
 		minX = Math.min(p[0], minX);
@@ -13615,7 +13875,7 @@ module.exports = function(vectorfield, bounds) {
 		if (vec3.length(u) > maxNorm) {
 			maxNorm = vec3.length(u);
 		}
-		if (i) {
+		if (i && !rawSizemodemode) {
 			// Find vector scale [w/ units of time] using "successive" positions
 			// (not "adjacent" with would be O(n^2)),
 			//
@@ -13654,7 +13914,9 @@ module.exports = function(vectorfield, bounds) {
 	}
 	geo.vectorScale = vectorScale;
 
-	var coneScale = vectorfield.coneSize || 0.5;
+	var coneScale = vectorfield.coneSize || (
+		rawSizemodemode ? 1 :0.5
+	);
 
 	if (vectorfield.absoluteConeSize) {
 		coneScale = vectorfield.absoluteConeSize * invertedMaxNorm;
@@ -13694,8 +13956,8 @@ module.exports = function(vectorfield, bounds) {
 	return geo;
 };
 
-var shaders = _glvis_('./lib/shaders');
-module.exports.createMesh = _glvis_('./create_mesh');
+var shaders = __webpack_require__(614);
+module.exports.createMesh = __webpack_require__(9060);
 module.exports.createConeMesh = function(gl, params) {
 	return module.exports.createMesh(gl, params, {
 		shaders: shaders,
@@ -13703,17 +13965,23 @@ module.exports.createConeMesh = function(gl, params) {
 	});
 }
 
-},{"./create_mesh":80,"./lib/shaders":81,"gl-vec3":169}],80:[function(_glvis_,module,exports){
-'use strict'
 
-var createShader  = _glvis_('gl-shader')
-var createBuffer  = _glvis_('gl-buffer')
-var createVAO     = _glvis_('gl-vao')
-var createTexture = _glvis_('gl-texture2d')
-var multiply      = _glvis_('gl-mat4/multiply')
-var invert        = _glvis_('gl-mat4/invert')
-var ndarray       = _glvis_('ndarray')
-var colormap      = _glvis_('colormap')
+/***/ }),
+
+/***/ 9060:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createShader  = __webpack_require__(9405)
+var createBuffer  = __webpack_require__(2762)
+var createVAO     = __webpack_require__(8116)
+var createTexture = __webpack_require__(7766)
+var multiply      = __webpack_require__(6760)
+var invert        = __webpack_require__(7608)
+var ndarray       = __webpack_require__(9618)
+var colormap      = __webpack_require__(6729)
 
 var IDENTITY = [
   1,0,0,0,
@@ -14278,12 +14546,17 @@ function createVectorMesh(gl, params, opts) {
 
 module.exports = createVectorMesh
 
-},{"colormap":53,"gl-buffer":78,"gl-mat4/invert":98,"gl-mat4/multiply":100,"gl-shader":132,"gl-texture2d":146,"gl-vao":150,"ndarray":259}],81:[function(_glvis_,module,exports){
-var glslify       = _glvis_('glslify')
+
+/***/ }),
+
+/***/ 614:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var glslify       = __webpack_require__(3236)
 
 var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, coneScale, coneOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * conePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(conePosition, 1.0);\n  vec4 t_position  = view * conePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = conePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
 var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
-var pickVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform float vectorScale, coneScale, coneOffset;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector.xyz), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n  gl_Position = projection * view * conePosition;\n  f_id        = id;\n  f_position  = position.xyz;\n}\n"])
+var pickVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform float vectorScale, coneScale, coneOffset;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector.xyz), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n  gl_Position = projection * (view * conePosition);\n  f_id        = id;\n  f_position  = position.xyz;\n}\n"])
 var pickFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"])
 
 exports.meshShader = {
@@ -14306,7 +14579,12 @@ exports.pickShader = {
   ]
 }
 
-},{"glslify":231}],82:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 737:
+/***/ (function(module) {
+
 module.exports = {
   0: 'NONE',
   1: 'ONE',
@@ -14606,21 +14884,32 @@ module.exports = {
   37444: 'BROWSER_DEFAULT_WEBGL'
 }
 
-},{}],83:[function(_glvis_,module,exports){
-var gl10 = _glvis_('./1.0/numbers')
+
+/***/ }),
+
+/***/ 5171:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var gl10 = __webpack_require__(737)
 
 module.exports = function lookupConstant (number) {
   return gl10[number]
 }
 
-},{"./1.0/numbers":82}],84:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 9165:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createErrorBars
 
-var createBuffer  = _glvis_('gl-buffer')
-var createVAO     = _glvis_('gl-vao')
-var createShader  = _glvis_('./shaders/index')
+var createBuffer  = __webpack_require__(2762)
+var createVAO     = __webpack_require__(8116)
+var createShader  = __webpack_require__(3436)
 
 var IDENTITY = [1,0,0,0,
                 0,1,0,0,
@@ -14864,13 +15153,19 @@ function createErrorBars(options) {
   return result
 }
 
-},{"./shaders/index":85,"gl-buffer":78,"gl-vao":150}],85:[function(_glvis_,module,exports){
-'use strict'
 
-var glslify = _glvis_('glslify')
-var createShader = _glvis_('gl-shader')
+/***/ }),
 
-var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, offset;\nattribute vec4 color;\nuniform mat4 model, view, projection;\nuniform float capSize;\nvarying vec4 fragColor;\nvarying vec3 fragPosition;\n\nvoid main() {\n  vec4 worldPosition  = model * vec4(position, 1.0);\n  worldPosition       = (worldPosition / worldPosition.w) + vec4(capSize * offset, 0.0);\n  gl_Position         = projection * view * worldPosition;\n  fragColor           = color;\n  fragPosition        = position;\n}"])
+/***/ 3436:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var glslify = __webpack_require__(3236)
+var createShader = __webpack_require__(9405)
+
+var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, offset;\nattribute vec4 color;\nuniform mat4 model, view, projection;\nuniform float capSize;\nvarying vec4 fragColor;\nvarying vec3 fragPosition;\n\nvoid main() {\n  vec4 worldPosition  = model * vec4(position, 1.0);\n  worldPosition       = (worldPosition / worldPosition.w) + vec4(capSize * offset, 0.0);\n  gl_Position         = projection * (view * worldPosition);\n  fragColor           = color;\n  fragPosition        = position;\n}"])
 var fragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float opacity;\nvarying vec3 fragPosition;\nvarying vec4 fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], fragPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  gl_FragColor = opacity * fragColor;\n}"])
 
 module.exports = function(gl) {
@@ -14881,10 +15176,16 @@ module.exports = function(gl) {
   ])
 }
 
-},{"gl-shader":132,"glslify":231}],86:[function(_glvis_,module,exports){
-'use strict'
 
-var createTexture = _glvis_('gl-texture2d')
+/***/ }),
+
+/***/ 2260:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createTexture = __webpack_require__(7766)
 
 module.exports = createFBO
 
@@ -15348,12 +15649,17 @@ function createFBO(gl, width, height, options) {
     WEBGL_draw_buffers)
 }
 
-},{"gl-texture2d":146}],87:[function(_glvis_,module,exports){
 
-var sprintf = _glvis_('sprintf-js').sprintf;
-var glConstants = _glvis_('gl-constants/lookup');
-var shaderName = _glvis_('glsl-shader-name');
-var addLineNumbers = _glvis_('add-line-numbers');
+/***/ }),
+
+/***/ 2992:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+
+var sprintf = (__webpack_require__(3387).sprintf);
+var glConstants = __webpack_require__(5171);
+var shaderName = __webpack_require__(1848);
+var addLineNumbers = __webpack_require__(1085);
 
 module.exports = formatCompilerError;
 
@@ -15403,375 +15709,16 @@ function formatCompilerError(errLog, src, type) {
 }
 
 
-},{"add-line-numbers":9,"gl-constants/lookup":83,"glsl-shader-name":223,"sprintf-js":301}],88:[function(_glvis_,module,exports){
-'use strict'
 
-module.exports = createHeatmap2D
+/***/ }),
 
-var bsearch = _glvis_('binary-search-bounds')
-var iota = _glvis_('iota-array')
-var pool = _glvis_('typedarray-pool')
-var createShader = _glvis_('gl-shader')
-var createBuffer = _glvis_('gl-buffer')
+/***/ 7319:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-var shaders = _glvis_('./lib/shaders')
+var glslify       = __webpack_require__(3236)
+var createShader  = __webpack_require__(9405)
 
-function GLHeatmap2D (
-  plot,
-  shader,
-  pickShader,
-  positionBuffer,
-  weightBuffer,
-  colorBuffer,
-  idBuffer) {
-  this.plot = plot
-  this.shader = shader
-  this.pickShader = pickShader
-  this.positionBuffer = positionBuffer
-  this.weightBuffer = weightBuffer
-  this.colorBuffer = colorBuffer
-  this.idBuffer = idBuffer
-  this.xData = []
-  this.yData = []
-  this.shape = [0, 0]
-  this.bounds = [Infinity, Infinity, -Infinity, -Infinity]
-  this.pickOffset = 0
-}
-
-var proto = GLHeatmap2D.prototype
-
-var WEIGHTS = [
-  0, 0,
-  1, 0,
-  0, 1,
-  1, 0,
-  1, 1,
-  0, 1
-]
-
-proto.draw = (function () {
-  var MATRIX = [
-    1, 0, 0,
-    0, 1, 0,
-    0, 0, 1
-  ]
-
-  return function () {
-    var plot = this.plot
-    var shader = this.shader
-    var bounds = this.bounds
-    var numVertices = this.numVertices
-
-    if (numVertices <= 0) {
-      return
-    }
-
-    var gl = plot.gl
-    var dataBox = plot.dataBox
-
-    var boundX = bounds[2] - bounds[0]
-    var boundY = bounds[3] - bounds[1]
-    var dataX = dataBox[2] - dataBox[0]
-    var dataY = dataBox[3] - dataBox[1]
-
-    MATRIX[0] = 2.0 * boundX / dataX
-    MATRIX[4] = 2.0 * boundY / dataY
-    MATRIX[6] = 2.0 * (bounds[0] - dataBox[0]) / dataX - 1.0
-    MATRIX[7] = 2.0 * (bounds[1] - dataBox[1]) / dataY - 1.0
-
-    shader.bind()
-
-    var uniforms = shader.uniforms
-    uniforms.viewTransform = MATRIX
-
-    uniforms.shape = this.shape
-
-    var attributes = shader.attributes
-    this.positionBuffer.bind()
-    attributes.position.pointer()
-
-    this.weightBuffer.bind()
-    attributes.weight.pointer(gl.UNSIGNED_BYTE, false)
-
-    this.colorBuffer.bind()
-    attributes.color.pointer(gl.UNSIGNED_BYTE, true)
-
-    gl.drawArrays(gl.TRIANGLES, 0, numVertices)
-  }
-})()
-
-proto.drawPick = (function () {
-  var MATRIX = [
-    1, 0, 0,
-    0, 1, 0,
-    0, 0, 1
-  ]
-
-  var PICK_VECTOR = [0, 0, 0, 0]
-
-  return function (pickOffset) {
-    var plot = this.plot
-    var shader = this.pickShader
-    var bounds = this.bounds
-    var numVertices = this.numVertices
-
-    if (numVertices <= 0) {
-      return
-    }
-
-    var gl = plot.gl
-    var dataBox = plot.dataBox
-
-    var boundX = bounds[2] - bounds[0]
-    var boundY = bounds[3] - bounds[1]
-    var dataX = dataBox[2] - dataBox[0]
-    var dataY = dataBox[3] - dataBox[1]
-
-    MATRIX[0] = 2.0 * boundX / dataX
-    MATRIX[4] = 2.0 * boundY / dataY
-    MATRIX[6] = 2.0 * (bounds[0] - dataBox[0]) / dataX - 1.0
-    MATRIX[7] = 2.0 * (bounds[1] - dataBox[1]) / dataY - 1.0
-
-    for (var i = 0; i < 4; ++i) {
-      PICK_VECTOR[i] = (pickOffset >> (i * 8)) & 0xff
-    }
-
-    this.pickOffset = pickOffset
-
-    shader.bind()
-
-    var uniforms = shader.uniforms
-    uniforms.viewTransform = MATRIX
-    uniforms.pickOffset = PICK_VECTOR
-    uniforms.shape = this.shape
-
-    var attributes = shader.attributes
-    this.positionBuffer.bind()
-    attributes.position.pointer()
-
-    this.weightBuffer.bind()
-    attributes.weight.pointer(gl.UNSIGNED_BYTE, false)
-
-    this.idBuffer.bind()
-    attributes.pickId.pointer(gl.UNSIGNED_BYTE, false)
-
-    gl.drawArrays(gl.TRIANGLES, 0, numVertices)
-
-    return pickOffset + this.shape[0] * this.shape[1]
-  }
-})()
-
-proto.pick = function (x, y, value) {
-  var pickOffset = this.pickOffset
-  var pointCount = this.shape[0] * this.shape[1]
-  if (value < pickOffset || value >= pickOffset + pointCount) {
-    return null
-  }
-  var pointId = value - pickOffset
-  var xData = this.xData
-  var yData = this.yData
-  return {
-    object: this,
-    pointId: pointId,
-    dataCoord: [
-      xData[pointId % this.shape[0]],
-      yData[(pointId / this.shape[0]) | 0]]
-  }
-}
-
-proto.update = function (options) {
-  options = options || {}
-
-  var shape = options.shape || [0, 0]
-
-  var x = options.x || iota(shape[0])
-  var y = options.y || iota(shape[1])
-  var z = options.z || new Float32Array(shape[0] * shape[1])
-
-  var isSmooth = options.zsmooth !== false
-
-  this.xData = x
-  this.yData = y
-
-  var colorLevels = options.colorLevels || [0]
-  var colorValues = options.colorValues || [0, 0, 0, 1]
-  var colorCount = colorLevels.length
-
-  var bounds = this.bounds
-  var lox, loy, hix, hiy
-  if (isSmooth) {
-    lox = bounds[0] = x[0]
-    loy = bounds[1] = y[0]
-    hix = bounds[2] = x[x.length - 1]
-    hiy = bounds[3] = y[y.length - 1]
-  } else {
-    // To get squares to centre on data values
-    lox = bounds[0] = x[0] + (x[1] - x[0]) / 2 // starting x value
-    loy = bounds[1] = y[0] + (y[1] - y[0]) / 2 // starting y value
-
-    // Bounds needs to add half a square on each end
-    hix = bounds[2] = x[x.length - 1] + (x[x.length - 1] - x[x.length - 2]) / 2
-    hiy = bounds[3] = y[y.length - 1] + (y[y.length - 1] - y[y.length - 2]) / 2
-
-    // N.B. Resolution = 1 / range
-  }
-  var xs = 1.0 / (hix - lox)
-  var ys = 1.0 / (hiy - loy)
-
-  var numX = shape[0]
-  var numY = shape[1]
-
-  this.shape = [numX, numY]
-
-  var numVerts = (
-    isSmooth ? (numX - 1) * (numY - 1) : numX * numY
-  ) * (WEIGHTS.length >>> 1)
-
-  this.numVertices = numVerts
-
-  var colors = pool.mallocUint8(numVerts * 4)
-  var positions = pool.mallocFloat32(numVerts * 2)
-  var weights   = pool.mallocUint8 (numVerts * 2)
-  var ids = pool.mallocUint32(numVerts)
-
-  var ptr = 0
-
-  var ni = isSmooth ? numX - 1 : numX
-  var nj = isSmooth ? numY - 1 : numY
-
-  for (var j = 0; j < nj; ++j) {
-    var yc0, yc1
-
-    if (isSmooth) {
-      yc0 =  ys * (y[j] - loy)
-      yc1 =  ys * (y[j + 1] - loy)
-    } else {
-      yc0 = j < numY - 1 ? ys * (y[j] - (y[j + 1] - y[j])/2 - loy) : ys * (y[j] - (y[j] - y[j - 1])/2 - loy)
-      yc1 = j < numY - 1 ? ys * (y[j] + (y[j + 1] - y[j])/2 - loy) : ys * (y[j] + (y[j] - y[j - 1])/2 - loy)
-    }
-
-    for (var i = 0; i < ni; ++i) {
-      var xc0, xc1
-
-      if (isSmooth) {
-        xc0 = xs * (x[i] - lox)
-        xc1 = xs * (x[i + 1] - lox)
-      } else {
-        xc0 = i < numX - 1 ? xs * (x[i] - (x[i + 1] - x[i])/2 - lox) : xs * (x[i] - (x[i] - x[i - 1])/2 - lox)
-        xc1 = i < numX - 1 ? xs * (x[i] + (x[i + 1] - x[i])/2 - lox) : xs * (x[i] + (x[i] - x[i - 1])/2 - lox)
-      }
-
-      for (var dd = 0; dd < WEIGHTS.length; dd += 2) {
-        var dx = WEIGHTS[dd]
-        var dy = WEIGHTS[dd + 1]
-        var offset = isSmooth ? (j + dy) * numX + (i + dx) : j * numX + i
-        var zc = z[offset]
-        var colorIdx = bsearch.le(colorLevels, zc)
-        var r, g, b, a
-        if (colorIdx < 0) {
-          r = colorValues[0]
-          g = colorValues[1]
-          b = colorValues[2]
-          a = colorValues[3]
-        } else if (colorIdx === colorCount - 1) {
-          r = colorValues[4 * colorCount - 4]
-          g = colorValues[4 * colorCount - 3]
-          b = colorValues[4 * colorCount - 2]
-          a = colorValues[4 * colorCount - 1]
-        } else {
-          var t = (zc - colorLevels[colorIdx]) /
-            (colorLevels[colorIdx + 1] - colorLevels[colorIdx])
-          var ti = 1.0 - t
-          var i0 = 4 * colorIdx
-          var i1 = 4 * (colorIdx + 1)
-          r = ti * colorValues[i0] + t * colorValues[i1]
-          g = ti * colorValues[i0 + 1] + t * colorValues[i1 + 1]
-          b = ti * colorValues[i0 + 2] + t * colorValues[i1 + 2]
-          a = ti * colorValues[i0 + 3] + t * colorValues[i1 + 3]
-        }
-
-        colors[4 * ptr] = 255 * r
-        colors[4 * ptr + 1] = 255 * g
-        colors[4 * ptr + 2] = 255 * b
-        colors[4 * ptr + 3] = 255 * a
-
-        positions[2*ptr] = xc0*.5 + xc1*.5;
-        positions[2*ptr+1] = yc0*.5 + yc1*.5;
-
-        weights[2*ptr] = dx;
-        weights[2*ptr+1] = dy;
-
-        ids[ptr] = j * numX + i
-
-        ptr += 1
-      }
-    }
-  }
-
-  this.positionBuffer.update(positions)
-  this.weightBuffer.update(weights)
-  this.colorBuffer.update(colors)
-  this.idBuffer.update(ids)
-
-  pool.free(positions)
-  pool.free(colors)
-  pool.free(weights)
-  pool.free(ids)
-}
-
-proto.dispose = function () {
-  this.shader.dispose()
-  this.pickShader.dispose()
-  this.positionBuffer.dispose()
-  this.weightBuffer.dispose()
-  this.colorBuffer.dispose()
-  this.idBuffer.dispose()
-  this.plot.removeObject(this)
-}
-
-function createHeatmap2D (plot, options) {
-  var gl = plot.gl
-
-  var shader = createShader(gl, shaders.vertex, shaders.fragment)
-  var pickShader = createShader(gl, shaders.pickVertex, shaders.pickFragment)
-
-  var positionBuffer = createBuffer(gl)
-  var weightBuffer   = createBuffer(gl)
-  var colorBuffer = createBuffer(gl)
-  var idBuffer = createBuffer(gl)
-
-  var heatmap = new GLHeatmap2D(
-    plot,
-    shader,
-    pickShader,
-    positionBuffer,
-    weightBuffer,
-    colorBuffer,
-    idBuffer)
-
-  heatmap.update(options)
-  plot.addObject(heatmap)
-
-  return heatmap
-}
-
-},{"./lib/shaders":89,"binary-search-bounds":31,"gl-buffer":78,"gl-shader":132,"iota-array":235,"typedarray-pool":308}],89:[function(_glvis_,module,exports){
-'use strict'
-
-var glslify = _glvis_('glslify')
-
-module.exports = {
-  fragment:     glslify(["precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = vec4(fragColor.rgb * fragColor.a, fragColor.a);\n}\n"]),
-  vertex:       glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 color;\nattribute vec2 weight;\n\nuniform vec2 shape;\nuniform mat3 viewTransform;\n\nvarying vec4 fragColor;\n\nvoid main() {\n  vec3 vPosition = viewTransform * vec3( position + (weight-.5)/(shape-1.) , 1.0);\n  fragColor = color;\n  gl_Position = vec4(vPosition.xy, 0, vPosition.z);\n}\n"]),
-  pickFragment: glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\nvarying vec2 vWeight;\n\nuniform vec2 shape;\nuniform vec4 pickOffset;\n\nvoid main() {\n  vec2 d = step(.5, vWeight);\n  vec4 id = fragId + pickOffset;\n  id.x += d.x + d.y*shape.x;\n\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  gl_FragColor = id/255.;\n}\n"]),
-  pickVertex:   glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\nattribute vec2 weight;\n\nuniform vec2 shape;\nuniform mat3 viewTransform;\n\nvarying vec4 fragId;\nvarying vec2 vWeight;\n\nvoid main() {\n  vWeight = weight;\n\n  fragId = pickId;\n\n  vec3 vPosition = viewTransform * vec3( position + (weight-.5)/(shape-1.) , 1.0);\n  gl_Position = vec4(vPosition.xy, 0, vPosition.z);\n}\n"])
-}
-
-},{"glslify":231}],90:[function(_glvis_,module,exports){
-var glslify       = _glvis_('glslify')
-var createShader  = _glvis_('gl-shader')
-
-var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  vec4 startPoint = project(position);\n  vec4 endPoint   = project(nextPosition);\n\n  vec2 A = startPoint.xy / startPoint.w;\n  vec2 B =   endPoint.xy /   endPoint.w;\n\n  float clipAngle = atan(\n    (B.y - A.y) * screenShape.y,\n    (B.x - A.x) * screenShape.x\n  );\n\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(\n    sin(clipAngle),\n    -cos(clipAngle)\n  ) / screenShape;\n\n  gl_Position = vec4(startPoint.xy + startPoint.w * offset, startPoint.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"])
+var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvec4 project(vec3 p) {\n  return projection * (view * (model * vec4(p, 1.0)));\n}\n\nvoid main() {\n  vec4 startPoint = project(position);\n  vec4 endPoint   = project(nextPosition);\n\n  vec2 A = startPoint.xy / startPoint.w;\n  vec2 B =   endPoint.xy /   endPoint.w;\n\n  float clipAngle = atan(\n    (B.y - A.y) * screenShape.y,\n    (B.x - A.x) * screenShape.x\n  );\n\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(\n    sin(clipAngle),\n    -cos(clipAngle)\n  ) / screenShape;\n\n  gl_Position = vec4(startPoint.xy + startPoint.w * offset, startPoint.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"])
 var forwardFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3      clipBounds[2];\nuniform sampler2D dashTexture;\nuniform float     dashScale;\nuniform float     opacity;\n\nvarying vec3    worldPosition;\nvarying float   pixelArcLength;\nvarying vec4    fragColor;\n\nvoid main() {\n  if (\n    outOfRange(clipBounds[0], clipBounds[1], worldPosition) ||\n    fragColor.a * opacity == 0.\n  ) discard;\n\n  float dashWeight = texture2D(dashTexture, vec2(dashScale * pixelArcLength, 0)).r;\n  if(dashWeight < 0.5) {\n    discard;\n  }\n  gl_FragColor = fragColor * opacity;\n}\n"])
 var pickFrag = glslify(["precision highp float;\n#define GLSLIFY 1\n\n#define FLOAT_MAX  1.70141184e38\n#define FLOAT_MIN  1.17549435e-38\n\n// https://github.com/mikolalysenko/glsl-read-float/blob/master/index.glsl\nvec4 packFloat(float v) {\n  float av = abs(v);\n\n  //Handle special cases\n  if(av < FLOAT_MIN) {\n    return vec4(0.0, 0.0, 0.0, 0.0);\n  } else if(v > FLOAT_MAX) {\n    return vec4(127.0, 128.0, 0.0, 0.0) / 255.0;\n  } else if(v < -FLOAT_MAX) {\n    return vec4(255.0, 128.0, 0.0, 0.0) / 255.0;\n  }\n\n  vec4 c = vec4(0,0,0,0);\n\n  //Compute exponent and mantissa\n  float e = floor(log2(av));\n  float m = av * pow(2.0, -e) - 1.0;\n\n  //Unpack mantissa\n  c[1] = floor(128.0 * m);\n  m -= c[1] / 128.0;\n  c[2] = floor(32768.0 * m);\n  m -= c[2] / 32768.0;\n  c[3] = floor(8388608.0 * m);\n\n  //Unpack exponent\n  float ebias = e + 127.0;\n  c[0] = floor(ebias / 2.0);\n  ebias -= c[0] * 2.0;\n  c[1] += floor(ebias) * 128.0;\n\n  //Unpack sign bit\n  c[0] += 128.0 * step(0.0, -v);\n\n  //Scale back to range\n  return c / 255.0;\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform float pickId;\nuniform vec3 clipBounds[2];\n\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\nvarying vec4 fragColor;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], worldPosition)) discard;\n\n  gl_FragColor = vec4(pickId/255.0, packFloat(pixelArcLength).xyz);\n}"])
 
@@ -15791,14 +15738,20 @@ exports.createPickShader = function(gl) {
   return createShader(gl, vertSrc, pickFrag, null, ATTRIBUTES)
 }
 
-},{"gl-shader":132,"glslify":231}],91:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 5714:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createLinePlot
 
-var createBuffer = _glvis_('gl-buffer')
-var createVAO = _glvis_('gl-vao')
-var createTexture = _glvis_('gl-texture2d')
+var createBuffer = __webpack_require__(2762)
+var createVAO = __webpack_require__(8116)
+var createTexture = __webpack_require__(7766)
 
 var UINT8_VIEW = new Uint8Array(4)
 var FLOAT_VIEW = new Float32Array(UINT8_VIEW.buffer)
@@ -15811,9 +15764,9 @@ function unpackFloat(x, y, z, w) {
   return FLOAT_VIEW[0]
 }
 
-var bsearch = _glvis_('binary-search-bounds')
-var ndarray = _glvis_('ndarray')
-var shaders = _glvis_('./lib/shaders')
+var bsearch = __webpack_require__(2478)
+var ndarray = __webpack_require__(9618)
+var shaders = __webpack_require__(7319)
 
 var createShader = shaders.createShader
 var createPickShader = shaders.createPickShader
@@ -16192,7 +16145,12 @@ function createLinePlot (options) {
   return linePlot
 }
 
-},{"./lib/shaders":90,"binary-search-bounds":31,"gl-buffer":78,"gl-texture2d":146,"gl-vao":150,"ndarray":259}],92:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1903:
+/***/ (function(module) {
+
 module.exports = clone;
 
 /**
@@ -16221,7 +16179,12 @@ function clone(a) {
     out[15] = a[15];
     return out;
 };
-},{}],93:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6864:
+/***/ (function(module) {
+
 module.exports = create;
 
 /**
@@ -16249,7 +16212,12 @@ function create() {
     out[15] = 1;
     return out;
 };
-},{}],94:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9921:
+/***/ (function(module) {
+
 module.exports = determinant;
 
 /**
@@ -16280,7 +16248,12 @@ function determinant(a) {
     // Calculate the determinant
     return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 };
-},{}],95:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7399:
+/***/ (function(module) {
+
 module.exports = fromQuat;
 
 /**
@@ -16328,7 +16301,12 @@ function fromQuat(out, q) {
 
     return out;
 };
-},{}],96:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6743:
+/***/ (function(module) {
+
 module.exports = fromRotationTranslation;
 
 /**
@@ -16382,7 +16360,12 @@ function fromRotationTranslation(out, q, v) {
     
     return out;
 };
-},{}],97:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7894:
+/***/ (function(module) {
+
 module.exports = identity;
 
 /**
@@ -16410,7 +16393,12 @@ function identity(out) {
     out[15] = 1;
     return out;
 };
-},{}],98:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7608:
+/***/ (function(module) {
+
 module.exports = invert;
 
 /**
@@ -16466,8 +16454,13 @@ function invert(out, a) {
 
     return out;
 };
-},{}],99:[function(_glvis_,module,exports){
-var identity = _glvis_('./identity');
+
+/***/ }),
+
+/***/ 6582:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var identity = __webpack_require__(7894);
 
 module.exports = lookAt;
 
@@ -16557,7 +16550,12 @@ function lookAt(out, eye, center, up) {
 
     return out;
 };
-},{"./identity":97}],100:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6760:
+/***/ (function(module) {
+
 module.exports = multiply;
 
 /**
@@ -16600,7 +16598,12 @@ function multiply(out, a, b) {
     out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
     return out;
 };
-},{}],101:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4040:
+/***/ (function(module) {
+
 module.exports = ortho;
 
 /**
@@ -16637,7 +16640,12 @@ function ortho(out, left, right, bottom, top, near, far) {
     out[15] = 1;
     return out;
 };
-},{}],102:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4772:
+/***/ (function(module) {
+
 module.exports = perspective;
 
 /**
@@ -16671,7 +16679,12 @@ function perspective(out, fovy, aspect, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],103:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6079:
+/***/ (function(module) {
+
 module.exports = rotate;
 
 /**
@@ -16736,7 +16749,12 @@ function rotate(out, a, rad, axis) {
     }
     return out;
 };
-},{}],104:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5567:
+/***/ (function(module) {
+
 module.exports = rotateX;
 
 /**
@@ -16781,7 +16799,12 @@ function rotateX(out, a, rad) {
     out[11] = a23 * c - a13 * s;
     return out;
 };
-},{}],105:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2408:
+/***/ (function(module) {
+
 module.exports = rotateY;
 
 /**
@@ -16826,7 +16849,12 @@ function rotateY(out, a, rad) {
     out[11] = a03 * s + a23 * c;
     return out;
 };
-},{}],106:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7089:
+/***/ (function(module) {
+
 module.exports = rotateZ;
 
 /**
@@ -16871,7 +16899,12 @@ function rotateZ(out, a, rad) {
     out[7] = a13 * c - a03 * s;
     return out;
 };
-},{}],107:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2504:
+/***/ (function(module) {
+
 module.exports = scale;
 
 /**
@@ -16903,7 +16936,12 @@ function scale(out, a, v) {
     out[15] = a[15];
     return out;
 };
-},{}],108:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7656:
+/***/ (function(module) {
+
 module.exports = translate;
 
 /**
@@ -16942,7 +16980,12 @@ function translate(out, a, v) {
 
     return out;
 };
-},{}],109:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5665:
+/***/ (function(module) {
+
 module.exports = transpose;
 
 /**
@@ -16992,11 +17035,17 @@ function transpose(out, a) {
     
     return out;
 };
-},{}],110:[function(_glvis_,module,exports){
-'use strict'
 
-var barycentric            = _glvis_('barycentric')
-var closestPointToTriangle = _glvis_('polytope-closest-point/lib/closest_point_2d.js')
+/***/ }),
+
+/***/ 7626:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var barycentric            = __webpack_require__(2642)
+var closestPointToTriangle = __webpack_require__(9346)
 
 module.exports = closestPointToPickLocation
 
@@ -17090,19 +17139,24 @@ function closestPointToPickLocation(simplex, pixelCoord, model, view, projection
   }
   return [closestIndex, interpolate(simplex, weights), weights]
 }
-},{"barycentric":14,"polytope-closest-point/lib/closest_point_2d.js":270}],111:[function(_glvis_,module,exports){
-var glslify       = _glvis_('glslify')
 
-var triVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  gl_Position      = project(position);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * vec4(position , 1.0);\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal  = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  f_color          = color;\n  f_data           = position;\n  f_uv             = uv;\n}\n"])
+/***/ }),
+
+/***/ 840:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var glslify       = __webpack_require__(3236)
+
+var triVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvec4 project(vec3 p) {\n  return projection * (view * (model * vec4(p, 1.0)));\n}\n\nvoid main() {\n  gl_Position      = project(position);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * vec4(position , 1.0);\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal  = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  f_color          = color;\n  f_data           = position;\n  f_uv             = uv;\n}\n"])
 var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\n//#pragma glslify: beckmann = require(glsl-specular-beckmann) // used in gl-surface3d\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (f_color.a == 0.0 ||\n    outOfRange(clipBounds[0], clipBounds[1], f_data)\n  ) discard;\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  //float specular = max(0.0, beckmann(L, V, N, roughness)); // used in gl-surface3d\n\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = vec4(f_color.rgb, 1.0) * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * f_color.a;\n}\n"])
-var edgeVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model, view, projection;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_color = color;\n  f_data  = position;\n  f_uv    = uv;\n}"])
+var edgeVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model, view, projection;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  gl_Position = projection * (view * (model * vec4(position, 1.0)));\n  f_color = color;\n  f_data  = position;\n  f_uv    = uv;\n}"])
 var edgeFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_data)) discard;\n\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"])
-var pointVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\nattribute float pointSize;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0.0, 0.0 ,0.0 ,0.0);\n  } else {\n    gl_Position = projection * view * model * vec4(position, 1.0);\n  }\n  gl_PointSize = pointSize;\n  f_color = color;\n  f_uv = uv;\n}"])
+var pointVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\nattribute float pointSize;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0.0, 0.0 ,0.0 ,0.0);\n  } else {\n    gl_Position = projection * (view * (model * vec4(position, 1.0)));\n  }\n  gl_PointSize = pointSize;\n  f_color = color;\n  f_uv = uv;\n}"])
 var pointFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec2 pointR = gl_PointCoord.xy - vec2(0.5, 0.5);\n  if(dot(pointR, pointR) > 0.25) {\n    discard;\n  }\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"])
-var pickVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_id        = id;\n  f_position  = position;\n}"])
+var pickVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  gl_Position = projection * (view * (model * vec4(position, 1.0)));\n  f_id        = id;\n  f_position  = position;\n}"])
 var pickFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"])
-var pickPointVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3  position;\nattribute float pointSize;\nattribute vec4  id;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0.0, 0.0, 0.0, 0.0);\n  } else {\n    gl_Position  = projection * view * model * vec4(position, 1.0);\n    gl_PointSize = pointSize;\n  }\n  f_id         = id;\n  f_position   = position;\n}"])
-var contourVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n}"])
+var pickPointVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3  position;\nattribute float pointSize;\nattribute vec4  id;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0.0, 0.0, 0.0, 0.0);\n  } else {\n    gl_Position  = projection * (view * (model * vec4(position, 1.0)));\n    gl_PointSize = pointSize;\n  }\n  f_id         = id;\n  f_position   = position;\n}"])
+var contourVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\n\nvoid main() {\n  gl_Position = projection * (view * (model * vec4(position, 1.0)));\n}"])
 var contourFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform vec3 contourColor;\n\nvoid main() {\n  gl_FragColor = vec4(contourColor, 1.0);\n}\n"])
 
 exports.meshShader = {
@@ -17159,25 +17213,31 @@ exports.contourShader = {
   ]
 }
 
-},{"glslify":231}],112:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 7201:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 var DEFAULT_VERTEX_NORMALS_EPSILON = 1e-6; // may be too large if triangles are very small
 var DEFAULT_FACE_NORMALS_EPSILON = 1e-6;
 
-var createShader  = _glvis_('gl-shader')
-var createBuffer  = _glvis_('gl-buffer')
-var createVAO     = _glvis_('gl-vao')
-var createTexture = _glvis_('gl-texture2d')
-var normals       = _glvis_('normals')
-var multiply      = _glvis_('gl-mat4/multiply')
-var invert        = _glvis_('gl-mat4/invert')
-var ndarray       = _glvis_('ndarray')
-var colormap      = _glvis_('colormap')
-var getContour    = _glvis_('simplicial-complex-contour')
-var pool          = _glvis_('typedarray-pool')
-var shaders       = _glvis_('./lib/shaders')
-var closestPoint  = _glvis_('./lib/closest-point')
+var createShader  = __webpack_require__(9405)
+var createBuffer  = __webpack_require__(2762)
+var createVAO     = __webpack_require__(8116)
+var createTexture = __webpack_require__(7766)
+var normals       = __webpack_require__(8406)
+var multiply      = __webpack_require__(6760)
+var invert        = __webpack_require__(7608)
+var ndarray       = __webpack_require__(9618)
+var colormap      = __webpack_require__(6729)
+var getContour    = __webpack_require__(7765)
+var pool          = __webpack_require__(1888)
+var shaders       = __webpack_require__(840)
+var closestPoint  = __webpack_require__(7626)
 
 var meshShader    = shaders.meshShader
 var wireShader    = shaders.wireShader
@@ -18270,1271 +18330,23 @@ function createSimplicialMesh(gl, params) {
 
 module.exports = createSimplicialMesh
 
-},{"./lib/closest-point":110,"./lib/shaders":111,"colormap":53,"gl-buffer":78,"gl-mat4/invert":98,"gl-mat4/multiply":100,"gl-shader":132,"gl-texture2d":146,"gl-vao":150,"ndarray":259,"normals":261,"simplicial-complex-contour":291,"typedarray-pool":308}],113:[function(_glvis_,module,exports){
-'use strict'
 
-module.exports = createBoxes
+/***/ }),
 
-var createBuffer = _glvis_('gl-buffer')
-var createShader = _glvis_('gl-shader')
+/***/ 4437:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var shaders = _glvis_('./shaders')
+"use strict";
 
-function Boxes(plot, vbo, shader) {
-  this.plot   = plot
-  this.vbo    = vbo
-  this.shader = shader
-}
-
-var proto = Boxes.prototype
-
-proto.bind = function() {
-  var shader = this.shader
-  this.vbo.bind()
-  this.shader.bind()
-  shader.attributes.coord.pointer()
-  shader.uniforms.screenBox = this.plot.screenBox
-}
-
-proto.drawBox = (function() {
-  var lo = [0,0]
-  var hi = [0,0]
-  return function(loX, loY, hiX, hiY, color) {
-    var plot       = this.plot
-    var shader     = this.shader
-    var gl         = plot.gl
-
-    lo[0] = loX
-    lo[1] = loY
-    hi[0] = hiX
-    hi[1] = hiY
-
-    shader.uniforms.lo     = lo
-    shader.uniforms.hi     = hi
-    shader.uniforms.color  = color
-
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-  }
-}())
-
-proto.dispose = function() {
-  this.vbo.dispose()
-  this.shader.dispose()
-}
-
-function createBoxes(plot) {
-  var gl  = plot.gl
-  var vbo = createBuffer(gl, [
-    0,0,
-    0,1,
-    1,0,
-    1,1])
-  var shader  = createShader(gl, shaders.boxVert, shaders.lineFrag)
-  return new Boxes(plot, vbo, shader)
-}
-
-},{"./shaders":116,"gl-buffer":78,"gl-shader":132}],114:[function(_glvis_,module,exports){
-'use strict'
-
-module.exports = createGrid
-
-var createBuffer  = _glvis_('gl-buffer')
-var createShader  = _glvis_('gl-shader')
-var bsearch       = _glvis_('binary-search-bounds')
-var shaders       = _glvis_('./shaders')
-
-function Grid(plot, vbo, shader, tickShader) {
-  this.plot   = plot
-  this.vbo    = vbo
-  this.shader = shader
-  this.tickShader = tickShader
-  this.ticks  = [[], []]
-}
-
-function compareTickNum(a, b) {
-  return a - b
-}
-
-var proto = Grid.prototype
-
-proto.draw = (function() {
-
-  var DATA_SHIFT = [0,0]
-  var DATA_SCALE = [0,0]
-  var DATA_AXIS  = [0,0]
-
-  return function() {
-    var plot       = this.plot
-    var vbo        = this.vbo
-    var shader     = this.shader
-    var ticks      = this.ticks
-    var gl         = plot.gl
-    var bounds     = plot._tickBounds
-    var dataBox    = plot.dataBox
-    var viewPixels = plot.viewBox
-    var lineWidth  = plot.gridLineWidth
-    var gridColor  = plot.gridLineColor
-    var gridEnable = plot.gridLineEnable
-    var pixelRatio = plot.pixelRatio
-
-    for(var i=0; i<2; ++i) {
-      var lo = bounds[i]
-      var hi = bounds[i+2]
-      var boundScale = hi - lo
-      var dataCenter  = 0.5 * (dataBox[i+2] + dataBox[i])
-      var dataWidth   = dataBox[i+2] - dataBox[i]
-      DATA_SCALE[i] = 2.0 * boundScale / dataWidth
-      DATA_SHIFT[i] = 2.0 * (lo - dataCenter) / dataWidth
-    }
-
-    shader.bind()
-    vbo.bind()
-    shader.attributes.dataCoord.pointer()
-    shader.uniforms.dataShift = DATA_SHIFT
-    shader.uniforms.dataScale = DATA_SCALE
-
-    var offset = 0
-    for(var i=0; i<2; ++i) {
-      DATA_AXIS[0] = DATA_AXIS[1] = 0
-      DATA_AXIS[i] = 1
-      shader.uniforms.dataAxis  = DATA_AXIS
-      shader.uniforms.lineWidth = lineWidth[i] / (viewPixels[i+2] - viewPixels[i]) * pixelRatio
-      shader.uniforms.color     = gridColor[i]
-
-      var size = ticks[i].length * 6
-      if(gridEnable[i] && size) {
-        gl.drawArrays(gl.TRIANGLES, offset, size)
-      }
-      offset += size
-    }
-  }
-})()
-
-proto.drawTickMarks = (function() {
-  var DATA_SHIFT = [0,0]
-  var DATA_SCALE = [0,0]
-  var X_AXIS     = [1,0]
-  var Y_AXIS     = [0,1]
-  var SCR_OFFSET = [0,0]
-  var TICK_SCALE = [0,0]
-
-  return function() {
-    var plot       = this.plot
-    var vbo        = this.vbo
-    var shader     = this.tickShader
-    var ticks      = this.ticks
-    var gl         = plot.gl
-    var bounds     = plot._tickBounds
-    var dataBox    = plot.dataBox
-    var viewBox    = plot.viewBox
-    var pixelRatio = plot.pixelRatio
-    var screenBox  = plot.screenBox
-
-    var screenWidth  = screenBox[2] - screenBox[0]
-    var screenHeight = screenBox[3] - screenBox[1]
-    var viewWidth    = viewBox[2]   - viewBox[0]
-    var viewHeight   = viewBox[3]   - viewBox[1]
-
-    for(var i=0; i<2; ++i) {
-      var lo = bounds[i]
-      var hi = bounds[i+2]
-      var boundScale = hi - lo
-      var dataCenter  = 0.5 * (dataBox[i+2] + dataBox[i])
-      var dataWidth   = (dataBox[i+2] - dataBox[i])
-      DATA_SCALE[i] = 2.0 * boundScale / dataWidth
-      DATA_SHIFT[i] = 2.0 * (lo - dataCenter) / dataWidth
-    }
-
-    DATA_SCALE[0] *= viewWidth / screenWidth
-    DATA_SHIFT[0] *= viewWidth / screenWidth
-
-    DATA_SCALE[1] *= viewHeight / screenHeight
-    DATA_SHIFT[1] *= viewHeight / screenHeight
-
-    shader.bind()
-    vbo.bind()
-
-    shader.attributes.dataCoord.pointer()
-
-    var uniforms = shader.uniforms
-    uniforms.dataShift = DATA_SHIFT
-    uniforms.dataScale = DATA_SCALE
-
-    var tickMarkLength = plot.tickMarkLength
-    var tickMarkWidth  = plot.tickMarkWidth
-    var tickMarkColor  = plot.tickMarkColor
-
-    var xTicksOffset = 0
-    var yTicksOffset = ticks[0].length * 6
-
-    var xStart = Math.min(bsearch.ge(ticks[0], (dataBox[0] - bounds[0]) / (bounds[2] - bounds[0]), compareTickNum), ticks[0].length)
-    var xEnd   = Math.min(bsearch.gt(ticks[0], (dataBox[2] - bounds[0]) / (bounds[2] - bounds[0]), compareTickNum), ticks[0].length)
-    var xOffset = xTicksOffset + 6 * xStart
-    var xCount  = 6 * Math.max(0, xEnd - xStart)
-
-    var yStart = Math.min(bsearch.ge(ticks[1], (dataBox[1] - bounds[1]) / (bounds[3] - bounds[1]), compareTickNum), ticks[1].length)
-    var yEnd   = Math.min(bsearch.gt(ticks[1], (dataBox[3] - bounds[1]) / (bounds[3] - bounds[1]), compareTickNum), ticks[1].length)
-    var yOffset = yTicksOffset + 6 * yStart
-    var yCount  = 6 * Math.max(0, yEnd - yStart)
-
-    SCR_OFFSET[0]         = 2.0 * (viewBox[0] - tickMarkLength[1]) / screenWidth - 1.0
-    SCR_OFFSET[1]         = (viewBox[3] + viewBox[1]) / screenHeight - 1.0
-    TICK_SCALE[0]         = tickMarkLength[1] * pixelRatio / screenWidth
-    TICK_SCALE[1]         = tickMarkWidth[1]  * pixelRatio / screenHeight
-
-    if(yCount) {
-      uniforms.color        = tickMarkColor[1]
-      uniforms.tickScale    = TICK_SCALE
-      uniforms.dataAxis     = Y_AXIS
-      uniforms.screenOffset = SCR_OFFSET
-      gl.drawArrays(gl.TRIANGLES, yOffset, yCount)
-    }
-
-    SCR_OFFSET[0]         = (viewBox[2] + viewBox[0]) / screenWidth - 1.0
-    SCR_OFFSET[1]         = 2.0 * (viewBox[1] - tickMarkLength[0]) / screenHeight - 1.0
-    TICK_SCALE[0]         = tickMarkWidth[0]  * pixelRatio / screenWidth
-    TICK_SCALE[1]         = tickMarkLength[0] * pixelRatio / screenHeight
-
-    if(xCount) {
-      uniforms.color        = tickMarkColor[0]
-      uniforms.tickScale    = TICK_SCALE
-      uniforms.dataAxis     = X_AXIS
-      uniforms.screenOffset = SCR_OFFSET
-      gl.drawArrays(gl.TRIANGLES, xOffset, xCount)
-    }
-
-    SCR_OFFSET[0]         = 2.0 * (viewBox[2] + tickMarkLength[3]) / screenWidth - 1.0
-    SCR_OFFSET[1]         = (viewBox[3] + viewBox[1]) / screenHeight - 1.0
-    TICK_SCALE[0]         = tickMarkLength[3] * pixelRatio / screenWidth
-    TICK_SCALE[1]         = tickMarkWidth[3]  * pixelRatio / screenHeight
-
-    if(yCount) {
-      uniforms.color        = tickMarkColor[3]
-      uniforms.tickScale    = TICK_SCALE
-      uniforms.dataAxis     = Y_AXIS
-      uniforms.screenOffset = SCR_OFFSET
-      gl.drawArrays(gl.TRIANGLES, yOffset, yCount)
-    }
-
-    SCR_OFFSET[0]         = (viewBox[2] + viewBox[0]) / screenWidth - 1.0
-    SCR_OFFSET[1]         = 2.0 * (viewBox[3] + tickMarkLength[2]) / screenHeight - 1.0
-    TICK_SCALE[0]         = tickMarkWidth[2]  * pixelRatio / screenWidth
-    TICK_SCALE[1]         = tickMarkLength[2] * pixelRatio / screenHeight
-
-    if(xCount) {
-      uniforms.color        = tickMarkColor[2]
-      uniforms.tickScale    = TICK_SCALE
-      uniforms.dataAxis     = X_AXIS
-      uniforms.screenOffset = SCR_OFFSET
-      gl.drawArrays(gl.TRIANGLES, xOffset, xCount)
-    }
-  }
-})()
-
-proto.update = (function() {
-  var OFFSET_X = [1,  1, -1, -1,  1, -1]
-  var OFFSET_Y = [1, -1,  1,  1, -1, -1]
-
-  return function(options) {
-    var ticks  = options.ticks
-    var bounds = options.bounds
-    var data   = new Float32Array(6 * 3 * (ticks[0].length + ticks[1].length))
-
-    var zeroLineEnable = this.plot.zeroLineEnable
-
-    var ptr    = 0
-    var gridTicks = [[], []]
-    for(var dim=0; dim<2; ++dim) {
-      var localTicks = gridTicks[dim]
-      var axisTicks = ticks[dim]
-      var lo = bounds[dim]
-      var hi = bounds[dim+2]
-      for(var i=0; i<axisTicks.length; ++i) {
-        var x = (axisTicks[i].x - lo) / (hi - lo)
-        localTicks.push(x)
-        for(var j=0; j<6; ++j) {
-          data[ptr++] = x
-          data[ptr++] = OFFSET_X[j]
-          data[ptr++] = OFFSET_Y[j]
-        }
-      }
-    }
-
-    this.ticks = gridTicks
-    this.vbo.update(data)
-  }
-})()
-
-proto.dispose = function() {
-  this.vbo.dispose()
-  this.shader.dispose()
-  this.tickShader.dispose()
-}
-
-function createGrid(plot) {
-  var gl     = plot.gl
-  var vbo    = createBuffer(gl)
-  var shader = createShader(gl, shaders.gridVert, shaders.gridFrag)
-  var tickShader = createShader(gl, shaders.tickVert, shaders.gridFrag)
-  var grid   = new Grid(plot, vbo, shader, tickShader)
-  return grid
-}
-
-},{"./shaders":116,"binary-search-bounds":31,"gl-buffer":78,"gl-shader":132}],115:[function(_glvis_,module,exports){
-'use strict'
-
-module.exports = createLines
-
-var createBuffer = _glvis_('gl-buffer')
-var createShader = _glvis_('gl-shader')
-
-var shaders = _glvis_('./shaders')
-
-function Lines(plot, vbo, shader) {
-  this.plot   = plot
-  this.vbo    = vbo
-  this.shader = shader
-}
-
-var proto = Lines.prototype
-
-proto.bind = function() {
-  var shader = this.shader
-  this.vbo.bind()
-  this.shader.bind()
-  shader.attributes.coord.pointer()
-  shader.uniforms.screenBox = this.plot.screenBox
-}
-
-proto.drawLine = (function() {
-  var start = [0,0]
-  var end   = [0,0]
-  return function(startX, startY, endX, endY, width, color) {
-    var plot       = this.plot
-    var shader     = this.shader
-    var gl         = plot.gl
-
-    start[0] = startX
-    start[1] = startY
-    end[0]   = endX
-    end[1]   = endY
-
-    shader.uniforms.start  = start
-    shader.uniforms.end    = end
-    shader.uniforms.width  = width * plot.pixelRatio
-    shader.uniforms.color  = color
-
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-  }
-}())
-
-proto.dispose = function() {
-  this.vbo.dispose()
-  this.shader.dispose()
-}
-
-function createLines(plot) {
-  var gl  = plot.gl
-  var vbo = createBuffer(gl, [
-    -1,-1,
-    -1,1,
-    1,-1,
-    1,1])
-  var shader  = createShader(gl, shaders.lineVert, shaders.lineFrag)
-  var lines   = new Lines(plot, vbo, shader)
-  return lines
-}
-
-},{"./shaders":116,"gl-buffer":78,"gl-shader":132}],116:[function(_glvis_,module,exports){
-'use strict'
-
-var glslify = _glvis_('glslify')
-
-var FRAGMENT = glslify(["precision lowp float;\n#define GLSLIFY 1\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = vec4(color.xyz * color.w, color.w);\n}\n"])
-
-module.exports = {
-  lineVert: glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 coord;\n\nuniform vec4 screenBox;\nuniform vec2 start, end;\nuniform float width;\n\nvec2 perp(vec2 v) {\n  return vec2(v.y, -v.x);\n}\n\nvec2 screen(vec2 v) {\n  return 2.0 * (v - screenBox.xy) / (screenBox.zw - screenBox.xy) - 1.0;\n}\n\nvoid main() {\n  vec2 delta = normalize(perp(start - end));\n  vec2 offset = mix(start, end, 0.5 * (coord.y+1.0));\n  gl_Position = vec4(screen(offset + 0.5 * width * delta * coord.x), 0, 1);\n}\n"]),
-  lineFrag: FRAGMENT,
-  textVert: glslify(["#define GLSLIFY 1\nattribute vec3 textCoordinate;\n\nuniform vec2 dataScale, dataShift, dataAxis, screenOffset, textScale;\nuniform float angle;\n\nvoid main() {\n  float dataOffset  = textCoordinate.z;\n  vec2 glyphOffset  = textCoordinate.xy;\n  mat2 glyphMatrix = mat2(cos(angle), sin(angle), -sin(angle), cos(angle));\n  vec2 screenCoordinate = dataAxis * (dataScale * dataOffset + dataShift) +\n    glyphMatrix * glyphOffset * textScale + screenOffset;\n  gl_Position = vec4(screenCoordinate, 0, 1);\n}\n"]),
-  textFrag: FRAGMENT,
-  gridVert: glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale;\nuniform float lineWidth;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  pos += 10.0 * dataCoord.y * vec2(dataAxis.y, -dataAxis.x) + dataCoord.z * lineWidth;\n  gl_Position = vec4(pos, 0, 1);\n}\n"]),
-  gridFrag: FRAGMENT,
-  boxVert:  glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 coord;\n\nuniform vec4 screenBox;\nuniform vec2 lo, hi;\n\nvec2 screen(vec2 v) {\n  return 2.0 * (v - screenBox.xy) / (screenBox.zw - screenBox.xy) - 1.0;\n}\n\nvoid main() {\n  gl_Position = vec4(screen(mix(lo, hi, coord)), 0, 1);\n}\n"]),
-  tickVert: glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale, screenOffset, tickScale;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  gl_Position = vec4(pos + tickScale*dataCoord.yz + screenOffset, 0, 1);\n}\n"])
-}
-
-},{"glslify":231}],117:[function(_glvis_,module,exports){
-'use strict'
-
-module.exports = createTextElements
-
-var createBuffer = _glvis_('gl-buffer')
-var createShader = _glvis_('gl-shader')
-var getText      = _glvis_('text-cache')
-var bsearch      = _glvis_('binary-search-bounds')
-var shaders      = _glvis_('./shaders')
-
-function TextElements(plot, vbo, shader) {
-  this.plot         = plot
-  this.vbo          = vbo
-  this.shader       = shader
-  this.tickOffset   = [[],[]]
-  this.tickX        = [[],[]]
-  this.labelOffset  = [0,0]
-  this.labelCount   = [0,0]
-}
-
-var proto = TextElements.prototype
-
-proto.drawTicks = (function() {
-  var DATA_AXIS = [0,0]
-  var SCREEN_OFFSET = [0,0]
-  var ZERO_2 = [0,0]
-
-  return function(axis) {
-    var plot        = this.plot
-    var shader      = this.shader
-    var tickX       = this.tickX[axis]
-    var tickOffset  = this.tickOffset[axis]
-    var gl          = plot.gl
-    var viewBox     = plot.viewBox
-    var dataBox     = plot.dataBox
-    var screenBox   = plot.screenBox
-    var pixelRatio  = plot.pixelRatio
-    var tickEnable  = plot.tickEnable
-    var tickPad     = plot.tickPad
-    var textColor   = plot.tickColor
-    var textAngle   = plot.tickAngle
-    // todo check if this should be used (now unused)
-    // var tickLength  = plot.tickMarkLength
-
-    var labelEnable = plot.labelEnable
-    var labelPad    = plot.labelPad
-    var labelColor  = plot.labelColor
-    var labelAngle  = plot.labelAngle
-    var labelOffset = this.labelOffset[axis]
-    var labelCount  = this.labelCount[axis]
-
-    var start = bsearch.lt(tickX, dataBox[axis])
-    var end   = bsearch.le(tickX, dataBox[axis+2])
-
-    DATA_AXIS[0]    = DATA_AXIS[1] = 0
-    DATA_AXIS[axis] = 1
-
-    SCREEN_OFFSET[axis] = (viewBox[2+axis] + viewBox[axis]) / (screenBox[2+axis] - screenBox[axis]) - 1.0
-
-    var screenScale = 2.0 / screenBox[2+(axis^1)] - screenBox[axis^1]
-
-    SCREEN_OFFSET[axis^1] = screenScale * viewBox[axis^1] - 1.0
-    if(tickEnable[axis]) {
-      SCREEN_OFFSET[axis^1] -= screenScale * pixelRatio * tickPad[axis]
-      if(start < end && tickOffset[end] > tickOffset[start]) {
-        shader.uniforms.dataAxis     = DATA_AXIS
-        shader.uniforms.screenOffset = SCREEN_OFFSET
-        shader.uniforms.color        = textColor[axis]
-        shader.uniforms.angle        = textAngle[axis]
-        gl.drawArrays(
-          gl.TRIANGLES,
-          tickOffset[start],
-          tickOffset[end] - tickOffset[start])
-      }
-    }
-    if(labelEnable[axis] && labelCount) {
-      SCREEN_OFFSET[axis^1] -= screenScale * pixelRatio * labelPad[axis]
-      shader.uniforms.dataAxis     = ZERO_2
-      shader.uniforms.screenOffset = SCREEN_OFFSET
-      shader.uniforms.color        = labelColor[axis]
-      shader.uniforms.angle        = labelAngle[axis]
-      gl.drawArrays(
-        gl.TRIANGLES,
-        labelOffset,
-        labelCount)
-    }
-
-    SCREEN_OFFSET[axis^1] = screenScale * viewBox[2+(axis^1)] - 1.0
-    if(tickEnable[axis+2]) {
-      SCREEN_OFFSET[axis^1] += screenScale * pixelRatio * tickPad[axis+2]
-      if(start < end && tickOffset[end] > tickOffset[start]) {
-        shader.uniforms.dataAxis     = DATA_AXIS
-        shader.uniforms.screenOffset = SCREEN_OFFSET
-        shader.uniforms.color        = textColor[axis+2]
-        shader.uniforms.angle        = textAngle[axis+2]
-        gl.drawArrays(
-          gl.TRIANGLES,
-          tickOffset[start],
-          tickOffset[end] - tickOffset[start])
-      }
-    }
-    if(labelEnable[axis+2] && labelCount) {
-      SCREEN_OFFSET[axis^1] += screenScale * pixelRatio * labelPad[axis+2]
-      shader.uniforms.dataAxis     = ZERO_2
-      shader.uniforms.screenOffset = SCREEN_OFFSET
-      shader.uniforms.color        = labelColor[axis+2]
-      shader.uniforms.angle        = labelAngle[axis+2]
-      gl.drawArrays(
-        gl.TRIANGLES,
-        labelOffset,
-        labelCount)
-    }
-
-  }
-})()
-
-proto.drawTitle = (function() {
-  var DATA_AXIS = [0,0]
-  var SCREEN_OFFSET = [0,0]
-
-  return function() {
-    var plot        = this.plot
-    var shader      = this.shader
-    var gl          = plot.gl
-    var screenBox   = plot.screenBox
-    var titleCenter = plot.titleCenter
-    var titleAngle  = plot.titleAngle
-    var titleColor  = plot.titleColor
-    var pixelRatio  = plot.pixelRatio
-
-    if(!this.titleCount) {
-      return
-    }
-
-    for(var i=0; i<2; ++i) {
-      SCREEN_OFFSET[i] = 2.0 * (titleCenter[i]*pixelRatio - screenBox[i]) /
-        (screenBox[2+i] - screenBox[i]) - 1
-    }
-
-    shader.bind()
-    shader.uniforms.dataAxis      = DATA_AXIS
-    shader.uniforms.screenOffset  = SCREEN_OFFSET
-    shader.uniforms.angle         = titleAngle
-    shader.uniforms.color         = titleColor
-
-    gl.drawArrays(gl.TRIANGLES, this.titleOffset, this.titleCount)
-  }
-})()
-
-proto.bind = (function() {
-  var DATA_SHIFT = [0,0]
-  var DATA_SCALE = [0,0]
-  var TEXT_SCALE = [0,0]
-
-  return function() {
-    var plot      = this.plot
-    var shader    = this.shader
-    var bounds    = plot._tickBounds
-    var dataBox   = plot.dataBox
-    var screenBox = plot.screenBox
-    var viewBox   = plot.viewBox
-
-    shader.bind()
-
-    //Set up coordinate scaling uniforms
-    for(var i=0; i<2; ++i) {
-
-      var lo = bounds[i]
-      var hi = bounds[i+2]
-      var boundScale = hi - lo
-      var dataCenter  = 0.5 * (dataBox[i+2] + dataBox[i])
-      var dataWidth   = (dataBox[i+2] - dataBox[i])
-
-      var viewLo = viewBox[i]
-      var viewHi = viewBox[i+2]
-      var viewScale = viewHi - viewLo
-      var screenLo = screenBox[i]
-      var screenHi = screenBox[i+2]
-      var screenScale = screenHi - screenLo
-
-      DATA_SCALE[i] = 2.0 * boundScale / dataWidth * viewScale / screenScale
-      DATA_SHIFT[i] = 2.0 * (lo - dataCenter) / dataWidth * viewScale / screenScale
-    }
-
-    TEXT_SCALE[1] = 2.0 * plot.pixelRatio / (screenBox[3] - screenBox[1])
-    TEXT_SCALE[0] = TEXT_SCALE[1] * (screenBox[3] - screenBox[1]) / (screenBox[2] - screenBox[0])
-
-    shader.uniforms.dataScale = DATA_SCALE
-    shader.uniforms.dataShift = DATA_SHIFT
-    shader.uniforms.textScale = TEXT_SCALE
-
-    //Set attributes
-    this.vbo.bind()
-    shader.attributes.textCoordinate.pointer()
-  }
-})()
-
-proto.update = function(options) {
-  var vertices  = []
-  var axesTicks = options.ticks
-  var bounds    = options.bounds
-  var i, j, k, data, scale, dimension
-
-  for(dimension=0; dimension<2; ++dimension) {
-    var offsets = [Math.floor(vertices.length/3)], tickX = [-Infinity]
-
-    //Copy vertices over to buffer
-    var ticks = axesTicks[dimension]
-    for(i=0; i<ticks.length; ++i) {
-      var tick  = ticks[i]
-      var x     = tick.x
-      var text  = tick.text
-      var font  = tick.font || 'sans-serif'
-      scale = (tick.fontSize || 12)
-
-      var coordScale = 1.0 / (bounds[dimension+2] - bounds[dimension])
-      var coordShift = bounds[dimension]
-
-      var rows = text.split('\n')
-      for(var r = 0; r < rows.length; r++) {
-        data = getText(font, rows[r]).data
-        for (j = 0; j < data.length; j += 2) {
-          vertices.push(
-              data[j] * scale,
-              -data[j + 1] * scale - r * scale * 1.2,
-              (x - coordShift) * coordScale)
-        }
-      }
-
-      offsets.push(Math.floor(vertices.length/3))
-      tickX.push(x)
-    }
-
-    this.tickOffset[dimension] = offsets
-    this.tickX[dimension] = tickX
-  }
-
-  //Add labels
-  for(dimension=0; dimension<2; ++dimension) {
-    this.labelOffset[dimension] = Math.floor(vertices.length/3)
-
-    data  = getText(options.labelFont[dimension], options.labels[dimension], { textAlign: 'center' }).data
-    scale = options.labelSize[dimension]
-    for(i=0; i<data.length; i+=2) {
-      vertices.push(data[i]*scale, -data[i+1]*scale, 0)
-    }
-
-    this.labelCount[dimension] =
-      Math.floor(vertices.length/3) - this.labelOffset[dimension]
-  }
-
-  //Add title
-  this.titleOffset = Math.floor(vertices.length/3)
-  data = getText(options.titleFont, options.title).data
-  scale = options.titleSize
-  for(i=0; i<data.length; i+=2) {
-    vertices.push(data[i]*scale, -data[i+1]*scale, 0)
-  }
-  this.titleCount = Math.floor(vertices.length/3) - this.titleOffset
-
-  //Upload new vertices
-  this.vbo.update(vertices)
-}
-
-proto.dispose = function() {
-  this.vbo.dispose()
-  this.shader.dispose()
-}
-
-function createTextElements(plot) {
-  var gl = plot.gl
-  var vbo = createBuffer(gl)
-  var shader = createShader(gl, shaders.textVert, shaders.textFrag)
-  var text = new TextElements(plot, vbo, shader)
-  return text
-}
-
-},{"./shaders":116,"binary-search-bounds":31,"gl-buffer":78,"gl-shader":132,"text-cache":303}],118:[function(_glvis_,module,exports){
-'use strict'
-
-module.exports = createGLPlot2D
-
-var createPick = _glvis_('gl-select-static')
-
-var createGrid = _glvis_('./lib/grid')
-var createText = _glvis_('./lib/text')
-var createLine = _glvis_('./lib/line')
-var createBox  = _glvis_('./lib/box')
-
-function GLPlot2D(gl, pickBuffer) {
-  this.gl               = gl
-  this.pickBuffer       = pickBuffer
-
-  this.screenBox        = [0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight]
-  this.viewBox          = [0, 0, 0, 0]
-  this.dataBox          = [-10, -10, 10, 10]
-
-  this.gridLineEnable   = [true,true]
-  this.gridLineWidth    = [1,1]
-  this.gridLineColor    = [[0,0,0,1],
-                           [0,0,0,1]]
-
-  this.pixelRatio       = 1
-
-  this.tickMarkLength   = [0,0,0,0]
-  this.tickMarkWidth    = [0,0,0,0]
-  this.tickMarkColor    = [[0,0,0,1],
-                           [0,0,0,1],
-                           [0,0,0,1],
-                           [0,0,0,1]]
-
-  this.tickPad          = [15,15,15,15]
-  this.tickAngle        = [0,0,0,0]
-  this.tickEnable       = [true,true,true,true]
-  this.tickColor        = [[0,0,0,1],
-                           [0,0,0,1],
-                           [0,0,0,1],
-                           [0,0,0,1]]
-
-  this.labelPad         = [15,15,15,15]
-  this.labelAngle       = [0,Math.PI/2,0,3.0*Math.PI/2]
-  this.labelEnable      = [true,true,true,true]
-  this.labelColor       = [[0,0,0,1],
-                           [0,0,0,1],
-                           [0,0,0,1],
-                           [0,0,0,1]]
-
-  this.titleCenter      = [0,0]
-  this.titleEnable      = true
-  this.titleAngle       = 0
-  this.titleColor       = [0,0,0,1]
-
-  this.borderColor      = [0,0,0,0]
-  this.backgroundColor  = [0,0,0,0]
-
-  this.zeroLineEnable   = [true, true]
-  this.zeroLineWidth    = [4, 4]
-  this.zeroLineColor    = [[0, 0, 0, 1],[0, 0, 0, 1]]
-
-  this.borderLineEnable = [true,true,true,true]
-  this.borderLineWidth  = [2,2,2,2]
-  this.borderLineColor  = [[0,0,0,1],
-                           [0,0,0,1],
-                           [0,0,0,1],
-                           [0,0,0,1]]
-
-  //Drawing parameters
-  this.grid             = null
-  this.text             = null
-  this.line             = null
-  this.box              = null
-  this.objects          = []
-  this.overlays         = []
-
-  this._tickBounds      = [Infinity, Infinity, -Infinity, -Infinity]
-
-  this.static = false
-
-  this.dirty        = false
-  this.pickDirty    = false
-  this.pickDelay    = 120
-  this.pickRadius   = 10
-  this._pickTimeout = null
-  this._drawPick    = this.drawPick.bind(this)
-
-  this._depthCounter = 0
-}
-
-var proto = GLPlot2D.prototype
-
-proto.setDirty = function() {
-  this.dirty = this.pickDirty = true
-}
-
-proto.setOverlayDirty = function() {
-  this.dirty = true
-}
-
-proto.nextDepthValue = function() {
-  return (this._depthCounter++) / 65536.0
-}
-
-function lerp(a, b, t) {
-  var s = 0.5 * (t + 1.0)
-  return Math.floor((1.0-s)*a + s*b)|0
-}
-
-proto.draw = (function() {
-var TICK_MARK_BOX = [0,0,0,0]
-return function() {
-  var gl         = this.gl
-  var screenBox  = this.screenBox
-  var viewPixels = this.viewBox
-  var dataBox    = this.dataBox
-  var pixelRatio = this.pixelRatio
-  var grid       = this.grid
-  var line       = this.line
-  var text       = this.text
-  var objects    = this.objects
-
-  this._depthCounter = 0
-
-  if(this.pickDirty) {
-    if(this._pickTimeout) {
-      clearTimeout(this._pickTimeout)
-    }
-    this.pickDirty = false
-    this._pickTimeout = setTimeout(this._drawPick, this.pickDelay)
-  }
-
-  if(!this.dirty) {
-    return
-  }
-  this.dirty = false
-
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null)
-
-  //Turn on scissor
-  gl.enable(gl.SCISSOR_TEST)
-
-  //Turn off depth buffer
-  gl.disable(gl.DEPTH_TEST)
-  gl.depthFunc(gl.LESS)
-  gl.depthMask(false)
-
-  //Configure premultiplied alpha blending
-  gl.enable(gl.BLEND)
-  gl.blendEquation(gl.FUNC_ADD, gl.FUNC_ADD);
-  gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
-  //Draw border
-  if (this.borderColor) {
-    gl.scissor(
-      screenBox[0],
-      screenBox[1],
-      screenBox[2]-screenBox[0],
-      screenBox[3]-screenBox[1])
-    var borderColor = this.borderColor
-    gl.clearColor(
-      borderColor[0]*borderColor[3],
-      borderColor[1]*borderColor[3],
-      borderColor[2]*borderColor[3],
-      borderColor[3])
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-  }
-
-  //Draw center pane
-  gl.scissor(
-    viewPixels[0],
-    viewPixels[1],
-    viewPixels[2]-viewPixels[0],
-    viewPixels[3]-viewPixels[1])
-  gl.viewport(
-    viewPixels[0],
-    viewPixels[1],
-    viewPixels[2]-viewPixels[0],
-    viewPixels[3]-viewPixels[1])
-  var backgroundColor = this.backgroundColor
-  gl.clearColor(
-    backgroundColor[0]*backgroundColor[3],
-    backgroundColor[1]*backgroundColor[3],
-    backgroundColor[2]*backgroundColor[3],
-    backgroundColor[3])
-  gl.clear(gl.COLOR_BUFFER_BIT)
-
-  //Draw grid
-  grid.draw()
-
-  //Draw zero lines separately
-  var zeroLineEnable = this.zeroLineEnable
-  var zeroLineColor  = this.zeroLineColor
-  var zeroLineWidth  = this.zeroLineWidth
-  if(zeroLineEnable[0] || zeroLineEnable[1]) {
-    line.bind()
-    for(var i=0; i<2; ++i) {
-      if(!zeroLineEnable[i] ||
-        !(dataBox[i] <= 0 && dataBox[i+2] >= 0)) {
-        continue
-      }
-
-      var zeroIntercept = screenBox[i] -
-        dataBox[i] * (screenBox[i+2] - screenBox[i]) / (dataBox[i+2] - dataBox[i])
-
-      if(i === 0) {
-        line.drawLine(
-          zeroIntercept, screenBox[1], zeroIntercept, screenBox[3],
-          zeroLineWidth[i],
-          zeroLineColor[i])
-      } else {
-        line.drawLine(
-          screenBox[0], zeroIntercept, screenBox[2], zeroIntercept,
-          zeroLineWidth[i],
-          zeroLineColor[i])
-      }
-    }
-  }
-
-  //Draw traces
-  for(var i=0; i<objects.length; ++i) {
-    objects[i].draw()
-  }
-
-  //Return viewport to default
-  gl.viewport(
-    screenBox[0],
-    screenBox[1],
-    screenBox[2]-screenBox[0],
-    screenBox[3]-screenBox[1])
-  gl.scissor(
-    screenBox[0],
-    screenBox[1],
-    screenBox[2]-screenBox[0],
-    screenBox[3]-screenBox[1])
-
-  //Draw tick marks
-  this.grid.drawTickMarks()
-
-  //Draw line elements
-  line.bind()
-
-  //Draw border lines
-  var borderLineEnable = this.borderLineEnable
-  var borderLineWidth  = this.borderLineWidth
-  var borderLineColor  = this.borderLineColor
-  if(borderLineEnable[1]) {
-    line.drawLine(
-      viewPixels[0], viewPixels[1] - 0.5*borderLineWidth[1]*pixelRatio,
-      viewPixels[0], viewPixels[3] + 0.5*borderLineWidth[3]*pixelRatio,
-      borderLineWidth[1], borderLineColor[1])
-  }
-  if(borderLineEnable[0]) {
-    line.drawLine(
-      viewPixels[0] - 0.5*borderLineWidth[0]*pixelRatio, viewPixels[1],
-      viewPixels[2] + 0.5*borderLineWidth[2]*pixelRatio, viewPixels[1],
-      borderLineWidth[0], borderLineColor[0])
-  }
-  if(borderLineEnable[3]) {
-    line.drawLine(
-      viewPixels[2], viewPixels[1] - 0.5*borderLineWidth[1]*pixelRatio,
-      viewPixels[2], viewPixels[3] + 0.5*borderLineWidth[3]*pixelRatio,
-      borderLineWidth[3], borderLineColor[3])
-  }
-  if(borderLineEnable[2]) {
-    line.drawLine(
-      viewPixels[0] - 0.5*borderLineWidth[0]*pixelRatio, viewPixels[3],
-      viewPixels[2] + 0.5*borderLineWidth[2]*pixelRatio, viewPixels[3],
-      borderLineWidth[2], borderLineColor[2])
-  }
-
-  //Draw text elements
-  text.bind()
-  for(var i=0; i<2; ++i) {
-    text.drawTicks(i)
-  }
-  if(this.titleEnable) {
-    text.drawTitle()
-  }
-
-  //Draw other overlay elements (select boxes, etc.)
-  var overlays = this.overlays
-  for(var i=0; i<overlays.length; ++i) {
-    overlays[i].draw()
-  }
-
-  //Turn off scissor test
-  gl.disable(gl.SCISSOR_TEST)
-  gl.disable(gl.BLEND)
-  gl.depthMask(true)
-}
-})()
-
-proto.drawPick = (function() {
-
-return function() {
-  if (this.static) return;
-
-  var pickBuffer = this.pickBuffer
-  var gl = this.gl
-
-  this._pickTimeout = null
-  pickBuffer.begin()
-
-  var pickOffset = 1
-  var objects = this.objects
-  for(var i=0; i<objects.length; ++i) {
-    pickOffset = objects[i].drawPick(pickOffset)
-  }
-
-  pickBuffer.end()
-}
-})()
-
-proto.pick = (function() {
-return function(x, y) {
-  if (this.static) return;
-
-  var pixelRatio     = this.pixelRatio
-  var pickPixelRatio = this.pickPixelRatio
-  var viewBox        = this.viewBox
-
-  var scrX = Math.round((x - viewBox[0] / pixelRatio) * pickPixelRatio)|0
-  var scrY = Math.round((y - viewBox[1] / pixelRatio) * pickPixelRatio)|0
-
-  var pickResult = this.pickBuffer.query(scrX, scrY, this.pickRadius)
-  if(!pickResult) {
-    return null
-  }
-
-  var pickValue = pickResult.id +
-    (pickResult.value[0]<<8)  +
-    (pickResult.value[1]<<16) +
-    (pickResult.value[2]<<24)
-
-  var objects = this.objects
-  for(var i=0; i<objects.length; ++i) {
-    var result = objects[i].pick(scrX, scrY, pickValue)
-    if(result) {
-      return result
-    }
-  }
-
-  return null
-}
-})()
-
-function deepClone(array) {
-  var result = array.slice()
-  for(var i=0; i<result.length; ++i) {
-    result[i] = result[i].slice()
-  }
-  return result
-}
-
-function compareTicks(a, b) {
-  return a.x - b.x
-}
-
-proto.setScreenBox = function(nbox) {
-  var screenBox = this.screenBox
-  var pixelRatio = this.pixelRatio
-
-  screenBox[0] = Math.round(nbox[0] * pixelRatio) | 0
-  screenBox[1] = Math.round(nbox[1] * pixelRatio) | 0
-  screenBox[2] = Math.round(nbox[2] * pixelRatio) | 0
-  screenBox[3] = Math.round(nbox[3] * pixelRatio) | 0
-
-  this.setDirty()
-}
-
-proto.setDataBox = function(nbox) {
-  var dataBox = this.dataBox
-
-  var different =
-    dataBox[0] !== nbox[0] ||
-    dataBox[1] !== nbox[1] ||
-    dataBox[2] !== nbox[2] ||
-    dataBox[3] !== nbox[3]
-
-  if(different) {
-    dataBox[0] = nbox[0]
-    dataBox[1] = nbox[1]
-    dataBox[2] = nbox[2]
-    dataBox[3] = nbox[3]
-
-    this.setDirty()
-  }
-}
-
-proto.setViewBox = function(nbox) {
-  var pixelRatio = this.pixelRatio
-  var viewBox = this.viewBox
-
-  viewBox[0] = Math.round(nbox[0] * pixelRatio)|0
-  viewBox[1] = Math.round(nbox[1] * pixelRatio)|0
-  viewBox[2] = Math.round(nbox[2] * pixelRatio)|0
-  viewBox[3] = Math.round(nbox[3] * pixelRatio)|0
-
-  var pickPixelRatio = this.pickPixelRatio
-  this.pickBuffer.shape = [
-    Math.round((nbox[2] - nbox[0]) * pickPixelRatio)|0,
-    Math.round((nbox[3] - nbox[1]) * pickPixelRatio)|0 ]
-
-  this.setDirty()
-}
-
-proto.update = function(options) {
-  options = options || {}
-
-  var gl = this.gl
-
-  this.pixelRatio      = options.pixelRatio || 1
-
-  var pixelRatio       = this.pixelRatio
-  this.pickPixelRatio  = Math.max(pixelRatio, 1)
-
-  this.setScreenBox(options.screenBox ||
-    [0, 0, gl.drawingBufferWidth/pixelRatio, gl.drawingBufferHeight/pixelRatio])
-
-  var screenBox = this.screenBox
-  this.setViewBox(options.viewBox ||
-    [0.125*(this.screenBox[2]-this.screenBox[0])/pixelRatio,
-     0.125*(this.screenBox[3]-this.screenBox[1])/pixelRatio,
-     0.875*(this.screenBox[2]-this.screenBox[0])/pixelRatio,
-     0.875*(this.screenBox[3]-this.screenBox[1])/pixelRatio])
-
-  var viewBox = this.viewBox
-  var aspectRatio = (viewBox[2] - viewBox[0]) / (viewBox[3] - viewBox[1])
-  this.setDataBox(options.dataBox || [-10, -10/aspectRatio, 10, 10/aspectRatio])
-
-  this.borderColor     = options.borderColor !== false ? (options.borderColor || [0,0,0,0]).slice() : false
-  this.backgroundColor = (options.backgroundColor || [0,0,0,0]).slice()
-
-  this.gridLineEnable  = (options.gridLineEnable || [true,true]).slice()
-  this.gridLineWidth   = (options.gridLineWidth || [1,1]).slice()
-  this.gridLineColor   = deepClone(options.gridLineColor ||
-    [[0.5,0.5,0.5,1],[0.5,0.5,0.5,1]])
-
-  this.zeroLineEnable   = (options.zeroLineEnable || [true, true]).slice()
-  this.zeroLineWidth    = (options.zeroLineWidth || [4, 4]).slice()
-  this.zeroLineColor    = deepClone(options.zeroLineColor ||
-    [[0, 0, 0, 1],[0, 0, 0, 1]])
-
-  this.tickMarkLength   = (options.tickMarkLength || [0,0,0,0]).slice()
-  this.tickMarkWidth    = (options.tickMarkWidth || [0,0,0,0]).slice()
-  this.tickMarkColor    = deepClone(options.tickMarkColor ||
-    [[0,0,0,1],[0,0,0,1],[0,0,0,1],[0,0,0,1]])
-
-  this.titleCenter      = (options.titleCenter || [
-    0.5*(viewBox[0]+viewBox[2])/pixelRatio,(viewBox[3]+120)/pixelRatio]).slice()
-  this.titleEnable      = !('titleEnable' in options) || !!options.titleEnable
-  this.titleAngle       = options.titleAngle || 0
-  this.titleColor       = (options.titleColor || [0,0,0,1]).slice()
-
-  this.labelPad         = (options.labelPad || [15,15,15,15]).slice()
-  this.labelAngle       = (options.labelAngle ||
-    [0,Math.PI/2,0,3.0*Math.PI/2]).slice()
-  this.labelEnable      = (options.labelEnable || [true,true,true,true]).slice()
-  this.labelColor       = deepClone(options.labelColor ||
-    [[0,0,0,1],[0,0,0,1],[0,0,0,1],[0,0,0,1]])
-
-  this.tickPad         = (options.tickPad || [15,15,15,15]).slice()
-  this.tickAngle       = (options.tickAngle || [0,0,0,0]).slice()
-  this.tickEnable      = (options.tickEnable || [true,true,true,true]).slice()
-  this.tickColor       = deepClone(options.tickColor ||
-    [[0,0,0,1],[0,0,0,1],[0,0,0,1],[0,0,0,1]])
-
-  this.borderLineEnable = (options.borderLineEnable ||
-                            [true,true,true,true]).slice()
-  this.borderLineWidth  = (options.borderLineWidth || [2,2,2,2]).slice()
-  this.borderLineColor  = deepClone(options.borderLineColor ||
-                          [[0,0,0,1],
-                           [0,0,0,1],
-                           [0,0,0,1],
-                           [0,0,0,1]])
-
-  var ticks = options.ticks || [ [], [] ]
-
-  //Compute bounds on ticks
-  var bounds = this._tickBounds
-  bounds[0] = bounds[1] =  Infinity
-  bounds[2] = bounds[3] = -Infinity
-  for(var i=0; i<2; ++i) {
-    var axisTicks = ticks[i].slice(0)
-    if(axisTicks.length === 0) {
-      continue
-    }
-    axisTicks.sort(compareTicks)
-    bounds[i]   = Math.min(bounds[i], axisTicks[0].x)
-    bounds[i+2] = Math.max(bounds[i+2], axisTicks[axisTicks.length-1].x)
-  }
-
-  //Update grid
-  this.grid.update({
-    bounds: bounds,
-    ticks:  ticks
-  })
-
-  //Update text
-  this.text.update({
-    bounds:     bounds,
-    ticks:      ticks,
-    labels:     options.labels    || ['x', 'y'],
-    labelSize:  options.labelSize || [12,12],
-    labelFont:  options.labelFont || ['sans-serif', 'sans-serif'],
-    title:      options.title     || '',
-    titleSize:  options.titleSize || 18,
-    titleFont:  options.titleFont || 'sans-serif'
-  })
-
-  this.static = !!options.static;
-
-  this.setDirty()
-}
-
-proto.dispose = function() {
-  this.box.dispose()
-  this.grid.dispose()
-  this.text.dispose()
-  this.line.dispose()
-  for(var i=this.objects.length-1; i>=0; --i) {
-    this.objects[i].dispose()
-  }
-  this.objects.length = 0
-  for(var i=this.overlays.length-1; i>=0; --i) {
-    this.overlays[i].dispose()
-  }
-  this.overlays.length = 0
-
-  this.gl = null
-}
-
-proto.addObject = function(object) {
-  if(this.objects.indexOf(object) < 0) {
-    this.objects.push(object)
-    this.setDirty()
-  }
-}
-
-proto.removeObject = function(object) {
-  var objects = this.objects
-  for(var i=0; i<objects.length; ++i) {
-    if(objects[i] === object) {
-      objects.splice(i,1)
-      this.setDirty()
-      break
-    }
-  }
-}
-
-proto.addOverlay = function(object) {
-  if(this.overlays.indexOf(object) < 0) {
-    this.overlays.push(object)
-    this.setOverlayDirty()
-  }
-}
-
-proto.removeOverlay = function(object) {
-  var objects = this.overlays
-  for(var i=0; i<objects.length; ++i) {
-    if(objects[i] === object) {
-      objects.splice(i,1)
-      this.setOverlayDirty()
-      break
-    }
-  }
-}
-
-function createGLPlot2D(options) {
-  var gl = options.gl
-  var pickBuffer = createPick(gl, [
-    gl.drawingBufferWidth, gl.drawingBufferHeight])
-  var plot = new GLPlot2D(gl, pickBuffer)
-  plot.grid = createGrid(plot)
-  plot.text = createText(plot)
-  plot.line = createLine(plot)
-  plot.box  = createBox(plot)
-  plot.update(options)
-  return plot
-}
-
-},{"./lib/box":113,"./lib/grid":114,"./lib/line":115,"./lib/text":117,"gl-select-static":131}],119:[function(_glvis_,module,exports){
-'use strict'
 
 module.exports = createCamera
 
-var now         = _glvis_('right-now')
-var createView  = _glvis_('3d-view')
-var mouseChange = _glvis_('mouse-change')
-var mouseWheel  = _glvis_('mouse-wheel')
-var mouseOffset = _glvis_('mouse-event-offset')
-var hasPassive  = _glvis_('has-passive-events')
+var now         = __webpack_require__(3025)
+var createView  = __webpack_require__(6296)
+var mouseChange = __webpack_require__(351)
+var mouseWheel  = __webpack_require__(8512)
+var mouseOffset = __webpack_require__(24)
+var hasPassive  = __webpack_require__(7520)
 
 function createCamera(element, options) {
   element = element || document.body
@@ -19805,9 +18617,14 @@ function createCamera(element, options) {
   return camera
 }
 
-},{"3d-view":7,"has-passive-events":232,"mouse-change":247,"mouse-event-offset":248,"mouse-wheel":250,"right-now":278}],120:[function(_glvis_,module,exports){
-var glslify      = _glvis_('glslify')
-var createShader = _glvis_('gl-shader')
+
+/***/ }),
+
+/***/ 799:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var glslify      = __webpack_require__(3236)
+var createShader = __webpack_require__(9405)
 
 var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\nattribute vec2 position;\nvarying vec2 uv;\nvoid main() {\n  uv = position;\n  gl_Position = vec4(position, 0, 1);\n}"])
 var fragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform sampler2D accumBuffer;\nvarying vec2 uv;\n\nvoid main() {\n  vec4 accum = texture2D(accumBuffer, 0.5 * (uv + 1.0));\n  gl_FragColor = min(vec4(1,1,1,1), accum);\n}"])
@@ -19816,21 +18633,27 @@ module.exports = function(gl) {
   return createShader(gl, vertSrc, fragSrc, null, [ { name: 'position', type: 'vec2'}])
 }
 
-},{"gl-shader":132,"glslify":231}],121:[function(_glvis_,module,exports){
-'use strict'
 
-var createCamera = _glvis_('./camera.js')
-var createAxes   = _glvis_('gl-axes3d')
-var axesRanges   = _glvis_('gl-axes3d/properties')
-var createSpikes = _glvis_('gl-spikes3d')
-var createSelect = _glvis_('gl-select-static')
-var createFBO    = _glvis_('gl-fbo')
-var drawTriangle = _glvis_('a-big-triangle')
-var mouseChange  = _glvis_('mouse-change')
-var perspective  = _glvis_('gl-mat4/perspective')
-var ortho        = _glvis_('gl-mat4/ortho')
-var createShader = _glvis_('./lib/shader')
-var isMobile = _glvis_('is-mobile')({ tablet: true, featureDetect: true })
+/***/ }),
+
+/***/ 4100:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createCamera = __webpack_require__(4437)
+var createAxes   = __webpack_require__(3837)
+var axesRanges   = __webpack_require__(5445)
+var createSpikes = __webpack_require__(4449)
+var createSelect = __webpack_require__(3589)
+var createFBO    = __webpack_require__(2260)
+var drawTriangle = __webpack_require__(7169)
+var mouseChange  = __webpack_require__(351)
+var perspective  = __webpack_require__(4772)
+var ortho        = __webpack_require__(4040)
+var createShader = __webpack_require__(799)
+var isMobile = __webpack_require__(9216)({ tablet: true, featureDetect: true })
 
 module.exports = {
   createScene: createScene,
@@ -20671,235 +19494,12 @@ function calcCameraParams(scene, isOrtho) {
   }
 }
 
-},{"./camera.js":119,"./lib/shader":120,"a-big-triangle":8,"gl-axes3d":70,"gl-axes3d/properties":77,"gl-fbo":86,"gl-mat4/ortho":101,"gl-mat4/perspective":102,"gl-select-static":131,"gl-spikes3d":141,"is-mobile":238,"mouse-change":247}],122:[function(_glvis_,module,exports){
-var glslify = _glvis_('glslify')
 
-exports.pointVertex       = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform float pointCloud;\n\nhighp float rand(vec2 co) {\n  highp float a = 12.9898;\n  highp float b = 78.233;\n  highp float c = 43758.5453;\n  highp float d = dot(co.xy, vec2(a, b));\n  highp float e = mod(d, 3.14);\n  return fract(sin(e) * c);\n}\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n    // if we don't jitter the point size a bit, overall point cloud\n    // saturation 'jumps' on zooming, which is disturbing and confusing\n  gl_PointSize = pointSize * ((19.5 + rand(position)) / 20.0);\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    // get the same square surface as circle would be\n    gl_PointSize *= 0.886;\n  }\n}"])
-exports.pointFragment     = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color, borderColor;\nuniform float centerFraction;\nuniform float pointCloud;\n\nvoid main() {\n  float radius;\n  vec4 baseColor;\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    if(centerFraction == 1.0) {\n      gl_FragColor = color;\n    } else {\n      gl_FragColor = mix(borderColor, color, centerFraction);\n    }\n  } else {\n    radius = length(2.0 * gl_PointCoord.xy - 1.0);\n    if(radius > 1.0) {\n      discard;\n    }\n    baseColor = mix(borderColor, color, step(radius, centerFraction));\n    gl_FragColor = vec4(baseColor.rgb * baseColor.a, baseColor.a);\n  }\n}\n"])
-exports.pickVertex        = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  fragId = id;\n}\n"])
-exports.pickFragment      = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0 * gl_PointCoord.xy - 1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}\n"])
+/***/ }),
 
-},{"glslify":231}],123:[function(_glvis_,module,exports){
-'use strict'
+/***/ 783:
+/***/ (function(module) {
 
-var createShader = _glvis_('gl-shader')
-var createBuffer = _glvis_('gl-buffer')
-
-var pool = _glvis_('typedarray-pool')
-
-var SHADERS = _glvis_('./lib/shader')
-
-module.exports = createPointcloud2D
-
-function Pointcloud2D(plot, offsetBuffer, pickBuffer, shader, pickShader) {
-  this.plot           = plot
-  this.offsetBuffer   = offsetBuffer
-  this.pickBuffer     = pickBuffer
-  this.shader         = shader
-  this.pickShader     = pickShader
-  this.sizeMin        = 0.5
-  this.sizeMinCap     = 2
-  this.sizeMax        = 20
-  this.areaRatio      = 1.0
-  this.pointCount     = 0
-  this.color          = [1, 0, 0, 1]
-  this.borderColor    = [0, 0, 0, 1]
-  this.blend          = false
-  this.pickOffset     = 0
-  this.points         = null
-}
-
-var proto = Pointcloud2D.prototype
-
-proto.dispose = function() {
-  this.shader.dispose()
-  this.pickShader.dispose()
-  this.offsetBuffer.dispose()
-  this.pickBuffer.dispose()
-  this.plot.removeObject(this)
-}
-
-proto.update = function(options) {
-
-  var i
-
-  options = options || {}
-
-  function dflt(opt, value) {
-    if(opt in options) {
-      return options[opt]
-    }
-    return value
-  }
-
-  this.sizeMin      = dflt('sizeMin', 0.5)
-  // this.sizeMinCap      = dflt('sizeMinCap', 2)
-  this.sizeMax      = dflt('sizeMax', 20)
-  this.color        = dflt('color', [1, 0, 0, 1]).slice()
-  this.areaRatio    = dflt('areaRatio', 1)
-  this.borderColor  = dflt('borderColor', [0, 0, 0, 1]).slice()
-  this.blend        = dflt('blend', false)
-
-  //Update point data
-
-  // Attempt straight-through processing (STP) to avoid allocation and copy
-  // TODO eventually abstract out STP logic, maybe into `pool` or a layer above
-  var pointCount = options.positions.length >>> 1
-  var dataStraightThrough = options.positions instanceof Float32Array
-  var idStraightThrough = options.idToIndex instanceof Int32Array && options.idToIndex.length >= pointCount // permit larger to help reuse
-
-  var data          = options.positions
-  var packed        = dataStraightThrough ? data : pool.mallocFloat32(data.length)
-  var packedId      = idStraightThrough ? options.idToIndex : pool.mallocInt32(pointCount)
-
-  if(!dataStraightThrough) {
-    packed.set(data)
-  }
-
-  if(!idStraightThrough) {
-    packed.set(data)
-    for(i = 0; i < pointCount; i++) {
-      packedId[i] = i
-    }
-  }
-
-  this.points       = data
-
-  this.offsetBuffer.update(packed)
-  this.pickBuffer.update(packedId)
-
-  if(!dataStraightThrough) {
-    pool.free(packed)
-  }
-
-  if(!idStraightThrough) {
-    pool.free(packedId)
-  }
-
-  this.pointCount = pointCount
-  this.pickOffset = 0
-}
-
-function count(points, dataBox) {
-  var visiblePointCountEstimate = 0
-  var length = points.length >>> 1
-  var i
-  for(i = 0; i < length; i++) {
-    var x = points[i * 2]
-    var y = points[i * 2 + 1]
-    if(x >= dataBox[0] && x <= dataBox[2] && y >= dataBox[1] && y <= dataBox[3])
-      visiblePointCountEstimate++
-  }
-  return visiblePointCountEstimate
-}
-
-proto.unifiedDraw = (function() {
-  var MATRIX = [1, 0, 0,
-                0, 1, 0,
-                0, 0, 1]
-  var PICK_VEC4 = [0, 0, 0, 0]
-return function(pickOffset) {
-  var pick = pickOffset !== void(0)
-
-  var shader        = pick ? this.pickShader : this.shader
-  var gl            = this.plot.gl
-  var dataBox       = this.plot.dataBox
-
-  if(this.pointCount === 0) {
-    return pickOffset
-  }
-
-  var dataX   = dataBox[2] - dataBox[0]
-  var dataY   = dataBox[3] - dataBox[1]
-
-  var visiblePointCountEstimate = count(this.points, dataBox)
-  var basicPointSize =  this.plot.pickPixelRatio * Math.max(Math.min(this.sizeMinCap, this.sizeMin), Math.min(this.sizeMax, this.sizeMax / Math.pow(visiblePointCountEstimate, 0.33333)))
-
-  MATRIX[0] = 2.0 / dataX
-  MATRIX[4] = 2.0 / dataY
-  MATRIX[6] = -2.0 * dataBox[0] / dataX - 1.0
-  MATRIX[7] = -2.0 * dataBox[1] / dataY - 1.0
-
-  this.offsetBuffer.bind()
-
-  shader.bind()
-  shader.attributes.position.pointer()
-  shader.uniforms.matrix      = MATRIX
-  shader.uniforms.color       = this.color
-  shader.uniforms.borderColor = this.borderColor
-  shader.uniforms.pointCloud = basicPointSize < 5
-  shader.uniforms.pointSize = basicPointSize
-  shader.uniforms.centerFraction = Math.min(1, Math.max(0, Math.sqrt(1 - this.areaRatio)))
-
-  if(pick) {
-
-    PICK_VEC4[0] = ( pickOffset        & 0xff)
-    PICK_VEC4[1] = ((pickOffset >> 8)  & 0xff)
-    PICK_VEC4[2] = ((pickOffset >> 16) & 0xff)
-    PICK_VEC4[3] = ((pickOffset >> 24) & 0xff)
-
-    this.pickBuffer.bind()
-    shader.attributes.pickId.pointer(gl.UNSIGNED_BYTE)
-    shader.uniforms.pickOffset = PICK_VEC4
-    this.pickOffset = pickOffset
-  }
-
-  // Worth switching these off, but we can't make assumptions about other
-  // renderers, so let's restore it after each draw
-  var blend = gl.getParameter(gl.BLEND)
-  var dither = gl.getParameter(gl.DITHER)
-
-  if(blend && !this.blend)
-    gl.disable(gl.BLEND)
-  if(dither)
-    gl.disable(gl.DITHER)
-
-  gl.drawArrays(gl.POINTS, 0, this.pointCount)
-
-  if(blend && !this.blend)
-    gl.enable(gl.BLEND)
-  if(dither)
-    gl.enable(gl.DITHER)
-
-  return pickOffset + this.pointCount
-}
-})()
-
-proto.draw = proto.unifiedDraw
-proto.drawPick = proto.unifiedDraw
-
-proto.pick = function(x, y, value) {
-  var pickOffset = this.pickOffset
-  var pointCount = this.pointCount
-  if(value < pickOffset || value >= pickOffset + pointCount) {
-    return null
-  }
-  var pointId = value - pickOffset
-  var points = this.points
-  return {
-    object: this,
-    pointId: pointId,
-    dataCoord: [points[2 * pointId], points[2 * pointId + 1] ]
-  }
-}
-
-function createPointcloud2D(plot, options) {
-  var gl = plot.gl
-  var buffer = createBuffer(gl)
-  var pickBuffer = createBuffer(gl)
-  var shader = createShader(gl, SHADERS.pointVertex, SHADERS.pointFragment)
-  var pickShader = createShader(gl, SHADERS.pickVertex, SHADERS.pickFragment)
-
-  var result = new Pointcloud2D(plot, buffer, pickBuffer, shader, pickShader)
-  result.update(options)
-
-  //Register with plot
-  plot.addObject(result)
-
-  return result
-}
-
-},{"./lib/shader":122,"gl-buffer":78,"gl-shader":132,"typedarray-pool":308}],124:[function(_glvis_,module,exports){
 module.exports = slerp
 
 /**
@@ -20952,26 +19552,45 @@ function slerp (out, a, b, t) {
   return out
 }
 
-},{}],125:[function(_glvis_,module,exports){
-'use strict';
+
+/***/ }),
+
+/***/ 5964:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = function(a){
   return (!a && a !== 0) ? '' : a.toString();
 }
 
-},{}],126:[function(_glvis_,module,exports){
-"use strict"
 
-var vectorizeText = _glvis_("vectorize-text")
+/***/ }),
+
+/***/ 9366:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var vectorizeText = __webpack_require__(4359)
 
 module.exports = getGlyph
 
 var GLYPH_CACHE = {}
 
 function getGlyph(symbol, font, pixelRatio) {
-  var fontCache = GLYPH_CACHE[font]
+  var fontKey = [
+    font.style,
+    font.weight,
+    font.variant,
+    font.family
+  ].join('_')
+
+  var fontCache = GLYPH_CACHE[fontKey]
   if(!fontCache) {
-    fontCache = GLYPH_CACHE[font] = {}
+    fontCache = GLYPH_CACHE[fontKey] = {}
   }
   if(symbol in fontCache) {
     return fontCache[symbol]
@@ -20981,7 +19600,10 @@ function getGlyph(symbol, font, pixelRatio) {
     textAlign: "center",
     textBaseline: "middle",
     lineHeight: 1.0,
-    font: font,
+    font: font.family,
+    fontStyle: font.style,
+    fontWeight: font.weight,
+    fontVariant: font.variant,
     lineSpacing: 1.25,
     styletags: {
       breaklines:true,
@@ -21028,13 +19650,18 @@ function getGlyph(symbol, font, pixelRatio) {
   //Save cached symbol
   return fontCache[symbol] = [triSymbol, lineSymbol, bounds]
 }
-},{"vectorize-text":311}],127:[function(_glvis_,module,exports){
-var createShaderWrapper = _glvis_('gl-shader')
-var glslify = _glvis_('glslify')
+
+/***/ }),
+
+/***/ 1283:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var createShaderWrapper = __webpack_require__(9405)
+var glslify = __webpack_require__(3236)
 
 var perspectiveVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform vec4 highlightId;\nuniform float highlightScale;\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = 1.0;\n    if(distance(highlightId, id) < 0.0001) {\n      scale = highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1);\n    vec4 viewPosition = view * worldPosition;\n    viewPosition = viewPosition / viewPosition.w;\n    vec4 clipPosition = projection * (viewPosition + scale * vec4(glyph.x, -glyph.y, 0, 0));\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
 var orthographicVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float highlightScale, pixelRatio;\nuniform vec4 highlightId;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = pixelRatio;\n    if(distance(highlightId.bgr, id.bgr) < 0.001) {\n      scale *= highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1.0);\n    vec4 viewPosition = view * worldPosition;\n    vec4 clipPosition = projection * viewPosition;\n    clipPosition /= clipPosition.w;\n\n    gl_Position = clipPosition + vec4(screenSize * scale * vec2(glyph.x, -glyph.y), 0.0, 0.0);\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"])
-var projectionVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform float highlightScale;\nuniform vec4 highlightId;\nuniform vec3 axes[2];\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float scale, pixelRatio;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float lscale = pixelRatio * scale;\n    if(distance(highlightId, id) < 0.0001) {\n      lscale *= highlightScale;\n    }\n\n    vec4 clipCenter   = projection * view * model * vec4(position, 1);\n    vec3 dataPosition = position + 0.5*lscale*(axes[0] * glyph.x + axes[1] * glyph.y) * clipCenter.w * screenSize.y;\n    vec4 clipPosition = projection * view * model * vec4(dataPosition, 1);\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = dataPosition;\n  }\n}\n"])
+var projectionVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform float highlightScale;\nuniform vec4 highlightId;\nuniform vec3 axes[2];\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float scale, pixelRatio;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float lscale = pixelRatio * scale;\n    if(distance(highlightId, id) < 0.0001) {\n      lscale *= highlightScale;\n    }\n\n    vec4 clipCenter   = projection * (view * (model * vec4(position, 1)));\n    vec3 dataPosition = position + 0.5*lscale*(axes[0] * glyph.x + axes[1] * glyph.y) * clipCenter.w * screenSize.y;\n    vec4 clipPosition = projection * (view * (model * vec4(dataPosition, 1)));\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = dataPosition;\n  }\n}\n"])
 var drawFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 fragClipBounds[2];\nuniform float opacity;\n\nvarying vec4 interpColor;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (\n    outOfRange(fragClipBounds[0], fragClipBounds[1], dataCoordinate) ||\n    interpColor.a * opacity == 0.\n  ) discard;\n  gl_FragColor = interpColor * opacity;\n}\n"])
 var pickFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 fragClipBounds[2];\nuniform float pickGroup;\n\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(fragClipBounds[0], fragClipBounds[1], dataCoordinate)) discard;\n\n  gl_FragColor = vec4(pickGroup, pickId.bgr);\n}"])
 
@@ -21105,22 +19732,39 @@ exports.createPickProject = function(gl) {
   return createShader(gl, pickProject)
 }
 
-},{"gl-shader":132,"glslify":231}],128:[function(_glvis_,module,exports){
-'use strict'
 
-var isAllBlank      = _glvis_('is-string-blank')
-var createBuffer    = _glvis_('gl-buffer')
-var createVAO       = _glvis_('gl-vao')
-var pool            = _glvis_('typedarray-pool')
-var mat4mult        = _glvis_('gl-mat4/multiply')
-var shaders         = _glvis_('./lib/shaders')
-var getGlyph        = _glvis_('./lib/glyphs')
-var getSimpleString = _glvis_('./lib/get-simple-string')
+/***/ }),
+
+/***/ 8418:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var isAllBlank      = __webpack_require__(5219)
+var createBuffer    = __webpack_require__(2762)
+var createVAO       = __webpack_require__(8116)
+var pool            = __webpack_require__(1888)
+var mat4mult        = __webpack_require__(6760)
+var shaders         = __webpack_require__(1283)
+var getGlyph        = __webpack_require__(9366)
+var getSimpleString = __webpack_require__(5964)
 
 var IDENTITY = [1,0,0,0,
                 0,1,0,0,
                 0,0,1,0,
                 0,0,0,1]
+
+var ab = ArrayBuffer
+var dv = DataView
+
+function isTypedArray(a) {
+    return ab.isView(a) && !(a instanceof dv)
+}
+
+function isArrayOrTypedArray(a) {
+    return Array.isArray(a) || isTypedArray(a)
+}
 
 module.exports = createPointCloud
 
@@ -21509,7 +20153,7 @@ function get_glyphData(glyphs, index, font, pixelRatio) {
   var str
 
   // use the data if presented in an array
-  if(Array.isArray(glyphs)) {
+  if(isArrayOrTypedArray(glyphs)) {
     if(index < glyphs.length) {
       str = glyphs[index]
     } else {
@@ -21526,6 +20170,32 @@ function get_glyphData(glyphs, index, font, pixelRatio) {
     str = '▼' // Note: this special character may have minimum number of surfaces
     visible = false
   }
+
+  if(!font) font = {}
+
+  var family = font.family
+  if(isArrayOrTypedArray(family)) family = family[index]
+  if(!family) family = "normal"
+
+  var weight = font.weight
+  if(isArrayOrTypedArray(weight)) weight = weight[index]
+  if(!weight) weight = "normal"
+
+  var style = font.style
+  if(isArrayOrTypedArray(style)) style = style[index]
+  if(!style) style = "normal"
+
+  var variant = font.variant
+  if(isArrayOrTypedArray(variant)) variant = variant[index]
+  if(!variant) variant = "normal"
+
+  var glyph = getGlyph(str, {
+    family: family,
+    weight: weight,
+    style: style,
+    variant: variant,
+  }, pixelRatio)
+
 
   var glyph = getGlyph(str, font, pixelRatio)
 
@@ -21551,7 +20221,7 @@ proto.update = function(options) {
     this.lineWidth = options.lineWidth
   }
   if('project' in options) {
-    if(Array.isArray(options.project)) {
+    if(isArrayOrTypedArray(options.project)) {
       this.axesProject = options.project
     } else {
       var v = !!options.project
@@ -21559,7 +20229,7 @@ proto.update = function(options) {
     }
   }
   if('projectScale' in options) {
-    if(Array.isArray(options.projectScale)) {
+    if(isArrayOrTypedArray(options.projectScale)) {
       this.projectScale = options.projectScale.slice()
     } else {
       var s = +options.projectScale
@@ -21569,7 +20239,7 @@ proto.update = function(options) {
 
   this.projectHasAlpha = false // default to no transparent draw
   if('projectOpacity' in options) {
-    if(Array.isArray(options.projectOpacity)) {
+    if(isArrayOrTypedArray(options.projectOpacity)) {
       this.projectOpacity = options.projectOpacity.slice()
     } else {
       var s = +options.projectOpacity
@@ -21598,7 +20268,13 @@ proto.update = function(options) {
   var points = options.position
 
   //Text font
-  var font      = options.font      || 'normal'
+  var font = {
+    family: options.font || 'normal',
+    style: options.fontStyle || 'normal',
+    weight: options.fontWeight || 'normal',
+    variant: options.fontVariant || 'normal'
+  }
+
   var alignment = options.alignment || [0,0]
 
   var alignmentX;
@@ -21674,8 +20350,8 @@ proto.update = function(options) {
     var color      = [0,0,0,1]
     var lineColor  = [0,0,0,1]
 
-    var isColorArray      = Array.isArray(colors)     && Array.isArray(colors[0])
-    var isLineColorArray  = Array.isArray(lineColors) && Array.isArray(lineColors[0])
+    var isColorArray      = isArrayOrTypedArray(colors)     && isArrayOrTypedArray(colors[0])
+    var isLineColorArray  = isArrayOrTypedArray(lineColors) && isArrayOrTypedArray(lineColors[0])
 
   fill_loop:
     for(var i=0; i<numPoints; ++i) {
@@ -21701,7 +20377,7 @@ proto.update = function(options) {
 
       //Get color
       if(!glyphVisible) color = [1,1,1,0]
-      else if(Array.isArray(colors)) {
+      else if(isArrayOrTypedArray(colors)) {
         var c
         if(isColorArray) {
           if(i < colors.length) {
@@ -21732,7 +20408,7 @@ proto.update = function(options) {
 
       //Get lineColor
       if(!glyphVisible) lineColor = [1,1,1,0]
-      else if(Array.isArray(lineColors)) {
+      else if(isArrayOrTypedArray(lineColors)) {
         var c
         if(isLineColorArray) {
           if(i < lineColors.length) {
@@ -21763,7 +20439,7 @@ proto.update = function(options) {
 
       var size = 0.5
       if(!glyphVisible) size = 0.0
-      else if(Array.isArray(sizes)) {
+      else if(isArrayOrTypedArray(sizes)) {
         if(i < sizes.length) {
           size = +sizes[i]
         } else {
@@ -21777,7 +20453,7 @@ proto.update = function(options) {
 
 
       var angle = 0
-      if(Array.isArray(angles)) {
+      if(isArrayOrTypedArray(angles)) {
         if(i < angles.length) {
           angle = +angles[i]
         } else {
@@ -21802,7 +20478,7 @@ proto.update = function(options) {
       var textOffsetY = alignmentY
 
       var textOffsetX = 0
-      if(Array.isArray(alignmentX)) {
+      if(isArrayOrTypedArray(alignmentX)) {
         if(i < alignmentX.length) {
           textOffsetX = alignmentX[i]
         } else {
@@ -21813,7 +20489,7 @@ proto.update = function(options) {
       }
 
       var textOffsetY = 0
-      if(Array.isArray(alignmentY)) {
+      if(isArrayOrTypedArray(alignmentY)) {
         if(i < alignmentY.length) {
           textOffsetY = alignmentY[i]
         } else {
@@ -21977,149 +20653,21 @@ function createPointCloud(options) {
   return pointCloud
 }
 
-},{"./lib/get-simple-string":125,"./lib/glyphs":126,"./lib/shaders":127,"gl-buffer":78,"gl-mat4/multiply":100,"gl-vao":150,"is-string-blank":239,"typedarray-pool":308}],129:[function(_glvis_,module,exports){
-'use strict'
 
-var glslify = _glvis_('glslify')
+/***/ }),
 
-exports.boxVertex = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 vertex;\n\nuniform vec2 cornerA, cornerB;\n\nvoid main() {\n  gl_Position = vec4(mix(cornerA, cornerB, vertex), 0, 1);\n}\n"])
-exports.boxFragment = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = color;\n}\n"])
+/***/ 3589:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-},{"glslify":231}],130:[function(_glvis_,module,exports){
-'use strict'
+"use strict";
 
-var createShader = _glvis_('gl-shader')
-var createBuffer = _glvis_('gl-buffer')
-
-var SHADERS = _glvis_('./lib/shaders')
-
-module.exports = createSelectBox
-
-function SelectBox(plot, boxBuffer, boxShader) {
-  this.plot = plot
-  this.boxBuffer = boxBuffer
-  this.boxShader = boxShader
-
-  this.enabled = true
-
-  this.selectBox = [Infinity,Infinity,-Infinity,-Infinity]
-
-  this.borderColor = [0,0,0,1]
-  this.innerFill   = false
-  this.innerColor  = [0,0,0,0.25]
-  this.outerFill   = true
-  this.outerColor  = [0,0,0,0.5]
-  this.borderWidth = 10
-}
-
-var proto = SelectBox.prototype
-
-proto.draw = function() {
-  if(!this.enabled) {
-    return
-  }
-
-  var plot         = this.plot
-  var selectBox    = this.selectBox
-  var lineWidth    = this.borderWidth
-
-  var innerFill    = this.innerFill
-  var innerColor   = this.innerColor
-  var outerFill    = this.outerFill
-  var outerColor   = this.outerColor
-  var borderColor  = this.borderColor
-
-  var boxes        = plot.box
-  var screenBox    = plot.screenBox
-  var dataBox      = plot.dataBox
-  var viewBox      = plot.viewBox
-  var pixelRatio   = plot.pixelRatio
-
-  //Map select box into pixel coordinates
-  var loX = (selectBox[0]-dataBox[0])*(viewBox[2]-viewBox[0])/(dataBox[2]-dataBox[0])+viewBox[0]
-  var loY = (selectBox[1]-dataBox[1])*(viewBox[3]-viewBox[1])/(dataBox[3]-dataBox[1])+viewBox[1]
-  var hiX = (selectBox[2]-dataBox[0])*(viewBox[2]-viewBox[0])/(dataBox[2]-dataBox[0])+viewBox[0]
-  var hiY = (selectBox[3]-dataBox[1])*(viewBox[3]-viewBox[1])/(dataBox[3]-dataBox[1])+viewBox[1]
-
-  loX = Math.max(loX, viewBox[0])
-  loY = Math.max(loY, viewBox[1])
-  hiX = Math.min(hiX, viewBox[2])
-  hiY = Math.min(hiY, viewBox[3])
-
-  if(hiX < loX || hiY < loY) {
-    return
-  }
-
-  boxes.bind()
-
-  //Draw box
-  var screenWidth  = screenBox[2] - screenBox[0]
-  var screenHeight = screenBox[3] - screenBox[1]
-
-  if(this.outerFill) {
-    boxes.drawBox(0, 0, screenWidth, loY, outerColor)
-    boxes.drawBox(0, loY, loX, hiY, outerColor)
-    boxes.drawBox(0, hiY, screenWidth, screenHeight, outerColor)
-    boxes.drawBox(hiX, loY, screenWidth, hiY, outerColor)
-  }
-
-  if(this.innerFill) {
-    boxes.drawBox(loX, loY, hiX, hiY, innerColor)
-  }
-
-  //Draw border
-  if(lineWidth > 0) {
-
-    //Draw border
-    var w = lineWidth * pixelRatio
-    boxes.drawBox(loX-w, loY-w, hiX+w, loY+w, borderColor)
-    boxes.drawBox(loX-w, hiY-w, hiX+w, hiY+w, borderColor)
-    boxes.drawBox(loX-w, loY-w, loX+w, hiY+w, borderColor)
-    boxes.drawBox(hiX-w, loY-w, hiX+w, hiY+w, borderColor)
-  }
-}
-
-proto.update = function(options) {
-  options = options || {}
-
-  this.innerFill    = !!options.innerFill
-  this.outerFill    = !!options.outerFill
-  this.innerColor   = (options.innerColor   || [0,0,0,0.5]).slice()
-  this.outerColor   = (options.outerColor   || [0,0,0,0.5]).slice()
-  this.borderColor  = (options.borderColor || [0,0,0,1]).slice()
-  this.borderWidth  = options.borderWidth || 0
-  this.selectBox    = (options.selectBox || this.selectBox).slice()
-}
-
-proto.dispose = function() {
-  this.boxBuffer.dispose()
-  this.boxShader.dispose()
-  this.plot.removeOverlay(this)
-}
-
-function createSelectBox(plot, options) {
-  var gl = plot.gl
-  var buffer = createBuffer(gl, [
-    0, 0,
-    0, 1,
-    1, 0,
-    1, 1 ])
-  var shader = createShader(gl, SHADERS.boxVertex, SHADERS.boxFragment)
-  var selectBox = new SelectBox(plot, buffer, shader)
-  selectBox.update(options)
-  plot.addOverlay(selectBox)
-  return selectBox
-}
-
-},{"./lib/shaders":129,"gl-buffer":78,"gl-shader":132}],131:[function(_glvis_,module,exports){
-'use strict'
 
 module.exports = createSelectBuffer
 
-var createFBO = _glvis_('gl-fbo')
-var pool      = _glvis_('typedarray-pool')
-var ndarray   = _glvis_('ndarray')
-var nextPow2  = _glvis_('bit-twiddle').nextPow2
+var createFBO = __webpack_require__(2260)
+var pool      = __webpack_require__(1888)
+var ndarray   = __webpack_require__(9618)
+var nextPow2  = (__webpack_require__(8828).nextPow2)
 
 var selectRange = function(arr, x, y) {
   var closestD2 = 1e8
@@ -22296,15 +20844,21 @@ function createSelectBuffer(gl, shape) {
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":32,"gl-fbo":86,"ndarray":259,"typedarray-pool":308}],132:[function(_glvis_,module,exports){
-'use strict'
 
-var createUniformWrapper   = _glvis_('./lib/create-uniforms')
-var createAttributeWrapper = _glvis_('./lib/create-attributes')
-var makeReflect            = _glvis_('./lib/reflect')
-var shaderCache            = _glvis_('./lib/shader-cache')
-var runtime                = _glvis_('./lib/runtime-reflect')
-var GLError                = _glvis_("./lib/GLError")
+/***/ }),
+
+/***/ 9405:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createUniformWrapper   = __webpack_require__(3327)
+var createAttributeWrapper = __webpack_require__(8731)
+var makeReflect            = __webpack_require__(216)
+var shaderCache            = __webpack_require__(5091)
+var runtime                = __webpack_require__(2145)
+var GLError                = __webpack_require__(8866)
 
 //Shader object
 function Shader(gl) {
@@ -22562,7 +21116,12 @@ function createShader(
 
 module.exports = createShader
 
-},{"./lib/GLError":133,"./lib/create-attributes":134,"./lib/create-uniforms":135,"./lib/reflect":136,"./lib/runtime-reflect":137,"./lib/shader-cache":138}],133:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8866:
+/***/ (function(module) {
+
 function GLError (rawError, shortMessage, longMessage) {
     this.shortMessage = shortMessage || ''
     this.longMessage = longMessage || ''
@@ -22577,12 +21136,18 @@ GLError.prototype.name = 'GLError'
 GLError.prototype.constructor = GLError
 module.exports = GLError
 
-},{}],134:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 8731:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createAttributeWrapper
 
-var GLError = _glvis_("./GLError")
+var GLError = __webpack_require__(8866)
 
 function ShaderAttribute(
     gl
@@ -22862,11 +21427,17 @@ function createAttributeWrapper(
   return obj
 }
 
-},{"./GLError":133}],135:[function(_glvis_,module,exports){
-'use strict'
 
-var coallesceUniforms = _glvis_('./reflect')
-var GLError = _glvis_("./GLError")
+/***/ }),
+
+/***/ 3327:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var coallesceUniforms = __webpack_require__(216)
+var GLError = __webpack_require__(8866)
 
 module.exports = createUniformWrapper
 
@@ -23073,8 +21644,14 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
   }
 }
 
-},{"./GLError":133,"./reflect":136}],136:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 216:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = makeReflectTypes
 
@@ -23131,8 +21708,14 @@ function makeReflectTypes(uniforms, useIndex) {
   }
   return obj
 }
-},{}],137:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2145:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 
 exports.uniforms    = runtimeUniforms
 exports.attributes  = runtimeAttributes
@@ -23211,16 +21794,22 @@ function runtimeAttributes(gl, program) {
   return result
 }
 
-},{}],138:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 5091:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
 
 exports.shader   = getShaderReference
 exports.program  = createProgram
 
-var GLError = _glvis_("./GLError")
-var formatCompilerError = _glvis_('gl-format-compiler-error');
+var GLError = __webpack_require__(8866)
+var formatCompilerError = __webpack_require__(2992);
 
-var weakMap = typeof WeakMap === 'undefined' ? _glvis_('weakmap-shim') : WeakMap
+var weakMap = typeof WeakMap === 'undefined' ? __webpack_require__(606) : WeakMap
 var CACHE = new weakMap()
 
 var SHADER_COUNTER = 0
@@ -23349,101 +21938,19 @@ function createProgram(gl, vref, fref, attribs, locations) {
   return getCache(gl).getProgram(vref, fref, attribs, locations)
 }
 
-},{"./GLError":133,"gl-format-compiler-error":87,"weakmap-shim":316}],139:[function(_glvis_,module,exports){
-'use strict'
 
-module.exports = createSpikes2D
+/***/ }),
 
-function GLSpikes2D(plot) {
-  this.plot = plot
-  this.enable = [true, true, false, false]
-  this.width  = [1, 1, 1, 1]
-  this.color  = [[0,0,0,1],
-                 [0,0,0,1],
-                 [0,0,0,1],
-                 [0,0,0,1]]
-  this.center = [Infinity, Infinity]
-}
+/***/ 1493:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var proto = GLSpikes2D.prototype
+"use strict";
 
-proto.update = function(options) {
-  options = options || {}
-  this.enable = (options.enable || [true,true,false,false]).slice()
-  this.width  = (options.width || [1,1,1,1]).slice()
-  this.color  = (options.color || [
-                  [0,0,0,1],
-                  [0,0,0,1],
-                  [0,0,0,1],
-                  [0,0,0,1]]).map(function(x) { return x.slice() })
-  this.center = (options.center || [Infinity,Infinity]).slice()
-  this.plot.setOverlayDirty()
-}
 
-proto.draw = function() {
-  var spikeEnable = this.enable
-  var spikeWidth  = this.width
-  var spikeColor  = this.color
-  var spikeCenter = this.center
-  var plot        = this.plot
-  var line        = plot.line
+var glslify      = __webpack_require__(3236)
+var createShader = __webpack_require__(9405)
 
-  var dataBox     = plot.dataBox
-  var viewPixels  = plot.viewBox
-
-  line.bind()
-
-  if(dataBox[0] <= spikeCenter[0] && spikeCenter[0] <= dataBox[2] &&
-     dataBox[1] <= spikeCenter[1] && spikeCenter[1] <= dataBox[3]) {
-
-    var centerX = viewPixels[0] + (spikeCenter[0] - dataBox[0]) / (dataBox[2] - dataBox[0]) * (viewPixels[2] - viewPixels[0])
-    var centerY = viewPixels[1] + (spikeCenter[1] - dataBox[1]) / (dataBox[3] - dataBox[1]) * (viewPixels[3] - viewPixels[1])
-
-    if(spikeEnable[0]) {
-     line.drawLine(
-       centerX, centerY,
-       viewPixels[0], centerY,
-       spikeWidth[0], spikeColor[0])
-    }
-    if(spikeEnable[1]) {
-     line.drawLine(
-       centerX, centerY,
-       centerX, viewPixels[1],
-       spikeWidth[1], spikeColor[1])
-    }
-    if(spikeEnable[2]) {
-      line.drawLine(
-        centerX, centerY,
-        viewPixels[2], centerY,
-        spikeWidth[2], spikeColor[2])
-    }
-    if(spikeEnable[3]) {
-      line.drawLine(
-        centerX, centerY,
-        centerX, viewPixels[3],
-        spikeWidth[3], spikeColor[3])
-    }
-  }
-}
-
-proto.dispose = function() {
-  this.plot.removeOverlay(this)
-}
-
-function createSpikes2D(plot, options) {
-  var spikes = new GLSpikes2D(plot)
-  spikes.update(options)
-  plot.addOverlay(spikes)
-  return spikes
-}
-
-},{}],140:[function(_glvis_,module,exports){
-'use strict'
-
-var glslify      = _glvis_('glslify')
-var createShader = _glvis_('gl-shader')
-
-var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, color;\nattribute float weight;\n\nuniform mat4 model, view, projection;\nuniform vec3 coordinates[3];\nuniform vec4 colors[3];\nuniform vec2 screenShape;\nuniform float lineWidth;\n\nvarying vec4 fragColor;\n\nvoid main() {\n  vec3 vertexPosition = mix(coordinates[0],\n    mix(coordinates[2], coordinates[1], 0.5 * (position + 1.0)), abs(position));\n\n  vec4 clipPos = projection * view * model * vec4(vertexPosition, 1.0);\n  vec2 clipOffset = (projection * view * model * vec4(color, 0.0)).xy;\n  vec2 delta = weight * clipOffset * screenShape;\n  vec2 lineOffset = normalize(vec2(delta.y, -delta.x)) / screenShape;\n\n  gl_Position   = vec4(clipPos.xy + clipPos.w * 0.5 * lineWidth * lineOffset, clipPos.z, clipPos.w);\n  fragColor     = color.x * colors[0] + color.y * colors[1] + color.z * colors[2];\n}\n"])
+var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, color;\nattribute float weight;\n\nuniform mat4 model, view, projection;\nuniform vec3 coordinates[3];\nuniform vec4 colors[3];\nuniform vec2 screenShape;\nuniform float lineWidth;\n\nvarying vec4 fragColor;\n\nvoid main() {\n  vec3 vertexPosition = mix(coordinates[0],\n    mix(coordinates[2], coordinates[1], 0.5 * (position + 1.0)), abs(position));\n\n  vec4 clipPos = projection * (view * (model * vec4(vertexPosition, 1.0)));\n  vec2 clipOffset = (projection * (view * (model * vec4(color, 0.0)))).xy;\n  vec2 delta = weight * clipOffset * screenShape;\n  vec2 lineOffset = normalize(vec2(delta.y, -delta.x)) / screenShape;\n\n  gl_Position   = vec4(clipPos.xy + clipPos.w * 0.5 * lineWidth * lineOffset, clipPos.z, clipPos.w);\n  fragColor     = color.x * colors[0] + color.y * colors[1] + color.z * colors[2];\n}\n"])
 var fragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor;\n\nvoid main() {\n  gl_FragColor = fragColor;\n}"])
 
 module.exports = function(gl) {
@@ -23454,12 +21961,18 @@ module.exports = function(gl) {
   ])
 }
 
-},{"gl-shader":132,"glslify":231}],141:[function(_glvis_,module,exports){
-'use strict'
 
-var createBuffer = _glvis_('gl-buffer')
-var createVAO = _glvis_('gl-vao')
-var createShader = _glvis_('./shaders/index')
+/***/ }),
+
+/***/ 4449:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createBuffer = __webpack_require__(2762)
+var createVAO = __webpack_require__(8116)
+var createShader = __webpack_require__(1493)
 
 module.exports = createSpikes
 
@@ -23650,12 +22163,17 @@ function createSpikes(gl, options) {
   return spikes
 }
 
-},{"./shaders/index":140,"gl-buffer":78,"gl-vao":150}],142:[function(_glvis_,module,exports){
-var glslify       = _glvis_('glslify')
+
+/***/ }),
+
+/***/ 6740:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var glslify       = __webpack_require__(3236)
 
 var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, tubeScale;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * tubePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(tubePosition, 1.0);\n  vec4 t_position  = view * tubePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = tubePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
 var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"])
-var pickVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform float tubeScale;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  gl_Position = projection * view * tubePosition;\n  f_id        = id;\n  f_position  = position.xyz;\n}\n"])
+var pickVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform float tubeScale;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  gl_Position = projection * (view * tubePosition);\n  f_id        = id;\n  f_position  = position.xyz;\n}\n"])
 var pickFragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"])
 
 exports.meshShader = {
@@ -23678,11 +22196,17 @@ exports.pickShader = {
   ]
 }
 
-},{"glslify":231}],143:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7815:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 "use strict";
 
-var vec3 = _glvis_('gl-vec3');
-var vec4 = _glvis_('gl-vec4');
+
+var vec3 = __webpack_require__(2931);
+var vec4 = __webpack_require__(9970);
 var GRID_TYPES = ['xyz', 'xzy', 'yxz', 'yzx', 'zxy', 'zyx'];
 
 var streamToTube = function(stream, maxDivergence, minDistance, maxNorm) {
@@ -24229,8 +22753,8 @@ module.exports = function(vectorField, bounds) {
 	return tubes;
 };
 
-var shaders = _glvis_('./lib/shaders');
-var createMesh = _glvis_('gl-cone3d').createMesh;
+var shaders = __webpack_require__(6740);
+var createMesh = (__webpack_require__(6405).createMesh);
 module.exports.createTubeMesh = function(gl, params) {
 	return createMesh(gl, params, {
 		shaders: shaders,
@@ -24238,13 +22762,18 @@ module.exports.createTubeMesh = function(gl, params) {
 	});
 }
 
-},{"./lib/shaders":142,"gl-cone3d":79,"gl-vec3":169,"gl-vec4":205}],144:[function(_glvis_,module,exports){
-var createShader = _glvis_('gl-shader')
-var glslify = _glvis_('glslify')
 
-var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform vec3 objectOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 localCoordinate = vec3(uv.zw, f.x);\n  worldCoordinate = objectOffset + localCoordinate;\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"])
+/***/ }),
+
+/***/ 990:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var createShader = __webpack_require__(9405)
+var glslify = __webpack_require__(3236)
+
+var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform vec3 objectOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 localCoordinate = vec3(uv.zw, f.x);\n  worldCoordinate = objectOffset + localCoordinate;\n  mat4 objectOffsetTranslation = mat4(1.0) + mat4(vec4(0), vec4(0), vec4(0), vec4(objectOffset, 0));\n  vec4 worldPosition = (model * objectOffsetTranslation) * vec4(localCoordinate, 1.0);\n  vec4 clipPosition = projection * (view * worldPosition);\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"])
 var fragSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat beckmannSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform float vertexColor;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  if (\n    kill > 0.0 ||\n    vColor.a == 0.0 ||\n    outOfRange(clipBounds[0], clipBounds[1], worldCoordinate)\n  ) discard;\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = max(beckmannSpecular(L, V, N, roughness), 0.);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  //decide how to interpolate color — in vertex or in fragment\n  vec4 surfaceColor =\n    step(vertexColor, .5) * texture2D(colormap, vec2(value, value)) +\n    step(.5, vertexColor) * vColor;\n\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"])
-var contourVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute float f;\n\nuniform vec3 objectOffset;\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  worldCoordinate = objectOffset + dataCoordinate;\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z += zOffset;\n\n  gl_Position = clipPosition;\n  value = f + objectOffset.z;\n  kill = -1.0;\n  planeCoordinate = uv.zw;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"])
+var contourVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute float f;\n\nuniform vec3 objectOffset;\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  worldCoordinate = objectOffset + dataCoordinate;\n  mat4 objectOffsetTranslation = mat4(1.0) + mat4(vec4(0), vec4(0), vec4(0), vec4(objectOffset, 0));\n  vec4 worldPosition = (model * objectOffsetTranslation) * vec4(dataCoordinate, 1.0);\n\n  vec4 clipPosition = projection * (view * worldPosition);\n  clipPosition.z += zOffset;\n\n  gl_Position = clipPosition;\n  value = f + objectOffset.z;\n  kill = -1.0;\n  planeCoordinate = uv.zw;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"])
 var pickSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if ((kill > 0.0) ||\n      (outOfRange(clipBounds[0], clipBounds[1], worldCoordinate))) discard;\n\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}\n"])
 
 exports.createShader = function (gl) {
@@ -24288,26 +22817,32 @@ exports.createPickContourShader = function (gl) {
   return shader
 }
 
-},{"gl-shader":132,"glslify":231}],145:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 9499:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createSurfacePlot
 
-var bits = _glvis_('bit-twiddle')
-var createBuffer = _glvis_('gl-buffer')
-var createVAO = _glvis_('gl-vao')
-var createTexture = _glvis_('gl-texture2d')
-var pool = _glvis_('typedarray-pool')
-var colormap = _glvis_('colormap')
-var ops = _glvis_('ndarray-ops')
-var pack = _glvis_('ndarray-pack')
-var ndarray = _glvis_('ndarray')
-var surfaceNets = _glvis_('surface-nets')
-var multiply = _glvis_('gl-mat4/multiply')
-var invert = _glvis_('gl-mat4/invert')
-var bsearch = _glvis_('binary-search-bounds')
-var gradient = _glvis_('ndarray-gradient')
-var shaders = _glvis_('./lib/shaders')
+var bits = __webpack_require__(8828)
+var createBuffer = __webpack_require__(2762)
+var createVAO = __webpack_require__(8116)
+var createTexture = __webpack_require__(7766)
+var pool = __webpack_require__(1888)
+var colormap = __webpack_require__(6729)
+var ops = __webpack_require__(5298)
+var pack = __webpack_require__(9994)
+var ndarray = __webpack_require__(9618)
+var surfaceNets = __webpack_require__(3711)
+var multiply = __webpack_require__(6760)
+var invert = __webpack_require__(7608)
+var bsearch = __webpack_require__(2478)
+var gradient = __webpack_require__(6199)
+var shaders = __webpack_require__(990)
 
 var createShader = shaders.createShader
 var createContourShader = shaders.createContourShader
@@ -25670,12 +24205,18 @@ function createSurfacePlot (params) {
   return surface
 }
 
-},{"./lib/shaders":144,"binary-search-bounds":31,"bit-twiddle":32,"colormap":53,"gl-buffer":78,"gl-mat4/invert":98,"gl-mat4/multiply":100,"gl-texture2d":146,"gl-vao":150,"ndarray":259,"ndarray-gradient":252,"ndarray-ops":254,"ndarray-pack":255,"surface-nets":302,"typedarray-pool":308}],146:[function(_glvis_,module,exports){
-'use strict'
 
-var ndarray = _glvis_('ndarray')
-var ops     = _glvis_('ndarray-ops')
-var pool    = _glvis_('typedarray-pool')
+/***/ }),
+
+/***/ 7766:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var ndarray = __webpack_require__(9618)
+var ops     = __webpack_require__(5298)
+var pool    = __webpack_require__(1888)
 
 module.exports = createTexture2D
 
@@ -26233,8 +24774,14 @@ function createTexture2D(gl) {
   throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
 }
 
-},{"ndarray":259,"ndarray-ops":254,"typedarray-pool":308}],147:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 1433:
+/***/ (function(module) {
+
+"use strict";
+
 
 function doBind(gl, elements, attributes) {
   if(elements) {
@@ -26288,10 +24835,16 @@ function doBind(gl, elements, attributes) {
 }
 
 module.exports = doBind
-},{}],148:[function(_glvis_,module,exports){
-"use strict"
 
-var bindAttribs = _glvis_("./do-bind.js")
+/***/ }),
+
+/***/ 870:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bindAttribs = __webpack_require__(1433)
 
 function VAOEmulated(gl) {
   this.gl = gl
@@ -26328,10 +24881,16 @@ function createVAOEmulated(gl) {
 }
 
 module.exports = createVAOEmulated
-},{"./do-bind.js":147}],149:[function(_glvis_,module,exports){
-"use strict"
 
-var bindAttribs = _glvis_("./do-bind.js")
+/***/ }),
+
+/***/ 7518:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bindAttribs = __webpack_require__(1433)
 
 function VertexAttribute(location, dimension, a, b, c, d) {
   this.location = location
@@ -26416,11 +24975,17 @@ function createVAONative(gl, ext) {
 }
 
 module.exports = createVAONative
-},{"./do-bind.js":147}],150:[function(_glvis_,module,exports){
-"use strict"
 
-var createVAONative = _glvis_("./lib/vao-native.js")
-var createVAOEmulated = _glvis_("./lib/vao-emulated.js")
+/***/ }),
+
+/***/ 8116:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var createVAONative = __webpack_require__(7518)
+var createVAOEmulated = __webpack_require__(870)
 
 function ExtensionShim (gl) {
   this.bindVertexArrayOES = gl.bindVertexArray.bind(gl)
@@ -26445,7 +25010,12 @@ function createVAO(gl, attributes, elements, elementsType) {
 
 module.exports = createVAO
 
-},{"./lib/vao-emulated.js":148,"./lib/vao-native.js":149}],151:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5632:
+/***/ (function(module) {
+
 module.exports = add;
 
 /**
@@ -26462,12 +25032,17 @@ function add(out, a, b) {
     out[2] = a[2] + b[2]
     return out
 }
-},{}],152:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8192:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = angle
 
-var fromValues = _glvis_('./fromValues')
-var normalize = _glvis_('./normalize')
-var dot = _glvis_('./dot')
+var fromValues = __webpack_require__(2825)
+var normalize = __webpack_require__(3536)
+var dot = __webpack_require__(244)
 
 /**
  * Get the angle between two 3D vectors
@@ -26491,7 +25066,12 @@ function angle(a, b) {
     }     
 }
 
-},{"./dot":162,"./fromValues":168,"./normalize":179}],153:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9226:
+/***/ (function(module) {
+
 module.exports = ceil
 
 /**
@@ -26508,7 +25088,12 @@ function ceil(out, a) {
   return out
 }
 
-},{}],154:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3126:
+/***/ (function(module) {
+
 module.exports = clone;
 
 /**
@@ -26524,7 +25109,12 @@ function clone(a) {
     out[2] = a[2]
     return out
 }
-},{}],155:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3990:
+/***/ (function(module) {
+
 module.exports = copy;
 
 /**
@@ -26540,7 +25130,12 @@ function copy(out, a) {
     out[2] = a[2]
     return out
 }
-},{}],156:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1091:
+/***/ (function(module) {
+
 module.exports = create;
 
 /**
@@ -26555,7 +25150,12 @@ function create() {
     out[2] = 0
     return out
 }
-},{}],157:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5911:
+/***/ (function(module) {
+
 module.exports = cross;
 
 /**
@@ -26575,10 +25175,20 @@ function cross(out, a, b) {
     out[2] = ax * by - ay * bx
     return out
 }
-},{}],158:[function(_glvis_,module,exports){
-module.exports = _glvis_('./distance')
 
-},{"./distance":159}],159:[function(_glvis_,module,exports){
+/***/ }),
+
+/***/ 5455:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(7056)
+
+
+/***/ }),
+
+/***/ 7056:
+/***/ (function(module) {
+
 module.exports = distance;
 
 /**
@@ -26594,10 +25204,20 @@ function distance(a, b) {
         z = b[2] - a[2]
     return Math.sqrt(x*x + y*y + z*z)
 }
-},{}],160:[function(_glvis_,module,exports){
-module.exports = _glvis_('./divide')
 
-},{"./divide":161}],161:[function(_glvis_,module,exports){
+/***/ }),
+
+/***/ 4008:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(6690)
+
+
+/***/ }),
+
+/***/ 6690:
+/***/ (function(module) {
+
 module.exports = divide;
 
 /**
@@ -26614,7 +25234,12 @@ function divide(out, a, b) {
     out[2] = a[2] / b[2]
     return out
 }
-},{}],162:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 244:
+/***/ (function(module) {
+
 module.exports = dot;
 
 /**
@@ -26627,13 +25252,23 @@ module.exports = dot;
 function dot(a, b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 }
-},{}],163:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2613:
+/***/ (function(module) {
+
 module.exports = 0.000001
 
-},{}],164:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9922:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = equals
 
-var EPSILON = _glvis_('./epsilon')
+var EPSILON = __webpack_require__(2613)
 
 /**
  * Returns whether or not the vectors have approximately the same elements in the same position.
@@ -26654,7 +25289,12 @@ function equals(a, b) {
           Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)))
 }
 
-},{"./epsilon":163}],165:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9265:
+/***/ (function(module) {
+
 module.exports = exactEquals
 
 /**
@@ -26668,7 +25308,12 @@ function exactEquals(a, b) {
   return a[0] === b[0] && a[1] === b[1] && a[2] === b[2]
 }
 
-},{}],166:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2681:
+/***/ (function(module) {
+
 module.exports = floor
 
 /**
@@ -26685,10 +25330,15 @@ function floor(out, a) {
   return out
 }
 
-},{}],167:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5137:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = forEach;
 
-var vec = _glvis_('./create')()
+var vec = __webpack_require__(1091)()
 
 /**
  * Perform some operation over an array of vec3s.
@@ -26730,7 +25380,12 @@ function forEach(a, stride, offset, count, fn, arg) {
         
         return a
 }
-},{"./create":156}],168:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2825:
+/***/ (function(module) {
+
 module.exports = fromValues;
 
 /**
@@ -26748,56 +25403,66 @@ function fromValues(x, y, z) {
     out[2] = z
     return out
 }
-},{}],169:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2931:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = {
-  EPSILON: _glvis_('./epsilon')
-  , create: _glvis_('./create')
-  , clone: _glvis_('./clone')
-  , angle: _glvis_('./angle')
-  , fromValues: _glvis_('./fromValues')
-  , copy: _glvis_('./copy')
-  , set: _glvis_('./set')
-  , equals: _glvis_('./equals')
-  , exactEquals: _glvis_('./exactEquals')
-  , add: _glvis_('./add')
-  , subtract: _glvis_('./subtract')
-  , sub: _glvis_('./sub')
-  , multiply: _glvis_('./multiply')
-  , mul: _glvis_('./mul')
-  , divide: _glvis_('./divide')
-  , div: _glvis_('./div')
-  , min: _glvis_('./min')
-  , max: _glvis_('./max')
-  , floor: _glvis_('./floor')
-  , ceil: _glvis_('./ceil')
-  , round: _glvis_('./round')
-  , scale: _glvis_('./scale')
-  , scaleAndAdd: _glvis_('./scaleAndAdd')
-  , distance: _glvis_('./distance')
-  , dist: _glvis_('./dist')
-  , squaredDistance: _glvis_('./squaredDistance')
-  , sqrDist: _glvis_('./sqrDist')
-  , length: _glvis_('./length')
-  , len: _glvis_('./len')
-  , squaredLength: _glvis_('./squaredLength')
-  , sqrLen: _glvis_('./sqrLen')
-  , negate: _glvis_('./negate')
-  , inverse: _glvis_('./inverse')
-  , normalize: _glvis_('./normalize')
-  , dot: _glvis_('./dot')
-  , cross: _glvis_('./cross')
-  , lerp: _glvis_('./lerp')
-  , random: _glvis_('./random')
-  , transformMat4: _glvis_('./transformMat4')
-  , transformMat3: _glvis_('./transformMat3')
-  , transformQuat: _glvis_('./transformQuat')
-  , rotateX: _glvis_('./rotateX')
-  , rotateY: _glvis_('./rotateY')
-  , rotateZ: _glvis_('./rotateZ')
-  , forEach: _glvis_('./forEach')
+  EPSILON: __webpack_require__(2613)
+  , create: __webpack_require__(1091)
+  , clone: __webpack_require__(3126)
+  , angle: __webpack_require__(8192)
+  , fromValues: __webpack_require__(2825)
+  , copy: __webpack_require__(3990)
+  , set: __webpack_require__(1463)
+  , equals: __webpack_require__(9922)
+  , exactEquals: __webpack_require__(9265)
+  , add: __webpack_require__(5632)
+  , subtract: __webpack_require__(6843)
+  , sub: __webpack_require__(2229)
+  , multiply: __webpack_require__(5847)
+  , mul: __webpack_require__(4505)
+  , divide: __webpack_require__(6690)
+  , div: __webpack_require__(4008)
+  , min: __webpack_require__(8107)
+  , max: __webpack_require__(7417)
+  , floor: __webpack_require__(2681)
+  , ceil: __webpack_require__(9226)
+  , round: __webpack_require__(2447)
+  , scale: __webpack_require__(6621)
+  , scaleAndAdd: __webpack_require__(8489)
+  , distance: __webpack_require__(7056)
+  , dist: __webpack_require__(5455)
+  , squaredDistance: __webpack_require__(2953)
+  , sqrDist: __webpack_require__(6141)
+  , length: __webpack_require__(1387)
+  , len: __webpack_require__(868)
+  , squaredLength: __webpack_require__(3066)
+  , sqrLen: __webpack_require__(5486)
+  , negate: __webpack_require__(5093)
+  , inverse: __webpack_require__(811)
+  , normalize: __webpack_require__(3536)
+  , dot: __webpack_require__(244)
+  , cross: __webpack_require__(5911)
+  , lerp: __webpack_require__(6658)
+  , random: __webpack_require__(7636)
+  , transformMat4: __webpack_require__(5673)
+  , transformMat3: __webpack_require__(492)
+  , transformQuat: __webpack_require__(264)
+  , rotateX: __webpack_require__(6894)
+  , rotateY: __webpack_require__(109)
+  , rotateZ: __webpack_require__(8692)
+  , forEach: __webpack_require__(5137)
 }
 
-},{"./add":151,"./angle":152,"./ceil":153,"./clone":154,"./copy":155,"./create":156,"./cross":157,"./dist":158,"./distance":159,"./div":160,"./divide":161,"./dot":162,"./epsilon":163,"./equals":164,"./exactEquals":165,"./floor":166,"./forEach":167,"./fromValues":168,"./inverse":170,"./len":171,"./length":172,"./lerp":173,"./max":174,"./min":175,"./mul":176,"./multiply":177,"./negate":178,"./normalize":179,"./random":180,"./rotateX":181,"./rotateY":182,"./rotateZ":183,"./round":184,"./scale":185,"./scaleAndAdd":186,"./set":187,"./sqrDist":188,"./sqrLen":189,"./squaredDistance":190,"./squaredLength":191,"./sub":192,"./subtract":193,"./transformMat3":194,"./transformMat4":195,"./transformQuat":196}],170:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 811:
+/***/ (function(module) {
+
 module.exports = inverse;
 
 /**
@@ -26813,10 +25478,20 @@ function inverse(out, a) {
   out[2] = 1.0 / a[2]
   return out
 }
-},{}],171:[function(_glvis_,module,exports){
-module.exports = _glvis_('./length')
 
-},{"./length":172}],172:[function(_glvis_,module,exports){
+/***/ }),
+
+/***/ 868:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(1387)
+
+
+/***/ }),
+
+/***/ 1387:
+/***/ (function(module) {
+
 module.exports = length;
 
 /**
@@ -26831,7 +25506,12 @@ function length(a) {
         z = a[2]
     return Math.sqrt(x*x + y*y + z*z)
 }
-},{}],173:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6658:
+/***/ (function(module) {
+
 module.exports = lerp;
 
 /**
@@ -26852,7 +25532,12 @@ function lerp(out, a, b, t) {
     out[2] = az + t * (b[2] - az)
     return out
 }
-},{}],174:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7417:
+/***/ (function(module) {
+
 module.exports = max;
 
 /**
@@ -26869,7 +25554,12 @@ function max(out, a, b) {
     out[2] = Math.max(a[2], b[2])
     return out
 }
-},{}],175:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8107:
+/***/ (function(module) {
+
 module.exports = min;
 
 /**
@@ -26886,10 +25576,20 @@ function min(out, a, b) {
     out[2] = Math.min(a[2], b[2])
     return out
 }
-},{}],176:[function(_glvis_,module,exports){
-module.exports = _glvis_('./multiply')
 
-},{"./multiply":177}],177:[function(_glvis_,module,exports){
+/***/ }),
+
+/***/ 4505:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(5847)
+
+
+/***/ }),
+
+/***/ 5847:
+/***/ (function(module) {
+
 module.exports = multiply;
 
 /**
@@ -26906,7 +25606,12 @@ function multiply(out, a, b) {
     out[2] = a[2] * b[2]
     return out
 }
-},{}],178:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5093:
+/***/ (function(module) {
+
 module.exports = negate;
 
 /**
@@ -26922,7 +25627,12 @@ function negate(out, a) {
     out[2] = -a[2]
     return out
 }
-},{}],179:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3536:
+/***/ (function(module) {
+
 module.exports = normalize;
 
 /**
@@ -26946,7 +25656,12 @@ function normalize(out, a) {
     }
     return out
 }
-},{}],180:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7636:
+/***/ (function(module) {
+
 module.exports = random;
 
 /**
@@ -26968,7 +25683,12 @@ function random(out, scale) {
     out[2] = z * scale
     return out
 }
-},{}],181:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6894:
+/***/ (function(module) {
+
 module.exports = rotateX;
 
 /**
@@ -26998,7 +25718,12 @@ function rotateX(out, a, b, c){
     return out
 }
 
-},{}],182:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 109:
+/***/ (function(module) {
+
 module.exports = rotateY;
 
 /**
@@ -27028,7 +25753,12 @@ function rotateY(out, a, b, c){
     return out
 }
 
-},{}],183:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8692:
+/***/ (function(module) {
+
 module.exports = rotateZ;
 
 /**
@@ -27058,7 +25788,12 @@ function rotateZ(out, a, b, c){
     return out
 }
 
-},{}],184:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2447:
+/***/ (function(module) {
+
 module.exports = round
 
 /**
@@ -27075,7 +25810,12 @@ function round(out, a) {
   return out
 }
 
-},{}],185:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6621:
+/***/ (function(module) {
+
 module.exports = scale;
 
 /**
@@ -27092,7 +25832,12 @@ function scale(out, a, b) {
     out[2] = a[2] * b
     return out
 }
-},{}],186:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8489:
+/***/ (function(module) {
+
 module.exports = scaleAndAdd;
 
 /**
@@ -27110,7 +25855,12 @@ function scaleAndAdd(out, a, b, scale) {
     out[2] = a[2] + (b[2] * scale)
     return out
 }
-},{}],187:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1463:
+/***/ (function(module) {
+
 module.exports = set;
 
 /**
@@ -27128,13 +25878,28 @@ function set(out, x, y, z) {
     out[2] = z
     return out
 }
-},{}],188:[function(_glvis_,module,exports){
-module.exports = _glvis_('./squaredDistance')
 
-},{"./squaredDistance":190}],189:[function(_glvis_,module,exports){
-module.exports = _glvis_('./squaredLength')
+/***/ }),
 
-},{"./squaredLength":191}],190:[function(_glvis_,module,exports){
+/***/ 6141:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(2953)
+
+
+/***/ }),
+
+/***/ 5486:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(3066)
+
+
+/***/ }),
+
+/***/ 2953:
+/***/ (function(module) {
+
 module.exports = squaredDistance;
 
 /**
@@ -27150,7 +25915,12 @@ function squaredDistance(a, b) {
         z = b[2] - a[2]
     return x*x + y*y + z*z
 }
-},{}],191:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3066:
+/***/ (function(module) {
+
 module.exports = squaredLength;
 
 /**
@@ -27165,10 +25935,20 @@ function squaredLength(a) {
         z = a[2]
     return x*x + y*y + z*z
 }
-},{}],192:[function(_glvis_,module,exports){
-module.exports = _glvis_('./subtract')
 
-},{"./subtract":193}],193:[function(_glvis_,module,exports){
+/***/ }),
+
+/***/ 2229:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(6843)
+
+
+/***/ }),
+
+/***/ 6843:
+/***/ (function(module) {
+
 module.exports = subtract;
 
 /**
@@ -27185,7 +25965,12 @@ function subtract(out, a, b) {
     out[2] = a[2] - b[2]
     return out
 }
-},{}],194:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 492:
+/***/ (function(module) {
+
 module.exports = transformMat3;
 
 /**
@@ -27203,7 +25988,12 @@ function transformMat3(out, a, m) {
     out[2] = x * m[2] + y * m[5] + z * m[8]
     return out
 }
-},{}],195:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5673:
+/***/ (function(module) {
+
 module.exports = transformMat4;
 
 /**
@@ -27224,7 +26014,12 @@ function transformMat4(out, a, m) {
     out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w
     return out
 }
-},{}],196:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 264:
+/***/ (function(module) {
+
 module.exports = transformQuat;
 
 /**
@@ -27253,7 +26048,12 @@ function transformQuat(out, a, q) {
     out[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx
     return out
 }
-},{}],197:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4361:
+/***/ (function(module) {
+
 module.exports = add
 
 /**
@@ -27272,7 +26072,12 @@ function add (out, a, b) {
   return out
 }
 
-},{}],198:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2335:
+/***/ (function(module) {
+
 module.exports = clone
 
 /**
@@ -27290,7 +26095,12 @@ function clone (a) {
   return out
 }
 
-},{}],199:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2933:
+/***/ (function(module) {
+
 module.exports = copy
 
 /**
@@ -27308,7 +26118,12 @@ function copy (out, a) {
   return out
 }
 
-},{}],200:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7536:
+/***/ (function(module) {
+
 module.exports = create
 
 /**
@@ -27325,7 +26140,12 @@ function create () {
   return out
 }
 
-},{}],201:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4691:
+/***/ (function(module) {
+
 module.exports = distance
 
 /**
@@ -27343,7 +26163,12 @@ function distance (a, b) {
   return Math.sqrt(x * x + y * y + z * z + w * w)
 }
 
-},{}],202:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1373:
+/***/ (function(module) {
+
 module.exports = divide
 
 /**
@@ -27362,7 +26187,12 @@ function divide (out, a, b) {
   return out
 }
 
-},{}],203:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3750:
+/***/ (function(module) {
+
 module.exports = dot
 
 /**
@@ -27376,7 +26206,12 @@ function dot (a, b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]
 }
 
-},{}],204:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3390:
+/***/ (function(module) {
+
 module.exports = fromValues
 
 /**
@@ -27397,36 +26232,46 @@ function fromValues (x, y, z, w) {
   return out
 }
 
-},{}],205:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9970:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = {
-  create: _glvis_('./create'),
-  clone: _glvis_('./clone'),
-  fromValues: _glvis_('./fromValues'),
-  copy: _glvis_('./copy'),
-  set: _glvis_('./set'),
-  add: _glvis_('./add'),
-  subtract: _glvis_('./subtract'),
-  multiply: _glvis_('./multiply'),
-  divide: _glvis_('./divide'),
-  min: _glvis_('./min'),
-  max: _glvis_('./max'),
-  scale: _glvis_('./scale'),
-  scaleAndAdd: _glvis_('./scaleAndAdd'),
-  distance: _glvis_('./distance'),
-  squaredDistance: _glvis_('./squaredDistance'),
-  length: _glvis_('./length'),
-  squaredLength: _glvis_('./squaredLength'),
-  negate: _glvis_('./negate'),
-  inverse: _glvis_('./inverse'),
-  normalize: _glvis_('./normalize'),
-  dot: _glvis_('./dot'),
-  lerp: _glvis_('./lerp'),
-  random: _glvis_('./random'),
-  transformMat4: _glvis_('./transformMat4'),
-  transformQuat: _glvis_('./transformQuat')
+  create: __webpack_require__(7536),
+  clone: __webpack_require__(2335),
+  fromValues: __webpack_require__(3390),
+  copy: __webpack_require__(2933),
+  set: __webpack_require__(4578),
+  add: __webpack_require__(4361),
+  subtract: __webpack_require__(6860),
+  multiply: __webpack_require__(3576),
+  divide: __webpack_require__(1373),
+  min: __webpack_require__(2334),
+  max: __webpack_require__(160),
+  scale: __webpack_require__(9288),
+  scaleAndAdd: __webpack_require__(4844),
+  distance: __webpack_require__(4691),
+  squaredDistance: __webpack_require__(7960),
+  length: __webpack_require__(6808),
+  squaredLength: __webpack_require__(483),
+  negate: __webpack_require__(1498),
+  inverse: __webpack_require__(4494),
+  normalize: __webpack_require__(5177),
+  dot: __webpack_require__(3750),
+  lerp: __webpack_require__(2573),
+  random: __webpack_require__(9131),
+  transformMat4: __webpack_require__(5352),
+  transformQuat: __webpack_require__(4041)
 }
 
-},{"./add":197,"./clone":198,"./copy":199,"./create":200,"./distance":201,"./divide":202,"./dot":203,"./fromValues":204,"./inverse":206,"./length":207,"./lerp":208,"./max":209,"./min":210,"./multiply":211,"./negate":212,"./normalize":213,"./random":214,"./scale":215,"./scaleAndAdd":216,"./set":217,"./squaredDistance":218,"./squaredLength":219,"./subtract":220,"./transformMat4":221,"./transformQuat":222}],206:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4494:
+/***/ (function(module) {
+
 module.exports = inverse
 
 /**
@@ -27444,7 +26289,12 @@ function inverse (out, a) {
   return out
 }
 
-},{}],207:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6808:
+/***/ (function(module) {
+
 module.exports = length
 
 /**
@@ -27461,7 +26311,12 @@ function length (a) {
   return Math.sqrt(x * x + y * y + z * z + w * w)
 }
 
-},{}],208:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2573:
+/***/ (function(module) {
+
 module.exports = lerp
 
 /**
@@ -27485,7 +26340,12 @@ function lerp (out, a, b, t) {
   return out
 }
 
-},{}],209:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 160:
+/***/ (function(module) {
+
 module.exports = max
 
 /**
@@ -27504,7 +26364,12 @@ function max (out, a, b) {
   return out
 }
 
-},{}],210:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2334:
+/***/ (function(module) {
+
 module.exports = min
 
 /**
@@ -27523,7 +26388,12 @@ function min (out, a, b) {
   return out
 }
 
-},{}],211:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3576:
+/***/ (function(module) {
+
 module.exports = multiply
 
 /**
@@ -27542,7 +26412,12 @@ function multiply (out, a, b) {
   return out
 }
 
-},{}],212:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1498:
+/***/ (function(module) {
+
 module.exports = negate
 
 /**
@@ -27560,7 +26435,12 @@ function negate (out, a) {
   return out
 }
 
-},{}],213:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5177:
+/***/ (function(module) {
+
 module.exports = normalize
 
 /**
@@ -27586,9 +26466,14 @@ function normalize (out, a) {
   return out
 }
 
-},{}],214:[function(_glvis_,module,exports){
-var vecNormalize = _glvis_('./normalize')
-var vecScale = _glvis_('./scale')
+
+/***/ }),
+
+/***/ 9131:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var vecNormalize = __webpack_require__(5177)
+var vecScale = __webpack_require__(9288)
 
 module.exports = random
 
@@ -27612,7 +26497,12 @@ function random (out, scale) {
   return out
 }
 
-},{"./normalize":213,"./scale":215}],215:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9288:
+/***/ (function(module) {
+
 module.exports = scale
 
 /**
@@ -27631,7 +26521,12 @@ function scale (out, a, b) {
   return out
 }
 
-},{}],216:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4844:
+/***/ (function(module) {
+
 module.exports = scaleAndAdd
 
 /**
@@ -27651,7 +26546,12 @@ function scaleAndAdd (out, a, b, scale) {
   return out
 }
 
-},{}],217:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4578:
+/***/ (function(module) {
+
 module.exports = set
 
 /**
@@ -27672,7 +26572,12 @@ function set (out, x, y, z, w) {
   return out
 }
 
-},{}],218:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7960:
+/***/ (function(module) {
+
 module.exports = squaredDistance
 
 /**
@@ -27690,7 +26595,12 @@ function squaredDistance (a, b) {
   return x * x + y * y + z * z + w * w
 }
 
-},{}],219:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 483:
+/***/ (function(module) {
+
 module.exports = squaredLength
 
 /**
@@ -27707,7 +26617,12 @@ function squaredLength (a) {
   return x * x + y * y + z * z + w * w
 }
 
-},{}],220:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6860:
+/***/ (function(module) {
+
 module.exports = subtract
 
 /**
@@ -27726,7 +26641,12 @@ function subtract (out, a, b) {
   return out
 }
 
-},{}],221:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5352:
+/***/ (function(module) {
+
 module.exports = transformMat4
 
 /**
@@ -27746,7 +26666,12 @@ function transformMat4 (out, a, m) {
   return out
 }
 
-},{}],222:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4041:
+/***/ (function(module) {
+
 module.exports = transformQuat
 
 /**
@@ -27775,9 +26700,14 @@ function transformQuat (out, a, q) {
   return out
 }
 
-},{}],223:[function(_glvis_,module,exports){
-var tokenize = _glvis_('glsl-tokenizer')
-var atob     = _glvis_('atob-lite')
+
+/***/ }),
+
+/***/ 1848:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var tokenize = __webpack_require__(4905)
+var atob     = __webpack_require__(6468)
 
 module.exports = getName
 
@@ -27800,14 +26730,19 @@ function getName(src) {
   }
 }
 
-},{"atob-lite":13,"glsl-tokenizer":230}],224:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5874:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = tokenize
 
-var literals100 = _glvis_('./lib/literals')
-  , operators = _glvis_('./lib/operators')
-  , builtins100 = _glvis_('./lib/builtins')
-  , literals300es = _glvis_('./lib/literals-300es')
-  , builtins300es = _glvis_('./lib/builtins-300es')
+var literals100 = __webpack_require__(620)
+  , operators = __webpack_require__(7827)
+  , builtins100 = __webpack_require__(6852)
+  , literals300es = __webpack_require__(7932)
+  , builtins300es = __webpack_require__(3508)
 
 var NORMAL = 999          // <-- never emitted
   , TOKEN = 9999          // <-- never emitted
@@ -28177,9 +27112,14 @@ function tokenize(opt) {
   }
 }
 
-},{"./lib/builtins":226,"./lib/builtins-300es":225,"./lib/literals":228,"./lib/literals-300es":227,"./lib/operators":229}],225:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3508:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 // 300es builtins/reserved words that were previously valid in v100
-var v100 = _glvis_('./builtins')
+var v100 = __webpack_require__(6852)
 
 // The texture2D|Cube functions have been removed
 // And the gl_ features are updated
@@ -28248,7 +27188,12 @@ module.exports = v100.concat([
   , 'textureProjGradOffset'
 ])
 
-},{"./builtins":226}],226:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 6852:
+/***/ (function(module) {
+
 module.exports = [
   // Keep this list sorted
   'abs'
@@ -28400,8 +27345,13 @@ module.exports = [
   , 'textureCubeGradEXT'
 ]
 
-},{}],227:[function(_glvis_,module,exports){
-var v100 = _glvis_('./literals')
+
+/***/ }),
+
+/***/ 7932:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var v100 = __webpack_require__(620)
 
 module.exports = v100.slice().concat([
    'layout'
@@ -28489,7 +27439,12 @@ module.exports = v100.slice().concat([
   , 'usampler2DMSArray'
 ])
 
-},{"./literals":228}],228:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 620:
+/***/ (function(module) {
+
 module.exports = [
   // current
     'precision'
@@ -28585,7 +27540,12 @@ module.exports = [
   , 'using'
 ]
 
-},{}],229:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7827:
+/***/ (function(module) {
+
 module.exports = [
     '<<='
   , '>>='
@@ -28634,8 +27594,13 @@ module.exports = [
   , '}'
 ]
 
-},{}],230:[function(_glvis_,module,exports){
-var tokenize = _glvis_('./index')
+
+/***/ }),
+
+/***/ 4905:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var tokenize = __webpack_require__(5874)
 
 module.exports = tokenizeString
 
@@ -28649,7 +27614,12 @@ function tokenizeString(str, opt) {
   return tokens
 }
 
-},{"./index":224}],231:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3236:
+/***/ (function(module) {
+
 module.exports = function(strings) {
   if (typeof strings === 'string') strings = [strings]
   var exprs = [].slice.call(arguments,1)
@@ -28661,10 +27631,16 @@ module.exports = function(strings) {
   return parts.join('')
 }
 
-},{}],232:[function(_glvis_,module,exports){
-'use strict'
 
-var isBrowser = _glvis_('is-browser')
+/***/ }),
+
+/***/ 7520:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var isBrowser = __webpack_require__(9507)
 
 function detect() {
 	var supported = false
@@ -28687,8 +27663,106 @@ function detect() {
 
 module.exports = isBrowser && detect()
 
-},{"is-browser":236}],233:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 3778:
+/***/ (function(__unused_webpack_module, exports) {
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = ((value * c) - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+
+/***/ }),
+
+/***/ 8954:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 //High level idea:
 // 1. Use Clarkson's incremental construction to find convex hull
@@ -28696,8 +27770,8 @@ module.exports = isBrowser && detect()
 
 module.exports = incrementalConvexHull
 
-var orient = _glvis_("robust-orientation")
-var compareCell = _glvis_("simplicial-complex").compareCells
+var orient = __webpack_require__(3250)
+var compareCell = (__webpack_require__(6803)/* .compareCells */ .Fw)
 
 function Simplex(vertices, adjacent, boundary) {
   this.vertices = vertices
@@ -29127,10 +28201,16 @@ function incrementalConvexHull(points, randomSearch) {
   //Extract boundary cells
   return triangles.boundary()
 }
-},{"robust-orientation":284,"simplicial-complex":293}],234:[function(_glvis_,module,exports){
-"use strict"
 
-var bounds = _glvis_("binary-search-bounds")
+/***/ }),
+
+/***/ 3352:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bounds = __webpack_require__(2478)
 
 var NOT_FOUND = 0
 var SUCCESS = 1
@@ -29494,21 +28574,19 @@ function createWrapper(intervals) {
   return new IntervalTree(createIntervalTree(intervals))
 }
 
-},{"binary-search-bounds":31}],235:[function(_glvis_,module,exports){
-"use strict"
 
-function iota(n) {
-  var result = new Array(n)
-  for(var i=0; i<n; ++i) {
-    result[i] = i
-  }
-  return result
-}
+/***/ }),
 
-module.exports = iota
-},{}],236:[function(_glvis_,module,exports){
+/***/ 9507:
+/***/ (function(module) {
+
 module.exports = true;
-},{}],237:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7163:
+/***/ (function(module) {
+
 /*!
  * Determine if an object is a Buffer
  *
@@ -29531,45 +28609,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],238:[function(_glvis_,module,exports){
-'use strict'
 
-module.exports = isMobile
-module.exports.isMobile = isMobile
-module.exports.default = isMobile
+/***/ }),
 
-var mobileRE = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i
+/***/ 5219:
+/***/ (function(module) {
 
-var tabletRE = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android|ipad|playbook|silk/i
+"use strict";
 
-function isMobile (opts) {
-  if (!opts) opts = {}
-  var ua = opts.ua
-  if (!ua && typeof navigator !== 'undefined') ua = navigator.userAgent
-  if (ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
-    ua = ua.headers['user-agent']
-  }
-  if (typeof ua !== 'string') return false
-
-  var result = opts.tablet ? tabletRE.test(ua) : mobileRE.test(ua)
-
-  if (
-    !result &&
-    opts.tablet &&
-    opts.featureDetect &&
-    navigator &&
-    navigator.maxTouchPoints > 1 &&
-    ua.indexOf('Macintosh') !== -1 &&
-    ua.indexOf('Safari') !== -1
-  ) {
-    result = true
-  }
-
-  return result
-}
-
-},{}],239:[function(_glvis_,module,exports){
-'use strict';
 
 /**
  * Is this string all whitespace?
@@ -29605,12 +28652,22 @@ module.exports = function(str){
     return true;
 }
 
-},{}],240:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 395:
+/***/ (function(module) {
+
 function lerp(v0, v1, t) {
     return v0*(1-t)+v1*t
 }
 module.exports = lerp
-},{}],241:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 2652:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 /*jshint unused:true*/
 /*
 Input:  matrix      ; a 4x4 matrix
@@ -29628,18 +28685,18 @@ https://github.com/ChromiumWebApps/chromium/blob/master/ui/gfx/transform_util.cc
 http://www.w3.org/TR/css3-transforms/#decomposing-a-3d-matrix
 */
 
-var normalize = _glvis_('./normalize')
+var normalize = __webpack_require__(4335)
 
-var create = _glvis_('gl-mat4/create')
-var clone = _glvis_('gl-mat4/clone')
-var determinant = _glvis_('gl-mat4/determinant')
-var invert = _glvis_('gl-mat4/invert')
-var transpose = _glvis_('gl-mat4/transpose')
+var create = __webpack_require__(6864)
+var clone = __webpack_require__(1903)
+var determinant = __webpack_require__(9921)
+var invert = __webpack_require__(7608)
+var transpose = __webpack_require__(5665)
 var vec3 = {
-    length: _glvis_('gl-vec3/length'),
-    normalize: _glvis_('gl-vec3/normalize'),
-    dot: _glvis_('gl-vec3/dot'),
-    cross: _glvis_('gl-vec3/cross')
+    length: __webpack_require__(1387),
+    normalize: __webpack_require__(3536),
+    dot: __webpack_require__(244),
+    cross: __webpack_require__(5911)
 }
 
 var tmp = create()
@@ -29790,7 +28847,12 @@ function combine(out, a, b, scale1, scale2) {
     out[1] = a[1] * scale1 + b[1] * scale2
     out[2] = a[2] * scale1 + b[2] * scale2
 }
-},{"./normalize":242,"gl-mat4/clone":92,"gl-mat4/create":93,"gl-mat4/determinant":94,"gl-mat4/invert":98,"gl-mat4/transpose":109,"gl-vec3/cross":157,"gl-vec3/dot":162,"gl-vec3/length":172,"gl-vec3/normalize":179}],242:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 4335:
+/***/ (function(module) {
+
 module.exports = function normalize(out, mat) {
     var m44 = mat[15]
     // Cannot normalize.
@@ -29801,13 +28863,18 @@ module.exports = function normalize(out, mat) {
         out[i] = mat[i] * scale
     return true
 }
-},{}],243:[function(_glvis_,module,exports){
-var lerp = _glvis_('gl-vec3/lerp')
 
-var recompose = _glvis_('mat4-recompose')
-var decompose = _glvis_('mat4-decompose')
-var determinant = _glvis_('gl-mat4/determinant')
-var slerp = _glvis_('quat-slerp')
+/***/ }),
+
+/***/ 7442:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var lerp = __webpack_require__(6658)
+
+var recompose = __webpack_require__(7182)
+var decompose = __webpack_require__(2652)
+var determinant = __webpack_require__(9921)
+var slerp = __webpack_require__(8648)
 
 var state0 = state()
 var state1 = state()
@@ -29854,7 +28921,12 @@ function vec3(n) {
 function vec4() {
     return [0,0,0,1]
 }
-},{"gl-mat4/determinant":94,"gl-vec3/lerp":173,"mat4-decompose":241,"mat4-recompose":244,"quat-slerp":271}],244:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7182:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 /*
 Input:  translation ; a 3 component vector
         scale       ; a 3 component vector
@@ -29867,12 +28939,12 @@ From: http://www.w3.org/TR/css3-transforms/#recomposing-to-a-3d-matrix
 */
 
 var mat4 = {
-    identity: _glvis_('gl-mat4/identity'),
-    translate: _glvis_('gl-mat4/translate'),
-    multiply: _glvis_('gl-mat4/multiply'),
-    create: _glvis_('gl-mat4/create'),
-    scale: _glvis_('gl-mat4/scale'),
-    fromRotationTranslation: _glvis_('gl-mat4/fromRotationTranslation')
+    identity: __webpack_require__(7894),
+    translate: __webpack_require__(7656),
+    multiply: __webpack_require__(6760),
+    create: __webpack_require__(6864),
+    scale: __webpack_require__(2504),
+    fromRotationTranslation: __webpack_require__(6743)
 }
 
 var rotationMatrix = mat4.create()
@@ -29915,19 +28987,25 @@ module.exports = function recomposeMat4(matrix, translation, scale, skew, perspe
     mat4.scale(matrix, matrix, scale)
     return matrix
 }
-},{"gl-mat4/create":93,"gl-mat4/fromRotationTranslation":96,"gl-mat4/identity":97,"gl-mat4/multiply":100,"gl-mat4/scale":107,"gl-mat4/translate":108}],245:[function(_glvis_,module,exports){
-'use strict'
 
-var bsearch   = _glvis_('binary-search-bounds')
-var m4interp  = _glvis_('mat4-interpolate')
-var invert44  = _glvis_('gl-mat4/invert')
-var rotateX   = _glvis_('gl-mat4/rotateX')
-var rotateY   = _glvis_('gl-mat4/rotateY')
-var rotateZ   = _glvis_('gl-mat4/rotateZ')
-var lookAt    = _glvis_('gl-mat4/lookAt')
-var translate = _glvis_('gl-mat4/translate')
-var scale     = _glvis_('gl-mat4/scale')
-var normalize = _glvis_('gl-vec3/normalize')
+/***/ }),
+
+/***/ 1811:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bsearch   = __webpack_require__(2478)
+var m4interp  = __webpack_require__(7442)
+var invert44  = __webpack_require__(7608)
+var rotateX   = __webpack_require__(5567)
+var rotateY   = __webpack_require__(2408)
+var rotateZ   = __webpack_require__(7089)
+var lookAt    = __webpack_require__(6582)
+var translate = __webpack_require__(7656)
+var scale     = __webpack_require__(2504)
+var normalize = __webpack_require__(3536)
 
 var DEFAULT_CENTER = [0,0,0]
 
@@ -30115,12 +29193,18 @@ function createMatrixCameraController(options) {
   return new MatrixCameraController(matrix)
 }
 
-},{"binary-search-bounds":31,"gl-mat4/invert":98,"gl-mat4/lookAt":99,"gl-mat4/rotateX":104,"gl-mat4/rotateY":105,"gl-mat4/rotateZ":106,"gl-mat4/scale":107,"gl-mat4/translate":108,"gl-vec3/normalize":179,"mat4-interpolate":243}],246:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 3090:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = monotoneConvexHull2D
 
-var orient = _glvis_('robust-orientation')[3]
+var orient = (__webpack_require__(3250)[3])
 
 function monotoneConvexHull2D(points) {
   var n = points.length
@@ -30197,12 +29281,18 @@ function monotoneConvexHull2D(points) {
   //Return result
   return result
 }
-},{"robust-orientation":284}],247:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 351:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = mouseListen
 
-var mouse = _glvis_('mouse-event')
+var mouse = __webpack_require__(4687)
 
 function mouseListen (element, callback) {
   if (!callback) {
@@ -30404,7 +29494,12 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":249}],248:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 24:
+/***/ (function(module) {
+
 var rootPosition = { left: 0, top: 0 }
 
 module.exports = mouseEventOffset
@@ -30431,8 +29526,14 @@ function getBoundingClientOffset (element) {
   }
 }
 
-},{}],249:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 4687:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 
 function mouseButtons(ev) {
   if(typeof ev === 'object') {
@@ -30493,10 +29594,16 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],250:[function(_glvis_,module,exports){
-'use strict'
 
-var toPX = _glvis_('to-px')
+/***/ }),
+
+/***/ 8512:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var toPX = __webpack_require__(665)
 
 module.exports = mouseWheelListen
 
@@ -30535,10 +29642,16 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":304}],251:[function(_glvis_,module,exports){
-"use strict"
 
-var pool = _glvis_("typedarray-pool")
+/***/ }),
+
+/***/ 2640:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var pool = __webpack_require__(1888)
 
 module.exports = createSurfaceExtractor
 
@@ -30917,10 +30030,16 @@ function createSurfaceExtractor(args) {
     order,
     typesig)
 }
-},{"typedarray-pool":308}],252:[function(_glvis_,module,exports){
-'use strict'
 
-var dup = _glvis_('dup')
+/***/ }),
+
+/***/ 6199:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var dup = __webpack_require__(1338)
 
 var CACHED_CWiseOp = {
   zero: function(SS, a0, t0, p0) {
@@ -31045,7 +30164,7 @@ function generateTemplate(d) {
 function CACHED_link(diff, zero, grad1, grad2) {
   return function(dst, src) {
     var s = src.shape.slice()
-    if (1 && s[0] > 2 && s[1] > 2) {
+    if ( true && s[0] > 2 && s[1] > 2) {
       grad2(
         src
           .pick(-1, -1)
@@ -31061,7 +30180,7 @@ function CACHED_link(diff, zero, grad1, grad2) {
           .hi(s[0] - 2, s[1] - 2)
       )
     }
-    if (1 && s[1] > 2) {
+    if ( true && s[1] > 2) {
       grad1(
         src
           .pick(0, -1)
@@ -31079,7 +30198,7 @@ function CACHED_link(diff, zero, grad1, grad2) {
           .hi(s[1] - 2)
       )
     }
-    if (1 && s[1] > 2) {
+    if ( true && s[1] > 2) {
       grad1(
         src
           .pick(s[0] - 1, -1)
@@ -31097,7 +30216,7 @@ function CACHED_link(diff, zero, grad1, grad2) {
           .hi(s[1] - 2)
       )
     }
-    if (1 && s[0] > 2) {
+    if ( true && s[0] > 2) {
       grad1(
         src
           .pick(-1, 0)
@@ -31115,7 +30234,7 @@ function CACHED_link(diff, zero, grad1, grad2) {
           .hi(s[0] - 2)
       )
     }
-    if (1 && s[0] > 2) {
+    if ( true && s[0] > 2) {
       grad1(
         src
           .pick(-1, s[1] - 1)
@@ -31186,8 +30305,14 @@ module.exports = function gradient(out, inp, bc) {
   var cached = generateGradient(bc)
   return cached(out, inp)
 }
-},{"dup":65}],253:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 4317:
+/***/ (function(module) {
+
+"use strict";
+
 
 function interp1d(arr, x) {
   var ix = Math.floor(x)
@@ -31297,8 +30422,14 @@ module.exports.d1 = interp1d
 module.exports.d2 = interp2d
 module.exports.d3 = interp3d
 
-},{}],254:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 5298:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 
 var CACHED_CWiseOp = {
   'float64,2,1,0': function () {
@@ -31689,11 +30820,17 @@ var assign_ops = {
 exports.assign = makeOp({
   funcName: "assign" })
 
-},{}],255:[function(_glvis_,module,exports){
-"use strict"
 
-var ndarray = _glvis_("ndarray")
-var do_convert = _glvis_("./doConvert.js")
+/***/ }),
+
+/***/ 9994:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var ndarray = __webpack_require__(9618)
+var do_convert = __webpack_require__(8277)
 
 module.exports = function convert(arr, result) {
   var shape = [], c = arr, sz = 1
@@ -31712,8 +30849,14 @@ module.exports = function convert(arr, result) {
   return result
 }
 
-},{"./doConvert.js":256,"ndarray":259}],256:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 8277:
+/***/ (function(module) {
+
+"use strict";
+
 
 function CwiseOp() {
   return function (SS, a0, t0, p0, Y0) {
@@ -31801,10 +30944,16 @@ module.exports = compileCwise({
   funcName: "convert"
 });
 
-},{}],257:[function(_glvis_,module,exports){
-"use strict"
 
-var pool = _glvis_("typedarray-pool")
+/***/ }),
+
+/***/ 7640:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var pool = __webpack_require__(1888)
 
 function getMallocFree(dtype) {
   switch(dtype) {
@@ -32554,10 +31703,16 @@ function compileSort(order, dtype) {
 }
 
 module.exports = compileSort
-},{"typedarray-pool":308}],258:[function(_glvis_,module,exports){
-"use strict"
 
-var compile = _glvis_("./lib/compile_sort.js")
+/***/ }),
+
+/***/ 446:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var compile = __webpack_require__(7640)
 var CACHE = {}
 
 function sort(array) {
@@ -32574,8 +31729,13 @@ function sort(array) {
 }
 
 module.exports = sort
-},{"./lib/compile_sort.js":257}],259:[function(_glvis_,module,exports){
-var isBuffer = _glvis_("is-buffer")
+
+/***/ }),
+
+/***/ 9618:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var isBuffer = __webpack_require__(7163)
 
 var hasTypedArrays  = ((typeof Float64Array) !== "undefined")
 
@@ -33575,10 +32735,16 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"is-buffer":237}],260:[function(_glvis_,module,exports){
-"use strict"
 
-var doubleBits = _glvis_("double-bits")
+/***/ }),
+
+/***/ 1278:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var doubleBits = __webpack_require__(2361)
 
 var SMALLEST_DENORM = Math.pow(2, -1074)
 var UINT_MAX = (-1)>>>0
@@ -33618,7 +32784,12 @@ function nextafter(x, y) {
   }
   return doubleBits.pack(lo, hi)
 }
-},{"double-bits":64}],261:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8406:
+/***/ (function(__unused_webpack_module, exports) {
+
 var DEFAULT_NORMALS_EPSILON = 1e-6;
 var DEFAULT_FACE_EPSILON = 1e-6;
 
@@ -33743,8 +32914,14 @@ exports.faceNormals = function(faces, positions, specifiedEpsilon) {
 
 
 
-},{}],262:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 4081:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = quatFromFrame
 
@@ -33785,16 +32962,22 @@ function quatFromFrame(
   }
   return out
 }
-},{}],263:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 9977:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createOrbitController
 
-var filterVector  = _glvis_('filtered-vector')
-var lookAt        = _glvis_('gl-mat4/lookAt')
-var mat4FromQuat  = _glvis_('gl-mat4/fromQuat')
-var invert44      = _glvis_('gl-mat4/invert')
-var quatFromFrame = _glvis_('./lib/quatFromFrame')
+var filterVector  = __webpack_require__(9215)
+var lookAt        = __webpack_require__(6582)
+var mat4FromQuat  = __webpack_require__(7399)
+var invert44      = __webpack_require__(7608)
+var quatFromFrame = __webpack_require__(4081)
 
 function len3(x,y,z) {
   return Math.sqrt(Math.pow(x,2) + Math.pow(y,2) + Math.pow(z,2))
@@ -34179,7 +33362,13 @@ function createOrbitController(options) {
 
   return result
 }
-},{"./lib/quatFromFrame":262,"filtered-vector":68,"gl-mat4/fromQuat":95,"gl-mat4/invert":98,"gl-mat4/lookAt":99}],264:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1371:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
 /*!
  * pad-left <https://github.com/jonschlinkert/pad-left>
  *
@@ -34187,15 +33376,20 @@ function createOrbitController(options) {
  * Licensed under the MIT license.
  */
 
-'use strict';
 
-var repeat = _glvis_('repeat-string');
+
+var repeat = __webpack_require__(3233);
 
 module.exports = function padLeft(str, num, ch) {
   ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
   return repeat(ch, num) + str;
 };
-},{"repeat-string":277}],265:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3202:
+/***/ (function(module) {
+
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -34206,12 +33400,18 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],266:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 3088:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = planarDual
 
-var compareAngle = _glvis_("compare-angle")
+var compareAngle = __webpack_require__(3140)
 
 function planarDual(cells, positions) {
 
@@ -34337,12 +33537,18 @@ function planarDual(cells, positions) {
   //Combine paths and loops together
   return cycles
 }
-},{"compare-angle":54}],267:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 5609:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = trimLeaves
 
-var e2a = _glvis_('edges-to-adjacency-list')
+var e2a = __webpack_require__(3134)
 
 function trimLeaves(edges, positions) {
   var adj = e2a(edges, positions.length)
@@ -34393,18 +33599,24 @@ function trimLeaves(edges, positions) {
   
   return [ nedges, npositions ]
 }
-},{"edges-to-adjacency-list":66}],268:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 2095:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = planarGraphToPolyline
 
-var e2a = _glvis_('edges-to-adjacency-list')
-var planarDual = _glvis_('planar-dual')
-var preprocessPolygon = _glvis_('point-in-big-polygon')
-var twoProduct = _glvis_('two-product')
-var robustSum = _glvis_('robust-sum')
-var uniq = _glvis_('uniq')
-var trimLeaves = _glvis_('./lib/trim-leaves')
+var e2a = __webpack_require__(3134)
+var planarDual = __webpack_require__(3088)
+var preprocessPolygon = __webpack_require__(5085)
+var twoProduct = __webpack_require__(5250)
+var robustSum = __webpack_require__(8210)
+var uniq = __webpack_require__(1682)
+var trimLeaves = __webpack_require__(5609)
 
 function makeArray(length, fill) {
   var result = new Array(length)
@@ -34598,13 +33810,18 @@ function planarGraphToPolyline(edges, positions) {
 
   return result
 }
-},{"./lib/trim-leaves":267,"edges-to-adjacency-list":66,"planar-dual":266,"point-in-big-polygon":269,"robust-sum":289,"two-product":306,"uniq":310}],269:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 5085:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = preprocessPolygon
 
-var orient = _glvis_('robust-orientation')[3]
-var makeSlabs = _glvis_('slab-decomposition')
-var makeIntervalTree = _glvis_('interval-tree-1d')
-var bsearch = _glvis_('binary-search-bounds')
+var orient = (__webpack_require__(3250)[3])
+var makeSlabs = __webpack_require__(4209)
+var makeIntervalTree = __webpack_require__(3352)
+var bsearch = __webpack_require__(2478)
 
 function visitInterval() {
   return true
@@ -34750,11 +33967,17 @@ function preprocessPolygon(loops) {
       testSlab)
   }
 }
-},{"binary-search-bounds":31,"interval-tree-1d":234,"robust-orientation":284,"slab-decomposition":299}],270:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 9346:
+/***/ (function(module) {
+
+"use strict";
 //Optimized version for triangle closest point
 // Based on Eberly's WildMagick codes
 // http://www.geometrictools.com/LibMathematics/Distance/Distance.html
-"use strict";
+
 
 var diff = new Float64Array(4);
 var edge0 = new Float64Array(4);
@@ -34948,12 +34171,23 @@ function closestPoint2d(V0, V1, V2, point, result) {
 
 module.exports = closestPoint2d;
 
-},{}],271:[function(_glvis_,module,exports){
-module.exports = _glvis_('gl-quat/slerp')
-},{"gl-quat/slerp":124}],272:[function(_glvis_,module,exports){
-'use strict'
 
-var bnadd = _glvis_('big-rat/add')
+/***/ }),
+
+/***/ 8648:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = __webpack_require__(783)
+
+/***/ }),
+
+/***/ 2653:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bnadd = __webpack_require__(3865)
 
 module.exports = add
 
@@ -34966,12 +34200,18 @@ function add (a, b) {
   return r
 }
 
-},{"big-rat/add":15}],273:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 5838:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = float2rat
 
-var rat = _glvis_('big-rat')
+var rat = __webpack_require__(7842)
 
 function float2rat(v) {
   var result = new Array(v.length)
@@ -34981,11 +34221,17 @@ function float2rat(v) {
   return result
 }
 
-},{"big-rat":18}],274:[function(_glvis_,module,exports){
-'use strict'
 
-var rat = _glvis_('big-rat')
-var mul = _glvis_('big-rat/mul')
+/***/ }),
+
+/***/ 8987:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var rat = __webpack_require__(7842)
+var mul = __webpack_require__(6504)
 
 module.exports = muls
 
@@ -34999,10 +34245,16 @@ function muls(a, x) {
   return r
 }
 
-},{"big-rat":18,"big-rat/mul":27}],275:[function(_glvis_,module,exports){
-'use strict'
 
-var bnsub = _glvis_('big-rat/sub')
+/***/ }),
+
+/***/ 544:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var bnsub = __webpack_require__(5572)
 
 module.exports = sub
 
@@ -35015,12 +34267,18 @@ function sub(a, b) {
   return r
 }
 
-},{"big-rat/sub":29}],276:[function(_glvis_,module,exports){
-'use strict'
 
-var compareCell = _glvis_('compare-cell')
-var compareOrientedCell = _glvis_('compare-oriented-cell')
-var orientation = _glvis_('cell-orientation')
+/***/ }),
+
+/***/ 5771:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var compareCell = __webpack_require__(8507)
+var compareOrientedCell = __webpack_require__(3788)
+var orientation = __webpack_require__(2419)
 
 module.exports = reduceCellComplex
 
@@ -35048,7 +34306,13 @@ function reduceCellComplex(cells) {
   return cells
 }
 
-},{"cell-orientation":47,"compare-cell":56,"compare-oriented-cell":57}],277:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 3233:
+/***/ (function(module) {
+
+"use strict";
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -35056,7 +34320,7 @@ function reduceCellComplex(cells) {
  * Licensed under the MIT License.
  */
 
-'use strict';
+
 
 /**
  * Results cache
@@ -35120,19 +34384,28 @@ function repeat(str, num) {
   return res;
 }
 
-},{}],278:[function(_glvis_,module,exports){
-(function (global){(function (){
+
+/***/ }),
+
+/***/ 3025:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports =
-  global.performance &&
-  global.performance.now ? function now() {
+  __webpack_require__.g.performance &&
+  __webpack_require__.g.performance.now ? function now() {
     return performance.now()
   } : Date.now || function now() {
     return +new Date
   }
 
-}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],279:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 7004:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = compressExpansion
 
@@ -35166,15 +34439,21 @@ function compressExpansion(e) {
   e.length = top
   return e
 }
-},{}],280:[function(_glvis_,module,exports){
-"use strict"
 
-var twoProduct = _glvis_("two-product")
-var robustSum = _glvis_("robust-sum")
-var robustScale = _glvis_("robust-scale")
-var compress = _glvis_("robust-compress")
+/***/ }),
 
-var NUM_EXPANDED = 4
+/***/ 2962:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(5250)
+var robustSum = __webpack_require__(8210)
+var robustScale = __webpack_require__(3012)
+var compress = __webpack_require__(7004)
+
+var NUM_EXPANDED = 6
 
 function determinant_2(sum, scale, prod, compress) {
   return function robustDeterminant2(m) {
@@ -35188,10 +34467,24 @@ function determinant_3(sum, scale, prod, compress) {
   }
 }
 
+function determinant_4(sum, scale, prod, compress) {
+  return function robustDeterminant4(m) {
+    return compress(sum(sum(scale(sum(scale(sum(prod(m[2][2], m[3][3]), prod(-m[2][3], m[3][2])), m[1][1]), sum(scale(sum(prod(m[2][1], m[3][3]), prod(-m[2][3], m[3][1])), -m[1][2]), scale(sum(prod(m[2][1], m[3][2]), prod(-m[2][2], m[3][1])), m[1][3]))), m[0][0]), scale(sum(scale(sum(prod(m[2][2], m[3][3]), prod(-m[2][3], m[3][2])), m[1][0]), sum(scale(sum(prod(m[2][0], m[3][3]), prod(-m[2][3], m[3][0])), -m[1][2]), scale(sum(prod(m[2][0], m[3][2]), prod(-m[2][2], m[3][0])), m[1][3]))), -m[0][1])), sum(scale(sum(scale(sum(prod(m[2][1], m[3][3]), prod(-m[2][3], m[3][1])), m[1][0]), sum(scale(sum(prod(m[2][0], m[3][3]), prod(-m[2][3], m[3][0])), -m[1][1]), scale(sum(prod(m[2][0], m[3][1]), prod(-m[2][1], m[3][0])), m[1][3]))), m[0][2]), scale(sum(scale(sum(prod(m[2][1], m[3][2]), prod(-m[2][2], m[3][1])), m[1][0]), sum(scale(sum(prod(m[2][0], m[3][2]), prod(-m[2][2], m[3][0])), -m[1][1]), scale(sum(prod(m[2][0], m[3][1]), prod(-m[2][1], m[3][0])), m[1][2]))), -m[0][3]))))
+  }
+}
+
+function determinant_5(sum, scale, prod, compress) {
+  return function robustDeterminant5(m) {
+    return compress(sum(sum(scale(sum(sum(scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][2]), sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), -m[2][3]), scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][4]))), m[1][1]), scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][3]), scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][4]))), -m[1][2])), sum(scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][4]))), m[1][3]), scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][3]))), -m[1][4]))), m[0][0]), scale(sum(sum(scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][2]), sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), -m[2][3]), scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][4]))), m[1][0]), scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][3]), scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), m[2][4]))), -m[1][2])), sum(scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][4]))), m[1][3]), scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][3]))), -m[1][4]))), -m[0][1])), sum(scale(sum(sum(scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][3]), scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][4]))), m[1][0]), scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][3]), scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), m[2][4]))), -m[1][1])), sum(scale(sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][4]))), m[1][3]), scale(sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][3]))), -m[1][4]))), m[0][2]), sum(scale(sum(sum(scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][4]))), m[1][0]), scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][4]))), -m[1][1])), sum(scale(sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][4]))), m[1][2]), scale(sum(scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][2]))), -m[1][4]))), -m[0][3]), scale(sum(sum(scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][3]))), m[1][0]), scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][3]))), -m[1][1])), sum(scale(sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][3]))), m[1][2]), scale(sum(scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][2]))), -m[1][3]))), m[0][4])))))
+  }
+}
+
 function compileDeterminant(n) {
   var fn =
     n === 2 ? determinant_2 :
-    n === 3 ? determinant_3 : undefined
+    n === 3 ? determinant_3 :
+    n === 4 ? determinant_4 :
+    n === 5 ? determinant_5 : undefined
   return fn(robustSum, robustScale, twoProduct, compress)
 }
 
@@ -35200,7 +34493,7 @@ var CACHE = [
   function robustDeterminant1(m) { return [m[0][0]] }
 ]
 
-function proc(det0, det1, det2, det3, CACHE, gen) {
+function proc(det0, det1, det2, det3, det4, det5, CACHE, gen) {
   return function robustDeterminant(m) {
     switch (m.length) {
       case 0:
@@ -35211,6 +34504,10 @@ function proc(det0, det1, det2, det3, CACHE, gen) {
         return det2(m)
       case 3:
         return det3(m)
+      case 4:
+        return det4(m)
+      case 5:
+        return det5(m)
     }
     var det = CACHE[m.length]
     if (!det) det = CACHE[m.length] = gen(m.length)
@@ -35230,11 +34527,17 @@ function generateDispatch() {
 }
 
 generateDispatch()
-},{"robust-compress":279,"robust-scale":286,"robust-sum":289,"two-product":306}],281:[function(_glvis_,module,exports){
-"use strict"
 
-var twoProduct = _glvis_("two-product")
-var robustSum = _glvis_("robust-sum")
+/***/ }),
+
+/***/ 1944:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(5250)
+var robustSum = __webpack_require__(8210)
 
 module.exports = robustDotProduct
 
@@ -35245,13 +34548,19 @@ function robustDotProduct(a, b) {
   }
   return r
 }
-},{"robust-sum":289,"two-product":306}],282:[function(_glvis_,module,exports){
-"use strict"
 
-var twoProduct = _glvis_("two-product")
-var robustSum = _glvis_("robust-sum")
-var robustDiff = _glvis_("robust-subtract")
-var robustScale = _glvis_("robust-scale")
+/***/ }),
+
+/***/ 2646:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(5250)
+var robustSum = __webpack_require__(8210)
+var robustDiff = __webpack_require__(8545)
+var robustScale = __webpack_require__(3012)
 
 var NUM_EXPAND = 6
 
@@ -35449,18 +34758,27 @@ function generateInSphereTest() {
 }
 
 generateInSphereTest()
-},{"robust-scale":286,"robust-subtract":288,"robust-sum":289,"two-product":306}],283:[function(_glvis_,module,exports){
-"use strict"
 
-var determinant = _glvis_("robust-determinant")
+/***/ }),
 
-var NUM_EXPAND = 3
+/***/ 727:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var determinant = __webpack_require__(2962)
+
+var NUM_EXPAND = 6
 
 function generateSolver(n) {
   var fn =
-    n === 2 ? solve2d : solve3d
+    n === 2 ? solve2d :
+    n === 3 ? solve3d :
+    n === 4 ? solve4d :
+    n === 5 ? solve5d : solve6d
 
-  if(n < NUM_EXPAND) {
+  if(n < 6) {
     return fn(determinant[n])
   }
   return fn(determinant)
@@ -35486,18 +34804,38 @@ function solve3d(det) {
   }
 }
 
+function solve4d(det) {
+  return function robustLinearSolve4d(A, b) {
+    return [det([[+b[0], +A[0][1], +A[0][2], +A[0][3]], [+b[1], +A[1][1], +A[1][2], +A[1][3]], [+b[2], +A[2][1], +A[2][2], +A[2][3]], [+b[3], +A[3][1], +A[3][2], +A[3][3]]]), det([[+A[0][0], +b[0], +A[0][2], +A[0][3]], [+A[1][0], +b[1], +A[1][2], +A[1][3]], [+A[2][0], +b[2], +A[2][2], +A[2][3]], [+A[3][0], +b[3], +A[3][2], +A[3][3]]]), det([[+A[0][0], +A[0][1], +b[0], +A[0][3]], [+A[1][0], +A[1][1], +b[1], +A[1][3]], [+A[2][0], +A[2][1], +b[2], +A[2][3]], [+A[3][0], +A[3][1], +b[3], +A[3][3]]]), det([[+A[0][0], +A[0][1], +A[0][2], +b[0]], [+A[1][0], +A[1][1], +A[1][2], +b[1]], [+A[2][0], +A[2][1], +A[2][2], +b[2]], [+A[3][0], +A[3][1], +A[3][2], +b[3]]]), det(A)]
+  }
+}
+
+function solve5d(det) {
+  return function robustLinearSolve5d(A, b) {
+    return [det([[+b[0], +A[0][1], +A[0][2], +A[0][3], +A[0][4]], [+b[1], +A[1][1], +A[1][2], +A[1][3], +A[1][4]], [+b[2], +A[2][1], +A[2][2], +A[2][3], +A[2][4]], [+b[3], +A[3][1], +A[3][2], +A[3][3], +A[3][4]], [+b[4], +A[4][1], +A[4][2], +A[4][3], +A[4][4]]]), det([[+A[0][0], +b[0], +A[0][2], +A[0][3], +A[0][4]], [+A[1][0], +b[1], +A[1][2], +A[1][3], +A[1][4]], [+A[2][0], +b[2], +A[2][2], +A[2][3], +A[2][4]], [+A[3][0], +b[3], +A[3][2], +A[3][3], +A[3][4]], [+A[4][0], +b[4], +A[4][2], +A[4][3], +A[4][4]]]), det([[+A[0][0], +A[0][1], +b[0], +A[0][3], +A[0][4]], [+A[1][0], +A[1][1], +b[1], +A[1][3], +A[1][4]], [+A[2][0], +A[2][1], +b[2], +A[2][3], +A[2][4]], [+A[3][0], +A[3][1], +b[3], +A[3][3], +A[3][4]], [+A[4][0], +A[4][1], +b[4], +A[4][3], +A[4][4]]]), det([[+A[0][0], +A[0][1], +A[0][2], +b[0], +A[0][4]], [+A[1][0], +A[1][1], +A[1][2], +b[1], +A[1][4]], [+A[2][0], +A[2][1], +A[2][2], +b[2], +A[2][4]], [+A[3][0], +A[3][1], +A[3][2], +b[3], +A[3][4]], [+A[4][0], +A[4][1], +A[4][2], +b[4], +A[4][4]]]), det([[+A[0][0], +A[0][1], +A[0][2], +A[0][3], +b[0]], [+A[1][0], +A[1][1], +A[1][2], +A[1][3], +b[1]], [+A[2][0], +A[2][1], +A[2][2], +A[2][3], +b[2]], [+A[3][0], +A[3][1], +A[3][2], +A[3][3], +b[3]], [+A[4][0], +A[4][1], +A[4][2], +A[4][3], +b[4]]]), det(A)]
+  }
+}
+
+function solve6d(det) {
+  return function robustLinearSolve6d(A, b) {
+    return [det([[+b[0], +A[0][1], +A[0][2], +A[0][3], +A[0][4], +A[0][5]], [+b[1], +A[1][1], +A[1][2], +A[1][3], +A[1][4], +A[1][5]], [+b[2], +A[2][1], +A[2][2], +A[2][3], +A[2][4], +A[2][5]], [+b[3], +A[3][1], +A[3][2], +A[3][3], +A[3][4], +A[3][5]], [+b[4], +A[4][1], +A[4][2], +A[4][3], +A[4][4], +A[4][5]], [+b[5], +A[5][1], +A[5][2], +A[5][3], +A[5][4], +A[5][5]]]), det([[+A[0][0], +b[0], +A[0][2], +A[0][3], +A[0][4], +A[0][5]], [+A[1][0], +b[1], +A[1][2], +A[1][3], +A[1][4], +A[1][5]], [+A[2][0], +b[2], +A[2][2], +A[2][3], +A[2][4], +A[2][5]], [+A[3][0], +b[3], +A[3][2], +A[3][3], +A[3][4], +A[3][5]], [+A[4][0], +b[4], +A[4][2], +A[4][3], +A[4][4], +A[4][5]], [+A[5][0], +b[5], +A[5][2], +A[5][3], +A[5][4], +A[5][5]]]), det([[+A[0][0], +A[0][1], +b[0], +A[0][3], +A[0][4], +A[0][5]], [+A[1][0], +A[1][1], +b[1], +A[1][3], +A[1][4], +A[1][5]], [+A[2][0], +A[2][1], +b[2], +A[2][3], +A[2][4], +A[2][5]], [+A[3][0], +A[3][1], +b[3], +A[3][3], +A[3][4], +A[3][5]], [+A[4][0], +A[4][1], +b[4], +A[4][3], +A[4][4], +A[4][5]], [+A[5][0], +A[5][1], +b[5], +A[5][3], +A[5][4], +A[5][5]]]), det([[+A[0][0], +A[0][1], +A[0][2], +b[0], +A[0][4], +A[0][5]], [+A[1][0], +A[1][1], +A[1][2], +b[1], +A[1][4], +A[1][5]], [+A[2][0], +A[2][1], +A[2][2], +b[2], +A[2][4], +A[2][5]], [+A[3][0], +A[3][1], +A[3][2], +b[3], +A[3][4], +A[3][5]], [+A[4][0], +A[4][1], +A[4][2], +b[4], +A[4][4], +A[4][5]], [+A[5][0], +A[5][1], +A[5][2], +b[5], +A[5][4], +A[5][5]]]), det([[+A[0][0], +A[0][1], +A[0][2], +A[0][3], +b[0], +A[0][5]], [+A[1][0], +A[1][1], +A[1][2], +A[1][3], +b[1], +A[1][5]], [+A[2][0], +A[2][1], +A[2][2], +A[2][3], +b[2], +A[2][5]], [+A[3][0], +A[3][1], +A[3][2], +A[3][3], +b[3], +A[3][5]], [+A[4][0], +A[4][1], +A[4][2], +A[4][3], +b[4], +A[4][5]], [+A[5][0], +A[5][1], +A[5][2], +A[5][3], +b[5], +A[5][5]]]), det([[+A[0][0], +A[0][1], +A[0][2], +A[0][3], +A[0][4], +b[0]], [+A[1][0], +A[1][1], +A[1][2], +A[1][3], +A[1][4], +b[1]], [+A[2][0], +A[2][1], +A[2][2], +A[2][3], +A[2][4], +b[2]], [+A[3][0], +A[3][1], +A[3][2], +A[3][3], +A[3][4], +b[3]], [+A[4][0], +A[4][1], +A[4][2], +A[4][3], +A[4][4], +b[4]], [+A[5][0], +A[5][1], +A[5][2], +A[5][3], +A[5][4], +b[5]]]), det(A)]
+  }
+}
+
 var CACHE = [
   robustLinearSolve0d,
   robustLinearSolve1d
 ]
 
-function proc(s0, s1, s2, s3, CACHE, g) {
+function proc(s0, s1, s2, s3, s4, s5, CACHE, g) {
   return function dispatchLinearSolve(A, b) {
     switch (A.length) {
       case 0: return s0(A, b);
       case 1: return s1(A, b);
       case 2: return s2(A, b);
       case 3: return s3(A, b);
+      case 4: return s4(A, b);
+      case 5: return s5(A, b);
     }
     var s = CACHE[A.length];
     if (!s) s = CACHE[A.length] = g(A.length);
@@ -35506,7 +34844,7 @@ function proc(s0, s1, s2, s3, CACHE, g) {
 }
 
 function generateDispatch() {
-  while(CACHE.length <= NUM_EXPAND) {
+  while(CACHE.length < NUM_EXPAND) {
     CACHE.push(generateSolver(CACHE.length))
   }
   module.exports = proc.apply(undefined, CACHE.concat([CACHE, generateSolver]))
@@ -35516,13 +34854,19 @@ function generateDispatch() {
 }
 
 generateDispatch()
-},{"robust-determinant":280}],284:[function(_glvis_,module,exports){
-"use strict"
 
-var twoProduct = _glvis_("two-product")
-var robustSum = _glvis_("robust-sum")
-var robustScale = _glvis_("robust-scale")
-var robustSubtract = _glvis_("robust-subtract")
+/***/ }),
+
+/***/ 3250:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(5250)
+var robustSum = __webpack_require__(8210)
+var robustScale = __webpack_require__(3012)
+var robustSubtract = __webpack_require__(8545)
 
 var NUM_EXPAND = 5
 
@@ -35673,11 +35017,17 @@ function generateOrientationProc() {
 }
 
 generateOrientationProc()
-},{"robust-scale":286,"robust-subtract":288,"robust-sum":289,"two-product":306}],285:[function(_glvis_,module,exports){
-"use strict"
 
-var robustSum = _glvis_("robust-sum")
-var robustScale = _glvis_("robust-scale")
+/***/ }),
+
+/***/ 5382:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var robustSum = __webpack_require__(8210)
+var robustScale = __webpack_require__(3012)
 
 module.exports = robustProduct
 
@@ -35703,11 +35053,17 @@ function robustProduct(a, b) {
   }
   return r
 }
-},{"robust-scale":286,"robust-sum":289}],286:[function(_glvis_,module,exports){
-"use strict"
 
-var twoProduct = _glvis_("two-product")
-var twoSum = _glvis_("two-sum")
+/***/ }),
+
+/***/ 3012:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(5250)
+var twoSum = __webpack_require__(9362)
 
 module.exports = scaleLinearExpansion
 
@@ -35754,12 +35110,18 @@ function scaleLinearExpansion(e, scale) {
   g.length = count
   return g
 }
-},{"two-product":306,"two-sum":307}],287:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 1125:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = segmentsIntersect
 
-var orient = _glvis_("robust-orientation")[3]
+var orient = (__webpack_require__(3250)[3])
 
 function checkCollinear(a0, a1, b0, b1) {
 
@@ -35802,8 +35164,14 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
   return true
 }
-},{"robust-orientation":284}],288:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 8545:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = robustSubtract
 
@@ -35959,8 +35327,14 @@ function robustSubtract(e, f) {
   g.length = count
   return g
 }
-},{}],289:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 8210:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = linearExpansionSum
 
@@ -36116,28 +35490,40 @@ function linearExpansionSum(e, f) {
   g.length = count
   return g
 }
-},{}],290:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 9127:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = boundary
 
-var bnd = _glvis_('boundary-cells')
-var reduce = _glvis_('reduce-simplicial-complex')
+var bnd = __webpack_require__(6204)
+var reduce = __webpack_require__(5771)
 
 function boundary(cells) {
   return reduce(bnd(cells))
 }
 
-},{"boundary-cells":34,"reduce-simplicial-complex":276}],291:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 7765:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = extractContour
 
-var ndarray = _glvis_('ndarray')
-var pool    = _glvis_('typedarray-pool')
-var ndsort  = _glvis_('ndarray-sort')
+var ndarray = __webpack_require__(9618)
+var pool    = __webpack_require__(1888)
+var ndsort  = __webpack_require__(446)
 
-var contourAlgorithm = _glvis_('./lib/codegen')
+var contourAlgorithm = __webpack_require__(1570)
 
 function getDimension(cells) {
   var numCells = cells.length
@@ -36291,8 +35677,14 @@ function extractContour(cells, values, level, d) {
     vertexWeights: uweights
   }
 }
-},{"./lib/codegen":292,"ndarray":259,"ndarray-sort":258,"typedarray-pool":308}],292:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 1570:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = getPolygonizer
 
@@ -36592,11 +35984,580 @@ function getPolygonizer(d) {
   return allFns[d]();
 }
 
-},{}],293:[function(_glvis_,module,exports){
-"use strict"; "use restrict";
 
-var bits      = _glvis_("bit-twiddle")
-  , UnionFind = _glvis_("union-find")
+/***/ }),
+
+/***/ 6803:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+var __webpack_unused_export__;
+ "use restrict";
+
+var bits      = __webpack_require__(8828)
+  , UnionFind = __webpack_require__(1755)
+
+//Returns the dimension of a cell complex
+function dimension(cells) {
+  var d = 0
+    , max = Math.max
+  for(var i=0, il=cells.length; i<il; ++i) {
+    d = max(d, cells[i].length)
+  }
+  return d-1
+}
+__webpack_unused_export__ = dimension
+
+//Counts the number of vertices in faces
+function countVertices(cells) {
+  var vc = -1
+    , max = Math.max
+  for(var i=0, il=cells.length; i<il; ++i) {
+    var c = cells[i]
+    for(var j=0, jl=c.length; j<jl; ++j) {
+      vc = max(vc, c[j])
+    }
+  }
+  return vc+1
+}
+__webpack_unused_export__ = countVertices
+
+//Returns a deep copy of cells
+function cloneCells(cells) {
+  var ncells = new Array(cells.length)
+  for(var i=0, il=cells.length; i<il; ++i) {
+    ncells[i] = cells[i].slice(0)
+  }
+  return ncells
+}
+__webpack_unused_export__ = cloneCells
+
+//Ranks a pair of cells up to permutation
+function compareCells(a, b) {
+  var n = a.length
+    , t = a.length - b.length
+    , min = Math.min
+  if(t) {
+    return t
+  }
+  switch(n) {
+    case 0:
+      return 0;
+    case 1:
+      return a[0] - b[0];
+    case 2:
+      var d = a[0]+a[1]-b[0]-b[1]
+      if(d) {
+        return d
+      }
+      return min(a[0],a[1]) - min(b[0],b[1])
+    case 3:
+      var l1 = a[0]+a[1]
+        , m1 = b[0]+b[1]
+      d = l1+a[2] - (m1+b[2])
+      if(d) {
+        return d
+      }
+      var l0 = min(a[0], a[1])
+        , m0 = min(b[0], b[1])
+        , d  = min(l0, a[2]) - min(m0, b[2])
+      if(d) {
+        return d
+      }
+      return min(l0+a[2], l1) - min(m0+b[2], m1)
+    
+    //TODO: Maybe optimize n=4 as well?
+    
+    default:
+      var as = a.slice(0)
+      as.sort()
+      var bs = b.slice(0)
+      bs.sort()
+      for(var i=0; i<n; ++i) {
+        t = as[i] - bs[i]
+        if(t) {
+          return t
+        }
+      }
+      return 0
+  }
+}
+exports.Fw = compareCells
+
+function compareZipped(a, b) {
+  return compareCells(a[0], b[0])
+}
+
+//Puts a cell complex into normal order for the purposes of findCell queries
+function normalize(cells, attr) {
+  if(attr) {
+    var len = cells.length
+    var zipped = new Array(len)
+    for(var i=0; i<len; ++i) {
+      zipped[i] = [cells[i], attr[i]]
+    }
+    zipped.sort(compareZipped)
+    for(var i=0; i<len; ++i) {
+      cells[i] = zipped[i][0]
+      attr[i] = zipped[i][1]
+    }
+    return cells
+  } else {
+    cells.sort(compareCells)
+    return cells
+  }
+}
+__webpack_unused_export__ = normalize
+
+//Removes all duplicate cells in the complex
+function unique(cells) {
+  if(cells.length === 0) {
+    return []
+  }
+  var ptr = 1
+    , len = cells.length
+  for(var i=1; i<len; ++i) {
+    var a = cells[i]
+    if(compareCells(a, cells[i-1])) {
+      if(i === ptr) {
+        ptr++
+        continue
+      }
+      cells[ptr++] = a
+    }
+  }
+  cells.length = ptr
+  return cells
+}
+__webpack_unused_export__ = unique;
+
+//Finds a cell in a normalized cell complex
+function findCell(cells, c) {
+  var lo = 0
+    , hi = cells.length-1
+    , r  = -1
+  while (lo <= hi) {
+    var mid = (lo + hi) >> 1
+      , s   = compareCells(cells[mid], c)
+    if(s <= 0) {
+      if(s === 0) {
+        r = mid
+      }
+      lo = mid + 1
+    } else if(s > 0) {
+      hi = mid - 1
+    }
+  }
+  return r
+}
+__webpack_unused_export__ = findCell;
+
+//Builds an index for an n-cell.  This is more general than dual, but less efficient
+function incidence(from_cells, to_cells) {
+  var index = new Array(from_cells.length)
+  for(var i=0, il=index.length; i<il; ++i) {
+    index[i] = []
+  }
+  var b = []
+  for(var i=0, n=to_cells.length; i<n; ++i) {
+    var c = to_cells[i]
+    var cl = c.length
+    for(var k=1, kn=(1<<cl); k<kn; ++k) {
+      b.length = bits.popCount(k)
+      var l = 0
+      for(var j=0; j<cl; ++j) {
+        if(k & (1<<j)) {
+          b[l++] = c[j]
+        }
+      }
+      var idx=findCell(from_cells, b)
+      if(idx < 0) {
+        continue
+      }
+      while(true) {
+        index[idx++].push(i)
+        if(idx >= from_cells.length || compareCells(from_cells[idx], b) !== 0) {
+          break
+        }
+      }
+    }
+  }
+  return index
+}
+__webpack_unused_export__ = incidence
+
+//Computes the dual of the mesh.  This is basically an optimized version of buildIndex for the situation where from_cells is just the list of vertices
+function dual(cells, vertex_count) {
+  if(!vertex_count) {
+    return incidence(unique(skeleton(cells, 0)), cells, 0)
+  }
+  var res = new Array(vertex_count)
+  for(var i=0; i<vertex_count; ++i) {
+    res[i] = []
+  }
+  for(var i=0, len=cells.length; i<len; ++i) {
+    var c = cells[i]
+    for(var j=0, cl=c.length; j<cl; ++j) {
+      res[c[j]].push(i)
+    }
+  }
+  return res
+}
+__webpack_unused_export__ = dual
+
+//Enumerates all cells in the complex
+function explode(cells) {
+  var result = []
+  for(var i=0, il=cells.length; i<il; ++i) {
+    var c = cells[i]
+      , cl = c.length|0
+    for(var j=1, jl=(1<<cl); j<jl; ++j) {
+      var b = []
+      for(var k=0; k<cl; ++k) {
+        if((j >>> k) & 1) {
+          b.push(c[k])
+        }
+      }
+      result.push(b)
+    }
+  }
+  return normalize(result)
+}
+__webpack_unused_export__ = explode
+
+//Enumerates all of the n-cells of a cell complex
+function skeleton(cells, n) {
+  if(n < 0) {
+    return []
+  }
+  var result = []
+    , k0     = (1<<(n+1))-1
+  for(var i=0; i<cells.length; ++i) {
+    var c = cells[i]
+    for(var k=k0; k<(1<<c.length); k=bits.nextCombination(k)) {
+      var b = new Array(n+1)
+        , l = 0
+      for(var j=0; j<c.length; ++j) {
+        if(k & (1<<j)) {
+          b[l++] = c[j]
+        }
+      }
+      result.push(b)
+    }
+  }
+  return normalize(result)
+}
+__webpack_unused_export__ = skeleton;
+
+//Computes the boundary of all cells, does not remove duplicates
+function boundary(cells) {
+  var res = []
+  for(var i=0,il=cells.length; i<il; ++i) {
+    var c = cells[i]
+    for(var j=0,cl=c.length; j<cl; ++j) {
+      var b = new Array(c.length-1)
+      for(var k=0, l=0; k<cl; ++k) {
+        if(k !== j) {
+          b[l++] = c[k]
+        }
+      }
+      res.push(b)
+    }
+  }
+  return normalize(res)
+}
+__webpack_unused_export__ = boundary;
+
+//Computes connected components for a dense cell complex
+function connectedComponents_dense(cells, vertex_count) {
+  var labels = new UnionFind(vertex_count)
+  for(var i=0; i<cells.length; ++i) {
+    var c = cells[i]
+    for(var j=0; j<c.length; ++j) {
+      for(var k=j+1; k<c.length; ++k) {
+        labels.link(c[j], c[k])
+      }
+    }
+  }
+  var components = []
+    , component_labels = labels.ranks
+  for(var i=0; i<component_labels.length; ++i) {
+    component_labels[i] = -1
+  }
+  for(var i=0; i<cells.length; ++i) {
+    var l = labels.find(cells[i][0])
+    if(component_labels[l] < 0) {
+      component_labels[l] = components.length
+      components.push([cells[i].slice(0)])
+    } else {
+      components[component_labels[l]].push(cells[i].slice(0))
+    }
+  }
+  return components
+}
+
+//Computes connected components for a sparse graph
+function connectedComponents_sparse(cells) {
+  var vertices  = unique(normalize(skeleton(cells, 0)))
+    , labels    = new UnionFind(vertices.length)
+  for(var i=0; i<cells.length; ++i) {
+    var c = cells[i]
+    for(var j=0; j<c.length; ++j) {
+      var vj = findCell(vertices, [c[j]])
+      for(var k=j+1; k<c.length; ++k) {
+        labels.link(vj, findCell(vertices, [c[k]]))
+      }
+    }
+  }
+  var components        = []
+    , component_labels  = labels.ranks
+  for(var i=0; i<component_labels.length; ++i) {
+    component_labels[i] = -1
+  }
+  for(var i=0; i<cells.length; ++i) {
+    var l = labels.find(findCell(vertices, [cells[i][0]]));
+    if(component_labels[l] < 0) {
+      component_labels[l] = components.length
+      components.push([cells[i].slice(0)])
+    } else {
+      components[component_labels[l]].push(cells[i].slice(0))
+    }
+  }
+  return components
+}
+
+//Computes connected components for a cell complex
+function connectedComponents(cells, vertex_count) {
+  if(vertex_count) {
+    return connectedComponents_dense(cells, vertex_count)
+  }
+  return connectedComponents_sparse(cells)
+}
+__webpack_unused_export__ = connectedComponents
+
+
+/***/ }),
+
+/***/ 3105:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+/**
+ * Bit twiddling hacks for JavaScript.
+ *
+ * Author: Mikola Lysenko
+ *
+ * Ported from Stanford bit twiddling hack library:
+ *    http://graphics.stanford.edu/~seander/bithacks.html
+ */
+
+ "use restrict";
+
+//Number of bits in an integer
+var INT_BITS = 32;
+
+//Constants
+exports.INT_BITS  = INT_BITS;
+exports.INT_MAX   =  0x7fffffff;
+exports.INT_MIN   = -1<<(INT_BITS-1);
+
+//Returns -1, 0, +1 depending on sign of x
+exports.sign = function(v) {
+  return (v > 0) - (v < 0);
+}
+
+//Computes absolute value of integer
+exports.abs = function(v) {
+  var mask = v >> (INT_BITS-1);
+  return (v ^ mask) - mask;
+}
+
+//Computes minimum of integers x and y
+exports.min = function(x, y) {
+  return y ^ ((x ^ y) & -(x < y));
+}
+
+//Computes maximum of integers x and y
+exports.max = function(x, y) {
+  return x ^ ((x ^ y) & -(x < y));
+}
+
+//Checks if a number is a power of two
+exports.isPow2 = function(v) {
+  return !(v & (v-1)) && (!!v);
+}
+
+//Computes log base 2 of v
+exports.log2 = function(v) {
+  var r, shift;
+  r =     (v > 0xFFFF) << 4; v >>>= r;
+  shift = (v > 0xFF  ) << 3; v >>>= shift; r |= shift;
+  shift = (v > 0xF   ) << 2; v >>>= shift; r |= shift;
+  shift = (v > 0x3   ) << 1; v >>>= shift; r |= shift;
+  return r | (v >> 1);
+}
+
+//Computes log base 10 of v
+exports.log10 = function(v) {
+  return  (v >= 1000000000) ? 9 : (v >= 100000000) ? 8 : (v >= 10000000) ? 7 :
+          (v >= 1000000) ? 6 : (v >= 100000) ? 5 : (v >= 10000) ? 4 :
+          (v >= 1000) ? 3 : (v >= 100) ? 2 : (v >= 10) ? 1 : 0;
+}
+
+//Counts number of bits
+exports.popCount = function(v) {
+  v = v - ((v >>> 1) & 0x55555555);
+  v = (v & 0x33333333) + ((v >>> 2) & 0x33333333);
+  return ((v + (v >>> 4) & 0xF0F0F0F) * 0x1010101) >>> 24;
+}
+
+//Counts number of trailing zeros
+function countTrailingZeros(v) {
+  var c = 32;
+  v &= -v;
+  if (v) c--;
+  if (v & 0x0000FFFF) c -= 16;
+  if (v & 0x00FF00FF) c -= 8;
+  if (v & 0x0F0F0F0F) c -= 4;
+  if (v & 0x33333333) c -= 2;
+  if (v & 0x55555555) c -= 1;
+  return c;
+}
+exports.countTrailingZeros = countTrailingZeros;
+
+//Rounds to next power of 2
+exports.nextPow2 = function(v) {
+  v += v === 0;
+  --v;
+  v |= v >>> 1;
+  v |= v >>> 2;
+  v |= v >>> 4;
+  v |= v >>> 8;
+  v |= v >>> 16;
+  return v + 1;
+}
+
+//Rounds down to previous power of 2
+exports.prevPow2 = function(v) {
+  v |= v >>> 1;
+  v |= v >>> 2;
+  v |= v >>> 4;
+  v |= v >>> 8;
+  v |= v >>> 16;
+  return v - (v>>>1);
+}
+
+//Computes parity of word
+exports.parity = function(v) {
+  v ^= v >>> 16;
+  v ^= v >>> 8;
+  v ^= v >>> 4;
+  v &= 0xf;
+  return (0x6996 >>> v) & 1;
+}
+
+var REVERSE_TABLE = new Array(256);
+
+(function(tab) {
+  for(var i=0; i<256; ++i) {
+    var v = i, r = i, s = 7;
+    for (v >>>= 1; v; v >>>= 1) {
+      r <<= 1;
+      r |= v & 1;
+      --s;
+    }
+    tab[i] = (r << s) & 0xff;
+  }
+})(REVERSE_TABLE);
+
+//Reverse bits in a 32 bit word
+exports.reverse = function(v) {
+  return  (REVERSE_TABLE[ v         & 0xff] << 24) |
+          (REVERSE_TABLE[(v >>> 8)  & 0xff] << 16) |
+          (REVERSE_TABLE[(v >>> 16) & 0xff] << 8)  |
+           REVERSE_TABLE[(v >>> 24) & 0xff];
+}
+
+//Interleave bits of 2 coordinates with 16 bits.  Useful for fast quadtree codes
+exports.interleave2 = function(x, y) {
+  x &= 0xFFFF;
+  x = (x | (x << 8)) & 0x00FF00FF;
+  x = (x | (x << 4)) & 0x0F0F0F0F;
+  x = (x | (x << 2)) & 0x33333333;
+  x = (x | (x << 1)) & 0x55555555;
+
+  y &= 0xFFFF;
+  y = (y | (y << 8)) & 0x00FF00FF;
+  y = (y | (y << 4)) & 0x0F0F0F0F;
+  y = (y | (y << 2)) & 0x33333333;
+  y = (y | (y << 1)) & 0x55555555;
+
+  return x | (y << 1);
+}
+
+//Extracts the nth interleaved component
+exports.deinterleave2 = function(v, n) {
+  v = (v >>> n) & 0x55555555;
+  v = (v | (v >>> 1))  & 0x33333333;
+  v = (v | (v >>> 2))  & 0x0F0F0F0F;
+  v = (v | (v >>> 4))  & 0x00FF00FF;
+  v = (v | (v >>> 16)) & 0x000FFFF;
+  return (v << 16) >> 16;
+}
+
+
+//Interleave bits of 3 coordinates, each with 10 bits.  Useful for fast octree codes
+exports.interleave3 = function(x, y, z) {
+  x &= 0x3FF;
+  x  = (x | (x<<16)) & 4278190335;
+  x  = (x | (x<<8))  & 251719695;
+  x  = (x | (x<<4))  & 3272356035;
+  x  = (x | (x<<2))  & 1227133513;
+
+  y &= 0x3FF;
+  y  = (y | (y<<16)) & 4278190335;
+  y  = (y | (y<<8))  & 251719695;
+  y  = (y | (y<<4))  & 3272356035;
+  y  = (y | (y<<2))  & 1227133513;
+  x |= (y << 1);
+  
+  z &= 0x3FF;
+  z  = (z | (z<<16)) & 4278190335;
+  z  = (z | (z<<8))  & 251719695;
+  z  = (z | (z<<4))  & 3272356035;
+  z  = (z | (z<<2))  & 1227133513;
+  
+  return x | (z << 2);
+}
+
+//Extracts nth interleaved component of a 3-tuple
+exports.deinterleave3 = function(v, n) {
+  v = (v >>> n)       & 1227133513;
+  v = (v | (v>>>2))   & 3272356035;
+  v = (v | (v>>>4))   & 251719695;
+  v = (v | (v>>>8))   & 4278190335;
+  v = (v | (v>>>16))  & 0x3FF;
+  return (v<<22)>>22;
+}
+
+//Computes next combination in colexicographic order (this is mistakenly called nextPermutation on the bit twiddling hacks page)
+exports.nextCombination = function(v) {
+  var t = v | (v - 1);
+  return (t + 1) | (((~t & -~t) - 1) >>> (countTrailingZeros(v) + 1));
+}
+
+
+
+/***/ }),
+
+/***/ 2014:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+ "use restrict";
+
+var bits      = __webpack_require__(3105)
+  , UnionFind = __webpack_require__(4623)
 
 //Returns the dimension of a cell complex
 function dimension(cells) {
@@ -36936,12 +36897,14 @@ function connectedComponents(cells, vertex_count) {
 }
 exports.connectedComponents = connectedComponents
 
-},{"bit-twiddle":32,"union-find":309}],294:[function(_glvis_,module,exports){
-arguments[4][32][0].apply(exports,arguments)
-},{"dup":32}],295:[function(_glvis_,module,exports){
-arguments[4][293][0].apply(exports,arguments)
-},{"bit-twiddle":294,"dup":293,"union-find":296}],296:[function(_glvis_,module,exports){
-"use strict"; "use restrict";
+
+/***/ }),
+
+/***/ 4623:
+/***/ (function(module) {
+
+"use strict";
+ "use restrict";
 
 module.exports = UnionFind;
 
@@ -36997,13 +36960,19 @@ UnionFind.prototype.link = function(x, y) {
 }
 
 
-},{}],297:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 5878:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = simplifyPolygon
 
-var orient = _glvis_("robust-orientation")
-var sc = _glvis_("simplicial-complex")
+var orient = __webpack_require__(3250)
+var sc = __webpack_require__(2014)
 
 function errorWeight(base, a, b) {
   var area = Math.abs(orient(base, a, b))
@@ -37269,12 +37238,18 @@ function simplifyPolygon(cells, positions, minArea) {
     edges: ncells
   }
 }
-},{"robust-orientation":284,"simplicial-complex":295}],298:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 1303:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = orderSegments
 
-var orient = _glvis_("robust-orientation")
+var orient = __webpack_require__(3250)
 
 function horizontalOrder(a, b) {
   var bl, br
@@ -37365,15 +37340,21 @@ function orderSegments(b, a) {
   }
   return ar[0] - br[0]
 }
-},{"robust-orientation":284}],299:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 4209:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createSlabDecomposition
 
-var bounds = _glvis_("binary-search-bounds")
-var createRBTree = _glvis_("functional-red-black-tree")
-var orient = _glvis_("robust-orientation")
-var orderSegments = _glvis_("./lib/order-segments")
+var bounds = __webpack_require__(2478)
+var createRBTree = __webpack_require__(3840)
+var orient = __webpack_require__(3250)
+var orderSegments = __webpack_require__(1303)
 
 function SlabDecomposition(slabs, coordinates, horizontal) {
   this.slabs = slabs
@@ -37596,11 +37577,17 @@ function createSlabDecomposition(segments) {
   }
   return new SlabDecomposition(slabs, lines, horizontal)
 }
-},{"./lib/order-segments":298,"binary-search-bounds":31,"functional-red-black-tree":69,"robust-orientation":284}],300:[function(_glvis_,module,exports){
-"use strict"
 
-var robustDot = _glvis_("robust-dot-product")
-var robustSum = _glvis_("robust-sum")
+/***/ }),
+
+/***/ 5202:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var robustDot = __webpack_require__(1944)
+var robustSum = __webpack_require__(8210)
 
 module.exports = splitPolygon
 module.exports.positive = positive
@@ -37688,8 +37675,13 @@ function negative(points, plane) {
   }
   return neg
 }
-},{"robust-dot-product":281,"robust-sum":289}],301:[function(_glvis_,module,exports){
-/* global window, exports, define */
+
+/***/ }),
+
+/***/ 3387:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
 
 !function() {
     'use strict'
@@ -37901,33 +37893,40 @@ function negative(points, plane) {
      * export to either browser or node.js
      */
     /* eslint-disable quote-props */
-    if (typeof exports !== 'undefined') {
-        exports['sprintf'] = sprintf
-        exports['vsprintf'] = vsprintf
+    if (true) {
+        exports.sprintf = sprintf
+        exports.vsprintf = vsprintf
     }
     if (typeof window !== 'undefined') {
         window['sprintf'] = sprintf
         window['vsprintf'] = vsprintf
 
-        if (typeof define === 'function' && define['amd']) {
-            define(function() {
+        if (true) {
+            !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
                 return {
                     'sprintf': sprintf,
                     'vsprintf': vsprintf
                 }
-            })
+            }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
         }
     }
     /* eslint-enable quote-props */
 }(); // eslint-disable-line
 
-},{}],302:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 3711:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = surfaceNets
 
-var generateContourExtractor = _glvis_("ndarray-extract-contour")
-var zeroCrossings = _glvis_("zero-crossings")
+var generateContourExtractor = __webpack_require__(2640)
+var zeroCrossings = __webpack_require__(781)
 
 var allFns = {
   "2d": function (genContour, order, dtype) {
@@ -38049,107 +38048,16 @@ function surfaceNets(array,level) {
   }
   return proc(array,level)
 }
-},{"ndarray-extract-contour":251,"zero-crossings":318}],303:[function(_glvis_,module,exports){
-(function (process){(function (){
-'use strict'
 
-module.exports = textGet
+/***/ }),
 
-var vectorizeText = _glvis_('vectorize-text')
+/***/ 665:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-var globals = window || process.global || {}
-var __TEXT_CACHE  = globals.__TEXT_CACHE || {}
-globals.__TEXT_CACHE = {}
+"use strict";
 
-function unwrap(mesh) {
-  var cells     = mesh.cells
-  var positions = mesh.positions
-  var data      = new Float32Array(cells.length * 6)
-  var ptr       = 0
-  var shapeX    = 0
-  for(var i=0; i<cells.length; ++i) {
-    var tri = cells[i]
-    for(var j=0; j<3; ++j) {
-      var point = positions[tri[j]]
-      data[ptr++] = point[0]
-      data[ptr++] = point[1] + 1.4
-      shapeX      = Math.max(point[0], shapeX)
-    }
-  }
-  return {
-    data:  data,
-    shape: shapeX
-  }
-}
 
-function textGet(font, text, opts) {
-  var opts = opts || {}
-  var fontcache = __TEXT_CACHE[font]
-  if(!fontcache) {
-    fontcache = __TEXT_CACHE[font] = {
-      ' ': {
-        data:   new Float32Array(0),
-        shape: 0.2
-      }
-    }
-  }
-  var mesh = fontcache[text]
-  if(!mesh) {
-    if(text.length <= 1 || !/\d/.test(text)) {
-      mesh = fontcache[text] = unwrap(vectorizeText(text, {
-        triangles:     true,
-        font:          font,
-        textAlign:     opts.textAlign || 'left',
-        textBaseline:  'alphabetic',
-        styletags: {
-            breaklines: true,
-                 bolds: true,
-               italics: true,
-            subscripts: true,
-          superscripts: true
-        }
-      }))
-    } else {
-      var parts = text.split(/(\d|\s)/)
-      var buffer = new Array(parts.length)
-      var bufferSize = 0
-      var shapeX = 0
-      for(var i=0; i<parts.length; ++i) {
-        buffer[i] = textGet(font, parts[i])
-        bufferSize += buffer[i].data.length
-        shapeX += buffer[i].shape
-        if(i>0) {
-          shapeX += 0.02
-        }
-      }
-
-      var data = new Float32Array(bufferSize)
-      var ptr     = 0
-      var xOffset = -0.5 * shapeX
-      for(var i=0; i<buffer.length; ++i) {
-        var bdata = buffer[i].data
-        for(var j=0; j<bdata.length; j+=2) {
-          data[ptr++] = bdata[j] + xOffset
-          data[ptr++] = bdata[j+1]
-        }
-        xOffset += buffer[i].shape + 0.02
-      }
-
-      mesh = fontcache[text] = {
-        data:  data,
-        shape: shapeX
-      }
-    }
-  }
-
-   return mesh
-}
-
-}).call(this)}).call(this,_glvis_('_process'))
-},{"_process":5,"vectorize-text":311}],304:[function(_glvis_,module,exports){
-'use strict'
-
-var parseUnit = _glvis_('parse-unit')
+var parseUnit = __webpack_require__(3202)
 
 module.exports = toPX
 
@@ -38207,17 +38115,23 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":265}],305:[function(_glvis_,module,exports){
-'use strict'
+
+/***/ }),
+
+/***/ 7261:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createTurntableController
 
-var filterVector = _glvis_('filtered-vector')
-var invert44     = _glvis_('gl-mat4/invert')
-var rotateM      = _glvis_('gl-mat4/rotate')
-var cross        = _glvis_('gl-vec3/cross')
-var normalize3   = _glvis_('gl-vec3/normalize')
-var dot3         = _glvis_('gl-vec3/dot')
+var filterVector = __webpack_require__(9215)
+var invert44     = __webpack_require__(7608)
+var rotateM      = __webpack_require__(6079)
+var cross        = __webpack_require__(5911)
+var normalize3   = __webpack_require__(3536)
+var dot3         = __webpack_require__(244)
 
 function len3(x, y, z) {
   return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2))
@@ -38780,8 +38694,14 @@ function createTurntableController(options) {
     theta,
     phi)
 }
-},{"filtered-vector":68,"gl-mat4/invert":98,"gl-mat4/rotate":103,"gl-vec3/cross":157,"gl-vec3/dot":162,"gl-vec3/normalize":179}],306:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 5250:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = twoProduct
 
@@ -38814,8 +38734,14 @@ function twoProduct(a, b, result) {
 
   return [ y, x ]
 }
-},{}],307:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 9362:
+/***/ (function(module) {
+
+"use strict";
+
 
 module.exports = fastTwoSum
 
@@ -38832,17 +38758,22 @@ function fastTwoSum(a, b, result) {
 	}
 	return [ar+br, x]
 }
-},{}],308:[function(_glvis_,module,exports){
-(function (global){(function (){
-'use strict'
 
-var bits = _glvis_('bit-twiddle')
-var dup = _glvis_('dup')
-var Buffer = _glvis_('buffer').Buffer
+/***/ }),
+
+/***/ 1888:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var bits = __webpack_require__(8828)
+var dup = __webpack_require__(1338)
+var Buffer = (__webpack_require__(4793)/* .Buffer */ .hp)
 
 //Legacy pool support
-if(!global.__TYPEDARRAY_POOL) {
-  global.__TYPEDARRAY_POOL = {
+if(!__webpack_require__.g.__TYPEDARRAY_POOL) {
+  __webpack_require__.g.__TYPEDARRAY_POOL = {
       UINT8     : dup([32, 0])
     , UINT16    : dup([32, 0])
     , UINT32    : dup([32, 0])
@@ -38862,7 +38793,7 @@ if(!global.__TYPEDARRAY_POOL) {
 var hasUint8C = (typeof Uint8ClampedArray) !== 'undefined'
 var hasBigUint64 = (typeof BigUint64Array) !== 'undefined'
 var hasBigInt64 = (typeof BigInt64Array) !== 'undefined'
-var POOL = global.__TYPEDARRAY_POOL
+var POOL = __webpack_require__.g.__TYPEDARRAY_POOL
 
 //Upgrade pool
 if(!POOL.UINT8C) {
@@ -39086,9 +39017,14 @@ exports.clearCache = function clearCache() {
   }
 }
 
-}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bit-twiddle":32,"buffer":3,"dup":65}],309:[function(_glvis_,module,exports){
-"use strict"; "use restrict";
+
+/***/ }),
+
+/***/ 1755:
+/***/ (function(module) {
+
+"use strict";
+ "use restrict";
 
 module.exports = UnionFind;
 
@@ -39150,8 +39086,14 @@ proto.link = function(x, y) {
     ++ranks[xr];
   }
 }
-},{}],310:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 1682:
+/***/ (function(module) {
+
+"use strict";
+
 
 function unique_pred(list, compare) {
   var ptr = 1
@@ -39209,12 +39151,18 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],311:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 4359:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = createText
 
-var vectorizeText = _glvis_("./lib/vtext")
+var vectorizeText = __webpack_require__(7718)
 var defaultCanvas = null
 var defaultContext = null
 
@@ -39236,16 +39184,21 @@ function createText(str, options) {
     options)
 }
 
-},{"./lib/vtext":312}],312:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 7718:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 module.exports = vectorizeText
 module.exports.processPixels = processPixels
 
-var surfaceNets = _glvis_('surface-nets')
-var ndarray = _glvis_('ndarray')
-var simplify = _glvis_('simplify-planar-graph')
-var cleanPSLG = _glvis_('clean-pslg')
-var cdt2d = _glvis_('cdt2d')
-var toPolygonCrappy = _glvis_('planar-graph-to-polyline')
+var surfaceNets = __webpack_require__(3711)
+var ndarray = __webpack_require__(9618)
+var simplify = __webpack_require__(5878)
+var cleanPSLG = __webpack_require__(332)
+var cdt2d = __webpack_require__(2538)
+var toPolygonCrappy = __webpack_require__(2095)
 
 var TAG_bold = "b"
 var CHR_bold = 'b|'
@@ -39691,7 +39644,12 @@ function vectorizeText(str, canvas, context, options) {
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":42,"clean-pslg":50,"ndarray":259,"planar-graph-to-polyline":268,"simplify-planar-graph":297,"surface-nets":302}],313:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 1538:
+/***/ (function(module) {
+
 // Copyright (C) 2011 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -40378,8 +40336,13 @@ function vectorizeText(str, canvas, context, options) {
   }
 })();
 
-},{}],314:[function(_glvis_,module,exports){
-var hiddenStore = _glvis_('./hidden-store.js');
+
+/***/ }),
+
+/***/ 236:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var hiddenStore = __webpack_require__(8284);
 
 module.exports = createStore;
 
@@ -40399,7 +40362,12 @@ function createStore() {
     };
 }
 
-},{"./hidden-store.js":315}],315:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 8284:
+/***/ (function(module) {
+
 module.exports = hiddenStore;
 
 function hiddenStore(obj, key) {
@@ -40417,12 +40385,17 @@ function hiddenStore(obj, key) {
     return store;
 }
 
-},{}],316:[function(_glvis_,module,exports){
+
+/***/ }),
+
+/***/ 606:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
 // Original - @Gozola.
 // https://gist.github.com/Gozala/1269991
 // This is a reimplemented version (with a few bug fixes).
 
-var createStore = _glvis_('./create-store.js');
+var createStore = __webpack_require__(236);
 
 module.exports = weakMap;
 
@@ -40448,8 +40421,14 @@ function weakMap() {
     }
 }
 
-},{"./create-store.js":314}],317:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 3349:
+/***/ (function(module) {
+
+"use strict";
+
 
 function CWiseOp() {
   return function(SS, a0, t0, p0, Y0, Y1) {
@@ -40511,12 +40490,18 @@ module.exports = compileCwise({
     funcName: 'zeroCrossings'
 })
 
-},{}],318:[function(_glvis_,module,exports){
-"use strict"
+
+/***/ }),
+
+/***/ 781:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = findZeroCrossings
 
-var core = _glvis_("./lib/zc-core")
+var core = __webpack_require__(3349)
 
 function findZeroCrossings(array, level) {
   var cross = []
@@ -40524,5 +40509,74 @@ function findZeroCrossings(array, level) {
   core(array.hi(array.shape[0]-1), cross, level)
   return cross
 }
-},{"./lib/zc-core":317}]},{},[6])(6)
-});
+
+/***/ }),
+
+/***/ 7790:
+/***/ (function() {
+
+/* (ignored) */
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/global */
+/******/ 	!function() {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/node module decorator */
+/******/ 	!function() {
+/******/ 		__webpack_require__.nmd = function(module) {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__(1964);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
+/******/ })()
+;

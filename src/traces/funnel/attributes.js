@@ -109,11 +109,13 @@ module.exports = {
     },
 
     offsetgroup: barAttrs.offsetgroup,
-    alignmentgroup: barAttrs.alignmentgroup
+    alignmentgroup: barAttrs.alignmentgroup,
+    zorder: barAttrs.zorder
 };
 
 function funnelMarker() {
     var marker = extendFlat({}, barAttrs.marker);
     delete marker.pattern;
+    delete marker.cornerradius;
     return marker;
 }

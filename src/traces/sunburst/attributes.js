@@ -9,6 +9,7 @@ var domainAttrs = require('../../plots/domain').attributes;
 var pieAttrs = require('../pie/attributes');
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
+var pattern = require('../../components/drawing/attributes').pattern;
 
 module.exports = {
     labels: {
@@ -113,6 +114,7 @@ module.exports = {
             width: extendFlat({}, pieAttrs.marker.line.width, {dflt: 1}),
             editType: 'calc'
         },
+        pattern: pattern,
         editType: 'calc'
     },
         colorScaleAttrs('marker', {

@@ -18,9 +18,9 @@ var dragBox = require('../cartesian/dragbox');
 var dragElement = require('../../components/dragelement');
 var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
-var prepSelect = require('../cartesian/select').prepSelect;
-var selectOnClick = require('../cartesian/select').selectOnClick;
-var clearSelect = require('../cartesian/select').clearSelect;
+var prepSelect = require('../../components/selections').prepSelect;
+var selectOnClick = require('../../components/selections').selectOnClick;
+var clearOutline = require('../../components/selections').clearOutline;
 var setCursor = require('../../lib/setcursor');
 var clearGlCanvases = require('../../lib/clear_gl_canvases');
 var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
@@ -390,6 +390,24 @@ proto.doAutoRange = function(fullLayout, polarLayout) {
         radialAxis.r2l(rng[0], null, 'gregorian'),
         radialAxis.r2l(rng[1], null, 'gregorian')
     ];
+
+    if(radialAxis.minallowed !== undefined) {
+        var minallowed = radialAxis.r2l(radialAxis.minallowed);
+        if(radialAxis._rl[0] > radialAxis._rl[1]) {
+            radialAxis._rl[1] = Math.max(radialAxis._rl[1], minallowed);
+        } else {
+            radialAxis._rl[0] = Math.max(radialAxis._rl[0], minallowed);
+        }
+    }
+
+    if(radialAxis.maxallowed !== undefined) {
+        var maxallowed = radialAxis.r2l(radialAxis.maxallowed);
+        if(radialAxis._rl[0] < radialAxis._rl[1]) {
+            radialAxis._rl[1] = Math.min(radialAxis._rl[1], maxallowed);
+        } else {
+            radialAxis._rl[0] = Math.min(radialAxis._rl[0], maxallowed);
+        }
+    }
 };
 
 proto.updateRadialAxis = function(fullLayout, polarLayout) {
@@ -800,7 +818,7 @@ proto.updateHoverAndMainDrag = function(fullLayout) {
     var scaleX;
     var scaleY;
 
-    var mainDrag = dragBox.makeDragger(layers, 'path', 'maindrag', 'crosshair');
+    var mainDrag = dragBox.makeDragger(layers, 'path', 'maindrag', fullLayout.dragmode === false ? 'none' : 'crosshair');
 
     d3.select(mainDrag)
         .attr('d', _this.pathSubplot())
@@ -922,7 +940,7 @@ proto.updateHoverAndMainDrag = function(fullLayout) {
         zb = dragBox.makeZoombox(zoomlayer, lum, cx, cy, path0);
         zb.attr('fill-rule', 'evenodd');
         corners = dragBox.makeCorners(zoomlayer, cx, cy);
-        clearSelect(gd);
+        clearOutline(gd);
     }
 
     // N.B. this sets scoped 'r0' and 'r1'
@@ -1150,6 +1168,9 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
 
     var radialDrag = dragBox.makeRectDragger(layers, className, 'crosshair', -bl2, -bl2, bl, bl);
     var dragOpts = {element: radialDrag, gd: gd};
+    if(fullLayout.dragmode === false) {
+        dragOpts.dragmode = false;
+    }
 
     updateElement(d3.select(radialDrag), radialAxis.visible && innerRadius < radius, {
         transform: strTranslate(tx, ty)
@@ -1266,7 +1287,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
         dragOpts.moveFn = moveFn;
         dragOpts.doneFn = doneFn;
 
-        clearSelect(gd);
+        clearOutline(gd);
     };
 
     dragOpts.clampFn = function(dx, dy) {
@@ -1292,13 +1313,17 @@ proto.updateAngularDrag = function(fullLayout) {
     var cyy = _this.cyy;
     var dbs = constants.angularDragBoxSize;
 
-    var angularDrag = dragBox.makeDragger(layers, 'path', 'angulardrag', 'move');
+    var angularDrag = dragBox.makeDragger(layers, 'path', 'angulardrag', fullLayout.dragmode === false ? 'none' : 'move');
     var dragOpts = {element: angularDrag, gd: gd};
 
-    d3.select(angularDrag)
-        .attr('d', _this.pathAnnulus(radius, radius + dbs))
-        .attr('transform', strTranslate(cx, cy))
-        .call(setCursor, 'move');
+    if(fullLayout.dragmode === false) {
+        dragOpts.dragmode = false;
+    } else {
+        d3.select(angularDrag)
+            .attr('d', _this.pathAnnulus(radius, radius + dbs))
+            .attr('transform', strTranslate(cx, cy))
+            .call(setCursor, 'move');
+    }
 
     function xy2a(x, y) {
         return Math.atan2(cyy + dbs - y, x - cxx - dbs);
@@ -1427,7 +1452,7 @@ proto.updateAngularDrag = function(fullLayout) {
         dragOpts.moveFn = moveFn;
         dragOpts.doneFn = doneFn;
 
-        clearSelect(gd);
+        clearOutline(gd);
     };
 
     // I don't what we should do in this case, skip we now

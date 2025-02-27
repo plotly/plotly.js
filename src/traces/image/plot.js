@@ -5,21 +5,21 @@ var Lib = require('../../lib');
 var strTranslate = Lib.strTranslate;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');
-
-var unsupportedBrowsers = Lib.isIOS() || Lib.isSafari() || Lib.isIE();
+var supportsPixelatedImage = require('../../lib/supports_pixelated_image');
+var PIXELATED_IMAGE_STYLE = require('../../constants/pixelated_image').STYLE;
 
 module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    var supportsPixelatedImage = !(unsupportedBrowsers || gd._context._exportedPlot);
+    var supportsPixelated = !gd._context._exportedPlot && supportsPixelatedImage();
 
     Lib.makeTraceGroups(imageLayer, cdimage, 'im').each(function(cd) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
         var realImage = (
-            ((trace.zsmooth === 'fast') || (trace.zsmooth === false && supportsPixelatedImage)) &&
+            ((trace.zsmooth === 'fast') || (trace.zsmooth === false && supportsPixelated)) &&
             !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear'
         );
         trace._realImage = realImage;
@@ -92,7 +92,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             var canvas = document.createElement('canvas');
             canvas.width = imageWidth;
             canvas.height = imageHeight;
-            var context = canvas.getContext('2d');
+            var context = canvas.getContext('2d', {willReadFrequently: true});
 
             var ipx = function(i) {return Lib.constrain(Math.round(xa.c2p(x0 + i * dx) - left), 0, imageWidth);};
             var jpx = function(j) {return Lib.constrain(Math.round(ya.c2p(y0 + j * dy) - top), 0, imageHeight);};
@@ -131,7 +131,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
 
         image3.exit().remove();
 
-        var style = (trace.zsmooth === false) ? constants.pixelatedStyle : '';
+        var style = (trace.zsmooth === false) ? PIXELATED_IMAGE_STYLE : '';
 
         if(realImage) {
             var xRange = Lib.simpleMap(xa.range, xa.r2l);
@@ -167,7 +167,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                     var canvas = document.createElement('canvas');
                     canvas.width = w;
                     canvas.height = h;
-                    var context = canvas.getContext('2d');
+                    var context = canvas.getContext('2d', {willReadFrequently: true});
 
                     trace._image = trace._image || new Image();
                     var image = trace._image;
@@ -186,13 +186,17 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         .then(function() {
             var href, canvas;
             if(trace._hasZ) {
-                canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {return z[j][i];});
+                canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {
+                    var _z = z[j][i];
+                    if(Lib.isTypedArray(_z)) _z = Array.from(_z);
+                    return _z;
+                });
                 href = canvas.toDataURL('image/png');
             } else if(trace._hasSource) {
                 if(realImage) {
                     href = trace.source;
                 } else {
-                    var context = trace._canvas.el.getContext('2d');
+                    var context = trace._canvas.el.getContext('2d', {willReadFrequently: true});
                     var data = context.getImageData(0, 0, w, h).data;
                     canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {
                         var index = 4 * (j * w + i);

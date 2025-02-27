@@ -1,4 +1,4 @@
-var increment = require('@src/lib').increment;
+var increment = require('../../../src/lib').increment;
 
 describe('increment', function() {
     'use strict';

@@ -20,14 +20,14 @@ var axisLayoutAttrs = require('../../plots/cartesian/layout_attributes');
 
 var Color = require('../../components/color');
 var anchor = {
-    'left': 'start',
-    'center': 'middle',
-    'right': 'end'
+    left: 'start',
+    center: 'middle',
+    right: 'end'
 };
 var position = {
-    'left': 0,
-    'center': 0.5,
-    'right': 1
+    left: 0,
+    center: 0.5,
+    right: 1
 };
 
 var SI_PREFIX = /[yzafpnµmkMGTPEZY]/;
@@ -571,7 +571,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         bignumberAx.setScale();
         Axes.prepTicks(bignumberAx);
 
-        var fmt = function(v) { return Axes.tickText(bignumberAx, v).text;};
+        var bignumberFmt = function(v) { return Axes.tickText(bignumberAx, v).text;};
         var bignumberSuffix = trace.number.suffix;
         var bignumberPrefix = trace.number.prefix;
 
@@ -579,7 +579,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
 
         function writeNumber() {
             var txt = typeof cd[0].y === 'number' ?
-                bignumberPrefix + fmt(cd[0].y) + bignumberSuffix :
+                bignumberPrefix + bignumberFmt(cd[0].y) + bignumberSuffix :
                 '-';
             number.text(txt)
                 .call(Drawing.font, trace.number.font)
@@ -598,7 +598,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
                     var interpolator = interpolateNumber(cd[0].lastY, cd[0].y);
                     trace._lastValue = cd[0].y;
 
-                    var transitionFmt = transitionFormat(trace.number.valueformat, fmt, cd[0].lastY, cd[0].y);
+                    var transitionFmt = transitionFormat(trace.number.valueformat, bignumberFmt, cd[0].lastY, cd[0].y);
                     return function(t) {
                         that.text(bignumberPrefix + transitionFmt(interpolator(t)) + bignumberSuffix);
                     };
@@ -607,7 +607,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             writeNumber();
         }
 
-        bignumberbBox = measureText(bignumberPrefix + fmt(cd[0].y) + bignumberSuffix, trace.number.font, numbersAnchor, gd);
+        bignumberbBox = measureText(bignumberPrefix + bignumberFmt(cd[0].y) + bignumberSuffix, trace.number.font, numbersAnchor, gd);
         return number;
     }
 
@@ -617,13 +617,16 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         Axes.prepTicks(deltaAx);
 
         var deltaFmt = function(v) { return Axes.tickText(deltaAx, v).text;};
+        var deltaSuffix = trace.delta.suffix;
+        var deltaPrefix = trace.delta.prefix;
+
         var deltaValue = function(d) {
             var value = trace.delta.relative ? d.relativeDelta : d.delta;
             return value;
         };
         var deltaFormatText = function(value, numberFmt) {
             if(value === 0 || typeof value !== 'number' || isNaN(value)) return '-';
-            return (value > 0 ? trace.delta.increasing.symbol : trace.delta.decreasing.symbol) + numberFmt(value);
+            return (value > 0 ? trace.delta.increasing.symbol : trace.delta.decreasing.symbol) + deltaPrefix + numberFmt(value) + deltaSuffix;
         };
         var deltaFill = function(d) {
             return d.delta >= 0 ? trace.delta.increasing.color : trace.delta.decreasing.color;
@@ -820,6 +823,7 @@ function mockAxis(gd, opts, zrange) {
     var axisOptions = {
         letter: 'x',
         font: fullLayout.font,
+        noAutotickangles: true,
         noHover: true,
         noTickson: true
     };

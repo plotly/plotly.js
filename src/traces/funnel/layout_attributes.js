@@ -13,7 +13,7 @@ module.exports = {
             'With *group*, the bars are plotted next to one another',
             'centered around the shared location.',
             'With *overlay*, the bars are plotted over one another,',
-            'you might need to an *opacity* to see multiple bars.'
+            'you might need to reduce *opacity* to see multiple bars.'
         ].join(' ')
     },
     funnelgap: {

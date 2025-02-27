@@ -20,8 +20,9 @@ var TOO_MANY_POINTS = require('./constants').TOO_MANY_POINTS;
 
 module.exports = function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
-    var xa = AxisIDs.getFromId(gd, trace.xaxis);
-    var ya = AxisIDs.getFromId(gd, trace.yaxis);
+    var xa = trace._xA = AxisIDs.getFromId(gd, trace.xaxis, 'x');
+    var ya = trace._yA = AxisIDs.getFromId(gd, trace.yaxis, 'y');
+
     var subplot = fullLayout._plots[trace.xaxis + trace.yaxis];
     var len = trace._length;
     var hasTooManyPoints = len >= TOO_MANY_POINTS;

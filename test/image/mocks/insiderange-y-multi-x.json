@@ -1,0 +1,150 @@
+{
+ "data": [
+  {
+   "type": "bar",
+   "orientation": "h",
+   "yaxis": "y",
+   "xaxis": "x",
+   "x": [1000, 10, 100, 1]
+  },
+  {
+   "yaxis": "y",
+   "xaxis": "x11",
+   "x": [1000, 10, 100, 1]
+  },
+  {
+   "type": "bar",
+   "orientation": "h",
+   "yaxis": "y2",
+   "xaxis": "x2",
+   "x": [1000, 10, 100, 1]
+  },
+  {
+   "yaxis": "y2",
+   "xaxis": "x12",
+   "x": [1000, 10, 100, 1]
+  },
+  {
+   "type": "bar",
+   "orientation": "h",
+   "yaxis": "y3",
+   "xaxis": "x3",
+   "y": [2000, 2001, 2002, 2003],
+   "x": [1000, 10, 100, 1]
+  },
+  {
+   "yaxis": "y3",
+   "xaxis": "x13",
+   "y": [2000, 2001, 2002, 2003],
+   "x": [1000, 10, 100, 1]
+  },
+  {
+   "type": "bar",
+   "orientation": "h",
+   "yaxis": "y4",
+   "xaxis": "x4",
+   "y": [2000, 2001, 2002, 2003],
+   "x": [1000, 10, 100, 1]
+  },
+  {
+   "yaxis": "y4",
+   "xaxis": "x14",
+   "y": [2000, 2001, 2002, 2003],
+   "x": [1000, 10, 100, 1]
+  }
+ ],
+ "layout": {
+  "font": {
+   "lineposition": "under",
+   "shadow": "auto"
+  },
+  "template": {
+   "layout": {
+    "xaxis": {
+     "range": [-100, 1100],
+     "ticks": "inside",
+     "ticklabelposition": "inside",
+     "ticklen": 8,
+     "tickwidth": 3,
+     "gridcolor": "white"
+    }
+   }
+  },
+  "yaxis": {
+   "insiderange": [1, 2],
+   "anchor": "x",
+   "domain": [0, 0.45],
+   "gridcolor": "white"
+  },
+  "xaxis": {
+   "anchor": "y",
+   "domain": [0, 0.45],
+   "side": "top"
+  },
+  "xaxis11": {
+   "anchor": "y",
+   "overlaying": "x",
+   "side": "bottom"
+  },
+  "yaxis2": {
+   "insiderange": [2, 1],
+   "anchor": "x2",
+   "domain": [0, 0.45],
+   "gridcolor": "white"
+  },
+  "xaxis2": {
+   "anchor": "y2",
+   "domain": [0.55, 1],
+   "side": "bottom"
+  },
+  "xaxis12": {
+   "anchor": "y2",
+   "overlaying": "x2",
+   "side": "top"
+  },
+  "yaxis3": {
+   "type": "date",
+   "insiderange": ["2001-01", "2002-01"],
+   "anchor": "x3",
+   "domain": [0.55, 1],
+   "gridcolor": "white"
+  },
+  "xaxis3": {
+   "anchor": "y3",
+   "domain": [0, 0.45],
+   "side": "top"
+  },
+  "xaxis13": {
+   "anchor": "y3",
+   "overlaying": "x3",
+   "side": "bottom"
+  },
+  "yaxis4": {
+   "type": "date",
+   "insiderange": ["2002-01", "2001-01"],
+   "anchor": "x4",
+   "domain": [0.55, 1],
+   "gridcolor": "white"
+  },
+  "xaxis4": {
+   "anchor": "y4",
+   "domain": [0.55, 1],
+   "side": "bottom"
+  },
+  "xaxis14": {
+   "anchor": "y4",
+   "overlaying": "x4",
+   "side": "top"
+  },
+  "plot_bgcolor": "lightblue",
+  "showlegend": false,
+  "width": 900,
+  "height": 900,
+  "margin": {
+   "t": 60,
+   "b": 60,
+   "l": 60,
+   "r": 60
+  }
+ }
+}

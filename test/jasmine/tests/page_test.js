@@ -1,5 +1,5 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -26,7 +26,7 @@ describe('page rendering', function() {
 
         // make a plot that has pretty much all kinds of plot elements
         // start with plot_types, because it has all the subplot types already
-        var mock = Lib.extendDeep({}, require('@mocks/plot_types.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/plot_types.json'));
 
         mock.data.push(
             {type: 'contour', z: [[1, 2], [3, 4]], coloring: 'heatmap'}
@@ -52,8 +52,8 @@ describe('page rendering', function() {
         }];
 
         // then merge in a few more with other component types
-        mock.layout.updatemenus = require('@mocks/updatemenus.json').layout.updatemenus;
-        mock.layout.sliders = require('@mocks/sliders.json').layout.sliders;
+        mock.layout.updatemenus = require('../../image/mocks/updatemenus.json').layout.updatemenus;
+        mock.layout.sliders = require('../../image/mocks/sliders.json').layout.sliders;
 
         mock.layout.xaxis.title = 'XXX';
         mock.layout.showlegend = true;

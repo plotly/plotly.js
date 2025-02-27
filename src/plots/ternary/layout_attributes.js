@@ -15,7 +15,7 @@ var ternaryAxesAttrs = {
     },
     color: axesAttrs.color,
     // ticks
-    tickmode: axesAttrs.tickmode,
+    tickmode: axesAttrs.minor.tickmode,
     nticks: extendFlat({}, axesAttrs.nticks, {dflt: 6, min: 1}),
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
@@ -27,6 +27,7 @@ var ternaryAxesAttrs = {
     tickcolor: axesAttrs.tickcolor,
     ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
+    labelalias: axesAttrs.labelalias,
     showtickprefix: axesAttrs.showtickprefix,
     tickprefix: axesAttrs.tickprefix,
     showticksuffix: axesAttrs.showticksuffix,
@@ -47,6 +48,7 @@ var ternaryAxesAttrs = {
     showgrid: extendFlat({}, axesAttrs.showgrid, {dflt: true}),
     gridcolor: axesAttrs.gridcolor,
     gridwidth: axesAttrs.gridwidth,
+    griddash: axesAttrs.griddash,
     layer: axesAttrs.layer,
     // range
     min: {
@@ -60,10 +62,6 @@ var ternaryAxesAttrs = {
             'all the minima set to zero.'
         ].join(' ')
     },
-    _deprecated: {
-        title: axesAttrs._deprecated.title,
-        titlefont: axesAttrs._deprecated.titlefont
-    }
 };
 
 var attrs = module.exports = overrideAll({

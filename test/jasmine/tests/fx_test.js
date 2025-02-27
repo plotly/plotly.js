@@ -1,4 +1,4 @@
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -153,7 +153,13 @@ describe('Fx defaults', function() {
                 font: {
                     family: 'Roboto',
                     size: 20,
-                    color: 'pink'
+                    color: 'pink',
+                    weight: 'bold',
+                    style: 'italic',
+                    variant: 'small-caps',
+                    textcase: 'word caps',
+                    lineposition: 'under',
+                    shadow: 'auto',
                 }
             }
         });
@@ -164,7 +170,13 @@ describe('Fx defaults', function() {
             font: {
                 family: 'Roboto',
                 size: 40,
-                color: 'pink'
+                color: 'pink',
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             },
             align: 'auto',
             namelength: 15
@@ -176,7 +188,13 @@ describe('Fx defaults', function() {
             font: {
                 family: 'Roboto',
                 size: 20,
-                color: 'red'
+                color: 'red',
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             },
             align: 'auto',
             namelength: 15
@@ -188,7 +206,13 @@ describe('Fx defaults', function() {
             font: {
                 family: 'Roboto',
                 size: 20,
-                color: 'pink'
+                color: 'pink',
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             }
         });
 
@@ -198,7 +222,13 @@ describe('Fx defaults', function() {
             font: {
                 family: 'Gravitas',
                 size: 20,
-                color: 'pink'
+                color: 'pink',
+                weight: 'bold',
+                style: 'italic',
+                variant: 'small-caps',
+                textcase: 'word caps',
+                lineposition: 'under',
+                shadow: 'auto',
             }
         });
     });

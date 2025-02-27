@@ -15,18 +15,40 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     });
 };
 
+function dfltLabelYanchor(isLine, labelTextPosition) {
+    // If shape is a line, default y-anchor is 'bottom' (so that text is above line by default)
+    // Otherwise, default y-anchor is equal to y-component of `textposition`
+    // (so that text is positioned inside shape bounding box by default)
+    return isLine ? 'bottom' :
+        labelTextPosition.indexOf('top') !== -1 ? 'top' :
+        labelTextPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
+}
+
 function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     function coerce(attr, dflt) {
         return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
     }
 
+    shapeOut._isShape = true;
+
     var visible = coerce('visible');
     if(!visible) return;
+
+    var showlegend = coerce('showlegend');
+    if(showlegend) {
+        coerce('legend');
+        coerce('legendwidth');
+        coerce('legendgroup');
+        coerce('legendgrouptitle.text');
+        Lib.coerceFont(coerce, 'legendgrouptitle.font');
+        coerce('legendrank');
+    }
 
     var path = coerce('path');
     var dfltType = path ? 'path' : 'rect';
     var shapeType = coerce('type', dfltType);
-    if(shapeOut.type !== 'path') delete shapeOut.path;
+    var noPath = shapeType !== 'path';
+    if(noPath) delete shapeOut.path;
 
     coerce('editable');
     coerce('layer');
@@ -63,12 +85,16 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
             ax._shapeIndices.push(shapeOut._index);
             r2pos = helpers.rangeToShapePosition(ax);
             pos2r = helpers.shapePositionToRange(ax);
+            if(ax.type === 'category' || ax.type === 'multicategory') {
+                coerce(axLetter + '0shift');
+                coerce(axLetter + '1shift');
+            }
         } else {
             pos2r = r2pos = Lib.identity;
         }
 
         // Coerce x0, x1, y0, y1
-        if(shapeType !== 'path') {
+        if(noPath) {
             var dflt0 = 0.25;
             var dflt1 = 0.75;
 
@@ -112,9 +138,21 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         }
     }
 
-    if(shapeType === 'path') {
-        coerce('path');
-    } else {
+    if(noPath) {
         Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
+    }
+
+    // Label options
+    var isLine = shapeType === 'line';
+    var labelTextTemplate, labelText;
+    if(noPath) { labelTextTemplate = coerce('label.texttemplate'); }
+    if(!labelTextTemplate) { labelText = coerce('label.text'); }
+    if(labelText || labelTextTemplate) {
+        coerce('label.textangle');
+        var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
+        coerce('label.xanchor');
+        coerce('label.yanchor', dfltLabelYanchor(isLine, labelTextPosition));
+        coerce('label.padding');
+        Lib.coerceFont(coerce, 'label.font', fullLayout.font);
     }
 }

@@ -1,9 +1,9 @@
 var d3Select = require('../../strict-d3').select;
 
-var Plotly = require('@lib/index');
-var Colorbar = require('@src/components/colorbar');
-var Plots = require('@src/plots/plots');
-var subroutines = require('@src/plot_api/subroutines');
+var Plotly = require('../../../lib/index');
+var Colorbar = require('../../../src/components/colorbar');
+var Plots = require('../../../src/plots/plots');
+var subroutines = require('../../../src/plot_api/subroutines');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -529,19 +529,19 @@ describe('Test colorbar:', function() {
                 return attrs;
             }
 
-            var z = [[1, 10], [100, 1000]];
+            var mock = require('../../image/mocks/contour_transposed');
+            var z = mock.data[0].z;
 
             var expectedAttrs;
             var actualAttrs;
 
-            Plotly.newPlot(gd, [{type: 'contour', z: z}])
+            Plotly.newPlot(gd, mock)
             .then(function() {
                 expectedAttrs = getCBFillAttributes();
-
-                return Plotly.newPlot(gd, [{type: 'heatmap', z: z}])
-                .then(function() {
-                    return Plotly.react(gd, [{type: 'contour', z: z}]);
-                });
+                return Plotly.newPlot(gd, [{type: 'heatmap', z: z}]);
+            })
+            .then(function() {
+                return Plotly.react(gd, mock);
             })
             .then(function() {
                 actualAttrs = getCBFillAttributes();

@@ -45,4 +45,6 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     coerce('hovertemplate');
 
     traceOut._length = null;
+
+    coerce('zorder');
 };

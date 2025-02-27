@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
 
-var Box = require('@src/traces/box');
+var Box = require('../../../src/traces/box');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -722,7 +722,7 @@ describe('Test box hover:', function() {
 
         var fig = Lib.extendDeep(
             {width: 700, height: 500},
-            specs.mock || require('@mocks/box_grouped.json')
+            specs.mock || require('../../image/mocks/box_grouped.json')
         );
 
         if(specs.patch) {
@@ -743,8 +743,8 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', '', '', '', ''],
+        nums: ['median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7'],
+        name: ['radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with mean',
@@ -755,8 +755,8 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'mean: 0.45'],
-        name: ['radishes', '', '', '', '', ''],
+        nums: ['median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7', 'mean: 0.45'],
+        name: ['radishes', '', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with sd',
@@ -768,24 +768,25 @@ describe('Test box hover:', function() {
             return fig;
         },
         nums: [
-            'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7',
+            'median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7',
             'mean ± σ: 0.45 ± 0.2362908'
         ],
-        name: ['radishes', '', '', '', '', ''],
+        name: ['radishes', '', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with boxpoints fences',
-        mock: require('@mocks/boxplots_outliercolordflt.json'),
+        mock: require('../../image/mocks/boxplots_outliercolordflt.json'),
         patch: function(fig) {
             fig.layout.hovermode = 'x';
             return fig;
         },
         pos: [350, 200],
         nums: [
+            '23.25',
             'median: 8.15', 'min: 0.75', 'q1: 6.8',
             'q3: 10.25', 'max: 23.25', 'lower fence: 5.25', 'upper fence: 12'
         ],
-        name: ['', '', '', '', '', '', ''],
+        name: ['', '', '', '', '', '', '', ''],
         axis: 'trace 0'
     }, {
         desc: 'with overlaid boxes',
@@ -795,12 +796,22 @@ describe('Test box hover:', function() {
             return fig;
         },
         nums: [
-            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0', 'q1: 0.1',
-            'q3: 0.6', 'max: 0.7', 'median: 0.45', 'q1: 0.2', 'q3: 0.6', 'max: 0.9'
+            'median: 0.45', 'median: 0.45', 'median: 0.55',
+            'min: 0', 'min: 0.1', 'min: 0.2',
+            'lower fence: 0', 'lower fence: 0.1', 'lower fence: 0.2',
+            'q1: 0.1', 'q1: 0.2', 'q1: 0.3',
+            'q3: 0.6', 'q3: 0.6', 'q3: 0.6',
+            'upper fence: 0.7', 'upper fence: 0.9', 'upper fence: 1',
+            'max: 0.7', 'max: 0.9', 'max: 1'
         ],
         name: [
-            '', 'kale', '', '', 'radishes', '', '',
-            '', '', 'carrots', '', '', ''
+            'carrots', 'kale', 'radishes',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', ''
         ],
         axis: 'day 1'
     }, {
@@ -841,8 +852,8 @@ describe('Test box hover:', function() {
             return fig;
         },
         pos: [215, 200],
-        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', '', '', '', ''],
+        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'lower fence: 0', 'upper fence: 0.7'],
+        name: ['radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'hoveron boxes+points | hovermode x (box AND closest point)',
@@ -855,8 +866,8 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['0.6', 'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', 'radishes', '', '', '', ''],
+        nums: ['0.6', 'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'lower fence: 0', 'upper fence: 0.7'],
+        name: ['radishes', 'radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'text items on hover',
@@ -902,27 +913,39 @@ describe('Test box hover:', function() {
         name: ''
     }, {
         desc: 'orientation:h | hovermode:y',
-        mock: require('@mocks/box_grouped_horz.json'),
+        mock: require('../../image/mocks/box_grouped_horz.json'),
         patch: function(fig) {
             fig.layout.hovermode = 'y';
             return fig;
         },
         pos: [430, 130],
         nums: [
-            'max: 1', 'mean ± σ: 0.6833333 ± 0.2409472', 'min: 0.3',
-            'q1: 0.5', 'q3: 0.9', 'median: 0.7'],
-        name: ['', '', '', '', '', 'carrots'],
-        axis: 'day 2',
-        hOrder: [0, 4, 5, 1, 3, 2]
+            'median: 0.7',
+            'min: 0.3',
+            'q1: 0.5',
+            'q3: 0.9',
+            'max: 1',
+            'lower fence: 0.3',
+            'upper fence: 1',
+            'mean ± σ: 0.6833333 ± 0.2409472',
+        ],
+        name: ['carrots', '', '', '', '', '', '', ''],
+        axis: 'day 2'
     }, {
         desc: 'orientation:h | hovermode:closest',
-        mock: require('@mocks/box_grouped_horz.json'),
+        mock: require('../../image/mocks/box_grouped_horz.json'),
         pos: [430, 130],
         nums: [
-            '(max: 1, day 2)', '(mean ± σ: 0.6833333 ± 0.2409472, day 2)', '(min: 0.3, day 2)',
-            '(q1: 0.5, day 2)', '(q3: 0.9, day 2)', '(median: 0.7, day 2)'],
-        name: ['', '', '', '', '', 'carrots'],
-        hOrder: [0, 4, 5, 1, 3, 2]
+            '(median: 0.7, day 2)',
+            '(min: 0.3, day 2)',
+            '(q1: 0.5, day 2)',
+            '(q3: 0.9, day 2)',
+            '(max: 1, day 2)',
+            '(lower fence: 0.3, day 2)',
+            '(upper fence: 1, day 2)',
+            '(mean ± σ: 0.6833333 ± 0.2409472, day 2)'
+        ],
+        name: ['carrots', '', '', '', '', '', '', ''],
     }, {
         desc: 'on boxpoints with numeric positions | hovermode:closest',
         mock: {
@@ -967,8 +990,8 @@ describe('Test box hover:', function() {
             }
         },
         pos: [200, 200],
-        nums: ['median: 2', 'q1: 1.5', 'q3: 2.5', 'max: 3', 'min: 1'],
-        name: ['', '', '', '', ''],
+        nums: ['median: 2', 'q1: 1.5', 'q3: 2.5', 'max: 3', 'min: 1', 'lower fence: 1', 'upper fence: 3'],
+        name: ['', '', '', '', '', '', ''],
         axis: 'trace 0'
     }, {
         desc: 'q1/median/q3 signature on boxes',
@@ -987,8 +1010,8 @@ describe('Test box hover:', function() {
             }
         },
         pos: [200, 200],
-        nums: ['median: 2', 'q1: 1', 'q3: 3'],
-        name: ['', '', ''],
+        nums: ['median: 2', 'min: 1', 'q1: 1', 'q3: 3', 'max: 3', 'lower fence: 1', 'upper fence: 3'],
+        name: ['', '', '', '', '', '', ''],
         axis: 'A'
     }, {
         desc: 'q1/median/q3 signature on points',
@@ -1086,7 +1109,7 @@ describe('Test box restyle:', function() {
     afterEach(destroyGraphDiv);
 
     it('should be able to add/remove innner parts', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/box_plot_jitter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/box_plot_jitter.json'));
         // start with just 1 box
         delete fig.data[0].boxpoints;
 

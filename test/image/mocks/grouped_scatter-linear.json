@@ -1,0 +1,23 @@
+{
+ "data": [
+  {
+   "mode": "markers+lines+text",
+   "texttemplate": "x:%{x}",
+   "textposition": "bottom center",
+   "textfont": { "size": 16 },
+   "y": [1, 3, 2]
+  },
+  {
+   "mode": "markers+lines+text",
+   "texttemplate": "x:%{x}",
+   "textposition": "bottom center",
+   "textfont": { "size": 16 },
+   "y": [2, 1, 3]
+  }
+ ],
+ "layout": {
+  "width": 600,
+  "height": 400,
+  "scattermode": "group"
+ }
+}

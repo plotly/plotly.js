@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
 
-var Image = require('@src/traces/image');
+var Image = require('../../../src/traces/image');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -13,7 +13,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var supplyAllDefaults = require('../assets/supply_defaults');
-var Fx = require('@src/components/fx');
+var Fx = require('../../../src/components/fx');
 
 describe('image supplyDefaults', function() {
     'use strict';
@@ -209,6 +209,14 @@ describe('image smart layout defaults', function() {
         expect(gd._fullLayout.yaxis.scaleanchor).toBe('x');
     });
 
+    it('should NOT set scaleanchor if asked not to', function() {
+        gd = {};
+        gd.data = [{type: 'image', z: [[[255, 0, 0]]]}];
+        gd.layout = {yaxis: {scaleanchor: false}};
+        supplyAllDefaults(gd);
+        expect(gd._fullLayout.yaxis.scaleanchor).toBe(false);
+    });
+
     it('should NOT reset scaleanchor if it\'s already defined', function() {
         gd.data = [{type: 'image', z: [[[255, 0, 0]]]}, {y: [5, 3, 2], xaxis: 'x3'}];
         gd.layout = {yaxis: {scaleanchor: 'x3'}};
@@ -254,7 +262,7 @@ describe('image plot', function() {
     afterEach(destroyGraphDiv);
 
     it('should not draw traces that are off-screen', function(done) {
-        var mock = require('@mocks/image_adventurer.json');
+        var mock = require('../../image/mocks/image_adventurer.json');
         var mockCopy = Lib.extendDeep({}, mock);
 
         function assertImageCnt(cnt) {
@@ -291,7 +299,7 @@ describe('image plot', function() {
     ].forEach(function(test) {
         var attr = test[0];
         it('should be able to restyle ' + attr, function(done) {
-            var mock = require('@mocks/image_adventurer.json');
+            var mock = require('../../image/mocks/image_adventurer.json');
             var mockCopy = Lib.extendDeep({}, mock);
             mockCopy.layout = {
                 width: 400,
@@ -328,7 +336,7 @@ describe('image plot', function() {
     });
 
     it('should be able to restyle x0/y0', function(done) {
-        var mock = require('@mocks/image_cat.json');
+        var mock = require('../../image/mocks/image_cat.json');
         var mockCopy = Lib.extendDeep({}, mock);
 
         var x = []; var y = [];
@@ -357,7 +365,7 @@ describe('image plot', function() {
     });
 
     it('should handle restyling x0/y0 to category', function(done) {
-        var mock = require('@mocks/image_opacity.json');
+        var mock = require('../../image/mocks/image_opacity.json');
         var mockCopy = Lib.extendDeep({}, mock);
 
         var x = []; var y = [];
@@ -407,7 +415,7 @@ describe('image plot', function() {
     });
 
     it('renders pixelated image when source is defined', function(done) {
-        var mock = require('@mocks/image_astronaut_source.json');
+        var mock = require('../../image/mocks/image_astronaut_source.json');
         var mockCopy = Lib.extendDeep({}, mock);
         Plotly.newPlot(gd, mockCopy)
         .then(function(gd) {
@@ -421,7 +429,7 @@ describe('image plot', function() {
       ['xaxis.type', 'log']
     ].forEach(function(attr) {
         it('does not renders pixelated image when the axes are not compatible', function(done) {
-            var mock = require('@mocks/image_astronaut_source.json');
+            var mock = require('../../image/mocks/image_astronaut_source.json');
             var mockCopy = Lib.extendDeep({}, mock);
             Plotly.newPlot(gd, mockCopy)
             .then(function(gd) {
@@ -445,7 +453,7 @@ describe('image hover:', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = require('@mocks/image_cat.json');
+            var mock = require('../../image/mocks/image_cat.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
@@ -487,7 +495,7 @@ describe('image hover:', function() {
     });
 
     describe('for `image_adventurer` defined by z', function() {
-        var mock = require('@mocks/image_adventurer.json');
+        var mock = require('../../image/mocks/image_adventurer.json');
         beforeAll(function() {
             gd = createGraphDiv();
         });
@@ -618,7 +626,7 @@ describe('image hover:', function() {
     });
 
     describe('for `image_astronaut_source` defined by source', function() {
-        var mock = require('@mocks/image_astronaut_source.json');
+        var mock = require('../../image/mocks/image_astronaut_source.json');
         beforeAll(function() {
             gd = createGraphDiv();
         });

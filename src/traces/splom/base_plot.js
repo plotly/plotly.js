@@ -11,12 +11,14 @@ var shouldShowZeroLine = require('../../plots/cartesian/axes').shouldShowZeroLin
 
 var SPLOM = 'splom';
 
+var reglPrecompiled = {};
+
 function plot(gd) {
     var fullLayout = gd._fullLayout;
     var _module = Registry.getModule(SPLOM);
     var splomCalcData = getModuleCalcData(gd.calcdata, _module)[0];
 
-    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint'], reglPrecompiled);
     if(!success) return;
 
     if(fullLayout._hasOnlyLargeSploms) {
@@ -219,5 +221,6 @@ module.exports = {
     updateGrid: updateGrid,
     clean: clean,
     updateFx: Cartesian.updateFx,
-    toSVG: Cartesian.toSVG
+    toSVG: Cartesian.toSVG,
+    reglPrecompiled: reglPrecompiled
 };

@@ -1,5 +1,5 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -80,7 +80,7 @@ describe('Test cone autorange:', function() {
     }
 
     it('@gl should add pad around cone position to make sure they fit on the scene', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-autorange.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl3d_cone-autorange.json'));
         var rng0 = [0.103, 3.897];
 
         function makeScaleFn(s) {
@@ -221,7 +221,7 @@ describe('Test cone interactions', function() {
     });
 
     it('@gl should add/clear gl objects correctly', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl3d_cone-simple.json'));
         // put traces on same subplot
         delete fig.data[1].scene;
 
@@ -284,7 +284,7 @@ describe('Test cone interactions', function() {
     });
 
     it('@gl should display hover labels', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl3d_cone-simple.json'));
         // only one trace on one scene
         fig.data = [fig.data[0]];
         fig.data[0].showscale = false;

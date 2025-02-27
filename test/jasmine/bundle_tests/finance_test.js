@@ -1,7 +1,7 @@
-var Plots = require('@src/plots/plots');
-var Plotly = require('@lib/core');
-var ohlc = require('@lib/ohlc');
-var candlestick = require('@lib/candlestick');
+var Plots = require('../../../src/plots/plots');
+var Plotly = require('../../../lib/core');
+var ohlc = require('../../../lib/ohlc');
+var candlestick = require('../../../lib/candlestick');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -12,13 +12,7 @@ describe('Bundle with finance trace type', function() {
 
     Plotly.register([ohlc, candlestick]);
 
-    var mock = require('@mocks/finance_style.json');
-
-    it('should not register transforms anymore', function() {
-        var transformModules = Object.keys(Plots.transformsRegistry);
-
-        expect(transformModules).toEqual([]);
-    });
+    var mock = require('../../image/mocks/finance_style.json');
 
     it('should register the correct trace modules for the generated traces', function() {
         var traceModules = Object.keys(Plots.modules);

@@ -47,6 +47,11 @@ exports.mean = function(data, len) {
     return exports.aggNums(function(a, b) { return a + b; }, 0, data) / len;
 };
 
+exports.geometricMean = function(data, len) {
+    if(!len) len = exports.len(data);
+    return Math.pow(exports.aggNums(function(a, b) { return a * b; }, 1, data), 1 / len);
+};
+
 exports.midRange = function(numArr) {
     if(numArr === undefined || numArr.length === 0) return undefined;
     return (exports.aggNums(Math.max, null, numArr) + exports.aggNums(Math.min, null, numArr)) / 2;
@@ -77,7 +82,7 @@ exports.median = function(data) {
 /**
  * interp() computes a percentile (quantile) for a given distribution.
  * We interpolate the distribution (to compute quantiles, we follow method #10 here:
- * http://www.amstat.org/publications/jse/v14n3/langford.html).
+ * http://jse.amstat.org/v14n3/langford.html).
  * Typically the index or rank (n * arr.length) may be non-integer.
  * For reference: ends are clipped to the extreme values in the array;
  * For box plots: index you get is half a point too high (see

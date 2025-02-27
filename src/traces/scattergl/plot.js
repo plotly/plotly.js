@@ -14,6 +14,7 @@ var linkTraces = require('../scatter/link_traces');
 
 var styleTextSelection = require('./edit_style').styleTextSelection;
 
+var reglPrecompiled = {};
 
 function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
     var gs = fullLayout._size;
@@ -34,7 +35,7 @@ function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
     ];
 }
 
-module.exports = function plot(gd, subplot, cdata) {
+var exports = module.exports = function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
 
     var fullLayout = gd._fullLayout;
@@ -46,7 +47,7 @@ module.exports = function plot(gd, subplot, cdata) {
     // we may have more subplots than initialized data due to Axes.getSubplots method
     if(!scene) return;
 
-    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint'], reglPrecompiled);
     if(!success) {
         scene.init();
         return;
@@ -59,6 +60,14 @@ module.exports = function plot(gd, subplot, cdata) {
     linkTraces(gd, subplot, cdata);
 
     if(scene.dirty) {
+        if(
+            (scene.line2d || scene.error2d) &&
+            !(scene.scatter2d || scene.fill2d || scene.glText)
+        ) {
+            // Fixes shared WebGL context drawing lines only case
+            regl.clear({});
+        }
+
         // make sure scenes are created
         if(scene.error2d === true) {
             scene.error2d = createError(regl);
@@ -369,3 +378,5 @@ module.exports = function plot(gd, subplot, cdata) {
         scene.glText.forEach(function(text) { text.update(vpRange0); });
     }
 };
+
+exports.reglPrecompiled = reglPrecompiled;

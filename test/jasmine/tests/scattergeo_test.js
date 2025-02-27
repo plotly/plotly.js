@@ -1,9 +1,9 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var BADNUM = require('@src/constants/numerical').BADNUM;
-var loggers = require('@src/lib/loggers');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var BADNUM = require('../../../src/constants/numerical').BADNUM;
+var loggers = require('../../../src/lib/loggers');
 
-var ScatterGeo = require('@src/traces/scattergeo');
+var ScatterGeo = require('../../../src/traces/scattergeo');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -439,7 +439,7 @@ describe('Test scattergeo hover', function() {
     });
 
     it('should include *properties* from input custom geojson', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_custom-geojson.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_custom-geojson.json'));
         fig.data = [fig.data[3]];
         fig.data[0].geo = 'geo';
         fig.data[0].marker = {size: 40};
@@ -505,20 +505,20 @@ describe('scattergeo drawing', function() {
 
 describe('Test scattergeo texttemplate:', function() {
     checkTextTemplate([{
-        'type': 'scattergeo',
-        'mode': 'markers+text',
-        'lon': [-73.57, -79.24, -123.06],
-        'lat': [45.5, 43.4, 49.13],
-        'text': ['Montreal', 'Toronto', 'Vancouver']
+        type: 'scattergeo',
+        mode: 'markers+text',
+        lon: [-73.57, -79.24, -123.06],
+        lat: [45.5, 43.4, 49.13],
+        text: ['Montreal', 'Toronto', 'Vancouver']
     }], '.scattergeo text', [
         ['%{text}: %{lon}, %{lat}', ['Montreal: −73.57, 45.5', 'Toronto: −79.24, 43.4', 'Vancouver: −123.06, 49.13']]
     ]);
 
     checkTextTemplate([{
-        'type': 'scattergeo',
-        'mode': 'markers+text',
-        'locations': ['Canada'],
-        'locationmode': 'country names'
+        type: 'scattergeo',
+        mode: 'markers+text',
+        locations: ['Canada'],
+        locationmode: 'country names'
     }], '.scattergeo text', [
         ['%{location}', ['Canada']]
     ]);

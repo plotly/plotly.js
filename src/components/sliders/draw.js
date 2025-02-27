@@ -17,6 +17,7 @@ var FROM_TL = alignmentConstants.FROM_TL;
 var FROM_BR = alignmentConstants.FROM_BR;
 
 module.exports = function draw(gd) {
+    var staticPlot = gd._context.staticPlot;
     var fullLayout = gd._fullLayout;
     var sliderData = makeSliderData(fullLayout, gd);
 
@@ -27,7 +28,7 @@ module.exports = function draw(gd) {
 
     sliders.enter().append('g')
         .classed(constants.containerClassName, true)
-        .style('cursor', 'ew-resize');
+        .style('cursor', staticPlot ? null : 'ew-resize');
 
     function clearSlider(sliderOpts) {
         if(sliderOpts._commandObserver) {
@@ -449,6 +450,8 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
 }
 
 function attachGripEvents(item, gd, sliderGroup) {
+    if(gd._context.staticPlot) return;
+
     var node = sliderGroup.node();
     var $gd = d3.select(gd);
 

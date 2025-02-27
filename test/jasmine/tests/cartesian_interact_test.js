@@ -1,11 +1,11 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Axes = require('@src/plots/cartesian/axes');
-var Drawing = require('@src/components/drawing');
-var constants = require('@src/plots/cartesian/constants');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Axes = require('../../../src/plots/cartesian/axes');
+var Drawing = require('../../../src/components/drawing');
+var constants = require('../../../src/plots/cartesian/constants');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -23,7 +23,7 @@ var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var MODEBAR_DELAY = 500;
 
 describe('zoom box element', function() {
-    var mock = require('@mocks/14.json');
+    var mock = require('../../image/mocks/14.json');
 
     var gd;
     beforeEach(function(done) {
@@ -75,7 +75,7 @@ describe('main plot pan', function() {
     afterEach(destroyGraphDiv);
 
     it('should respond to pan interactions', function(done) {
-        var mock = require('@mocks/10.json');
+        var mock = require('../../image/mocks/10.json');
         var precision = 5;
 
         var originalX = [-0.5251046025104602, 5.5];
@@ -187,7 +187,7 @@ describe('main plot pan', function() {
     });
 
     it('should emit plotly_relayouting events during pan interactions', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/10.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/10.json'));
         mock.layout.dragmode = 'pan';
 
         var nsteps = 10;
@@ -556,7 +556,7 @@ describe('axis zoom/pan and main plot zoom', function() {
     });
 
     it('updates linked axes when there are constraints (axes_scaleanchor mock)', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/axes_scaleanchor.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/axes_scaleanchor.json'));
 
         function _assert(y3rng, y4rng) {
             expect(gd._fullLayout.yaxis3.range).toBeCloseToArray(y3rng, 2, 'y3 rng');
@@ -775,17 +775,17 @@ describe('axis zoom/pan and main plot zoom', function() {
     });
 
     it('should compute correct multicategory tick label span during drag', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/multicategory.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/multicategory.json'));
 
         function _assertLabels(msg, exp) {
             var tickLabels = d3Select(gd).selectAll('.xtick > text');
-            expect(tickLabels.size()).toBe(exp.angle.length, msg + ' - # of tick labels');
+            expect(tickLabels.size()).withContext(msg + ' - # of tick labels').toBe(exp.angle.length);
 
             tickLabels.each(function(_, i) {
                 var t = d3Select(this).attr('transform');
                 var rotate = (t.split('rotate(')[1] || '').split(')')[0];
                 var angle = rotate.split(',')[0];
-                expect(Number(angle)).toBe(exp.angle[i], msg + ' - node ' + i);
+                expect(Number(angle)).withContext(msg + ' - node ' + i).toBeCloseTo(exp.angle[i], 2);
             });
 
             var tickLabels2 = d3Select(gd).selectAll('.xtick2 > text');
@@ -813,7 +813,7 @@ describe('axis zoom/pan and main plot zoom', function() {
         })
         .then(function() {
             return _run('drag to wide-range -> rotates labels', [-340, 0], {
-                angle: [90, 90, 90, 90, 90, 90, 90],
+                angle: [30, 30, 30, 30, 30, 30, 30],
                 y: [430, 430]
             });
         })
@@ -1592,7 +1592,7 @@ describe('axis zoom/pan and main plot zoom', function() {
                     [['yaxis'], [-0.318, 3.318]],
                     [['xaxis2', 'yaxis2'], [-0.588, 8.824]]
                 ]);
-                x2y2 = d3Select('.subplot.x2y2 .plot');
+                x2y2 = d3Select('.subplot.x2y2 .overplot').select('.x2y2');
                 expect(x2y2.attr('transform')).toBe('translate(50,50)');
                 mx = gd._fullLayout.xaxis._m;
                 my = gd._fullLayout.yaxis._m;
@@ -2542,6 +2542,185 @@ describe('Cartesian plots with css transforms', function() {
             })
             .then(function() {
                 _assertSelected(t.selected);
+            })
+            .then(done, done.fail);
+        });
+    });
+});
+
+describe('Cartesian taces with zorder', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    var data0 = [
+        {x: [1, 2], y: [1, 1], type: 'scatter', marker: {size: 10}, zorder: 10},
+        {x: [1, 2], y: [1, 2], type: 'scatter', marker: {size: 30}},
+        {x: [1, 2], y: [1, 3], type: 'scatter', marker: {size: 20}, zorder: 5}
+    ];
+
+    var data1 = [
+        {x: [1, 2], y: [1, 1], type: 'scatter', marker: {size: 10}},
+        {x: [1, 2], y: [1, 2], type: 'scatter', marker: {size: 30}, zorder: -5},
+        {x: [1, 2], y: [1, 3], type: 'scatter', marker: {size: 20}, zorder: 10},
+    ];
+
+    var barData = [
+        {x: [1, 2], y: [2, 4], type: 'bar'},
+        {x: [1, 2], y: [4, 2], type: 'bar', zorder: -10}
+    ];
+
+    function fig(data) {
+        return {
+            data: data,
+            layout: {
+                width: 400, height: 400
+            }
+        };
+    }
+
+    function assertZIndices(data, expectedData) {
+        for(var i = 0; i < data.length; i++) {
+            var zorder = expectedData[i].zorder ? expectedData[i].zorder : 0;
+            expect(data[i].zorder).toEqual(zorder);
+        }
+    }
+
+    function assertZIndicesSorted(data) {
+        var prevZIndex;
+        expect(data.length).toBeGreaterThan(0);
+        for(var i = 0; i < data.length; i++) {
+            var currentZIndex = data[i].__data__.zorder;
+            if(prevZIndex !== undefined) {
+                expect(currentZIndex).toBeGreaterThanOrEqual(prevZIndex);
+            }
+            prevZIndex = currentZIndex;
+        }
+    }
+
+    it('should be able to update and remove layers for scatter traces in respect to zorder', function(done) {
+        Plotly.newPlot(gd, fig(data0))
+        .then(function() {
+            var data = gd._fullData;
+            assertZIndices(data, data0);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig(data1));
+        })
+        .then(function() {
+            var data = gd._fullData;
+            assertZIndices(data, data1);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig(barData));
+        })
+        .then(function() {
+            var data = gd._fullData;
+            assertZIndices(data, barData);
+            var scatterTraces = d3SelectAll('g[class^="scatterlayer"]')[0];
+            expect(scatterTraces.length).toBe(0);
+            var barTraces = d3SelectAll('g[class^="barlayer"]')[0];
+            expect(barTraces.length).toBe(2);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig(barData.concat(data0)));
+        })
+        .then(function() {
+            var data = gd._fullData;
+            assertZIndices(data, barData.concat(data0));
+            var scatterTraces = d3SelectAll('g[class^="scatterlayer"]')[0];
+            expect(scatterTraces.length).toBe(3);
+            var barTraces = d3SelectAll('g[class^="barlayer"]')[0];
+            expect(barTraces.length).toBe(2);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should display traces in ascending order', function(done) {
+        Plotly.newPlot(gd, fig(data0))
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig(data1));
+        })
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should display traces in ascending zorder order after restyle', function(done) {
+        Plotly.newPlot(gd, fig(data0))
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
+            var data = gd._fullData;
+            assertZIndices(data, data0);
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'marker.size', 20);
+        })
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
+            var data = gd._fullData;
+            assertZIndices(data, data0);
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig(data1));
+        })
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
+            var data = gd._fullData;
+            assertZIndices(data, data1);
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'marker.size', 20);
+        })
+        .then(function() {
+            var tracesData = d3SelectAll('g[class^="scatterlayer"]');
+            var data = gd._fullData;
+            assertZIndices(data, data1);
+            assertZIndicesSorted(tracesData[0]);
+        })
+        .then(done, done.fail);
+    });
+
+    ['bar', 'waterfall', 'funnel'].forEach(function(traceType) {
+        it('should display ' + traceType + ' traces in ascending order', function(done) {
+            var _Data = [
+                {x: [1, 2], y: [2, 4], type: traceType},
+                {x: [1, 2], y: [4, 2], type: traceType, zorder: -10}
+            ];
+            var _Class = 'g[class^="' + traceType + 'layer"]';
+            Plotly.newPlot(gd, fig(_Data))
+            .then(function() {
+                var data = gd._fullData;
+                assertZIndices(data, _Data);
+                var tracesData = d3SelectAll(_Class);
+                assertZIndicesSorted(tracesData[0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'barmode', 'overlay');
+            })
+            .then(function() {
+                var tracesData = d3SelectAll(_Class);
+                assertZIndicesSorted(tracesData[0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'barmode', 'stack');
+            })
+            .then(function() {
+                var tracesData = d3SelectAll(_Class);
+                assertZIndicesSorted(tracesData[0]);
             })
             .then(done, done.fail);
         });

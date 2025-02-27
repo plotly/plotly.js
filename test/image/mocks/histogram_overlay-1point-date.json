@@ -1,0 +1,52 @@
+{
+ "data": [
+  {
+   "x": ["2023-05-22 09:29:56.00"],
+   "opacity": 1,
+   "type": "histogram",
+   "name": "Results B",
+   "marker": {
+    "color": "rgba(0, 255, 0, .2)",
+    "line": {
+     "color": "rgba(0, 255, 0, 1)",
+     "width": 2
+    }
+   },
+   "xbins": {
+    "size": "M1",
+    "start": "2023-05-01",
+    "end": "2023-07-01"
+   }
+  },
+  {
+   "x": [
+    "2023-05-21 09:29:56.00",
+    "2023-05-26 09:29:56.00",
+    "2023-06-21 09:29:56.00"
+   ],
+   "opacity": 1,
+   "type": "histogram",
+   "name": "Results A",
+   "marker": {
+    "color": "rgba(0, 0, 255, .2)",
+    "line": {
+     "color": "rgba(0, 0, 255, 1)",
+     "width": 2
+    }
+   },
+   "xbins": {
+    "size": "M1",
+    "start": "2023-05-01",
+    "end": "2023-07-01"
+   }
+  }
+ ],
+ "layout": {
+  "barmode": "overlay",
+  "title": { "text": "Sampled Results" },
+  "xaxis": {
+   "title": { "text": "Date" }
+  },
+  "yaxis": { "title": { "text": "Count" } }
+ }
+}

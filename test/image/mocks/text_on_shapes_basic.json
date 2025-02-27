@@ -1,0 +1,179 @@
+{
+ "data": [
+  {
+   "x": [0, 10],
+   "y": [0, 10],
+   "mode": "markers"
+  }
+ ],
+ "layout": {
+  "font": {
+   "textcase": "word caps",
+   "lineposition": "under",
+   "shadow": "auto",
+   "weight": "bold",
+   "style": "italic",
+   "variant": "small-caps"
+  },
+  "xaxis": {
+   "title": { "text": "linear" },
+   "range": [0, 10],
+   "type": "linear",
+   "showgrid": false,
+   "zeroline": false,
+   "showticklabels": false
+  },
+  "yaxis": {
+   "title": { "text": "linear" },
+   "range": [0, 10],
+   "type": "linear",
+   "showgrid": false,
+   "zeroline": false,
+   "showticklabels": false
+  },
+  "height": 500,
+  "width": 1000,
+  "margin": { "l": 20, "r": 20, "pad": 0 },
+  "showlegend": true,
+  "shapes": [
+   {
+    "showlegend": true,
+    "label": {
+     "text": "angle zero",
+     "textangle": 0,
+     "textposition": "end",
+     "padding": 20
+    },
+    "xref": "paper",
+    "yref": "paper",
+    "x0": 0.6,
+    "x1": 0.8,
+    "y0": 0.3,
+    "y1": 0.6,
+    "type": "line"
+   },
+   {
+    "showlegend": true,
+    "label": {
+     "text": "top right, xanchor right, <br>angle 45",
+     "xanchor": "right",
+     "textangle": 45,
+     "textposition": "top right",
+     "padding": 20
+    },
+    "layer": "below",
+    "xref": "paper",
+    "yref": "paper",
+    "x0": 0.5,
+    "x1": 0.6,
+    "y0": 0.4,
+    "y1": 0.6
+   },
+   {
+    "showlegend": true,
+    "label": { "text": "top right", "textposition": "top right" },
+    "xref": "paper",
+    "yref": "paper",
+    "type": "circle",
+    "x0": 0.3,
+    "x1": 0.35,
+    "y0": 0.2,
+    "y1": 0.4
+   },
+   {
+    "showlegend": true,
+    "legendgroup": "g1",
+    "legendgrouptitle": { "text": "1st group" },
+    "label": {
+     "text": "xanchor right, position not set<br> two lines",
+     "xanchor": "right",
+     "padding": 10,
+     "font": { "family": "Courier New, monospace", "size": 20 }
+    },
+    "xref": "paper",
+    "yref": "paper",
+    "type": "line",
+    "x0": 0.8,
+    "x1": 0.9,
+    "y0": 0.8,
+    "y1": 0.9
+   },
+   {
+    "showlegend": true,
+    "legendgroup": "g1",
+    "label": {
+     "text": "position auto, xanchor center, angle -30",
+     "xanchor": "center",
+     "textangle": -30
+    },
+    "layer": "below",
+    "x0": 2,
+    "x1": 3,
+    "y0": 7,
+    "y1": 9.5,
+    "opacity": 0.5,
+    "fillcolor": "#05e",
+    "line": { "width": 3, "color": "#025", "dash": "dashdot" }
+   },
+   {
+    "showlegend": true,
+    "legendgroup": "g2",
+    "legendgrouptitle": { "text": "2nd group" },
+    "label": { "text": "position auto, yanchor top", "yanchor": "top" },
+    "yref": "paper",
+    "type": "line",
+    "x0": 1.1,
+    "x1": 2.4,
+    "y0": 0.1,
+    "y1": 0.4,
+    "line": { "color": "#039", "dash": "dot", "width": 2 }
+   },
+   {
+    "showlegend": true,
+    "legendgroup": "g2",
+    "legendrank": 1,
+    "label": { "text": "position auto, xanchor center", "xanchor": "center" },
+    "xref": "paper",
+    "x0": 0.8,
+    "x1": 0.9,
+    "y0": 1,
+    "y1": 3,
+    "fillcolor": "#ccc"
+   },
+   {
+    "showlegend": true,
+    "legendgroup": "g2",
+    "label": { "text": "position end", "textposition": "end" },
+    "yref": "paper",
+    "type": "line",
+    "x0": 4.1,
+    "x1": 6.4,
+    "y0": 0.2,
+    "y1": 0.0,
+    "line": { "color": "#339", "width": 3 }
+   }
+  ],
+  "newshape": {
+   "line": {
+    "color": "pink"
+   },
+   "name": "A New Shape",
+   "label": {
+    "text": "new shape label"
+   },
+   "showlegend": true
+  },
+  "dragmode": "drawline"
+ },
+ "config": {
+  "editable": false,
+  "modeBarButtonsToAdd": [
+   "drawline",
+   "drawopenpath",
+   "drawclosedpath",
+   "drawcircle",
+   "drawrect",
+   "eraseshape"
+  ]
+ }
+}

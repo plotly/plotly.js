@@ -1,20 +1,20 @@
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var utcFormat = require('d3-time-format').utcFormat;
 
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Loggers = require('@src/lib/loggers');
-var Color = require('@src/components/color');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Loggers = require('../../../src/lib/loggers');
+var Color = require('../../../src/components/color');
 var tinycolor = require('tinycolor2');
 
-var handleTickValueDefaults = require('@src/plots/cartesian/tick_value_defaults');
-var Cartesian = require('@src/plots/cartesian');
-var Axes = require('@src/plots/cartesian/axes');
-var Fx = require('@src/components/fx');
-var supplyLayoutDefaults = require('@src/plots/cartesian/layout_defaults');
-var numerical = require('@src/constants/numerical');
+var handleTickValueDefaults = require('../../../src/plots/cartesian/tick_value_defaults');
+var Cartesian = require('../../../src/plots/cartesian');
+var Axes = require('../../../src/plots/cartesian/axes');
+var Fx = require('../../../src/components/fx');
+var supplyLayoutDefaults = require('../../../src/plots/cartesian/layout_defaults');
+var numerical = require('../../../src/constants/numerical');
 var BADNUM = numerical.BADNUM;
 var ONEDAY = numerical.ONEDAY;
 var ONEWEEK = numerical.ONEWEEK;
@@ -28,7 +28,6 @@ var supplyDefaults = require('../assets/supply_defaults');
 
 describe('Test axes', function() {
     'use strict';
-
     describe('swap', function() {
         it('should swap most attributes and fix placeholder titles', function() {
             var gd = {
@@ -718,13 +717,22 @@ describe('Test axes', function() {
         it('should set autorange to true when input range is invalid', function() {
             layoutIn = {
                 xaxis: { range: 'not-gonna-work' },
-                xaxis2: { range: [1, 2, 3] },
+                xaxis2: { range: [1] },
+                xaxis3: { range: [null, null] },
                 yaxis: { range: ['a', 2] },
                 yaxis2: { range: [1, 'b'] },
-                yaxis3: { range: [null, {}] }
+                yaxis3: { range: [undefined, {}] },
+                yaxis4: { range: [1, null], autorange: 'min' }, // second range is null not first
+                yaxis5: { range: [null, 2], autorange: 'max' }, // first range is null not second
+                yaxis6: { range: [1, null], autorange: 'max reversed' }, // second range is null not first
+                yaxis7: { range: [null, 2], autorange: 'min reversed' }, // first range is null not second
+                yaxis8: { range: [1, null], autorange: 'reversed' },
+                yaxis9: { range: [null, 2], autorange: 'reversed' },
+                yaxis10: { range: [1, null], autorange: true },
+                yaxis11: { range: [null, 2], autorange: true },
             };
-            layoutOut._subplots.cartesian.push('x2y2', 'xy3');
-            layoutOut._subplots.yaxis.push('x2', 'y2', 'y3');
+            layoutOut._subplots.cartesian.push('x2y2', 'xy3', 'x3y4', 'x3y5', 'x3y6', 'x3y7', 'x3y9', 'x3y9', 'x3y10', 'x3y11');
+            layoutOut._subplots.yaxis.push('x2', 'x3', 'y2', 'y3', 'y4', 'y5', 'y6', 'y7', 'y8', 'y9', 'y10', 'y11');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -748,6 +756,36 @@ describe('Test axes', function() {
             Axes.list({ _fullLayout: layoutOut }).forEach(function(ax) {
                 expect(ax.autorange).toBe(false, ax._name);
             });
+        });
+
+        it('should set autorange to true when range[0] and range[1] are set to null', function() {
+            layoutIn = {
+                xaxis: { range: [null, null] }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.autorange).toBe(true);
+        });
+
+        it('should set autorange to min when range[0] is set to null', function() {
+            layoutIn = {
+                xaxis: { range: [null, 1] }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.autorange).toBe('min');
+        });
+
+        it('should set autorange to max when range[1] is set to null', function() {
+            layoutIn = {
+                xaxis: { range: [1, null] }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.autorange).toBe('max');
         });
 
         it('only allows rangemode with linear axes', function() {
@@ -1432,6 +1470,66 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis10.rangebreaks[0].enabled).toBe(false, 'reject false');
             expect(layoutOut.xaxis11.rangebreaks[0].enabled).toBe(false, 'reject true');
         });
+
+        it('should coerce autoshift and shift only if anchor is *free*', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {anchor: 'free'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.autoshift).toBe(false);
+            expect(layoutOut.yaxis.shift).toEqual(0);
+
+            layoutIn.yaxis.autoshift = true;
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.autoshift).toBe(true);
+            expect(layoutOut.yaxis.shift).toEqual(-3);
+
+            layoutIn.yaxis.anchor = 'x';
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.autoshift).toBeUndefined();
+            expect(layoutOut.yaxis.shift).toBeUndefined();
+        });
+
+        it('should set automargin to *true* when shift is *true*', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {autoshift: true, anchor: 'free'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.automargin).toBe(true);
+        });
+
+        it('should set automargin to *false* when shift is numeric', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {shift: 100, anchor: 'free'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.automargin).toBe(false);
+        });
+
+        it('should set default axis position if shift is *true* according to overlaying domain', function() {
+            layoutIn = {
+                xaxis: {domain: [0.2, 0.5]},
+                yaxis: {},
+                yaxis2: {autoshift: true, anchor: 'free', overlaying: 'y'}
+            };
+
+            layoutOut._subplots.cartesian.push('xy2');
+            layoutOut._subplots.yaxis.push('y2');
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis2.position).toBe(0.2);
+
+            layoutIn.yaxis2.side = 'right';
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis2.position).toBe(0.5);
+
+            // Same should apply if shift is numeric
+            layoutIn.yaxis2.shift = 100;
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis2.position).toBe(0.5);
+        });
     });
 
     describe('autorange relayout', function() {
@@ -1482,6 +1580,103 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
 
+        it('can relayout one partial range without affecting other subplots', function(done) {
+            var rangeX2;
+            var rangeX3;
+            var rangeX4;
+            var autorangeX2;
+            var autorangeX3;
+            var autorangeX4;
+
+            Plotly.newPlot(gd, {
+                data: [
+                    {
+                        xaxis: 'x',
+                        yaxis: 'y',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x2',
+                        yaxis: 'y2',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x3',
+                        yaxis: 'y3',
+                        y: [1000, 10, 100, 1],
+                    },
+                    {
+                        xaxis: 'x4',
+                        yaxis: 'y4',
+                        y: [1000, 10, 100, 1],
+                    },
+                ],
+                layout: {
+                    xaxis: {
+                        range: [-1, null],
+                        anchor: 'y',
+                        domain: [0, 0.45],
+                    },
+                    yaxis: {
+                        anchor: 'x',
+                        domain: [0, 0.45],
+                        side: 'right',
+                    },
+                    xaxis2: {
+                        range: [null, 4],
+                        anchor: 'y2',
+                        domain: [0, 0.45],
+                    },
+                    yaxis2: {
+                        anchor: 'x2',
+                        domain: [0.55, 1],
+                        side: 'left',
+                    },
+                    xaxis3: {
+                        range: [null, -1],
+                        autorange: 'max reversed',
+                        anchor: 'y3',
+                        domain: [0.55, 1],
+                    },
+                    yaxis3: {
+                        anchor: 'x3',
+                        domain: [0, 0.45],
+                        side: 'left',
+                    },
+                    xaxis4: {
+                        range: [4, null],
+                        autorange: 'min reversed',
+                        anchor: 'y4',
+                        domain: [0.55, 1],
+                    },
+                    yaxis4: {
+                        anchor: 'x4',
+                        domain: [0.55, 1],
+                        side: 'right',
+                    }
+                }
+            }).then(function() {
+                rangeX2 = gd._fullLayout.xaxis2.range.slice();
+                rangeX3 = gd._fullLayout.xaxis3.range.slice();
+                rangeX4 = gd._fullLayout.xaxis4.range.slice();
+
+                autorangeX2 = gd._fullLayout.xaxis2.autorange;
+                autorangeX3 = gd._fullLayout.xaxis3.autorange;
+                autorangeX4 = gd._fullLayout.xaxis4.autorange;
+
+                return Plotly.relayout(gd, 'xaxis.range', [1, 2]);
+            }).then(function() {
+                expect(gd._fullLayout.xaxis2.range).toEqual(rangeX2);
+                expect(gd._fullLayout.xaxis3.range).toEqual(rangeX3);
+                expect(gd._fullLayout.xaxis4.range).toEqual(rangeX4);
+
+                expect(gd._fullLayout.xaxis2.autorange).toEqual(autorangeX2);
+                expect(gd._fullLayout.xaxis3.autorange).toEqual(autorangeX3);
+                expect(gd._fullLayout.xaxis4.autorange).toEqual(autorangeX4);
+            })
+            .then(done, done.fail);
+        });
+
         it('should make room for the inside labels of the counter axes', function(done) {
             Plotly.newPlot(gd, {
                 data: [{
@@ -1504,6 +1699,36 @@ describe('Test axes', function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.37, 3.22], 1);
             })
             .then(done, done.fail);
+        });
+    });
+
+    describe('insiderange relayout', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('can relayout insiderange', function(done) {
+            Plotly.newPlot(gd, [{
+                y: [1, 3, 2, 4]}
+            ], {
+                xaxis: {insiderange: [0, 2]},
+                yaxis: {ticklabelposition: 'inside'},
+                plot_bgcolor: 'lightgray',
+                width: 600,
+                height: 600
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
+
+                return Plotly.relayout(gd, {
+                    'xaxis.insiderange': [1, 3]
+                });
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.889, 3]);
+            }).then(done, done.fail);
         });
     });
 
@@ -1571,6 +1796,23 @@ describe('Test axes', function() {
                 'input range, ' + msg + ': ' + ax.range);
         }
 
+        it('can change axis domain on call to react when template is present', function(done) {
+            Plotly.newPlot(gd,
+                [{z: [[0, 1], [2, 3]], type: 'heatmap'}],
+                { template: {}, xaxis: { domain: [0,1], scaleanchor: 'y' } }
+            )
+            .then(function() {
+                return Plotly.react(gd, 
+                    [{z: [[0, 1], [2, 3]], type: 'heatmap'}],
+                    { template: {}, xaxis: { domain: [0.1, 0.9] } }
+                );
+            })
+            .then(function() {
+                assertRangeDomain('xaxis', [-0.5,1.5], [0.1, 0.9], [0.1, 0.9]);
+            })
+            .then(done, done.fail);
+        });
+
         it('can change per-axis constrain:domain/range and constraintoward', function(done) {
             Plotly.newPlot(gd,
                 // start with a heatmap as it has no padding so calculations are easy
@@ -1581,7 +1823,7 @@ describe('Test axes', function() {
                     height: 300,
                     margin: {l: 100, r: 100, t: 100, b: 100},
                     xaxis: {constrain: 'domain'},
-                    yaxis: {constraintoward: 'top', 'scaleanchor': 'x'}
+                    yaxis: {constraintoward: 'top', scaleanchor: 'x'}
                 }
             )
             .then(function() {
@@ -2141,7 +2383,17 @@ describe('Test axes', function() {
                 expect(yaxis.tickcolor).toBe('#444');
                 expect(yaxis.ticks).toBe('outside');
                 expect(yaxis.showticklabels).toBe(true);
-                expect(yaxis.tickfont).toEqual({ family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444' });
+                expect(yaxis.tickfont).toEqual({
+                    family: '"Open Sans", verdana, arial, sans-serif',
+                    size: 12,
+                    color: '#444',
+                    weight: 'normal',
+                    style: 'normal',
+                    variant: 'normal',
+                    textcase: 'normal',
+                    lineposition: 'none',
+                    shadow: 'none',
+                });
                 expect(yaxis.tickangle).toBe('auto');
             })
             .then(done, done.fail);
@@ -2154,7 +2406,17 @@ describe('Test axes', function() {
                     tickwidth: 5,
                     tickcolor: '#F00',
                     showticklabels: true,
-                    tickfont: { family: 'Garamond', size: 72, color: '#0FF' },
+                    tickfont: {
+                        family: 'Garamond',
+                        size: 72,
+                        color: '#0FF',
+                        weight: 'normal',
+                        style: 'normal',
+                        variant: 'normal',
+                        textcase: 'normal',
+                        lineposition: 'none',
+                        shadow: 'none',
+                    },
                     tickangle: -20
                 }
             };
@@ -2167,7 +2429,17 @@ describe('Test axes', function() {
                 expect(yaxis.tickcolor).toBe('#F00');
                 expect(yaxis.ticks).toBe('outside');
                 expect(yaxis.showticklabels).toBe(true);
-                expect(yaxis.tickfont).toEqual({ family: 'Garamond', size: 72, color: '#0FF' });
+                expect(yaxis.tickfont).toEqual({
+                    family: 'Garamond',
+                    size: 72,
+                    color: '#0FF',
+                    weight: 'normal',
+                    style: 'normal',
+                    variant: 'normal',
+                    textcase: 'normal',
+                    lineposition: 'none',
+                    shadow: 'none',
+                });
                 expect(yaxis.tickangle).toBe(-20);
             })
             .then(done, done.fail);
@@ -2434,7 +2706,7 @@ describe('Test axes', function() {
             };
         });
 
-        it('should save range when autosize turned off and rangeInitial isn\'t defined', function() {
+        it('should save range when autosize turned off and rangeInitials are not defined', function() {
             ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
                 gd._fullLayout[ax].autorange = false;
             });
@@ -2442,39 +2714,64 @@ describe('Test axes', function() {
             hasOneAxisChanged = saveRangeInitial(gd);
 
             expect(hasOneAxisChanged).toBe(true);
-            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.5, 1]);
-            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+            expect(gd._fullLayout.xaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.xaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.yaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.yaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.xaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.xaxis2._rangeInitial1).toEqual(1);
+
+            expect(gd._fullLayout.yaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.yaxis2._rangeInitial1).toEqual(1);
         });
 
-        it('should not overwrite saved range if rangeInitial is defined', function() {
+        it('should not overwrite saved range if rangeInitials are defined', function() {
             ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
-                gd._fullLayout[ax]._rangeInitial = gd._fullLayout[ax].range.slice();
+                gd._fullLayout[ax]._rangeInitial0 = gd._fullLayout[ax].range[0];
+                gd._fullLayout[ax]._rangeInitial1 = gd._fullLayout[ax].range[1];
                 gd._fullLayout[ax].range = [0, 1];
             });
 
             hasOneAxisChanged = saveRangeInitial(gd);
 
             expect(hasOneAxisChanged).toBe(false);
-            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.5, 1]);
-            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+
+            expect(gd._fullLayout.xaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.xaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.yaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.yaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.xaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.xaxis2._rangeInitial1).toEqual(1);
+
+            expect(gd._fullLayout.yaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.yaxis2._rangeInitial1).toEqual(1);
         });
 
         it('should save range when overwrite option is on and range has changed', function() {
             ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
-                gd._fullLayout[ax]._rangeInitial = gd._fullLayout[ax].range.slice();
+                gd._fullLayout[ax]._rangeInitial0 = gd._fullLayout[ax].range[0];
+                gd._fullLayout[ax]._rangeInitial1 = gd._fullLayout[ax].range[1];
             });
             gd._fullLayout.xaxis2.range = [0.2, 0.4];
 
             hasOneAxisChanged = saveRangeInitial(gd, true);
             expect(hasOneAxisChanged).toBe(true);
-            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
-            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.2, 0.4]);
-            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+
+            expect(gd._fullLayout.xaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.xaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.yaxis._rangeInitial0).toEqual(0);
+            expect(gd._fullLayout.yaxis._rangeInitial1).toEqual(0.5);
+
+            expect(gd._fullLayout.xaxis2._rangeInitial0).toEqual(0.2);
+            expect(gd._fullLayout.xaxis2._rangeInitial1).toEqual(0.4);
+
+            expect(gd._fullLayout.yaxis2._rangeInitial0).toEqual(0.5);
+            expect(gd._fullLayout.yaxis2._rangeInitial1).toEqual(1);
         });
     });
 
@@ -3479,7 +3776,7 @@ describe('Test axes', function() {
             var ax = {
                 type: 'category',
                 _categories: ['a', 'b', 'c', 'd'],
-                _categoriesMap: {'a': 0, 'b': 1, 'c': 2, 'd': 3},
+                _categoriesMap: {a: 0, b: 1, c: 2, d: 3},
                 tickmode: 'array',
                 tickvals: ['a', 1, 1.5, 'c', 2.7, 3, 'e', 4, 5, -2],
                 ticktext: ['A!', 'B?', 'B->C'],
@@ -3512,7 +3809,7 @@ describe('Test axes', function() {
             var ax = {
                 type: 'category',
                 _categories: ['a', 'b', 'c', 'd'],
-                _categoriesMap: {'a': 0, 'b': 1, 'c': 2, 'd': 3},
+                _categoriesMap: {a: 0, b: 1, c: 2, d: 3},
                 tickmode: 'linear',
                 tick0: 0,
                 dtick: 1,
@@ -4017,16 +4314,22 @@ describe('Test axes', function() {
                     var op = parts[0];
 
                     var method = {
-                        '=': 'toBe',
+                        '=': 'toBeCloseTo',
                         '~=': 'toBeWithin',
                         grew: 'toBeGreaterThan',
                         shrunk: 'toBeLessThan',
-                        initial: 'toBe'
+                        initial: 'toBeCloseTo'
                     }[op];
 
                     var val = op === 'initial' ? initialSize[k] : previousSize[k];
                     var msgk = msg + ' ' + k + (parts[1] ? ' |' + parts[1] : '');
-                    var args = op === '~=' ? [val, 1.1, msgk] : [val, msgk, ''];
+                    var args = [val];
+                    if(op === '~=') {
+                        args.push(1.1);
+                    } else if(method === 'toBeCloseTo') {
+                        args.push(3);
+                    }
+                    args.push(msgk);
 
                     expect(actual[k])[method](args[0], args[1], args[2]);
                 }
@@ -4062,7 +4365,7 @@ describe('Test axes', function() {
                 width: 600, height: 600
             })
             .then(function() {
-                expect(gd._fullLayout.xaxis._tickAngles.xtick).toBe(30);
+                expect(gd._fullLayout.xaxis._tickAngles.xtick).toBeCloseTo(30, 3);
 
                 var gs = gd._fullLayout._size;
                 initialSize = Lib.extendDeep({}, gs);
@@ -4225,6 +4528,141 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
 
+        it('should handle partial automargin', function(done) {
+            var initialSize;
+
+            function assertSize(msg, actual, exp) {
+                for(var k in exp) {
+                    var parts = exp[k].split('|');
+                    var op = parts[0];
+
+                    var method = {
+                        '=': 'toBeCloseTo',
+                        '~=': 'toBeWithin',
+                        grew: 'toBeGreaterThan',
+                        shrunk: 'toBeLessThan',
+                        initial: 'toBeCloseTo'
+                    }[op];
+
+                    var val = initialSize[k];
+                    var msgk = msg + ' ' + k + (parts[1] ? ' |' + parts[1] : '');
+                    var args = [val];
+                    if(op === '~=') {
+                        args.push(1.1);
+                    } else if(method === 'toBeCloseTo') {
+                        args.push(3);
+                    }
+                    args.push(msgk);
+
+                    expect(actual[k])[method](args[0], args[1], args[2]);
+                }
+            }
+
+            function check(msg, relayoutObj, exp) {
+                return function() {
+                    return Plotly.relayout(gd, relayoutObj).then(function() {
+                        var gs = Lib.extendDeep({}, gd._fullLayout._size);
+                        assertSize(msg, gs, exp);
+                    });
+                };
+            }
+
+            Plotly.newPlot(gd, [{
+                x: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooongloooooongloooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ],
+                y: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ]
+            }], {
+                margin: {l: 0, r: 0, b: 0, t: 0},
+                width: 600, height: 600
+            })
+            .then(function() {
+                expect(gd._fullLayout.xaxis._tickAngles.xtick).toBeCloseTo(30, 3);
+
+                var gs = gd._fullLayout._size;
+                initialSize = Lib.extendDeep({}, gs);
+            })
+            .then(check('automargin y', {'yaxis.automargin': true, 'yaxis.tickangle': 30, 'yaxis.ticklen': 30}, {
+                t: 'grew', l: 'grew',
+                b: '=', r: '='
+            }))
+            .then(check('automargin not left', {'yaxis.automargin': 'right+height'}, {
+                t: 'grew', l: '=',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep left height', {'yaxis.automargin': 'left+height'}, {
+                t: 'grew', l: 'grew',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep bottom right', {'yaxis.automargin': 'bottom+right'}, {
+                t: '=', l: '=',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep height', {'yaxis.automargin': 'height'}, {
+                t: 'grew', l: '=',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep top', {'yaxis.automargin': 'top'}, {
+                t: 'grew', l: '=',
+                b: '=', r: '='
+            }))
+            .then(check('automargin not top', {'yaxis.automargin': 'bottom+width'}, {
+                t: '=', l: 'grew',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep left', {'yaxis.automargin': 'left'}, {
+                t: '=', l: 'grew',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep width', {'yaxis.automargin': 'width'}, {
+                t: '=', l: 'grew',
+                b: '=', r: '='
+            }))
+            .then(check('automargin x', {'xaxis.automargin': true, 'yaxis.automargin': false}, {
+                t: '=', l: '=',
+                b: 'grew', r: 'grew'
+            }))
+            .then(check('automargin not bottom', {'xaxis.automargin': 'top+width'}, {
+                t: '=', l: '=',
+                b: '=', r: 'grew'
+            }))
+            .then(check('automargin keep right', {'xaxis.automargin': 'right'}, {
+                t: '=', l: '=',
+                b: '=', r: 'grew'
+            }))
+            .then(check('automargin keep bottom', {'xaxis.automargin': 'bottom'}, {
+                t: '=', l: '=',
+                b: 'grew', r: '='
+            }))
+            .then(check('automargin keep top right', {'xaxis.automargin': 'top+right'}, {
+                t: '=', l: '=',
+                b: '=', r: 'grew'
+            }))
+            .then(check('automargin keep top left', {'xaxis.automargin': 'top+left'}, {
+                t: '=', l: '=',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep bottom left', {'xaxis.automargin': 'bottom+left'}, {
+                t: '=', l: '=',
+                b: 'grew', r: '='
+            }))
+            .then(check('turn off automargin', {'xaxis.automargin': false, 'yaxis.automargin': false}, {
+                t: '=', l: '=',
+                b: '=', r: '='
+            }))
+            .then(done, done.fail);
+        });
+
         it('should handle cases with free+mirror axes', function(done) {
             Plotly.newPlot(gd, [{
                 y: [1, 2, 1]
@@ -4247,6 +4685,31 @@ describe('Test axes', function() {
                 // N.B. no '.automargin.mirror'
                 expect(Object.keys(gd._fullLayout._pushmargin))
                     .toEqual(['x.automargin', 'y.automargin', 'base']);
+            })
+            .then(done, done.fail);
+        });
+        it('should respect axis title placement on relayout', function(done) {
+            function getPos(gd, sel) {
+                return d3Select(gd).select(sel).node().getBoundingClientRect();
+            }
+
+            // Tick position is < title position since 0 is at the top of the graph,
+            // rather than at the bottom. We're checking that the ticks and title don't overlap
+            function assertLayout() {
+                var titleTop = getPos(gd, '.xtitle').top;
+                var tickBottom = getPos(gd, '.xtick').bottom;
+                expect(tickBottom).toBeLessThan(titleTop + 2); // allow two pixels tolerance
+            }
+
+            var fig = require('../../image/mocks/automargin-zoom.json');
+            Plotly.newPlot(gd, fig)
+
+            .then(assertLayout)
+            .then(function() {
+                return Plotly.relayout(gd, {'xaxis.range': [6, 14]});
+            })
+            .then(function() {
+                assertLayout();
             })
             .then(done, done.fail);
         });
@@ -4480,13 +4943,13 @@ describe('Test axes', function() {
             function _assert(msg, exp) {
                 var tickLabels = d3SelectAll('.xtick > text');
 
-                expect(tickLabels.size()).toBe(exp.angle.length, msg + ' - # of tick labels');
+                expect(tickLabels.size()).withContext(msg + ' - # of tick labels').toBe(exp.angle.length);
 
                 tickLabels.each(function(_, i) {
                     var t = d3Select(this).attr('transform');
                     var rotate = (t.split('rotate(')[1] || '').split(')')[0];
                     var angle = rotate.split(',')[0];
-                    expect(Number(angle)).toBe(exp.angle[i], msg + ' - node ' + i);
+                    expect(Number(angle)).withContext(msg + ' - node ' + i).toBeCloseTo(exp.angle[i], 2);
                 });
             }
 
@@ -4504,7 +4967,7 @@ describe('Test axes', function() {
             })
             .then(function() {
                 _assert('base - rotated', {
-                    angle: [90, 90, 90]
+                    angle: [30, 30, 30]
                 });
 
                 return Plotly.relayout(gd, 'xaxis.range', [-0.4, 1.4]);
@@ -4518,7 +4981,7 @@ describe('Test axes', function() {
             })
             .then(function() {
                 _assert('narrow range / wide ticks - rotated', {
-                    angle: [90, 90]
+                    angle: [30, 30]
                 });
             })
             .then(done, done.fail);
@@ -5591,7 +6054,7 @@ describe('Test axes', function() {
 
             for(var i = 0; i < labels.length; i++) {
                 expect(labels[i]).withContext(msg).toBe(expLabels[i]);
-                if(labels[i] !== ' ') {
+                if(labels[i] !== '') {
                     expect(positions[i]).withContext(msg).toBe(expPositions[i]);
                 }
             }
@@ -5623,8 +6086,8 @@ describe('Test axes', function() {
                         '2025-07-02 12:00',
                         '2026-07-02 12:00'
                     ], [
-                        [' ', '2020', '2021', '2022', '2023', '2024', '2025', ' '],
-                        [' ', '20', '21', '22', '23', '24', '25', ' ']
+                        ['', '2020', '2021', '2022', '2023', '2024', '2025', ''],
+                        ['', '20', '21', '22', '23', '24', '25', '']
                     ][i]);
                 })
                 .then(done, done.fail);
@@ -5657,7 +6120,7 @@ describe('Test axes', function() {
                     '2021-08-16',
                     '2021-11-16',
                     '2022-02-16'
-                ], [' ', '2020-Q1', '2020-Q2', '2020-Q3', '2020-Q4', '2021-Q1', '2021-Q2', '2021-Q3', '2021-Q4', ' ']);
+                ], ['', '2020-Q1', '2020-Q2', '2020-Q3', '2020-Q4', '2021-Q1', '2021-Q2', '2021-Q3', '2021-Q4', '']);
             })
             .then(done, done.fail);
         });
@@ -5685,7 +6148,7 @@ describe('Test axes', function() {
                     '2021-02-15 15:45',
                     '2021-08-15 15:45',
                     '2022-02-15 15:45'
-                ], [' ', '2020-Q1', '2020-Q3', '2021-Q1', '2021-Q3', ' ']);
+                ], ['', '2020-Q1', '2020-Q3', '2021-Q1', '2021-Q3', '']);
             })
             .then(done, done.fail);
         });
@@ -5716,9 +6179,9 @@ describe('Test axes', function() {
                         '2020-06-16',
                         '2020-07-16'
                     ], [
-                        [' ', 'Q1-January', 'Q1-February', 'Q1-March', 'Q2-April', 'Q2-May', 'Q2-June', ' '],
-                        [' ', 'Q1-Jan', 'Q1-Feb', 'Q1-Mar', 'Q2-Apr', 'Q2-May', 'Q2-Jun', ' '],
-                        [' ', 'Q1-01', 'Q1-02', 'Q1-03', 'Q2-04', 'Q2-05', 'Q2-06', ' ']
+                        ['', 'Q1-January', 'Q1-February', 'Q1-March', 'Q2-April', 'Q2-May', 'Q2-June', ''],
+                        ['', 'Q1-Jan', 'Q1-Feb', 'Q1-Mar', 'Q2-Apr', 'Q2-May', 'Q2-Jun', ''],
+                        ['', 'Q1-01', 'Q1-02', 'Q1-03', 'Q2-04', 'Q2-05', 'Q2-06', '']
                     ][i]);
                 })
                 .then(done, done.fail);
@@ -5882,14 +6345,14 @@ describe('Test axes', function() {
                         '2020-01-07 12:00',
                         '2020-01-08 12:00'
                     ], [
-                        [' ', 'Jan-Wednesday', 'Jan-Thursday', 'Jan-Friday', 'Jan-Saturday', 'Jan-Sunday', 'Jan-Monday', 'Jan-Tuesday', ' '],
-                        [' ', 'Jan-Wed', 'Jan-Thu', 'Jan-Fri', 'Jan-Sat', 'Jan-Sun', 'Jan-Mon', 'Jan-Tue', ' '],
-                        [' ', 'Jan-01', 'Jan-02', 'Jan-03', 'Jan-04', 'Jan-05', 'Jan-06', 'Jan-07', ' '],
-                        [' ', 'Jan- 1', 'Jan- 2', 'Jan- 3', 'Jan- 4', 'Jan- 5', 'Jan- 6', 'Jan- 7', ' '],
-                        [' ', 'Jan-001', 'Jan-002', 'Jan-003', 'Jan-004', 'Jan-005', 'Jan-006', 'Jan-007', ' '],
-                        [' ', 'Jan-3', 'Jan-4', 'Jan-5', 'Jan-6', 'Jan-7', 'Jan-1', 'Jan-2', ' '],
-                        [' ', 'Jan-3', 'Jan-4', 'Jan-5', 'Jan-6', 'Jan-0', 'Jan-1', 'Jan-2', ' '],
-                        [' ', 'Jan-01/01/2020', 'Jan-01/02/2020', 'Jan-01/03/2020', 'Jan-01/04/2020', 'Jan-01/05/2020', 'Jan-01/06/2020', 'Jan-01/07/2020', ' ']
+                        ['', 'Jan-Wednesday', 'Jan-Thursday', 'Jan-Friday', 'Jan-Saturday', 'Jan-Sunday', 'Jan-Monday', 'Jan-Tuesday', ''],
+                        ['', 'Jan-Wed', 'Jan-Thu', 'Jan-Fri', 'Jan-Sat', 'Jan-Sun', 'Jan-Mon', 'Jan-Tue', ''],
+                        ['', 'Jan-01', 'Jan-02', 'Jan-03', 'Jan-04', 'Jan-05', 'Jan-06', 'Jan-07', ''],
+                        ['', 'Jan- 1', 'Jan- 2', 'Jan- 3', 'Jan- 4', 'Jan- 5', 'Jan- 6', 'Jan- 7', ''],
+                        ['', 'Jan-001', 'Jan-002', 'Jan-003', 'Jan-004', 'Jan-005', 'Jan-006', 'Jan-007', ''],
+                        ['', 'Jan-3', 'Jan-4', 'Jan-5', 'Jan-6', 'Jan-7', 'Jan-1', 'Jan-2', ''],
+                        ['', 'Jan-3', 'Jan-4', 'Jan-5', 'Jan-6', 'Jan-0', 'Jan-1', 'Jan-2', ''],
+                        ['', 'Jan-01/01/2020', 'Jan-01/02/2020', 'Jan-01/03/2020', 'Jan-01/04/2020', 'Jan-01/05/2020', 'Jan-01/06/2020', 'Jan-01/07/2020', '']
                     ][i]);
                 })
                 .then(done, done.fail);
@@ -5924,9 +6387,9 @@ describe('Test axes', function() {
                         '2020-01-01 21:00',
                         '2020-01-02'
                     ], [
-                        [' ', 'Wed-1577836800000', 'Wed-1577847600000', 'Wed-1577858400000', 'Wed-1577869200000', 'Wed-1577880000000', 'Wed-1577890800000', 'Wed-1577901600000', 'Wed-1577912400000', 'Thu-1577923200000'],
-                        [' ', 'Wed-1577836800', 'Wed-1577847600', 'Wed-1577858400', 'Wed-1577869200', 'Wed-1577880000', 'Wed-1577890800', 'Wed-1577901600', 'Wed-1577912400', 'Thu-1577923200'],
-                        [' ', 'Wed-00:00:00', 'Wed-03:00:00', 'Wed-06:00:00', 'Wed-09:00:00', 'Wed-12:00:00', 'Wed-15:00:00', 'Wed-18:00:00', 'Wed-21:00:00', 'Thu-00:00:00']
+                        ['', 'Wed-1577836800000', 'Wed-1577847600000', 'Wed-1577858400000', 'Wed-1577869200000', 'Wed-1577880000000', 'Wed-1577890800000', 'Wed-1577901600000', 'Wed-1577912400000', 'Thu-1577923200000'],
+                        ['', 'Wed-1577836800', 'Wed-1577847600', 'Wed-1577858400', 'Wed-1577869200', 'Wed-1577880000', 'Wed-1577890800', 'Wed-1577901600', 'Wed-1577912400', 'Thu-1577923200'],
+                        ['', 'Wed-00:00:00', 'Wed-03:00:00', 'Wed-06:00:00', 'Wed-09:00:00', 'Wed-12:00:00', 'Wed-15:00:00', 'Wed-18:00:00', 'Wed-21:00:00', 'Thu-00:00:00']
                     ][i]);
                 })
                 .then(done, done.fail);
@@ -5937,37 +6400,37 @@ describe('Test axes', function() {
             {
                 formatter: '%H',
                 positions: ['2019-12-31 21:30', '2020-01-01 00:30', '2020-01-01 03:30', '2020-01-01 06:30', '2020-01-01 09:30', '2020-01-01 12:30', '2020-01-01 15:30', '2020-01-01 18:30', '2020-01-01 21:30', '2020-01-02 00:30'],
-                labels: [' ', 'Wed-00', 'Wed-03', 'Wed-06', 'Wed-09', 'Wed-12', 'Wed-15', 'Wed-18', 'Wed-21', 'Thu-00']
+                labels: ['', 'Wed-00', 'Wed-03', 'Wed-06', 'Wed-09', 'Wed-12', 'Wed-15', 'Wed-18', 'Wed-21', 'Thu-00']
             },
             {
                 formatter: '%I',
                 positions: ['2019-12-31 21:30', '2020-01-01 00:30', '2020-01-01 03:30', '2020-01-01 06:30', '2020-01-01 09:30', '2020-01-01 12:30', '2020-01-01 15:30', '2020-01-01 18:30', '2020-01-01 21:30', '2020-01-02 00:30'],
-                labels: [' ', 'Wed-12', 'Wed-03', 'Wed-06', 'Wed-09', 'Wed-12', 'Wed-03', 'Wed-06', 'Wed-09', 'Thu-12']
+                labels: ['', 'Wed-12', 'Wed-03', 'Wed-06', 'Wed-09', 'Wed-12', 'Wed-03', 'Wed-06', 'Wed-09', 'Thu-12']
             },
             {
                 formatter: '%p',
                 positions: ['2019-12-31 18:00', '2020-01-01 06:00', '2020-01-01 18:00', '2020-01-02 06:00'],
-                labels: [' ', 'Wed-AM', 'Wed-PM', ' ']
+                labels: ['', 'Wed-AM', 'Wed-PM', '']
             },
             {
                 formatter: '%M',
                 positions: ['2019-12-31 21:00', '2020-01-01', '2020-01-01 03:00', '2020-01-01 06:00', '2020-01-01 09:00', '2020-01-01 12:00', '2020-01-01 15:00', '2020-01-01 18:00', '2020-01-01 21:00', '2020-01-02'],
-                labels: [' ', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Thu-00']
+                labels: ['', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Thu-00']
             },
             {
                 formatter: '%S',
                 positions: ['2019-12-31 21:00', '2020-01-01', '2020-01-01 03:00', '2020-01-01 06:00', '2020-01-01 09:00', '2020-01-01 12:00', '2020-01-01 15:00', '2020-01-01 18:00', '2020-01-01 21:00', '2020-01-02'],
-                labels: [' ', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Thu-00']
+                labels: ['', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Wed-00', 'Thu-00']
             },
             {
                 formatter: '%L',
                 positions: ['2019-12-31 21:00', '2020-01-01', '2020-01-01 03:00', '2020-01-01 06:00', '2020-01-01 09:00', '2020-01-01 12:00', '2020-01-01 15:00', '2020-01-01 18:00', '2020-01-01 21:00', '2020-01-02'],
-                labels: [' ', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Thu-000']
+                labels: ['', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Wed-000', 'Thu-000']
             },
             {
                 formatter: '%f',
                 positions: ['2019-12-31 21:00', '2020-01-01', '2020-01-01 03:00', '2020-01-01 06:00', '2020-01-01 09:00', '2020-01-01 12:00', '2020-01-01 15:00', '2020-01-01 18:00', '2020-01-01 21:00', '2020-01-02'],
-                labels: [' ', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Thu-0']
+                labels: ['', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Wed-0', 'Thu-0']
             }
         ].forEach(function(t) {
             it('should respect time tickformat that includes ' + t.formatter, function(done) {
@@ -5995,17 +6458,17 @@ describe('Test axes', function() {
             {
                 range: ['2019-12-10', '2020-01-10'],
                 positions: ['2019-12-16 12:00', '2020-01-10'],
-                labels: ['2019-Dec', ' ']
+                labels: ['2019-Dec', '']
             },
             {
                 range: ['2019-12-20', '2020-01-20'],
                 positions: ['2019-12-20', '2020-01-16 12:00'],
-                labels: [' ', '2020-Jan']
+                labels: ['', '2020-Jan']
             },
             {
                 range: ['2020-01-20', '2019-12-20'],
                 positions: ['2020-01-20', '2020-01-16 12:00'],
-                labels: [' ', '2020-Jan']
+                labels: ['', '2020-Jan']
             }
         ].forEach(function(t) {
             it('should position labels with monthly tickformat when auto dtick is weekly | range:' + t.range, function(done) {
@@ -6041,72 +6504,72 @@ describe('Test axes', function() {
             {
                 range: ['2020-12-15', '2084-12-15'],
                 positions: ['2020-07-01 15:00', '2030-07-02 15:00', '2040-07-01 15:00', '2050-07-02 15:00', '2060-07-01 15:00', '2070-07-02 15:00', '2080-07-01 15:00'],
-                labels: [' ', '2030', '2040', '2050', '2060', '2070', '2080']
+                labels: ['', '2030', '2040', '2050', '2060', '2070', '2080']
             },
             {
                 range: ['2020-12-15', '2052-12-15'],
                 positions: ['2020-07-01 15:00', '2025-07-02 15:00', '2030-07-02 15:00', '2035-07-02 15:00', '2040-07-01 15:00', '2045-07-02 15:00', '2050-07-02 15:00'],
-                labels: [' ', '2025', '2030', '2035', '2040', '2045', '2050']
+                labels: ['', '2025', '2030', '2035', '2040', '2045', '2050']
             },
             {
                 range: ['2020-12-15', '2036-12-15'],
                 positions: ['2020-07-01 15:00', '2022-07-02 15:00', '2024-07-01 15:00', '2026-07-02 15:00', '2028-07-01 15:00', '2030-07-02 15:00', '2032-07-01 15:00', '2034-07-02 15:00', '2036-07-01 15:00'],
-                labels: [' ', '2022', '2024', '2026', '2028', '2030', '2032', '2034', '2036']
+                labels: ['', '2022', '2024', '2026', '2028', '2030', '2032', '2034', '2036']
             },
             {
                 range: ['2020-12-15', '2028-12-15'],
                 positions: ['2020-07-02', '2021-07-02 12:00', '2022-07-02 12:00', '2023-07-02 12:00', '2024-07-02', '2025-07-02 12:00', '2026-07-02 12:00', '2027-07-02 12:00', '2028-07-01 12:00'],
-                labels: [' ', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028']
+                labels: ['', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028']
             },
             {
                 range: ['2020-12-15', '2024-12-15'],
                 positions: ['2020-07-16 05:15', '2021-01-16 05:15', '2021-07-16 05:15', '2022-01-16 05:15', '2022-07-16 05:15', '2023-01-16 05:15', '2023-07-16 05:15', '2024-01-16 05:15', '2024-07-16 05:15'],
-                labels: [' ', 'Jan 2021', 'Jul 2021', 'Jan 2022', 'Jul 2022', 'Jan 2023', 'Jul 2023', 'Jan 2024', 'Jul 2024']
+                labels: ['', 'Jan 2021', 'Jul 2021', 'Jan 2022', 'Jul 2022', 'Jan 2023', 'Jul 2023', 'Jan 2024', 'Jul 2024']
             },
             {
                 range: ['2020-12-15', '2022-12-15'],
                 positions: ['2020-10-16 05:15', '2021-01-16 05:15', '2021-04-16 05:15', '2021-07-16 05:15', '2021-10-16 05:15', '2022-01-16 05:15', '2022-04-16 05:15', '2022-07-16 05:15', '2022-10-16 05:15'],
-                labels: [' ', 'Jan 2021', 'Apr 2021', 'Jul 2021', 'Oct 2021', 'Jan 2022', 'Apr 2022', 'Jul 2022', 'Oct 2022']
+                labels: ['', 'Jan 2021', 'Apr 2021', 'Jul 2021', 'Oct 2021', 'Jan 2022', 'Apr 2022', 'Jul 2022', 'Oct 2022']
             },
             {
                 range: ['2020-12-15', '2021-12-15'],
                 positions: ['2020-11-16 05:15', '2021-01-16 05:15', '2021-03-16 05:15', '2021-05-16 05:15', '2021-07-16 05:15', '2021-09-16 05:15', '2021-11-16 05:15'],
-                labels: [' ', 'Jan 2021', 'Mar 2021', 'May 2021', 'Jul 2021', 'Sep 2021', 'Nov 2021']
+                labels: ['', 'Jan 2021', 'Mar 2021', 'May 2021', 'Jul 2021', 'Sep 2021', 'Nov 2021']
             },
             {
                 range: ['2020-12-15', '2021-06-15'],
                 positions: ['2020-12-16 12:00', '2021-01-16 12:00', '2021-02-15', '2021-03-16 12:00', '2021-04-16', '2021-05-16 12:00', '2021-06-16 12:00'],
-                labels: ['Dec 2020', 'Jan 2021', 'Feb 2021', 'Mar 2021', 'Apr 2021', 'May 2021', ' ']
+                labels: ['Dec 2020', 'Jan 2021', 'Feb 2021', 'Mar 2021', 'Apr 2021', 'May 2021', '']
             },
             {
                 range: ['2020-12-15', '2021-02-15'],
                 positions: ['2020-12-13 12:00', '2020-12-20 12:00', '2020-12-27 12:00', '2021-01-03 12:00', '2021-01-10 12:00', '2021-01-17 12:00', '2021-01-24 12:00', '2021-01-31 12:00', '2021-02-07 12:00', '2021-02-14 12:00'],
-                labels: [' ', 'Dec 20<br>2020', 'Dec 27', 'Jan 3<br>2021', 'Jan 10', 'Jan 17', 'Jan 24', 'Jan 31', 'Feb 7', 'Feb 14']
+                labels: ['', 'Dec 20<br>2020', 'Dec 27', 'Jan 3<br>2021', 'Jan 10', 'Jan 17', 'Jan 24', 'Jan 31', 'Feb 7', 'Feb 14']
             },
             {
                 range: ['2020-12-15', '2021-01-15'],
                 positions: ['2020-12-13 12:00', '2020-12-20 12:00', '2020-12-27 12:00', '2021-01-03 12:00', '2021-01-10 12:00'],
-                labels: [' ', 'Dec 20<br>2020', 'Dec 27', 'Jan 3<br>2021', 'Jan 10']
+                labels: ['', 'Dec 20<br>2020', 'Dec 27', 'Jan 3<br>2021', 'Jan 10']
             },
             {
                 range: ['2020-12-15', '2021-01-01'],
                 positions: ['2020-12-14 12:00', '2020-12-16 12:00', '2020-12-18 12:00', '2020-12-20 12:00', '2020-12-22 12:00', '2020-12-24 12:00', '2020-12-26 12:00', '2020-12-28 12:00', '2020-12-30 12:00', '2021-01-01 12:00'],
-                labels: [' ', 'Dec 16<br>2020', 'Dec 18', 'Dec 20', 'Dec 22', 'Dec 24', 'Dec 26', 'Dec 28', 'Dec 30', ' ']
+                labels: ['', 'Dec 16<br>2020', 'Dec 18', 'Dec 20', 'Dec 22', 'Dec 24', 'Dec 26', 'Dec 28', 'Dec 30', '']
             },
             {
                 range: ['2020-12-15', '2020-12-21'],
                 positions: ['2020-12-14 12:00', '2020-12-15 12:00', '2020-12-16 12:00', '2020-12-17 12:00', '2020-12-18 12:00', '2020-12-19 12:00', '2020-12-20 12:00', '2020-12-21 12:00'],
-                labels: [' ', 'Dec 15<br>2020', 'Dec 16', 'Dec 17', 'Dec 18', 'Dec 19', 'Dec 20', ' ']
+                labels: ['', 'Dec 15<br>2020', 'Dec 16', 'Dec 17', 'Dec 18', 'Dec 19', 'Dec 20', '']
             },
             {
                 range: ['2020-12-15', '2020-12-16'],
                 positions: ['2020-12-14 21:00', '2020-12-15', '2020-12-15 03:00', '2020-12-15 06:00', '2020-12-15 09:00', '2020-12-15 12:00', '2020-12-15 15:00', '2020-12-15 18:00', '2020-12-15 21:00', '2020-12-16'],
-                labels: [' ', '00:00<br>Dec 15, 2020', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '00:00<br>Dec 16, 2020']
+                labels: ['', '00:00<br>Dec 15, 2020', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '00:00<br>Dec 16, 2020']
             },
             {
                 range: ['2020-12-15', '2020-12-15 12:00'],
                 positions: ['2020-12-14 22:00', '2020-12-15', '2020-12-15 02:00', '2020-12-15 04:00', '2020-12-15 06:00', '2020-12-15 08:00', '2020-12-15 10:00', '2020-12-15 12:00'],
-                labels: [' ', '00:00<br>Dec 15, 2020', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00']
+                labels: ['', '00:00<br>Dec 15, 2020', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00']
             }
         ].forEach(function(t) {
             it('should position auto labels | range:' + t.range, function(done) {
@@ -6161,72 +6624,72 @@ describe('Test axes', function() {
             {
                 range: ['2084-12-15', '2020-12-15'],
                 positions: ['2090-07-02 15:00', '2080-07-01 15:00', '2070-07-02 15:00', '2060-07-01 15:00', '2050-07-02 15:00', '2040-07-01 15:00', '2030-07-02 15:00'],
-                labels: [' ', '2080', '2070', '2060', '2050', '2040', '2030']
+                labels: ['', '2080', '2070', '2060', '2050', '2040', '2030']
             },
             {
                 range: ['2052-12-15', '2020-12-15'],
                 positions: ['2055-07-02 15:00', '2050-07-02 15:00', '2045-07-02 15:00', '2040-07-01 15:00', '2035-07-02 15:00', '2030-07-02 15:00', '2025-07-02 15:00'],
-                labels: [' ', '2050', '2045', '2040', '2035', '2030', '2025']
+                labels: ['', '2050', '2045', '2040', '2035', '2030', '2025']
             },
             {
                 range: ['2036-12-15', '2020-12-15'],
                 positions: ['2038-07-02 15:00', '2036-07-01 15:00', '2034-07-02 15:00', '2032-07-01 15:00', '2030-07-02 15:00', '2028-07-01 15:00', '2026-07-02 15:00', '2024-07-01 15:00', '2022-07-02 15:00'],
-                labels: [' ', '2036', '2034', '2032', '2030', '2028', '2026', '2024', '2022']
+                labels: ['', '2036', '2034', '2032', '2030', '2028', '2026', '2024', '2022']
             },
             {
                 range: ['2028-12-15', '2020-12-15'],
                 positions: ['2029-07-03', '2028-07-01 12:00', '2027-07-02 12:00', '2026-07-02 12:00', '2025-07-03', '2024-07-01 12:00', '2023-07-02 12:00', '2022-07-02 12:00', '2021-07-02 12:00'],
-                labels: [' ', '2028', '2027', '2026', '2025', '2024', '2023', '2022', '2021']
+                labels: ['', '2028', '2027', '2026', '2025', '2024', '2023', '2022', '2021']
             },
             {
                 range: ['2024-12-15', '2020-12-15'],
                 positions: ['2025-01-16 05:15', '2024-07-16 05:15', '2024-01-16 05:15', '2023-07-16 05:15', '2023-01-16 05:15', '2022-07-16 05:15', '2022-01-16 05:15', '2021-07-16 05:15', '2021-01-16 05:15'],
-                labels: [' ', 'Jul 2024', 'Jan 2024', 'Jul 2023', 'Jan 2023', 'Jul 2022', 'Jan 2022', 'Jul 2021', 'Jan 2021']
+                labels: ['', 'Jul 2024', 'Jan 2024', 'Jul 2023', 'Jan 2023', 'Jul 2022', 'Jan 2022', 'Jul 2021', 'Jan 2021']
             },
             {
                 range: ['2022-12-15', '2020-12-15'],
                 positions: ['2023-01-16 05:15', '2022-10-16 05:15', '2022-07-16 05:15', '2022-04-16 05:15', '2022-01-16 05:15', '2021-10-16 05:15', '2021-07-16 05:15', '2021-04-16 05:15', '2021-01-16 05:15'],
-                labels: [' ', 'Oct 2022', 'Jul 2022', 'Apr 2022', 'Jan 2022', 'Oct 2021', 'Jul 2021', 'Apr 2021', 'Jan 2021']
+                labels: ['', 'Oct 2022', 'Jul 2022', 'Apr 2022', 'Jan 2022', 'Oct 2021', 'Jul 2021', 'Apr 2021', 'Jan 2021']
             },
             {
                 range: ['2021-12-15', '2020-12-15'],
                 positions: ['2022-01-16 05:15', '2021-11-16 05:15', '2021-09-16 05:15', '2021-07-16 05:15', '2021-05-16 05:15', '2021-03-16 05:15', '2021-01-16 05:15'],
-                labels: [' ', 'Nov 2021', 'Sep 2021', 'Jul 2021', 'May 2021', 'Mar 2021', 'Jan 2021']
+                labels: ['', 'Nov 2021', 'Sep 2021', 'Jul 2021', 'May 2021', 'Mar 2021', 'Jan 2021']
             },
             {
                 range: ['2021-06-15', '2020-12-15'],
                 positions: ['2021-07-16', '2021-06-16 12:00', '2021-05-16', '2021-04-16 12:00', '2021-03-15', '2021-02-16 12:00', '2021-01-16 12:00'],
-                labels: [' ', ' ', 'May 2021', 'Apr 2021', 'Mar 2021', 'Feb 2021', 'Jan 2021']
+                labels: ['', '', 'May 2021', 'Apr 2021', 'Mar 2021', 'Feb 2021', 'Jan 2021']
             },
             {
                 range: ['2021-02-15', '2020-12-15'],
                 positions: ['2021-02-21 12:00', '2021-02-14 12:00', '2021-02-07 12:00', '2021-01-31 12:00', '2021-01-24 12:00', '2021-01-17 12:00', '2021-01-10 12:00', '2021-01-03 12:00', '2020-12-27 12:00', '2020-12-20 12:00'],
-                labels: [' ', 'Feb 14<br>2021', 'Feb 7', 'Jan 31', 'Jan 24', 'Jan 17', 'Jan 10', 'Jan 3', 'Dec 27<br>2020', 'Dec 20']
+                labels: ['', 'Feb 14<br>2021', 'Feb 7', 'Jan 31', 'Jan 24', 'Jan 17', 'Jan 10', 'Jan 3', 'Dec 27<br>2020', 'Dec 20']
             },
             {
                 range: ['2021-01-15', '2020-12-15'],
                 positions: ['2021-01-17 12:00', '2021-01-10 12:00', '2021-01-03 12:00', '2020-12-27 12:00', '2020-12-20 12:00'],
-                labels: [' ', 'Jan 10<br>2021', 'Jan 3', 'Dec 27<br>2020', 'Dec 20']
+                labels: ['', 'Jan 10<br>2021', 'Jan 3', 'Dec 27<br>2020', 'Dec 20']
             },
             {
                 range: ['2021-01-01', '2020-12-15'],
                 positions: ['2021-01-03 12:00', '2021-01-01 12:00', '2020-12-30 12:00', '2020-12-28 12:00', '2020-12-26 12:00', '2020-12-24 12:00', '2020-12-22 12:00', '2020-12-20 12:00', '2020-12-18 12:00', '2020-12-16 12:00'],
-                labels: [' ', ' ', 'Dec 30<br>2020', 'Dec 28', 'Dec 26', 'Dec 24', 'Dec 22', 'Dec 20', 'Dec 18', 'Dec 16']
+                labels: ['', '', 'Dec 30<br>2020', 'Dec 28', 'Dec 26', 'Dec 24', 'Dec 22', 'Dec 20', 'Dec 18', 'Dec 16']
             },
             {
                 range: ['2020-12-21', '2020-12-15'],
                 positions: ['2020-12-22 12:00', '2020-12-21 12:00', '2020-12-20 12:00', '2020-12-19 12:00', '2020-12-18 12:00', '2020-12-17 12:00', '2020-12-16 12:00', '2020-12-15 12:00'],
-                labels: [' ', ' ', 'Dec 20<br>2020', 'Dec 19', 'Dec 18', 'Dec 17', 'Dec 16', 'Dec 15']
+                labels: ['', '', 'Dec 20<br>2020', 'Dec 19', 'Dec 18', 'Dec 17', 'Dec 16', 'Dec 15']
             },
             {
                 range: ['2020-12-16', '2020-12-15'],
                 positions: ['2020-12-16 03:00', '2020-12-16', '2020-12-15 21:00', '2020-12-15 18:00', '2020-12-15 15:00', '2020-12-15 12:00', '2020-12-15 09:00', '2020-12-15 06:00', '2020-12-15 03:00', '2020-12-15'],
-                labels: [' ', '00:00<br>Dec 16, 2020', '21:00<br>Dec 15, 2020', '18:00', '15:00', '12:00', '09:00', '06:00', '03:00', '00:00']
+                labels: ['', '00:00<br>Dec 16, 2020', '21:00<br>Dec 15, 2020', '18:00', '15:00', '12:00', '09:00', '06:00', '03:00', '00:00']
             },
             {
                 range: ['2020-12-15 12:00', '2020-12-15'],
                 positions: ['2020-12-15 14:00', '2020-12-15 12:00', '2020-12-15 10:00', '2020-12-15 08:00', '2020-12-15 06:00', '2020-12-15 04:00', '2020-12-15 02:00', '2020-12-15'],
-                labels: [' ', '12:00<br>Dec 15, 2020', '10:00', '08:00', '06:00', '04:00', '02:00', '00:00']
+                labels: ['', '12:00<br>Dec 15, 2020', '10:00', '08:00', '06:00', '04:00', '02:00', '00:00']
             }
         ].forEach(function(t) {
             it('should position auto labels | reversed range:' + t.range, function(done) {
@@ -6286,7 +6749,7 @@ describe('Test axes', function() {
             {
                 range: ['2020-12-14 08:00', '2021-08-14 08:00'],
                 positions: ['2021-01-16 18:00', '2021-02-15 06:00', '2021-03-16 18:00', '2021-04-16 06:00', '2021-05-16 18:00', '2021-06-16 06:00', '2021-07-16 18:00', '2021-08-16 18:00'],
-                labels: ['Jan 2021', 'Feb 2021', 'Mar 2021', 'Apr 2021', 'May 2021', 'Jun 2021', 'Jul 2021', ' ']
+                labels: ['Jan 2021', 'Feb 2021', 'Mar 2021', 'Apr 2021', 'May 2021', 'Jun 2021', 'Jul 2021', '']
             },
             {
                 range: ['2020-12-14 08:00', '2021-04-14 08:00'],
@@ -6306,12 +6769,12 @@ describe('Test axes', function() {
             {
                 range: ['2020-12-14 08:00', '2021-01-01 08:00'],
                 positions: ['2020-12-16 12:00', '2020-12-18 12:00', '2020-12-22 12:00', '2020-12-24 12:00', '2020-12-28 12:00', '2020-12-30 12:00', '2021-01-01 12:00'],
-                labels: ['Dec 16<br>2020', 'Dec 18', 'Dec 22', 'Dec 24', 'Dec 28', 'Dec 30', ' ']
+                labels: ['Dec 16<br>2020', 'Dec 18', 'Dec 22', 'Dec 24', 'Dec 28', 'Dec 30', '']
             },
             {
                 range: ['2020-12-14 08:00', '2020-12-22 08:00'],
                 positions: ['2020-12-15 12:00', '2020-12-16 12:00', '2020-12-17 12:00', '2020-12-18 12:00', '2020-12-21 12:00', '2020-12-22 12:00'],
-                labels: ['Dec 15<br>2020', 'Dec 16', 'Dec 17', 'Dec 18', 'Dec 21', ' ']
+                labels: ['Dec 15<br>2020', 'Dec 16', 'Dec 17', 'Dec 18', 'Dec 21', '']
             },
             {
                 range: ['2020-12-14 08:00', '2020-12-18 08:00'],
@@ -6414,6 +6877,728 @@ describe('Test axes', function() {
                 })
                 .then(done, done.fail);
             });
+        });
+    });
+
+    describe('minor ticks"', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function _assert(expPositions) {
+            var ax = gd._fullLayout.xaxis;
+
+            // minor positions
+            var positions =
+                ax._vals
+                    .filter(function(d) { return d.minor; })
+                    .map(function(d) { return d.x; });
+
+            expect(positions).toEqual(expPositions);
+        }
+
+        it('minor tickvals', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [10, 100]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            tickvals: [12, 34, 56, 78],
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 12, 34, 56, 78 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('linear auto', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [10, 100]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 5, 10, 15, 25, 30, 35, 45, 50, 55, 65, 70, 75, 85, 90, 95, 105 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('linear auto with defined minor nticks: 2', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [10, 100]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            nticks: 2,
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 10, 30, 50, 70, 90 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('linear auto with defined minor nticks: 7', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [10, 100]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            nticks: 7,
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 5, 10, 15, 25, 30, 35, 45, 50, 55, 65, 70, 75, 85, 90, 95, 105 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('linear auto with defined minor nticks: 10', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [10, 100]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            nticks: 10,
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 6, 8, 10, 12, 14, 16, 18, 22, 24, 26, 28, 30, 32, 34, 36, 38, 42, 44, 46, 48, 50, 52, 54, 56, 58, 62, 64, 66, 68, 70, 72, 74, 76, 78, 82, 84, 86, 88, 90, 92, 94, 96, 98, 102, 104 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('linear auto with defined minor dtick: 2.5', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [10, 100]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            dtick: 2.5,
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 5, 7.5, 10, 12.5, 15, 17.5, 22.5, 25, 27.5, 30, 32.5, 35, 37.5, 42.5, 45, 47.5, 50, 52.5, 55, 57.5, 62.5, 65, 67.5, 70, 72.5, 75, 77.5, 82.5, 85, 87.5, 90, 92.5, 95, 97.5, 102.5, 105 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('linear auto with defined major dtick: 10', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [10, 100]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        dtick: 10,
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 6, 8, 12, 14, 16, 18, 22, 24, 26, 28, 32, 34, 36, 38, 42, 44, 46, 48, 52, 54, 56, 58, 62, 64, 66, 68, 72, 74, 76, 78, 82, 84, 86, 88, 92, 94, 96, 98, 102, 104 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('linear with defined major & minor dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [10, 100]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        dtick: 10,
+                        minor: {
+                            dtick: 5,
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('log auto - case 1', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [1, 10e20]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        type: 'log',
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ -1, 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('log auto - case 2', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [1, 10e10]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        type: 'log',
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 1, 3, 5, 7, 9, 11 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('log auto - case 3', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [1, 10e3]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        type: 'log',
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ -0.22184874961635648, -0.1549019599857433, -0.09691001300805657, -0.04575749056067513, 0.4771212547196623, 0.6020599913279623, 0.7781512503836435, 0.8450980400142567, 0.9030899869919434, 0.9542425094393249, 1.4771212547196624, 1.6020599913279623, 1.7781512503836434, 1.8450980400142567, 1.9030899869919433, 1.9542425094393248, 2.477121254719662, 2.6020599913279625, 2.7781512503836434, 2.845098040014257, 2.9030899869919433, 2.9542425094393248, 3.477121254719662, 3.6020599913279625, 3.7781512503836434, 3.845098040014257, 3.9030899869919433, 3.9542425094393248 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('log auto - case 4', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [1, 10]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        type: 'log',
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('log auto - case 5', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [1, 2]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        type: 'log',
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ -0.017728766960431602, -0.00877392430750515, 0.008600171761917567, 0.017033339298780367, 0.025305865264770258, 0.03342375548694973, 0.049218022670181646, 0.056904851336472634, 0.06445798922691853, 0.07188200730612543, 0.08635983067474828, 0.09342168516223513, 0.10037054511756296, 0.10720996964786844, 0.12057393120584996, 0.1271047983648077, 0.13353890837021762, 0.13987908640123659, 0.15228834438305658, 0.15836249209524975, 0.1643528557844372, 0.17026171539495752, 0.18184358794477265, 0.18752072083646318, 0.1931245983544617, 0.1986570869544227, 0.20951501454263102, 0.21484384804769796, 0.22010808804005513, 0.22530928172586287, 0.23552844690754896, 0.24054924828259974, 0.24551266781414988, 0.250420002308894, 0.2600713879850748, 0.2648178230095364, 0.26951294421791616, 0.2741578492636797, 0.28330122870354935, 0.2878017299302258, 0.29225607135647574, 0.29666519026153076, 0.30535136944662333, 0.3096301674258983, 0.31386722036915293, 0.31806333496276107 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('log with defined minor dtick: D2', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [1, 10e6]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        type: 'log',
+                        minor: {
+                            dtick: 'D2',
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ -0.30102999566398125, 0.30102999566398114, 0.6989700043360187, 1.3010299956639813, 1.6989700043360187, 2.3010299956639813, 2.6989700043360187, 3.3010299956639813, 3.6989700043360187, 4.301029995663981, 4.698970004336019, 5.301029995663981, 5.698970004336019, 6.301029995663981, 6.698970004336019, 7.301029995663981 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('log with defined minor dtick: L0.5', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [1, 10]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        type: 'log',
+                        minor: {
+                            dtick: 'L0.5',
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 0.17609125905568124, 0.3979400086720376, 0.5440680443502756, 0.6532125137753436, 0.7403626894942437, 0.8129133566428552, 0.8750612633916998, 0.9294189257142923, 0.9777236052888472, 1.0211892990699374, 1.0413926851582243, 1.0606978403536107 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 10 years major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2050-01']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 883612800000, 1009843200000, 1072915200000, 1136073600000, 1199145600000, 1325376000000, 1388534400000, 1451606400000, 1514764800000, 1640995200000, 1704067200000, 1767225600000, 1830297600000, 1956528000000, 2019686400000, 2082758400000, 2145916800000, 2272147200000, 2335219200000, 2398377600000, 2461449600000, 2587680000000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 5 years major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2020-01']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 915148800000, 978307200000, 1009843200000, 1041379200000, 1072915200000, 1136073600000, 1167609600000, 1199145600000, 1230768000000, 1293840000000, 1325376000000, 1356998400000, 1388534400000, 1451606400000, 1483228800000, 1514764800000, 1546300800000, 1609459200000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 2 years major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2010-01']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 930787200000, 962409600000, 978307200000, 993945600000, 1025481600000, 1041379200000, 1057017600000, 1088640000000, 1104537600000, 1120176000000, 1151712000000, 1167609600000, 1183248000000, 1214870400000, 1230768000000, 1246406400000, 1277942400000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 1 year major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2005-01']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 938736000000, 954547200000, 962409600000, 970358400000, 986083200000, 993945600000, 1001894400000, 1017619200000, 1025481600000, 1033430400000, 1049155200000, 1057017600000, 1064966400000, 1080777600000, 1088640000000, 1096588800000, 1112313600000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of M6 major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2003-01']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 941414400000, 951868800000, 957139200000, 967766400000, 973036800000, 983404800000, 988675200000, 999302400000, 1004572800000, 1014940800000, 1020211200000, 1030838400000, 1036108800000, 1046476800000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of M3 major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2002-01']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 944006400000, 949363200000, 951868800000, 957139200000, 959817600000, 965088000000, 967766400000, 973036800000, 975628800000, 980985600000, 983404800000, 988675200000, 991353600000, 996624000000, 999302400000, 1004572800000, 1007164800000, 1012521600000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of M2 major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2001-01']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 949363200000, 954547200000, 959817600000, 965088000000, 970358400000, 975628800000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of M1 major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2000-06']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 2 weeks major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2000-04']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 947376000000, 948585600000, 949795200000, 951004800000, 952214400000, 953424000000, 954633600000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 1 week major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2000-02']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 946598400000, 946684800000, 946857600000, 946944000000, 947030400000, 947116800000, 947203200000, 947289600000, 947462400000, 947548800000, 947635200000, 947721600000, 947808000000, 947894400000, 948067200000, 948153600000, 948240000000, 948326400000, 948412800000, 948499200000, 948672000000, 948758400000, 948844800000, 948931200000, 949017600000, 949104000000, 949276800000, 949363200000, 949449600000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 3 days major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01-01', '2000-01-21']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 946598400000, 946684800000, 946857600000, 946944000000, 947116800000, 947203200000, 947376000000, 947462400000, 947635200000, 947721600000, 947894400000, 947980800000, 948153600000, 948240000000, 948412800000, 948499200000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 2 days major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01-01', '2000-01-11']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 946641600000, 946684800000, 946728000000, 946814400000, 946857600000, 946900800000, 946987200000, 947030400000, 947073600000, 947160000000, 947203200000, 947246400000, 947332800000, 947376000000, 947419200000, 947505600000, 947548800000, 947592000000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 1 day major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01-01', '2000-01-06']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 946663200000, 946706400000, 946728000000, 946749600000, 946792800000, 946814400000, 946836000000, 946879200000, 946900800000, 946922400000, 946965600000, 946987200000, 947008800000, 947052000000, 947073600000, 947095200000, 947138400000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 12 hours major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01-01', '2000-01-03']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 946677600000, 946692000000, 946699200000, 946713600000, 946720800000, 946735200000, 946742400000, 946756800000, 946764000000, 946778400000, 946785600000, 946800000000, 946807200000, 946821600000, 946828800000, 946843200000, 946850400000, 946864800000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 6 hours major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01-01', '2000-01-02 12:00']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 946677600000, 946692000000, 946699200000, 946713600000, 946720800000, 946735200000, 946742400000, 946756800000, 946764000000, 946778400000, 946785600000, 946800000000, 946807200000, 946821600000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 3 hours major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01-01', '2000-01-02']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 946681200000, 946688400000, 946692000000, 946699200000, 946702800000, 946710000000, 946713600000, 946720800000, 946724400000, 946731600000, 946735200000, 946742400000, 946746000000, 946753200000, 946756800000, 946764000000, 946767600000, 946774800000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of 2 hours major dtick', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01-01', '2000-01-01 10:00']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 946683000000, 946686600000, 946688400000, 946690200000, 946693800000, 946695600000, 946697400000, 946701000000, 946702800000, 946704600000, 946708200000, 946710000000, 946711800000, 946715400000, 946717200000, 946719000000, 946722600000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of M1 major dtick with weekly minor', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2000-06']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            dtick: ONEWEEK,
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 946166400000, 946771200000, 947376000000, 947980800000, 948585600000, 949190400000, 949795200000, 950400000000, 951004800000, 951609600000, 952214400000, 952819200000, 953424000000, 954028800000, 954633600000, 955238400000, 955843200000, 956448000000, 957052800000, 957657600000, 958262400000, 958867200000, 959472000000, 960076800000 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('date auto - case of M1 major dtick with weekly minor start on Sunday', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['2000-01', '2000-06']
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        minor: {
+                            tick0: '2001-01-02',
+                            dtick: ONEWEEK,
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 946339200000, 946944000000, 947548800000, 948153600000, 948758400000, 949968000000, 950572800000, 951177600000, 951782400000, 952387200000, 952992000000, 953596800000, 954201600000, 954806400000, 955411200000, 956016000000, 956620800000, 957225600000, 957830400000, 958435200000, 959040000000, 959644800000, 960249600000 ]);
+            })
+            .then(done, done.fail);
         });
     });
 });
@@ -6638,7 +7823,7 @@ describe('Test Axes.getTickformat', function() {
 describe('Test tickformatstops:', function() {
     'use strict';
 
-    var mock = require('@mocks/tickformatstops.json');
+    var mock = require('../../image/mocks/tickformatstops.json');
 
     var mockCopy, gd;
 
@@ -6927,6 +8112,40 @@ describe('more react tests', function() {
         })
         .then(done, done.fail);
     });
+
+    it('insiderange react to new data', function(done) {
+        var layout = {
+            xaxis: {
+                insiderange: [0, 2]
+            },
+            yaxis: {
+                ticklabelposition: 'inside'
+            },
+            plot_bgcolor: 'lightgray',
+            width: 600,
+            height: 600
+        };
+
+        var data1 = [{
+            y: [1, 3, 2]
+        }];
+
+        var data2 = [{
+            y: [1000, 3000, 2000]
+        }];
+
+        var fig1 = {data: data1, layout: layout};
+        var fig2 = {data: data2, layout: layout};
+
+        Plotly.newPlot(gd, fig1)
+        .then(function() {
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
+
+            return Plotly.react(gd, fig2);
+        }).then(function() {
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.164, 2]);
+        }).then(done, done.fail);
+    });
 });
 
 describe('category preservation tests on gd passed to Plotly.react()', function() {
@@ -7021,5 +8240,108 @@ describe('more matching axes tests', function() {
             }
         })
         .then(done, done.fail);
+    });
+});
+
+describe('shift tests', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    function checkLine(selector, position) {
+        var path = d3Select(gd).select(selector);
+        var pos = (path.split('d="M')[1]).split(',')[0];
+        expect(Number(pos)).toBeCloseTo(position, 2);
+    }
+
+    afterEach(destroyGraphDiv);
+
+    it('should set y-axis shifts correctly on first draw when shift=true', function() {
+        var fig = require('../../image/mocks/mult-yaxes-simple.json');
+        Plotly.newPlot(gd, fig).then(function() {
+            checkLine('path.xy3-y.crisp', 550);
+            checkLine('path.xy4-y.crisp', 691);
+            expect(gd._fullLayout.yaxis3._shift).toBeCloseTo(97, 2);
+            expect(gd._fullLayout.yaxis4._shift).toBeCloseTo(243, 2);
+        });
+    });
+
+    it('should set y-axis shifts correctly on first draw when shift=<numeric>', function() {
+        var fig = require('../../image/mocks/mult-yaxes-manual-shift.json');
+        Plotly.newPlot(gd, fig).then(function() {
+            checkLine('path.xy3-y.crisp', 97);
+            checkLine('path.xy4-y.crisp', 616);
+            expect(gd._fullLayout.yaxis3._shift).toBeCloseTo(-100, 2);
+            expect(gd._fullLayout.yaxis4._shift).toBeCloseTo(100, 2);
+        });
+    });
+});
+describe('test tickmode calculator', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function generateTickConfig() {
+        var standardConfig = {tickmode: 'array', ticks: 'inside', ticklen: 1, showticklabels: false};
+
+        // Number of ticks will be random
+        Lib.seedPseudoRandom();
+        var n = (Lib.pseudoRandom() * 99) + 1;
+        var tickVals = [];
+        for(var i = 0; i <= n; i++) {
+            tickVals.push(i);
+        }
+        standardConfig.tickvals = tickVals;
+        standardConfig.ticktext = tickVals;
+        return standardConfig;
+    }
+    var ticksOff = {tickmode: 'array', ticks: '', tickvals: [], ticktext: [], ticklen: 0, showticklabels: false};
+
+    function _assert(expLength) {
+        var ax = gd._fullLayout.xaxis;
+
+        // all positions
+        var positions =
+            ax._vals
+                .filter(function(d) { return d; })
+                .map(function(d) { return d.x; });
+
+        expect(positions.length).toEqual(expLength);
+    }
+
+    describe('arrayTicks', function() {
+        it('should return the specified correct number of major ticks and minor ticks', function(done) {
+            var xMajorConfig = ticksOff;
+            var xMinorConfig = ticksOff;
+            xMajorConfig = generateTickConfig();
+            xMinorConfig = generateTickConfig();
+            xMajorConfig.range = [0, 1000];
+            xMajorConfig.minor = xMinorConfig;
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [0, 1],
+                    y: [0, 1]
+                }],
+                layout: {
+                    width: 400,
+                    height: 400,
+                    margin: {
+                        t: 40,
+                        b: 40,
+                        l: 40,
+                        r: 40
+                    },
+                    xaxis: xMajorConfig,
+                }
+            }).then(function() {
+                _assert(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
+            }).then(done, done.fail);
+        });
     });
 });

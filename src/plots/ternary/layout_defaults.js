@@ -81,28 +81,29 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     var title = coerce('title.text', dfltTitle);
     containerOut._hovertitle = title === dfltTitle ? title : letterUpper;
 
-    Lib.coerceFont(coerce, 'title.font', {
-        family: options.font.family,
+    Lib.coerceFont(coerce, 'title.font', options.font, { overrideDflt: {
         size: Lib.bigFont(options.font.size),
         color: dfltFontColor
-    });
+    }});
 
     // range is just set by 'min' - max is determined by the other axes mins
     coerce('min');
 
     handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
     handlePrefixSuffixDefaults(containerIn, containerOut, coerce, 'linear');
-    handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear');
+    handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear', {
+        noAutotickangles: true,
+        noTicklabelshift: true,
+        noTicklabelstandoff: true
+    });
     handleTickMarkDefaults(containerIn, containerOut, coerce,
         { outerTicks: true });
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
-        Lib.coerceFont(coerce, 'tickfont', {
-            family: options.font.family,
-            size: options.font.size,
+        Lib.coerceFont(coerce, 'tickfont', options.font, { overrideDflt: {
             color: dfltFontColor
-        });
+        }});
         coerce('tickangle');
         coerce('tickformat');
     }

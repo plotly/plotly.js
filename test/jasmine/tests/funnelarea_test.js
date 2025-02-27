@@ -1,5 +1,5 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -10,7 +10,7 @@ var click = require('../assets/click');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
-var rgb = require('@src/components/color').rgb;
+var rgb = require('../../../src/components/color').rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -298,13 +298,10 @@ describe('Funnelarea traces', function() {
         };
     }
 
-    it('shows title top center if titleposition is undefined', function(done) {
+    it('shows title top center if title.position is undefined', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<BR>Title',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', font: { size: 12 } },
             type: 'funnelarea',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -315,11 +312,7 @@ describe('Funnelarea traces', function() {
     it('shows title top center', function(done) {
         Plotly.newPlot(gd, [{
             values: [1, 1, 1, 1, 2],
-            title: 'Test<BR>Title',
-            titleposition: 'top center',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', position: 'top center', font: { size: 12 } },
             type: 'funnelarea',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -330,11 +323,7 @@ describe('Funnelarea traces', function() {
     it('shows title top left', function(done) {
         Plotly.newPlot(gd, [{
             values: [3, 2, 1],
-            title: 'Test<BR>Title',
-            titleposition: 'top left',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', position: 'top left', font: { size: 12 } },
             type: 'funnelarea',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -345,11 +334,7 @@ describe('Funnelarea traces', function() {
     it('shows title top right', function(done) {
         Plotly.newPlot(gd, [{
             values: [4, 5, 6, 5],
-            title: 'Test<BR>Title',
-            titleposition: 'top right',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', position: 'top right', font: { size: 12 } },
             type: 'funnelarea',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -360,11 +345,7 @@ describe('Funnelarea traces', function() {
     it('correctly positions large title', function(done) {
         Plotly.newPlot(gd, [{
             values: [1, 3, 4, 1, 2],
-            title: 'Test<BR>Title',
-            titleposition: 'top center',
-            titlefont: {
-                size: 60
-            },
+            title: { text: 'Test<BR>Title', position: 'top center', font: { size: 60 } },
             type: 'funnelarea',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -587,31 +568,6 @@ describe('Funnelarea traces', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to restyle title despite using the deprecated attributes', function(done) {
-        Plotly.newPlot(gd, [{
-            type: 'funnelarea',
-            values: [1, 2, 3],
-            title: 'yo',
-            titlefont: {color: 'blue'},
-            titleposition: 'top left'
-        }])
-          .then(function() {
-              _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
-              _verifyTitle(true, false, true, false, false);
-
-              return Plotly.restyle(gd, {
-                  'title': 'oy',
-                  'titlefont.color': 'red',
-                  'titleposition': 'top right'
-              });
-          })
-          .then(function() {
-              _assertTitle('base', 'oy', 'rgb(255, 0, 0)');
-              _verifyTitle(false, true, true, false, false);
-          })
-          .then(done, done.fail);
-    });
-
     it('should be able to react with new text colors', function(done) {
         Plotly.newPlot(gd, [{
             type: 'funnelarea',
@@ -640,7 +596,7 @@ describe('Funnelarea traces', function() {
     });
 
     it('should be able to toggle visibility', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/funnelarea_title_multiple.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/funnelarea_title_multiple.json'));
 
         function _assert(msg, exp) {
             return function() {
@@ -672,7 +628,7 @@ describe('Funnelarea traces', function() {
 });
 
 describe('funnelarea hovering', function() {
-    var mock = require('@mocks/funnelarea_simple.json');
+    var mock = require('../../image/mocks/funnelarea_simple.json');
 
     describe('with hoverinfo set to none', function() {
         var mockCopy = Lib.extendDeep({}, mock);
@@ -988,8 +944,8 @@ describe('funnelarea hovering', function() {
                 );
 
                 return Plotly.restyle(gd, {
-                    'text': [['E', 'D', 'C', 'B', 'A']],
-                    'hovertemplate': '%{text}<extra></extra>'
+                    text: [['E', 'D', 'C', 'B', 'A']],
+                    hovertemplate: '%{text}<extra></extra>'
                 });
             })
             .then(_hover)
@@ -1053,7 +1009,7 @@ describe('funnelarea hovering', function() {
 
 
 describe('Test event data of interactions on a funnelarea plot:', function() {
-    var mock = require('@mocks/funnelarea_simple.json');
+    var mock = require('../../image/mocks/funnelarea_simple.json');
 
     var mockCopy, gd;
 
@@ -1326,7 +1282,7 @@ describe('Test funnelarea interactions edge cases:', function() {
     }
 
     it('should keep tracking hover labels and hover events after *calc* edits', function(done) {
-        var mock = Lib.extendFlat({}, require('@mocks/funnelarea_simple.json'));
+        var mock = Lib.extendFlat({}, require('../../image/mocks/funnelarea_simple.json'));
         var hoverCnt = 0;
         var unhoverCnt = 0;
 

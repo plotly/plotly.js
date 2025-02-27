@@ -2,7 +2,7 @@
 
 var Lib = require('../../lib');
 
-var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
+var handleGroupingDefaults = require('../scatter/grouping_defaults');
 var handleText = require('../bar/defaults').handleText;
 var handleXYDefaults = require('../scatter/xy_defaults');
 var handlePeriodDefaults = require('../scatter/period_defaults');
@@ -44,7 +44,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     });
 
     if(traceOut.textposition !== 'none' && !traceOut.texttemplate) {
-        coerce('textinfo', Array.isArray(text) ? 'text+value' : 'value');
+        coerce('textinfo', Lib.isArrayOrTypedArray(text) ? 'text+value' : 'value');
     }
 
     var markerColor = coerce('marker.color', defaultColor);
@@ -61,6 +61,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
             coerce('connector.line.dash');
         }
     }
+    coerce('zorder');
 }
 
 function defaultFillColor(markerColor) {
@@ -76,12 +77,11 @@ function crossTraceDefaults(fullData, fullLayout) {
         return Lib.coerce(traceOut._input, traceOut, attributes, attr);
     }
 
-    if(fullLayout.funnelmode === 'group') {
-        for(var i = 0; i < fullData.length; i++) {
-            traceOut = fullData[i];
+    for(var i = 0; i < fullData.length; i++) {
+        traceOut = fullData[i];
+        if(traceOut.type === 'funnel') {
             traceIn = traceOut._input;
-
-            handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce);
+            handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce, fullLayout.funnelmode);
         }
     }
 }

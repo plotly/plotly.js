@@ -12,33 +12,25 @@ var i270 = constants.i270;
 var cos45 = constants.cos45;
 var sin45 = constants.sin45;
 
-var cartesianHelpers = require('../../../plots/cartesian/helpers');
+var cartesianHelpers = require('../../selections/helpers');
 var p2r = cartesianHelpers.p2r;
 var r2p = cartesianHelpers.r2p;
 
-var handleOutline = require('../../../plots/cartesian/handle_outline');
-var clearSelect = handleOutline.clearSelect;
+var handleOutline = require('.././handle_outline');
+var clearOutline = handleOutline.clearOutline;
 
 var helpers = require('./helpers');
 var readPaths = helpers.readPaths;
 var writePaths = helpers.writePaths;
 var ellipseOver = helpers.ellipseOver;
+var fixDatesForPaths = helpers.fixDatesForPaths;
 
-
-module.exports = function newShapes(outlines, dragOptions) {
+function newShapes(outlines, dragOptions) {
     if(!outlines.length) return;
     var e = outlines[0][0]; // pick first
     if(!e) return;
-    var d = e.getAttribute('d');
 
     var gd = dragOptions.gd;
-    var drwStyle = gd._fullLayout.newshape;
-
-    var plotinfo = dragOptions.plotinfo;
-    var xaxis = plotinfo.xaxis;
-    var yaxis = plotinfo.yaxis;
-    var xPaper = !!plotinfo.domain || !plotinfo.xaxis;
-    var yPaper = !!plotinfo.domain || !plotinfo.yaxis;
 
     var isActiveShape = dragOptions.isActiveShape;
     var dragmode = dragOptions.dragmode;
@@ -70,28 +62,98 @@ module.exports = function newShapes(outlines, dragOptions) {
         }
     }
 
-    var isOpenMode = openMode(dragmode);
+    var newShape = createShapeObj(outlines, dragOptions, dragmode);
 
+    clearOutline(gd);
+
+    var editHelpers = dragOptions.editHelpers;
+    var modifyItem = (editHelpers || {}).modifyItem;
+
+    var allShapes = [];
+    for(var q = 0; q < shapes.length; q++) {
+        var beforeEdit = gd._fullLayout.shapes[q];
+        allShapes[q] = beforeEdit._input;
+
+        if(
+            isActiveShape !== undefined &&
+            q === gd._fullLayout._activeShapeIndex
+        ) {
+            var afterEdit = newShape;
+
+            switch(beforeEdit.type) {
+                case 'line':
+                case 'rect':
+                case 'circle':
+                    modifyItem('x0', afterEdit.x0 - (beforeEdit.x0shift || 0));
+                    modifyItem('x1', afterEdit.x1 - (beforeEdit.x1shift || 0));
+                    modifyItem('y0', afterEdit.y0 - (beforeEdit.y0shift || 0));
+                    modifyItem('y1', afterEdit.y1 - (beforeEdit.y1shift || 0));
+                    break;
+
+                case 'path':
+                    modifyItem('path', afterEdit.path);
+                    break;
+            }
+        }
+    }
+
+    if(isActiveShape === undefined) {
+        allShapes.push(newShape); // add new shape
+        return allShapes;
+    }
+
+    return editHelpers ? editHelpers.getUpdateObj() : {};
+}
+
+function createShapeObj(outlines, dragOptions, dragmode) {
+    var e = outlines[0][0]; // pick first outline
+    var gd = dragOptions.gd;
+
+    var d = e.getAttribute('d');
+    var newStyle = gd._fullLayout.newshape;
+    var plotinfo = dragOptions.plotinfo;
+    var isActiveShape = dragOptions.isActiveShape;
+
+    var xaxis = plotinfo.xaxis;
+    var yaxis = plotinfo.yaxis;
+    var xPaper = !!plotinfo.domain || !plotinfo.xaxis;
+    var yPaper = !!plotinfo.domain || !plotinfo.yaxis;
+
+    var isOpenMode = openMode(dragmode);
     var polygons = readPaths(d, gd, plotinfo, isActiveShape);
 
     var newShape = {
         editable: true,
 
+        visible: newStyle.visible,
+        name: newStyle.name,
+        showlegend: newStyle.showlegend,
+        legend: newStyle.legend,
+        legendwidth: newStyle.legendwidth,
+        legendgroup: newStyle.legendgroup,
+        legendgrouptitle: {
+            text: newStyle.legendgrouptitle.text,
+            font: newStyle.legendgrouptitle.font
+        },
+        legendrank: newStyle.legendrank,
+
+        label: newStyle.label,
+
         xref: xPaper ? 'paper' : xaxis._id,
         yref: yPaper ? 'paper' : yaxis._id,
 
-        layer: drwStyle.layer,
-        opacity: drwStyle.opacity,
+        layer: newStyle.layer,
+        opacity: newStyle.opacity,
         line: {
-            color: drwStyle.line.color,
-            width: drwStyle.line.width,
-            dash: drwStyle.line.dash
+            color: newStyle.line.color,
+            width: newStyle.line.width,
+            dash: newStyle.line.dash
         }
     };
 
     if(!isOpenMode) {
-        newShape.fillcolor = drwStyle.fillcolor;
-        newShape.fillrule = drwStyle.fillrule;
+        newShape.fillcolor = newStyle.fillcolor;
+        newShape.fillrule = newStyle.fillrule;
     }
 
     var cell;
@@ -101,6 +163,7 @@ module.exports = function newShapes(outlines, dragOptions) {
 
     if(
         cell &&
+        cell.length === 5 && // ensure we only have 4 corners for a rect
         dragmode === 'drawrect'
     ) {
         newShape.type = 'rect';
@@ -188,61 +251,10 @@ module.exports = function newShapes(outlines, dragOptions) {
         newShape.path = writePaths(polygons);
         cell = null;
     }
-
-    clearSelect(gd);
-
-    var editHelpers = dragOptions.editHelpers;
-    var modifyItem = (editHelpers || {}).modifyItem;
-
-    var allShapes = [];
-    for(var q = 0; q < shapes.length; q++) {
-        var beforeEdit = gd._fullLayout.shapes[q];
-        allShapes[q] = beforeEdit._input;
-
-        if(
-            isActiveShape !== undefined &&
-            q === gd._fullLayout._activeShapeIndex
-        ) {
-            var afterEdit = newShape;
-
-            switch(beforeEdit.type) {
-                case 'line':
-                case 'rect':
-                case 'circle':
-                    modifyItem('x0', afterEdit.x0);
-                    modifyItem('x1', afterEdit.x1);
-                    modifyItem('y0', afterEdit.y0);
-                    modifyItem('y1', afterEdit.y1);
-                    break;
-
-                case 'path':
-                    modifyItem('path', afterEdit.path);
-                    break;
-            }
-        }
-    }
-
-    if(isActiveShape === undefined) {
-        allShapes.push(newShape); // add new shape
-        return allShapes;
-    }
-
-    return editHelpers ? editHelpers.getUpdateObj() : {};
-};
-
-function fixDatesForPaths(polygons, xaxis, yaxis) {
-    var xIsDate = xaxis.type === 'date';
-    var yIsDate = yaxis.type === 'date';
-    if(!xIsDate && !yIsDate) return polygons;
-
-    for(var i = 0; i < polygons.length; i++) {
-        for(var j = 0; j < polygons[i].length; j++) {
-            for(var k = 0; k + 2 < polygons[i][j].length; k += 2) {
-                if(xIsDate) polygons[i][j][k + 1] = polygons[i][j][k + 1].replace(' ', '_');
-                if(yIsDate) polygons[i][j][k + 2] = polygons[i][j][k + 2].replace(' ', '_');
-            }
-        }
-    }
-
-    return polygons;
+    return newShape;
 }
+
+module.exports = {
+    newShapes: newShapes,
+    createShapeObj: createShapeObj,
+};

@@ -13,7 +13,9 @@ function hasColorscale(trace, containerStr, colorKey) {
     var container = containerStr ?
         Lib.nestedProperty(trace, containerStr).get() || {} :
         trace;
+
     var color = container[colorKey || 'color'];
+    if(color && color._inputArray) color = color._inputArray;
 
     var isArrayWithOneNumber = false;
     if(Lib.isArrayOrTypedArray(color)) {
