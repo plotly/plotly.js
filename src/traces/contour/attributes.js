@@ -161,7 +161,9 @@ module.exports = extendFlat({
                 'If *heatmap*, a heatmap gradient coloring is applied',
                 'between each contour level.',
                 'If *lines*, coloring is done on the contour lines.',
-                'If *none*, no coloring is applied on this trace.'
+                'If *none*, no coloring is applied on this trace.',
+                'When coloring is set to *none*, use `line.color` to set a single color for all contour lines,',
+                'or provide an array to `line.color` to assign colors to each contour level.'
             ].join(' ')
         },
         showlines: {
@@ -244,7 +246,8 @@ module.exports = extendFlat({
             editType: 'style+colorbars',
             description: [
                 'Sets the color of the contour level.',
-                'Has no effect if `contours.coloring` is set to *lines*.'
+                'Has no effect if `contours.coloring` is set to *lines*.',
+                'If an array is provided, the colors are mapped to the contour levels in increasing order.'
             ].join(' ')
         }),
         width: {

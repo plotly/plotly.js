@@ -30,16 +30,57 @@ module.exports = function style(gd) {
 
         var colorMap = (colorLines || colorFills) ? makeColorMap(trace) : null;
 
+        // Create a function to map contour levels to colors if line.color is an array
+        var lineColorFunc = null;
+        if(Array.isArray(line.color)) {
+            var levels = [];
+            c.selectAll('g.contourlevel').each(function(d) {
+                levels.push(d.level);
+            });
+            
+            // Sort levels to ensure consistent color mapping
+            levels.sort(function(a, b) { return a - b; });
+            
+            // Create mapping function from level to color
+            lineColorFunc = function(level) {
+                var index = levels.indexOf(level);
+                // If level not found or line.color is empty, return default color
+                if(index === -1 || !line.color.length) return line.color[0] || '#444';
+                // Map level index to color array, handling wrapping for more levels than colors
+                return line.color[index % line.color.length];
+            };
+        }
+        
         c.selectAll('g.contourlevel').each(function(d) {
+            var lineColor;
+            if(colorLines) {
+                lineColor = colorMap(d.level);
+            } else if(lineColorFunc) {
+                lineColor = lineColorFunc(d.level);
+            } else {
+                lineColor = line.color;
+            }
+            
             d3.select(this).selectAll('path')
                 .call(Drawing.lineGroupStyle,
                     line.width,
-                    colorLines ? colorMap(d.level) : line.color,
+                    lineColor,
                     line.dash);
         });
 
         var labelFont = contours.labelfont;
         c.selectAll('g.contourlabels text').each(function(d) {
+            var labelColor;
+            if(labelFont.color) {
+                labelColor = labelFont.color;
+            } else if(colorLines) {
+                labelColor = colorMap(d.level);
+            } else if(lineColorFunc) {
+                labelColor = lineColorFunc(d.level);
+            } else {
+                labelColor = line.color;
+            }
+            
             Drawing.font(d3.select(this), {
                 weight: labelFont.weight,
                 style: labelFont.style,
@@ -49,7 +90,7 @@ module.exports = function style(gd) {
                 shadow: labelFont.shadow,
                 family: labelFont.family,
                 size: labelFont.size,
-                color: labelFont.color || (colorLines ? colorMap(d.level) : line.color)
+                color: labelColor
             });
         });
 
