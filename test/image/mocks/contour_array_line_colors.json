@@ -1,0 +1,31 @@
+{
+  "data": [
+    {
+      "type": "contour",
+      "z": [
+        [1, 2, 3, 4], 
+        [5, 6, 7, 8], 
+        [9, 10, 11, 12], 
+        [13, 14, 15, 16]
+      ],
+      "line": {
+        "color": ["red", "green", "blue", "yellow", "orange"]
+      },
+      "contours": {
+        "coloring": "none",
+        "start": 3,
+        "end": 15,
+        "size": 3,
+        "showlabels": true
+      }
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "Contour with Array-based Line Colors"
+    },
+    "autosize": false,
+    "height": 450,
+    "width": 500
+  }
+}
