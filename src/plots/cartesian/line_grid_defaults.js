@@ -67,11 +67,13 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
     }
 
     if(!opts.noZeroLine) {
+        var zeroLineLayer = coerce2('zerolinelayer');
         var zeroLineColor = coerce2('zerolinecolor', dfltColor);
         var zeroLineWidth = coerce2('zerolinewidth');
         var showZeroLine = coerce('zeroline', opts.showGrid || !!zeroLineColor || !!zeroLineWidth);
 
         if(!showZeroLine) {
+            delete containerOut.zerolinelayer;
             delete containerOut.zerolinecolor;
             delete containerOut.zerolinewidth;
         }
