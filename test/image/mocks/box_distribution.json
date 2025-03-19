@@ -1,0 +1,39 @@
+{
+  "data": [
+    {
+      "type": "box",
+      "name": "Normal Dist (Linear)",
+      "x": [1],
+      "y": [1, 2, 3, 4, 5, 10, 20, 100],
+      "distribution": "normal",
+      "boxmean": true
+    },
+    {
+      "type": "box",
+      "name": "Log-Normal Dist (Linear)",
+      "x": [2],
+      "y": [1, 2, 3, 4, 5, 10, 20, 100],
+      "distribution": "log-normal",
+      "boxmean": true
+    },
+    {
+      "type": "box",
+      "name": "Auto Dist (Linear)",
+      "x": [3],
+      "y": [1, 2, 3, 4, 5, 10, 20, 100],
+      "distribution": "auto",
+      "boxmean": true
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "Box Plot with Different Distribution Types (Linear Scale)"
+    },
+    "xaxis": {
+      "title": "Distribution Type"
+    },
+    "yaxis": {
+      "title": "Values"
+    }
+  }
+}

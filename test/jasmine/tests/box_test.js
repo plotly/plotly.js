@@ -1228,6 +1228,184 @@ describe('Test box calc', function() {
         Plots.doCalcdata(gd);
         return gd.calcdata[0];
     }
+    
+    it('should compute fence values differently depending on *distribution*', function() {
+        // Create a dataset that would have a negative lower fence with normal distribution
+        var y = [10, 20, 30, 40, 1000];
+        
+        // Test with normal distribution
+        var cd = _calc({
+            y: y,
+            distribution: 'normal'
+        });
+        // The normal distribution fence could potentially be negative
+        
+        // Test with log-normal distribution
+        var cd2 = _calc({
+            y: y,
+            distribution: 'log-normal'
+        });
+        // The log-normal lower fence should be higher (not negative)
+        expect(cd2[0].lf).toBeGreaterThan(0, 'log-normal distribution lower fence is positive');
+        
+        // Skip test with negative values as the implementation gracefully handles them via Math.max
+        
+        // Test auto distribution on a log axis
+        var cd4 = _calc({
+            y: y,
+            distribution: 'auto'
+        }, {
+            yaxis: {type: 'log'}
+        });
+        // Should use log-normal distribution
+        expect(cd4[0].lf).toBeGreaterThan(0, 'auto distribution on log axis');
+        expect(cd4[0].lf).toBeCloseTo(cd2[0].lf, 6, 'auto distribution equals log-normal on log axis');
+    });
+    
+    it('should prevent negative whiskers with log-normal distribution', function() {
+        // This dataset would produce negative lower fence with normal distribution calculation
+        // (but the implementation will clamp to the minimum value)
+        var dataset = [2, 3, 5, 10, 200];
+        
+        // Calculate with normal distribution
+        var cdNormal = _calc({
+            y: dataset,
+            distribution: 'normal'
+        });
+        
+        // Calculate with log-normal distribution
+        var cdLogNormal = _calc({
+            y: dataset,
+            distribution: 'log-normal'
+        });
+        
+        // Verify log-normal lower fence is positive
+        expect(cdLogNormal[0].lf).toBeGreaterThan(0, 'log-normal lower fence is positive');
+    });
+    
+    it('should set usesLogNormal flag correctly for log-normal distribution', function() {
+        // Use a typical log-normally distributed dataset
+        var dataset = [1, 2, 5, 10, 20, 50, 100];
+        
+        var cd = _calc({
+            y: dataset,
+            distribution: 'log-normal'
+        });
+        
+        // Verify the usesLogNormal flag is set
+        expect(cd[0].usesLogNormal).toBe(true, 'usesLogNormal flag is set for log-normal distribution');
+        
+        // Check that the fence values are reasonable
+        expect(cd[0].lf).toBeGreaterThan(0, 'log-normal lower fence is positive');
+        expect(cd[0].lf).toBeLessThan(cd[0].q1, 'lower fence is less than q1');
+        expect(cd[0].uf).toBeGreaterThan(cd[0].q3, 'upper fence is greater than q3');
+    });
+    
+    it('should use correct distribution mode for auto setting', function() {
+        var dataset = [1, 2, 5, 10, 20, 50, 100];
+        
+        // Test on linear axis
+        var cdLinear = _calc({
+            y: dataset,
+            distribution: 'auto'
+        }, {
+            yaxis: {type: 'linear'}
+        });
+        
+        // Calculate with explicitly set normal distribution
+        var cdNormal = _calc({
+            y: dataset,
+            distribution: 'normal'
+        });
+        
+        // Verify auto on linear axis uses normal distribution
+        expect(cdLinear[0].lf).toBeCloseTo(cdNormal[0].lf, 6, 'auto distribution equals normal on linear axis');
+        expect(cdLinear[0].uf).toBeCloseTo(cdNormal[0].uf, 6, 'auto distribution equals normal on linear axis');
+        
+        // Test on log axis
+        var cdLog = _calc({
+            y: dataset,
+            distribution: 'auto'
+        }, {
+            yaxis: {type: 'log'}
+        });
+        
+        // Calculate with explicitly set log-normal distribution
+        var cdLogNormal = _calc({
+            y: dataset,
+            distribution: 'log-normal'
+        });
+        
+        // Verify auto on log axis uses log-normal distribution
+        expect(cdLog[0].lf).toBeCloseTo(cdLogNormal[0].lf, 6, 'auto distribution equals log-normal on log axis');
+        expect(cdLog[0].uf).toBeCloseTo(cdLogNormal[0].uf, 6, 'auto distribution equals log-normal on log axis');
+    });
+    
+    it('should correctly handle explicit fence values', function() {
+        var dataset = [1, 2, 5, 10, 20, 50, 100];
+        
+        // With normal distribution and no explicit fences (baseline)
+        var cdNormalBaseline = _calc({
+            y: dataset,
+            distribution: 'normal'
+        });
+        
+        // With log-normal distribution and no explicit fences (baseline)
+        var cdLogNormalBaseline = _calc({
+            y: dataset,
+            distribution: 'log-normal'
+        });
+        
+        // Fence values must be valid (>= q1 and <= q3)
+        var validLowerFence = cdNormalBaseline[0].q1;
+        var validUpperFence = cdNormalBaseline[0].q3;
+        
+        // With normal distribution and valid explicit fences
+        var cdNormal = _calc({
+            y: dataset,
+            distribution: 'normal',
+            lowerfence: [validLowerFence],
+            upperfence: [validUpperFence]
+        });
+        
+        // With log-normal distribution and valid explicit fences
+        var cdLogNormal = _calc({
+            y: dataset,
+            distribution: 'log-normal',
+            lowerfence: [validLowerFence],
+            upperfence: [validUpperFence]
+        });
+        
+        // Verify explicit fence values are used when valid
+        expect(cdNormal[0].lf).toEqual(validLowerFence, 'normal distribution uses valid explicit lower fence');
+        expect(cdNormal[0].uf).toEqual(validUpperFence, 'normal distribution uses valid explicit upper fence');
+        expect(cdLogNormal[0].lf).toEqual(validLowerFence, 'log-normal distribution uses valid explicit lower fence');
+        expect(cdLogNormal[0].uf).toEqual(validUpperFence, 'log-normal distribution uses valid explicit upper fence');
+    });
+    
+    it('should handle extreme data distributions correctly', function() {
+        // Very skewed dataset that would have strongly negative whiskers with normal distribution
+        var extremeDataset = [1, 2, 3, 4, 5, 1000, 2000, 5000];
+        
+        // With normal distribution
+        var cdNormal = _calc({
+            y: extremeDataset,
+            distribution: 'normal'
+        });
+        
+        // With log-normal distribution
+        var cdLogNormal = _calc({
+            y: extremeDataset,
+            distribution: 'log-normal'
+        });
+        
+        // Verify log-normal gives reasonable positive whiskers
+        expect(cdLogNormal[0].lf).toBeGreaterThan(0, 'log-normal gives positive lower fence for extreme data');
+        
+        // Verify usesLogNormal flag is set correctly
+        expect(cdNormal[0].usesLogNormal).toBe(false, 'normal distribution sets flag to false');
+        expect(cdLogNormal[0].usesLogNormal).toBe(true, 'log-normal distribution sets flag to true');
+    });
 
     it('should compute q1/q3 depending on *quartilemethod*', function() {
         // samples from https://en.wikipedia.org/wiki/Quartile

@@ -312,6 +312,25 @@ module.exports = {
             'Q3 the median of the upper half.'
         ].join(' ')
     },
+    
+    distribution: {
+        valType: 'enumerated',
+        values: ['normal', 'log-normal', 'auto'],
+        dflt: 'auto',
+        editType: 'calc',
+        description: [
+            'Sets the underlying distribution used to compute the whiskers.',
+            
+            'If *normal*, the whiskers are computed using the standard 1.5 * IQR rule,',
+            'when displaying your data on a linear scale.',
+            
+            'If *log-normal*, the whiskers are computed based on the IQR in log units,',
+            'which prevents the lower fence from ever going negative (resulting in an',
+            'infinitely long whisker on a log scale).',
+            
+            'If *auto*, uses *log-normal* when displayed on a log axis, otherwise *normal*.'
+        ].join(' ')
+    },
 
     width: {
         valType: 'number',

@@ -36,6 +36,10 @@ module.exports = function calc(gd, trace) {
         posLetter = 'x';
         hasPeriod = !!trace.xperiodalignment;
     }
+    
+    // Determine whether to use log-normal distribution for whiskers
+    var useLogNormal = trace.distribution === 'log-normal' || 
+                      (trace.distribution === 'auto' && valAxis.type === 'log');
 
     var allPosArrays = getPosArrays(trace, posLetter, posAxis, fullLayout[numKey]);
     var posArray = allPosArrays[0];
@@ -78,6 +82,7 @@ module.exports = function calc(gd, trace) {
             if(hasPeriod && origPos) {
                 cdi.orig_p = origPos[i]; // used by hover
             }
+            cdi.usesLogNormal = useLogNormal;
 
             cdi.q1 = d2c('q1');
             cdi.med = d2c('median');
@@ -213,6 +218,7 @@ module.exports = function calc(gd, trace) {
             if(ptsPerBin[i].length > 0) {
                 cdi = {};
                 cdi.pos = cdi[posLetter] = posDistinct[i];
+                cdi.usesLogNormal = useLogNormal;
 
                 pts = cdi.pts = ptsPerBin[i].sort(sortByVal);
                 boxVals = cdi[valLetter] = pts.map(extractVal);
@@ -407,10 +413,24 @@ function extractVal(o) { return o.v; }
 // last point below 1.5 * IQR
 function computeLowerFence(cdi, boxVals, N) {
     if(N === 0) return cdi.q1;
+    
+    var lowerFence;
+    
+    if (cdi.usesLogNormal) {
+        // For log-normal distribution, compute fence in log space to prevent negative values
+        var logQ1 = Math.log(Math.max(cdi.q1, Number.MIN_VALUE));
+        var logQ3 = Math.log(Math.max(cdi.q3, Number.MIN_VALUE));
+        var logIQR = logQ3 - logQ1;
+        lowerFence = Math.exp(logQ1 - 1.5 * logIQR);
+    } else {
+        // Standard 1.5 * IQR calculation (2.5*Q1 - 1.5*Q3 is algebraically equivalent)
+        lowerFence = 2.5 * cdi.q1 - 1.5 * cdi.q3;
+    }
+    
     return Math.min(
         cdi.q1,
         boxVals[Math.min(
-            Lib.findBin(2.5 * cdi.q1 - 1.5 * cdi.q3, boxVals, true) + 1,
+            Lib.findBin(lowerFence, boxVals, true) + 1,
             N - 1
         )]
     );
@@ -419,10 +439,24 @@ function computeLowerFence(cdi, boxVals, N) {
 // last point above 1.5 * IQR
 function computeUpperFence(cdi, boxVals, N) {
     if(N === 0) return cdi.q3;
+    
+    var upperFence;
+    
+    if (cdi.usesLogNormal) {
+        // For log-normal distribution, compute fence in log space
+        var logQ1 = Math.log(Math.max(cdi.q1, Number.MIN_VALUE));
+        var logQ3 = Math.log(Math.max(cdi.q3, Number.MIN_VALUE));
+        var logIQR = logQ3 - logQ1;
+        upperFence = Math.exp(logQ3 + 1.5 * logIQR);
+    } else {
+        // Standard 1.5 * IQR calculation (2.5*Q3 - 1.5*Q1 is algebraically equivalent)
+        upperFence = 2.5 * cdi.q3 - 1.5 * cdi.q1;
+    }
+    
     return Math.max(
         cdi.q3,
         boxVals[Math.max(
-            Lib.findBin(2.5 * cdi.q3 - 1.5 * cdi.q1, boxVals),
+            Lib.findBin(upperFence, boxVals),
             0
         )]
     );
