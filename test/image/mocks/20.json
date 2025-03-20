@@ -8,7 +8,7 @@
   },
   {
    "x": [2, 3, 4],
-   "y": [40, 50, 60],
+   "y": [4000000000000, 5000000000000, 6000000000000],
    "name": "yaxis2 data",
    "yaxis": "y2",
    "type": "scatter"
@@ -36,7 +36,7 @@
   },
   {
    "x": [6, 7, 8],
-   "y": [4000000, 5000000, 6000000],
+   "y": [400000000000000000000000000000000, 500000000000000000000000000000000, 600000000000000000000000000000000],
    "name": "yaxis6 data",
    "yaxis": "y6",
    "type": "scatter"
@@ -111,6 +111,7 @@
    "tickfont": {
     "color": "#ff7f0e"
    },
+   "exponentformat": "SI",
    "linecolor": "rgba(255,127,14,0.4)",
    "linewidth": 6,
    "anchor": "free",
@@ -189,7 +190,7 @@
    "tickfont": {
     "color": "#8c564b"
    },
-   "exponentformat": "SI",
+   "exponentformat": "SI extended",
    "linecolor": "rgba(140,86,75,0.5)",
    "anchor": "free",
    "side": "right",
