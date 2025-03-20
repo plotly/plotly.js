@@ -112,6 +112,19 @@
    }
   },
   {
+   "name": "usa",
+   "specs": {
+    "source": "BNDA_simplified",
+    "acceptedFeatures": [
+     {
+      "key": "iso3cd",
+      "values": ["USA"]
+     }
+    ],
+    "bounds": [-180, 0, -45, 85]
+   }
+  },
+  {
    "name": "world",
    "specs": {
     "source": "BNDA_simplified",
@@ -120,7 +133,7 @@
    }
   }
  ],
- "simplifyTolerance": 0.1,
+ "simplifyTolerance": 0.01,
  "outputDirGeojson": "./build/geodata/geojson",
  "outputDirTopojson": "./dist/topojson",
  "inputDir": "./build/geodata",
