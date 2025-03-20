@@ -124,6 +124,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
+    "@turf/simplify": "^7.2.0",
     "amdefine": "^1.0.1",
     "assert": "^2.1.0",
     "browserify-transform-tools": "^1.7.0",
@@ -161,6 +162,7 @@
     "karma-viewport": "1.0.2",
     "lodash": "^4.17.21",
     "madge": "^8.0.0",
+    "mapshaper": "^0.6.102",
     "mathjax-v2": "npm:mathjax@2.7.5",
     "mathjax-v3": "npm:mathjax@^3.2.2",
     "minify-stream": "^2.1.0",
