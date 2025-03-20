@@ -37,10 +37,11 @@ function getGeojsonFile(filename) {
 function cleanGeojson(geojson) {
     return geojson.features.filter((feature) => {
         const hasValidProperties = feature.properties != null;
+        // Remove overlapping geometries (broader geographic regions & great lakes) identified as all rows with iso3cd == NULL.
         const hasValidIso3 = feature.properties?.iso3cd !== null;
         const hasValidGeometry = feature.geometry != null;
 
-        // Remove Hawaii with specific globalid
+        // Remove Hawaii with specific globalid as there is an overlapping geometry
         const isHawaiiOverlap = feature.properties?.globalid === '{8B42E894-6AF5-4236-B04D-8F634A159724}';
 
         return hasValidProperties && hasValidIso3 && hasValidGeometry && !isHawaiiOverlap;
