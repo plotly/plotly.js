@@ -36,6 +36,9 @@ module.exports = {
         flags: ['name', 'x', 'y', 'text', 'percent initial', 'percent previous', 'percent total']
     }),
 
+    tooltip: barAttrs.tooltip,
+    tooltiptemplate: barAttrs.tooltiptemplate,
+
     textinfo: {
         valType: 'flaglist',
         flags: ['label', 'text', 'percent initial', 'percent previous', 'percent total', 'value'],
