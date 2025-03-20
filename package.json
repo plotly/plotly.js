@@ -35,7 +35,7 @@
     "use-draftlogs": "node tasks/use_draftlogs.js",
     "empty-draftlogs": "node tasks/empty_draftlogs.js",
     "empty-dist": "node tasks/empty_dist.js",
-    "build": "npm run empty-dist && npm run preprocess && npm run find-strings && npm run bundle && npm run extra-bundles && npm run locales && npm run schema dist && npm run stats",
+    "build": "npm run empty-dist && npm run preprocess && npm run build_topojson && npm run find-strings && npm run bundle && npm run extra-bundles && npm run locales && npm run schema dist && npm run stats",
     "regl-codegen": "node devtools/regl_codegen/server.mjs",
     "cibuild": "npm run empty-dist && npm run preprocess && node tasks/cibundle.mjs",
     "lint": "npx @biomejs/biome lint",
@@ -60,7 +60,10 @@
     "version": "npm run build && git add -A lib dist build src/version.js",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
     "postpublish": "node tasks/sync_packages.js",
-    "postshrinkwrap": "chttps ."
+    "postshrinkwrap": "chttps .",
+    "get_geodata": "node tasks/topojson/get_geodata.mjs",
+    "process_geodata": "node tasks/topojson/process_geodata.mjs",
+    "build_topojson": "npm run get_geodata && npm run process_geodata"
   },
   "browserify": {
     "transform": [
