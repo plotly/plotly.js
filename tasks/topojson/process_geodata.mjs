@@ -114,12 +114,12 @@ async function createCoastlinesLayer({ bounds, name, source }) {
     }
 }
 
-async function createOceansLayer({ bounds, name, source }) {
-    console.log(`Building oceans layer for '${name}'`);
+async function createOceanLayer({ bounds, name, source }) {
+    console.log(`Building ocean layer for '${name}'`);
     for (const resolution of resolutions) {
         const inputFilePath = `./tasks/topojson/world_rectangle.geojson`;
-        const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/oceans.geojson`;
-        const eraseFilePath = `${outputDirGeojson}/${source.oceans}.geojson`;
+        const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/ocean.geojson`;
+        const eraseFilePath = `${outputDirGeojson}/${source.ocean}.geojson`;
         const commands = `${inputFilePath} ${bounds.length ? `-clip bbox=${bounds.join(',')}` : ''} -erase ${eraseFilePath} -o ${outputFilePath}`;
         await mapshaper.runCommands(commands);
     }
@@ -165,7 +165,7 @@ for (const {
     await createCountriesLayer({ acceptedFeatures, excludedFeatures, name, source });
     await createLandLayer({ name, source });
     await createCoastlinesLayer({ bounds, name, source });
-    await createOceansLayer({ bounds, name, source });
+    await createOceanLayer({ bounds, name, source });
     await createWaterbodiesLayer({ bounds, name, source });
 }
 

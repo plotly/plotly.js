@@ -2,7 +2,7 @@ const source = {
     coastlines: 'GEOA_simplified',
     countries: 'BNDA_simplified',
     land: 'countries',
-    oceans: 'GEOA_simplified',
+    ocean: 'GEOA_simplified',
     waterbodies: 'WBYA_simplified'
 };
 
