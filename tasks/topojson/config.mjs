@@ -104,7 +104,7 @@ const config = {
                         values: ['OCE']
                     }
                 ],
-                bounds: []
+                bounds: [-180, -50, 180, 25]
             }
         },
         {
