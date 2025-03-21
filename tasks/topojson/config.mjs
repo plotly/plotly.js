@@ -1,5 +1,14 @@
+const source = {
+    coastlines: 'GEOA_simplified',
+    countries: 'BNDA_simplified',
+    land: 'countries',
+    oceans: 'GEOA_simplified',
+    waterbodies: 'WBYA_simplified'
+};
+
 const config = {
     resolutions: [110, 50],
+    // This mapping is no longer used, but keeping for info
     regionMapping: {
         AFE: 'africa',
         AFW: 'africa',
@@ -17,7 +26,7 @@ const config = {
         {
             name: 'africa',
             specs: {
-                source: 'BNDA_simplified',
+                source,
                 acceptedFeatures: [
                     {
                         key: 'georeg',
@@ -30,7 +39,7 @@ const config = {
         {
             name: 'antarctica',
             specs: {
-                source: 'BNDA_simplified',
+                source,
                 acceptedFeatures: [
                     {
                         key: 'georeg',
@@ -43,7 +52,7 @@ const config = {
         {
             name: 'asia',
             specs: {
-                source: 'BNDA_simplified',
+                source,
                 acceptedFeatures: [
                     {
                         key: 'georeg',
@@ -56,7 +65,7 @@ const config = {
         {
             name: 'europe',
             specs: {
-                source: 'BNDA_simplified',
+                source,
                 acceptedFeatures: [
                     {
                         key: 'georeg',
@@ -69,7 +78,7 @@ const config = {
         {
             name: 'north-america',
             specs: {
-                source: 'BNDA_simplified',
+                source,
                 acceptedFeatures: [
                     {
                         key: 'georeg',
@@ -88,7 +97,7 @@ const config = {
         {
             name: 'oceania',
             specs: {
-                source: 'BNDA_simplified',
+                source,
                 acceptedFeatures: [
                     {
                         key: 'georeg',
@@ -101,7 +110,7 @@ const config = {
         {
             name: 'south-america',
             specs: {
-                source: 'BNDA_simplified',
+                source,
                 acceptedFeatures: [
                     {
                         key: 'intreg',
@@ -114,7 +123,7 @@ const config = {
         {
             name: 'usa',
             specs: {
-                source: 'BNDA_simplified',
+                source,
                 acceptedFeatures: [
                     {
                         key: 'iso3cd',
@@ -127,7 +136,7 @@ const config = {
         {
             name: 'world',
             specs: {
-                source: 'BNDA_simplified',
+                source,
                 acceptedFeatures: [],
                 bounds: []
             }

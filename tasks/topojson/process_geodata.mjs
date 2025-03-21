@@ -22,16 +22,13 @@ async function convertShpToGeo(filename) {
 }
 
 function getGeojsonFile(filename) {
-    console.log('📂 Loading GeoJSON file...');
-    let geojson;
+    console.log(`📂 Loading GeoJSON file ${filename}...`);
     try {
-        geojson = JSON.parse(fs.readFileSync(filename, 'utf8'));
+        return JSON.parse(fs.readFileSync(filename, 'utf8'));
     } catch (err) {
         console.error(`❌ Failed to load GeoJSON input file '${filename}':`, err.message);
         process.exit(1);
     }
-
-    return geojson;
 }
 
 function cleanGeojson(geojson) {
@@ -78,7 +75,7 @@ function saveGeojson(region, resolution, layer, geojson) {
 
 async function createCountriesLayer({ acceptedFeatures, excludedFeatures, name, source }) {
     console.log(`Building countries layer for '${name}'`);
-    const geojson = getGeojsonFile(`${outputDirGeojson}/${source}.geojson`);
+    const geojson = getGeojsonFile(`${outputDirGeojson}/${source.countries}.geojson`);
     const cleanedFeatures = cleanGeojson(geojson);
     const scopedFeatures = getScopedFeatures(cleanedFeatures, acceptedFeatures, excludedFeatures);
 
@@ -97,42 +94,42 @@ async function createCountriesLayer({ acceptedFeatures, excludedFeatures, name, 
     saveGeojson(name, 110, layer, simplifiedCollection);
 }
 
-async function createLandLayer(name) {
+async function createLandLayer({ name, source }) {
     console.log(`Building land layer for '${name}'`);
     for (const resolution of resolutions) {
-        const inputFilePath = `${outputDirGeojson}/${name}_${resolution}m/countries.geojson`;
+        const inputFilePath = `${outputDirGeojson}/${name}_${resolution}m/${source.land}.geojson`;
         const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/land.geojson`;
         const commands = `${inputFilePath} -dissolve -o ${outputFilePath}`;
         await mapshaper.runCommands(commands);
     }
 }
 
-async function createCoastlinesLayer(name) {
+async function createCoastlinesLayer({ bounds, name, source }) {
     console.log(`Building coastlines layer for '${name}'`);
     for (const resolution of resolutions) {
-        const inputFilePath = `${outputDirGeojson}/${name}_${resolution}m/countries.geojson`;
+        const inputFilePath = `${outputDirGeojson}/${source.coastlines}.geojson`;
         const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/coastlines.geojson`;
-        const commands = `${inputFilePath} -dissolve -lines -o ${outputFilePath}`;
+        const commands = `${inputFilePath} -lines ${bounds.length ? `-clip bbox=${bounds.join(',')}` : ''} -o ${outputFilePath}`;
         await mapshaper.runCommands(commands);
     }
 }
 
-async function createOceansLayer({ bounds, name }) {
+async function createOceansLayer({ bounds, name, source }) {
     console.log(`Building oceans layer for '${name}'`);
     for (const resolution of resolutions) {
         const inputFilePath = `./tasks/topojson/world_rectangle.geojson`;
         const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/oceans.geojson`;
-        const eraseFilePath = `${outputDirGeojson}/GEOA_simplified.geojson`;
+        const eraseFilePath = `${outputDirGeojson}/${source.oceans}.geojson`;
         const commands = `${inputFilePath} ${bounds.length ? `-clip bbox=${bounds.join(',')}` : ''} -erase ${eraseFilePath} -o ${outputFilePath}`;
         await mapshaper.runCommands(commands);
     }
 }
 
-async function createWaterbodiesLayer({ bounds, name }) {
+async function createWaterbodiesLayer({ bounds, name, source }) {
     // Clip the waterbodies shapefile to each continent
     console.log(`Building waterbodies layer for '${name}'`);
     for (const resolution of resolutions) {
-        const inputFilePath = `${outputDirGeojson}/WBYA_simplified.geojson`;
+        const inputFilePath = `${outputDirGeojson}/${source.waterbodies}.geojson`;
         const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/waterbodies.geojson`;
         const commands = `${inputFilePath} ${bounds.length ? `-clip bbox=${bounds.join(',')}` : ''} -o ${outputFilePath}`;
         await mapshaper.runCommands(commands);
@@ -166,10 +163,10 @@ for (const {
     specs: { acceptedFeatures, bounds, excludedFeatures = [], source }
 } of scopes) {
     await createCountriesLayer({ acceptedFeatures, excludedFeatures, name, source });
-    await createLandLayer(name);
-    await createCoastlinesLayer(name);
-    await createOceansLayer({ bounds, name });
-    await createWaterbodiesLayer({ bounds, name });
+    await createLandLayer({ name, source });
+    await createCoastlinesLayer({ bounds, name, source });
+    await createOceansLayer({ bounds, name, source });
+    await createWaterbodiesLayer({ bounds, name, source });
 }
 
 await combineFiles();
