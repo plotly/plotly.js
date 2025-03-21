@@ -2,11 +2,11 @@ import { exec } from 'child_process';
 import fs from 'fs';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
-import config from './config.json' assert { type: 'json' };
+import config from './config.mjs';
 
 try {
     // Download data from UN
-    const tasksPath = './tasks/topojson'
+    const tasksPath = './tasks/topojson';
     const outputPath = './build/geodata';
     const archivePath = `${tasksPath}/geodata.zip`;
 

@@ -2,7 +2,7 @@ import { simplify } from '@turf/simplify';
 import fs from 'fs';
 import mapshaper from 'mapshaper';
 import path from 'path';
-import config from './config.json' assert { type: 'json' };
+import config from './config.mjs';
 
 const { inputDir, resolutions, scopes, shapefiles, simplifyTolerance } = config;
 
