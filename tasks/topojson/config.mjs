@@ -1,0 +1,153 @@
+const source = {
+    coastlines: 'GEOA_simplified',
+    countries: 'BNDA_simplified',
+    land: 'countries',
+    ocean: 'GEOA_simplified',
+    waterbodies: 'WBYA_simplified'
+};
+
+const config = {
+    resolutions: [110, 50],
+    // This mapping is no longer used, but keeping for info
+    regionMapping: {
+        AFE: 'africa',
+        AFW: 'africa',
+        AFR: 'africa',
+        AME: 'americas',
+        NAM: 'north-america',
+        LAC: 'south-america',
+        ASI: 'asia',
+        EUR: 'europe',
+        OCE: 'oceania',
+        ANT: 'antarctica',
+        WORLD: 'world'
+    },
+    scopes: [
+        {
+            name: 'africa',
+            specs: {
+                source,
+                acceptedFeatures: [
+                    {
+                        key: 'georeg',
+                        values: ['AFE', 'AFR', 'AFW']
+                    }
+                ],
+                bounds: [-30, -50, 60, 50]
+            }
+        },
+        {
+            name: 'antarctica',
+            specs: {
+                source,
+                acceptedFeatures: [
+                    {
+                        key: 'georeg',
+                        values: ['ANT']
+                    }
+                ],
+                bounds: [-180, -90, 180, -50]
+            }
+        },
+        {
+            name: 'asia',
+            specs: {
+                source,
+                acceptedFeatures: [
+                    {
+                        key: 'georeg',
+                        values: ['ASI']
+                    }
+                ],
+                bounds: [15, -90, 180, 85]
+            }
+        },
+        {
+            name: 'europe',
+            specs: {
+                source,
+                acceptedFeatures: [
+                    {
+                        key: 'georeg',
+                        values: ['EUR']
+                    }
+                ],
+                bounds: [-30, 0, 60, 90]
+            }
+        },
+        {
+            name: 'north-america',
+            specs: {
+                source,
+                acceptedFeatures: [
+                    {
+                        key: 'georeg',
+                        values: ['AME']
+                    }
+                ],
+                excludedFeatures: [
+                    {
+                        key: 'intreg',
+                        values: ['South America']
+                    }
+                ],
+                bounds: [-180, 0, -45, 85]
+            }
+        },
+        {
+            name: 'oceania',
+            specs: {
+                source,
+                acceptedFeatures: [
+                    {
+                        key: 'georeg',
+                        values: ['OCE']
+                    }
+                ],
+                bounds: [-180, -50, 180, 25]
+            }
+        },
+        {
+            name: 'south-america',
+            specs: {
+                source,
+                acceptedFeatures: [
+                    {
+                        key: 'intreg',
+                        values: ['South America']
+                    }
+                ],
+                bounds: [-100, -70, -30, 25]
+            }
+        },
+        {
+            name: 'usa',
+            specs: {
+                source,
+                acceptedFeatures: [
+                    {
+                        key: 'iso3cd',
+                        values: ['USA']
+                    }
+                ],
+                bounds: [-180, 0, -45, 85]
+            }
+        },
+        {
+            name: 'world',
+            specs: {
+                source,
+                acceptedFeatures: [],
+                bounds: []
+            }
+        }
+    ],
+    simplifyTolerance: 0.01,
+    outputDirGeojson: './build/geodata/geojson',
+    outputDirTopojson: './dist/topojson',
+    inputDir: './build/geodata',
+    shapefiles: ['BNDA_simplified', 'GEOA_simplified', 'WBYA_simplified'],
+    downloadUrl: 'https://geoportal.un.org/arcgis/sharing/rest/content/items/f86966528d5943efbdb83fd521dc0943/data'
+};
+
+export default config;
