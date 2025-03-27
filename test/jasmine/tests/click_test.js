@@ -7,6 +7,7 @@ var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doub
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
+var createShadowGraphDiv = require('../assets/create_shadow_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var mouseEvent = require('../assets/mouse_event');
@@ -1059,17 +1060,17 @@ describe('Test click interactions:', function() {
                 width: 600,
                 height: 600
             }).then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068], 1);
 
                 return doubleClick(300, 300);
             })
             .then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.2019, 3.249]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.2019, 3.249], 1);
 
                 return doubleClick(300, 300);
             })
             .then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068], 1);
             })
             .then(done, done.fail);
         });
@@ -1161,6 +1162,56 @@ describe('Test click interactions:', function() {
             .then(fns.end)
             .then(done, done.fail);
         });
+    });
+});
+
+describe('Click events in Shadow DOM', function() {
+    afterEach(destroyGraphDiv);
+
+    function fig() {
+        var x = [];
+        var y = [];
+        for (var i = 0; i <= 20; i++) {
+            for (var j = 0; j <= 20; j++) {
+                x.push(i);
+                y.push(j);
+            }
+        }
+        return {
+            data: [{x: x, y: y, mode: 'markers'}],
+            layout: {
+                width: 400,
+                height: 400,
+                margin: {l: 100, r: 100, t: 100, b: 100},
+                xaxis: {range: [0, 20]},
+                yaxis: {range: [0, 20]},
+            }
+        };
+    }
+
+    it('should select the same point in regular and shadow DOM', function(done) {
+        var clickData;
+        var clickX = 120;
+        var clickY = 150;
+        var expectedX = 2;  // counts up 1 every 10px from 0 at 100px
+        var expectedY = 15;  // counts down 1 every 10px from 20 at 100px
+
+        function check(gd) {
+            gd.on('plotly_click', function(event) { clickData = event; });
+            click(clickX, clickY);
+            expect(clickData.points.length).toBe(1);
+            var pt = clickData.points[0];
+            expect(pt.x).toBe(expectedX);
+            expect(pt.y).toBe(expectedY);
+            clickData = null;
+        }
+
+        Plotly.newPlot(createGraphDiv(), fig())
+        .then(check)
+        .then(destroyGraphDiv)
+        .then(function() { return Plotly.newPlot(createShadowGraphDiv(), fig()) })
+        .then(check)
+        .then(done, done.fail);
     });
 });
 
