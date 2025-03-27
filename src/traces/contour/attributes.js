@@ -243,6 +243,7 @@ module.exports = extendFlat({
 
     line: {
         color: extendFlat({}, scatterLineAttrs.color, {
+            arrayOk: true,
             editType: 'style+colorbars',
             description: [
                 'Sets the color of the contour level.',
