@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -161,8 +161,8 @@
     "karma-viewport": "1.0.2",
     "lodash": "^4.17.21",
     "madge": "^8.0.0",
-    "mathjax-v2": "npm:mathjax@2.7.5",
-    "mathjax-v3": "npm:mathjax@^3.2.2",
+    "@plotly/mathjax-v2": "npm:mathjax@2.7.5",
+    "@plotly/mathjax-v3": "npm:mathjax@^3.2.2",
     "minify-stream": "^2.1.0",
     "npm-link-check": "^5.0.1",
     "open": "^8.4.2",
