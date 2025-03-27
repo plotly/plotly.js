@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v3.0.1
+* plotly.js (geo) v3.0.0
 * Copyright 2012-2025, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38,7 +38,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.0.1";
+      exports.version = "3.0.0";
     }
   });
 
@@ -49,7 +49,7 @@ var Plotly = (() => {
         context[name] = context[name] || definition();
         if (typeof module != "undefined" && module.exports) {
           module.exports = context[name];
-        } else if (typeof define == "function" && false) {
+        } else if (typeof define == "function" && define.amd) {
           define(function $AMD$() {
             return context[name];
           });
@@ -7224,7 +7224,7 @@ var Plotly = (() => {
         d3.xml = d3_xhrType(function(request) {
           return request.responseXML;
         });
-        if (typeof define === "function" && false) define(d3);
+        if (typeof define === "function" && define.amd) define(d3);
         else if (typeof module === "object" && module.exports) module.exports = d3;
         else this.d3 = d3;
       }.apply(self);
@@ -7235,7 +7235,7 @@ var Plotly = (() => {
   var require_d3_time = __commonJS({
     "node_modules/d3-time/dist/d3-time.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : (global2 = global2 || self, factory(global2.d3 = global2.d3 || {}));
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = global2 || self, factory(global2.d3 = global2.d3 || {}));
       })(exports, function(exports2) {
         "use strict";
         var t0 = /* @__PURE__ */ new Date(), t1 = /* @__PURE__ */ new Date();
@@ -7573,7 +7573,7 @@ var Plotly = (() => {
   var require_d3_time_format = __commonJS({
     "node_modules/d3-time-format/dist/d3-time-format.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_time()) : typeof define === "function" && false ? define(["exports", "d3-time"], factory) : (global2 = global2 || self, factory(global2.d3 = global2.d3 || {}, global2.d3));
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_time()) : typeof define === "function" && define.amd ? define(["exports", "d3-time"], factory) : (global2 = global2 || self, factory(global2.d3 = global2.d3 || {}, global2.d3));
       })(exports, function(exports2, d3Time) {
         "use strict";
         function localDate(d) {
@@ -8126,7 +8126,7 @@ var Plotly = (() => {
   var require_d3_format = __commonJS({
     "node_modules/d3-format/dist/d3-format.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.d3 = global2.d3 || {}));
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.d3 = global2.d3 || {}));
       })(exports, function(exports2) {
         "use strict";
         function formatDecimal(x) {
@@ -8483,7 +8483,7 @@ var Plotly = (() => {
   var require_base64_arraybuffer_umd = __commonJS({
     "node_modules/base64-arraybuffer/dist/base64-arraybuffer.umd.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2["base64-arraybuffer"] = {}));
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2["base64-arraybuffer"] = {}));
       })(exports, function(exports2) {
         "use strict";
         var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -10034,7 +10034,7 @@ var Plotly = (() => {
         }
         if (typeof module !== "undefined" && module.exports) {
           module.exports = tinycolor;
-        } else if (typeof define === "function" && false) {
+        } else if (typeof define === "function" && define.amd) {
           define(function() {
             return tinycolor;
           });
@@ -13737,10 +13737,10 @@ var Plotly = (() => {
     }
   });
 
-  // stylePlugin:/Users/marthacryan/gitrepos/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
+  // stylePlugin:/Users/alex/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
   var maplibre_gl_exports = {};
   var init_maplibre_gl2 = __esm({
-    "stylePlugin:/Users/marthacryan/gitrepos/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
+    "stylePlugin:/Users/alex/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       init_maplibre_gl();
     }
   });
@@ -59520,7 +59520,7 @@ var Plotly = (() => {
   var require_topojson_client = __commonJS({
     "node_modules/topojson-client/dist/topojson-client.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : (global2 = global2 || self, factory(global2.topojson = global2.topojson || {}));
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = global2 || self, factory(global2.topojson = global2.topojson || {}));
       })(exports, function(exports2) {
         "use strict";
         function identity(x) {
@@ -61946,7 +61946,7 @@ var Plotly = (() => {
   var require_d3_array = __commonJS({
     "node_modules/d3-array/dist/d3-array.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : factory(global2.d3 = global2.d3 || {});
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : factory(global2.d3 = global2.d3 || {});
       })(exports, function(exports2) {
         "use strict";
         function ascending(a, b) {
@@ -62366,7 +62366,7 @@ var Plotly = (() => {
   var require_d3_geo = __commonJS({
     "node_modules/d3-geo/dist/d3-geo.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_array()) : typeof define === "function" && false ? define(["exports", "d3-array"], factory) : (global2 = global2 || self, factory(global2.d3 = global2.d3 || {}, global2.d3));
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_array()) : typeof define === "function" && define.amd ? define(["exports", "d3-array"], factory) : (global2 = global2 || self, factory(global2.d3 = global2.d3 || {}, global2.d3));
       })(exports, function(exports2, d3Array) {
         "use strict";
         function adder() {
@@ -64684,7 +64684,7 @@ var Plotly = (() => {
   var require_d3_geo_projection = __commonJS({
     "node_modules/d3-geo-projection/dist/d3-geo-projection.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_geo(), require_d3_array()) : typeof define === "function" && false ? define(["exports", "d3-geo", "d3-array"], factory) : factory(global2.d3 = global2.d3 || {}, global2.d3, global2.d3);
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_geo(), require_d3_array()) : typeof define === "function" && define.amd ? define(["exports", "d3-geo", "d3-array"], factory) : factory(global2.d3 = global2.d3 || {}, global2.d3, global2.d3);
       })(exports, function(exports2, d3Geo, d3Array) {
         "use strict";
         var abs = Math.abs;
