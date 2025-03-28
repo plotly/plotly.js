@@ -14965,6 +14965,16 @@
      "editType": "ticks",
      "valType": "color"
     },
+    "zerolinelayer": {
+     "description": "Sets the layer on which this zeroline is displayed. If *above traces*, this zeroline is displayed above all the subplot's traces If *below traces*, this zeroline is displayed below all the subplot's traces, but above the grid lines. Limitation: *zerolinelayer* currently has no effect if the *zorder* property is set on any trace.",
+     "dflt": "below traces",
+     "editType": "plot",
+     "valType": "enumerated",
+     "values": [
+      "above traces",
+      "below traces"
+     ]
+    },
     "zerolinewidth": {
      "description": "Sets the width (in px) of the zero line.",
      "dflt": 1,
@@ -16198,6 +16208,16 @@
      "dflt": "#444",
      "editType": "ticks",
      "valType": "color"
+    },
+    "zerolinelayer": {
+     "description": "Sets the layer on which this zeroline is displayed. If *above traces*, this zeroline is displayed above all the subplot's traces If *below traces*, this zeroline is displayed below all the subplot's traces, but above the grid lines. Limitation: *zerolinelayer* currently has no effect if the *zorder* property is set on any trace.",
+     "dflt": "below traces",
+     "editType": "plot",
+     "valType": "enumerated",
+     "values": [
+      "above traces",
+      "below traces"
+     ]
     },
     "zerolinewidth": {
      "description": "Sets the width (in px) of the zero line.",
