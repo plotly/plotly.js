@@ -2,37 +2,74 @@ import { exec } from 'child_process';
 import fs from 'fs';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
-import config from './config.mjs';
+import config, { getNEDownloadUrl, getNEFilename } from './config.mjs';
 
-try {
-    // Download data from UN
-    const tasksPath = './tasks/topojson';
-    const outputPath = './build/geodata';
-    const archivePath = `${tasksPath}/geodata.zip`;
+const { resolutions, unDownloadUrl, unFilename, vectors } = config;
 
-    if (fs.existsSync(archivePath)) {
-        console.log('Data file already exists. Skipping download.');
-    } else {
-        console.log(`Downloading data from ${config.downloadUrl}`);
-        const unResponse = await fetch(config.downloadUrl);
-        if (!unResponse.ok || !unResponse.body) throw new Error(`Bad response: ${unResponse.status}`);
+const tasksPath = './tasks/topojson';
+const outputPath = './build/geodata';
 
-        console.log('Processing data');
-        if (!fs.existsSync(archivePath)) fs.mkdirSync(archivePath, { recursive: true });
-        const file = fs.createWriteStream(archivePath);
-        await pipeline(Readable.fromWeb(unResponse.body), file);
+// Download Natural Earth vectors
+for (const [vector, source] of Object.entries(vectors)) {
+    for (const resolution of resolutions) {
+        const url = getNEDownloadUrl({ resolution, vector });
+        const filename = getNEFilename({ resolution, source });
+        const archivePath = `${outputPath}/${filename}.zip`;
 
-        console.log(`Download complete. File saved to: ${archivePath}`);
+        if (fs.existsSync(archivePath)) {
+            console.log(`File ${archivePath} already exists. Skipping download.`);
+        } else {
+            try {
+                console.log(`Downloading data from ${url}`);
+
+                const response = await fetch(url);
+                if (!response.ok || !response.body) throw new Error(`Bad response: ${response.status}`);
+
+                if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath, { recursive: true });
+                const file = fs.createWriteStream(archivePath);
+                await pipeline(Readable.fromWeb(response.body), file);
+
+                console.log('Decompressing NE shapefile');
+                // Use the shell to handle decompressing
+                if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath, { recursive: true });
+                exec(`unzip -o ${archivePath} -d ${outputPath}`);
+
+                console.log(`NE Shapefile decompressed to ${outputPath}`);
+            } catch (error) {
+                console.error(`Error when downloading file '${archivePath}': ${error}`);
+                continue;
+            }
+        }
     }
+}
 
-    // Unzip archive
-    if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath, { recursive: true });
-    console.log('Unzipping shapefiles', `unzip -o ${archivePath} -d ${outputPath}`);
-    // Use the shell to handle unzipping
-    if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath, { recursive: true });
-    exec(`unzip -o ${archivePath} -d ${outputPath}`);
+// Download UN GeoJSON file
+const url = unDownloadUrl;
+const archivePath = `${tasksPath}/${unFilename}.zip`;
+const geojsonPath = `${outputPath}/${unFilename}.geojson`;
 
-    console.log(`Shapefiles unzipped to ${outputPath}`);
-} catch (error) {
-    console.error(`Error when downloading file!: ${error}`);
+if (fs.existsSync(archivePath)) {
+    console.log(`File ${archivePath} already exists. Skipping download.`);
+    if (fs.existsSync(geojsonPath)) console.log(`File ${geojsonPath} already exists. Skipping decompression.`);
+    else exec(`unzip -o ${archivePath} -d ${geojsonPath}`);
+} else {
+    try {
+        console.log(`Downloading data from ${url}`);
+
+        const response = await fetch(url);
+        if (!response.ok || !response.body) throw new Error(`Bad response: ${response.status}`);
+
+        if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath, { recursive: true });
+        const file = fs.createWriteStream(geojsonPath);
+        await pipeline(Readable.fromWeb(response.body), file);
+        console.log(`UN GeoJSON file saved to ${geojsonPath}`);
+
+        console.log('Compressing UN GeoJSON for future use');
+        // Use the shell to handle compression
+        exec(`zip ${archivePath} ${geojsonPath}`);
+
+        console.log(`UN GeoJSON archive saved to ${archivePath}`);
+    } catch (error) {
+        console.error(`Error when downloading file '${geojsonPath}': ${error}`);
+    }
 }
