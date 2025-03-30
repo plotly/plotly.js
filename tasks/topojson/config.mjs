@@ -1,27 +1,17 @@
 const source = {
-    coastlines: 'GEOA_simplified',
-    countries: 'BNDA_simplified',
+    coastlines: 'world_atlas_land',
+    countries: 'world_atlas_countries',
+    lakes: '',
     land: 'countries',
-    ocean: 'GEOA_simplified',
+    ocean: 'world_atlas_land',
+    rivers: '',
     waterbodies: 'WBYA_simplified'
 };
 
+const resolutions = [50, 110]
+
 const config = {
-    resolutions: [110, 50],
-    // This mapping is no longer used, but keeping for info
-    regionMapping: {
-        AFE: 'africa',
-        AFW: 'africa',
-        AFR: 'africa',
-        AME: 'americas',
-        NAM: 'north-america',
-        LAC: 'south-america',
-        ASI: 'asia',
-        EUR: 'europe',
-        OCE: 'oceania',
-        ANT: 'antarctica',
-        WORLD: 'world'
-    },
+    resolutions,
     scopes: [
         {
             name: 'africa',
@@ -29,8 +19,8 @@ const config = {
                 source,
                 acceptedFeatures: [
                     {
-                        key: 'georeg',
-                        values: ['AFE', 'AFR', 'AFW']
+                        key: 'CONTINENT',
+                        values: ['Africa']
                     }
                 ],
                 bounds: [-30, -50, 60, 50]
@@ -42,8 +32,8 @@ const config = {
                 source,
                 acceptedFeatures: [
                     {
-                        key: 'georeg',
-                        values: ['ANT']
+                        key: 'REGION_WB',
+                        values: ['Antarctica']
                     }
                 ],
                 bounds: [-180, -90, 180, -50]
@@ -55,8 +45,8 @@ const config = {
                 source,
                 acceptedFeatures: [
                     {
-                        key: 'georeg',
-                        values: ['ASI']
+                        key: 'CONTINENT',
+                        values: ['Asia']
                     }
                 ],
                 bounds: [15, -90, 180, 85]
@@ -68,8 +58,8 @@ const config = {
                 source,
                 acceptedFeatures: [
                     {
-                        key: 'georeg',
-                        values: ['EUR']
+                        key: 'CONTINENT',
+                        values: ['Europe']
                     }
                 ],
                 bounds: [-30, 0, 60, 90]
@@ -81,16 +71,16 @@ const config = {
                 source,
                 acceptedFeatures: [
                     {
-                        key: 'georeg',
-                        values: ['AME']
+                        key: 'CONTINENT',
+                        values: ['North America']
                     }
                 ],
-                excludedFeatures: [
-                    {
-                        key: 'intreg',
-                        values: ['South America']
-                    }
-                ],
+                // excludedFeatures: [
+                //     {
+                //         key: 'CONTINENT',
+                //         values: ['South America']
+                //     }
+                // ],
                 bounds: [-180, 0, -45, 85]
             }
         },
@@ -100,8 +90,8 @@ const config = {
                 source,
                 acceptedFeatures: [
                     {
-                        key: 'georeg',
-                        values: ['OCE']
+                        key: 'CONTINENT',
+                        values: ['Oceania']
                     }
                 ],
                 bounds: [-180, -50, 180, 25]
@@ -113,7 +103,7 @@ const config = {
                 source,
                 acceptedFeatures: [
                     {
-                        key: 'intreg',
+                        key: 'CONTINENT',
                         values: ['South America']
                     }
                 ],
@@ -126,7 +116,7 @@ const config = {
                 source,
                 acceptedFeatures: [
                     {
-                        key: 'iso3cd',
+                        key: 'ISO_A3',
                         values: ['USA']
                     }
                 ],
@@ -147,7 +137,50 @@ const config = {
     outputDirTopojson: './dist/topojson',
     inputDir: './build/geodata',
     shapefiles: ['BNDA_simplified', 'GEOA_simplified', 'WBYA_simplified'],
-    downloadUrl: 'https://geoportal.un.org/arcgis/sharing/rest/content/items/f86966528d5943efbdb83fd521dc0943/data'
+    vectors: [
+        {
+            name: "coastlines",
+            source: "coastline",
+            type: "physical"
+        },
+        {
+            // Only to be used to generate the JSON info file
+            name: "countries",
+            source: "admin_0_countries",
+            type: "cultural"
+        },
+        {
+            name: "ocean",
+            source: "ocean",
+            type: "physical"
+        },
+        {
+            name: "lakes",
+            source: "lakes",
+            type: "physical"
+        },
+        {
+            name: "rivers",
+            source: "rivers_lake_centerlines",
+            type: "physical"
+        },
+        {
+            name: "subunits",
+            source: "admin_1_states_provinces_lakes",
+            type: "cultural"
+        },
+    ],
+    downloadUrl: 'https://geoportal.un.org/arcgis/sharing/rest/content/items/f86966528d5943efbdb83fd521dc0943/data',
+    // countries, land provided by visionscarto maps
+    worldMapPaths: resolutions.map(r => `./node_modules/visioncarto-world-atlas/world/${r}m.json`)
 };
+
+export function getFilename({ resolution, source }) {
+    return `ne_${resolution}m_${source}`
+}
+
+export function getDownloadUrl({ resolution, vector: { source, type} }) {
+    return `https://naciscdn.org/naturalearth/${resolution}m/${type}/${getFilename({ resolution, source })}.zip`
+}
 
 export default config;
