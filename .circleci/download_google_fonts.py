@@ -2,12 +2,19 @@ import requests
 
 dirOut = '.circleci/fonts/truetype/googleFonts/'
 
-def download(repo, family, types) :
+def download(repo, family, types):
     for t in types :
         name = family + t + '.ttf'
         url = repo + name + '?raw=true'
         print(url)
         req = requests.get(url, allow_redirects=True)
+        if req.status_code != 200:
+            raise RuntimeError(f"""
+Download failed.
+Status code: {req.status_code}
+Message: {req.reason}
+"""
+            )
         open(dirOut + name, 'wb').write(req.content)
 
 download(
@@ -82,7 +89,7 @@ download(
 )
 
 download(
-    'https://github.com/expo/google-fonts/blob/master/font-packages/gravitas-one/',
+    'https://github.com/expo/google-fonts/blob/main/font-packages/gravitas-one/400Regular/',
     'GravitasOne',
     [
         '_400Regular'
