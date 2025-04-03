@@ -13,7 +13,16 @@ topojsonUtils.getTopojsonName = function(geoLayout) {
 };
 
 topojsonUtils.getTopojsonPath = function(topojsonURL, topojsonName) {
-    return topojsonURL + topojsonName + '.json';
+    var path = topojsonURL;
+
+    if(topojsonName.startsWith('un_')) {
+        path += 'un';
+        return 'https://raw.githubusercontent.com/etpinard/sane-topojson/refs/heads/un-borders/dist/un.json';
+    } else {
+        path += topojsonName;
+    }
+
+    return path + '.json';
 };
 
 topojsonUtils.getTopojsonFeatures = function(trace, topojson) {
