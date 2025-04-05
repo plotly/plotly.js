@@ -214,7 +214,11 @@ function crawl(objIn, objOut, schema, list, base, path) {
         } else if(!Lib.validate(valIn, nestedSchema)) {
             list.push(format('value', base, p, valIn));
         } else if(nestedSchema.valType === 'enumerated' &&
-            ((nestedSchema.coerceNumber && valIn !== +valOut) || valIn !== valOut)
+            (
+                (nestedSchema.coerceNumber && valIn !== +valOut) ||
+                (!isArrayOrTypedArray(valIn) && valIn !== valOut) ||
+                (String(valIn) !== String(valOut))
+            )
         ) {
             list.push(format('dynamic', base, p, valIn, valOut));
         }
