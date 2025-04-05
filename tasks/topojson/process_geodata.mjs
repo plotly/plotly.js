@@ -1,11 +1,9 @@
-import { exec } from 'child_process';
 import fs from 'fs';
 import mapshaper from 'mapshaper';
 import path from 'path';
-import { promisify } from 'util';
-import config, { getFilename } from './config.mjs';
+import config, { getNEFilename } from './config.mjs';
 
-const { inputDir, layers, resolutions, scopes, vectors } = config;
+const { filters, inputDir, layers, resolutions, scopes, unFilename, vectors } = config;
 
 // Create output directories
 const outputDirGeojson = path.resolve(config.outputDirGeojson);
@@ -16,17 +14,10 @@ if (!fs.existsSync(outputDirTopojson)) fs.mkdirSync(outputDirTopojson, { recursi
 async function convertShpToGeo(filename) {
     const inputFilePath = `${inputDir}/${filename}.shp`;
     const outputFilePath = `${outputDirGeojson}/${filename}.geojson`;
-    const commands = `${inputFilePath} -proj wgs84 -o format=geojson ${outputFilePath}`;
+    const commands = [inputFilePath, `-proj wgs84``-o format=geojson ${outputFilePath}`];
     await mapshaper.runCommands(commands);
 
     console.log(`GeoJSON saved to ${outputFilePath}`);
-}
-
-async function convertGeoToJson({ resolution, source }) {
-    const inputFilePath = `${outputDirGeojson}/${getFilename({ resolution, source })}.geojson`;
-    const outputFilePath = `${outputDirGeojson}/${getFilename({ resolution, source })}.json`;
-    const commands = `-i ${inputFilePath} -o format=json ${outputFilePath}`;
-    await mapshaper.runCommands(commands);
 }
 
 function getJsonFile(filename) {
@@ -39,35 +30,46 @@ function getJsonFile(filename) {
     }
 }
 
-async function createCountriesLayer({ bounds, filter: { key, value }, name, resolution, source }) {
+async function createCountriesLayer({ bounds, filter, name, resolution, source }) {
     console.log(`Building ${resolution}m countries layer for '${name}'`);
-    const inputFilePath = `${outputDirGeojson}/${source}_${resolution}m.geojson`;
+    const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/countries.geojson`;
-    const filterCommand =
-        key && value
-            ? getJsonFile(`${outputDirGeojson}/${getFilename({ resolution: 50, source: vectors.countries })}.json`)
-                  .filter((item) => item[key] === value)
-                  .map((item) => `name === "${item.NAME}"`)
-                  .join(' || ')
-                  .replace("'", "\\'") // Handle Côte d'Ivoire
-            : '';
-    const commands = `${inputFilePath} ${bounds.length ? `-clip bbox=${bounds.join(',')}` : ''} ${filterCommand ? `-filter '${filterCommand}'` : ''} -o ${outputFilePath}`;
+    const commands = [
+        inputFilePath,
+        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
+        filter ? `-filter '${filter}'` : '',
+        `-o ${outputFilePath}`
+    ].join(' ');
     await mapshaper.runCommands(commands);
+    // TODO: Add simplification command if on 110m resolution? Or take care of somewhere else?
 }
 
-async function createLandLayer({ name, resolution, source }) {
+async function createLandLayer({ bounds, name, resolution, source }) {
+    // TODO: Figure out way to only include North and Central America via filter, dissolve
     console.log(`Building ${resolution}m land layer for '${name}'`);
-    const inputFilePath = `${outputDirGeojson}/${name}_${resolution}m/${source}.geojson`;
+    const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/land.geojson`;
-    const commands = `${inputFilePath} -dissolve -o ${outputFilePath}`;
+    const commands = [
+        inputFilePath,
+        '-dissolve',
+        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
+        `-o ${outputFilePath}`
+    ].join(' ');
     await mapshaper.runCommands(commands);
 }
 
 async function createCoastlinesLayer({ bounds, name, resolution, source }) {
     console.log(`Building ${resolution}m coastlines layer for '${name}'`);
-    const inputFilePath = `${outputDirGeojson}/${source}_${resolution}m.geojson`;
+    // TODO: Update source to be a path?
+    const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/coastlines.geojson`;
-    const commands = `${inputFilePath} -lines ${bounds.length ? `-clip bbox=${bounds.join(',')}` : ''} -o ${outputFilePath}`;
+    const commands = [
+        inputFilePath,
+        '-dissolve',
+        '-lines',
+        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
+        `-o ${outputFilePath}`
+    ].join(' ');
     await mapshaper.runCommands(commands);
 }
 
@@ -75,36 +77,69 @@ async function createOceanLayer({ bounds, name, resolution, source }) {
     console.log(`Building ${resolution}m ocean layer for '${name}'`);
     const inputFilePath = `./tasks/topojson/world_rectangle.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/ocean.geojson`;
-    const eraseFilePath = `${outputDirGeojson}/${source}_${resolution}m.geojson`;
-    const commands = `${inputFilePath} ${bounds.length ? `-clip bbox=${bounds.join(',')}` : ''} -erase ${eraseFilePath} -o ${outputFilePath}`;
+    const eraseFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
+    const commands = [
+        inputFilePath,
+        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
+        `-erase ${eraseFilePath}`,
+        `-o ${outputFilePath}`
+    ].join(' ');
     await mapshaper.runCommands(commands);
 }
 
-async function createRiversLayer({ bounds, name, resolution, source }) {
+async function createRiversLayer({ name, resolution, source }) {
     console.log(`Building ${resolution}m rivers layer for '${name}'`);
-    const inputFilePath = `${outputDirGeojson}/${getFilename({ resolution, source })}.geojson`;
+    const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/rivers.geojson`;
-    // Clip to the continent
-    const commands = `${inputFilePath} -clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson -o ${outputFilePath}`;
+    const commands = [
+        inputFilePath,
+        `-clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson`, // Clip to the continent
+        `-o ${outputFilePath}`
+    ].join(' ');
     await mapshaper.runCommands(commands);
 }
 
-async function createLakesLayer({ bounds, name, resolution, source }) {
+async function createLakesLayer({ name, resolution, source }) {
     console.log(`Building ${resolution}m lakes layer for '${name}'`);
-    const inputFilePath = `${outputDirGeojson}/${getFilename({ resolution, source })}.geojson`;
+    const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/lakes.geojson`;
-    // Clip to the continent
-    const commands = `${inputFilePath} -clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson -o ${outputFilePath}`;
+    const commands = [
+        inputFilePath,
+        `-clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson`, // Clip to the continent
+        `-o ${outputFilePath}`
+    ].join(' ');
     await mapshaper.runCommands(commands);
 }
 
-async function createSubunitsLayer({ bounds, name, resolution, source }) {
+async function createSubunitsLayer({ name, resolution, source }) {
     console.log(`Building ${resolution}m subunits layer for '${name}'`);
-    const inputFilePath = `${outputDirGeojson}/${getFilename({ resolution, source })}.geojson`;
+    const filter = ['AUS', 'BRA', 'CAN', 'USA'].map((id) => `adm0_a3 === "${id}"`).join(' || ');
+    const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/subunits.geojson`;
-    // Clip to the continent
-    const commands = `${inputFilePath} -clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson -o ${outputFilePath}`;
+    const commands = [
+        inputFilePath,
+        `-filter "${filter}"`,
+        `-clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson`, // Clip to the continent
+        `-o ${outputFilePath}`
+    ].join(' ');
     await mapshaper.runCommands(commands);
+    // const geojson = getJsonFile(outputFilePath)
+    // const prunedJsonFile = pruneProperties(geojson)
+}
+
+function pruneProperties(geojson) {
+    const newFeatures = geojson.features.map((feature) => {
+        const { properties } = feature;
+        if (properties) {
+            // Update id to three letter country code
+            feature.id = properties.a3;
+            for (const property in properties) {
+                if (!['ct'].includes(property)) delete properties[property];
+            }
+        }
+
+        return feature;
+    });
 }
 
 async function combineFiles() {
@@ -119,7 +154,7 @@ async function combineFiles() {
 
             const outputFile = `${outputDirTopojson}/${name}_${resolution}m.json`;
             // Layer names default to file names
-            const commands = `-i ${regionDir}/*.geojson combine-files -o format=topojson ${outputFile}`;
+            const commands = [`${regionDir}/*.geojson combine-files``-o format=topojson ${outputFile}`].join(' ');
             await mapshaper.runCommands(commands);
 
             console.log(`Topojson saved to: ${outputFile}`);
@@ -129,37 +164,40 @@ async function combineFiles() {
 
 for (const resolution of resolutions) {
     for (const source of Object.values(vectors)) {
-        await convertShpToGeo(getFilename({ resolution, source }));
+        await convertShpToGeo(getNEFilename({ resolution, source }));
     }
+
+    // TODO: Update this to simplify the '50m' UN GeoJSON to '110m'
+    // Get all polygon features layer from UN GeoJSON
+    const inputFilePath = `${inputDir}/${unFilename}.geojson`;
+    const outputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/all_features.geojson`;
+    const commandsAllFeatures = [inputFilePath, `-o target=1 ${outputFilePath}`].join(' ');
+    await mapshaper.runCommands(commandsAllFeatures);
+
+    // Get countries from all polygon features
+    const inputFilePathCountries = `${outputDirGeojson}/${unFilename}_${resolution}m/all_features.geojson`;
+    const outputFilePathCountries = `${outputDirGeojson}/${unFilename}_${resolution}m/countries.geojson`;
+    const commandsCountries = [
+        inputFilePathCountries,
+        `-filter '${filters.countries}'`,
+        `-o ${outputFilePathCountries}`
+    ].join(' ');
+    await mapshaper.runCommands(commandsCountries);
+
+    // Get land from all polygon features
+    const inputFilePathLand = `${outputDirGeojson}/${unFilename}_${resolution}m/all_features.geojson`;
+    const outputFilePathLand = `${outputDirGeojson}/${unFilename}_${resolution}m/land.geojson`;
+    const commandsLand = [inputFilePathLand, `-filter '${filters.land}'`, `-clean -o ${outputFilePathLand}`].join(' ');
+    await mapshaper.runCommands(commandsLand);
 }
-
-// Convert NE countries data into JSON
-convertGeoToJson({ resolution: 50, source: vectors.countries });
-
-async function extractCountriesLandLayers() {
-    for (const resolution of resolutions) {
-        for (const layer of ['countries', 'land']) {
-            const worldMapPath = path.resolve(`./node_modules/visionscarto-world-atlas/world/${resolution}m.json`);
-            const outputFilePath = `${outputDirGeojson}/world_atlas_${layer}_${resolution}m.geojson`;
-            const tempOutputFilePath = `${outputDirGeojson}/world_atlas_${layer}_${resolution}m_temp.geojson`;
-            const commands = `${worldMapPath} -o format=geojson target=${layer} ${tempOutputFilePath}`;
-            await mapshaper.runCommands(commands);
-            const exec_promise = promisify(exec);
-            if (fs.existsSync(outputFilePath)) fs.unlinkSync(outputFilePath);
-            await exec_promise(`ogr2ogr ${outputFilePath} ${tempOutputFilePath} -wrapdateline`);
-        }
-    }
-}
-
-await extractCountriesLandLayers();
 
 for (const resolution of resolutions) {
     for (const {
         name,
-        specs: { bounds, filter = {} }
+        specs: { bounds, filter }
     } of scopes) {
         await createCountriesLayer({ bounds, filter, name, resolution, source: layers.countries });
-        await createLandLayer({ name, resolution, source: layers.land });
+        await createLandLayer({ bounds, name, resolution, source: layers.land });
         await createCoastlinesLayer({ bounds, name, resolution, source: layers.coastlines });
         await createOceanLayer({ bounds, name, resolution, source: layers.ocean });
         await createRiversLayer({ bounds, name, resolution, source: layers.rivers });
@@ -168,3 +206,4 @@ for (const resolution of resolutions) {
     }
 }
 await combineFiles();
+// Prune topojson?
