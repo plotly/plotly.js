@@ -102,9 +102,7 @@ const config = {
     }
 };
 
-export function getNEFilename({ resolution, source }) {
-    return `ne_${resolution}m_${source}`;
-}
+export const getNEFilename = ({ resolution, source }) => `ne_${resolution}m_${source}`;
 
 export function getNEDownloadUrl({ resolution, vector: { source, type } }) {
     return `https://naciscdn.org/naturalearth/${resolution}m/${type}/${getNEFilename({ resolution, source })}.zip`;
