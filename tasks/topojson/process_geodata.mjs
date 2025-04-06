@@ -1,3 +1,4 @@
+import { geoIdentity, geoPath } from 'd3-geo';
 import fs from 'fs';
 import mapshaper from 'mapshaper';
 import path from 'path';
@@ -40,7 +41,22 @@ async function createCountriesLayer({ bounds, filter, name, resolution, source }
         `-o ${outputFilePath}`
     ].join(' ');
     await mapshaper.runCommands(commands);
+    addCentroidsToGeojson(outputFilePath);
     // TODO: Add simplification command if on 110m resolution? Or take care of somewhere else?
+}
+
+function addCentroidsToGeojson(geojsonPath) {
+    const geojson = getJsonFile(geojsonPath);
+    if (!geojson.features) return;
+
+    const features = geojson.features.map((feature) => {
+        const centroid = getCentroid(feature);
+        feature.properties.ct = centroid;
+
+        return feature;
+    });
+
+    fs.writeFileSync(geojsonPath, JSON.stringify({ ...geojson, features }));
 }
 
 async function createLandLayer({ bounds, name, resolution, source }) {
@@ -122,6 +138,7 @@ async function createSubunitsLayer({ name, resolution, source }) {
         `-o ${outputFilePath}`
     ].join(' ');
     await mapshaper.runCommands(commands);
+    addCentroidsToGeojson(outputFilePath);
 }
 
 function pruneProperties(topojson) {
@@ -133,7 +150,7 @@ function pruneProperties(topojson) {
                     if (properties) {
                         geometry.id = properties.iso3cd;
                         geometry.properties = {
-                            // TODO: Add centroid?
+                            ct: properties.ct
                         };
                     }
 
@@ -146,6 +163,7 @@ function pruneProperties(topojson) {
                     if (properties) {
                         geometry.id = properties.postal;
                         geometry.properties = {
+                            ct: properties.ct,
                             gu: properties.gu_a3
                         };
                     }
@@ -167,6 +185,27 @@ function pruneProperties(topojson) {
     }
 
     return topojson;
+}
+
+function getCentroid(feature) {
+    const { type } = feature.geometry;
+    const projection = geoIdentity();
+    const path = geoPath(projection);
+
+    if (type === 'MultiPolygon') {
+        let maxArea = -Infinity;
+
+        for (const coordinates of feature.geometry.coordinates) {
+            const polygon = { type: 'Polygon', coordinates };
+            const area = path.area(polygon);
+            if (area > maxArea) {
+                maxArea = area;
+                feature = polygon;
+            }
+        }
+    }
+
+    return path.centroid(feature).map((coord) => +coord.toFixed(2));
 }
 
 async function convertLayersToTopojson({ name, resolution }) {
@@ -233,4 +272,3 @@ for (const resolution of resolutions) {
         await convertLayersToTopojson({ name, resolution });
     }
 }
-// Prune topojson?
