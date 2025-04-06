@@ -14,14 +14,13 @@ if (!fs.existsSync(outputDirTopojson)) fs.mkdirSync(outputDirTopojson, { recursi
 async function convertShpToGeo(filename) {
     const inputFilePath = `${inputDir}/${filename}.shp`;
     const outputFilePath = `${outputDirGeojson}/${filename}.geojson`;
-    const commands = [inputFilePath, `-proj wgs84``-o format=geojson ${outputFilePath}`];
+    const commands = [inputFilePath, `-proj wgs84`, `-o format=geojson ${outputFilePath}`].join(' ');
     await mapshaper.runCommands(commands);
 
     console.log(`GeoJSON saved to ${outputFilePath}`);
 }
 
 function getJsonFile(filename) {
-    console.log(`📂 Loading JSON file ${filename}...`);
     try {
         return JSON.parse(fs.readFileSync(filename, 'utf8'));
     } catch (err) {
@@ -123,43 +122,71 @@ async function createSubunitsLayer({ name, resolution, source }) {
         `-o ${outputFilePath}`
     ].join(' ');
     await mapshaper.runCommands(commands);
-    // const geojson = getJsonFile(outputFilePath)
-    // const prunedJsonFile = pruneProperties(geojson)
 }
 
-function pruneProperties(geojson) {
-    const newFeatures = geojson.features.map((feature) => {
-        const { properties } = feature;
-        if (properties) {
-            // Update id to three letter country code
-            feature.id = properties.a3;
-            for (const property in properties) {
-                if (!['ct'].includes(property)) delete properties[property];
-            }
-        }
+function pruneProperties(topojson) {
+    for (const layer in topojson.objects) {
+        switch (layer) {
+            case 'countries':
+                topojson.objects[layer].geometries = topojson.objects[layer].geometries.map((geometry) => {
+                    const { properties } = geometry;
+                    if (properties) {
+                        geometry.id = properties.iso3cd;
+                        geometry.properties = {
+                            // TODO: Add centroid?
+                        };
+                    }
 
-        return feature;
-    });
-}
+                    return geometry;
+                });
+                break;
+            case 'subunits':
+                topojson.objects[layer].geometries = topojson.objects[layer].geometries.map((geometry) => {
+                    const { properties } = geometry;
+                    if (properties) {
+                        geometry.id = properties.postal;
+                        geometry.properties = {
+                            gu: properties.gu_a3
+                        };
+                    }
 
-async function combineFiles() {
-    // TODO: Update properties to only include relevant info (see formatProperties in sane-topojson)
-    for (const resolution of resolutions) {
-        for (const { name } of scopes) {
-            const regionDir = path.join(outputDirGeojson, `${name}_${resolution}m`);
-            if (!fs.existsSync(regionDir)) {
-                console.log(`Couldn't find ${regionDir}`);
-                continue;
-            }
+                    return geometry;
+                });
 
-            const outputFile = `${outputDirTopojson}/${name}_${resolution}m.json`;
-            // Layer names default to file names
-            const commands = [`${regionDir}/*.geojson combine-files``-o format=topojson ${outputFile}`].join(' ');
-            await mapshaper.runCommands(commands);
+                break;
+            default:
+                topojson.objects[layer].geometries = topojson.objects[layer].geometries.map((geometry) => {
+                    delete geometry.id;
+                    delete geometry.properties;
 
-            console.log(`Topojson saved to: ${outputFile}`);
+                    return geometry;
+                });
+
+                break;
         }
     }
+
+    return topojson;
+}
+
+async function convertLayersToTopojson({ name, resolution }) {
+    const regionDir = path.join(outputDirGeojson, `${name}_${resolution}m`);
+    if (!fs.existsSync(regionDir)) {
+        console.log(`Couldn't find ${regionDir}`);
+        return;
+    }
+
+    const outputFile = `${outputDirTopojson}/${name}_${resolution}m.json`;
+    // Layer names default to file names
+    const commands = [`${regionDir}/*.geojson combine-files`, `-o format=topojson ${outputFile}`].join(' ');
+    await mapshaper.runCommands(commands);
+
+    // Remove extra information from features
+    const topojson = getJsonFile(outputFile);
+    const prunedTopojson = pruneProperties(topojson);
+    fs.writeFileSync(outputFile, JSON.stringify(prunedTopojson));
+
+    console.log(`Topojson saved to: ${outputFile}`);
 }
 
 for (const resolution of resolutions) {
@@ -203,7 +230,7 @@ for (const resolution of resolutions) {
         await createRiversLayer({ bounds, name, resolution, source: layers.rivers });
         await createLakesLayer({ bounds, name, resolution, source: layers.lakes });
         await createSubunitsLayer({ bounds, name, resolution, source: layers.subunits });
+        await convertLayersToTopojson({ name, resolution });
     }
 }
-await combineFiles();
 // Prune topojson?
