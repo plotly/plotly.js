@@ -70,10 +70,22 @@ const config = {
     inputDir: './build/geodata',
     vectors: {
         // 'coastlines', 'countries', and 'land' are derived from UN geodata
-        ocean: 'ocean',
-        lakes: 'lakes',
-        rivers: 'rivers_lake_centerlines',
-        subunits: 'admin_1_states_provinces_lakes'
+        ocean: {
+            source: 'ocean',
+            type: 'physical'
+        },
+        lakes: {
+            source: 'lakes',
+            type: 'physical'
+        },
+        rivers: {
+            source: 'rivers_lake_centerlines',
+            type: 'physical'
+        },
+        subunits: {
+            source: 'admin_1_states_provinces_lakes',
+            type: 'cultural'
+        }
     },
     layers: {
         coastlines: 'land',

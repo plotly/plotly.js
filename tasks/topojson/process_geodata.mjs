@@ -243,7 +243,7 @@ const simplifiedGeojson = {
 fs.writeFileSync(`${outputDirGeojson}/${unFilename}_110m/all_features.geojson`, JSON.stringify(simplifiedGeojson));
 
 for (const resolution of resolutions) {
-    for (const source of Object.values(vectors)) {
+    for (const { source } of Object.values(vectors)) {
         await convertShpToGeo(getNEFilename({ resolution, source }));
     }
 
