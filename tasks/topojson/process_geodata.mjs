@@ -231,16 +231,18 @@ async function convertLayersToTopojson({ name, resolution }) {
 
 // Get polygon features from UN GeoJSON
 const inputFilePath = `${inputDir}/${unFilename}.geojson`;
-const outputFilePath = `${outputDirGeojson}/${unFilename}_50m/all_features.geojson`;
-const commandsAllFeatures = [inputFilePath, `-o target=1 ${outputFilePath}`].join(' ');
+const outputFilePath50m = `${outputDirGeojson}/${unFilename}_50m/all_features.geojson`;
+const outputPath110m = `${outputDirGeojson}/${unFilename}_110m`;
+const commandsAllFeatures = [inputFilePath, `-o target=1 ${outputFilePath50m}`].join(' ');
 await mapshaper.runCommands(commandsAllFeatures);
 
-const geojson = getJsonFile(outputFilePath);
+const geojson = getJsonFile(outputFilePath50m);
 const simplifiedGeojson = {
     ...geojson,
     features: geojson.features.map((f) => simplify(f, { tolerance: 0.01, highQuality: true }))
 };
-fs.writeFileSync(`${outputDirGeojson}/${unFilename}_110m/all_features.geojson`, JSON.stringify(simplifiedGeojson));
+if (!fs.existsSync(outputPath110m)) fs.mkdirSync(outputPath110m, { recursive: true });
+fs.writeFileSync(`${outputPath110m}/all_features.geojson`, JSON.stringify(simplifiedGeojson));
 
 for (const resolution of resolutions) {
     for (const { source } of Object.values(vectors)) {
