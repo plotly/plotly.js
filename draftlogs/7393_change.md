@@ -1,0 +1,1 @@
+- Switch to United Nations/Natural Earth geodata for building topojson used in geo plot
