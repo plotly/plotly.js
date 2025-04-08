@@ -37,7 +37,7 @@
     "empty-dist": "node tasks/empty_dist.js",
     "build": "npm run empty-dist && npm run preprocess && npm run build_topojson && npm run find-strings && npm run bundle && npm run extra-bundles && npm run locales && npm run schema dist && npm run stats",
     "regl-codegen": "node devtools/regl_codegen/server.mjs",
-    "cibuild": "npm run empty-dist && npm run preprocess && node tasks/cibundle.mjs",
+    "cibuild": "npm run empty-dist && npm run preprocess && npm run build_topojson && node tasks/cibundle.mjs",
     "lint": "npx @biomejs/biome lint",
     "lint-fix": "npx @biomejs/biome format ./test/image/mocks --write; npx @biomejs/biome lint --write || true",
     "pretest": "node tasks/pretest.js",
