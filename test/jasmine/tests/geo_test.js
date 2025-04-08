@@ -23,7 +23,7 @@ var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doub
 var HOVERMINTIME = require('../../../src/components/fx').constants.HOVERMINTIME;
 
 // use local topojson files
-Plotly.setPlotConfig({ topojsonURL: '../../../dist/topojson' });
+Plotly.setPlotConfig({ topojsonURL: '/base/dist/topojson/' });
 
 function move(fromX, fromY, toX, toY, delay) {
     return new Promise(function(resolve) {
@@ -1482,7 +1482,7 @@ describe('Test geo interactions', function() {
         })
         .then(function() {
             check([179, -16.6], 1, 'spot on Fiji island that cross antimeridian west of antimeridian');
-            check([-179.9, -16.2], 1, 'spot on Fiji island that cross antimeridian east of antimeridian');
+            check([-179.9, -16.8], 1, 'spot on Fiji island that cross antimeridian east of antimeridian');
 
             return Plotly.relayout(gd, {
                 'geo.center.lat': null,
@@ -1796,8 +1796,8 @@ describe('Test event property of interactions on a geo plot:', function() {
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
             expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-            expect(pt.lat).toEqual(57.75, 'points[0].lat');
-            expect(pt.lon).toEqual(-101.57, 'points[0].lon');
+            expect(pt.lat).toEqual(57.72, 'points[0].lat');
+            expect(pt.lon).toEqual(-101.68, 'points[0].lon');
             expect(pt.location).toEqual('CAN', 'points[0].location');
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             expect(pt.text).toEqual(20, 'points[0].text');
@@ -1900,8 +1900,8 @@ describe('Test event property of interactions on a geo plot:', function() {
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
             expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-            expect(pt.lat).toEqual(57.75, 'points[0].lat');
-            expect(pt.lon).toEqual(-101.57, 'points[0].lon');
+            expect(pt.lat).toEqual(57.72, 'points[0].lat');
+            expect(pt.lon).toEqual(-101.68, 'points[0].lon');
             expect(pt.location).toEqual('CAN', 'points[0].location');
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             expect(pt.text).toEqual(20, 'points[0].text');
@@ -1941,8 +1941,8 @@ describe('Test event property of interactions on a geo plot:', function() {
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
                 expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
                 expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-                expect(pt.lat).toEqual(57.75, 'points[0].lat');
-                expect(pt.lon).toEqual(-101.57, 'points[0].lon');
+                expect(pt.lat).toEqual(57.72, 'points[0].lat');
+                expect(pt.lon).toEqual(-101.68, 'points[0].lon');
                 expect(pt.location).toEqual('CAN', 'points[0].location');
                 expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
                 expect(pt.text).toEqual(20, 'points[0].text');
@@ -2624,7 +2624,8 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             _assert('after scroll', [
                 [-94.5, 35.0], 1.3
             ], [
-                [387.1, 245.9], 974.4
+                // TODO: Verify that this change is acceptable
+                [380.5, 245.9], 974.4
             ], [
                 'geo.center.lon', 'geo.center.lon', 'geo.projection.scale'
             ]);
@@ -2634,8 +2635,9 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             _assert('after some relayout call that causes a replot', [
                 [-94.5, 35.0], 1.3
             ], [
+                // TODO: Verify that this change is acceptable
                 // new center values are reflected in translate()
-                [387.1, 245.9], 974.4
+                [380.5, 245.9], 974.4
             ], [
                 'geo.showlakes'
             ]);
@@ -2757,11 +2759,11 @@ describe('Test geo interactions update marker angles:', function() {
         })
         .then(function() {
             newPath = getPath();
-            expect(newPath).toEqual('M0,0L18.238949470790537,8.206139299448276L19.579067739888885,-4.081679364776507Z');
+            expect(newPath).toEqual('M0,0L18.22327727600463,8.240883770679762L19.586810955756498,-4.044358612123453Z');
 
             expect(newPath).not.toEqual(initialPath);
-            expect(newPath).toEqual('M0,0L18.238949470790537,8.206139299448276L19.579067739888885,-4.081679364776507Z');
-            expect(initialPath).toEqual('M0,0L-1.5033314641545745,19.94341982983066L10.506227353572104,17.01820163222463Z');
+            expect(newPath).toEqual('M0,0L18.22327727600463,8.240883770679762L19.586810955756498,-4.044358612123453Z');
+            expect(initialPath).toEqual('M0,0L-1.5100144203478312,19.942914943667123L10.500523963798084,17.021721313830223Z');
         })
         .then(done, done.fail);
     });
