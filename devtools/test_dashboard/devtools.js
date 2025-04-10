@@ -77,7 +77,7 @@ var Tabs = {
         };
     },
 
-    // Save a png snapshot and display it below the plot
+    // Save a PNG snapshot and display it below the plot
     snapshot: function(id) {
         var gd = Tabs.getGraph(id);
 
