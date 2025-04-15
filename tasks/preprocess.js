@@ -11,7 +11,6 @@ var updateVersion = require('./util/update_version');
 // main
 makeBuildCSS();
 exposePartsInLib();
-copyTopojsonFiles();
 updateVersion(constants.pathToPlotlyVersion);
 
 // convert scss to css to js and static css file
@@ -71,14 +70,4 @@ function writeLibFiles(obj) {
             ].join('\n')
         );
     }
-}
-
-// copy topojson files from sane-topojson to dist/
-function copyTopojsonFiles() {
-    fs.copy(
-        constants.pathToTopojsonSrc,
-        constants.pathToTopojsonDist,
-        { clobber: true },
-        common.throwOnError
-    );
 }
