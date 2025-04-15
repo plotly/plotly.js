@@ -18,8 +18,6 @@ async function convertShpToGeo(filename) {
     const outputFilePath = `${outputDirGeojson}/${filename}.geojson`;
     const commands = [inputFilePath, `-proj wgs84`, `-o format=geojson ${outputFilePath}`].join(' ');
     await mapshaper.runCommands(commands);
-
-    console.log(`GeoJSON saved to ${outputFilePath}`);
 }
 
 function getJsonFile(filename) {
@@ -32,7 +30,6 @@ function getJsonFile(filename) {
 }
 
 async function createCountriesLayer({ bounds, filter, name, resolution, source }) {
-    console.log(`Building ${resolution}m countries layer for '${name}'`);
     const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/countries.geojson`;
     const commands = [
@@ -43,7 +40,6 @@ async function createCountriesLayer({ bounds, filter, name, resolution, source }
     ].join(' ');
     await mapshaper.runCommands(commands);
     addCentroidsToGeojson(outputFilePath);
-    // TODO: Add simplification command if on 110m resolution? Or take care of somewhere else?
 }
 
 function addCentroidsToGeojson(geojsonPath) {
@@ -62,7 +58,6 @@ function addCentroidsToGeojson(geojsonPath) {
 
 async function createLandLayer({ bounds, name, resolution, source }) {
     // TODO: Figure out way to only include North and Central America via filter, dissolve
-    console.log(`Building ${resolution}m land layer for '${name}'`);
     const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/land.geojson`;
     const commands = [
@@ -75,7 +70,6 @@ async function createLandLayer({ bounds, name, resolution, source }) {
 }
 
 async function createCoastlinesLayer({ bounds, name, resolution, source }) {
-    console.log(`Building ${resolution}m coastlines layer for '${name}'`);
     // TODO: Update source to be a path?
     const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/coastlines.geojson`;
@@ -90,7 +84,6 @@ async function createCoastlinesLayer({ bounds, name, resolution, source }) {
 }
 
 async function createOceanLayer({ bounds, name, resolution, source }) {
-    console.log(`Building ${resolution}m ocean layer for '${name}'`);
     const inputFilePath = `./tasks/topojson/world_rectangle.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/ocean.geojson`;
     const eraseFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
@@ -104,7 +97,6 @@ async function createOceanLayer({ bounds, name, resolution, source }) {
 }
 
 async function createRiversLayer({ name, resolution, source }) {
-    console.log(`Building ${resolution}m rivers layer for '${name}'`);
     const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/rivers.geojson`;
     const commands = [
@@ -116,7 +108,6 @@ async function createRiversLayer({ name, resolution, source }) {
 }
 
 async function createLakesLayer({ name, resolution, source }) {
-    console.log(`Building ${resolution}m lakes layer for '${name}'`);
     const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/lakes.geojson`;
     const commands = [
@@ -128,7 +119,6 @@ async function createLakesLayer({ name, resolution, source }) {
 }
 
 async function createSubunitsLayer({ name, resolution, source }) {
-    console.log(`Building ${resolution}m subunits layer for '${name}'`);
     const filter = ['AUS', 'BRA', 'CAN', 'USA'].map((id) => `adm0_a3 === "${id}"`).join(' || ');
     const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/subunits.geojson`;
@@ -211,10 +201,7 @@ function getCentroid(feature) {
 
 async function convertLayersToTopojson({ name, resolution }) {
     const regionDir = path.join(outputDirGeojson, `${name}_${resolution}m`);
-    if (!fs.existsSync(regionDir)) {
-        console.log(`Couldn't find ${regionDir}`);
-        return;
-    }
+    if (!fs.existsSync(regionDir)) return;
 
     const outputFile = `${outputDirTopojson}/${name}_${resolution}m.json`;
     // Layer names default to file names
@@ -225,8 +212,6 @@ async function convertLayersToTopojson({ name, resolution }) {
     const topojson = getJsonFile(outputFile);
     const prunedTopojson = pruneProperties(topojson);
     fs.writeFileSync(outputFile, JSON.stringify(prunedTopojson));
-
-    console.log(`Topojson saved to: ${outputFile}`);
 }
 
 // Get polygon features from UN GeoJSON
