@@ -69,11 +69,7 @@ const config = {
     outputDirTopojson: './dist/topojson',
     inputDir: './build/geodata',
     vectors: {
-        // 'coastlines', 'countries', and 'land' are derived from UN geodata
-        ocean: {
-            source: 'ocean',
-            type: 'physical'
-        },
+        // 'coastlines', 'countries', 'land', and 'ocean' are derived from UN geodata
         lakes: {
             source: 'lakes',
             type: 'physical'

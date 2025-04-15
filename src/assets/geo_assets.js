@@ -8,7 +8,7 @@ const topojson = {
   'north-america_110m': require('../../dist/topojson/north-america_110m.json'),
   oceania_110m: require('../../dist/topojson/oceania_110m.json'),
   'south-america_110m': require('../../dist/topojson/south-america_110m.json'),
-  usa_110m: require('../../dist/topojson/usa_110m'),
+  usa_110m: require('../../dist/topojson/usa_110m.json'),
   world_110m: require('../../dist/topojson/world_110m.json'),
   africa_50m: require('../../dist/topojson/africa_50m.json'),
   antarctica_50m: require('../../dist/topojson/antarctica_50m.json'),
