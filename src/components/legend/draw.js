@@ -770,24 +770,28 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var legendGroupWidths = {};
 
     
-    if(legendObj.yref === 'paper') {
+    var { maxheight, orientation, yref } = legendObj;
+    var heightToBeScaled = orientation === "v" && yref === "paper" ? gs.h : fullLayout.height;
+    legendObj._maxHeight = maxheight > 1 ? maxheight : maxheight * heightToBeScaled;
+
+    if (legendObj.yref === 'paper') {
         isBelowPlotArea = legendObj.y < 0 || (legendObj.y === 0 && yanchor === 'top');
         isAbovePlotArea = legendObj.y > 1 || (legendObj.y === 1 && yanchor === 'bottom');
-        
-        var { maxheight, orientation, yref } = legendObj;
-        var heightToBeScaled = orientation === "v" && yref === "paper" ? gs.h : fullLayout.height;
-        legendObj._maxHeight = Math.max(maxheight > 1 ? maxheight : maxheight * heightToBeScaled, 30);
     } else {
         isBelowPlotArea = legendObj.y * fullLayout.height < gs.b || (legendObj.y * fullLayout.height === gs.b && yanchor === 'top');
         isAbovePlotArea = legendObj.y * fullLayout.height > gs.b + gs.h || (legendObj.y * fullLayout.height === gs.b + gs.h && yanchor === 'bottom');
-        if(yanchor === 'top')
-            legendObj._maxHeight = legendObj.y * fullLayout.height;
-        else if(yanchor === 'bottom')
-            legendObj._maxHeight = (1 - legendObj.y) * fullLayout.height;
-        else // if (yanchor === 'middle')
-            legendObj._maxHeight = 2 * Math.min(1 - legendObj.y, legendObj.y) * fullLayout.height;
-        legendObj._maxHeight = Math.max(legendObj._maxHeight, 30);
+        var maxAvailableHeight;
+        if (yanchor === 'top') {
+            maxAvailableHeight = legendObj.y * fullLayout.height;
+        } else if (yanchor === 'bottom') {
+            maxAvailableHeight = (1 - legendObj.y) * fullLayout.height;
+        } else {
+            // yanchor is 'middle' or 'auto'
+            maxAvailableHeight = 2 * Math.min(1 - legendObj.y, legendObj.y) * fullLayout.height;
+        }
+        legendObj._maxHeight = Math.min(legendObj._maxHeight, maxAvailableHeight)
     }
+    legendObj._maxHeight = Math.max(legendObj._maxHeight, 30);
 
     var toggleRectWidth = 0;
     legendObj._width = 0;
