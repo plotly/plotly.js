@@ -66,6 +66,10 @@ else :
 # unable to generate baselines for the following mocks
 blacklist = [
     'map_stamen-style',
+    'map_predefined-styles2',
+    'map_scattercluster',
+    'map_fonts-supported-open-sans',
+    'map_fonts-supported-open-sans-weight',
 ]
 allNames = [a for a in allNames if a not in blacklist]
 
