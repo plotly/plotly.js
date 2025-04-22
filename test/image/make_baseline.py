@@ -67,6 +67,7 @@ else :
 blacklist = [
     'map_stamen-style',
     'map_predefined-styles2',
+    'map_scattercluster',
 ]
 allNames = [a for a in allNames if a not in blacklist]
 
