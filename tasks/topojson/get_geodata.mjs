@@ -6,7 +6,6 @@ import config, { getNEDownloadUrl, getNEFilename } from './config.mjs';
 
 const { resolutions, unDownloadUrl, unFilename, vectors } = config;
 
-const tasksPath = './tasks/topojson';
 const outputPath = './build/geodata';
 
 // Download Natural Earth vector maps
@@ -39,7 +38,7 @@ for (const vector of Object.values(vectors)) {
 
 // Download UN GeoJSON file
 const url = unDownloadUrl;
-const archivePath = `${tasksPath}/${unFilename}.zip`;
+const archivePath = `${outputPath}/${unFilename}.zip`;
 const geojsonPath = `${outputPath}`;
 const geojsonFilePath = `${geojsonPath}/${unFilename}.geojson`;
 
