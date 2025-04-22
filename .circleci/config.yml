@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  browser-tools: circleci/browser-tools@1.4.8
+  browser-tools: circleci/browser-tools@1.5.1
 
 # Inspired by:
 # https://github.com/CircleCI-Public/circleci-demo-workflows/blob/workspace-forwarding/.circleci/config.yml
@@ -464,12 +464,6 @@ jobs:
       - run:
           name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
           command: diff --unified --color dist/plot-schema.json test/plot-schema.json
-      - run:
-          name: Test plotly.min.js import using amdefine
-          command: npm run test-amdefine
-      - run:
-          name: Test plotly.min.js import using requirejs
-          command: npm run test-requirejs
 
   test-stackgl-bundle:
     docker:

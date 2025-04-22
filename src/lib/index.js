@@ -189,6 +189,7 @@ lib.removeElement = domModule.removeElement;
 lib.addStyleRule = domModule.addStyleRule;
 lib.addRelatedStyleRule = domModule.addRelatedStyleRule;
 lib.deleteRelatedStyleRule = domModule.deleteRelatedStyleRule;
+lib.setStyleOnHover = domModule.setStyleOnHover;
 lib.getFullTransformMatrix = domModule.getFullTransformMatrix;
 lib.getElementTransformMatrix = domModule.getElementTransformMatrix;
 lib.getElementAndAncestors = domModule.getElementAndAncestors;
@@ -754,10 +755,6 @@ lib.containsAny = function(s, fragments) {
     return false;
 };
 
-lib.isIE = function() {
-    return typeof window.navigator.msSaveBlob !== 'undefined';
-};
-
 var IS_SAFARI_REGEX = /Version\/[\d\.]+.*Safari/;
 lib.isSafari = function() {
     return IS_SAFARI_REGEX.test(window.navigator.userAgent);
@@ -1070,9 +1067,9 @@ lib.templateString = function(string, obj) {
             v = obj[key];
         } else {
             getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
-            v = getterCache[key]();
+            v = getterCache[key](true);  // true means don't replace undefined with null
         }
-        return lib.isValidTextValue(v) ? v : '';
+        return (v !== undefined) ? v : '';
     });
 };
 
@@ -1135,9 +1132,6 @@ function templateFormatString(string, labels, d3locale) {
     var opts = this;
     var args = arguments;
     if(!labels) labels = {};
-    // Not all that useful, but cache nestedProperty instantiation
-    // just in case it speeds things up *slightly*:
-    var getterCache = {};
 
     return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, rawKey, format) {
         var isOther =
@@ -1188,9 +1182,8 @@ function templateFormatString(string, labels, d3locale) {
                 }
 
                 if(!SIMPLE_PROPERTY_REGEX.test(key)) {
-                    value = lib.nestedProperty(obj, key).get();
-                    value = getterCache[key] || lib.nestedProperty(obj, key).get();
-                    if(value) getterCache[key] = value;
+                    // true here means don't convert null to undefined
+                    value = lib.nestedProperty(obj, key).get(true);
                 }
                 if(value !== undefined) break;
             }

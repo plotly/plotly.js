@@ -70,18 +70,16 @@
    "error_y": {
     "type": "constant",
     "value": 0.1,
-    "color": "#85144B",
+    "color": "#85144BCC",
     "thickness": 1.5,
-    "width": 3,
-    "opacity": 1
+    "width": 3
    },
    "error_x": {
     "type": "constant",
     "value": 0.2,
-    "color": "#85144B",
+    "color": "#85144B44",
     "thickness": 1.5,
-    "width": 3,
-    "opacity": 1
+    "width": 3
    },
    "marker": {
     "color": "#85144B",

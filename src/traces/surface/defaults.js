@@ -121,13 +121,6 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce(contourDim + '.size');
     }
 
-    // backward compatibility block
-    if(!surfaceColor) {
-        mapLegacy(traceIn, 'zmin', 'cmin');
-        mapLegacy(traceIn, 'zmax', 'cmax');
-        mapLegacy(traceIn, 'zauto', 'cauto');
-    }
-
     // TODO if contours.?.usecolormap are false and hidesurface is true
     // the colorbar shouldn't be shown by default
 
@@ -152,12 +145,6 @@ function opacityscaleDefaults(traceIn, traceOut, layout, coerce) {
         traceOut.opacityscale = createWave(1, MIN);
     } else if(!isValidScaleArray(opacityscale)) {
         traceOut.opacityscale = undefined;
-    }
-}
-
-function mapLegacy(traceIn, oldAttr, newAttr) {
-    if(oldAttr in traceIn && !(newAttr in traceIn)) {
-        traceIn[newAttr] = traceIn[oldAttr];
     }
 }
 

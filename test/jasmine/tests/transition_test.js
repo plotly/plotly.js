@@ -106,7 +106,7 @@ describe('Plots.transition', function() {
             var pythonLogo = 'https://images.plot.ly/language-icons/api-home/python-logo.png';
 
             function imageel() {
-                return gd._fullLayout._imageUpperLayer.select('image').node();
+                return gd._fullLayout._imageUpperLayer.node().querySelector('image');
             }
             function imagesrc() {
                 return imageel().getAttribute('href');
@@ -190,42 +190,6 @@ describe('Plots.transition', function() {
 
                 expect(d3).toEqual(d2);
                 expect(s3).not.toEqual(s2);
-            }).then(done, done.fail);
-        });
-
-
-        it('with duration:' + transitionDuration + ', transitions a transform', function(done) {
-            Plotly.restyle(gd, {
-                'transforms[0]': {
-                    enabled: true,
-                    type: 'filter',
-                    operation: '<',
-                    target: 'x',
-                    value: 10
-                }
-            }, [0]).then(function() {
-                expect(gd._fullData[0].transforms).toEqual([jasmine.objectContaining({
-                    enabled: true,
-                    type: 'filter',
-                    operation: '<',
-                    target: 'x',
-                    value: 10
-                })]);
-
-                return Plots.transition(gd, [{
-                    'transforms[0].operation': '>'
-                }], null, [0],
-                    {redraw: true, duration: transitionDuration},
-                    {duration: transitionDuration, easing: 'cubic-in-out'}
-                );
-            }).then(function() {
-                expect(gd._fullData[0].transforms).toEqual([jasmine.objectContaining({
-                    enabled: true,
-                    type: 'filter',
-                    operation: '>',
-                    target: 'x',
-                    value: 10
-                })]);
             }).then(done, done.fail);
         });
 

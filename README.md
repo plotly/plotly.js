@@ -1,7 +1,7 @@
 <a href="https://plotly.com/javascript/"><img src="https://images.plot.ly/logo/plotlyjs-logo@2x.png" height="70"></a>
 
 [![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
-[![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
+[![circle ci](https://circleci.com/gh/plotly/plotly.js.svg?style=shield)](https://circleci.com/gh/plotly/plotly.js)
 [![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/master/LICENSE)
 
 [Plotly.js](https://plotly.com/javascript) is a standalone Javascript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](http://plotly.com/r)).
@@ -62,7 +62,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 
 ```html
 <head>
-    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="gd"></div>
@@ -79,7 +79,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 Alternatively you may consider using [native ES6 import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in the script tag.
 ```html
 <script type="module">
-    import "https://cdn.plot.ly/plotly-2.35.2.min.js"
+    import "https://cdn.plot.ly/plotly-3.0.1.min.js"
     Plotly.newPlot("gd", [{ y: [1, 2, 3] }])
 </script>
 ```
@@ -89,7 +89,7 @@ Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastl
 ### Un-minified versions are also available on CDN
 While non-minified source files may contain characters outside UTF-8, it is recommended that you specify the `charset` when loading those bundles.
 ```html
-<script src="https://cdn.plot.ly/plotly-2.35.2.js" charset="utf-8"></script>
+<script src="https://cdn.plot.ly/plotly-3.0.1.js" charset="utf-8"></script>
 ```
 
 > Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.5. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.

@@ -452,11 +452,6 @@ function setPlotContext(gd, config) {
             }
         }
 
-        // map plot3dPixelRatio to plotGlPixelRatio for backward compatibility
-        if(config.plot3dPixelRatio && !context.plotGlPixelRatio) {
-            context.plotGlPixelRatio = context.plot3dPixelRatio;
-        }
-
         // now deal with editable and edits - first editable overrides
         // everything, then edits refines
         var editable = config.editable;
@@ -1397,8 +1392,6 @@ function _restyle(gd, aobj, traces) {
     var eventData = Lib.extendDeepAll({}, aobj);
     var i;
 
-    cleanDeprecatedAttributeKeys(aobj);
-
     // initialize flags
     var flags = editTypes.traceFlags();
 
@@ -1701,49 +1694,6 @@ function _restyle(gd, aobj, traces) {
 }
 
 /**
- * Converts deprecated attribute keys to
- * the current API to ensure backwards compatibility.
- *
- * This is needed for the update mechanism to determine which
- * subroutines to run based on the actual attribute
- * definitions (that don't include the deprecated ones).
- *
- * E.g. Maps {'xaxis.title': 'A chart'} to {'xaxis.title.text': 'A chart'}
- * and {titlefont: {...}} to {'title.font': {...}}.
- *
- * @param aobj
- */
-function cleanDeprecatedAttributeKeys(aobj) {
-    var oldAxisTitleRegex = Lib.counterRegex('axis', '\.title', false, false);
-    var colorbarRegex = /colorbar\.title$/;
-    var keys = Object.keys(aobj);
-    var i, key, value;
-
-    for(i = 0; i < keys.length; i++) {
-        key = keys[i];
-        value = aobj[key];
-
-        if((key === 'title' || oldAxisTitleRegex.test(key) || colorbarRegex.test(key)) &&
-          (typeof value === 'string' || typeof value === 'number')) {
-            replace(key, key.replace('title', 'title.text'));
-        } else if(key.indexOf('titlefont') > -1 && key.indexOf('grouptitlefont') === -1) {
-            replace(key, key.replace('titlefont', 'title.font'));
-        } else if(key.indexOf('titleposition') > -1) {
-            replace(key, key.replace('titleposition', 'title.position'));
-        } else if(key.indexOf('titleside') > -1) {
-            replace(key, key.replace('titleside', 'title.side'));
-        } else if(key.indexOf('titleoffset') > -1) {
-            replace(key, key.replace('titleoffset', 'title.offset'));
-        }
-    }
-
-    function replace(oldAttrStr, newAttrStr) {
-        aobj[newAttrStr] = aobj[oldAttrStr];
-        delete aobj[oldAttrStr];
-    }
-}
-
-/**
  * relayout: update layout attributes of an existing plot
  *
  * Can be called two ways:
@@ -1926,7 +1876,6 @@ function _relayout(gd, aobj) {
 
     var arrayStr, i, j;
 
-    cleanDeprecatedAttributeKeys(aobj);
     keys = Object.keys(aobj);
 
     // look for 'allaxes', split out into all axes
@@ -2190,8 +2139,6 @@ function _relayout(gd, aobj) {
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))
             ) {
-                flags.plot = true;
-            } else if(fullLayout._has('gl2d')) {
                 flags.plot = true;
             } else if(valObject) editTypes.update(flags, valObject);
             else flags.calc = true;
@@ -2835,7 +2782,6 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
     for(i = 0; i < oldFullData.length; i++) {
         if(newFullData[i]) {
             trace = newFullData[i]._fullInput;
-            if(Plots.hasMakesDataTransform(trace)) trace = newFullData[i];
             if(seenUIDs[trace.uid]) continue;
             seenUIDs[trace.uid] = 1;
 
@@ -2863,6 +2809,32 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
 
     function getLayoutValObject(parts) {
         return PlotSchema.getLayoutValObject(newFullLayout, parts);
+    }
+
+    // Clear out any _inputDomain that's no longer valid
+    for (var key in newFullLayout) {
+        if (!key.startsWith('xaxis') && !key.startsWith('yaxis')) {
+            continue;
+        }
+        if (!oldFullLayout[key]) {
+            continue;
+        }
+        var newDomain = newFullLayout[key].domain;
+        var oldDomain = oldFullLayout[key].domain;
+        var oldInputDomain = oldFullLayout[key]._inputDomain;
+        if (oldFullLayout[key]._inputDomain) {
+            if (newDomain[0] === oldInputDomain[0] && newDomain[1] === oldInputDomain[1]) {
+                // what you're asking for hasn't changed, so let plotly.js start with what it
+                // concluded last time and iterate from there
+                newFullLayout[key].domain = oldFullLayout[key].domain;
+            } else if (newDomain[0] !== oldDomain[0] || newDomain[1] !== oldDomain[1]) {
+                // what you're asking for HAS changed, so clear _inputDomain and let us start from scratch
+                newFullLayout[key]._inputDomain = null;
+            }
+            // We skip the else case (newDomain !== oldInputDomain && newDomain === oldDomain)
+            // because it's likely that if the newDomain and oldDomain are the same, the user
+            // passed in the same layout object and we should keep the _inputDomain.
+        }
     }
 
     var diffOpts = {
@@ -2915,11 +2887,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         // track cartesian axes with altered ranges
         if(AX_RANGE_RE.test(astr) || AX_AUTORANGE_RE.test(astr)) {
             flags.rangesAltered[outerparts[0]] = 1;
-        }
-
-        // clear _inputDomain on cartesian axes with altered domains
-        if(AX_DOMAIN_RE.test(astr)) {
-            nestedProperty(newContainer, '_inputDomain').set(null);
         }
 
         // track datarevision changes
@@ -3704,7 +3671,25 @@ function makePlotFramework(gd) {
     fullLayout._container.enter()
         .insert('div', ':first-child')
         .classed('plot-container', true)
-        .classed('plotly', true);
+        .classed('plotly', true)
+        // The plot container should always take the full with the height of its
+        // parent (the graph div). This ensures that for responsive plots
+        // without a height or width set, the paper div will take up the full
+        // height & width of the graph div. 
+        // So, for responsive plots without a height or width set, if the plot
+        // container's height is left to 'auto', its height will be dictated by
+        // its childrens' height. (The plot container's only child is the paper
+        // div.) 
+        // In this scenario, the paper div's height will be set to 100%,
+        // which will be 100% of the plot container's auto height. That is
+        // meaninglesss, so the browser will use the paper div's children to set
+        // the height of the plot container instead. However, the paper div's
+        // children do not have any height, because they are all positioned
+        // absolutely, and therefore take up no space.
+        .style({
+            width: "100%",
+            height: "100%"
+        });
 
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);

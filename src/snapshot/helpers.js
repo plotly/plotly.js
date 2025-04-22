@@ -7,7 +7,6 @@ exports.getDelay = function(fullLayout) {
 
     return (
         fullLayout._has('gl3d') ||
-        fullLayout._has('gl2d') ||
         fullLayout._has('mapbox') ||
         fullLayout._has('map')
     ) ? 500 : 0;
@@ -64,5 +63,3 @@ function fixBinary(b) {
 }
 
 exports.IMAGE_URL_PREFIX = /^data:image\/\w+;base64,/;
-
-exports.MSG_IE_BAD_FORMAT = 'Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.';

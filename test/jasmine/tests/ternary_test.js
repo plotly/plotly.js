@@ -21,7 +21,7 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var SORTED_EVENT_KEYS = [
     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-    'xaxis', 'yaxis', 'a', 'b', 'c',
+    'xaxis', 'yaxis', 'a', 'b', 'c', 'id',
     'bbox'
 ].sort();
 
@@ -392,16 +392,15 @@ describe('ternary plots', function() {
             _assert('b', 'chocolate', '"Open Sans", verdana, arial, sans-serif', rgb('#0f0'), 14);
             _assert('c', 'Component C', '"Open Sans", verdana, arial, sans-serif', rgb('#444'), 14);
 
-            // Note: Different update notations to also test legacy title structures
             return Plotly.relayout(gd, {
                 'ternary.aaxis.title.text': 'chips',
                 'ternary.aaxis.title.font.color': 'yellow',
-                'ternary.aaxis.titlefont.family': 'monospace',
-                'ternary.aaxis.titlefont.size': 16,
-                'ternary.baxis.title': 'white chocolate',
+                'ternary.aaxis.title.font.family': 'monospace',
+                'ternary.aaxis.title.font.size': 16,
+                'ternary.baxis.title.text': 'white chocolate',
                 'ternary.baxis.title.font.color': 'blue',
-                'ternary.baxis.titlefont.family': 'sans-serif',
-                'ternary.baxis.titlefont.size': 10,
+                'ternary.baxis.title.font.family': 'sans-serif',
+                'ternary.baxis.title.font.size': 10,
                 'ternary.caxis.title': {
                     text: 'candy',
                     font: {

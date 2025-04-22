@@ -54,14 +54,12 @@ proto.update = function(graphInfo, buttons) {
     }
 
     var style = fullLayout.modebar;
-    var bgSelector = context.displayModeBar === 'hover' ? '.js-plotly-plot .plotly:hover ' : '';
 
-    Lib.deleteRelatedStyleRule(modeBarId);
-    Lib.addRelatedStyleRule(modeBarId, bgSelector + '#' + modeBarId + ' .modebar-group', 'background-color: ' + style.bgcolor);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn .icon path', 'fill: ' + style.color);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + style.activecolor);
-    Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn.active .icon path', 'fill: ' + style.activecolor);
-
+    // set style for modebar-group directly instead of inline CSS that's not allowed by strict CSP's
+    var groupSelector = '#' + modeBarId + ' .modebar-group';
+    document.querySelectorAll(groupSelector).forEach(function(group) {
+        group.style.backgroundColor = style.bgcolor;
+    });
     // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons);
     var needsNewLogo = (this.hasLogo !== context.displaylogo);
@@ -91,6 +89,10 @@ proto.update = function(graphInfo, buttons) {
     }
 
     this.updateActiveButton();
+
+    // set styles on hover using event listeners instead of inline CSS that's not allowed by strict CSP's
+    Lib.setStyleOnHover('#' + modeBarId + ' .modebar-btn', '.active', '.icon path', 'fill: ' + style.activecolor, 'fill: ' + style.color, this.element);
+
 };
 
 proto.updateButtons = function(buttons) {
@@ -129,6 +131,10 @@ proto.updateButtons = function(buttons) {
 proto.createGroup = function() {
     var group = document.createElement('div');
     group.className = 'modebar-group';
+
+    var style = this.graphInfo._fullLayout.modebar;
+    group.style.backgroundColor = style.bgcolor;
+
     return group;
 };
 
@@ -246,11 +252,27 @@ proto.updateActiveButton = function(buttonClicked) {
         var isToggleButton = (button.getAttribute('data-toggle') === 'true');
         var button3 = d3.select(button);
 
+        // set style on button based on its state at the moment this is called
+        // (e.g. during the handling when a modebar button is clicked)
+        var updateButtonStyle = function(button, isActive) {
+            var style = fullLayout.modebar;
+            var childEl = button.querySelector('.icon path');
+            if(childEl) {
+                if(isActive || button.matches(':hover')) {
+                    childEl.style.fill = style.activecolor;
+                } else {
+                    childEl.style.fill = style.color;
+                }
+            }
+        };
+
         // Use 'data-toggle' and 'buttonClicked' to toggle buttons
         // that have no one-to-one equivalent in fullLayout
         if(isToggleButton) {
             if(dataAttr === dataAttrClicked) {
-                button3.classed('active', !button3.classed('active'));
+                var isActive = !button3.classed('active');
+                button3.classed('active', isActive);
+                updateButtonStyle(button, isActive);
             }
         } else {
             var val = (dataAttr === null) ?
@@ -258,6 +280,7 @@ proto.updateActiveButton = function(buttonClicked) {
                 Lib.nestedProperty(fullLayout, dataAttr).get();
 
             button3.classed('active', val === thisval);
+            updateButtonStyle(button, val === thisval);
         }
     });
 };
@@ -317,7 +340,6 @@ proto.removeAllButtons = function() {
 
 proto.destroy = function() {
     Lib.removeElement(this.container.querySelector('.modebar'));
-    Lib.deleteRelatedStyleRule(this._uid);
 };
 
 function createModeBar(gd, buttons) {

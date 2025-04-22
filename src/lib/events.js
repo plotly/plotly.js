@@ -1,7 +1,5 @@
 'use strict';
 
-/* global jQuery:false */
-
 var EventEmitter = require('events').EventEmitter;
 
 var Events = {
@@ -56,17 +54,7 @@ var Events = {
         plotObj._removeInternalListener = internalEv.removeListener.bind(internalEv);
         plotObj._removeAllInternalListeners = internalEv.removeAllListeners.bind(internalEv);
 
-        /*
-         * We must wrap emit to continue to support JQuery events. The idea
-         * is to check to see if the user is using JQuery events, if they are
-         * we emit JQuery events to trigger user handlers as well as the EventEmitter
-         * events.
-         */
         plotObj.emit = function(event, data) {
-            if(typeof jQuery !== 'undefined') {
-                jQuery(plotObj).trigger(event, data);
-            }
-
             ev.emit(event, data);
             internalEv.emit(event, data);
         };
@@ -77,29 +65,19 @@ var Events = {
     /*
      * This function behaves like jQuery's triggerHandler. It calls
      * all handlers for a particular event and returns the return value
-     * of the LAST handler. This function also triggers jQuery's
-     * triggerHandler for backwards compatibility.
+     * of the LAST handler.
      */
     triggerHandler: function(plotObj, event, data) {
-        var jQueryHandlerValue;
         var nodeEventHandlerValue;
-
-        /*
-         * If jQuery exists run all its handlers for this event and
-         * collect the return value of the LAST handler function
-         */
-        if(typeof jQuery !== 'undefined') {
-            jQueryHandlerValue = jQuery(plotObj).triggerHandler(event, data);
-        }
 
         /*
          * Now run all the node style event handlers
          */
         var ev = plotObj._ev;
-        if(!ev) return jQueryHandlerValue;
+        if(!ev) return;
 
         var handlers = ev._events[event];
-        if(!handlers) return jQueryHandlerValue;
+        if(!handlers) return;
 
         // making sure 'this' is the EventEmitter instance
         function apply(handler) {
@@ -129,14 +107,7 @@ var Events = {
         // now call the final handler and collect its value
         nodeEventHandlerValue = apply(handlers[i]);
 
-        /*
-         * Return either the jQuery handler value if it exists or the
-         * nodeEventHandler value. jQuery event value supersedes nodejs
-         * events for backwards compatibility reasons.
-         */
-        return jQueryHandlerValue !== undefined ?
-            jQueryHandlerValue :
-            nodeEventHandlerValue;
+        return nodeEventHandlerValue;
     },
 
     purge: function(plotObj) {

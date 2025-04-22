@@ -160,7 +160,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
                 x1 += dx;
                 y0 += dy;
                 y1 += dy;
-            } // TODO: handle heatmapgl
+            }
 
             eventData.bbox = {
                 x0: x0 + gLeft,

@@ -5,7 +5,6 @@ import common from './util/common.js';
 import _bundle from './util/bundle_wrapper.mjs';
 
 var header = constants.licenseDist + '\n';
-var allTransforms = constants.allTransforms;
 var allTraces = constants.allTraces;
 var mainIndex = constants.mainIndex;
 var strictIndex = constants.strictIndex;
@@ -18,7 +17,6 @@ export default function partialBundle(tasks, opts) {
     var dist = opts.dist;
     var distMin = opts.distMin;
     var traceList = opts.traceList;
-    var transformList = opts.transformList;
     var calendars = opts.calendars;
     var strict = opts.strict;
 
@@ -27,8 +25,8 @@ export default function partialBundle(tasks, opts) {
         tasks.push(function(done) {
             var partialIndex = (strict) ? strictIndex : mainIndex;
 
-            var all = ['calendars'].concat(allTransforms).concat(allTraces);
-            var includes = (calendars ? ['calendars'] : []).concat(transformList).concat(traceList);
+            var all = ['calendars'].concat(allTraces);
+            var includes = (calendars ? ['calendars'] : []).concat(traceList);
             var excludes = all.filter(function(e) { return includes.indexOf(e) === -1; });
 
             excludes.forEach(function(t) {

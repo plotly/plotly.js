@@ -1,5 +1,5 @@
 # Custom bundle
-You can simply make custom bundles yourself, if none of the [distributed packages](https://github.com/plotly/plotly.js/blob/master/dist/README.md) meet your needs, or you want to make a more optimized bundle file with/without specific traces and transforms.
+You can simply make custom bundles yourself, if none of the [distributed packages](https://github.com/plotly/plotly.js/blob/master/dist/README.md) meet your needs, or you want to make a more optimized bundle file with/without specific traces.
 
 Make sure you have the versions of node/npm that's recommended:
 - plotly.js before 2.5: Node 12/npm 6
@@ -27,7 +27,7 @@ cd plotly.js
 npm i
 ```
 
-By default all traces and transforms are included in the bundle if you simply run:
+By default all traces are included in the bundle if you simply run:
 ```sh
 npm run custom-bundle
 ```
@@ -38,16 +38,6 @@ npm run custom-bundle -- --traces scatter,scattergl,scatter3d
 ```
 Please note that the `scatter` trace is currently included in all bundles and cannot be removed.
 [This behaviour may change in the future](https://github.com/plotly/plotly.js/pull/5535), so we recommend that you explicitly include `scatter` anyway if you need it in your bundle.
-
-Use the `transforms` option to specify which should be included.
-```sh
-npm run custom-bundle -- --transforms sort,filter
-```
-
-Or use `transforms none` to exclude them all.
-```sh
-npm run custom-bundle -- --transforms none
-```
 
 Use the `strict` option to use strict trace types where possible.
 ```sh
@@ -66,15 +56,14 @@ npm run custom-bundle -- --unminified
 ```
 
 # Example illustrating use of different options together
-To create an unminified custom bundle named `myScatters` including `scatter`, `scattergl` and `scatter3d` traces without any transforms:
+To create an unminified custom bundle named `myScatters` including `scatter`, `scattergl` and `scatter3d` traces:
 ```sh
 npm run custom-bundle -- \
     --unminified \
     --out myScatters \
     --traces scatter,scattergl,scatter3d \
-    --transforms none
 ```
 Or simply on one line:
 ```sh
-npm run custom-bundle -- --unminified --out myScatters --traces scatter,scattergl,scatter3d --transforms none
+npm run custom-bundle -- --unminified --out myScatters --traces scatter,scattergl,scatter3d
 ```

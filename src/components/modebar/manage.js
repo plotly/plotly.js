@@ -107,7 +107,6 @@ function getButtonGroups(gd) {
     var hasGeo = fullLayout._has('geo');
     var hasPie = fullLayout._has('pie');
     var hasFunnelarea = fullLayout._has('funnelarea');
-    var hasGL2D = fullLayout._has('gl2d');
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
     var hasMap = fullLayout._has('map');
@@ -155,7 +154,7 @@ function getButtonGroups(gd) {
     var resetGroup = [];
     var dragModeGroup = [];
 
-    if((hasCartesian || hasGL2D || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasMap + hasPolar + hasSmith > 1) {
+    if((hasCartesian || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasMap + hasPolar + hasSmith > 1) {
         // graphs with more than one plot types get 'union buttons'
         // which reset the view or toggle hover labels across all subplots.
         hoverGroup = ['toggleHover'];
@@ -175,8 +174,6 @@ function getButtonGroups(gd) {
         zoomGroup = ['zoomInMap', 'zoomOutMap'];
         hoverGroup = ['toggleHover'];
         resetGroup = ['resetViewMap'];
-    } else if(hasGL2D) {
-        hoverGroup = ['hoverClosestGl2d'];
     } else if(hasPie) {
         hoverGroup = ['hoverClosestPie'];
     } else if(hasSankey) {
@@ -196,14 +193,14 @@ function getButtonGroups(gd) {
         hoverGroup = [];
     }
 
-    if((hasCartesian || hasGL2D) && !allAxesFixed) {
+    if(hasCartesian && !allAxesFixed) {
         zoomGroup = ['zoomIn2d', 'zoomOut2d', 'autoScale2d'];
         if(resetGroup[0] !== 'resetViews') resetGroup = ['resetScale2d'];
     }
 
     if(hasGL3D) {
         dragModeGroup = ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'];
-    } else if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
+    } else if((hasCartesian && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     } else if(hasMapbox || hasMap || hasGeo) {
         dragModeGroup = ['pan2d'];
@@ -248,14 +245,12 @@ function getButtonGroups(gd) {
                     enableHover('hoverClosestCartesian');
                     enableHover('hoverClosestGeo');
                     enableHover('hoverClosest3d');
-                    enableHover('hoverClosestGl2d');
                     enableHover('hoverClosestPie');
                 } else if(b === 'v1hovermode') {
                     enableHover('hoverClosestCartesian');
                     enableHover('hoverCompareCartesian');
                     enableHover('hoverClosestGeo');
                     enableHover('hoverClosest3d');
-                    enableHover('hoverClosestGl2d');
                     enableHover('hoverClosestPie');
                 }
             } else newList.push(b);

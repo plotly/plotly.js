@@ -60,8 +60,13 @@ exports.getClosest = function(cd, distfn, pointData) {
         // this is the longest loop... if this bogs down, we may need
         // to create pre-sorted data (by x or y), not sure how to
         // do this for 'closest'
-        for(var i = 0; i < cd.length; i++) {
-            var newDistance = distfn(cd[i]);
+
+        // defined outside the for to improve the garbage collector performance
+        var newDistance = Infinity;
+        // the browser engine typically optimizes the length, but it is outside the cycle if it does not
+        var len = cd.length
+        for(var i = 0; i < len; i++) {
+            newDistance = distfn(cd[i]);
             if(newDistance <= pointData.distance) {
                 pointData.index = i;
                 pointData.distance = newDistance;

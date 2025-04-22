@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Johnson"
+  given-names: "Alex"
+  orcid: https://orcid.org/0000-0003-4623-4147
+- family-names: "Tétreault-Pinard"
+  given-names: "Étienne"
+- family-names: "Samimi"
+  given-names: "Mojtaba"
+title: "Open source Plotly charting library"
+version: 3.0.1
+doi: 10.5281/zenodo.13964707
+date-released: 2025-01-27
+url: "https://github.com/plotly/plotly.js"

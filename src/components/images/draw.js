@@ -73,7 +73,7 @@ module.exports = function draw(gd) {
 
         thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
-        if(d.source && d.source.slice(0, 5) === 'data:') {
+        if(!gd._context.staticPlot || (d.source && d.source.slice(0, 5) === 'data:')) {
             thisImage.attr('xlink:href', d.source);
             this._imgSrc = d.source;
         } else {
@@ -203,10 +203,16 @@ module.exports = function draw(gd) {
         );
     }
 
+    function imgDataFunc(d) {
+        return [d.xref, d.x, d.sizex, d.yref, d.y, d.sizey].join('_');
+    }
+
+    function imgSort(a, b) { return a._index - b._index; }
+
     var imagesBelow = fullLayout._imageLowerLayer.selectAll('image')
-        .data(imageDataBelow);
+        .data(imageDataBelow, imgDataFunc);
     var imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
-        .data(imageDataAbove);
+        .data(imageDataAbove, imgDataFunc);
 
     imagesBelow.enter().append('image');
     imagesAbove.enter().append('image');
@@ -222,6 +228,8 @@ module.exports = function draw(gd) {
         setImage.bind(this)(d);
         applyAttributes.bind(this)(d);
     });
+    imagesBelow.sort(imgSort);
+    imagesAbove.sort(imgSort);
 
     var allSubplots = Object.keys(fullLayout._plots);
     for(i = 0; i < allSubplots.length; i++) {
@@ -229,13 +237,12 @@ module.exports = function draw(gd) {
         var subplotObj = fullLayout._plots[subplot];
 
         // filter out overlaid plots (which have their images on the main plot)
-        // and gl2d plots (which don't support below images, at least not yet)
         if(!subplotObj.imagelayer) continue;
 
         var imagesOnSubplot = subplotObj.imagelayer.selectAll('image')
             // even if there are no images on this subplot, we need to run
             // enter and exit in case there were previously
-            .data(imageDataSubplot[subplot] || []);
+            .data(imageDataSubplot[subplot] || [], imgDataFunc);
 
         imagesOnSubplot.enter().append('image');
         imagesOnSubplot.exit().remove();
@@ -244,5 +251,6 @@ module.exports = function draw(gd) {
             setImage.bind(this)(d);
             applyAttributes.bind(this)(d);
         });
+        imagesOnSubplot.sort(imgSort);
     }
 };

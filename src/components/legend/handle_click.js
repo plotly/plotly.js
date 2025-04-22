@@ -91,42 +91,15 @@ module.exports = function handleClick(g, gd, numClicks) {
         var index = fullInput.index;
         if(index === undefined) index = fullInput._index;
 
-        if(Registry.hasTransform(fullInput, 'groupby')) {
-            var kcont = carrs[index];
-            if(!kcont) {
-                var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
-                var lastGroupbyIndex = groupbyIndices[groupbyIndices.length - 1];
-                kcont = Lib.keyedContainer(fullInput, 'transforms[' + lastGroupbyIndex + '].styles', 'target', 'value.visible');
-                carrs[index] = kcont;
-            }
+        // false -> false (not possible since will not be visible in legend)
+        // true -> legendonly
+        // legendonly -> true
+        var nextVisibility = fullInput.visible === false ? false : visibility;
 
-            var curState = kcont.get(fullTrace._group);
-
-            // If not specified, assume visible. This happens if there are other style
-            // properties set for a group but not the visibility. There are many similar
-            // ways to do this (e.g. why not just `curState = fullTrace.visible`??? The
-            // answer is: because it breaks other things like groupby trace names in
-            // subtle ways.)
-            if(curState === undefined) {
-                curState = true;
-            }
-
-            if(curState !== false) {
-                // true -> legendonly. All others toggle to true:
-                kcont.set(fullTrace._group, visibility);
-            }
-            carrIdx[index] = insertDataUpdate(index, fullInput.visible === false ? false : true);
+        if(isShape) {
+            insertShapesUpdate(index, nextVisibility);
         } else {
-            // false -> false (not possible since will not be visible in legend)
-            // true -> legendonly
-            // legendonly -> true
-            var nextVisibility = fullInput.visible === false ? false : visibility;
-
-            if(isShape) {
-                insertShapesUpdate(index, nextVisibility);
-            } else {
-                insertDataUpdate(index, nextVisibility);
-            }
+            insertDataUpdate(index, nextVisibility);
         }
     }
 
