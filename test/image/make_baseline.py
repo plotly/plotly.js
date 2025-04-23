@@ -53,6 +53,7 @@ if 'virtual-webgl' in sys.argv or 'virtual-webgl=' in sys.argv :
     plotlyjs = plotlyjs_with_virtual_webgl
 
 pio.kaleido.scope.plotlyjs = plotlyjs
+pio.kaleido.scope.topojson = "file://" + os.path.join(root, 'dist', 'topojson')
 pio.templates.default = 'none'
 
 ALL_MOCKS = [os.path.splitext(a)[0] for a in os.listdir(dirIn) if a.endswith('.json')]
