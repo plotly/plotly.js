@@ -2759,10 +2759,10 @@ describe('Test geo interactions update marker angles:', function() {
         })
         .then(function() {
             newPath = getPath();
-            expect(newPath).toEqual('M0,0L18.22327727600463,8.240883770679762L19.586810955756498,-4.044358612123453Z');
+            expect(newPath).toEqual('M0,0L18.223277273610172,8.24088377597469L19.58681095693162,-4.04435860643234Z');
 
             expect(newPath).not.toEqual(initialPath);
-            expect(newPath).toEqual('M0,0L18.22327727600463,8.240883770679762L19.586810955756498,-4.044358612123453Z');
+            expect(newPath).toEqual('M0,0L18.223277273610172,8.24088377597469L19.58681095693162,-4.04435860643234Z');
             expect(initialPath).toEqual('M0,0L-1.5100144203478312,19.942914943667123L10.500523963798084,17.021721313830223Z');
         })
         .then(done, done.fail);
