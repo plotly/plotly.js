@@ -62,7 +62,7 @@ function locationToFeature(locationmode, location, features) {
 
         for(i = 0; i < filteredFeatures.length; i++) {
             f = filteredFeatures[i];
-            if(f.id === locationId && isMainCountryFeature(f)) return f;
+            if(f.id === locationId) return f;
         }
 
         loggers.log([
@@ -72,18 +72,6 @@ function locationToFeature(locationmode, location, features) {
     }
 
     return false;
-}
-
-function isMainCountryFeature(feature) {
-    // Returns false for certain features which are not the main region of their country
-    if(feature.id === 'USA') {
-        if(feature.properties && feature.properties.ct && feature.properties.ct[0] == -155.5 &&
-            feature.properties.ct[1] == 19.6) {
-            // Hawaii
-            return false;
-        }
-    }
-    return true;
 }
 
 function feature2polygons(feature) {
