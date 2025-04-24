@@ -60,7 +60,7 @@ const config = {
         {
             name: 'world',
             specs: {
-                filter: '',
+                filter: '!(iso3cd === "USA" && stscod === 4)',
                 bounds: []
             }
         }
