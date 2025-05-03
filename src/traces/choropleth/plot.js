@@ -49,8 +49,9 @@ function calcGeoJSON(calcTrace, fullLayout) {
             geoUtils.locationToFeature(locationmode, calcPt.loc, features);
 
         if(feature) {
-            calcPt.geojson = feature;
-            calcPt.ct = feature.properties.ct;
+            var f0 = Array.isArray(feature) ? feature[0] : feature;
+            calcPt.geojson = f0;
+            calcPt.ct = f0.properties.ct;
             calcPt._polygons = geoUtils.feature2polygons(feature);
 
             var bboxFeature = geoUtils.computeBbox(feature);
