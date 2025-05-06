@@ -25,7 +25,7 @@ const config = {
         {
             name: 'europe',
             specs: {
-                filter: 'georeg === "EUR"',
+                filter: 'georeg === "EUR" && iso3cd !== "GRL"',
                 bounds: [-30, 0, 60, 90]
             }
         },
