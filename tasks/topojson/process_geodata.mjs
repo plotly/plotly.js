@@ -57,8 +57,7 @@ function addCentroidsToGeojson(geojsonPath) {
 }
 
 async function createLandLayer({ bounds, name, resolution, source }) {
-    // TODO: Figure out way to only include North and Central America via filter, dissolve
-    const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
+    const inputFilePath = `${outputDirGeojson}/${name}_${resolution}m/countries.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/land.geojson`;
     const commands = [
         inputFilePath,
@@ -216,54 +215,29 @@ async function convertLayersToTopojson({ name, resolution }) {
 
 // Get polygon features from UN GeoJSON and patch Antarctica gap
 const inputFilePathUNGeojson = `${inputDir}/${unFilename}.geojson`;
-const inputFilePathAntarcticaPatch = './tasks/topojson/antarctica_patch.geojson';
-const outputFilePath50m = `${outputDirGeojson}/${unFilename}_50m/all_features.geojson`;
-const outputPath110m = `${outputDirGeojson}/${unFilename}_110m`;
-// const commandsAllFeatures = [
-//     inputFilePathUNGeojson,
-//     // inputFilePathAntarcticaPatch,
-//     // 'combine-files',
-//     `-filter 'iso3cd === "ATA"' target=1 + name=antarctica`,
-//     // '-merge-layers target=antarctica,antarctica_patch force',
-//     '-clean snap-interval=0.015 target=antarctica',
-//     // '-dissolve2 target=antarctica copy-fields=objectid,iso3cd,m49_cd,nam_en,lbl_en,georeg,geo_cd,sub_cd,int_cd,subreg,intreg,iso2cd,lbl_fr,name_fr,globalid,stscod,isoclr,ct,FID',
-//     // '-dissolve2 target=antarctica',
-//     `-filter 'georeg !== "ANT"' target=1`,
-//     '-merge-layers target=1,antarctica force name=all_features',
-//     `-o target=1 ${outputFilePath50m}`
-// ].join(" ")
 const commandsAllFeaturesCommon = [
     inputFilePathUNGeojson,
     `-filter 'iso3cd === "ATA"' target=1 + name=antarctica`,
+    // Use 'snap-interval' to patch gap in Antarctica
     '-clean snap-interval=0.015 target=antarctica',
+    // Add rectangle to extend Antarctica to bottom of world
     '-rectangle bbox=-180,-90,180,-89 name=antarctica_rectangle',
     '-merge-layers target=antarctica,antarctica_rectangle force',
     '-dissolve2 target=antarctica copy-fields=objectid,iso3cd,m49_cd,nam_en,lbl_en,georeg,geo_cd,sub_cd,int_cd,subreg,intreg,iso2cd,lbl_fr,name_fr,globalid,stscod,isoclr,ct,FID',
+    // Remove unpatched Antarctica
     `-filter 'georeg !== "ANT"' target=1`,
+    // Merge patched Antarctica
     '-merge-layers target=1,antarctica force name=all_features',
 ]
+
+// Process 50m UN geodata
+const outputFilePath50m = `${outputDirGeojson}/${unFilename}_50m/all_features.geojson`;
 const commandsAllFeatures50m = [
     ...commandsAllFeaturesCommon,
     `-o target=1 ${outputFilePath50m}`
 ].join(" ")
 await mapshaper.runCommands(commandsAllFeatures50m);
 
-// const geojson = getJsonFile(outputFilePath50m);
-// const simplifiedGeojson = {
-//     ...geojson,
-//     features: geojson.features.map((f) => simplify(f, { tolerance: 0.1, highQuality: true }))
-// };
-// if (!fs.existsSync(outputPath110m)) fs.mkdirSync(outputPath110m, { recursive: true });
-// fs.writeFileSync(`${outputPath110m}/all_features.geojson`, JSON.stringify(simplifiedGeojson));
-
-// const commandsAllFeatures110m = [
-//     outputFilePath50m,
-//     '-simplify 7% rdp',
-//     `-o ${outputFilePath110m}`
-// ].join(" ")
-// await mapshaper.runCommands(commandsAllFeatures110m);
-
-// Process 50m UN geodata
 // Get countries from all polygon features
 const inputFilePathCountries50m = outputFilePath50m;
 const outputFilePathCountries50m = `${outputDirGeojson}/${unFilename}_50m/countries.geojson`;
@@ -276,7 +250,7 @@ const commandsCountries50m = [
 await mapshaper.runCommands(commandsCountries50m);
 
 // Get land from all polygon features
-const inputFilePathLand50m = outputFilePath50m;
+const inputFilePathLand50m = outputFilePathCountries50m;
 const outputFilePathLand50m = `${outputDirGeojson}/${unFilename}_50m/land.geojson`;
 const commandsLand50m = [
     inputFilePathLand50m,
@@ -300,6 +274,7 @@ const outputFilePathCountries110m = `${outputDirGeojson}/${unFilename}_110m/coun
 const commandsCountries110m = [
     inputFilePathCountries110m,
     `-filter '${filters.countries}'`,
+    // Use 'snap-interval' to fix alignment issues with USA and Alaska, Mexico
     '-clean snap-interval=0.015',
     `-o ${outputFilePathCountries110m}`
 ].join(' ');
@@ -319,23 +294,6 @@ for (const resolution of resolutions) {
     for (const { source } of Object.values(vectors)) {
         await convertShpToGeo(getNEFilename({ resolution, source }));
     }
-
-    // // Get countries from all polygon features
-    // const inputFilePathCountries = `${outputDirGeojson}/${unFilename}_${resolution}m/all_features.geojson`;
-    // const outputFilePathCountries = `${outputDirGeojson}/${unFilename}_${resolution}m/countries.geojson`;
-    // const commandsCountries = [
-    //     inputFilePathCountries,
-    //     `-filter '${filters.countries}'`,
-    //     `-o ${outputFilePathCountries}`
-    // ].join(' ');
-    // await mapshaper.runCommands(commandsCountries);
-
-    // // Get land from all polygon features
-    // const inputFilePathLand = outputFilePathCountries;
-    // // const inputFilePathLand = `${outputDirGeojson}/${unFilename}_${resolution}m/all_features.geojson`;
-    // const outputFilePathLand = `${outputDirGeojson}/${unFilename}_${resolution}m/land.geojson`;
-    // const commandsLand = [inputFilePathLand, '-dissolve2', `-clean -o ${outputFilePathLand}`].join(' ');
-    // await mapshaper.runCommands(commandsLand);
 }
 
 for (const resolution of resolutions) {
