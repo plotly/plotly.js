@@ -227,6 +227,9 @@ const commandsAllFeaturesCommon = [
     `-filter 'georeg !== "ANT"' target=1`,
     // Merge patched Antarctica
     '-merge-layers target=1,antarctica force name=all_features',
+    // Erase Caspian Sea
+    `-filter 'globalid === "{BBBEF27F-A6F4-4FBC-9729-77B3A8739409}"' target=all_features + name=caspian_sea`,
+    '-erase source=caspian_sea target=all_features'
 ]
 
 // Process 50m UN geodata
