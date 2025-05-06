@@ -96,16 +96,6 @@ const config = {
     unDownloadUrl: 'https://geoportal.un.org/arcgis/sharing/rest/content/items/d7caaff3ef4b4f7c82689b7c4694ad92/data',
     filters: {
         countries: 'stscod !== undefined',
-        land: [
-            '{839C9589-44D9-4BD5-A681-13E10ED03C5E}', // AME
-            '{2EE1B4A5-9C3F-445C-A1AB-399715463785}', // ANT
-            '{3D11547B-94D9-42C9-B849-14B389FE5F7F}', // OCE
-            '{32DB79BE-0D53-46BD-995F-EBE7C30ED6B6}', // AFR
-            '{3F3547E7-C7FB-4347-9D80-575C6485FD2E}', // EUR
-            '{4351AA38-B383-44BF-8341-720DD74872B4}' // ASI
-        ]
-            .map((id) => `globalid === "${id}"`)
-            .join(' || '),
         subunits: ['AUS', 'BRA', 'CAN', 'USA'].map((id) => `adm0_a3 === "${id}"`).join(' || ')
     }
 };
