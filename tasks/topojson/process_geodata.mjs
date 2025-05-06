@@ -84,7 +84,7 @@ async function createCoastlinesLayer({ bounds, name, resolution, source }) {
 }
 
 async function createOceanLayer({ bounds, name, resolution, source }) {
-    const inputFilePath = `./tasks/topojson/world_rectangle.geojson`;
+    const inputFilePath = './tasks/topojson/world_rectangle.geojson';
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/ocean.geojson`;
     const eraseFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
     const commands = [
@@ -214,41 +214,128 @@ async function convertLayersToTopojson({ name, resolution }) {
     fs.writeFileSync(outputFile, JSON.stringify(prunedTopojson));
 }
 
-// Get polygon features from UN GeoJSON
-const inputFilePath = `${inputDir}/${unFilename}.geojson`;
+// Get polygon features from UN GeoJSON and patch Antarctica gap
+const inputFilePathUNGeojson = `${inputDir}/${unFilename}.geojson`;
+const inputFilePathAntarcticaPatch = './tasks/topojson/antarctica_patch.geojson';
 const outputFilePath50m = `${outputDirGeojson}/${unFilename}_50m/all_features.geojson`;
 const outputPath110m = `${outputDirGeojson}/${unFilename}_110m`;
-const commandsAllFeatures = [inputFilePath, `-o target=1 ${outputFilePath50m}`].join(' ');
-await mapshaper.runCommands(commandsAllFeatures);
+// const commandsAllFeatures = [
+//     inputFilePathUNGeojson,
+//     // inputFilePathAntarcticaPatch,
+//     // 'combine-files',
+//     `-filter 'iso3cd === "ATA"' target=1 + name=antarctica`,
+//     // '-merge-layers target=antarctica,antarctica_patch force',
+//     '-clean snap-interval=0.015 target=antarctica',
+//     // '-dissolve2 target=antarctica copy-fields=objectid,iso3cd,m49_cd,nam_en,lbl_en,georeg,geo_cd,sub_cd,int_cd,subreg,intreg,iso2cd,lbl_fr,name_fr,globalid,stscod,isoclr,ct,FID',
+//     // '-dissolve2 target=antarctica',
+//     `-filter 'georeg !== "ANT"' target=1`,
+//     '-merge-layers target=1,antarctica force name=all_features',
+//     `-o target=1 ${outputFilePath50m}`
+// ].join(" ")
+const commandsAllFeaturesCommon = [
+    inputFilePathUNGeojson,
+    `-filter 'iso3cd === "ATA"' target=1 + name=antarctica`,
+    '-clean snap-interval=0.015 target=antarctica',
+    '-rectangle bbox=-180,-90,180,-89 name=antarctica_rectangle',
+    '-merge-layers target=antarctica,antarctica_rectangle force',
+    '-dissolve2 target=antarctica copy-fields=objectid,iso3cd,m49_cd,nam_en,lbl_en,georeg,geo_cd,sub_cd,int_cd,subreg,intreg,iso2cd,lbl_fr,name_fr,globalid,stscod,isoclr,ct,FID',
+    `-filter 'georeg !== "ANT"' target=1`,
+    '-merge-layers target=1,antarctica force name=all_features',
+]
+const commandsAllFeatures50m = [
+    ...commandsAllFeaturesCommon,
+    `-o target=1 ${outputFilePath50m}`
+].join(" ")
+await mapshaper.runCommands(commandsAllFeatures50m);
 
-const geojson = getJsonFile(outputFilePath50m);
-const simplifiedGeojson = {
-    ...geojson,
-    features: geojson.features.map((f) => simplify(f, { tolerance: 0.01, highQuality: true }))
-};
-if (!fs.existsSync(outputPath110m)) fs.mkdirSync(outputPath110m, { recursive: true });
-fs.writeFileSync(`${outputPath110m}/all_features.geojson`, JSON.stringify(simplifiedGeojson));
+// const geojson = getJsonFile(outputFilePath50m);
+// const simplifiedGeojson = {
+//     ...geojson,
+//     features: geojson.features.map((f) => simplify(f, { tolerance: 0.1, highQuality: true }))
+// };
+// if (!fs.existsSync(outputPath110m)) fs.mkdirSync(outputPath110m, { recursive: true });
+// fs.writeFileSync(`${outputPath110m}/all_features.geojson`, JSON.stringify(simplifiedGeojson));
+
+// const commandsAllFeatures110m = [
+//     outputFilePath50m,
+//     '-simplify 7% rdp',
+//     `-o ${outputFilePath110m}`
+// ].join(" ")
+// await mapshaper.runCommands(commandsAllFeatures110m);
+
+// Process 50m UN geodata
+// Get countries from all polygon features
+const inputFilePathCountries50m = outputFilePath50m;
+const outputFilePathCountries50m = `${outputDirGeojson}/${unFilename}_50m/countries.geojson`;
+const commandsCountries50m = [
+    inputFilePathCountries50m,
+    `-filter '${filters.countries}'`,
+    '-clean',
+    `-o ${outputFilePathCountries50m}`
+].join(' ');
+await mapshaper.runCommands(commandsCountries50m);
+
+// Get land from all polygon features
+const inputFilePathLand50m = outputFilePath50m;
+const outputFilePathLand50m = `${outputDirGeojson}/${unFilename}_50m/land.geojson`;
+const commandsLand50m = [
+    inputFilePathLand50m,
+    '-dissolve2',
+    `-o ${outputFilePathLand50m}`
+].join(' ');
+await mapshaper.runCommands(commandsLand50m);
+
+// Create 110m geodata
+const outputFilePath110m = `${outputDirGeojson}/${unFilename}_110m/all_features.geojson`;
+const commandsAllFeatures110m = [
+    ...commandsAllFeaturesCommon,
+    '-simplify 10% rdp',
+    `-o target=1 ${outputFilePath110m}`
+].join(" ")
+await mapshaper.runCommands(commandsAllFeatures110m);
+
+// Get countries from all polygon features
+const inputFilePathCountries110m = outputFilePath110m;
+const outputFilePathCountries110m = `${outputDirGeojson}/${unFilename}_110m/countries.geojson`;
+const commandsCountries110m = [
+    inputFilePathCountries110m,
+    `-filter '${filters.countries}'`,
+    '-clean snap-interval=0.015',
+    `-o ${outputFilePathCountries110m}`
+].join(' ');
+await mapshaper.runCommands(commandsCountries110m);
+
+// Get land from all polygon features
+const inputFilePathLand110m = outputFilePathCountries110m;
+const outputFilePathLand110m = `${outputDirGeojson}/${unFilename}_110m/land.geojson`;
+const commandsLand110m = [
+    inputFilePathLand110m,
+    '-dissolve2',
+    `-o ${outputFilePathLand110m}`
+].join(' ');
+await mapshaper.runCommands(commandsLand110m);
 
 for (const resolution of resolutions) {
     for (const { source } of Object.values(vectors)) {
         await convertShpToGeo(getNEFilename({ resolution, source }));
     }
 
-    // Get countries from all polygon features
-    const inputFilePathCountries = `${outputDirGeojson}/${unFilename}_${resolution}m/all_features.geojson`;
-    const outputFilePathCountries = `${outputDirGeojson}/${unFilename}_${resolution}m/countries.geojson`;
-    const commandsCountries = [
-        inputFilePathCountries,
-        `-filter '${filters.countries}'`,
-        `-o ${outputFilePathCountries}`
-    ].join(' ');
-    await mapshaper.runCommands(commandsCountries);
+    // // Get countries from all polygon features
+    // const inputFilePathCountries = `${outputDirGeojson}/${unFilename}_${resolution}m/all_features.geojson`;
+    // const outputFilePathCountries = `${outputDirGeojson}/${unFilename}_${resolution}m/countries.geojson`;
+    // const commandsCountries = [
+    //     inputFilePathCountries,
+    //     `-filter '${filters.countries}'`,
+    //     `-o ${outputFilePathCountries}`
+    // ].join(' ');
+    // await mapshaper.runCommands(commandsCountries);
 
-    // Get land from all polygon features
-    const inputFilePathLand = `${outputDirGeojson}/${unFilename}_${resolution}m/all_features.geojson`;
-    const outputFilePathLand = `${outputDirGeojson}/${unFilename}_${resolution}m/land.geojson`;
-    const commandsLand = [inputFilePathLand, `-filter '${filters.land}'`, `-clean -o ${outputFilePathLand}`].join(' ');
-    await mapshaper.runCommands(commandsLand);
+    // // Get land from all polygon features
+    // const inputFilePathLand = outputFilePathCountries;
+    // // const inputFilePathLand = `${outputDirGeojson}/${unFilename}_${resolution}m/all_features.geojson`;
+    // const outputFilePathLand = `${outputDirGeojson}/${unFilename}_${resolution}m/land.geojson`;
+    // const commandsLand = [inputFilePathLand, '-dissolve2', `-clean -o ${outputFilePathLand}`].join(' ');
+    // await mapshaper.runCommands(commandsLand);
 }
 
 for (const resolution of resolutions) {
