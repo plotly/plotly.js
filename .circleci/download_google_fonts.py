@@ -1,97 +1,82 @@
+import os
+
 import requests
 
-dirOut = '.circleci/fonts/truetype/googleFonts/'
+dir_out = ".circleci/fonts/truetype/googleFonts/"
+
 
 def download(repo, family, types):
-    for t in types :
-        name = family + t + '.ttf'
-        url = repo + name + '?raw=true'
-        print(url)
-        req = requests.get(url, allow_redirects=True)
+    for t in types:
+        name = family + t + ".ttf"
+        url = repo + name + "?raw=true"
+        outfile = dir_out + name
+        print("Getting: ", url)
+        if os.path.exists(outfile):
+            print("    => Already exists: ", outfile)
+            continue
+        req = requests.get(url, allow_redirects=False)
         if req.status_code != 200:
+            # If we get a redirect, print an error so that we know to update the URL
+            if req.status_code == 302 or req.status_code == 301:
+                new_url = req.headers.get("Location")
+                print(f"    => Redirected -- please update URL to: {new_url}")
             raise RuntimeError(f"""
 Download failed.
 Status code: {req.status_code}
 Message: {req.reason}
-"""
-            )
-        open(dirOut + name, 'wb').write(req.content)
+""")
+        open(outfile, "wb").write(req.content)
+
 
 download(
-    'https://github.com/googlefonts/noto-fonts/blob/main/hinted/ttf/NotoSansMono/',
-    'NotoSansMono',
-    [
-        '-Regular',
-        '-Bold'
-    ]
+    "https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansMono/hinted/ttf/",
+    "NotoSansMono",
+    ["-Regular", "-Bold"],
 )
 
 download(
-    'https://github.com/googlefonts/noto-fonts/blob/main/hinted/ttf/NotoSans/',
-    'NotoSans',
-    [
-        '-Regular',
-        '-Italic',
-        '-Bold'
-    ]
+    "https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSans/hinted/ttf/",
+    "NotoSans",
+    ["-Regular", "-Italic", "-Bold"],
 )
 
 download(
-    'https://github.com/googlefonts/noto-fonts/blob/main/hinted/ttf/NotoSerif/',
-    'NotoSerif',
+    "https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSerif/hinted/ttf/",
+    "NotoSerif",
     [
-        '-Regular',
-        '-Italic',
-        '-Bold',
-        '-BoldItalic',
-    ]
+        "-Regular",
+        "-Italic",
+        "-Bold",
+        "-BoldItalic",
+    ],
 )
 
 download(
-    'https://github.com/google/fonts/blob/main/ofl/oldstandardtt/',
-    'OldStandard',
-    [
-        '-Regular',
-        '-Italic',
-        '-Bold'
-    ]
+    "https://raw.githubusercontent.com/google/fonts/refs/heads/main/ofl/oldstandardtt/",
+    "OldStandard",
+    ["-Regular", "-Italic", "-Bold"],
 )
 
 download(
-    'https://github.com/google/fonts/blob/main/ofl/ptsansnarrow/',
-    'PT_Sans-Narrow-Web',
-    [
-        '-Regular',
-        '-Bold'
-    ]
+    "https://raw.githubusercontent.com/google/fonts/refs/heads/main/ofl/ptsansnarrow/",
+    "PT_Sans-Narrow-Web",
+    ["-Regular", "-Bold"],
 )
 
 download(
-    'https://github.com/impallari/Raleway/blob/master/fonts/v3.000%20Fontlab/TTF/',
-    'Raleway',
-    [
-        '-Regular',
-        '-Regular-Italic',
-        '-Bold',
-        '-Bold-Italic'
-    ]
+    "https://raw.githubusercontent.com/impallari/Raleway/refs/heads/master/fonts/v3.000%20Fontlab/TTF/",
+    "Raleway",
+    ["-Regular", "-Regular-Italic", "-Bold", "-Bold-Italic"],
 )
 
 download(
-    'https://github.com/googlefonts/roboto/blob/main/src/hinted/',
-    'Roboto',
-    [
-        '-Regular',
-        '-Italic',
-        '-Bold',
-        '-BoldItalic'
-    ]
+    "https://raw.githubusercontent.com/googlefonts/roboto-2/refs/heads/main/src/hinted/",
+    "Roboto",
+    ["-Regular", "-Italic", "-Bold", "-BoldItalic"],
 )
 
 download(
-    'https://github.com/expo/google-fonts/blob/main/font-packages/gravitas-one/400Regular/',
-    'GravitasOne',
-    [
-        '_400Regular'
-    ]
+    "https://raw.githubusercontent.com/expo/google-fonts/refs/heads/main/font-packages/gravitas-one/400Regular/",
+    "GravitasOne",
+    ["_400Regular"],
 )
