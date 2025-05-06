@@ -3915,11 +3915,24 @@ axes.drawLabels = function(gd, ax, opts) {
         }
     }
 
+    function removeHiddenLabels() {
+        // Remove all hidden labels to prevent them from affecting the layout.
+        tickLabels.each(function(d) {
+            var thisLabel = d3.select(this);
+            var textNode = thisLabel.select('text').node();
+            var opacity = window.getComputedStyle(textNode).opacity;
+            if (opacity == '0') {
+                thisLabel.select('text').text('');
+                d3.select(textNode).text('');
+            }
+        });
+    }
+
     if(ax._selections) {
         ax._selections[cls] = tickLabels;
     }
 
-    var seq = [allLabelsReady];
+    var seq = [allLabelsReady, removeHiddenLabels];
 
     // N.B. during auto-margin redraws, if the axis fixed its label overlaps
     // by rotating 90 degrees, do not attempt to re-fix its label overlaps
