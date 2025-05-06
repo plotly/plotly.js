@@ -1,4 +1,3 @@
-import simplify from '@turf/simplify';
 import { geoIdentity, geoPath } from 'd3-geo';
 import fs from 'fs';
 import mapshaper from 'mapshaper';
