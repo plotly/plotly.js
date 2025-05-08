@@ -5,14 +5,14 @@ import requests
 dir_out = ".circleci/fonts/truetype/googleFonts/"
 
 
-def download(repo, family, types):
+def download(repo, family, types, overwrite=True):
     for t in types:
         name = family + t + ".ttf"
         url = repo + name + "?raw=true"
-        outfile = dir_out + name
+        out_file = dir_out + name
         print("Getting: ", url)
-        if os.path.exists(outfile):
-            print("    => Already exists: ", outfile)
+        if os.path.exists(out_file) and not overwrite:
+            print("    => Already exists: ", out_file)
             continue
         req = requests.get(url, allow_redirects=False)
         if req.status_code != 200:
@@ -25,7 +25,7 @@ Download failed.
 Status code: {req.status_code}
 Message: {req.reason}
 """)
-        open(outfile, "wb").write(req.content)
+        open(out_file, "wb").write(req.content)
 
 
 download(
