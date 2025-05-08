@@ -3902,7 +3902,7 @@
        "symbol": {
         "editType": "plot",
         "icon": {
-         "description": "Sets the symbol icon image (map.layer.layout.icon-image). Full list: https://www.map.com/maki-icons/",
+         "description": "Sets the symbol icon image (map.layer.layout.icon-image). Full list: https://www.mapbox.com/maki-icons/",
          "dflt": "marker",
          "editType": "plot",
          "valType": "string"
@@ -72103,7 +72103,7 @@
      },
      "symbol": {
       "arrayOk": true,
-      "description": "Sets the marker symbol. Full list: https://www.map.com/maki-icons/ Note that the array `marker.color` and `marker.size` are only available for *circle* symbols.",
+      "description": "Sets the marker symbol. Full list: https://www.mapbox.com/maki-icons/ Note that the array `marker.color` and `marker.size` are only available for *circle* symbols.",
       "dflt": "circle",
       "editType": "calc",
       "valType": "string"
