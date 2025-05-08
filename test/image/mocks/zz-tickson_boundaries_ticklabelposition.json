@@ -1,0 +1,150 @@
+{
+ "data": [
+  {
+   "type": "box",
+   "x": [
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 2",
+    "day 2",
+    "day 2",
+    "day 2",
+    "day 2",
+    "day 2"
+   ],
+   "y": [0.2, 0.2, 0.6, 1, 0.5, 0.4, 0.2, 0.7, 0.9, 0.1, 0.5, 0.3]
+  },
+  {
+   "type": "box",
+   "x": [
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 2",
+    "day 2",
+    "day 2",
+    "day 2",
+    "day 2",
+    "day 2"
+   ],
+   "y": [0.1, 0.3, 0.1, 0.9, 0.6, 0.6, 0.9, 1, 0.3, 0.6, 0.8, 0.5]
+  },
+  {
+   "type": "box",
+   "x": [
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 1",
+    "day 2",
+    "day 2",
+    "day 2",
+    "day 2",
+    "day 2",
+    "day 2"
+   ],
+   "y": [0.6, 0.7, 0.3, 0.6, 0, 0.5, 0.7, 0.9, 0.5, 0.8, 0.7, 0.2]
+  },
+
+  {
+   "type": "bar",
+   "x": [1, 2, 1],
+   "y": ["apples", "bananas", "clementines"],
+   "orientation": "h",
+   "xaxis": "x2",
+   "yaxis": "y2"
+  },
+  {
+   "type": "bar",
+   "x": [1.3, 2.2, 0.8],
+   "y": ["apples", "bananas", "clementines"],
+   "orientation": "h",
+   "xaxis": "x2",
+   "yaxis": "y2"
+  },
+  {
+   "type": "bar",
+   "x": [3, 3.2, 1.8],
+   "y": ["apples", "bananas", "clementines"],
+   "orientation": "h",
+   "xaxis": "x2",
+   "yaxis": "y2"
+  },
+
+  {
+   "type": "bar",
+   "name": "with dtick !== 1",
+   "x": ["a", "b", "c", "d", "e", "f", "g", "h"],
+   "y": [1, 2, 1, 2, 1, 3, 4, 1],
+   "xaxis": "x3",
+   "yaxis": "y3"
+  },
+
+  {
+   "mode": "markers",
+   "marker": { "symbol": "square" },
+   "name": "with overlapping tick labels",
+   "x": ["A very long title", "short", "Another very long title"],
+   "y": [0, 10, 2],
+   "xaxis": "x4",
+   "yaxis": "y4"
+  }
+ ],
+ "layout": {
+  "title": {
+    "text": "Although some ticklabelpositions have a side specified,<br>all category labels are expected to be centered."
+  },
+  "boxmode": "group",
+  "grid": {
+   "rows": 4,
+   "columns": 1,
+   "pattern": "independent",
+   "ygap": 0.2
+  },
+  "xaxis": {
+   "ticklabelposition": "inside right",
+   "ticks": "outside",
+   "tickson": "boundaries",
+   "gridcolor": "white",
+   "gridwidth": 4
+  },
+  "yaxis2": {
+   "ticks": "inside",
+   "ticklabelposition": "inside top",
+   "tickson": "boundaries",
+   "gridcolor": "white",
+   "gridwidth": 4
+  },
+  "xaxis3": {
+   "ticks": "inside",
+   "ticklabelposition": "inside left",
+   "tickson": "boundaries",
+   "gridcolor": "white",
+   "gridwidth": 4,
+   "dtick": 2
+  },
+  "xaxis4": {
+   "domain": [0.22, 0.78],
+   "ticks": "outside",
+   "ticklabelposition": "inside",
+   "ticklen": 20,
+   "tickson": "boundaries",
+   "gridcolor": "white",
+   "gridwidth": 4
+  },
+  "plot_bgcolor": "lightgrey",
+  "showlegend": false,
+  "width": 500,
+  "height": 800,
+  "margin": { "b": 140 }
+ }
+}
