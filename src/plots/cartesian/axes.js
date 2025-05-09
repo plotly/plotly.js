@@ -3648,7 +3648,7 @@ axes.drawLabels = function(gd, ax, opts) {
                     'text-anchor': anchor
                 });
 
-                thisText.style('opacity', 1); // visible
+                thisText.style('display', null); // visible
 
                 if(ax._adjustTickLabelsOverflow) {
                     ax._adjustTickLabelsOverflow();
@@ -3706,9 +3706,9 @@ axes.drawLabels = function(gd, ax, opts) {
 
                 var t = thisLabel.select('text');
                 if(adjust) {
-                    if(hideOverflow) t.style('opacity', 0); // hidden
+                    if(hideOverflow) t.style('display', 'none'); // hidden
                 } else {
-                    t.style('opacity', 1); // visible
+                    t.style('display', null); // visible
 
                     if(side === 'bottom' || side === 'right') {
                         visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
@@ -3783,7 +3783,7 @@ axes.drawLabels = function(gd, ax, opts) {
                                 q > ax['_visibleLabelMin_' + anchorAx._id]
                             ) {
                                 t.style('display', 'none'); // hidden
-                            } else if(e.K === 'tick' && !idx) {
+                            } else if(e.K === 'tick' && !idx && t.style('display') != 'none') {
                                 t.style('display', null); // visible
                             }
                         });
@@ -3807,6 +3807,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var autoangle = null;
 
     function fixLabelOverlaps() {
+        console.log("fix label overlaps!");
         positionLabels(tickLabels, tickAngle);
 
         // check for auto-angling if x labels overlap
@@ -3915,24 +3916,11 @@ axes.drawLabels = function(gd, ax, opts) {
         }
     }
 
-    function removeHiddenLabels() {
-        // Remove all hidden labels to prevent them from affecting the layout.
-        tickLabels.each(function(d) {
-            var thisLabel = d3.select(this);
-            var textNode = thisLabel.select('text').node();
-            var opacity = window.getComputedStyle(textNode).opacity;
-            if (opacity == '0') {
-                thisLabel.select('text').text('');
-                d3.select(textNode).text('');
-            }
-        });
-    }
-
     if(ax._selections) {
         ax._selections[cls] = tickLabels;
     }
 
-    var seq = [allLabelsReady, removeHiddenLabels];
+    var seq = [allLabelsReady];
 
     // N.B. during auto-margin redraws, if the axis fixed its label overlaps
     // by rotating 90 degrees, do not attempt to re-fix its label overlaps
