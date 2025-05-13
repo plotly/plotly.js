@@ -3783,8 +3783,11 @@ axes.drawLabels = function(gd, ax, opts) {
                                 q > ax['_visibleLabelMin_' + anchorAx._id]
                             ) {
                                 t.style('display', 'none'); // hidden
-                            } else if(e.K === 'tick' && !idx && t.style('display') != 'none') {
-                                t.style('display', null); // visible
+                            } else if(e.K === 'tick' && !idx) {
+                                var display = window.getComputedStyle(t.node()).display;
+                                if (display != 'none') {
+                                    t.style('display', null); // visible
+                                }
                             }
                         });
                     });
@@ -3807,7 +3810,6 @@ axes.drawLabels = function(gd, ax, opts) {
     var autoangle = null;
 
     function fixLabelOverlaps() {
-        console.log("fix label overlaps!");
         positionLabels(tickLabels, tickAngle);
 
         // check for auto-angling if x labels overlap
