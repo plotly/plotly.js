@@ -3783,11 +3783,8 @@ axes.drawLabels = function(gd, ax, opts) {
                                 q > ax['_visibleLabelMin_' + anchorAx._id]
                             ) {
                                 t.style('display', 'none'); // hidden
-                            } else if(e.K === 'tick' && !idx) {
-                                var display = window.getComputedStyle(t.node()).display;
-                                if (display != 'none') {
-                                    t.style('display', null); // visible
-                                }
+                            } else if(e.K === 'tick' && !idx && t.node().style.display !== 'none') {
+                                t.style('display', null); // visible
                             }
                         });
                     });
