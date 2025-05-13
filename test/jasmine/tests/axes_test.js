@@ -6911,7 +6911,7 @@ describe('Test axes', function() {
                     .filter(function(d) { return d.minor; })
                     .map(function(d) { return d.x; });
 
-            expect(positions).toBeCloseToArray(expPositions);
+            expect(positions).toBeCloseToArray(expPositions, 3);
         }
 
         it('minor tickvals', function(done) {
