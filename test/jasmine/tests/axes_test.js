@@ -1722,13 +1722,13 @@ describe('Test axes', function() {
                 width: 600,
                 height: 600
             }).then(function() {
-                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.13, 2]);
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
 
                 return Plotly.relayout(gd, {
                     'xaxis.insiderange': [1, 3]
                 });
             }).then(function() {
-                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.866, 3]);
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.889, 3]);
             }).then(done, done.fail);
         });
     });
@@ -4908,32 +4908,32 @@ describe('Test axes', function() {
             })
             .then(function() {
                 _assert('on labels (defaults)', {
-                    ticks: [108.75, 348, 587.25],
-                    gridLines: [108.75, 348, 587.25],
+                    ticks: [110.75, 350, 589.25],
+                    gridLines: [110.75, 350, 589.25],
                     tickLabels: [106.421, 345.671, 585.25]
                 });
                 return Plotly.relayout(gd, 'xaxis.tickson', 'boundaries');
             })
             .then(function() {
                 _assert('inside on boundaries', {
-                    ticks: [228.367, 467.617], // N.B. first and last tick are clipped
-                    gridLines: [228.367, 467.617],
+                    ticks: [230.369, 469.619], // N.B. first and last tick are clipped
+                    gridLines: [230.369, 469.619],
                     tickLabels: [106.421875, 345.671875, 585.25]
                 });
                 return Plotly.relayout(gd, 'xaxis.ticks', 'outside');
             })
             .then(function() {
                 _assert('outside on boundaries', {
-                    ticks: [228.367, 467.617],
-                    gridLines: [228.367, 467.617],
+                    ticks: [230.369, 469.619],
+                    gridLines: [230.369, 469.619],
                     tickLabels: [106.421875, 345.671875, 585.25]
                 });
                 return Plotly.restyle(gd, 'x', [[1, 2, 1]]);
             })
             .then(function() {
                 _assert('fallback to *labels* on non-category axes', {
-                    ticks: [108.75, 204.433, 300.133, 395.85, 491.533, 587.25],
-                    gridLines: [108.75, 204.433, 300.133, 395.85, 491.533, 587.25],
+                    ticks: [110.75, 206.449, 302.149, 397.85, 493.549, 589.25],
+                    gridLines: [110.75, 206.449, 302.149, 397.85, 493.549, 589.25],
                     tickLabels: [106.421, 197.121, 292.821, 388.521, 484.221, 584.921]
                 });
             })
@@ -8152,11 +8152,11 @@ describe('more react tests', function() {
 
         Plotly.newPlot(gd, fig1)
         .then(function() {
-            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.134, 2]);
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
 
             return Plotly.react(gd, fig2);
         }).then(function() {
-            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.192, 2]);
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.164, 2]);
         }).then(done, done.fail);
     });
 });
