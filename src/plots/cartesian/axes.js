@@ -3651,7 +3651,7 @@ axes.drawLabels = function(gd, ax, opts) {
                     'text-anchor': anchor
                 });
 
-                thisText.style('opacity', 1); // visible
+                thisText.style('display', null); // visible
 
                 if(ax._adjustTickLabelsOverflow) {
                     ax._adjustTickLabelsOverflow();
@@ -3709,9 +3709,9 @@ axes.drawLabels = function(gd, ax, opts) {
 
                 var t = thisLabel.select('text');
                 if(adjust) {
-                    if(hideOverflow) t.style('opacity', 0); // hidden
+                    if(hideOverflow) t.style('display', 'none'); // hidden
                 } else {
-                    t.style('opacity', 1); // visible
+                    t.style('display', null); // visible
 
                     if(side === 'bottom' || side === 'right') {
                         visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
@@ -3788,7 +3788,7 @@ axes.drawLabels = function(gd, ax, opts) {
                                 q > ax['_visibleLabelMin_' + anchorAx._id]
                             ) {
                                 t.style('display', 'none'); // hidden
-                            } else if(e.K === 'tick' && !idx) {
+                            } else if(e.K === 'tick' && !idx && t.node().style.display !== 'none') {
                                 t.style('display', null); // visible
                             }
                         });
