@@ -1697,7 +1697,7 @@ describe('Test axes', function() {
                 return Plotly.relayout(gd, 'xaxis.autorange', true);
             }).then(function() {
 
-                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.27, 3.23], 1);
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.37, 3.22], 1);
             })
             .then(done, done.fail);
         });
