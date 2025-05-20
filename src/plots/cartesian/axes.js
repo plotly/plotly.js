@@ -2946,8 +2946,10 @@ function calcLabelLevelBbox(ax, cls, mainLinePositionShift) {
         bottom = -Infinity;
         left = Infinity;
         right = -Infinity;
+        var xAxis = ax._id.charAt(0) === 'x';
         ax._selections[cls].each(function() {
             var thisLabel = selectTickLabel(this);
+            var hidden = thisLabel.style('display') === 'none';
             // Use parent node <g.(x|y)tick>, to make Drawing.bBox
             // retrieve a bbox computed with transform info
             //
@@ -2955,11 +2957,31 @@ function calcLabelLevelBbox(ax, cls, mainLinePositionShift) {
             // (like in fixLabelOverlaps) instead and use Axes.getPxPosition
             // together with the makeLabelFns outputs and `tickangle`
             // to compute one bbox per (tick value x tick style)
+            if (hidden) {
+                // turn on label display temporarily to calculate its bbox
+                thisLabel.style('display', null);
+            }
             var bb = Drawing.bBox(thisLabel.node().parentNode);
-            top = Math.min(top, bb.top);
-            bottom = Math.max(bottom, bb.bottom);
-            left = Math.min(left, bb.left);
-            right = Math.max(right, bb.right);
+            if (hidden) {
+                selectTickLabel(this).style('display', 'none');
+            }
+            var currentTop = bb.top;
+            var currentBottom = bb.bottom;
+            var currentLeft = bb.left;
+            var currentRight = bb.right;
+            if (hidden) {
+                if (xAxis) {
+                    currentTop = top;
+                    currentBottom = bottom;
+                } else {
+                    currentLeft = left;
+                    currentRight = right;
+                }
+            }
+            top = Math.min(top, currentTop);
+            bottom = Math.max(bottom, currentBottom);
+            left = Math.min(left, currentLeft);
+            right = Math.max(right, currentRight);
         });
     } else {
         var dummyCalc = axes.makeLabelFns(ax, mainLinePositionShift);
@@ -3707,8 +3729,8 @@ axes.drawLabels = function(gd, ax, opts) {
                 var t = thisLabel.select('text');
                 if(adjust) {
                     if(hideOverflow) t.style('display', 'none'); // hidden
-                } else {
-                    t.style('display', null); // visible
+                } else if(t.node().style.display !== 'none'){
+                    t.style('display', null);
 
                     if(side === 'bottom' || side === 'right') {
                         visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
