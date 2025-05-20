@@ -44,7 +44,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "136.0.7103.92"
+          chrome-version: "132.0.6834.214"
       - attach_workspace:
           at: ~/
       - run:
