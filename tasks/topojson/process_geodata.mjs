@@ -229,7 +229,10 @@ const commandsAllFeaturesCommon = [
     '-merge-layers target=1,antarctica force name=all_features',
     // Erase Caspian Sea
     `-filter 'globalid === "{BBBEF27F-A6F4-4FBC-9729-77B3A8739409}"' target=all_features + name=caspian_sea`,
-    '-erase source=caspian_sea target=all_features'
+    '-erase source=caspian_sea target=all_features',
+    // Handle disputed territories at Egypt/Sudan border: https://en.wikipedia.org/wiki/Egypt%E2%80%93Sudan_border
+    `-each 'if (globalid === "{CA12D116-7A19-41D1-9622-17C12CCC720D}") iso3cd = "XHT"'`, // Halaib Triangle
+    `-each 'if (globalid === "{9FD54A50-0BFB-4385-B342-1C3BDEE5ED9B}") iso3cd = "XBT"'` // Bir Tawil
 ]
 
 // Process 50m UN geodata
