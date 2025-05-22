@@ -328,15 +328,15 @@ var TAG_STYLES = {
     // would like to use baseline-shift for sub/sup but FF doesn't support it
     // so we need to use dy along with the uber hacky shift-back-to
     // baseline below
-    sup: 'font-size:70%',
-    sub: 'font-size:70%',
-    s: 'text-decoration:line-through',
-    u: 'text-decoration:underline',
-    b: 'font-weight:bold',
-    i: 'font-style:italic',
-    a: 'cursor:pointer',
-    span: '',
-    em: 'font-style:italic;font-weight:bold'
+    sup: {'font-size':'70%'},
+    sub: {'font-size':'70%'},
+    s: {'text-decoration':'line-through'},
+    u: {'text-decoration':'underline'},
+    b: {'font-weight': 'bold'},
+    i: {'font-style':'italic'},
+    a: {'cursor':'pointer'},
+    span: {},
+    em: {'font-style':'italic','font-weight':'bold'}
 };
 
 // baseline shifts for sub and sup
@@ -383,9 +383,6 @@ exports.BR_TAG_ALL = /<br(\s+.*)?>/gi;
  *     convention and will not make a popup if this string is empty.
  *     per the spec, cannot contain whitespace.
  *
- * Because we hack in other attributes with style (sub & sup), drop any trailing
- * semicolon in user-supplied styles so we can consistently append the tag-dependent style
- *
  * These are for tag attributes; Chrome anyway will convert entities in
  * attribute values, but not in attribute names
  * you can test this by for example:
@@ -394,7 +391,7 @@ exports.BR_TAG_ALL = /<br(\s+.*)?>/gi;
  * > p.innerHTML
  * <- '<span styl&#x65;="font-color:red;">Hi</span>'
  */
-var STYLEMATCH = /(^|[\s"'])style\s*=\s*("([^"]*);?"|'([^']*);?')/i;
+var STYLEMATCH = /(^|[\s"'])style\s*=\s*("([^"]*)"|'([^']*)')/i;
 var HREFMATCH = /(^|[\s"'])href\s*=\s*("([^"]*)"|'([^']*)')/i;
 var TARGETMATCH = /(^|[\s"'])target\s*=\s*("([^"\s]*)"|'([^'\s]*)')/i;
 var POPUPMATCH = /(^|[\s"'])popup\s*=\s*("([\w=,]*)"|'([\w=,]*)')/i;
@@ -495,7 +492,8 @@ var entityToUnicode = {
     nbsp: ' ',
     times: '×',
     plusmn: '±',
-    deg: '°'
+    deg: '°',
+    quot: "'",
 };
 
 // NOTE: in general entities can contain uppercase too (so [a-zA-Z]) but all the
@@ -535,6 +533,50 @@ function fromCodePoint(code) {
         (code >> 10) + 0xD7C0,
         (code % 0x400) + 0xDC00
     );
+}
+
+var SPLIT_STYLES = /([^;]+;|$)|&(#\d+|#x[\da-fA-F]+|[a-z]+);/;
+
+var ONE_STYLE = /^\s*([^:]+)\s*:\s*(.+?)\s*;?$/i;
+
+function applyStyles(node, styles) {
+    var parts = styles.split(SPLIT_STYLES);
+    var filteredParts = [];
+    for(var i = 0; i < parts.length; i++) {
+        if(parts[i] && typeof parts[i] === "string" && parts[i].length > 0) {
+            filteredParts.push(parts[i]);
+        }
+    }
+    parts = filteredParts;
+
+    for(var i = 0; i < parts.length; i++) {
+        var parti = parts[i];
+
+        // Recombine parts that was split due to HTML entity's semicolon
+        var partToSearch = parti;
+        do {
+            var matchEntity = partToSearch.match(ENTITY_MATCH);
+            if(matchEntity) {
+                var entity = matchEntity[0];
+                partToSearch = parts[i+1];
+                if(parti.endsWith(entity) && partToSearch) {
+                    // Matched HTML entity is at the end, and thus, need to
+                    // combine with next part to complete the style (when it ends
+                    // with a semicolon that is not part of a HTML entity)
+                    parti += partToSearch;
+                    i++;
+                }
+            } else {
+                partToSearch = undefined;
+            }
+        } while (partToSearch);
+
+        var match = parti.match(ONE_STYLE);
+        if(match) {
+            var decodedStyle = convertEntities(match[2]);
+            d3.select(node).style(match[1], decodedStyle);
+        }
+    }
 }
 
 /*
@@ -613,8 +655,6 @@ function buildSVGText(containerNode, str) {
             }
         } else nodeType = 'tspan';
 
-        if(nodeSpec.style) nodeAttrs.style = nodeSpec.style;
-
         var newNode = document.createElementNS(xmlnsNamespaces.svg, nodeType);
 
         if(type === 'sup' || type === 'sub') {
@@ -633,6 +673,10 @@ function buildSVGText(containerNode, str) {
         }
 
         d3.select(newNode).attr(nodeAttrs);
+        if(nodeSpec.style) applyStyles(newNode, nodeSpec.style)
+        if(nodeSpec.tagStyle) {
+            d3.select(newNode).style(nodeSpec.tagStyle);
+        }
 
         currentNode = nodeSpec.node = newNode;
         nodeStack.push(nodeSpec);
@@ -693,10 +737,10 @@ function buildSVGText(containerNode, str) {
                 var css = getQuotedMatch(extra, STYLEMATCH);
                 if(css) {
                     css = css.replace(COLORMATCH, '$1 fill:');
-                    if(tagStyle) css += ';' + tagStyle;
-                } else if(tagStyle) css = tagStyle;
+                }
 
                 if(css) nodeSpec.style = css;
+                if(tagStyle) nodeSpec.tagStyle = tagStyle;
 
                 if(tagType === 'a') {
                     hasLink = true;
@@ -770,7 +814,7 @@ exports.sanitizeHTML = function sanitizeHTML(str) {
                 var extra = match[4];
 
                 var css = getQuotedMatch(extra, STYLEMATCH);
-                var nodeAttrs = css ? {style: css} : {};
+                var nodeAttrs = {};
 
                 if(tagType === 'a') {
                     var href = getQuotedMatch(extra, HREFMATCH);
@@ -790,6 +834,7 @@ exports.sanitizeHTML = function sanitizeHTML(str) {
                 var newNode = document.createElement(tagType);
                 currentNode.appendChild(newNode);
                 d3.select(newNode).attr(nodeAttrs);
+                if(css) applyStyles(newNode, css);
 
                 currentNode = newNode;
                 nodeStack.push(newNode);
