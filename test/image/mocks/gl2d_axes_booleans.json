@@ -18,7 +18,7 @@
    "showgrid": false,
    "zeroline": false,
    "showline": false,
-   "autotick": true,
+   "tickmode": "auto",
    "autorange": true
   },
   "yaxis": {
@@ -27,7 +27,7 @@
    "showgrid": false,
    "zeroline": false,
    "showline": false,
-   "autotick": true,
+   "tickmode": "auto",
    "autorange": true
   }
  }

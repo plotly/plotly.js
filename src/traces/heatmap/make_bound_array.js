@@ -7,7 +7,6 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
     var arrayOut = [];
     var isContour = Registry.traceIs(trace, 'contour');
     var isHist = Registry.traceIs(trace, 'histogram');
-    var isGL2D = Registry.traceIs(trace, 'gl2d');
     var v0;
     var dv;
     var i;
@@ -22,7 +21,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
         // and extend it linearly based on the last two points
         if(len <= numbricks) {
             // contour plots only want the centers
-            if(isContour || isGL2D) arrayOut = Array.from(arrayIn).slice(0, numbricks);
+            if(isContour) arrayOut = Array.from(arrayIn).slice(0, numbricks);
             else if(numbricks === 1) {
                 if(ax.type === 'log') {
                     arrayOut = [0.5 * arrayIn[0], 2 * arrayIn[0]];
@@ -93,7 +92,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
 
         dv = dvIn || 1;
 
-        for(i = (isContour || isGL2D) ? 0 : -0.5; i < numbricks; i++) {
+        for(i = isContour ? 0 : -0.5; i < numbricks; i++) {
             arrayOut.push(v0 + dv * i);
         }
     }

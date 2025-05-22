@@ -41,7 +41,7 @@ modeBarButtons.toImage = {
         var opts = gd._context.toImageButtonOptions || {};
         var format = opts.format || 'png';
         return format === 'png' ?
-            _(gd, 'Download plot as a png') : // legacy text
+            _(gd, 'Download plot as a PNG') : // legacy text
             _(gd, 'Download plot'); // generic non-PNG text
     },
     icon: Icons.camera,
@@ -50,11 +50,6 @@ modeBarButtons.toImage = {
         var opts = {format: toImageButtonOptions.format || 'png'};
 
         Lib.notifier(_(gd, 'Taking snapshot - this may take a few seconds'), 'long');
-
-        if(opts.format !== 'svg' && Lib.isIE()) {
-            Lib.notifier(_(gd, 'IE only supports svg.  Changing format to svg.'), 'long');
-            opts.format = 'svg';
-        }
 
         ['filename', 'width', 'height', 'scale'].forEach(function(key) {
             if(key in toImageButtonOptions) {
@@ -558,18 +553,6 @@ function handleGeo(gd, ev) {
         resetView(gd, 'geo');
     }
 }
-
-modeBarButtons.hoverClosestGl2d = {
-    name: 'hoverClosestGl2d',
-    _cat: 'hoverclosest',
-    title: function(gd) { return _(gd, 'Toggle show closest data on hover'); },
-    attr: 'hovermode',
-    val: null,
-    toggle: true,
-    icon: Icons.tooltip_basic,
-    gravity: 'ne',
-    click: toggleHover
-};
 
 modeBarButtons.hoverClosestPie = {
     name: 'hoverClosestPie',

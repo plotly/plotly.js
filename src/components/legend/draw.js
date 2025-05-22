@@ -484,7 +484,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         event: evt,
         node: legendItem.node(),
         curveNumber: trace.index,
-        expandedIndex: trace._expandedIndex,
+        expandedIndex: trace.index,
         data: gd.data,
         layout: gd.layout,
         frames: gd._transitionData._frames,
@@ -559,18 +559,7 @@ function drawTexts(g, gd, legendObj) {
                 var fullInput = legendItem.trace._fullInput || {};
                 var update = {};
 
-                if(Registry.hasTransform(fullInput, 'groupby')) {
-                    var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
-                    var _index = groupbyIndices[groupbyIndices.length - 1];
-
-                    var kcont = Lib.keyedContainer(fullInput, 'transforms[' + _index + '].styles', 'target', 'value.name');
-
-                    kcont.set(legendItem.trace._group, newName);
-
-                    update = kcont.constructUpdate();
-                } else {
-                    update.name = newName;
-                }
+                update.name = newName;
 
                 if(fullInput._isShape) {
                     return Registry.call('_guiRelayout', gd, 'shapes[' + trace.index + '].name', update.name);
@@ -780,12 +769,9 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var traceGroupGap = legendObj.tracegroupgap;
     var legendGroupWidths = {};
 
-    // - if below/above plot area, give it the maximum potential margin-push value
-    // - otherwise, extend the height of the plot area
-    legendObj._maxHeight = Math.max(
-        (isBelowPlotArea || isAbovePlotArea) ? fullLayout.height / 2 : gs.h,
-        30
-    );
+    var { maxheight, orientation, yref } = legendObj;
+    var heightToBeScaled = orientation === "v" && yref === "paper" ? gs.h : fullLayout.height;
+    legendObj._maxHeight = Math.max(maxheight > 1 ? maxheight : maxheight * heightToBeScaled, 30);
 
     var toggleRectWidth = 0;
     legendObj._width = 0;

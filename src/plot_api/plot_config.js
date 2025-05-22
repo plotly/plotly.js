@@ -350,9 +350,7 @@ var configAttributes = {
         min: 1,
         max: 4,
         description: [
-            'Set the pixel ratio during WebGL image export.',
-            'This config option was formerly named `plot3dPixelRatio`',
-            'which is now deprecated.'
+            'Set the pixel ratio during WebGL image export.'
         ].join(' ')
     },
 
@@ -427,15 +425,6 @@ var configAttributes = {
         min: 0,
         dflt: 0,
         description: 'Sets the length of the undo/redo queue.'
-    },
-
-    globalTransforms: {
-        valType: 'any',
-        dflt: [],
-        description: [
-            'Set global transform to be applied to all traces with no',
-            'specification needed'
-        ].join(' ')
     },
 
     locale: {

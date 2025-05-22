@@ -22,8 +22,8 @@ var SUBTITLE_PADDING_EM = 1.6;
  * @param {DOM element} gd - the graphDiv
  * @param {string} titleClass - the css class of this title
  * @param {object} options - how and what to draw
- *      propContainer - the layout object containing `title` and `titlefont`
- *          attributes that apply to this title
+ *      propContainer - the layout object containing the `title` attribute that 
+ *          applies to this title
  *      propName - the full name of the title property (for Plotly.relayout)
  *      [traceIndex] - include only if this property applies to one trace
  *          (such as a colorbar title) - then editing pipes to Plotly.restyle

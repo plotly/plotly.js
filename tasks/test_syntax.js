@@ -90,22 +90,12 @@ function assertJasmineSuites() {
 
 /*
  * tests about the contents of source (and lib) files:
- * - check that we don't have any features that break in IE
  * - check that we don't use getComputedStyle unexpectedly
  * - check that require statements use lowercase (to match assertFileNames)
  *   or match the case of the source file
  */
 function assertSrcContents() {
     var logs = [];
-
-    // These are forbidden in IE *only in SVG* but since
-    // that's 99% of what we do here, we'll forbid them entirely
-    // until there's some HTML use case where we need them.
-    // (not sure what we'd do then, but we'd think of something!)
-    var IE_SVG_BLACK_LIST = ['innerHTML', 'parentElement', 'children'];
-
-    // Forbidden in IE in any context
-    var IE_BLACK_LIST = ['classList'];
 
     // require'd built-in modules
     var BUILTINS = ['events'];
@@ -122,28 +112,8 @@ function assertSrcContents() {
                 // look for .classList
                 if(node.type === 'MemberExpression') {
                     var source = node.source();
-                    var parts = source.split('.');
-                    var lastPart = parts[parts.length - 1];
-
-                    if(source === 'Math.sign') {
-                        logs.push(file + ' : contains Math.sign (IE failure)');
-                    } else if(source === 'window.getComputedStyle') {
+                    if(source === 'window.getComputedStyle') {
                         getComputedStyleCnt++;
-                    } else if(IE_BLACK_LIST.indexOf(lastPart) !== -1) {
-                        logs.push(file + ' : contains .' + lastPart + ' (IE failure)');
-                    } else if(IE_SVG_BLACK_LIST.indexOf(lastPart) !== -1) {
-                        // add special case for sunburst, icicle and treemap where we use 'children'
-                        // off the d3-hierarchy output
-                        var dirParts = path.dirname(file).split(path.sep);
-                        var filename = dirParts[dirParts.length - 1];
-                        var isSunburstOrIcicleOrTreemap =
-                            filename === 'sunburst' ||
-                            filename === 'icicle' ||
-                            filename === 'treemap';
-                        var isLinkedToObject = ['pt', 'd', 'parent', 'node'].indexOf(parts[parts.length - 2]) !== -1;
-                        if(!(isSunburstOrIcicleOrTreemap && isLinkedToObject)) {
-                            logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
-                        }
                     }
                 } else if(node.type === 'Identifier' && node.source() === 'getComputedStyle') {
                     if(node.parent.source() !== 'window.getComputedStyle') {
@@ -229,6 +199,7 @@ function assertFileNames() {
                 base === 'SECURITY.md' ||
                 base === 'BUILDING.md' ||
                 base === 'CUSTOM_BUNDLE.md' ||
+                base === 'CITATION.cff' ||
                 file.indexOf('mathjax') !== -1
             ) return;
 

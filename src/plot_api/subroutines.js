@@ -52,6 +52,14 @@ function lsInner(gd) {
     var axList = Axes.list(gd, '', true);
     var i, subplot, plotinfo, ax, xa, ya;
 
+    // Set the width and height of the paper div ('.svg-container') in
+    // accordance with the users configuration and layout. 
+    // If the plot is responsive and the user has not set a width/height, then
+    // the width/height of the paper div is set to 100% to fill the parent
+    // container. 
+    // We can't leave the height or width unset because all of the contents of
+    // the paper div are positioned absolutely (and will therefore not take up
+    // any space).
     fullLayout._paperdiv.style({
         width: (gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroWidth && !gd.layout.width) ? '100%' : fullLayout.width + 'px',
         height: (gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroHeight && !gd.layout.height) ? '100%' : fullLayout.height + 'px'
@@ -63,9 +71,7 @@ function lsInner(gd) {
     exports.drawMainTitle(gd);
     ModeBar.manage(gd);
 
-    // _has('cartesian') means SVG specifically, not GL2D - but GL2D
-    // can still get here because it makes some of the SVG structure
-    // for shared features like selections.
+    // _has('cartesian') means SVG specifically
     if(!fullLayout._has('cartesian')) {
         return Plots.previousPromises(gd);
     }

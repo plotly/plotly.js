@@ -34,7 +34,6 @@ exports.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS;
  *  - defs
  *  - traces
  *  - layout
- *  - transforms
  *  - frames
  *  - animations
  *  - config
@@ -44,12 +43,6 @@ exports.get = function() {
 
     Registry.allTypes.forEach(function(type) {
         traces[type] = getTraceAttributes(type);
-    });
-
-    var transforms = {};
-
-    Object.keys(Registry.transformsRegistry).forEach(function(type) {
-        transforms[type] = getTransformAttributes(type);
     });
 
     return {
@@ -82,8 +75,6 @@ exports.get = function() {
 
         traces: traces,
         layout: getLayoutAttributes(),
-
-        transforms: transforms,
 
         frames: getFramesAttributes(),
         animation: formatAttributes(animationAttributes),
@@ -218,21 +209,6 @@ exports.findArrayAttributes = function(trace) {
         exports.crawl(trace._module.attributes, callback);
     }
 
-    var transforms = trace.transforms;
-    if(transforms) {
-        for(var i = 0; i < transforms.length; i++) {
-            var transform = transforms[i];
-            var module = transform._module;
-
-            if(module) {
-                baseAttrName = 'transforms[' + i + '].';
-                baseContainer = transform;
-
-                exports.crawl(module.attributes, callback);
-            }
-        }
-    }
-
     return arrayAttributes;
 };
 
@@ -256,40 +232,25 @@ exports.getTraceValObject = function(trace, parts) {
     var i = 1; // index to start recursing from
     var moduleAttrs, valObject;
 
-    if(head === 'transforms') {
-        if(parts.length === 1) {
-            return baseAttributes.transforms;
-        }
-        var transforms = trace.transforms;
-        if(!Array.isArray(transforms) || !transforms.length) return false;
-        var tNum = parts[1];
-        if(!isIndex(tNum) || tNum >= transforms.length) {
-            return false;
-        }
-        moduleAttrs = (Registry.transformsRegistry[transforms[tNum].type] || {}).attributes;
-        valObject = moduleAttrs && moduleAttrs[parts[2]];
-        i = 3; // start recursing only inside the transform
-    } else {
-        // first look in the module for this trace
-        // components have already merged their trace attributes in here
-        var _module = trace._module;
-        if(!_module) _module = (Registry.modules[trace.type || baseAttributes.type.dflt] || {})._module;
-        if(!_module) return false;
+    // first look in the module for this trace
+    // components have already merged their trace attributes in here
+    var _module = trace._module;
+    if(!_module) _module = (Registry.modules[trace.type || baseAttributes.type.dflt] || {})._module;
+    if(!_module) return false;
 
-        moduleAttrs = _module.attributes;
-        valObject = moduleAttrs && moduleAttrs[head];
+    moduleAttrs = _module.attributes;
+    valObject = moduleAttrs && moduleAttrs[head];
 
-        // then look in the subplot attributes
-        if(!valObject) {
-            var subplotModule = _module.basePlotModule;
-            if(subplotModule && subplotModule.attributes) {
-                valObject = subplotModule.attributes[head];
-            }
+    // then look in the subplot attributes
+    if(!valObject) {
+        var subplotModule = _module.basePlotModule;
+        if(subplotModule && subplotModule.attributes) {
+            valObject = subplotModule.attributes[head];
         }
-
-        // finally look in the global attributes
-        if(!valObject) valObject = baseAttributes[head];
     }
+
+    // finally look in the global attributes
+    if(!valObject) valObject = baseAttributes[head];
 
     return recurseIntoValObject(valObject, parts, i);
 };
@@ -324,7 +285,7 @@ function layoutHeadAttr(fullLayout, head) {
             _module = basePlotModules[i];
             if(_module.attrRegex && _module.attrRegex.test(head)) {
                 // if a module defines overrides, these take precedence
-                // initially this is to allow gl2d different editTypes from svg cartesian
+                // this is to allow different editTypes from svg cartesian
                 if(_module.layoutAttrOverrides) return _module.layoutAttrOverrides;
 
                 // otherwise take the first attributes we find
@@ -332,7 +293,6 @@ function layoutHeadAttr(fullLayout, head) {
             }
 
             // a module can also override the behavior of base (and component) module layout attrs
-            // again see gl2d for initial use case
             var baseOverrides = _module.baseLayoutAttrOverrides;
             if(baseOverrides && head in baseOverrides) return baseOverrides[head];
         }
@@ -565,26 +525,6 @@ function getLayoutAttributes() {
 
     return {
         layoutAttributes: formatAttributes(layoutAttributes)
-    };
-}
-
-function getTransformAttributes(type) {
-    var _module = Registry.transformsRegistry[type];
-    var attributes = extendDeepAll({}, _module.attributes);
-
-    // add registered components transform attributes
-    Object.keys(Registry.componentsRegistry).forEach(function(k) {
-        var _module = Registry.componentsRegistry[k];
-
-        if(_module.schema && _module.schema.transforms && _module.schema.transforms[type]) {
-            Object.keys(_module.schema.transforms[type]).forEach(function(v) {
-                insertAttrs(attributes, _module.schema.transforms[type][v], v);
-            });
-        }
-    });
-
-    return {
-        attributes: formatAttributes(attributes)
     };
 }
 

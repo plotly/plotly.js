@@ -1,3 +1,4 @@
+import fs from 'fs';
 import fsExtra from 'fs-extra';
 import prependFile from 'prepend-file';
 
@@ -43,7 +44,17 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     await build(config);
 
-    addWrapper(pathToBundle)
+    addWrapper(pathToBundle);
+
+    if(pathToBundle.endsWith('.js')) {
+        var len = pathToBundle.length;
+        var cssOutput = pathToBundle.slice(0, len - 3) + '.css';
+
+        // remove unwanted css file
+        if (fs.existsSync(cssOutput)) {
+            fs.unlinkSync(cssOutput);
+        }
+    }
 
     if(cb) cb();
 }
@@ -56,9 +67,7 @@ function addWrapper(path){
         [
             '(',
             ' function(root, factory) {',
-            '  if (typeof define === "function" && define.amd) {',
-            '   define(factory);',
-            '  } else if (typeof module === "object" && module.exports) {',
+            '  if (typeof module === "object" && module.exports) {',
             '   module.exports = factory();',
             '  } else {',
             '   root.moduleName = factory();',
@@ -73,9 +82,7 @@ function addWrapper(path){
         path,
         [
             '',
-            'if (!(typeof define === "function" && define.amd)) {',
-            ' window.Plotly = Plotly;',
-            '}',
+            'window.Plotly = Plotly;',
             'return Plotly;',
             '}));',
         ].join('\n'),

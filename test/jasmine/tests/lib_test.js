@@ -340,11 +340,12 @@ describe('Test lib.js:', function() {
         });
 
         it('should access properties of objects in an array with index -1', function() {
-            var obj = {arr: [{a: 1}, {a: 2}, {b: 3}]};
+            var obj = {arr: [{a: 1}, {a: null}, {b: 3}]};
             var prop = np(obj, 'arr[-1].a');
 
-            expect(prop.get()).toEqual([1, 2, undefined]);
-            expect(obj).toEqual({arr: [{a: 1}, {a: 2}, {b: 3}]});
+            expect(prop.get()).toEqual([1, undefined, undefined]);
+            expect(prop.get(true)).toEqual([1, null, undefined]);
+            expect(obj).toEqual({arr: [{a: 1}, {a: null}, {b: 3}]});
 
             prop.set(5);
             expect(prop.get()).toBe(5);
@@ -1853,9 +1854,7 @@ describe('Test lib.js:', function() {
                 -Number.MAX_VALUE, -Number.MIN_VALUE
             ];
 
-            if(!Lib.isIE()) {
-                vals.push(Number.EPSILON, -Number.EPSILON);
-            }
+            vals.push(Number.EPSILON, -Number.EPSILON);
 
             vals.forEach(function(v) {
                 expect(Lib.cleanNumber(v)).toBe(v);
@@ -2445,6 +2444,14 @@ describe('Test lib.js:', function() {
         it('should work with the number *0* (nested case)', function() {
             expect(Lib.templateString('%{x.y}', {x: {y: 0}})).toEqual('0');
         });
+
+        it('preserves null and NaN', function() {
+            expect(Lib.templateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
+        });
     });
 
     describe('hovertemplateString', function() {
@@ -2471,6 +2478,16 @@ describe('Test lib.js:', function() {
 
         it('should work with the number *0* (nested case)', function() {
             expect(Lib.hovertemplateString('%{x.y}', {}, locale, {x: {y: 0}})).toEqual('0');
+        });
+
+        it('preserves null and NaN', function() {
+            expect(Lib.hovertemplateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {},
+                locale,
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
         });
 
         it('subtitutes multiple matches', function() {
@@ -2537,6 +2554,16 @@ describe('Test lib.js:', function() {
 
         it('looks for default label if no format is provided', function() {
             expect(Lib.texttemplateString('y: %{y}', {yLabel: '0.1'}, locale, {y: 0.123})).toEqual('y: 0.1');
+        });
+
+        it('preserves null and NaN', function() {
+            expect(Lib.texttemplateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {},
+                locale,
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
         });
 
         it('warns user up to 10 times if a variable cannot be found', function() {

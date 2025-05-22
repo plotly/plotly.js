@@ -553,24 +553,6 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
-        it('creates mode bar (gl2d version)', function() {
-            var buttons = getButtons([
-                ['toImage'],
-                ['zoom2d', 'pan2d'],
-                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']
-            ]);
-
-            var gd = getMockGraphInfo(['x'], ['y']);
-            gd._fullLayout._basePlotModules = [{ name: 'gl2d' }];
-            gd._fullLayout.xaxis = {fixedrange: false};
-            gd._fullData = [{type: 'scattergl'}];
-
-            manageModeBar(gd);
-            var modeBar = gd._fullLayout._modeBar;
-
-            checkButtons(modeBar, buttons, 1);
-        });
-
         it('creates mode bar (pie version)', function() {
             var buttons = getButtons([
                 ['toImage']
@@ -1562,33 +1544,6 @@ describe('ModeBar', function() {
             expect(style.fill).toBe(color);
         }
 
-        function getStyleRule() {
-            var uid = gd._fullLayout._uid;
-            var ownerNode = document.getElementById('plotly.js-style-modebar-' + uid);
-            var styleSheets = document.styleSheets;
-            for(var i = 0; i < styleSheets.length; i++) {
-                var ss = styleSheets[i];
-                if(ss.ownerNode === ownerNode) return ss;
-            }
-        }
-
-        it('create an associated style element and destroy it on purge', function(done) {
-            var styleSelector, style;
-            Plotly.newPlot(gd, [], {})
-            .then(function() {
-                styleSelector = 'style[id*="modebar-' + gd._fullLayout._uid + '"]';
-
-                style = document.querySelector(styleSelector);
-                expect(style).toBeTruthy();
-            })
-            .then(function() {
-                Plotly.purge(gd);
-                style = document.querySelector(styleSelector);
-                expect(style).toBeNull();
-            })
-            .then(done, done.fail);
-        });
-
         it('changes icon colors', function(done) {
             Plotly.newPlot(gd, [], {modebar: { color: colors[0]}})
             .then(function() {
@@ -1620,14 +1575,12 @@ describe('ModeBar', function() {
             Plotly.newPlot(gd, [], {modebar: { bgcolor: colors[0]}})
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element.querySelector('.modebar-group'));
-                expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
-                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
+                expect(style.backgroundColor).toBe(colors[0]);
             })
             .then(function() { return Plotly.relayout(gd, 'modebar.bgcolor', colors[1]); })
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element.querySelector('.modebar-group'));
-                expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
-                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
+                expect(style.backgroundColor).toBe(colors[1]);
             })
             .then(done, done.fail);
         });
@@ -1637,13 +1590,11 @@ describe('ModeBar', function() {
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element.querySelector('.modebar-group'));
                 expect(style.backgroundColor).toBe(colors[0]);
-                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[0]);
             })
             .then(function() { return Plotly.relayout(gd, 'modebar.bgcolor', colors[1]); })
             .then(function() {
                 style = window.getComputedStyle(gd._fullLayout._modeBar.element.querySelector('.modebar-group'));
                 expect(style.backgroundColor).toBe(colors[1]);
-                expect(getStyleRule().rules[3].style.backgroundColor).toBe(colors[1]);
             })
             .then(done, done.fail);
         });

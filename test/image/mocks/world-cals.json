@@ -183,16 +183,7 @@
    "xaxis": "x2",
    "yaxis": "y2",
    "ycalendar": "hebrew",
-   "name": "hebrew histogram<br>jalali filtered",
-   "transforms": [
-    {
-     "type": "filter",
-     "operation": "[]",
-     "valuecalendar": "jalali",
-     "value": ["0818-08", "0819-06"],
-     "target": "y"
-    }
-   ],
+   "name": "hebrew histogram",
    "ybins": {
     "start": "5200-12-29 12:00",
     "end": "5200-01-03 12:00",

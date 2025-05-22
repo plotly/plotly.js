@@ -60,6 +60,10 @@ function addStyleRule(selector, styleString) {
 function addRelatedStyleRule(uid, selector, styleString) {
     var id = 'plotly.js-style-' + uid;
     var style = document.getElementById(id);
+    if(style && style.matches('.no-inline-styles')) {
+        // Do not proceed if user disable inline styles explicitly...
+        return;
+    }
     if(!style) {
         style = document.createElement('style');
         style.setAttribute('id', id);
@@ -69,7 +73,9 @@ function addRelatedStyleRule(uid, selector, styleString) {
     }
     var styleSheet = style.sheet;
 
-    if(styleSheet.insertRule) {
+    if(!styleSheet) {
+        loggers.warn('Cannot addRelatedStyleRule, probably due to strict CSP...');
+    } else if(styleSheet.insertRule) {
         styleSheet.insertRule(selector + '{' + styleString + '}', 0);
     } else if(styleSheet.addRule) {
         styleSheet.addRule(selector, styleString, 0);
@@ -83,6 +89,48 @@ function deleteRelatedStyleRule(uid) {
     var id = 'plotly.js-style-' + uid;
     var style = document.getElementById(id);
     if(style) removeElement(style);
+}
+
+/**
+ * Setup event listeners on button elements to emulate the ':hover' state without using inline styles,
+ * which is not allowed with strict CSP.  This supports modebar buttons set with the 'active' class,
+ * in which case, the active style remains even when it's no longer hovered.
+ * @param {string} selector selector for button elements to be styled when hovered
+ * @param {string} activeSelector selector used to determine if selected element is active
+ * @param {string} childSelector the child element on which the styling needs to be updated
+ * @param {string} activeStyle    style that has to be applied when 'hovered' or 'active'
+ * @param {string} inactiveStyle    style that has to be applied when not 'hovered' nor 'active'
+ */
+function setStyleOnHover(selector, activeSelector, childSelector, activeStyle, inactiveStyle, element) {
+    var activeStyleParts = activeStyle.split(':');
+    var inactiveStyleParts = inactiveStyle.split(':');
+    var eventAddedAttrName = 'data-btn-style-event-added';
+    if (!element) {
+        element = document;
+    }
+    element.querySelectorAll(selector).forEach(function(el) {
+        if(!el.getAttribute(eventAddedAttrName)) {
+            // Emulate ":hover" CSS style using JS event handlers to set the
+            // style in a strict CSP-compliant manner.
+            el.addEventListener('mouseenter', function() {
+                var childEl = this.querySelector(childSelector);
+                if(childEl) {
+                    childEl.style[activeStyleParts[0]] = activeStyleParts[1];
+                }
+            });
+            el.addEventListener('mouseleave', function() {
+                var childEl = this.querySelector(childSelector);
+                if(childEl) {
+                    if(activeSelector && this.matches(activeSelector)) {
+                        childEl.style[activeStyleParts[0]] = activeStyleParts[1];
+                    } else {
+                        childEl.style[inactiveStyleParts[0]] = inactiveStyleParts[1];
+                    }
+                }
+            });
+            el.setAttribute(eventAddedAttrName, true);
+        }
+    });
 }
 
 function getFullTransformMatrix(element) {
@@ -162,6 +210,7 @@ module.exports = {
     addStyleRule: addStyleRule,
     addRelatedStyleRule: addRelatedStyleRule,
     deleteRelatedStyleRule: deleteRelatedStyleRule,
+    setStyleOnHover: setStyleOnHover,
     getFullTransformMatrix: getFullTransformMatrix,
     getElementTransformMatrix: getElementTransformMatrix,
     getElementAndAncestors: getElementAndAncestors,

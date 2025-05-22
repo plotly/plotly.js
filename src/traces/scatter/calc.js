@@ -36,7 +36,7 @@ function calc(gd, trace) {
     var yAttr = 'y';
     var posAttr;
     if(stackGroupOpts) {
-        Lib.pushUnique(stackGroupOpts.traceIndices, trace._expandedIndex);
+        Lib.pushUnique(stackGroupOpts.traceIndices, trace.index);
         isV = stackGroupOpts.orientation === 'v';
 
         // size, like we use for bar

@@ -81,60 +81,6 @@ exports.cleanLayout = function(layout) {
 
             // prune empty domain arrays made before the new nestedProperty
             if(emptyContainer(ax, 'domain')) delete ax.domain;
-
-            // autotick -> tickmode
-            if(ax.autotick !== undefined) {
-                if(ax.tickmode === undefined) {
-                    ax.tickmode = ax.autotick ? 'auto' : 'linear';
-                }
-                delete ax.autotick;
-            }
-
-            cleanTitle(ax);
-        } else if(polarAttrRegex && polarAttrRegex.test(key)) {
-            // modifications for polar
-
-            var polar = layout[key];
-            cleanTitle(polar.radialaxis);
-        } else if(ternaryAttrRegex && ternaryAttrRegex.test(key)) {
-            // modifications for ternary
-
-            var ternary = layout[key];
-            cleanTitle(ternary.aaxis);
-            cleanTitle(ternary.baxis);
-            cleanTitle(ternary.caxis);
-        } else if(sceneAttrRegex && sceneAttrRegex.test(key)) {
-            // modifications for 3D scenes
-
-            var scene = layout[key];
-
-            // clean old Camera coords
-            var cameraposition = scene.cameraposition;
-
-            if(Array.isArray(cameraposition) && cameraposition[0].length === 4) {
-                var rotation = cameraposition[0];
-                var center = cameraposition[1];
-                var radius = cameraposition[2];
-                var mat = m4FromQuat([], rotation);
-                var eye = [];
-
-                for(j = 0; j < 3; ++j) {
-                    eye[j] = center[j] + radius * mat[2 + 4 * j];
-                }
-
-                scene.camera = {
-                    eye: {x: eye[0], y: eye[1], z: eye[2]},
-                    center: {x: center[0], y: center[1], z: center[2]},
-                    up: {x: 0, y: 0, z: 1} // we just ignore calculating camera z up in this case
-                };
-
-                delete scene.cameraposition;
-            }
-
-            // clean axis titles
-            cleanTitle(scene.xaxis);
-            cleanTitle(scene.yaxis);
-            cleanTitle(scene.zaxis);
         }
     }
 
@@ -143,17 +89,6 @@ exports.cleanLayout = function(layout) {
         var ann = layout.annotations[i];
 
         if(!Lib.isPlainObject(ann)) continue;
-
-        if(ann.ref) {
-            if(ann.ref === 'paper') {
-                ann.xref = 'paper';
-                ann.yref = 'paper';
-            } else if(ann.ref === 'data') {
-                ann.xref = 'x';
-                ann.yref = 'y';
-            }
-            delete ann.ref;
-        }
 
         cleanAxRef(ann, 'xref');
         cleanAxRef(ann, 'yref');
@@ -199,9 +134,6 @@ exports.cleanLayout = function(layout) {
         }
     }
 
-    // clean plot title
-    cleanTitle(layout);
-
     /*
      * Moved from rotate -> orbit for dragmode
      */
@@ -227,44 +159,6 @@ function cleanAxRef(container, attr) {
     }
 }
 
-/**
- * Cleans up old title attribute structure (flat) in favor of the new one (nested).
- *
- * @param {Object} titleContainer - an object potentially including deprecated title attributes
- */
-function cleanTitle(titleContainer) {
-    if(titleContainer) {
-        // title -> title.text
-        // (although title used to be a string attribute,
-        // numbers are accepted as well)
-        if(typeof titleContainer.title === 'string' || typeof titleContainer.title === 'number') {
-            titleContainer.title = {
-                text: titleContainer.title
-            };
-        }
-
-        rewireAttr('titlefont', 'font');
-        rewireAttr('titleposition', 'position');
-        rewireAttr('titleside', 'side');
-        rewireAttr('titleoffset', 'offset');
-    }
-
-    function rewireAttr(oldAttrName, newAttrName) {
-        var oldAttrSet = titleContainer[oldAttrName];
-        var newAttrSet = titleContainer.title && titleContainer.title[newAttrName];
-
-        if(oldAttrSet && !newAttrSet) {
-            // Ensure title object exists
-            if(!titleContainer.title) {
-                titleContainer.title = {};
-            }
-
-            titleContainer.title[newAttrName] = titleContainer[oldAttrName];
-            delete titleContainer[oldAttrName];
-        }
-    }
-}
-
 /*
  * cleanData: Make a few changes to the data for backward compatibility
  * before it gets used for anything. Modifies the data traces users provide.
@@ -281,29 +175,6 @@ exports.cleanData = function(data) {
         if(trace.type === 'histogramy' && 'xbins' in trace && !('ybins' in trace)) {
             trace.ybins = trace.xbins;
             delete trace.xbins;
-        }
-
-        // error_y.opacity is obsolete - merge into color
-        if(trace.error_y && 'opacity' in trace.error_y) {
-            var dc = Color.defaults;
-            var yeColor = trace.error_y.color || (traceIs(trace, 'bar') ?
-                Color.defaultLine :
-                dc[tracei % dc.length]);
-            trace.error_y.color = Color.addOpacity(
-                Color.rgb(yeColor),
-                Color.opacity(yeColor) * trace.error_y.opacity);
-            delete trace.error_y.opacity;
-        }
-
-        // convert bardir to orientation, and put the data into
-        // the axes it's eventually going to be used with
-        if('bardir' in trace) {
-            if(trace.bardir === 'h' && (traceIs(trace, 'bar') ||
-                trace.type.substr(0, 9) === 'histogram')) {
-                trace.orientation = 'h';
-                exports.swapXYData(trace);
-            }
-            delete trace.bardir;
         }
 
         // now we have only one 1D histogram type, and whether
@@ -399,51 +270,6 @@ exports.cleanData = function(data) {
             }
         }
 
-        // transforms backward compatibility fixes
-        if(Array.isArray(trace.transforms)) {
-            var transforms = trace.transforms;
-
-            for(i = 0; i < transforms.length; i++) {
-                var transform = transforms[i];
-
-                if(!Lib.isPlainObject(transform)) continue;
-
-                switch(transform.type) {
-                    case 'filter':
-                        if(transform.filtersrc) {
-                            transform.target = transform.filtersrc;
-                            delete transform.filtersrc;
-                        }
-
-                        if(transform.calendar) {
-                            if(!transform.valuecalendar) {
-                                transform.valuecalendar = transform.calendar;
-                            }
-                            delete transform.calendar;
-                        }
-                        break;
-
-                    case 'groupby':
-                        // Name has changed from `style` to `styles`, so use `style` but prefer `styles`:
-                        transform.styles = transform.styles || transform.style;
-
-                        if(transform.styles && !Array.isArray(transform.styles)) {
-                            var prevStyles = transform.styles;
-                            var styleKeys = Object.keys(prevStyles);
-
-                            transform.styles = [];
-                            for(var j = 0; j < styleKeys.length; j++) {
-                                transform.styles.push({
-                                    target: styleKeys[j],
-                                    value: prevStyles[styleKeys[j]]
-                                });
-                            }
-                        }
-                        break;
-                }
-            }
-        }
-
         // prune empty containers made before the new nestedProperty
         if(emptyContainer(trace, 'line')) delete trace.line;
         if('marker' in trace) {
@@ -467,13 +293,6 @@ exports.cleanData = function(data) {
             delete trace.autobiny;
             delete trace.ybins;
         }
-
-        cleanTitle(trace);
-        if(trace.colorbar) cleanTitle(trace.colorbar);
-        if(trace.marker && trace.marker.colorbar) cleanTitle(trace.marker.colorbar);
-        if(trace.line && trace.line.colorbar) cleanTitle(trace.line.colorbar);
-        if(trace.aaxis) cleanTitle(trace.aaxis);
-        if(trace.baxis) cleanTitle(trace.baxis);
     }
 };
 

@@ -75,32 +75,6 @@ describe('Test splom trace defaults:', function() {
         expect(gd._fullData[0].diagonal.visible).toBe(false);
     });
 
-    it('still coerces partial visibilities even if all are false with transforms', function() {
-        _supply({
-            dimensions: [{
-                values: [1, 2, 3]
-            }],
-            showupperhalf: false,
-            showlowerhalf: false,
-            diagonal: {visible: false},
-            transforms: [{
-                type: 'filter',
-                target: 'dimensions[0].values',
-                operation: '>',
-                value: 2
-            }]
-        });
-
-        expect(gd._fullData[0].visible).toBe(false);
-
-        expect(gd._fullData[0].transforms[0].enabled).toBe(true);
-
-        // make sure these are still coerced - so you can get back via GUI!
-        expect(gd._fullData[0].showupperhalf).toBe(false);
-        expect(gd._fullData[0].showlowerhalf).toBe(false);
-        expect(gd._fullData[0].diagonal.visible).toBe(false);
-    });
-
     it('should set `visible: false` to values-less dimensions', function() {
         _supply({
             dimensions: [
@@ -825,7 +799,7 @@ describe('Test splom interactions:', function() {
         .then(function() {
             _assert({
                 subplotCnt: 25,
-                innerSubplotNodeCnt: 18,
+                innerSubplotNodeCnt: 19,
                 hasSplomGrid: false,
                 bgCnt: 0
             });
@@ -845,7 +819,7 @@ describe('Test splom interactions:', function() {
             // grid layer would be above xaxis layer,
             // if we didn't clear subplot children.
             expect(gridIndex).toBe(2, '<g.gridlayer> index');
-            expect(xaxisIndex).toBe(15, '<g.xaxislayer-above> index');
+            expect(xaxisIndex).toBe(16, '<g.xaxislayer-above> index');
 
             return Plotly.restyle(gd, 'dimensions', [dimsLarge]);
         })
@@ -857,7 +831,7 @@ describe('Test splom interactions:', function() {
                 // new subplots though have reduced number of children.
                 innerSubplotNodeCnt: function(d) {
                     var p = d.match(SUBPLOT_PATTERN);
-                    return (p[1] > 5 || p[2] > 5) ? 4 : 18;
+                    return (p[1] > 5 || p[2] > 5) ? 4 : 19;
                 },
                 hasSplomGrid: true,
                 bgCnt: 0
