@@ -663,12 +663,13 @@ module.exports = {
         dflt: 'outside',
         editType: 'calc',
         description: [
-            'Determines where tick labels are drawn with respect to the axis',
+            'Determines where tick labels are drawn with respect to the axis.',
             'Please note that',
-            'top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*.',
-            'Similarly',
-            'left or right has no effect on y axes or when `ticklabelmode` is set to *period*.',
-            'Has no effect on *multicategory* axes or when `tickson` is set to *boundaries*.',
+            'top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*',
+            'or when `tickson` is set to *boundaries*. Similarly,',
+            'left or right has no effect on y axes or when `ticklabelmode` is set to *period*',
+            'or when `tickson` is set to *boundaries*.',
+            'Has no effect on *multicategory* axes.',
             'When used on axes linked by `matches` or `scaleanchor`,',
             'no extra padding for inside labels would be added by autorange,',
             'so that the scales could match.'
