@@ -2365,6 +2365,7 @@ axes.draw = function(gd, arg, opts) {
                 if(plotinfo.minorGridlayer) plotinfo.minorGridlayer.selectAll('path').remove();
                 if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
                 if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
+                if(plotinfo.zerolinelayerAbove) plotinfo.zerolinelayerAbove.selectAll('path').remove();
 
                 fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
                 fullLayout._infolayer.select('.g-' + ya._id + 'title').remove();
@@ -2462,6 +2463,7 @@ axes.drawOne = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var counterLetter = axes.counterLetter(axId);
     var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
+    var zerolineIsAbove = ax.zerolinelayer === 'above traces';
 
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
@@ -2576,7 +2578,7 @@ axes.drawOne = function(gd, ax, opts) {
             });
             axes.drawZeroLine(gd, ax, {
                 counterAxis: counterAxis,
-                layer: plotinfo.zerolinelayer,
+                layer: zerolineIsAbove ? plotinfo.zerolinelayerAbove : plotinfo.zerolinelayer,
                 path: gridPath,
                 transFn: transTickFn
             });
@@ -3558,6 +3560,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
     var fullLayout = gd._fullLayout;
     var axId = ax._id;
+    var zerolineIsAbove = ax.zerolinelayer === 'above traces';
     var cls = opts.cls || axId + 'tick';
 
     var vals = opts.vals.filter(function(d) { return d.text; });
@@ -3766,8 +3769,10 @@ axes.drawLabels = function(gd, ax, opts) {
                     var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
 
                     var sel;
-                    if(e.K === ZERO_PATH.K) sel = mainPlotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
-                    else if(e.K === MINORGRID_PATH.K) sel = mainPlotinfo.minorGridlayer.selectAll('.' + ax._id);
+                    if(e.K === ZERO_PATH.K) {
+                        var zerolineLayer = zerolineIsAbove ? mainPlotinfo.zerolinelayerAbove : mainPlotinfo.zerolinelayer; 
+                        sel = zerolineLayer.selectAll('.' + ax._id + 'zl');
+                    } else if(e.K === MINORGRID_PATH.K) sel = mainPlotinfo.minorGridlayer.selectAll('.' + ax._id);
                     else if(e.K === GRID_PATH.K) sel = mainPlotinfo.gridlayer.selectAll('.' + ax._id);
                     else sel = mainPlotinfo[ax._id.charAt(0) + 'axislayer'];
 
