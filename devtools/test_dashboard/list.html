@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supported Charts</title>
+  </head>
+
+  <body>
+    <h1>Supported Charts</h1>
+    <div id="links"></div>
+
+    <script>
+      const URI = "http://localhost:3000/devtools/test_dashboard/index.html";
+      const divLinks = document.getElementById("links");
+      const links = [
+        "line_scatter",
+        "line_scatter_change_side",
+        "line_scatter_change_side_shrunk",
+        "line_scatter_regular_side",
+        "line_scatter_regular_side_shrunk",
+        "scatter_errorbars_inherit_color",
+        "scatter_fill_corner_cases",
+        "scatter_fill_gradient_tonext",
+        "scatter_fill_gradient_tonexty_toself",
+        "scatter_fill_no_opacity",
+        "scatter_fill_pattern",
+        "scatter_fill_self_next",
+        "scatter_fill_self_opacity",
+        "grouped_scatter-linear",
+        "axes_category_categoryarray",
+        "axes_category_descending",
+        "axes_category_descending_with_gaps",
+        "axes_category_null",
+        "tick_attributes",
+      ];
+
+      links.forEach((chart) => {
+        const a = document.createElement("a");
+        a.href = `${URI}#${chart}`;
+        a.textContent = chart;
+        a.target = "_blank";
+
+        const br = document.createElement("br");
+
+        divLinks.appendChild(a);
+        divLinks.appendChild(br);
+      });
+    </script>
+  </body>
+</html>
