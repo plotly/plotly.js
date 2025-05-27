@@ -38,6 +38,35 @@
    "line": { "width": 10, "color": "red" },
    "marker": { "size": 20, "color": "blue" },
    "yaxis": "y2"
+  },
+  {
+   "name":"x1 on y3 1",
+   "x": [1, 2, 3, 4],
+   "y": [4, 5, 6, 7],
+   "type": "scatter",
+   "yaxis": "y3"
+   }
+  },
+  {
+   "name":"x1 on y3 2",
+   "x": [2, 3, 4, 5],
+   "y": [8, 9, 10, 11],
+   "type": "scatter",
+   "yaxis": "y3"
+  },
+  {
+   "name":"x1 on y4 1",
+   "x": [1, 2, 3, 4],
+   "y": [12, 9, 15, 12],
+   "type": "scatter",
+   "yaxis": "y4"
+  },
+  {
+   "name":"x1 on y4 2",
+   "x": [1, 2, 3],
+   "y": [11, 12, 13],
+   "type": "scatter",
+   "yaxis": "y4"
   }
  ],
   "layout": {
@@ -45,7 +74,7 @@
     "yaxis": {
       "anchor": "x",
       "title": {
-        "text": "<b>Primary</b> yaxis title"
+        "text": "<b>First</b> yaxis title"
       }
     },
     "yaxis2": {
@@ -53,7 +82,23 @@
       "overlaying": "y",
       "side": "right",
       "title": {
-        "text": "<b>Secondary</b> yaxis title"
+        "text": "<b>Second</b> yaxis title"
+      }
+    },
+    "yaxis3": {
+      "anchor": "x",
+      "overlaying": "y",
+      "side": "right",
+      "title": {
+        "text": "<b>Third</b> yaxis title"
+      }
+    },
+    "yaxis4": {
+      "anchor": "x",
+      "overlaying": "y",
+      "side": "left",
+      "title": {
+        "text": "<b>Fourth</b> yaxis title"
       }
     },
     "title": {
