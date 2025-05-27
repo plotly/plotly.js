@@ -20,9 +20,26 @@
     <div id="graph" tabindex="0"></div> <!-- focus the graph -->
   </div>
   <div id="snapshot"></div>
-
+  <div id="focus-display"
+       aria-hidden="true"
+       tabindex="-1"
+       style="pointer-events: none; margin: .5em; padding: .5em; border: 1px solid gray">
+    Focused element will appear here. Helpful for debugging &lt;tab&gt; behavior.
+  </div>
   <script src="../../node_modules/@plotly/mathjax-v2/MathJax.js?config=TeX-AMS-MML_SVG"></script>
   <script charset="utf-8" id="source" src="../../build/plotly.js"></script>
   <script charset="utf-8" src="../../build/test_dashboard-bundle.js"></script>
+  <script>
+  const display = document.getElementById('focus-display');
+  document.addEventListener('focusin', () => {
+    const el = document.activeElement;
+    const tag = el.tagName.toLowerCase();
+    const id = el.id ? `#${el.id}` : '';
+    const cls = el.className ? `.${el.className.replace(/\s+/g, '.')}` : '';
+    const type = el.type ? ` type="${el.type}"` : '';
+    display.textContent = `Focused: <${tag}${id}${cls}${type}>`;
+  });
+</script>
+
 </body>
 </html>
