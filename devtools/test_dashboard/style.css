@@ -6,6 +6,10 @@ html, body{
 }
 header{
   position: fixed;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  align-items: center;
+  gap: 0.5em;
   top: 0;
   height: 40px;
   width: 100%;
@@ -19,7 +23,6 @@ header img{
   vertical-align: top;
 }
 header input{
-  float: right;
   background-color: none;
   border: none;
   border-bottom: 1px solid #ddd;
