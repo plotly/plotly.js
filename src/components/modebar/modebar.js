@@ -43,10 +43,8 @@ proto.update = function(graphInfo, buttons) {
     var modeBarId = 'modebar-' + fullLayout._uid;
 
     this.element.setAttribute('id', modeBarId);
-    this._uid = modeBarId;
-
     this.element.setAttribute('role', 'toolbar');
-    
+    this._uid = modeBarId;
     this.element.className = 'modebar';
     if(context.displayModeBar === 'hover') this.element.className += ' modebar--hover ease-bg';
 
@@ -149,6 +147,7 @@ proto.createButton = function(config) {
     var _this = this;
     var button = document.createElement('a');
 
+    button.setAttribute('tabindex', '0');
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
 
