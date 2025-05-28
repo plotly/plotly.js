@@ -45,7 +45,7 @@ proto.update = function(graphInfo, buttons) {
     this.element.setAttribute('id', modeBarId);
     this.element.setAttribute('role', 'toolbar');
     this._uid = modeBarId;
-    this.element.className = 'modebar';
+    this.element.className = 'modebar modebar--custom';
     if(context.displayModeBar === 'hover') this.element.className += ' modebar--hover ease-bg';
 
     if(fullLayout.modebar.orientation === 'v') {
