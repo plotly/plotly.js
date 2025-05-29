@@ -220,6 +220,7 @@ jobs:
       - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
       - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
@@ -243,6 +244,7 @@ jobs:
       - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
       - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
@@ -267,6 +269,7 @@ jobs:
       - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
       - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
@@ -291,6 +294,7 @@ jobs:
       - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
       - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
@@ -370,6 +374,7 @@ jobs:
       - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
       - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
