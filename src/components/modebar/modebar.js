@@ -44,7 +44,18 @@ proto.update = function(graphInfo, buttons) {
 
     this.element.setAttribute('id', modeBarId);
     this.element.setAttribute('role', 'toolbar');
-    this.element.setAttribute('tabindex', '0')
+    this.element.setAttribute('tabindex', '0');
+    
+    this.element.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            const activeButton = e.target.closest('.modebar-btn');
+            if (activeButton) {
+                activeButton.click();
+                e.preventDefault();
+            }
+        }
+    });
+
     this._uid = modeBarId;
     this.element.className = 'modebar modebar--custom';
     if(context.displayModeBar === 'hover') this.element.className += ' modebar--hover ease-bg';
