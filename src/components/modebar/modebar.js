@@ -43,9 +43,10 @@ proto.update = function(graphInfo, buttons) {
     var modeBarId = 'modebar-' + fullLayout._uid;
 
     this.element.setAttribute('id', modeBarId);
-    this._uid = modeBarId;
+    this.element.setAttribute('role', 'toolbar');
 
-    this.element.className = 'modebar';
+    this._uid = modeBarId;
+    this.element.className = 'modebar modebar--custom';
     if(context.displayModeBar === 'hover') this.element.className += ' modebar--hover ease-bg';
 
     if(fullLayout.modebar.orientation === 'v') {
@@ -147,15 +148,19 @@ proto.createButton = function(config) {
     var _this = this;
     var button = document.createElement('a');
 
+    button.setAttribute('tabindex', '0');
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
-
+    
     var title = config.title;
     if(title === undefined) title = config.name;
     // for localization: allow title to be a callable that takes gd as arg
     else if(typeof title === 'function') title = title(this.graphInfo);
 
-    if(title || title === 0) button.setAttribute('data-title', title);
+    if(title || title === 0) {
+        button.setAttribute('data-title', title)
+        button.setAttribute("aria-label", title)
+    };
 
     if(config.attr !== undefined) button.setAttribute('data-attr', config.attr);
 
@@ -174,6 +179,15 @@ proto.createButton = function(config) {
 
             // only needed for 'hoverClosestGeo' which does not call relayout
             _this.updateActiveButton(ev.currentTarget);
+        });
+        button.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const activeButton = e.target.closest('.modebar-btn');
+                if (activeButton) {
+                    activeButton.click();
+                    e.preventDefault();
+                }
+            }
         });
     }
 

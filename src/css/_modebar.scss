@@ -17,6 +17,10 @@
     opacity: 1;
 }
 
+&:focus-within .modebar--hover .modebar-group {
+  opacity: 1;
+}
+
 .modebar-group {
     float: left;
     display: inline-block;
