@@ -150,13 +150,16 @@ proto.createButton = function(config) {
     button.setAttribute('tabindex', '0');
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
-
+    
     var title = config.title;
     if(title === undefined) title = config.name;
     // for localization: allow title to be a callable that takes gd as arg
     else if(typeof title === 'function') title = title(this.graphInfo);
 
-    if(title || title === 0) button.setAttribute('data-title', title);
+    if(title || title === 0) {
+        button.setAttribute('data-title', title)
+        button.setAttribute("aria-label", title)
+    };
 
     if(config.attr !== undefined) button.setAttribute('data-attr', config.attr);
 
