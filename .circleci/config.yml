@@ -220,6 +220,11 @@ jobs:
       - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
     steps:
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -238,6 +243,11 @@ jobs:
       - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
     steps:
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -257,6 +267,11 @@ jobs:
       - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
     steps:
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -276,6 +291,11 @@ jobs:
       - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
     steps:
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -350,6 +370,11 @@ jobs:
       - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
     steps:
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
