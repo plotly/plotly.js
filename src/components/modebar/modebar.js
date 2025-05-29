@@ -44,7 +44,6 @@ proto.update = function(graphInfo, buttons) {
 
     this.element.setAttribute('id', modeBarId);
     this.element.setAttribute('role', 'toolbar');
-    this.element.setAttribute('tabindex', '0');
 
     this._uid = modeBarId;
     this.element.className = 'modebar modebar--custom';
