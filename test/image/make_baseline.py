@@ -19,7 +19,7 @@ plotlyjs_with_virtual_webgl = os.path.join(root, 'build', 'plotly_with_virtual-w
 dirIn = os.path.join(root, 'test', 'image', 'mocks')
 dirOut = os.path.join(root, 'build', 'test_images')
 
-# N.B. equal is the falg to write to baselines not test_images
+# N.B. equal is the flag to write to baselines not test_images
 
 if '=' in args :
     args = args[args.index('=') + 1:]
@@ -35,7 +35,7 @@ if 'mathjax3' in sys.argv or 'mathjax3=' in sys.argv :
     # until https://github.com/plotly/Kaleido/issues/124 is addressed
     # we are uanble to use local mathjax v3 installed in node_modules
     # for now let's download it from the internet:
-    pio.kaleido.scope.mathjax = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js'
+    pio.defaults.mathjax = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js'
     mathjax_version = 3
     print('Kaleido using MathJax v3')
 
@@ -52,7 +52,8 @@ if 'virtual-webgl' in sys.argv or 'virtual-webgl=' in sys.argv :
 
     plotlyjs = plotlyjs_with_virtual_webgl
 
-pio.kaleido.scope.plotlyjs = plotlyjs
+pio.defaults.plotlyjs = plotlyjs
+
 pio.templates.default = 'none'
 
 ALL_MOCKS = [os.path.splitext(a)[0] for a in os.listdir(dirIn) if a.endswith('.json')]
