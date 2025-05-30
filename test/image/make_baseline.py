@@ -67,6 +67,7 @@ else :
 # unable to generate baselines for the following mocks
 blacklist = [
     'map_stamen-style',
+    'gl3d_streamtube_reversed_ranges', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
 ]
 allNames = [a for a in allNames if a not in blacklist]
 
