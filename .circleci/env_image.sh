@@ -3,6 +3,7 @@ set -e
 python3 --version
 # install required fonts
 sudo apt-get install fonts-liberation2 fonts-open-sans fonts-noto-cjk fonts-noto-color-emoji
+python3 -m pip install requests --progress-bar off
 python3 .circleci/download_google_fonts.py
 sudo cp -r .circleci/fonts/ /usr/share/
 sudo fc-cache -f
