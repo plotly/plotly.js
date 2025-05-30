@@ -71,7 +71,7 @@ blacklist = [
     'map_predefined-styles1', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
     'map_predefined-styles2',  # Temporarily blacklist: fails with Kaleido v1.0.0rc14
     'mathjax',  # Temporarily blacklist: fails with Kaleido v1.0.0rc14
-    'grid_subplot_types' # Temporarily blacklist: fails with Kaleido v1.0.0rc14
+    'grid_subplot_types', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
     'map_fonts-supported-metropolis' # Temporarily blacklist: fails with Kaleido v1.0.0rc14
 ]
 allNames = [a for a in allNames if a not in blacklist]
