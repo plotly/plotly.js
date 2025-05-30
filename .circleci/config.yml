@@ -217,9 +217,15 @@ jobs:
   make-baselines-virtual-webgl:
     parallelism: 8
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.8.9-browsers
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -235,9 +241,15 @@ jobs:
 
   make-baselines-mathjax3:
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.8.9-browsers
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -254,9 +266,15 @@ jobs:
   make-baselines:
     parallelism: 12
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.8.9-browsers
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -273,9 +291,15 @@ jobs:
   make-baselines-b64:
     parallelism: 12
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.8.9-browsers
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -347,9 +371,15 @@ jobs:
 
   make-exports:
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.8.9-browsers
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
