@@ -28,7 +28,7 @@ allNames = [
     'zsmooth_methods',
     'fonts',
     'worldcup',
-    # 'mathjax'  # Temporarily blacklist: fails with Kaleido v1.0.0rc14
+    'mathjax',
 ]
 
 failed = 0

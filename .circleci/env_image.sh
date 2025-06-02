@@ -12,6 +12,6 @@ sudo fc-cache -f
 # Once new Kaleido and Plotly versions are released, uncomment the line above, update the Plotly version,
 # and delete the two lines below.
 python3 -m pip install "git+https://github.com/plotly/plotly.py.git@6837831" --progress-bar off
-python3 -m pip install "git+https://github.com/plotly/Kaleido.git@v1.0.0rc14#subdirectory=src/py" --progress-bar off
+python3 -m pip install "git+https://github.com/plotly/Kaleido.git@4967954#subdirectory=src/py" --progress-bar off
 # install numpy i.e. to convert arrays to typed arrays
 python3 -m pip install numpy==1.24.2
