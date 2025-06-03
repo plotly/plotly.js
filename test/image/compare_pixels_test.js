@@ -119,7 +119,7 @@ for(var i = 0; i < allMockList.length; i++) {
 
     var threshold =
         flakyMap ? 1 :
-        0.75;
+        0.7;
 
     if(mathjax3) mockName = 'mathjax3___' + mockName;
 
