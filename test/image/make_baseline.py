@@ -1,8 +1,13 @@
+import asyncio
 import os
 import sys
 import json
+
 import plotly.io as pio
+import kaleido
+
 from convert_b64 import arraysToB64
+
 
 args = []
 if len(sys.argv) == 2 :
@@ -31,11 +36,12 @@ if 'mathjax3=' in sys.argv :
 print('output to', dirOut)
 
 mathjax_version = 2
+mathjax = None
 if 'mathjax3' in sys.argv or 'mathjax3=' in sys.argv :
     # until https://github.com/plotly/Kaleido/issues/124 is addressed
     # we are uanble to use local mathjax v3 installed in node_modules
     # for now let's download it from the internet:
-    pio.defaults.mathjax = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js'
+    mathjax = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js'
     mathjax_version = 3
     print('Kaleido using MathJax v3')
 
@@ -51,8 +57,6 @@ if 'virtual-webgl' in sys.argv or 'virtual-webgl=' in sys.argv :
                     fileOut.write(line)
 
     plotlyjs = plotlyjs_with_virtual_webgl
-
-pio.defaults.plotlyjs = plotlyjs
 
 pio.templates.default = 'none'
 
@@ -71,6 +75,7 @@ blacklist = [
     'map_predefined-styles2',  # Temporarily blacklist: fails with Kaleido v1.0.0rc14
     'grid_subplot_types', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
     'map_fonts-supported-metropolis', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
+    'map_fonts-supported-metropolis-italic', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
     'map_fonts-supported-metropolis-weight', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
     'map_fonts-supported-open-sans-weight', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
 ]
@@ -81,55 +86,74 @@ if len(allNames) == 0 :
     sys.exit(1)
 
 failed = []
-for name in allNames :
-    outName = name
-    if mathjax_version == 3 :
-        outName = 'mathjax3___' + name
 
-    print(outName)
+async def make_baselines_async():
 
-    created = False
+    kopts = dict(
+        plotlyjs=plotlyjs,
+    )
+    if mathjax is not None:
+        kopts['mathjax'] = mathjax
 
-    MAX_RETRY = 2 # 1 means retry once
-    for attempt in range(0, MAX_RETRY + 1) :
-        with open(os.path.join(dirIn, name + '.json'), 'r') as _in :
-            fig = json.load(_in)
+    async with kaleido.Kaleido(n=1, **kopts) as k:
+        for name in allNames:
+            outName = name
+            if mathjax_version == 3:
+                outName = 'mathjax3___' + name
 
-            width = 700
-            height = 500
-            if 'layout' in fig :
-                layout = fig['layout']
-                if 'autosize' not in layout or layout['autosize'] != True :
-                    if 'width' in layout :
-                        width = layout['width']
-                    if 'height' in layout :
-                        height = layout['height']
+            print(outName)
 
-            if 'b64' in sys.argv or 'b64=' in sys.argv or 'b64-json' in sys.argv :
-                newFig = dict()
-                arraysToB64(fig, newFig)
-                fig = newFig
-                if 'b64-json' in sys.argv and attempt == 0 : print(json.dumps(fig, indent = 2))
+            created = False
 
-            try :
-                pio.write_image(
-                    fig=fig,
-                    file=os.path.join(dirOut, outName + '.png'),
-                    width=width,
-                    height=height,
-                    validate=False
-                )
-                created = True
-            except Exception as e :
-                print(e)
-                if attempt < MAX_RETRY :
-                    print('retry', attempt + 1, '/', MAX_RETRY)
-                else :
-                    failed.append(outName)
+            MAX_RETRY = 2 # 1 means retry once
+            for attempt in range(0, MAX_RETRY + 1) :
+                with open(os.path.join(dirIn, name + '.json'), 'r') as _in :
+                    fig = json.load(_in)
 
-        if(created) : break
+                    width = 700
+                    height = 500
+                    if 'layout' in fig :
+                        layout = fig['layout']
+                        if 'autosize' not in layout or layout['autosize'] != True :
+                            if 'width' in layout :
+                                width = layout['width']
+                            if 'height' in layout :
+                                height = layout['height']
 
-if len(failed) > 0 :
-    print('Failed at :')
-    print(failed)
-    sys.exit(1)
+                    if 'b64' in sys.argv or 'b64=' in sys.argv or 'b64-json' in sys.argv :
+                        newFig = dict()
+                        arraysToB64(fig, newFig)
+                        fig = newFig
+                        if 'b64-json' in sys.argv and attempt == 0 : print(json.dumps(fig, indent = 2))
+
+                    try:
+                        bytes = await k.calc_fig(
+                            fig,
+                            path=None,
+                            opts=dict(
+                                format="png",
+                                width=width,
+                                height=height,
+                            ),
+                        )
+                        filename = os.path.join(dirOut, outName + '.png')
+                        with open(filename, "wb") as f:
+                            f.write(bytes)
+                        created = True
+                    except Exception as e:
+                        print(e)
+                        if attempt < MAX_RETRY :
+                            print('retry', attempt + 1, '/', MAX_RETRY)
+                        else :
+                            failed.append(outName)
+
+                if(created): break
+
+    if len(failed) > 0 :
+        print('Failed at :')
+        print(failed)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    asyncio.run(make_baselines_async())
