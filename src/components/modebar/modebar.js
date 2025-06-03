@@ -146,8 +146,9 @@ proto.createGroup = function() {
  */
 proto.createButton = function(config) {
     var _this = this;
-    var button = document.createElement('a');
+    var button = document.createElement('button');
 
+    button.setAttribute('type', 'button');
     button.setAttribute('tabindex', '0');
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
