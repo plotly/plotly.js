@@ -1,7 +1,7 @@
 .modebar {
-    position: absolute;
-    top: 2px;
-    right: 2px;
+  position: absolute;
+  top: 2px;
+  right: 2px;
 }
 
 .ease-bg {
@@ -9,12 +9,12 @@
 }
 
 .modebar--hover > :not(.watermark) {
-    opacity: 0;
+  opacity: 0;
     @include vendor('transition', opacity 0.3s ease 0s);
 }
 
 &:hover .modebar--hover .modebar-group {
-    opacity: 1;
+  opacity: 1;
 }
 
 &:focus-within .modebar--hover .modebar-group {
@@ -22,54 +22,64 @@
 }
 
 .modebar-group {
-    float: left;
-    display: inline-block;
-    box-sizing: border-box;
-    padding-left: 8px;
-    position: relative;
-    vertical-align: middle;
-    white-space: nowrap;
+  float: left;
+  display: inline-block;
+  box-sizing: border-box;
+  padding-left: 8px;
+  position: relative;
+  vertical-align: middle;
+  white-space: nowrap;
+
+  a {
+    display: grid;
+    place-content: center;
+  }
 }
 
 .modebar-btn {
+  position: relative;
+  font-size: 16px;
+  padding: 3px 4px;
+  height: 22px;
+  /* display: inline-block; including this breaks 3d interaction in .embed mode. Chrome bug? */
+  cursor: pointer;
+  line-height: normal;
+  box-sizing: border-box;
+  border: none;
+  background: transparent;
+
+  svg {
     position: relative;
-    font-size: 16px;
-    padding: 3px 4px;
-    height: 22px;
-    /* display: inline-block; including this breaks 3d interaction in .embed mode. Chrome bug? */
-    cursor: pointer;
-    line-height: normal;
-    box-sizing: border-box;
-    border: none;
-    background: transparent;
-    svg {
-        position: relative;
-        top: 2px;
-    }
+  }
 
-    &.modebar-btn--logo {
+  &:focus-visible {
+    outline: 1px solid black;
+    outline-offset: 1px;
+    border-radius: 3px;
+  }
 
-    }
+  &.modebar-btn--logo {
+  }
 }
 
 .modebar.vertical {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-content: flex-end;
-    max-height: 100%;
-    svg {
-      top: -1px;
-    }
-    .modebar-group {
-        display: block;
-        float: none;
-        padding-left: 0px;
-        padding-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-end;
+  max-height: 100%;
+  svg {
+    top: -1px;
+  }
+  .modebar-group {
+    display: block;
+    float: none;
+    padding-left: 0px;
+    padding-bottom: 8px;
 
-        .modebar-btn {
-            display: block;
-            text-align: center;
-        }
+    .modebar-btn {
+      display: block;
+      text-align: center;
     }
+  }
 }
