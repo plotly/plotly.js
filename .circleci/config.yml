@@ -264,7 +264,7 @@ jobs:
             - plotly.js
 
   make-baselines:
-    parallelism: 12
+    parallelism: 24
     docker:
       - image: cimg/python:3.8.9-browsers
     working_directory: ~/plotly.js
