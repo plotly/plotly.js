@@ -44,7 +44,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "127.0.6533.119"
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -83,7 +83,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "127.0.6533.119"
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -105,7 +105,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "127.0.6533.119"
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -127,7 +127,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "127.0.6533.119"
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -168,7 +168,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "127.0.6533.119"
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -189,7 +189,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "127.0.6533.119"
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -407,7 +407,7 @@ jobs:
           name: Run syntax tests on source files
           command: .circleci/test.sh source-syntax
 
-  publish-dist:
+  publish-dist: &publish-dist
     docker:
       - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
@@ -464,6 +464,11 @@ jobs:
       - run:
           name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
           command: diff --unified --color dist/plot-schema.json test/plot-schema.json
+
+  publish-dist-node-v22:
+    <<: *publish-dist
+    docker:
+      - image: cimg/node:22.14.0
 
   test-stackgl-bundle:
     docker:
@@ -551,5 +556,7 @@ workflows:
             - install-and-cibuild
 
       - publish-dist
+
+      - publish-dist-node-v22
 
       - test-stackgl-bundle

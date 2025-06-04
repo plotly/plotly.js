@@ -284,7 +284,7 @@ var attrs = module.exports = overrideAll({
                 dflt: 'marker',
                 description: [
                     'Sets the symbol icon image (map.layer.layout.icon-image).',
-                    'Full list: https://www.map.com/maki-icons/'
+                    'Full list: https://www.mapbox.com/maki-icons/'
                 ].join(' ')
             },
             iconsize: {
