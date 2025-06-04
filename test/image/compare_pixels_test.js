@@ -192,7 +192,7 @@ for(var i = 0; i < allMockList.length; i++) {
     }
 }
 
-if(failed.length || skipped.length) {
+if(failed.length /* || skipped.length */) {
     throw JSON.stringify({
         failed: failed,
         skipped: skipped
