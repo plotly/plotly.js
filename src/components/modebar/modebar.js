@@ -149,10 +149,9 @@ proto.createButton = function(config) {
     var button = document.createElement('button');
 
     button.setAttribute('type', 'button');
-    button.setAttribute('tabindex', '0');
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
-    
+
     var title = config.title;
     if(title === undefined) title = config.name;
     // for localization: allow title to be a callable that takes gd as arg
@@ -180,15 +179,6 @@ proto.createButton = function(config) {
 
             // only needed for 'hoverClosestGeo' which does not call relayout
             _this.updateActiveButton(ev.currentTarget);
-        });
-        button.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                const activeButton = e.target.closest('.modebar-btn');
-                if (activeButton) {
-                    activeButton.click();
-                    e.preventDefault();
-                }
-            }
         });
     }
 
