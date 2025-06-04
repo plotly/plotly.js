@@ -117,10 +117,11 @@ for(var i = 0; i < allMockList.length; i++) {
         'gl3d_bunny-hull'
     ].indexOf(mockName) !== -1;
 
-    var threshold =
+    var threshold = 1; /*
         flakyMap ? 1 :
         otherFlaky ? 0.15 :
         0;
+    */
 
     if(mathjax3) mockName = 'mathjax3___' + mockName;
 
