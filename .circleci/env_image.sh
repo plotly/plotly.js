@@ -9,9 +9,8 @@ sudo cp -r .circleci/fonts/ /usr/share/
 sudo fc-cache -f
 # install kaleido & plotly
 # python -m pip install "plotly[kaleido]==6.1.2" --progress-bar off
-# Once new Kaleido and Plotly versions are released, uncomment the line above, update the Plotly version,
-# and delete the two lines below.
-python3 -m pip install "git+https://github.com/plotly/plotly.py.git@6837831" --progress-bar off
-python3 -m pip install "git+https://github.com/plotly/Kaleido.git@b83b6b8#subdirectory=src/py" --progress-bar off
+# Once the next Plotly version is released, uncomment the line above, update the Plotly version,
+# and delete the line below.
+python3 -m pip install "git+https://github.com/plotly/plotly.py.git@0089b4d#egg=plotly[kaleido]" --progress-bar off
 # install numpy i.e. to convert arrays to typed arrays
 python3 -m pip install numpy==1.24.2
