@@ -1016,6 +1016,19 @@ module.exports = {
         editType: 'ticks',
         description: 'Sets the line color of the zero line.'
     },
+    zerolinelayer: {
+        valType: 'enumerated',
+        values: ['above traces', 'below traces'],
+        dflt: 'below traces',
+        editType: 'plot',
+        description: [
+            'Sets the layer on which this zeroline is displayed.',
+            'If *above traces*, this zeroline is displayed above all the subplot\'s traces',
+            'If *below traces*, this zeroline is displayed below all the subplot\'s traces,',
+            'but above the grid lines. Limitation: *zerolinelayer* currently has no effect',
+            'if the *zorder* property is set on any trace.'
+        ].join(' ')
+    },
     zerolinewidth: {
         valType: 'number',
         dflt: 1,

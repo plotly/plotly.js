@@ -119,7 +119,7 @@ module.exports = overrideAll({
             arrayOk: true,
             description: [
                 'Sets the marker symbol.',
-                'Full list: https://www.map.com/maki-icons/',
+                'Full list: https://www.mapbox.com/maki-icons/',
                 'Note that the array `marker.color` and `marker.size`',
                 'are only available for *circle* symbols.'
             ].join(' ')

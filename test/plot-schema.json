@@ -3902,7 +3902,7 @@
        "symbol": {
         "editType": "plot",
         "icon": {
-         "description": "Sets the symbol icon image (map.layer.layout.icon-image). Full list: https://www.map.com/maki-icons/",
+         "description": "Sets the symbol icon image (map.layer.layout.icon-image). Full list: https://www.mapbox.com/maki-icons/",
          "dflt": "marker",
          "editType": "plot",
          "valType": "string"
@@ -14965,6 +14965,16 @@
      "editType": "ticks",
      "valType": "color"
     },
+    "zerolinelayer": {
+     "description": "Sets the layer on which this zeroline is displayed. If *above traces*, this zeroline is displayed above all the subplot's traces If *below traces*, this zeroline is displayed below all the subplot's traces, but above the grid lines. Limitation: *zerolinelayer* currently has no effect if the *zorder* property is set on any trace.",
+     "dflt": "below traces",
+     "editType": "plot",
+     "valType": "enumerated",
+     "values": [
+      "above traces",
+      "below traces"
+     ]
+    },
     "zerolinewidth": {
      "description": "Sets the width (in px) of the zero line.",
      "dflt": 1,
@@ -16198,6 +16208,16 @@
      "dflt": "#444",
      "editType": "ticks",
      "valType": "color"
+    },
+    "zerolinelayer": {
+     "description": "Sets the layer on which this zeroline is displayed. If *above traces*, this zeroline is displayed above all the subplot's traces If *below traces*, this zeroline is displayed below all the subplot's traces, but above the grid lines. Limitation: *zerolinelayer* currently has no effect if the *zorder* property is set on any trace.",
+     "dflt": "below traces",
+     "editType": "plot",
+     "valType": "enumerated",
+     "values": [
+      "above traces",
+      "below traces"
+     ]
     },
     "zerolinewidth": {
      "description": "Sets the width (in px) of the zero line.",
@@ -72083,7 +72103,7 @@
      },
      "symbol": {
       "arrayOk": true,
-      "description": "Sets the marker symbol. Full list: https://www.map.com/maki-icons/ Note that the array `marker.color` and `marker.size` are only available for *circle* symbols.",
+      "description": "Sets the marker symbol. Full list: https://www.mapbox.com/maki-icons/ Note that the array `marker.color` and `marker.size` are only available for *circle* symbols.",
       "dflt": "circle",
       "editType": "calc",
       "valType": "string"
