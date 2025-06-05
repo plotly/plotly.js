@@ -30,4 +30,4 @@ jobs:
     - name: Run headless test
       uses: coactions/setup-xvfb@v1
       with:
-        run: ./tasks/noci_test.sh
+        run: ./tasks/noci_test.sh jasmine
