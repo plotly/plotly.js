@@ -1,6 +1,6 @@
 /**
-* plotly.js (gl2d) v3.0.0-rc.2
-* Copyright 2012-2024, Plotly, Inc.
+* plotly.js (gl2d) v3.0.1
+* Copyright 2012-2025, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
@@ -14,15 +14,21 @@
 } (typeof self !== "undefined" ? self : this, () => {
 "use strict";
 var Plotly = (() => {
+  var __create = Object.create;
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
   var __esm = (fn, res) => function __init() {
     return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
   };
   var __commonJS = (cb, mod) => function __require() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
   };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
@@ -32,13 +38,21 @@ var Plotly = (() => {
     }
     return to;
   };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
   // src/version.js
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.0.0-rc.2";
+      exports.version = "3.0.1";
     }
   });
 
@@ -49,7 +63,7 @@ var Plotly = (() => {
         context[name] = context[name] || definition();
         if (typeof module != "undefined" && module.exports) {
           module.exports = context[name];
-        } else if (typeof define == "function" && define.amd) {
+        } else if (typeof define == "function" && false) {
           define(function $AMD$() {
             return context[name];
           });
@@ -7224,7 +7238,7 @@ var Plotly = (() => {
         d3.xml = d3_xhrType(function(request) {
           return request.responseXML;
         });
-        if (typeof define === "function" && define.amd) define(d3);
+        if (typeof define === "function" && false) define(d3);
         else if (typeof module === "object" && module.exports) module.exports = d3;
         else this.d3 = d3;
       }.apply(self);
@@ -7235,7 +7249,7 @@ var Plotly = (() => {
   var require_d3_time = __commonJS({
     "node_modules/d3-time/dist/d3-time.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = global2 || self, factory(global2.d3 = global2.d3 || {}));
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : (global2 = global2 || self, factory(global2.d3 = global2.d3 || {}));
       })(exports, function(exports2) {
         "use strict";
         var t0 = /* @__PURE__ */ new Date(), t1 = /* @__PURE__ */ new Date();
@@ -7573,7 +7587,7 @@ var Plotly = (() => {
   var require_d3_time_format = __commonJS({
     "node_modules/d3-time-format/dist/d3-time-format.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_time()) : typeof define === "function" && define.amd ? define(["exports", "d3-time"], factory) : (global2 = global2 || self, factory(global2.d3 = global2.d3 || {}, global2.d3));
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_time()) : typeof define === "function" && false ? define(["exports", "d3-time"], factory) : (global2 = global2 || self, factory(global2.d3 = global2.d3 || {}, global2.d3));
       })(exports, function(exports2, d3Time) {
         "use strict";
         function localDate(d) {
@@ -7760,14 +7774,14 @@ var Plotly = (() => {
             };
           }
           function parseSpecifier(d, specifier, string, j) {
-            var i = 0, n = specifier.length, m = string.length, c, parse;
+            var i = 0, n = specifier.length, m = string.length, c, parse2;
             while (i < n) {
               if (j >= m) return -1;
               c = specifier.charCodeAt(i++);
               if (c === 37) {
                 c = specifier.charAt(i++);
-                parse = parses[c in pads ? specifier.charAt(i++) : c];
-                if (!parse || (j = parse(d, string, j)) < 0) return -1;
+                parse2 = parses[c in pads ? specifier.charAt(i++) : c];
+                if (!parse2 || (j = parse2(d, string, j)) < 0) return -1;
               } else if (c != string.charCodeAt(j++)) {
                 return -1;
               }
@@ -7878,12 +7892,12 @@ var Plotly = (() => {
         function requote(s) {
           return s.replace(requoteRe, "\\$&");
         }
-        function formatRe(names) {
-          return new RegExp("^(?:" + names.map(requote).join("|") + ")", "i");
+        function formatRe(names2) {
+          return new RegExp("^(?:" + names2.map(requote).join("|") + ")", "i");
         }
-        function formatLookup(names) {
-          var map = {}, i = -1, n = names.length;
-          while (++i < n) map[names[i].toLowerCase()] = i;
+        function formatLookup(names2) {
+          var map = {}, i = -1, n = names2.length;
+          while (++i < n) map[names2[i].toLowerCase()] = i;
           return map;
         }
         function parseWeekdayNumberSunday(d, string, i) {
@@ -8126,7 +8140,7 @@ var Plotly = (() => {
   var require_d3_format = __commonJS({
     "node_modules/d3-format/dist/d3-format.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.d3 = global2.d3 || {}));
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.d3 = global2.d3 || {}));
       })(exports, function(exports2) {
         "use strict";
         function formatDecimal(x) {
@@ -8483,7 +8497,7 @@ var Plotly = (() => {
   var require_base64_arraybuffer_umd = __commonJS({
     "node_modules/base64-arraybuffer/dist/base64-arraybuffer.umd.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2["base64-arraybuffer"] = {}));
+        typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2["base64-arraybuffer"] = {}));
       })(exports, function(exports2) {
         "use strict";
         var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -8785,7 +8799,7 @@ var Plotly = (() => {
         };
       };
       function npGet(cont, parts) {
-        return function() {
+        return function(retainNull) {
           var curCont = cont;
           var curPart;
           var allSame;
@@ -8798,7 +8812,7 @@ var Plotly = (() => {
               allSame = true;
               out = [];
               for (j = 0; j < curCont.length; j++) {
-                out[j] = npGet(curCont[j], parts.slice(i + 1))();
+                out[j] = npGet(curCont[j], parts.slice(i + 1))(retainNull);
                 if (out[j] !== out[0]) allSame = false;
               }
               return allSame ? out[0] : out;
@@ -8813,7 +8827,7 @@ var Plotly = (() => {
           }
           if (typeof curCont !== "object" || curCont === null) return void 0;
           out = curCont[parts[i]];
-          if (out === null) return void 0;
+          if (!retainNull && out === null) return void 0;
           return out;
         };
       }
@@ -9668,13 +9682,13 @@ var Plotly = (() => {
           var rgb1 = tinycolor(color1).toRgb();
           var rgb2 = tinycolor(color2).toRgb();
           var p = amount / 100;
-          var rgba = {
+          var rgba2 = {
             r: (rgb2.r - rgb1.r) * p + rgb1.r,
             g: (rgb2.g - rgb1.g) * p + rgb1.g,
             b: (rgb2.b - rgb1.b) * p + rgb1.b,
             a: (rgb2.a - rgb1.a) * p + rgb1.a
           };
-          return tinycolor(rgba);
+          return tinycolor(rgba2);
         };
         tinycolor.readability = function(color1, color2) {
           var c1 = tinycolor(color1);
@@ -9723,7 +9737,7 @@ var Plotly = (() => {
             return tinycolor.mostReadable(baseColor, ["#fff", "#000"], args);
           }
         };
-        var names = tinycolor.names = {
+        var names2 = tinycolor.names = {
           aliceblue: "f0f8ff",
           antiquewhite: "faebd7",
           aqua: "0ff",
@@ -9874,7 +9888,7 @@ var Plotly = (() => {
           yellow: "ff0",
           yellowgreen: "9acd32"
         };
-        var hexNames = tinycolor.hexNames = flip(names);
+        var hexNames = tinycolor.hexNames = flip(names2);
         function flip(o) {
           var flipped = {};
           for (var i in o) {
@@ -9958,8 +9972,8 @@ var Plotly = (() => {
         function stringInputToObject(color) {
           color = color.replace(trimLeft, "").replace(trimRight, "").toLowerCase();
           var named = false;
-          if (names[color]) {
-            color = names[color];
+          if (names2[color]) {
+            color = names2[color];
             named = true;
           } else if (color == "transparent") {
             return { r: 0, g: 0, b: 0, a: 0, format: "name" };
@@ -10034,7 +10048,7 @@ var Plotly = (() => {
         }
         if (typeof module !== "undefined" && module.exports) {
           module.exports = tinycolor;
-        } else if (typeof define === "function" && define.amd) {
+        } else if (typeof define === "function" && false) {
           define(function() {
             return tinycolor;
           });
@@ -10860,8 +10874,8 @@ var Plotly = (() => {
         var match = valTrim.match(/^rgba?\s*\(([^()]*)\)$/);
         if (!match) return val;
         var parts = match[1].trim().split(/\s*[\s,]\s*/);
-        var rgba = valTrim.charAt(3) === "a" && parts.length === 4;
-        if (!rgba && parts.length !== 3) return val;
+        var rgba2 = valTrim.charAt(3) === "a" && parts.length === 4;
+        if (!rgba2 && parts.length !== 3) return val;
         for (var i = 0; i < parts.length; i++) {
           if (!parts[i].length) return val;
           parts[i] = Number(parts[i]);
@@ -10875,7 +10889,7 @@ var Plotly = (() => {
           }
         }
         var rgbStr = Math.round(parts[0] * 255) + ", " + Math.round(parts[1] * 255) + ", " + Math.round(parts[2] * 255);
-        if (rgba) return "rgba(" + rgbStr + ", " + parts[3] + ")";
+        if (rgba2) return "rgba(" + rgbStr + ", " + parts[3] + ")";
         return "rgb(" + rgbStr + ")";
       }
     }
@@ -12768,11 +12782,14 @@ var Plotly = (() => {
         var style = document.getElementById(id);
         if (style) removeElement(style);
       }
-      function setStyleOnHover(selector, activeSelector, childSelector, activeStyle, inactiveStyle) {
+      function setStyleOnHover(selector, activeSelector, childSelector, activeStyle, inactiveStyle, element) {
         var activeStyleParts = activeStyle.split(":");
         var inactiveStyleParts = inactiveStyle.split(":");
         var eventAddedAttrName = "data-btn-style-event-added";
-        document.querySelectorAll(selector).forEach(function(el) {
+        if (!element) {
+          element = document;
+        }
+        element.querySelectorAll(selector).forEach(function(el) {
           if (!el.getAttribute(eventAddedAttrName)) {
             el.addEventListener("mouseenter", function() {
               var childEl = this.querySelector(childSelector);
@@ -13734,10 +13751,10 @@ var Plotly = (() => {
     }
   });
 
-  // stylePlugin:/home/solarch/plotly/webgl/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
+  // stylePlugin:/Users/ekl/code/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
   var maplibre_gl_exports = {};
   var init_maplibre_gl2 = __esm({
-    "stylePlugin:/home/solarch/plotly/webgl/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
+    "stylePlugin:/Users/ekl/code/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       init_maplibre_gl();
     }
   });
@@ -15707,9 +15724,9 @@ var Plotly = (() => {
             v = obj[key];
           } else {
             getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
-            v = getterCache[key]();
+            v = getterCache[key](true);
           }
-          return lib.isValidTextValue(v) ? v : "";
+          return v !== void 0 ? v : "";
         });
       };
       var hovertemplateWarnings = {
@@ -15748,7 +15765,6 @@ var Plotly = (() => {
         var opts = this;
         var args = arguments;
         if (!labels) labels = {};
-        var getterCache = {};
         return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, rawKey, format) {
           var isOther = rawKey === "xother" || rawKey === "yother";
           var isSpaceOther = rawKey === "_xother" || rawKey === "_yother";
@@ -15780,9 +15796,7 @@ var Plotly = (() => {
                 break;
               }
               if (!SIMPLE_PROPERTY_REGEX.test(key)) {
-                value = lib.nestedProperty(obj, key).get();
-                value = getterCache[key] || lib.nestedProperty(obj, key).get();
-                if (value) getterCache[key] = value;
+                value = lib.nestedProperty(obj, key).get(true);
               }
               if (value !== void 0) break;
             }
@@ -20817,8 +20831,8 @@ var Plotly = (() => {
         var N = range.length;
         var _range = new Array(N);
         for (var i = 0; i < N; i++) {
-          var rgba = tinycolor(range[i]).toRgb();
-          _range[i] = [rgba.r, rgba.g, rgba.b, rgba.a];
+          var rgba2 = tinycolor(range[i]).toRgb();
+          _range[i] = [rgba2.r, rgba2.g, rgba2.b, rgba2.a];
         }
         var _sclFunc = d3.scale.linear().domain(domain).range(_range).clamp(true);
         var noNumericCheck = opts.noNumericCheck;
@@ -22829,10 +22843,10 @@ var Plotly = (() => {
   // node_modules/parse-svg-path/index.js
   var require_parse_svg_path = __commonJS({
     "node_modules/parse-svg-path/index.js"(exports, module) {
-      module.exports = parse;
+      module.exports = parse2;
       var length = { a: 7, c: 6, h: 1, l: 2, m: 2, q: 4, s: 4, t: 2, v: 1, z: 0 };
       var segment = /([astvzqmhlc])([^astvzqmhlc]*)/ig;
-      function parse(path) {
+      function parse2(path) {
         var data = [];
         path.replace(segment, function(_, command, args) {
           var type = command.toLowerCase();
@@ -29849,33 +29863,25 @@ var Plotly = (() => {
           if (gd._dragged) {
             if (options.doneFn) options.doneFn();
           } else {
-            if (options.clickFn) options.clickFn(numClicks, initialEvent);
+            var clickEvent;
+            if (initialEvent.target === initialTarget) {
+              clickEvent = initialEvent;
+            } else {
+              clickEvent = {
+                target: initialTarget,
+                srcElement: initialTarget,
+                toElement: initialTarget
+              };
+              Object.keys(initialEvent).concat(Object.keys(initialEvent.__proto__)).forEach((k) => {
+                var v = initialEvent[k];
+                if (!clickEvent[k] && typeof v !== "function") {
+                  clickEvent[k] = v;
+                }
+              });
+            }
+            if (options.clickFn) options.clickFn(numClicks, clickEvent);
             if (!rightClick) {
-              var e2;
-              try {
-                e2 = new MouseEvent("click", e);
-              } catch (err) {
-                var offset = pointerOffset(e);
-                e2 = document.createEvent("MouseEvents");
-                e2.initMouseEvent(
-                  "click",
-                  e.bubbles,
-                  e.cancelable,
-                  e.view,
-                  e.detail,
-                  e.screenX,
-                  e.screenY,
-                  offset[0],
-                  offset[1],
-                  e.ctrlKey,
-                  e.altKey,
-                  e.shiftKey,
-                  e.metaKey,
-                  e.button,
-                  e.relatedTarget
-                );
-              }
-              initialTarget.dispatchEvent(e2);
+              initialTarget.dispatchEvent(new MouseEvent("click", e));
             }
           }
           gd._dragging = false;
@@ -37154,7 +37160,6 @@ var Plotly = (() => {
         document.querySelectorAll(groupSelector).forEach(function(group) {
           group.style.backgroundColor = style.bgcolor;
         });
-        Lib.setStyleOnHover("#" + modeBarId + " .modebar-btn", ".active", ".icon path", "fill: " + style.activecolor, "fill: " + style.color);
         var needsNewButtons = !this.hasButtons(buttons);
         var needsNewLogo = this.hasLogo !== context.displaylogo;
         var needsNewLocale = this.locale !== context.locale;
@@ -37176,6 +37181,7 @@ var Plotly = (() => {
           }
         }
         this.updateActiveButton();
+        Lib.setStyleOnHover("#" + modeBarId + " .modebar-btn", ".active", ".icon path", "fill: " + style.activecolor, "fill: " + style.color, this.element);
       };
       proto.updateButtons = function(buttons) {
         var _this = this;
@@ -64695,7 +64701,7 @@ var Plotly = (() => {
   var require_svg_path_bounds = __commonJS({
     "node_modules/svg-path-bounds/index.js"(exports, module) {
       "use strict";
-      var parse = require_parse_svg_path();
+      var parse2 = require_parse_svg_path();
       var abs = require_abs_svg_path();
       var normalize = require_normalize_svg_path();
       var isSvgPath = require_is_svg_path();
@@ -64705,7 +64711,7 @@ var Plotly = (() => {
         if (Array.isArray(path) && path.length === 1 && typeof path[0] === "string") path = path[0];
         if (typeof path === "string") {
           assert(isSvgPath(path), "String is not an SVG path.");
-          path = parse(path);
+          path = parse2(path);
         }
         assert(Array.isArray(path), "Argument should be a string or an array of path segments.");
         path = abs(path);
@@ -65268,13 +65274,13 @@ var Plotly = (() => {
     }
   });
 
-  // node_modules/color-rgba/node_modules/color-parse/index.js
+  // node_modules/color-normalize/node_modules/color-parse/index.js
   var require_color_parse = __commonJS({
-    "node_modules/color-rgba/node_modules/color-parse/index.js"(exports, module) {
+    "node_modules/color-normalize/node_modules/color-parse/index.js"(exports, module) {
       "use strict";
-      var names = require_color_name();
-      module.exports = parse;
-      var baseHues = {
+      var names2 = require_color_name();
+      module.exports = parse2;
+      var baseHues2 = {
         red: 0,
         orange: 60,
         yellow: 120,
@@ -65282,12 +65288,12 @@ var Plotly = (() => {
         blue: 240,
         purple: 300
       };
-      function parse(cstr) {
+      function parse2(cstr) {
         var m, parts = [], alpha = 1, space;
         if (typeof cstr === "string") {
           cstr = cstr.toLowerCase();
-          if (names[cstr]) {
-            parts = names[cstr].slice();
+          if (names2[cstr]) {
+            parts = names2[cstr].slice();
             space = "rgb";
           } else if (cstr === "transparent") {
             alpha = 0;
@@ -65335,8 +65341,8 @@ var Plotly = (() => {
               } else if (base[i] === "h") {
                 if (/deg$/.test(x)) {
                   return parseFloat(x);
-                } else if (baseHues[x] !== void 0) {
-                  return baseHues[x];
+                } else if (baseHues2[x] !== void 0) {
+                  return baseHues2[x];
                 }
               }
               return parseFloat(x);
@@ -65385,114 +65391,39 @@ var Plotly = (() => {
     }
   });
 
-  // node_modules/color-space/rgb.js
-  var require_rgb = __commonJS({
-    "node_modules/color-space/rgb.js"(exports, module) {
-      "use strict";
-      module.exports = {
-        name: "rgb",
-        min: [0, 0, 0],
-        max: [255, 255, 255],
-        channel: ["red", "green", "blue"],
-        alias: ["RGB"]
-      };
-    }
-  });
-
-  // node_modules/color-space/hsl.js
-  var require_hsl = __commonJS({
-    "node_modules/color-space/hsl.js"(exports, module) {
-      "use strict";
-      var rgb = require_rgb();
-      module.exports = {
-        name: "hsl",
-        min: [0, 0, 0],
-        max: [360, 100, 100],
-        channel: ["hue", "saturation", "lightness"],
-        alias: ["HSL"],
-        rgb: function(hsl) {
-          var h = hsl[0] / 360, s = hsl[1] / 100, l = hsl[2] / 100, t1, t2, t3, rgb2, val;
-          if (s === 0) {
-            val = l * 255;
-            return [val, val, val];
-          }
-          if (l < 0.5) {
-            t2 = l * (1 + s);
-          } else {
-            t2 = l + s - l * s;
-          }
-          t1 = 2 * l - t2;
-          rgb2 = [0, 0, 0];
-          for (var i = 0; i < 3; i++) {
-            t3 = h + 1 / 3 * -(i - 1);
-            if (t3 < 0) {
-              t3++;
-            } else if (t3 > 1) {
-              t3--;
-            }
-            if (6 * t3 < 1) {
-              val = t1 + (t2 - t1) * 6 * t3;
-            } else if (2 * t3 < 1) {
-              val = t2;
-            } else if (3 * t3 < 2) {
-              val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
-            } else {
-              val = t1;
-            }
-            rgb2[i] = val * 255;
-          }
-          return rgb2;
-        }
-      };
-      rgb.hsl = function(rgb2) {
-        var r = rgb2[0] / 255, g = rgb2[1] / 255, b = rgb2[2] / 255, min = Math.min(r, g, b), max = Math.max(r, g, b), delta = max - min, h, s, l;
-        if (max === min) {
-          h = 0;
-        } else if (r === max) {
-          h = (g - b) / delta;
-        } else if (g === max) {
-          h = 2 + (b - r) / delta;
-        } else if (b === max) {
-          h = 4 + (r - g) / delta;
-        }
-        h = Math.min(h * 60, 360);
-        if (h < 0) {
-          h += 360;
-        }
-        l = (min + max) / 2;
-        if (max === min) {
-          s = 0;
-        } else if (l <= 0.5) {
-          s = delta / (max + min);
-        } else {
-          s = delta / (2 - max - min);
-        }
-        return [h, s * 100, l * 100];
-      };
-    }
-  });
-
-  // node_modules/color-rgba/index.js
+  // node_modules/color-normalize/node_modules/color-rgba/index.js
   var require_color_rgba = __commonJS({
-    "node_modules/color-rgba/index.js"(exports, module) {
+    "node_modules/color-normalize/node_modules/color-rgba/index.js"(exports, module) {
       "use strict";
-      var parse = require_color_parse();
-      var hsl = require_hsl();
-      var clamp = require_clamp();
-      module.exports = function rgba(color) {
+      var parse2 = require_color_parse();
+      module.exports = function rgba2(color) {
+        if (Array.isArray(color) && color.raw) color = String.raw.apply(null, arguments);
         var values, i, l;
-        var parsed = parse(color);
+        var parsed = parse2(color);
         if (!parsed.space) return [];
+        var min = [0, 0, 0], max = parsed.space[0] === "h" ? [360, 100, 100] : [255, 255, 255];
         values = Array(3);
-        values[0] = clamp(parsed.values[0], 0, 255);
-        values[1] = clamp(parsed.values[1], 0, 255);
-        values[2] = clamp(parsed.values[2], 0, 255);
-        if (parsed.space[0] === "h") {
-          values = hsl.rgb(values);
-        }
-        values.push(clamp(parsed.alpha, 0, 1));
+        values[0] = Math.min(Math.max(parsed.values[0], min[0]), max[0]);
+        values[1] = Math.min(Math.max(parsed.values[1], min[1]), max[1]);
+        values[2] = Math.min(Math.max(parsed.values[2], min[2]), max[2]);
+        if (parsed.space[0] === "h") values = hsl2rgb(values);
+        values.push(Math.min(Math.max(parsed.alpha, 0), 1));
         return values;
       };
+      function hsl2rgb(hsl) {
+        var h = hsl[0] / 360, s = hsl[1] / 100, l = hsl[2] / 100, t1, t2, t3, rgb, val, i = 0;
+        if (s === 0) return val = l * 255, [val, val, val];
+        t2 = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        t1 = 2 * l - t2;
+        rgb = [0, 0, 0];
+        for (; i < 3; ) {
+          t3 = h + 1 / 3 * -(i - 1);
+          t3 < 0 ? t3++ : t3 > 1 && t3--;
+          val = 6 * t3 < 1 ? t1 + (t2 - t1) * 6 * t3 : 2 * t3 < 1 ? t2 : 3 * t3 < 2 ? t1 + (t2 - t1) * (2 / 3 - t3) * 6 : t1;
+          rgb[i++] = val * 255;
+        }
+        return rgb;
+      }
     }
   });
 
@@ -65500,7 +65431,7 @@ var Plotly = (() => {
   var require_color_normalize = __commonJS({
     "node_modules/color-normalize/index.js"(exports, module) {
       "use strict";
-      var rgba = require_color_rgba();
+      var rgba2 = require_color_rgba();
       var clamp = require_clamp();
       var dtype = require_dtype();
       module.exports = function normalize(color, type) {
@@ -65511,7 +65442,7 @@ var Plotly = (() => {
         var output = new Ctor(4);
         var normalize2 = type !== "uint8" && type !== "uint8_clamped";
         if (!color.length || typeof color === "string") {
-          color = rgba(color);
+          color = rgba2(color);
           color[0] /= 255;
           color[1] /= 255;
           color[2] /= 255;
@@ -65556,11 +65487,11 @@ var Plotly = (() => {
       "use strict";
       var isNumeric = require_fast_isnumeric();
       var tinycolor = require_tinycolor();
-      var rgba = require_color_normalize();
+      var rgba2 = require_color_normalize();
       var Colorscale = require_colorscale();
       var colorDflt = require_attributes3().defaultLine;
       var isArrayOrTypedArray = require_array().isArrayOrTypedArray;
-      var colorDfltRgba = rgba(colorDflt);
+      var colorDfltRgba = rgba2(colorDflt);
       var opacityDflt = 1;
       function calculateColor(colorIn, opacityIn) {
         var colorOut = colorIn;
@@ -65569,7 +65500,7 @@ var Plotly = (() => {
       }
       function validateColor(colorIn) {
         if (isNumeric(colorIn)) return colorDfltRgba;
-        var colorOut = rgba(colorIn);
+        var colorOut = rgba2(colorIn);
         return colorOut.length ? colorOut : colorDfltRgba;
       }
       function validateOpacity(opacityIn) {
@@ -65590,7 +65521,7 @@ var Plotly = (() => {
         }
         if (isArrayColorIn) {
           getColor = function(c, i2) {
-            return c[i2] === void 0 ? colorDfltRgba : rgba(sclFunc(c[i2]));
+            return c[i2] === void 0 ? colorDfltRgba : rgba2(sclFunc(c[i2]));
           };
         } else getColor = validateColor;
         if (isArrayOpacityIn) {
@@ -65604,7 +65535,7 @@ var Plotly = (() => {
             opacityi = getOpacity(opacityIn, i);
             colorOut[i] = calculateColor(colori, opacityi);
           }
-        } else colorOut = calculateColor(rgba(colorIn), opacityIn);
+        } else colorOut = calculateColor(rgba2(colorIn), opacityIn);
         return colorOut;
       }
       function parseColorScale(cont) {
@@ -65634,7 +65565,7 @@ var Plotly = (() => {
       "use strict";
       var isNumeric = require_fast_isnumeric();
       var svgSdf = require_svg_path_sdf();
-      var rgba = require_color_normalize();
+      var rgba2 = require_color_normalize();
       var Registry = require_registry();
       var Lib = require_lib();
       var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
@@ -65901,12 +65832,12 @@ var Plotly = (() => {
           }
         } else {
           if (isOpen) {
-            optsOut.color = rgba(optsIn.color, "uint8");
+            optsOut.color = rgba2(optsIn.color, "uint8");
             optsOut.color[3] = 0;
-            optsOut.borderColor = rgba(optsIn.color, "uint8");
+            optsOut.borderColor = rgba2(optsIn.color, "uint8");
           } else {
-            optsOut.color = rgba(optsIn.color, "uint8");
-            optsOut.borderColor = rgba(optsIn.line.color, "uint8");
+            optsOut.color = rgba2(optsIn.color, "uint8");
+            optsOut.borderColor = rgba2(optsIn.line.color, "uint8");
           }
           optsOut.opacity = trace.opacity * optsIn.opacity;
           optsOut.marker = getSymbolSdf({
@@ -66634,9 +66565,9 @@ var Plotly = (() => {
       module.exports = toNumber;
       module.exports.to = toNumber;
       module.exports.from = fromNumber;
-      function toNumber(rgba, normalized) {
+      function toNumber(rgba2, normalized) {
         if (normalized == null) normalized = true;
-        var r = rgba[0], g = rgba[1], b = rgba[2], a = rgba[3];
+        var r = rgba2[0], g = rgba2[1], b = rgba2[2], a = rgba2[3];
         if (a == null) a = normalized ? 1 : 255;
         if (normalized) {
           r *= 255;
@@ -66873,7 +66804,7 @@ var Plotly = (() => {
       function _nonIterableRest() {
         throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
       }
-      var rgba = require_color_normalize();
+      var rgba2 = require_color_normalize();
       var getBounds = require_array_bounds();
       var colorId = require_color_id();
       var cluster = require_point_cluster();
@@ -67519,7 +67450,7 @@ var Plotly = (() => {
         }
         for (var _i6 = 0; _i6 < colors.length; _i6++) {
           var color = colors[_i6];
-          color = rgba(color, "uint8");
+          color = rgba2(color, "uint8");
           var id = colorId(color, false);
           if (paletteIds[id] == null) {
             var pos = palette.length;
@@ -69729,7 +69660,7 @@ var Plotly = (() => {
   var require_regl_line2d = __commonJS({
     "node_modules/regl-line2d/index.js"(exports, module) {
       "use strict";
-      var rgba = require_color_normalize();
+      var rgba2 = require_color_normalize();
       var getBounds = require_array_bounds();
       var extend = require_object_assign();
       var pick = require_pick_by_alias();
@@ -70480,7 +70411,7 @@ void main() {
           }
           if (o.join != null) state.join = o.join;
           if (o.hole != null) state.hole = o.hole;
-          if (o.fill != null) state.fill = !o.fill ? null : rgba(o.fill, "uint8");
+          if (o.fill != null) state.fill = !o.fill ? null : rgba2(o.fill, "uint8");
           if (o.viewport != null) state.viewport = parseRect(o.viewport);
           if (!state.viewport) {
             state.viewport = parseRect([
@@ -70657,16 +70588,16 @@ void main() {
             if (!colors) colors = "transparent";
             let colorData = new Uint8Array(count * 4 + 4);
             if (!Array.isArray(colors) || typeof colors[0] === "number") {
-              let c = rgba(colors, "uint8");
+              let c = rgba2(colors, "uint8");
               for (let i2 = 0; i2 < count + 1; i2++) {
                 colorData.set(c, i2 * 4);
               }
             } else {
               for (let i2 = 0; i2 < count; i2++) {
-                let c = rgba(colors[i2], "uint8");
+                let c = rgba2(colors[i2], "uint8");
                 colorData.set(c, i2 * 4);
               }
-              colorData.set(rgba(colors[0], "uint8"), count * 4);
+              colorData.set(rgba2(colors[0], "uint8"), count * 4);
             }
             state.colorBuffer({
               usage: "dynamic",
@@ -70709,7 +70640,7 @@ void main() {
     "node_modules/regl-error2d/index.js"(exports, module) {
       "use strict";
       var getBounds = require_array_bounds();
-      var rgba = require_color_normalize();
+      var rgba2 = require_color_normalize();
       var updateDiff = require_update_diff();
       var pick = require_pick_by_alias();
       var extend = require_object_assign();
@@ -71045,7 +70976,7 @@ void main() {
                 if (colors.length < count) throw Error("Not enough colors");
                 let colorData = new Uint8Array(count * 4);
                 for (let i2 = 0; i2 < count; i2++) {
-                  let c = rgba(colors[i2], "uint8");
+                  let c = rgba2(colors[i2], "uint8");
                   colorData.set(c, i2 * 4);
                 }
                 return colorData;
@@ -71177,7 +71108,7 @@ void main() {
   var require_parenthesis = __commonJS({
     "node_modules/parenthesis/index.js"(exports, module) {
       "use strict";
-      function parse(str, opts) {
+      function parse2(str, opts) {
         if (typeof str !== "string") return [str];
         var res = [str];
         if (typeof opts === "string" || Array.isArray(opts)) {
@@ -71256,10 +71187,10 @@ void main() {
         if (Array.isArray(arg)) {
           return stringify(arg, opts);
         } else {
-          return parse(arg, opts);
+          return parse2(arg, opts);
         }
       }
-      parenthesis.parse = parse;
+      parenthesis.parse = parse2;
       parenthesis.stringify = stringify;
       module.exports = parenthesis;
     }
@@ -71515,7 +71446,7 @@ void main() {
   var require_regl_unchecked = __commonJS({
     "node_modules/regl/dist/regl.unchecked.js"(exports, module) {
       (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : global2.createREGL = factory();
+        typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && false ? define(factory) : global2.createREGL = factory();
       })(exports, function() {
         "use strict";
         var extend = function(base, opts) {
@@ -82526,7 +82457,7 @@ void main() {
       var createRegl = require_regl_unchecked();
       var createGl = require_context();
       var WeakMap2 = require_es6_weak_map();
-      var rgba = require_color_normalize();
+      var rgba2 = require_color_normalize();
       var fontAtlas = require_font_atlas();
       var pool = require_pool();
       var parseRect = require_parse_rect();
@@ -83031,7 +82962,7 @@ void main() {
             o.color = "transparent";
           }
           if (typeof o.color === "string" || !isNaN(o.color)) {
-            this.color = rgba(o.color, "uint8");
+            this.color = rgba2(o.color, "uint8");
           } else {
             var colorData;
             if (typeof o.color[0] === "number" && o.color.length > this.counts.length) {
@@ -83039,13 +82970,13 @@ void main() {
               colorData = pool.mallocUint8(l);
               var sub = (o.color.subarray || o.color.slice).bind(o.color);
               for (var i$4 = 0; i$4 < l; i$4 += 4) {
-                colorData.set(rgba(sub(i$4, i$4 + 4), "uint8"), i$4);
+                colorData.set(rgba2(sub(i$4, i$4 + 4), "uint8"), i$4);
               }
             } else {
               var l$1 = o.color.length;
               colorData = pool.mallocUint8(l$1 * 4);
               for (var i$5 = 0; i$5 < l$1; i$5++) {
-                colorData.set(rgba(o.color[i$5] || 0, "uint8"), i$5 * 4);
+                colorData.set(rgba2(o.color[i$5] || 0, "uint8"), i$5 * 4);
               }
             }
             this.color = colorData;
@@ -85666,6 +85597,208 @@ void main() {
     }
   });
 
+  // node_modules/color-parse/index.js
+  function parse(cstr) {
+    var _a, _b;
+    var m, parts = [], alpha = 1, space;
+    if (typeof cstr === "number") {
+      return { space: "rgb", values: [cstr >>> 16, (cstr & 65280) >>> 8, cstr & 255], alpha: 1 };
+    }
+    if (typeof cstr === "number") return { space: "rgb", values: [cstr >>> 16, (cstr & 65280) >>> 8, cstr & 255], alpha: 1 };
+    cstr = String(cstr).toLowerCase();
+    if (import_color_name.default[cstr]) {
+      parts = import_color_name.default[cstr].slice();
+      space = "rgb";
+    } else if (cstr === "transparent") {
+      alpha = 0;
+      space = "rgb";
+      parts = [0, 0, 0];
+    } else if (cstr[0] === "#") {
+      var base = cstr.slice(1);
+      var size = base.length;
+      var isShort = size <= 4;
+      alpha = 1;
+      if (isShort) {
+        parts = [
+          parseInt(base[0] + base[0], 16),
+          parseInt(base[1] + base[1], 16),
+          parseInt(base[2] + base[2], 16)
+        ];
+        if (size === 4) {
+          alpha = parseInt(base[3] + base[3], 16) / 255;
+        }
+      } else {
+        parts = [
+          parseInt(base[0] + base[1], 16),
+          parseInt(base[2] + base[3], 16),
+          parseInt(base[4] + base[5], 16)
+        ];
+        if (size === 8) {
+          alpha = parseInt(base[6] + base[7], 16) / 255;
+        }
+      }
+      if (!parts[0]) parts[0] = 0;
+      if (!parts[1]) parts[1] = 0;
+      if (!parts[2]) parts[2] = 0;
+      space = "rgb";
+    } else if (m = /^((?:rgba?|hs[lvb]a?|hwba?|cmyk?|xy[zy]|gray|lab|lchu?v?|[ly]uv|lms|oklch|oklab|color))\s*\(([^\)]*)\)/.exec(cstr)) {
+      var name = m[1];
+      space = name.replace(/a$/, "");
+      var dims = space === "cmyk" ? 4 : space === "gray" ? 1 : 3;
+      parts = m[2].trim().split(/\s*[,\/]\s*|\s+/);
+      if (space === "color") space = parts.shift();
+      parts = parts.map(function(x, i) {
+        if (x[x.length - 1] === "%") {
+          x = parseFloat(x) / 100;
+          if (i === 3) return x;
+          if (space === "rgb") return x * 255;
+          if (space[0] === "h") return x * 100;
+          if (space[0] === "l" && !i) return x * 100;
+          if (space === "lab") return x * 125;
+          if (space === "lch") return i < 2 ? x * 150 : x * 360;
+          if (space[0] === "o" && !i) return x;
+          if (space === "oklab") return x * 0.4;
+          if (space === "oklch") return i < 2 ? x * 0.4 : x * 360;
+          return x;
+        }
+        if (space[i] === "h" || i === 2 && space[space.length - 1] === "h") {
+          if (baseHues[x] !== void 0) return baseHues[x];
+          if (x.endsWith("deg")) return parseFloat(x);
+          if (x.endsWith("turn")) return parseFloat(x) * 360;
+          if (x.endsWith("grad")) return parseFloat(x) * 360 / 400;
+          if (x.endsWith("rad")) return parseFloat(x) * 180 / Math.PI;
+        }
+        if (x === "none") return 0;
+        return parseFloat(x);
+      });
+      alpha = parts.length > dims ? parts.pop() : 1;
+    } else if (/[0-9](?:\s|\/|,)/.test(cstr)) {
+      parts = cstr.match(/([0-9]+)/g).map(function(value) {
+        return parseFloat(value);
+      });
+      space = ((_b = (_a = cstr.match(/([a-z])/ig)) == null ? void 0 : _a.join("")) == null ? void 0 : _b.toLowerCase()) || "rgb";
+    }
+    return {
+      space,
+      values: parts,
+      alpha
+    };
+  }
+  var import_color_name, color_parse_default, baseHues;
+  var init_color_parse = __esm({
+    "node_modules/color-parse/index.js"() {
+      import_color_name = __toESM(require_color_name(), 1);
+      color_parse_default = parse;
+      baseHues = {
+        red: 0,
+        orange: 60,
+        yellow: 120,
+        green: 180,
+        blue: 240,
+        purple: 300
+      };
+    }
+  });
+
+  // node_modules/color-space/rgb.js
+  var rgb_default;
+  var init_rgb = __esm({
+    "node_modules/color-space/rgb.js"() {
+      rgb_default = {
+        name: "rgb",
+        min: [0, 0, 0],
+        max: [255, 255, 255],
+        channel: ["red", "green", "blue"],
+        alias: ["RGB"]
+      };
+    }
+  });
+
+  // node_modules/color-space/hsl.js
+  var hsl_default;
+  var init_hsl = __esm({
+    "node_modules/color-space/hsl.js"() {
+      init_rgb();
+      hsl_default = {
+        name: "hsl",
+        min: [0, 0, 0],
+        max: [360, 100, 100],
+        channel: ["hue", "saturation", "lightness"],
+        alias: ["HSL"],
+        rgb: function(hsl) {
+          var h = hsl[0] / 360, s = hsl[1] / 100, l = hsl[2] / 100, t1, t2, t3, rgb, val, i = 0;
+          if (s === 0) return val = l * 255, [val, val, val];
+          t2 = l < 0.5 ? l * (1 + s) : l + s - l * s;
+          t1 = 2 * l - t2;
+          rgb = [0, 0, 0];
+          for (; i < 3; ) {
+            t3 = h + 1 / 3 * -(i - 1);
+            t3 < 0 ? t3++ : t3 > 1 && t3--;
+            val = 6 * t3 < 1 ? t1 + (t2 - t1) * 6 * t3 : 2 * t3 < 1 ? t2 : 3 * t3 < 2 ? t1 + (t2 - t1) * (2 / 3 - t3) * 6 : t1;
+            rgb[i++] = val * 255;
+          }
+          return rgb;
+        }
+      };
+      rgb_default.hsl = function(rgb) {
+        var r = rgb[0] / 255, g = rgb[1] / 255, b = rgb[2] / 255, min = Math.min(r, g, b), max = Math.max(r, g, b), delta = max - min, h, s, l;
+        if (max === min) {
+          h = 0;
+        } else if (r === max) {
+          h = (g - b) / delta;
+        } else if (g === max) {
+          h = 2 + (b - r) / delta;
+        } else if (b === max) {
+          h = 4 + (r - g) / delta;
+        }
+        h = Math.min(h * 60, 360);
+        if (h < 0) {
+          h += 360;
+        }
+        l = (min + max) / 2;
+        if (max === min) {
+          s = 0;
+        } else if (l <= 0.5) {
+          s = delta / (max + min);
+        } else {
+          s = delta / (2 - max - min);
+        }
+        return [h, s * 100, l * 100];
+      };
+    }
+  });
+
+  // node_modules/color-rgba/index.js
+  var color_rgba_exports = {};
+  __export(color_rgba_exports, {
+    default: () => rgba
+  });
+  function rgba(color) {
+    if (Array.isArray(color) && color.raw) color = String.raw(...arguments);
+    if (color instanceof Number) color = +color;
+    var values, i, l;
+    var parsed = color_parse_default(color);
+    if (!parsed.space) return [];
+    const min = parsed.space[0] === "h" ? hsl_default.min : rgb_default.min;
+    const max = parsed.space[0] === "h" ? hsl_default.max : rgb_default.max;
+    values = Array(3);
+    values[0] = Math.min(Math.max(parsed.values[0], min[0]), max[0]);
+    values[1] = Math.min(Math.max(parsed.values[1], min[1]), max[1]);
+    values[2] = Math.min(Math.max(parsed.values[2], min[2]), max[2]);
+    if (parsed.space[0] === "h") {
+      values = hsl_default.rgb(values);
+    }
+    values.push(Math.min(Math.max(parsed.alpha, 0), 1));
+    return values;
+  }
+  var init_color_rgba = __esm({
+    "node_modules/color-rgba/index.js"() {
+      init_color_parse();
+      init_rgb();
+      init_hsl();
+    }
+  });
+
   // src/traces/parcoords/helpers.js
   var require_helpers14 = __commonJS({
     "src/traces/parcoords/helpers.js"(exports) {
@@ -86285,7 +86418,7 @@ void main() {
       var Lib = require_lib();
       var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
       var numberFormat = Lib.numberFormat;
-      var rgba = require_color_rgba();
+      var rgba2 = (init_color_rgba(), __toCommonJS(color_rgba_exports)).default;
       var Axes = require_axes();
       var strRotate = Lib.strRotate;
       var strTranslate = Lib.strTranslate;
@@ -86371,7 +86504,7 @@ void main() {
           return d[0];
         });
         var colorTuples = cscale.map(function(d) {
-          var RGBA = rgba(d[1]);
+          var RGBA = rgba2(d[1]);
           return d3.rgb("rgb(" + RGBA[0] + "," + RGBA[1] + "," + RGBA[2] + ")");
         });
         var prop = function(n) {
@@ -86399,7 +86532,7 @@ void main() {
         var lineColor = helpers.convertTypedArray(cd0.lineColor);
         var line = trace.line;
         var deselectedLines = {
-          color: rgba(trace.unselected.line.color),
+          color: rgba2(trace.unselected.line.color),
           opacity: trace.unselected.line.opacity
         };
         var cOpts = Colorscale.extractOpts(line);
@@ -88244,10 +88377,10 @@ void main() {
             return getNumber("m");
           };
           var getName = function(match, shortNames, longNames, step) {
-            var names = doubled(match, step) ? longNames : shortNames;
-            for (var i = 0; i < names.length; i++) {
-              if (value.substr(iValue, names[i].length).toLowerCase() === names[i].toLowerCase()) {
-                iValue += names[i].length;
+            var names2 = doubled(match, step) ? longNames : shortNames;
+            for (var i = 0; i < names2.length; i++) {
+              if (value.substr(iValue, names2[i].length).toLowerCase() === names2[i].toLowerCase()) {
+                iValue += names2[i].length;
                 return i + calendar.minMonth;
               }
             }

@@ -691,10 +691,8 @@ describe('Click-to-select', function() {
           });
 
         [
-            testCase('scattermapbox', require('../../image/mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN }),
-            testCase('choroplethmapbox', require('../../image/mocks/mapbox_choropleth0.json'), 270, 220, [[0]], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN })
+            testCase('scattermap', require('../../image/mocks/map_0.json'), 650, 195, [[2], []], {}, {}),
+            testCase('choroplethmap', require('../../image/mocks/map_choropleth0.json'), 270, 220, [[0]], {}, {})
         ]
           .forEach(function(testCase) {
               it('@gl trace type ' + testCase.label, function(done) {
@@ -788,10 +786,8 @@ describe('Click-to-select', function() {
         });
 
         [
-            testCase('mapbox', require('../../image/mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN }),
-            testCase('mapbox', require('../../image/mocks/mapbox_choropleth0.json'), 270, 220, [[0], []], {},
-              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN })
+            testCase('scattermap', require('../../image/mocks/map_0.json'), 650, 195, [[2], []], {}, {}),
+            testCase('choroplethmap', require('../../image/mocks/map_choropleth0.json'), 270, 220, [[0], []], {}, {})
         ].forEach(function(testCase) {
             it('@gl for base plot ' + testCase.label, function(done) {
                 _run(testCase, done);
@@ -2162,70 +2158,6 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@gl should work on scattermapbox traces, hasCssTransform: ' + hasCssTransform, function(done) {
-            var assertPoints = makeAssertPoints(['lon', 'lat']);
-            var assertRanges = makeAssertRanges('mapbox');
-            var assertLassoPoints = makeAssertLassoPoints('mapbox');
-            var assertSelectedPoints = makeAssertSelectedPoints();
-
-            var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_bubbles-text'));
-
-            fig.data[0].lon.push(null);
-            fig.data[0].lat.push(null);
-
-            fig.layout.dragmode = 'select';
-
-            delete fig.layout.mapbox.bounds;
-
-            fig.config = {
-                mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
-            };
-            addInvisible(fig);
-
-            _newPlot(gd, fig)
-            .then(function() {
-                if(hasCssTransform) transformPlot(gd, cssTransform);
-
-                return _run(hasCssTransform,
-                    [[370, 120], [500, 200]],
-                    function() {
-                        assertPoints([[30, 30]]);
-                        assertRanges([[21.99, 34.55], [38.14, 25.98]]);
-                        assertSelectedPoints({0: [2]});
-                    },
-                    null, BOXEVENTS, 'scattermapbox select'
-                );
-            })
-            .then(function() {
-                return Plotly.relayout(gd, 'dragmode', 'lasso');
-            })
-            .then(function() {
-                return _run(hasCssTransform,
-                    [[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]],
-                    function() {
-                        assertPoints([[20, 20]]);
-                        assertSelectedPoints({0: [1]});
-                        assertLassoPoints([
-                            [13.28, 25.97], [13.28, 14.33], [25.71, 14.33], [25.71, 25.97], [13.28, 25.97]
-                        ]);
-                    },
-                    null, LASSOEVENTS, 'scattermapbox lasso'
-                );
-            })
-            .then(function() {
-                // make selection handlers don't get called in 'pan' dragmode
-                return Plotly.relayout(gd, 'dragmode', 'pan');
-            })
-            .then(function() {
-                return _run(hasCssTransform,
-                    [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermapbox pan'
-                );
-            })
-            .then(done, done.fail);
-        }, LONG_TIMEOUT_INTERVAL);
-    });
-
-    [false, true].forEach(function(hasCssTransform) {
         it('@gl should work on scattermap traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['lon', 'lat']);
             var assertRanges = makeAssertRanges('map');
@@ -2343,58 +2275,6 @@ describe('Test select box and lasso per trace:', function() {
             .then(function() {
                 return _run(hasCssTransform,
                     [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermap pan'
-                );
-            })
-            .then(done, done.fail);
-        }, LONG_TIMEOUT_INTERVAL);
-    });
-
-    [false, true].forEach(function(hasCssTransform) {
-        it('@gl should work on choroplethmapbox traces, hasCssTransform: ' + hasCssTransform, function(done) {
-            var assertPoints = makeAssertPoints(['location', 'z']);
-            var assertRanges = makeAssertRanges('mapbox');
-            var assertLassoPoints = makeAssertLassoPoints('mapbox');
-            var assertSelectedPoints = makeAssertSelectedPoints();
-
-            var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_choropleth0.json'));
-
-            fig.data[0].locations.push(null);
-
-            fig.layout.dragmode = 'select';
-            fig.config = {
-                mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
-            };
-            addInvisible(fig);
-
-            _newPlot(gd, fig)
-            .then(function() {
-                if(hasCssTransform) transformPlot(gd, cssTransform);
-
-                return _run(hasCssTransform,
-                    [[150, 150], [300, 300]],
-                    function() {
-                        assertPoints([['NY', 10]]);
-                        assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
-                        assertSelectedPoints({0: [0]});
-                    },
-                    null, BOXEVENTS, 'choroplethmapbox select'
-                );
-            })
-            .then(function() {
-                return Plotly.relayout(gd, 'dragmode', 'lasso');
-            })
-            .then(function() {
-                return _run(hasCssTransform,
-                    [[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]],
-                    function() {
-                        assertPoints([['MA', 20]]);
-                        assertSelectedPoints({0: [1]});
-                        assertLassoPoints([
-                            [-74.06, 43.936], [-74.06, 39.293], [-67.84, 39.293],
-                            [-67.84, 43.936], [-74.06, 43.936]
-                        ]);
-                    },
-                    null, LASSOEVENTS, 'choroplethmapbox lasso'
                 );
             })
             .then(done, done.fail);
@@ -3470,67 +3350,6 @@ describe('Test select box and lasso per trace:', function() {
             .then(done, done.fail);
         });
     });
-
-    it('@gl should work on choroplethmapbox traces after adding a new trace on top:', function(done) {
-        var assertPoints = makeAssertPoints(['location', 'z']);
-        var assertRanges = makeAssertRanges('mapbox');
-        var assertLassoPoints = makeAssertLassoPoints('mapbox');
-        var assertSelectedPoints = makeAssertSelectedPoints();
-
-        var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_choropleth0.json'));
-
-        fig.data[0].locations.push(null);
-
-        fig.layout.dragmode = 'select';
-        fig.config = {
-            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
-        };
-        addInvisible(fig);
-
-        var hasCssTransform = false;
-
-        _newPlot(gd, fig)
-        .then(function() {
-            // add a scatter points on top
-            fig.data[3] = {
-                type: 'scattermapbox',
-                marker: { size: 40 },
-                lon: [-70],
-                lat: [40]
-            };
-
-            return Plotly.react(gd, fig);
-        })
-        .then(function() {
-            return _run(hasCssTransform,
-                [[150, 150], [300, 300]],
-                function() {
-                    assertPoints([['NY', 10]]);
-                    assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
-                    assertSelectedPoints({0: [0], 3: []});
-                },
-                null, BOXEVENTS, 'choroplethmapbox select'
-            );
-        })
-        .then(function() {
-            return Plotly.relayout(gd, 'dragmode', 'lasso');
-        })
-        .then(function() {
-            return _run(hasCssTransform,
-                [[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]],
-                function() {
-                    assertPoints([['MA', 20], []]);
-                    assertSelectedPoints({0: [1], 3: [0]});
-                    assertLassoPoints([
-                        [-74.06, 43.936], [-74.06, 39.293], [-67.84, 39.293],
-                        [-67.84, 43.936], [-74.06, 43.936]
-                    ]);
-                },
-                null, LASSOEVENTS, 'choroplethmapbox lasso'
-            );
-        })
-        .then(done, done.fail);
-    }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should work on choroplethmap traces after adding a new trace on top:', function(done) {
         var assertPoints = makeAssertPoints(['location', 'z']);

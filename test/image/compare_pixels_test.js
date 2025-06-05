@@ -63,15 +63,11 @@ argv._.forEach(function(pattern) {
 var blacklist = [
     'map_angles',
     'map_stamen-style',
-    'mapbox_stamen-style',
-    'mapbox_custom-style',
-    'mapbox_density0-legend',
-    'mapbox_osm-style',
 ];
 
 if(virtualWebgl) {
     allMockList = allMockList.filter(function(a) {
-        return a.slice(0, 2) === 'gl' || a.slice(0, 6) === 'mapbox';
+        return a.slice(0, 2) === 'gl';
     });
 }
 
@@ -108,23 +104,12 @@ for(var i = 0; i < allMockList.length; i++) {
     // skip blacklist
     if(blacklist.indexOf(mockName) !== -1) continue;
 
-    var isMapbox = mockName.substr(0, 7) === 'mapbox_';
-
-    // We have to skip mapbox since Aug 2024
-    // See https://github.com/plotly/plotly.js/issues/7075
-    if(isMapbox) continue;
-
     var flakyMap = [
         // more flaky
         'map_density0-legend',
         'map_osm-style',
         'map_predefined-styles1',
         'map_predefined-styles2',
-
-        'mapbox_angles',
-        'mapbox_layers',
-        'mapbox_custom-style',
-        'mapbox_geojson-attributes'
     ].indexOf(mockName) !== -1;
 
     var otherFlaky = [
