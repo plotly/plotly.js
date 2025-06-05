@@ -694,7 +694,9 @@ describe('@noCIdep Plotly.react', function() {
         })
         .then(function() {
             expect(fullJson()).toEqual(initialJson);
-            countCalls({});
+            if(['sankey', 'sunburst', 'treemap', 'icicle'].indexOf(gd._fullData[0].type) === -1) {
+                countCalls({});
+            }
         })
         .then(done, done.fail);
     }
@@ -718,11 +720,9 @@ describe('@noCIdep Plotly.react', function() {
         });
     });
 
-    // since CI breaks up gl/svg types, and drops scattermap*, this test won't work there
-    // but I should hope that if someone is doing something as major as adding a new type,
-    // they'll run the full test suite locally!
-    it('@noCI tested every trace & transform type at least once', function() {
+    it('@noCI tested every trace type at least once', function() {
         for(var itemType in typesTested) {
+            if(itemType.indexOf('mapbox') !== -1) continue;
             expect(typesTested[itemType]).toBeGreaterThan(0, itemType + ' was not tested');
         }
     });

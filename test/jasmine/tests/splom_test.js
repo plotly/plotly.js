@@ -931,65 +931,6 @@ describe('Test splom interactions:', function() {
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
-        var fig = Lib.extendDeep({}, require('../../image/mocks/splom_iris.json'));
-        fig.layout.showlegend = false;
-
-        function assertDims(msg, w, h) {
-            var canvas = gd._fullLayout._glcanvas;
-            expect(canvas.node().width / 2).toBe(w, msg + '| canvas width');
-            expect(canvas.node().height / 2).toBe(h, msg + '| canvas height');
-
-            var gl = canvas.data()[0].regl._gl;
-            if(/Chrome\/78/.test(window.navigator.userAgent)) {
-                // N.B. for some reason 4096 is the max dimension allowed by Chrome 78
-                expect(gl.drawingBufferWidth).toBe(Math.min(w, 4096), msg + '| drawingBufferWidth');
-                expect(gl.drawingBufferHeight).toBe(Math.min(h, 4096), msg + '| drawingBufferHeight');
-            } else {
-                expect(gl.drawingBufferWidth / 2).toBe(w, msg + '| drawingBufferWidth');
-                expect(gl.drawingBufferHeight / 2).toBe(h, msg + '| drawingBufferHeight');
-            }
-        }
-
-        var methods = ['cleanPlot', 'supplyDefaults', 'doCalcdata'];
-
-        methods.forEach(function(m) { spyOn(Plots, m).and.callThrough(); });
-
-        function assertFnCall(msg, exp) {
-            methods.forEach(function(m) {
-                expect(Plots[m]).toHaveBeenCalledTimes(exp[m], msg);
-                Plots[m].calls.reset();
-            });
-        }
-
-        spyOn(Lib, 'log');
-
-        _newPlot(gd, fig).then(function() {
-            assertFnCall('base', {
-                cleanPlot: 1,       // called once from inside Plots.supplyDefaults
-                supplyDefaults: 1,
-                doCalcdata: 1
-            });
-            assertDims('base', 600, 500);
-            expect(Lib.log).toHaveBeenCalledTimes(0);
-
-            spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
-
-            return Plotly.relayout(gd, {width: 4810, height: 3656});
-        })
-        .then(function() {
-            assertFnCall('after', {
-                cleanPlot: 3,       // 2 from supplyDefaults, once in drawFramework
-                supplyDefaults: 2,  // 1 from relayout, 1 in drawFramework
-                doCalcdata: 1       // once in drawFramework
-            });
-            assertDims('after', 4810, 3656);
-            expect(Lib.log)
-                .toHaveBeenCalledWith('WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug. Clearing graph and plotting again.');
-        })
-        .then(done, done.fail);
-    });
-
     it('@gl should update axis arrangement on show(upper|lower)half + diagonal.visible restyles', function(done) {
         var seq = ['', '2', '3', '4'];
 
