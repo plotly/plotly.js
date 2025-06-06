@@ -1,0 +1,83 @@
+{
+    "data": [
+        {
+            "name": "plotly.js",
+            "type": "funnel",
+            "orientation": "h",
+            "y": [
+                "All tickets",
+                "Pull requests",
+                "Author: etpinard",
+                "Label: bug",
+                "Status: open"
+            ],
+            "x": [
+                3756,
+                1580,
+                663,
+                343,
+                1
+            ],
+            "textposition": "inside",
+            "insidetextanchor": "start",
+            "textinfo": "value+percent initial",
+            "tooltiptemplate": "%{fullData.name}<br>%{x}<br>y: %{y}",
+            "tooltip": {"arrowcolor": "blue"}
+        },
+        {
+            "name": "orca",
+            "type": "funnel",
+            "orientation": "h",
+            "y": [
+                "All tickets",
+                "Pull requests",
+                "Author: etpinard",
+                "Label: bug",
+                "Status: open"
+            ],
+            "x": [
+                224,
+                107,
+                31,
+                2,
+                0
+            ],
+            "textposition": "outside",
+            "textinfo": "label+value",
+            "marker": {
+                "line": {
+                    "color": "rgb(255, 0, 0)",
+                    "width": 2
+                }
+            },
+            "tooltiptemplate": "%{fullData.name}<br>%{x}<br>y: %{y}",
+            "tooltip": {"arrowcolor": "blue"}
+        }
+    ],
+    "layout": {
+        "font": {
+            "textcase": "word caps",
+            "lineposition": "under",
+            "shadow": "auto"
+        },
+        "title": {
+            "text": "plotly repos | April 10 2019"
+        },
+        "margin": { "l": 150 },
+        "height": 800,
+        "width": 800,
+        "funnelmode": "group",
+        "showlegend": true
+    },
+    "config": {
+      "editable": true,
+      "modeBarButtonsToAdd": [
+         "tooltip",
+         "hoverclosest",
+         "hovercompare",
+         "togglespikelines"
+      ],
+      "displaylogo": false,
+      "displayModeBar": true
+    }
+}
