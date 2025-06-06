@@ -269,4 +269,3 @@ function handleOnLoad() {
     plotFromHash();
 }
 
-module.exports = Tabs;
