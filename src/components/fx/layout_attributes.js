@@ -14,7 +14,7 @@ font.size.dflt = constants.HOVERFONTSIZE;
 module.exports = {
     clickmode: {
         valType: 'flaglist',
-        flags: ['event', 'select'],
+        flags: ['event', 'select', 'anywhere'],
         dflt: 'event',
         editType: 'plot',
         extras: ['none'],
@@ -31,7 +31,12 @@ module.exports = {
             'explicitly setting `hovermode`: *closest* when using this feature.',
             'Selection events are sent accordingly as long as *event* flag is set as well.',
             'When the *event* flag is missing, `plotly_click` and `plotly_selected`',
-            'events are not fired.'
+            'events are not fired.',
+            'The *anywhere* flag extends the *select* flag by allowing to trigger a',
+            'click event anywhere in the plot. The click event will always include *x*',
+            'and *y* coordinates and if a data point is below the cursor it will also',
+            'include information about the data point. When specifying *anywhere* the',
+            '*select* flag becomes superfluous.'
         ].join(' ')
     },
     dragmode: {
