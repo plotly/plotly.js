@@ -17834,6 +17834,17 @@
         "overlay"
        ]
       },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "role": "object",
       "shape": {
        "arrayOk": true,
@@ -19860,6 +19871,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
@@ -37588,6 +37610,17 @@
         "overlay"
        ]
       },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "role": "object",
       "shape": {
        "arrayOk": true,
@@ -41250,6 +41283,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
@@ -46481,6 +46525,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
@@ -56252,6 +56307,17 @@
         "overlay"
        ]
       },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "role": "object",
       "shape": {
        "arrayOk": true,
@@ -58637,6 +58703,17 @@
        "replace",
        "overlay"
       ]
+     },
+     "path": {
+      "arrayOk": true,
+      "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+      "editType": "style",
+      "valType": "string"
+     },
+     "pathsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+      "editType": "none",
+      "valType": "string"
      },
      "role": "object",
      "shape": {
@@ -87731,6 +87808,17 @@
         "overlay"
        ]
       },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "role": "object",
       "shape": {
        "arrayOk": true,
@@ -92371,6 +92459,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {

@@ -218,13 +218,14 @@ drawing.dashStyle = function(dash, lineWidth) {
 function setFillStyle(sel, trace, gd, forLegend) {
     var markerPattern = trace.fillpattern;
     var fillgradient = trace.fillgradient;
-    var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, 0, '');
+    var pAttr = drawing.getPatternAttr;
+    var patternShape = markerPattern && (pAttr(markerPattern.shape, 0, '') || pAttr(markerPattern.path, 0, ''));
     if(patternShape) {
-        var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
-        var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
+        var patternBGColor = pAttr(markerPattern.bgcolor, 0, null);
+        var patternFGColor = pAttr(markerPattern.fgcolor, 0, null);
         var patternFGOpacity = markerPattern.fgopacity;
-        var patternSize = drawing.getPatternAttr(markerPattern.size, 0, 8);
-        var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, 0, 0.3);
+        var patternSize = pAttr(markerPattern.size, 0, 8);
+        var patternSolidity = pAttr(markerPattern.solidity, 0, 0.3);
         var patternID = trace.uid;
         drawing.pattern(sel, 'point', gd, patternID,
             patternShape, patternSize, patternSolidity,
@@ -662,6 +663,16 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
                 fill: fgRGB
             };
             break;
+        default:
+            width = size;
+            height = size;
+            patternTag = 'path';
+            patternAttrs = {
+                d: shape,
+                opacity: opacity,
+                fill: fgRGB
+            };
+            break;
     }
 
     var str = [
@@ -869,7 +880,10 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd, pt) {
         }
 
         var markerPattern = marker.pattern;
-        var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, d.i, '');
+        var pAttr = drawing.getPatternAttr;
+        var patternShape = markerPattern && (
+            pAttr(markerPattern.shape, d.i, '') || pAttr(markerPattern.path, d.i, '')
+        );
 
         if(gradientType && gradientType !== 'none') {
             var gradientColor = d.mgc;
@@ -888,14 +902,15 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd, pt) {
                 fgcolor = pt.color;
                 perPointPattern = true;
             }
-            var patternFGColor = drawing.getPatternAttr(fgcolor, d.i, (pt && pt.color) || null);
+            var patternFGColor = pAttr(fgcolor, d.i, (pt && pt.color) || null);
 
-            var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
+            var patternBGColor = pAttr(markerPattern.bgcolor, d.i, null);
             var patternFGOpacity = markerPattern.fgopacity;
-            var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
-            var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
+            var patternSize = pAttr(markerPattern.size, d.i, 8);
+            var patternSolidity = pAttr(markerPattern.solidity, d.i, 0.3);
             perPointPattern = perPointPattern || d.mcc ||
                 Lib.isArrayOrTypedArray(markerPattern.shape) ||
+                Lib.isArrayOrTypedArray(markerPattern.path) ||
                 Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
                 Lib.isArrayOrTypedArray(markerPattern.fgcolor) ||
                 Lib.isArrayOrTypedArray(markerPattern.size) ||
