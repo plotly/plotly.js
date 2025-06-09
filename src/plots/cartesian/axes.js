@@ -3907,7 +3907,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 var isLeft = has('left');
                 var isRight = has('right');
                 var isBottom = has('bottom');
-                var isAligned = (tickson != 'boundaries') && (isBottom || isLeft || isTop || isRight);
+                var isAligned = (tickson !== 'boundaries') && (isBottom || isLeft || isTop || isRight);
                 var pad = !isAligned ? 0 :
                 (ax.tickwidth || 0) + 2 * TEXTPAD;
 
