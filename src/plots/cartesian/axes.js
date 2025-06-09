@@ -3084,7 +3084,7 @@ function getTickLabelUV(ax) {
     var isBottom = has('bottom');
     var isInside = has('inside');
 
-    var isAligned = (tickson != 'boundaries') && (isBottom || isLeft || isTop || isRight);
+    var isAligned = (tickson !== 'boundaries') && (isBottom || isLeft || isTop || isRight);
 
     // early return
     if(!isAligned && !isInside) return [0, 0];
