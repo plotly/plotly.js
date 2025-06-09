@@ -3073,6 +3073,7 @@ function getPosX(d) {
 // v is a shift perpendicular to the axis
 function getTickLabelUV(ax) {
     var ticklabelposition = ax.ticklabelposition || '';
+    var tickson = ax.tickson || '';
     var has = function(str) {
         return ticklabelposition.indexOf(str) !== -1;
     };
@@ -3083,7 +3084,7 @@ function getTickLabelUV(ax) {
     var isBottom = has('bottom');
     var isInside = has('inside');
 
-    var isAligned = isBottom || isLeft || isTop || isRight;
+    var isAligned = (tickson !== 'boundaries') && (isBottom || isLeft || isTop || isRight);
 
     // early return
     if(!isAligned && !isInside) return [0, 0];
@@ -3167,6 +3168,8 @@ axes.makeTickPath = function(ax, shift, sgn, opts) {
  */
 axes.makeLabelFns = function(ax, shift, angle) {
     var ticklabelposition = ax.ticklabelposition || '';
+    var tickson = ax.tickson || '';
+
     var has = function(str) {
         return ticklabelposition.indexOf(str) !== -1;
     };
@@ -3175,12 +3178,12 @@ axes.makeLabelFns = function(ax, shift, angle) {
     var isLeft = has('left');
     var isRight = has('right');
     var isBottom = has('bottom');
-    var isAligned = isBottom || isLeft || isTop || isRight;
+    var isAligned = (tickson !== 'boundaries') && (isBottom || isLeft || isTop || isRight);
 
     var insideTickLabels = has('inside');
     var labelsOverTicks =
         (ticklabelposition === 'inside' && ax.ticks === 'inside') ||
-        (!insideTickLabels && ax.ticks === 'outside' && ax.tickson !== 'boundaries');
+        (!insideTickLabels && ax.ticks === 'outside' && tickson !== 'boundaries');
 
     var labelStandoff = 0;
     var labelShift = 0;
@@ -3895,6 +3898,8 @@ axes.drawLabels = function(gd, ax, opts) {
                 }
             } else {
                 var ticklabelposition = ax.ticklabelposition || '';
+                var tickson = ax.tickson ||'';
+
                 var has = function(str) {
                     return ticklabelposition.indexOf(str) !== -1;
                 };
@@ -3902,7 +3907,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 var isLeft = has('left');
                 var isRight = has('right');
                 var isBottom = has('bottom');
-                var isAligned = isBottom || isLeft || isTop || isRight;
+                var isAligned = (tickson !== 'boundaries') && (isBottom || isLeft || isTop || isRight);
                 var pad = !isAligned ? 0 :
                 (ax.tickwidth || 0) + 2 * TEXTPAD;
 
