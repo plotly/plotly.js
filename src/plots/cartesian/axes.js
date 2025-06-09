@@ -3178,7 +3178,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
     var isLeft = has('left');
     var isRight = has('right');
     var isBottom = has('bottom');
-    var isAligned = (tickson != 'boundaries') && (isBottom || isLeft || isTop || isRight);
+    var isAligned = (tickson !== 'boundaries') && (isBottom || isLeft || isTop || isRight);
 
     var insideTickLabels = has('inside');
     var labelsOverTicks =
