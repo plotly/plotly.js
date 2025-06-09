@@ -71,7 +71,9 @@ exports.hovertemplateAttrs = function(opts, extra) {
         description: [
             'Template string used for rendering the information that appear on hover box.',
             'Note that this will override `hoverinfo`.',
-            templateFormatStringDescription({supportOther: true}),
+            templateFormatStringDescription({
+                supportOther: opts.noSupportOther ? false : true
+            }),
             'The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data.',
             'Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
             descPart,

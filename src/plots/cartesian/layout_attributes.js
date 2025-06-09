@@ -5,6 +5,7 @@ var colorAttrs = require('../../components/color/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var descriptionWithDates = require('../../plots/cartesian/axis_format_attributes').descriptionWithDates;
 
 var ONEDAY = require('../../constants/numerical').ONEDAY;
@@ -975,6 +976,9 @@ module.exports = {
         editType: 'none',
         description: descriptionWithDates('hover text')
     },
+    unifiedhovertemplate: hovertemplateAttrs({
+        noSupportOther: true
+    }),
     // lines and grids
     showline: {
         valType: 'boolean',
