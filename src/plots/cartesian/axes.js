@@ -2957,11 +2957,13 @@ function calcLabelLevelBbox(ax, cls, mainLinePositionShift) {
             // (like in fixLabelOverlaps) instead and use Axes.getPxPosition
             // together with the makeLabelFns outputs and `tickangle`
             // to compute one bbox per (tick value x tick style)
-            var bb = Drawing.bBox(thisLabel.node().parentNode);
-            top = Math.min(top, bb.top);
-            bottom = Math.max(bottom, bb.bottom);
-            left = Math.min(left, bb.left);
-            right = Math.max(right, bb.right);
+            if (thisLabel.style('display') !== 'none') {
+                var bb = Drawing.bBox(thisLabel.node().parentNode);
+                top = Math.min(top, bb.top);
+                bottom = Math.max(bottom, bb.bottom);
+                left = Math.min(left, bb.left);
+                right = Math.max(right, bb.right);
+            }
         });
     } else {
         var dummyCalc = axes.makeLabelFns(ax, mainLinePositionShift);
@@ -3654,7 +3656,7 @@ axes.drawLabels = function(gd, ax, opts) {
                     'text-anchor': anchor
                 });
 
-                thisText.style('opacity', 1); // visible
+                thisText.style('display', null); // visible
 
                 if(ax._adjustTickLabelsOverflow) {
                     ax._adjustTickLabelsOverflow();
@@ -3712,9 +3714,9 @@ axes.drawLabels = function(gd, ax, opts) {
 
                 var t = thisLabel.select('text');
                 if(adjust) {
-                    if(hideOverflow) t.style('opacity', 0); // hidden
-                } else {
-                    t.style('opacity', 1); // visible
+                    if(hideOverflow) t.style('display', 'none'); // hidden
+                } else if(t.node().style.display !== 'none'){
+                    t.style('display', null);
 
                     if(side === 'bottom' || side === 'right') {
                         visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
@@ -3791,7 +3793,7 @@ axes.drawLabels = function(gd, ax, opts) {
                                 q > ax['_visibleLabelMin_' + anchorAx._id]
                             ) {
                                 t.style('display', 'none'); // hidden
-                            } else if(e.K === 'tick' && !idx) {
+                            } else if(e.K === 'tick' && !idx && t.node().style.display !== 'none') {
                                 t.style('display', null); // visible
                             }
                         });
