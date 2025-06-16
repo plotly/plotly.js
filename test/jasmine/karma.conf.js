@@ -8,7 +8,7 @@ var esbuildConfig = require('../../esbuild-config.js');
 var isCI = Boolean(process.env.CI);
 
 var argv = minimist(process.argv.slice(4), {
-    string: ['bundleTest', 'width', 'height'],
+    string: ['bundleTest', 'performanceTest', 'width', 'height'],
     boolean: [
         'mathjax3',
         'info',
@@ -21,6 +21,7 @@ var argv = minimist(process.argv.slice(4), {
         Chrome: 'chrome',
         Firefox: ['firefox', 'FF'],
         bundleTest: ['bundletest', 'bundle_test'],
+        performanceTest: ['performancetest', 'performance_test'],
         nowatch: 'no-watch',
         failFast: 'fail-fast',
     },
@@ -53,7 +54,8 @@ if(argv.info) {
         '  - All non-flagged arguments corresponds to the test suites in `test/jasmine/tests/` to be run.',
         '    No need to add the `_test.js` suffix, we expand them correctly here.',
         '  - `--bundleTest` set the bundle test suite `test/jasmine/bundle_tests/ to be run.',
-        '    Note that only one bundle test can be run at a time.',
+        '  - `--performanceTest` set the bundle test suite `test/jasmine/performance_tests/ to be run.',
+        '    Note that only one bundle/performance test can be run at a time.',
         '  - Use `--tags` to specify which `@` tags to test (if any) e.g `npm run test-jasmine -- --tags=gl`',
         '    will run only gl tests.',
         '  - Use `--skip-tags` to specify which `@` tags to skip (if any) e.g `npm run test-jasmine -- --skip-tags=gl`',
@@ -100,7 +102,8 @@ var glob = function(_) {
 };
 
 var isBundleTest = !!argv.bundleTest;
-var isFullSuite = !isBundleTest && argv._.length === 0;
+var isPerformanceTest = !!argv.performanceTest;
+var isFullSuite = !(isBundleTest || isPerformanceTest) && argv._.length === 0;
 var testFileGlob;
 
 if(isFullSuite) {
@@ -113,6 +116,14 @@ if(isFullSuite) {
     }
 
     testFileGlob = path.join(__dirname, 'bundle_tests', glob([basename(_[0])]));
+} else if(isPerformanceTest) {
+    var _ = merge(argv.performanceTest);
+
+    if(_.length > 1) {
+        console.warn('Can only run one performance test suite at a time, ignoring ', _.slice(1));
+    }
+
+    testFileGlob = path.join(__dirname, 'performance_tests', glob([basename(_[0])]));
 } else {
     testFileGlob = path.join(__dirname, 'tests', glob(merge(argv._).map(basename)));
 }
@@ -250,7 +261,7 @@ func.defaultConfig = {
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
                 isCI ? '--ignore-gpu-blacklist' : '',
-                (isBundleTest && basename(testFileGlob) === 'no_webgl') ? '--disable-webgl' : ''
+                ((isBundleTest || isPerformanceTest) && basename(testFileGlob) === 'no_webgl') ? '--disable-webgl' : ''
             ]
         },
         _Firefox: {
