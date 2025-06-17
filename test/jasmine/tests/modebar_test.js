@@ -69,7 +69,7 @@ describe('ModeBar', function() {
     }
 
     function countButtons(modeBar) {
-        return d3Select(modeBar.element).selectAll('a.modebar-btn').size();
+        return d3Select(modeBar.element).selectAll('button.modebar-btn, a.modebar-btn').size();
     }
 
     function countLogo(modeBar) {
@@ -77,7 +77,7 @@ describe('ModeBar', function() {
     }
 
     function checkBtnAttr(modeBar, index, attr) {
-        var buttons = d3Select(modeBar.element).selectAll('a.modebar-btn');
+        var buttons = d3Select(modeBar.element).selectAll('button.modebar-btn, a.modebar-btn');
         return d3Select(buttons[0][index]).attr(attr);
     }
 
@@ -1620,7 +1620,7 @@ describe('ModeBar', function() {
         it('add predefined shape drawing and hover buttons via layout.modebar.add', function(done) {
             function countButtons() {
                 var modeBarEl = gd._fullLayout._modeBar.element;
-                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+                return d3Select(modeBarEl).selectAll('button.modebar-btn, a.modebar-btn').size();
             }
 
             var initial = 10;
@@ -1705,7 +1705,7 @@ describe('ModeBar', function() {
         it('remove buttons using exact (camel case) and short (lower case) names via layout.modebar.remove and template', function(done) {
             function countButtons() {
                 var modeBarEl = gd._fullLayout._modeBar.element;
-                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+                return d3Select(modeBarEl).selectAll('button.modebar-btn, a.modebar-btn').size();
             }
 
             var initial = 10;
@@ -1786,7 +1786,7 @@ describe('ModeBar', function() {
         it('add buttons using template', function(done) {
             function countButtons() {
                 var modeBarEl = gd._fullLayout._modeBar.element;
-                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+                return d3Select(modeBarEl).selectAll('button.modebar-btn, a.modebar-btn').size();
             }
 
             var initial = 10;
@@ -1809,7 +1809,7 @@ describe('ModeBar', function() {
             it('add ' + t + ' button if removed by layout and added by config', function(done) {
                 function countButtons() {
                     var modeBarEl = gd._fullLayout._modeBar.element;
-                    return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+                    return d3Select(modeBarEl).selectAll('button.modebar-btn, a.modebar-btn').size();
                 }
 
                 var initial = 10;
@@ -1830,7 +1830,7 @@ describe('ModeBar', function() {
         it('remove button if added by layout and removed by config', function(done) {
             function countButtons() {
                 var modeBarEl = gd._fullLayout._modeBar.element;
-                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+                return d3Select(modeBarEl).selectAll('button.modebar-btn, a.modebar-btn').size();
             }
 
             var initial = 10;
