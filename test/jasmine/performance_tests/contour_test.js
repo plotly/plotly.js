@@ -3,6 +3,7 @@ var delay = require('../assets/delay');
 var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/core');
 var PlotlyContour = require('../../../lib/contour');
+var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
 
 var gd = createGraphDiv();
 
@@ -105,6 +106,8 @@ tests.forEach(function(spec, index) {
 
                 if(t === nTimes && index === tests.length - 1) {
                     console.log(JSON.stringify(tests, null, 2));
+
+                    writeRawDataAsCSV('contour', tests);
                 }
             });
         });
