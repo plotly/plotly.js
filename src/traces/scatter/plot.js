@@ -518,9 +518,14 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var enter = join.enter().append('path')
             .classed('point', true);
 
+        var styleFns;
+        if(showMarkers) {
+            styleFns = Drawing.makePointStyleFns(trace, xa, ya);
+        }
+
         if(hasTransition) {
             enter
-                .call(Drawing.pointStyle, trace, gd)
+                .call(Drawing.pointStyle, trace, xa, ya, styleFns, gd)
                 .call(Drawing.translatePoints, xa, ya)
                 .style('opacity', 0)
                 .transition()
@@ -528,11 +533,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
 
         join.order();
-
-        var styleFns;
-        if(showMarkers) {
-            styleFns = Drawing.makePointStyleFns(trace);
-        }
 
         join.each(function(d) {
             var el = d3.select(this);

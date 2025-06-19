@@ -23,6 +23,13 @@ function calc(gd, trace) {
     var x = xObj.vals;
     var y = yObj.vals;
 
+    var origX1 = xa.makeCalcdata(trace, 'x1');
+    var origY1 = ya.makeCalcdata(trace, 'y1');
+    var x1Obj = alignPeriod(trace, xa, 'x1', origX1);
+    var y1Obj = alignPeriod(trace, ya, 'y1', origY1);
+    var x1 = x1Obj.vals;
+    var y1 = y1Obj.vals;
+
     var serieslen = trace._length;
     var cd = new Array(serieslen);
     var ids = trace.ids;
@@ -50,7 +57,7 @@ function calc(gd, trace) {
         interpolate = stackGroupOpts.stackgaps === 'interpolate';
     } else {
         var ppad = calcMarkerSize(trace, serieslen);
-        calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
+        calcAxisExpansion(gd, trace, xa, ya, x, y, x1, y1, ppad);
     }
 
     var hasPeriodX = !!trace.xperiodalignment;
@@ -88,6 +95,14 @@ function calc(gd, trace) {
             }
         } else {
             cdi[xAttr] = cdi[yAttr] = BADNUM;
+        }
+
+
+        var x1Valid = isNumeric(x[i]);
+        var y1Valid = isNumeric(y[i]);
+        if (x1Valid && y1Valid) {
+            cdi['x1'] = x1[i];
+            cdi['y1'] = y1[i];
         }
 
         if(ids) {
@@ -156,7 +171,7 @@ function calc(gd, trace) {
     return cd;
 }
 
-function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
+function calcAxisExpansion(gd, trace, xa, ya, x, y, x1, y1, ppad) {
     var serieslen = trace._length;
     var fullLayout = gd._fullLayout;
     var xId = xa._id;
@@ -216,8 +231,12 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
     }
 
     // N.B. asymmetric splom traces call this with blank {} xa or ya
-    if(xId) trace._extremes[xId] = Axes.findExtremes(xa, x, xOptions);
-    if(yId) trace._extremes[yId] = Axes.findExtremes(ya, y, yOptions);
+    if(xId) {
+        trace._extremes[xId] = Axes.findExtremes(xa, Array.isArray(x1) ? x.concat(x1) : x, xOptions)
+    }
+    if(yId) {
+        trace._extremes[yId] = Axes.findExtremes(ya, Array.isArray(y1) ? y.concat(y1) : y, yOptions);
+    }
 }
 
 function calcMarkerSize(trace, serieslen) {
