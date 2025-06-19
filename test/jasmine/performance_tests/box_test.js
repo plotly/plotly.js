@@ -2,7 +2,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var delay = require('../assets/delay');
 var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/core');
-var PlotlyBar = require('../../../lib/bar');
+var PlotlyBox = require('../../../lib/box');
 
 var gd = createGraphDiv();
 
@@ -23,10 +23,10 @@ var tests = [{
 }];
 
 tests.forEach(function(spec, index) {
-    describe('Performance test bar | size:' + spec.n, function() {
+    describe('Performance test box | size:' + spec.n, function() {
         'use strict';
 
-        Plotly.register(PlotlyBar);
+        Plotly.register(PlotlyBox);
 
         const samples = Array.from({ length: 9 }, (_, i) => i);
         const nTimes = samples.length - 1;
@@ -35,7 +35,8 @@ tests.forEach(function(spec, index) {
 
         var mock = {
             data: [{
-                type: 'bar',
+                type: 'box',
+                boxpoints: 'all',
                 y: y
             }],
             layout: {
@@ -60,7 +61,7 @@ tests.forEach(function(spec, index) {
         var aveDelta = 0;
 
         samples.forEach(function(t) {
-            it('should graph bar traces | turn: ' + t, function() {
+            it('should graph box traces | turn: ' + t, function() {
                 var delta = Date.now() - startTime;
 
                 if(t === 0) {
@@ -89,7 +90,7 @@ tests.forEach(function(spec, index) {
                     expect(aveDelta).toBeLessThan(spec.averageCap);
                 }
 
-                var nodes = d3SelectAll('g.trace.bars');
+                var nodes = d3SelectAll('g.trace.boxes');
                 expect(nodes.size()).toEqual(1);
 
                 if(t === nTimes && index === tests.length - 1) {

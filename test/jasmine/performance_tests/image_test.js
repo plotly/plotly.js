@@ -2,41 +2,59 @@ var createGraphDiv = require('../assets/create_graph_div');
 var delay = require('../assets/delay');
 var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/core');
-var PlotlyBar = require('../../../lib/bar');
+var PlotlyImage = require('../../../lib/image');
 
 var gd = createGraphDiv();
 
 var tests = [{
-    n: 1000, averageCap: 75
+    nx: 50, ny: 20, averageCap: 75
 }, {
-    n: 2000, averageCap: 100
+    nx: 100, ny: 40, averageCap: 100
 }, {
-    n: 4000, averageCap: 150
+    nx: 200, ny: 80, averageCap: 150
 }, {
-    n: 8000, averageCap: 300
+    nx: 400, ny: 160, averageCap: 300
 }, {
-    n: 16000, averageCap: 600
+    nx: 800, ny: 320, averageCap: 600
 }, {
-    n: 32000, averageCap: 1200
+    nx: 1600, ny: 640, averageCap: 1200
 }, {
-    n: 64000, averageCap: 2400
+    nx: 3200, ny: 1280, averageCap: 2400
 }];
 
 tests.forEach(function(spec, index) {
-    describe('Performance test bar | size:' + spec.n, function() {
+    describe('Performance test image | size:' + spec.nx + 'X' + spec.ny, function() {
         'use strict';
 
-        Plotly.register(PlotlyBar);
+        Plotly.register(PlotlyImage);
 
         const samples = Array.from({ length: 9 }, (_, i) => i);
         const nTimes = samples.length - 1;
 
-        var y = Float64Array.from({ length: spec.n }, (_, i) => i * Math.cos(Math.sqrt(i)));
+        var A = spec.nx;
+        var B = spec.ny;
+        spec.n = A * B;
+
+        var x = Uint16Array.from({ length: A }, (_, i) => i);
+        var y = Uint16Array.from({ length: B }, (_, i) => i);
+        var z = [];
+        for(var k = 0; k < B ; k++) {
+            z[k] = [];
+            for(var i = 0; i < A ; i++) {
+                z[k][i] = [
+                    Math.floor(127 * (1 + Math.cos(Math.sqrt(i)))),
+                    0,
+                    Math.floor(127 * (1 + Math.cos(Math.sqrt(k)))),
+                ];
+            }
+        }
 
         var mock = {
             data: [{
-                type: 'bar',
-                y: y
+                type: 'image',
+                x: x,
+                y: y,
+                z: z
             }],
             layout: {
                 width: 900,
@@ -60,7 +78,7 @@ tests.forEach(function(spec, index) {
         var aveDelta = 0;
 
         samples.forEach(function(t) {
-            it('should graph bar traces | turn: ' + t, function() {
+            it('should graph image traces | turn: ' + t, function() {
                 var delta = Date.now() - startTime;
 
                 if(t === 0) {
@@ -89,7 +107,7 @@ tests.forEach(function(spec, index) {
                     expect(aveDelta).toBeLessThan(spec.averageCap);
                 }
 
-                var nodes = d3SelectAll('g.trace.bars');
+                var nodes = d3SelectAll('g.imagelayer.mlayer');
                 expect(nodes.size()).toEqual(1);
 
                 if(t === nTimes && index === tests.length - 1) {

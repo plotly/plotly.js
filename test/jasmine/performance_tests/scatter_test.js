@@ -5,7 +5,7 @@ var Plotly = require('../../../lib/core');
 
 var gd = createGraphDiv();
 
-[{
+var tests = [{
     n: 1000, averageCap: 75
 }, {
     n: 2000, averageCap: 100
@@ -19,11 +19,13 @@ var gd = createGraphDiv();
     n: 32000, averageCap: 1200
 }, {
     n: 64000, averageCap: 2400
-}].forEach(function(spec) {
-    describe('Bundle with scatter | size:' + spec.n, function() {
+}];
+
+tests.forEach(function(spec, index) {
+    describe('Performance test scatter | size:' + spec.n, function() {
         'use strict';
 
-        const samples = Array.from({ length: 5 }, (_, i) => i);
+        const samples = Array.from({ length: 9 }, (_, i) => i);
         const nTimes = samples.length - 1;
 
         var y = Float64Array.from({ length: spec.n }, (_, i) => i * Math.cos(Math.sqrt(i)));
@@ -35,7 +37,7 @@ var gd = createGraphDiv();
                 y: y
             }],
             layout: {
-                width: 1200,
+                width: 900,
                 height: 400
             }
         };
@@ -60,27 +62,37 @@ var gd = createGraphDiv();
                 var delta = Date.now() - startTime;
 
                 if(t === 0) {
-                    console.log('________________________________');
-                    console.log('number of points in scatter: ' + spec.n);
-                    console.log('expected average (cap): ' + spec.averageCap + ' ms');
+                    // console.log('________________________________');
+                    // console.log('number of points: ' + spec.n);
+                    // console.log('expected average (cap): ' + spec.averageCap + ' ms');
+
+                    tests[index].raw = [];
                 }
+                tests[index].raw[t] = delta;
 
                 if(t > 0) { // we skip the first run which is slow
                     maxDelta = Math.max(maxDelta, delta);
                     aveDelta += delta / nTimes;
                 }
 
-                console.log('turn: ' + t + ' | ' + delta + ' ms');
+                // console.log('turn: ' + t + ' | ' + delta + ' ms');
 
                 if(t === nTimes) {
-                    console.log('max: ' + maxDelta);
-                    console.log('ave: ' + aveDelta);
+                    tests[index].average = aveDelta;
+                    tests[index].maximum = maxDelta;
+
+                    // console.log('max: ' + maxDelta);
+                    // console.log('ave: ' + aveDelta);
 
                     expect(aveDelta).toBeLessThan(spec.averageCap);
                 }
 
                 var nodes = d3SelectAll('g.trace.scatter');
                 expect(nodes.size()).toEqual(1);
+
+                if(t === nTimes && index === tests.length - 1) {
+                    console.log(JSON.stringify(tests, null, 2));
+                }
             });
         });
     });

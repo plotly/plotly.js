@@ -2,7 +2,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var delay = require('../assets/delay');
 var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/core');
-var PlotlyBar = require('../../../lib/bar');
+var PlotlyHistogram = require('../../../lib/histogram');
 
 var gd = createGraphDiv();
 
@@ -23,20 +23,20 @@ var tests = [{
 }];
 
 tests.forEach(function(spec, index) {
-    describe('Performance test bar | size:' + spec.n, function() {
+    describe('Performance test histogram | size:' + spec.n, function() {
         'use strict';
 
-        Plotly.register(PlotlyBar);
+        Plotly.register(PlotlyHistogram);
 
         const samples = Array.from({ length: 9 }, (_, i) => i);
         const nTimes = samples.length - 1;
 
-        var y = Float64Array.from({ length: spec.n }, (_, i) => i * Math.cos(Math.sqrt(i)));
+        var x = Float64Array.from({ length: spec.n }, (_, i) => i * Math.cos(Math.sqrt(i)));
 
         var mock = {
             data: [{
-                type: 'bar',
-                y: y
+                type: 'histogram',
+                x: x
             }],
             layout: {
                 width: 900,
@@ -60,7 +60,7 @@ tests.forEach(function(spec, index) {
         var aveDelta = 0;
 
         samples.forEach(function(t) {
-            it('should graph bar traces | turn: ' + t, function() {
+            it('should graph histogram traces | turn: ' + t, function() {
                 var delta = Date.now() - startTime;
 
                 if(t === 0) {
