@@ -53,6 +53,9 @@ jobs:
       - run:
           name: Run performance tests
           command: .circleci/test.sh performance-jasmine
+      - store_artifacts:
+          path: ~/Downloads
+          destination: /
 
 
   timezone-jasmine:
