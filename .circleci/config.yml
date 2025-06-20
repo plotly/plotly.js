@@ -53,10 +53,12 @@ jobs:
       - run:
           name: Run performance tests
           command: .circleci/test.sh performance-jasmine
+      - run:
+          name: Display system information
+          command: npm run system-info > ~/Downloads/system_info.txt
       - store_artifacts:
           path: ~/Downloads
           destination: /
-
 
   timezone-jasmine:
     docker:
