@@ -1,17 +1,14 @@
 exports.writeRawDataAsCSV = function(traceName, allTests) {
-    var str = '';
+    var str = 'chart type,data points,run id,rendering time(ms)\n';
     for(var k = 0; k < allTests.length; k++) {
         var test = allTests[k];
 
-        str += traceName + ',' + test.n + '\n';
-        str += 'id,time(ms)\n';
         for(var i = 0; i < test.raw.length; i++) {
-            str += i + ',' + test.raw[i] + '\n';
+            str += traceName + ',' + test.n + ',' + i + ',' + test.raw[i] + '\n';
         }
-        str += '\n';
-
-        console.log(str);
     }
+
+    console.log(str);
 
     // download a CSV file
     var a = document.createElement('a');
