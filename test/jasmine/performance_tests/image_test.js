@@ -63,12 +63,20 @@ tests.forEach(function(spec, index) {
             }
         };
 
-        var startTime;
+        var startTime, endTime;
 
         beforeEach(function(done) {
-            startTime = Date.now();
+            startTime = performance.now();
 
-            Plotly.newPlot(gd, mock).then(done);
+            // Wait for actual rendering to complete
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    endTime = performance.now();
+                    done();
+                });
+            });
+
+            Plotly.newPlot(gd, mock);
         });
 
         afterEach(function(done) {
@@ -80,7 +88,7 @@ tests.forEach(function(spec, index) {
 
         samples.forEach(function(t) {
             it('should graph image traces | turn: ' + t, function() {
-                var delta = Date.now() - startTime;
+                var delta = endTime - startTime;
 
                 if(t === 0) {
                     // console.log('________________________________');
