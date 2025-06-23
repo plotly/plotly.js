@@ -100,7 +100,7 @@ var tests = [{
 }];
 
 tests.forEach(function(spec, index) {
-    describe('Performance test ' + spec.nTraces + 'violin | size:' + spec.n + ' | mode: ' + spec.mode, function() {
+    describe('Performance test ' + spec.nTraces + ' violin | size:' + spec.n + ' | mode: ' + spec.mode, function() {
         'use strict';
 
         var startTime, endTime;
