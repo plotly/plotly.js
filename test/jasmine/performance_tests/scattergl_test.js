@@ -41,6 +41,20 @@ var tests = [{
 }, {
     n: 64000, mode: 'lines', nTraces: 1
 }, {
+    n: 1000, mode: 'markers+lines', nTraces: 1
+}, {
+    n: 2000, mode: 'markers+lines', nTraces: 1
+}, {
+    n: 4000, mode: 'markers+lines', nTraces: 1
+}, {
+    n: 8000, mode: 'markers+lines', nTraces: 1
+}, {
+    n: 16000, mode: 'markers+lines', nTraces: 1
+}, {
+    n: 32000, mode: 'markers+lines', nTraces: 1
+}, {
+    n: 64000, mode: 'markers+lines', nTraces: 1
+}, {
     n: 1000, mode: 'markers', nTraces: 10
 }, {
     n: 2000, mode: 'markers', nTraces: 10
@@ -69,6 +83,20 @@ var tests = [{
 }, {
     n: 64000, mode: 'lines', nTraces: 10
 }, {
+    n: 1000, mode: 'markers+lines', nTraces: 10
+}, {
+    n: 2000, mode: 'markers+lines', nTraces: 10
+}, {
+    n: 4000, mode: 'markers+lines', nTraces: 10
+}, {
+    n: 8000, mode: 'markers+lines', nTraces: 10
+}, {
+    n: 16000, mode: 'markers+lines', nTraces: 10
+}, {
+    n: 32000, mode: 'markers+lines', nTraces: 10
+}, {
+    n: 64000, mode: 'markers+lines', nTraces: 10
+}, {
     n: 1000, mode: 'markers', nTraces: 100
 }, {
     n: 2000, mode: 'markers', nTraces: 100
@@ -96,6 +124,20 @@ var tests = [{
     n: 32000, mode: 'lines', nTraces: 100
 }, {
     n: 64000, mode: 'lines', nTraces: 100
+}, {
+    n: 1000, mode: 'markers+lines', nTraces: 100
+}, {
+    n: 2000, mode: 'markers+lines', nTraces: 100
+}, {
+    n: 4000, mode: 'markers+lines', nTraces: 100
+}, {
+    n: 8000, mode: 'markers+lines', nTraces: 100
+}, {
+    n: 16000, mode: 'markers+lines', nTraces: 100
+}, {
+    n: 32000, mode: 'markers+lines', nTraces: 100
+}, {
+    n: 64000, mode: 'markers+lines', nTraces: 100
 }];
 
 tests.forEach(function(spec, index) {
