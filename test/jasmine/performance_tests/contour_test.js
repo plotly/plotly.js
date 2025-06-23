@@ -5,7 +5,12 @@ var Plotly = require('../../../lib/core');
 var PlotlyContour = require('../../../lib/contour');
 var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
 
+Plotly.register(PlotlyContour);
+
 var gd = createGraphDiv();
+
+const samples = Array.from({ length: 9 }, (_, i) => i);
+const nTimes = samples.length - 1;
 
 var tests = [{
     nx: 50, ny: 20
@@ -26,11 +31,6 @@ var tests = [{
 tests.forEach(function(spec, index) {
     describe('Performance test contour | size:' + spec.nx + 'X' + spec.ny, function() {
         'use strict';
-
-        Plotly.register(PlotlyContour);
-
-        const samples = Array.from({ length: 9 }, (_, i) => i);
-        const nTimes = samples.length - 1;
 
         var A = spec.nx;
         var B = spec.ny;

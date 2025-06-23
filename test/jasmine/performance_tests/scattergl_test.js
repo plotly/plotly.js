@@ -4,7 +4,12 @@ var Plotly = require('../../../lib/core');
 var PlotlyScattergl = require('../../../lib/scattergl');
 var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
 
+Plotly.register(PlotlyScattergl);
+
 var gd = createGraphDiv();
+
+const samples = Array.from({ length: 9 }, (_, i) => i);
+const nTimes = samples.length - 1;
 
 var tests = [{
     n: 1000
@@ -33,11 +38,6 @@ var tests = [{
 tests.forEach(function(spec, index) {
     describe('Performance test scattergl | size:' + spec.n, function() {
         'use strict';
-
-        Plotly.register(PlotlyScattergl);
-
-        const samples = Array.from({ length: 9 }, (_, i) => i);
-        const nTimes = samples.length - 1;
 
         var y = Float64Array.from({ length: spec.n }, (_, i) => i * Math.cos(Math.sqrt(i)));
 

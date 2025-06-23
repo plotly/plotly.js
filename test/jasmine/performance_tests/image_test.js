@@ -5,7 +5,12 @@ var Plotly = require('../../../lib/core');
 var PlotlyImage = require('../../../lib/image');
 var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
 
+Plotly.register(PlotlyImage);
+
 var gd = createGraphDiv();
+
+const samples = Array.from({ length: 9 }, (_, i) => i);
+const nTimes = samples.length - 1;
 
 var tests = [{
     nx: 50, ny: 20
@@ -26,8 +31,6 @@ var tests = [{
 tests.forEach(function(spec, index) {
     describe('Performance test image | size:' + spec.nx + 'X' + spec.ny, function() {
         'use strict';
-
-        Plotly.register(PlotlyImage);
 
         const samples = Array.from({ length: 9 }, (_, i) => i);
         const nTimes = samples.length - 1;
