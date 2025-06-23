@@ -8,19 +8,19 @@ var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
 var gd = createGraphDiv();
 
 var tests = [{
-    nx: 50, ny: 20, averageCap: 100
+    nx: 50, ny: 20
 }, {
-    nx: 100, ny: 40, averageCap: 125
+    nx: 100, ny: 40
 }, {
-    nx: 200, ny: 80, averageCap: 250
+    nx: 200, ny: 80
 }, {
-    nx: 400, ny: 160, averageCap: 500
+    nx: 400, ny: 160
 }, {
-    nx: 800, ny: 320, averageCap: 1000
+    nx: 800, ny: 320
 }, {
-    nx: 1600, ny: 640, averageCap: 2000
+    nx: 1600, ny: 640
 }, {
-    nx: 3200, ny: 1280, averageCap: 4000
+    nx: 3200, ny: 1280
 }];
 
 tests.forEach(function(spec, index) {
@@ -76,45 +76,19 @@ tests.forEach(function(spec, index) {
             delay(100)().then(done);
         });
 
-        var maxDelta = 0;
-        var aveDelta = 0;
-
         samples.forEach(function(t) {
             it('should graph contour traces | turn: ' + t, function() {
                 var delta = endTime - startTime;
 
                 if(t === 0) {
-                    // console.log('________________________________');
-                    // console.log('number of points: ' + spec.n);
-                    // console.log('expected average (cap): ' + spec.averageCap + ' ms');
-
                     tests[index].raw = [];
                 }
                 tests[index].raw[t] = delta;
-
-                if(t > 0) { // we skip the first run which is slow
-                    maxDelta = Math.max(maxDelta, delta);
-                    aveDelta += delta / nTimes;
-                }
-
-                // console.log('turn: ' + t + ' | ' + delta + ' ms');
-
-                if(t === nTimes) {
-                    tests[index].average = aveDelta;
-                    tests[index].maximum = maxDelta;
-
-                    // console.log('max: ' + maxDelta);
-                    // console.log('ave: ' + aveDelta);
-
-                    // expect(aveDelta).toBeLessThan(spec.averageCap);
-                }
 
                 var nodes = d3SelectAll('g.contourlayer');
                 expect(nodes.size()).toEqual(1);
 
                 if(t === nTimes && index === tests.length - 1) {
-                    // console.log(JSON.stringify(tests, null, 2));
-
                     writeRawDataAsCSV('contour', tests);
                 }
             });

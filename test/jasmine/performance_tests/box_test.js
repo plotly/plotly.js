@@ -8,19 +8,19 @@ var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
 var gd = createGraphDiv();
 
 var tests = [{
-    n: 1000, averageCap: 75
+    n: 1000
 }, {
-    n: 2000, averageCap: 100
+    n: 2000
 }, {
-    n: 4000, averageCap: 150
+    n: 4000
 }, {
-    n: 8000, averageCap: 300
+    n: 8000
 }, {
-    n: 16000, averageCap: 600
+    n: 16000
 }, {
-    n: 32000, averageCap: 1200
+    n: 32000
 }, {
-    n: 64000, averageCap: 2400
+    n: 64000
 }];
 
 tests.forEach(function(spec, index) {
@@ -66,45 +66,19 @@ tests.forEach(function(spec, index) {
             delay(100)().then(done);
         });
 
-        var maxDelta = 0;
-        var aveDelta = 0;
-
         samples.forEach(function(t) {
             it('should graph box traces | turn: ' + t, function() {
                 var delta = endTime - startTime;
 
                 if(t === 0) {
-                    // console.log('________________________________');
-                    // console.log('number of points: ' + spec.n);
-                    // console.log('expected average (cap): ' + spec.averageCap + ' ms');
-
                     tests[index].raw = [];
                 }
                 tests[index].raw[t] = delta;
-
-                if(t > 0) { // we skip the first run which is slow
-                    maxDelta = Math.max(maxDelta, delta);
-                    aveDelta += delta / nTimes;
-                }
-
-                // console.log('turn: ' + t + ' | ' + delta + ' ms');
-
-                if(t === nTimes) {
-                    tests[index].average = aveDelta;
-                    tests[index].maximum = maxDelta;
-
-                    // console.log('max: ' + maxDelta);
-                    // console.log('ave: ' + aveDelta);
-
-                    // expect(aveDelta).toBeLessThan(spec.averageCap);
-                }
 
                 var nodes = d3SelectAll('g.trace.boxes');
                 expect(nodes.size()).toEqual(1);
 
                 if(t === nTimes && index === tests.length - 1) {
-                    // console.log(JSON.stringify(tests, null, 2));
-
                     writeRawDataAsCSV('box', tests);
                 }
             });
