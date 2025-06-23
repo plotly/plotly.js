@@ -102,7 +102,7 @@ tests.forEach(function(spec, index) {
                 expect(nodes.size()).toEqual(1);
 
                 if(t === nTimes && index === tests.length - 1) {
-                    console.log(JSON.stringify(tests, null, 2));
+                    // console.log(JSON.stringify(tests, null, 2));
 
                     writeRawDataAsCSV('bar', tests);
                 }
