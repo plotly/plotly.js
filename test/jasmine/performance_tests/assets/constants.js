@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = {
-    nSamples: 1
+    nSamples: 4
 };
