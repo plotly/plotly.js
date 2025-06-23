@@ -54,11 +54,6 @@ jobs:
           name: Run performance tests
           command: .circleci/test.sh performance-jasmine
       - run:
-          name: Combine CSV files
-          command: |
-            head -n 1 `ls ~/Downloads/*.csv | head -n 1` > ~/Downloads/all.csv
-            tail -n+2 -q ~/Downloads/*.csv >> ~/Downloads/all.csv
-      - run:
           name: Display system information
           command: npm run system-info > ~/Downloads/system_info.txt
       - store_artifacts:

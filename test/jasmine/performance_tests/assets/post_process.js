@@ -1,4 +1,4 @@
-exports.downloadCSV = function(traceName, allTests) {
+exports.downloadCSV = function(allTests) {
     var str = [
         'number of traces',
         'chart type',
@@ -12,7 +12,7 @@ exports.downloadCSV = function(traceName, allTests) {
         for(var i = 0; i < test.raw.length; i++) {
             str += [
                 (test.nTraces || 1),
-                (traceName + (test.mode ? ' ' + test.mode : '')),
+                (test.traceType + (test.mode ? ' ' + test.mode : '')),
                 test.n,
                 i,
                 test.raw[i]
@@ -25,7 +25,7 @@ exports.downloadCSV = function(traceName, allTests) {
     var myBlob = new Blob([str], {type: 'text/plain'})
     var url = window.URL.createObjectURL(myBlob);
     a.href = url;
-    a.download = traceName + '.csv';
+    a.download = 'all.csv';
     a.style.display = 'none';
     document.body.append(a);
     a.click();
