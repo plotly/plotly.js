@@ -1,20 +1,26 @@
-exports.writeRawDataAsCSV = function(traceName, allTests) {
-    var str = 'number of traces,chart type,data points,run id,rendering time(ms)\n';
+exports.downloadCSV = function(traceName, allTests) {
+    var str = [
+        'number of traces',
+        'chart type',
+        'data points',
+        'run id',
+        'rendering time(ms)'
+    ].join(',') + '\n';
     for(var k = 0; k < allTests.length; k++) {
         var test = allTests[k];
 
         for(var i = 0; i < test.raw.length; i++) {
-            str +=
-                (test.nTraces || 1) + ',' +
-                (traceName + (test.mode ? '_' + test.mode : '')) + ',' +
-                test.n + ',' + i + ',' +
-                test.raw[i] + '\n';
+            str += [
+                (test.nTraces || 1),
+                (traceName + (test.mode ? ' ' + test.mode : '')),
+                test.n,
+                i,
+                test.raw[i]
+            ].join(',') + '\n';
         }
     }
 
-    console.log(str);
-
-    // download a CSV file
+    // download file by browser
     var a = document.createElement('a');
     var myBlob = new Blob([str], {type: 'text/plain'})
     var url = window.URL.createObjectURL(myBlob);

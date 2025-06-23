@@ -2,7 +2,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var delay = require('../assets/delay');
 var Plotly = require('../../../lib/core');
 var PlotlyScattergl = require('../../../lib/scattergl');
-var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
+var downloadCSV = require('./assets/post_process').downloadCSV;
 var nSamples = require('./assets/constants').nSamples;
 
 Plotly.register(PlotlyScattergl);
@@ -153,7 +153,7 @@ tests.forEach(function(spec, index) {
                 tests[index].raw[t] = delta;
 
                 if(t === nTimes && index === tests.length - 1) {
-                    writeRawDataAsCSV('scattergl', tests);
+                    downloadCSV('scattergl', tests);
                 }
             });
         });

@@ -3,7 +3,7 @@ var delay = require('../assets/delay');
 var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/core');
 var PlotlyBar = require('../../../lib/bar');
-var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
+var downloadCSV = require('./assets/post_process').downloadCSV;
 var nSamples = require('./assets/constants').nSamples;
 
 Plotly.register(PlotlyBar);
@@ -157,7 +157,7 @@ tests.forEach(function(spec, index) {
                 expect(nodes.size()).toEqual(spec.nTraces);
 
                 if(t === nTimes && index === tests.length - 1) {
-                    writeRawDataAsCSV('bar', tests);
+                    downloadCSV('bar', tests);
                 }
             });
         });

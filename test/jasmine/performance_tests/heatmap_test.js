@@ -3,7 +3,7 @@ var delay = require('../assets/delay');
 var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/core');
 var PlotlyHeatmap = require('../../../lib/heatmap');
-var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
+var downloadCSV = require('./assets/post_process').downloadCSV;
 var nSamples = require('./assets/constants').nSamples;
 
 Plotly.register(PlotlyHeatmap);
@@ -90,7 +90,7 @@ tests.forEach(function(spec, index) {
                 expect(nodes.size()).toEqual(1);
 
                 if(t === nTimes && index === tests.length - 1) {
-                    writeRawDataAsCSV('heatmap', tests);
+                    downloadCSV('heatmap', tests);
                 }
             });
         });
