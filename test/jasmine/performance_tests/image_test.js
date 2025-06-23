@@ -13,32 +13,23 @@ var gd = createGraphDiv();
 const samples = Array.from({ length: nSamples }, (_, i) => i);
 const nTimes = samples.length - 1;
 
-var tests = [{
-    nx: 50, ny: 20
-}, {
-    nx: 100, ny: 40
-}, {
-    nx: 200, ny: 80
-}, {
-    nx: 400, ny: 160
-}, {
-    nx: 800, ny: 320
-}, {
-    nx: 1600, ny: 640
-}, {
-    nx: 3200, ny: 1280
-}];
+var tests = [];
+for(let m of [10, 20, 40, 80, 160, 320, 640]) {
+    let nx = 5 * m;
+    let ny = 2 * m;
+    tests.push({
+        nx: nx,
+        ny: ny,
+        n: nx * ny,
+    });
+}
 
 tests.forEach(function(spec, index) {
     describe('Performance test image | size:' + spec.nx + 'X' + spec.ny, function() {
         'use strict';
 
-        const samples = Array.from({ length: nSamples }, (_, i) => i);
-        const nTimes = samples.length - 1;
-
         var A = spec.nx;
         var B = spec.ny;
-        spec.n = A * B;
 
         var x = Array.from({ length: A }, (_, i) => i);
         var y = Array.from({ length: B }, (_, i) => i);

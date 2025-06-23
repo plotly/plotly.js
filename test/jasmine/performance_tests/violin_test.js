@@ -13,91 +13,18 @@ var gd = createGraphDiv();
 const samples = Array.from({ length: nSamples }, (_, i) => i);
 const nTimes = samples.length - 1;
 
-var tests = [{
-    n: 1000, mode: 'no points', nTraces: 1
-}, {
-    n: 2000, mode: 'no points', nTraces: 1
-}, {
-    n: 4000, mode: 'no points', nTraces: 1
-}, {
-    n: 8000, mode: 'no points', nTraces: 1
-}, {
-    n: 16000, mode: 'no points', nTraces: 1
-}, {
-    n: 32000, mode: 'no points', nTraces: 1
-}, {
-    n: 64000, mode: 'no points', nTraces: 1
-}, {
-    n: 1000, mode: 'all points', nTraces: 1
-}, {
-    n: 2000, mode: 'all points', nTraces: 1
-}, {
-    n: 4000, mode: 'all points', nTraces: 1
-}, {
-    n: 8000, mode: 'all points', nTraces: 1
-}, {
-    n: 16000, mode: 'all points', nTraces: 1
-}, {
-    n: 32000, mode: 'all points', nTraces: 1
-}, {
-    n: 64000, mode: 'all points', nTraces: 1
-}, {
-    n: 1000, mode: 'no points', nTraces: 10
-}, {
-    n: 2000, mode: 'no points', nTraces: 10
-}, {
-    n: 4000, mode: 'no points', nTraces: 10
-}, {
-    n: 8000, mode: 'no points', nTraces: 10
-}, {
-    n: 16000, mode: 'no points', nTraces: 10
-}, {
-    n: 32000, mode: 'no points', nTraces: 10
-}, {
-    n: 64000, mode: 'no points', nTraces: 10
-}, {
-    n: 1000, mode: 'all points', nTraces: 10
-}, {
-    n: 2000, mode: 'all points', nTraces: 10
-}, {
-    n: 4000, mode: 'all points', nTraces: 10
-}, {
-    n: 8000, mode: 'all points', nTraces: 10
-}, {
-    n: 16000, mode: 'all points', nTraces: 10
-}, {
-    n: 32000, mode: 'all points', nTraces: 10
-}, {
-    n: 64000, mode: 'all points', nTraces: 10
-}, {
-    n: 1000, mode: 'no points', nTraces: 100
-}, {
-    n: 2000, mode: 'no points', nTraces: 100
-}, {
-    n: 4000, mode: 'no points', nTraces: 100
-}, {
-    n: 8000, mode: 'no points', nTraces: 100
-}, {
-    n: 16000, mode: 'no points', nTraces: 100
-}, {
-    n: 32000, mode: 'no points', nTraces: 100
-}, {
-    n: 64000, mode: 'no points', nTraces: 100
-}, {
-    n: 1000, mode: 'all points', nTraces: 100
-}, {
-    n: 2000, mode: 'all points', nTraces: 100
-}, {
-    n: 4000, mode: 'all points', nTraces: 100
-}, {
-    n: 8000, mode: 'all points', nTraces: 100
-}, {
-    n: 16000, mode: 'all points', nTraces: 100
-}, {
-    n: 32000, mode: 'all points', nTraces: 100
-}, {
-    n: 64000, mode: 'all points', nTraces: 100
-}];
+var tests = [];
+for(let mode of['no points', 'all points']) {
+    for(let nTraces of [1, 10, 100]) {
+        for(let n of [1000, 2000, 4000, 8000, 16000, 32000]) {
+            tests.push({
+                n:n,
+                mode: mode,
+                nTraces: nTraces
+            });
+        }
+    }
+}
 
 tests.forEach(function(spec, index) {
     describe('Performance test ' + spec.nTraces + ' violin | size:' + spec.n + ' | mode: ' + spec.mode, function() {
