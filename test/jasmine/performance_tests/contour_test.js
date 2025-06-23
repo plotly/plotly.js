@@ -4,12 +4,13 @@ var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/core');
 var PlotlyContour = require('../../../lib/contour');
 var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
+var nSamples = require('./assets/constants').nSamples;
 
 Plotly.register(PlotlyContour);
 
 var gd = createGraphDiv();
 
-const samples = Array.from({ length: 9 }, (_, i) => i);
+const samples = Array.from({ length: nSamples }, (_, i) => i);
 const nTimes = samples.length - 1;
 
 var tests = [{

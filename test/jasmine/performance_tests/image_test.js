@@ -4,12 +4,13 @@ var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/core');
 var PlotlyImage = require('../../../lib/image');
 var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
+var nSamples = require('./assets/constants').nSamples;
 
 Plotly.register(PlotlyImage);
 
 var gd = createGraphDiv();
 
-const samples = Array.from({ length: 9 }, (_, i) => i);
+const samples = Array.from({ length: nSamples }, (_, i) => i);
 const nTimes = samples.length - 1;
 
 var tests = [{
@@ -32,7 +33,7 @@ tests.forEach(function(spec, index) {
     describe('Performance test image | size:' + spec.nx + 'X' + spec.ny, function() {
         'use strict';
 
-        const samples = Array.from({ length: 9 }, (_, i) => i);
+        const samples = Array.from({ length: nSamples }, (_, i) => i);
         const nTimes = samples.length - 1;
 
         var A = spec.nx;

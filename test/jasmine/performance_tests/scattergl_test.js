@@ -3,12 +3,13 @@ var delay = require('../assets/delay');
 var Plotly = require('../../../lib/core');
 var PlotlyScattergl = require('../../../lib/scattergl');
 var writeRawDataAsCSV = require('./assets/post_process').writeRawDataAsCSV;
+var nSamples = require('./assets/constants').nSamples;
 
 Plotly.register(PlotlyScattergl);
 
 var gd = createGraphDiv();
 
-const samples = Array.from({ length: 9 }, (_, i) => i);
+const samples = Array.from({ length: nSamples }, (_, i) => i);
 const nTimes = samples.length - 1;
 
 var tests = [{
