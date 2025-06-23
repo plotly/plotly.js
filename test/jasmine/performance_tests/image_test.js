@@ -40,8 +40,8 @@ tests.forEach(function(spec, index) {
         var B = spec.ny;
         spec.n = A * B;
 
-        var x = Uint16Array.from({ length: A }, (_, i) => i);
-        var y = Uint16Array.from({ length: B }, (_, i) => i);
+        var x = Array.from({ length: A }, (_, i) => i);
+        var y = Array.from({ length: B }, (_, i) => i);
         var z = [];
         for(var k = 0; k < B ; k++) {
             z[k] = [];
