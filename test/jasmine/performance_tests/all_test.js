@@ -280,7 +280,6 @@ tests.forEach(function(spec, index) {
                         endTime = performance.now();
 
                         var delta = endTime - startTime;
-                        console.log(delta)
 
                         if(t === 0) {
                             tests[index].raw = [];
