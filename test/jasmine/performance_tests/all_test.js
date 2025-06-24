@@ -270,6 +270,10 @@ tests.forEach(function(spec, index) {
     describe('Performance test ' + spec.nTraces + ' ' + spec.traceType + (spec.mode ? ' | mode: ' + spec.mode : '') + ' | size:' + spec.n, function() {
         'use strict';
 
+        afterEach(function(done) {
+            delay(100)().then(done);
+        });
+
         samples.forEach(function(t) {
             it('turn: ' + t, function(done) {
                 var startTime, endTime;
