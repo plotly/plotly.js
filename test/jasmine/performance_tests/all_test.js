@@ -271,13 +271,32 @@ tests.forEach(function(spec, index) {
         'use strict';
 
         samples.forEach(function(t) {
-            it('turn: ' + t, function() {
+            it('turn: ' + t, function(done) {
                 var startTime, endTime;
 
                 requestAnimationFrame(function() {
                     // Wait for actual rendering instead of promise
                     requestAnimationFrame(function() {
                         endTime = performance.now();
+
+                        var delta = endTime - startTime;
+                        console.log(delta)
+
+                        if(t === 0) {
+                            tests[index].raw = [];
+                        }
+                        tests[index].raw[t] = delta;
+
+                        if(spec.selector) {
+                            var nodes = d3SelectAll(spec.selector);
+                            expect(nodes.size()).toEqual(spec.nTraces);
+                        }
+
+                        if(t === nTimes && index === tests.length - 1) {
+                            downloadCSV(tests);
+                        }
+
+                        done();
                     });
                 });
 
@@ -286,22 +305,6 @@ tests.forEach(function(spec, index) {
                 startTime = performance.now();
 
                 Plotly.newPlot(gd, mock);
-
-                var delta = endTime - startTime;
-
-                if(t === 0) {
-                    tests[index].raw = [];
-                }
-                tests[index].raw[t] = delta;
-
-                if(spec.selector) {
-                    var nodes = d3SelectAll(spec.selector);
-                    expect(nodes.size()).toEqual(spec.nTraces);
-                }
-
-                if(t === nTimes && index === tests.length - 1) {
-                    downloadCSV(tests);
-                }
             });
         });
     });
