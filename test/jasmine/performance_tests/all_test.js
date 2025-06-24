@@ -267,35 +267,26 @@ function makeScatterGeo(spec) {
 
 
 tests.forEach(function(spec, index) {
-    describe('Performance test ' + spec.nTraces + ' ' + spec.traceType + ' | mode: ' + spec.mode + ' | size:' + spec.n, function() {
+    describe('Performance test ' + spec.nTraces + ' ' + spec.traceType + (spec.mode ? ' | mode: ' + spec.mode : '') + ' | size:' + spec.n, function() {
         'use strict';
-
-        var startTime, endTime;
-
-        beforeEach(function(done) {
-            jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-
-            var mock = generateMock(spec);
-
-            startTime = performance.now();
-
-            // Wait for actual rendering to complete
-            requestAnimationFrame(function() {
-                requestAnimationFrame(function() {
-                    endTime = performance.now();
-                    done();
-                });
-            });
-
-            Plotly.newPlot(gd, mock);
-        });
-
-        afterEach(function(done) {
-            delay(100)().then(done);
-        });
 
         samples.forEach(function(t) {
             it('turn: ' + t, function() {
+                var startTime, endTime;
+
+                requestAnimationFrame(function() {
+                    // Wait for actual rendering instead of promise
+                    requestAnimationFrame(function() {
+                        endTime = performance.now();
+                    });
+                });
+
+                var mock = generateMock(spec);
+
+                startTime = performance.now();
+
+                Plotly.newPlot(gd, mock);
+
                 var delta = endTime - startTime;
 
                 if(t === 0) {
