@@ -6,16 +6,19 @@ exports.downloadCSV = function(allTests) {
         'run id',
         'rendering time(ms)'
     ].join(',') + '\n';
+
     for(var k = 0; k < allTests.length; k++) {
         var test = allTests[k];
 
-        for(var i = 0; i < test.raw.length; i++) {
+        var raw = test.raw || [];
+
+        for(var i = 0; i < raw.length; i++) {
             str += [
                 (test.nTraces || 1),
                 (test.traceType + (test.mode ? ' ' + test.mode : '')),
                 test.n,
                 i,
-                test.raw[i]
+                raw[i]
             ].join(',') + '\n';
         }
     }

@@ -8,7 +8,6 @@ var nSamples = require('./assets/constants').nSamples;
 var gd = createGraphDiv();
 
 const samples = Array.from({ length: nSamples }, (_, i) => i);
-const nTimes = samples.length - 1;
 
 var tests = [];
 
@@ -51,7 +50,7 @@ for(let traceType of ['box', 'violin']) {
 for(let traceType of ['scatter', 'scattergl', 'scattergeo']) {
     for(let mode of ['markers', 'lines', 'markers+lines']) {
         for(let nTraces of [1, 10, 100]) {
-            for(let n of [1000, 2000, 4000, 8000, 16000, 32000, 64000]) {
+            for(let n of [1000, 2000, 4000, 8000, 16000, 32000]) {
                 tests.push({
                     n:n,
                     nTraces: nTraces,
@@ -266,14 +265,16 @@ function makeScatterGeo(spec) {
 }
 
 
-tests.forEach(function(spec, index) {
-    describe('Performance test ' + spec.nTraces + ' ' + spec.traceType + (spec.mode ? ' | mode: ' + spec.mode : '') + ' | size:' + spec.n, function() {
-        'use strict';
+describe('Performance test various traces', function() {
+    'use strict';
 
-        afterEach(function(done) {
-            delay(100)().then(done);
-        });
+    afterAll(function(done) {
+        downloadCSV(tests);
+        // delay for the download to be completed
+        delay(1000)().then(done)
+    });
 
+    tests.forEach(function(spec, index) {
         samples.forEach(function(t) {
             it('turn: ' + t, function(done) {
                 var startTime, endTime;
@@ -293,10 +294,6 @@ tests.forEach(function(spec, index) {
                         if(spec.selector) {
                             var nodes = d3SelectAll(spec.selector);
                             expect(nodes.size()).toEqual(spec.nTraces);
-                        }
-
-                        if(t === nTimes && index === tests.length - 1) {
-                            downloadCSV(tests);
                         }
 
                         done();
