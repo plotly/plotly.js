@@ -86,7 +86,6 @@ async function createCoastlinesLayer({ bounds, name, resolution, source }) {
 }
 
 async function createOceanLayer({ bounds, name, resolution, source }) {
-    // const inputFilePath = './tasks/topojson/world_rectangle.geojson';
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/ocean.geojson`;
     const eraseFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
     const commands = [
@@ -214,7 +213,7 @@ async function convertLayersToTopojson({ name, resolution }) {
             const filePath = path.join(regionDir, file)
             const layer = file.split(".")[0]
             let stitchedGeojson = geoStitch(getJsonFile(filePath))
-            stitchedGeojson = rewind(stitchedGeojson, true)
+            // stitchedGeojson = rewind(stitchedGeojson, true)
             // fs.writeFileSync(filePath, JSON.stringify(stitchedGeojson));
             geojsonObjects[layer] = stitchedGeojson
             // geojsonObjects[layer] = getJsonFile(filePath)
