@@ -12,7 +12,7 @@ const config = {
             name: 'antarctica',
             specs: {
                 filter: 'georeg === "ANT"',
-                bounds: [-180, -90, 180, -50]
+                bounds: [-180, -90, 180, -60]
             }
         },
         {

@@ -89,7 +89,6 @@
     "css-loader": "^7.1.2",
     "d3-force": "^1.2.1",
     "d3-format": "^1.4.5",
-    "d3-geo-projection": "^2.9.0",
     "d3-hierarchy": "^1.1.9",
     "d3-interpolate": "^3.0.1",
     "d3-time": "^1.1.0",
@@ -126,6 +125,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
+    "@mapbox/geojson-rewind": "^0.5.2",
+    "@placemarkio/check-geojson": "^0.1.14",
     "@plotly/mathjax-v2": "npm:mathjax@2.7.5",
     "@plotly/mathjax-v3": "npm:mathjax@^3.2.2",
     "amdefine": "^1.0.1",
@@ -137,6 +138,7 @@
     "check-node-version": "^4.2.1",
     "chttps": "^1.0.6",
     "d3-geo": "^3.1.1",
+    "d3-geo-projection": "^4.0.0",
     "deep-equal": "^2.2.3",
     "ecstatic": "^4.1.4",
     "esbuild": "^0.25.5",
@@ -179,6 +181,8 @@
     "sass": "^1.78.0",
     "stream-browserify": "^3.0.0",
     "through2": "^4.0.2",
+    "topojson": "^1.6.27",
+    "topojson-server": "^3.0.1",
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
     "virtual-webgl": "^1.0.6"

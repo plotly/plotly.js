@@ -1,8 +1,12 @@
 import { geoIdentity, geoPath } from 'd3-geo';
+import { geoStitch } from 'd3-geo-projection'
 import fs from 'fs';
 import mapshaper from 'mapshaper';
 import path from 'path';
 import config, { getNEFilename } from './config.mjs';
+import { topology } from 'topojson-server';
+import topojsonLib from 'topojson';
+import rewind from '@mapbox/geojson-rewind'
 
 const { filters, inputDir, layers, resolutions, scopes, unFilename, vectors } = config;
 
@@ -82,11 +86,11 @@ async function createCoastlinesLayer({ bounds, name, resolution, source }) {
 }
 
 async function createOceanLayer({ bounds, name, resolution, source }) {
-    const inputFilePath = './tasks/topojson/world_rectangle.geojson';
+    // const inputFilePath = './tasks/topojson/world_rectangle.geojson';
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/ocean.geojson`;
     const eraseFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
     const commands = [
-        inputFilePath,
+        '-rectangle bbox=-180,-90,180,90',
         bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
         `-erase ${eraseFilePath}`,
         `-o ${outputFilePath}`
@@ -202,20 +206,54 @@ async function convertLayersToTopojson({ name, resolution }) {
     if (!fs.existsSync(regionDir)) return;
 
     const outputFile = `${outputDirTopojson}/${name}_${resolution}m.json`;
-    // Layer names default to file names
-    const commands = [`${regionDir}/*.geojson combine-files`, `-o format=topojson ${outputFile}`].join(' ');
-    await mapshaper.runCommands(commands);
+    if (["antarctica", "world"].includes(name)) {
+    // if (false) {
+        const files = fs.readdirSync(regionDir)
+        const geojsonObjects = {}
+        for (const file of files) {
+            const filePath = path.join(regionDir, file)
+            const layer = file.split(".")[0]
+            let stitchedGeojson = geoStitch(getJsonFile(filePath))
+            stitchedGeojson = rewind(stitchedGeojson, true)
+            // fs.writeFileSync(filePath, JSON.stringify(stitchedGeojson));
+            geojsonObjects[layer] = stitchedGeojson
+            // geojsonObjects[layer] = getJsonFile(filePath)
+        }
+        const topojsonTopology = topology(geojsonObjects)
+        // const topojsonTopology = topojsonLib.topology(geojsonObjects, {
+        //   verbose: true,
+        //   'property-transform': f => f.properties
+        // })
+        fs.writeFileSync(outputFile, JSON.stringify(topojsonTopology));
+    } else {
+        // Layer names default to file names
+        const commands = [`${regionDir}/*.geojson combine-files`, `-o format=topojson ${outputFile}`].join(' ');
+        await mapshaper.runCommands(commands);
+    }
 
     // Remove extra information from features
-    const topojson = getJsonFile(outputFile);
-    const prunedTopojson = pruneProperties(topojson);
-    fs.writeFileSync(outputFile, JSON.stringify(prunedTopojson));
+    // const topojson = getJsonFile(outputFile);
+    // const prunedTopojson = pruneProperties(topojson);
+    // fs.writeFileSync(outputFile, JSON.stringify(prunedTopojson));
 }
 
 // Get polygon features from UN GeoJSON and patch Antarctica gap
 const inputFilePathUNGeojson = `${inputDir}/${unFilename}.geojson`;
+const inputFilePathUNGeojsonCleaned = `${inputDir}/${unFilename}_cleaned.geojson`;
+// TODO: Update all x-coords close to 180 to be exactly 180
+function snapToAntimeridian(inputFilepath, outputFilepath) {
+    const jsonString = fs.readFileSync(inputFilepath, 'utf8')
+    const updatedString = jsonString
+        .replaceAll(/179\.99\d+,/g, '180,')
+        .replaceAll(/180\.00\d+,/g, '180,')
+
+    fs.writeFileSync(outputFilepath, updatedString);
+}
+snapToAntimeridian(inputFilePathUNGeojson, inputFilePathUNGeojsonCleaned)
 const commandsAllFeaturesCommon = [
-    inputFilePathUNGeojson,
+    // TODO: Should I use the cleaned data or leave as is?
+    inputFilePathUNGeojsonCleaned,
+    // inputFilePathUNGeojson,
     `-filter 'iso3cd === "ATA"' target=1 + name=antarctica`,
     // Use 'snap-interval' to patch gap in Antarctica
     '-clean snap-interval=0.015 target=antarctica',
@@ -230,7 +268,7 @@ const commandsAllFeaturesCommon = [
     // Erase Caspian Sea
     `-filter 'globalid === "{BBBEF27F-A6F4-4FBC-9729-77B3A8739409}"' target=all_features + name=caspian_sea`,
     '-erase source=caspian_sea target=all_features',
-    // Handle disputed territories at Egypt/Sudan border: https://en.wikipedia.org/wiki/Egypt%E2%80%93Sudan_border
+    // Update country codes for disputed territories at Egypt/Sudan border: https://en.wikipedia.org/wiki/Egypt%E2%80%93Sudan_border
     `-each 'if (globalid === "{CA12D116-7A19-41D1-9622-17C12CCC720D}") iso3cd = "XHT"'`, // Halaib Triangle
     `-each 'if (globalid === "{9FD54A50-0BFB-4385-B342-1C3BDEE5ED9B}") iso3cd = "XBT"'` // Bir Tawil
 ]
@@ -265,13 +303,16 @@ const commandsLand50m = [
 await mapshaper.runCommands(commandsLand50m);
 
 // Create 110m geodata
+const inputFilePath110m = outputFilePath50m;
 const outputFilePath110m = `${outputDirGeojson}/${unFilename}_110m/all_features.geojson`;
 const commandsAllFeatures110m = [
-    ...commandsAllFeaturesCommon,
+    // ...commandsAllFeaturesCommon,
+    inputFilePath110m,
     '-simplify 10% rdp',
     `-o target=1 ${outputFilePath110m}`
 ].join(" ")
 await mapshaper.runCommands(commandsAllFeatures110m);
+console.log(commandsAllFeatures110m)
 
 // Get countries from all polygon features
 const inputFilePathCountries110m = outputFilePath110m;
