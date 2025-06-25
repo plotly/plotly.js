@@ -1,12 +1,10 @@
+import rewind from '@mapbox/geojson-rewind'
 import { geoIdentity, geoPath } from 'd3-geo';
-import { geoStitch } from 'd3-geo-projection'
 import fs from 'fs';
 import mapshaper from 'mapshaper';
 import path from 'path';
-import config, { getNEFilename } from './config.mjs';
-import { topology } from 'topojson-server';
 import topojsonLib from 'topojson';
-import rewind from '@mapbox/geojson-rewind'
+import config, { getNEFilename } from './config.mjs';
 
 const { filters, inputDir, layers, resolutions, scopes, unFilename, vectors } = config;
 
@@ -32,19 +30,6 @@ function getJsonFile(filename) {
     }
 }
 
-async function createCountriesLayer({ bounds, filter, name, resolution, source }) {
-    const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
-    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/countries.geojson`;
-    const commands = [
-        inputFilePath,
-        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
-        filter ? `-filter '${filter}'` : '',
-        `-o ${outputFilePath}`
-    ].join(' ');
-    await mapshaper.runCommands(commands);
-    addCentroidsToGeojson(outputFilePath);
-}
-
 function addCentroidsToGeojson(geojsonPath) {
     const geojson = getJsonFile(geojsonPath);
     if (!geojson.features) return;
@@ -59,78 +44,18 @@ function addCentroidsToGeojson(geojsonPath) {
     fs.writeFileSync(geojsonPath, JSON.stringify({ ...geojson, features }));
 }
 
-async function createLandLayer({ bounds, name, resolution, source }) {
-    const inputFilePath = `${outputDirGeojson}/${name}_${resolution}m/countries.geojson`;
-    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/land.geojson`;
-    const commands = [
-        inputFilePath,
-        '-dissolve',
-        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
-        `-o ${outputFilePath}`
-    ].join(' ');
-    await mapshaper.runCommands(commands);
-}
+// Wind the polygon rings in the correct direction to indicate what is solid and what is whole
+const rewindGeojson = (geojson, clockwise = true) => rewind(geojson, clockwise)
 
-async function createCoastlinesLayer({ bounds, name, resolution, source }) {
-    // TODO: Update source to be a path?
-    const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
-    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/coastlines.geojson`;
-    const commands = [
-        inputFilePath,
-        '-dissolve',
-        '-lines',
-        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
-        `-o ${outputFilePath}`
-    ].join(' ');
-    await mapshaper.runCommands(commands);
-}
+// Snap x-coordinates that are close to be on the antimeridian
+function snapToAntimeridian(inputFilepath, outputFilepath) {
+    outputFilepath ||= inputFilepath
+    const jsonString = fs.readFileSync(inputFilepath, 'utf8')
+    const updatedString = jsonString
+        .replaceAll(/179\.99\d+,/g, '180,')
+        .replaceAll(/180\.00\d+,/g, '180,')
 
-async function createOceanLayer({ bounds, name, resolution, source }) {
-    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/ocean.geojson`;
-    const eraseFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
-    const commands = [
-        '-rectangle bbox=-180,-90,180,90',
-        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
-        `-erase ${eraseFilePath}`,
-        `-o ${outputFilePath}`
-    ].join(' ');
-    await mapshaper.runCommands(commands);
-}
-
-async function createRiversLayer({ name, resolution, source }) {
-    const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
-    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/rivers.geojson`;
-    const commands = [
-        inputFilePath,
-        `-clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson`, // Clip to the continent
-        `-o ${outputFilePath}`
-    ].join(' ');
-    await mapshaper.runCommands(commands);
-}
-
-async function createLakesLayer({ name, resolution, source }) {
-    const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
-    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/lakes.geojson`;
-    const commands = [
-        inputFilePath,
-        `-clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson`, // Clip to the continent
-        `-o ${outputFilePath}`
-    ].join(' ');
-    await mapshaper.runCommands(commands);
-}
-
-async function createSubunitsLayer({ name, resolution, source }) {
-    const filter = ['AUS', 'BRA', 'CAN', 'USA'].map((id) => `adm0_a3 === "${id}"`).join(' || ');
-    const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
-    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/subunits.geojson`;
-    const commands = [
-        inputFilePath,
-        `-filter "${filter}"`,
-        `-clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson`, // Clip to the continent
-        `-o ${outputFilePath}`
-    ].join(' ');
-    await mapshaper.runCommands(commands);
-    addCentroidsToGeojson(outputFilePath);
+    fs.writeFileSync(outputFilepath, updatedString);
 }
 
 function pruneProperties(topojson) {
@@ -200,29 +125,109 @@ function getCentroid(feature) {
     return path.centroid(feature).map((coord) => +coord.toFixed(2));
 }
 
+async function createCountriesLayer({ bounds, filter, name, resolution, source }) {
+    const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
+    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/countries.geojson`;
+    const commands = [
+        inputFilePath,
+        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
+        filter ? `-filter '${filter}'` : '',
+        `-o ${outputFilePath}`
+    ].join(' ');
+    await mapshaper.runCommands(commands);
+    addCentroidsToGeojson(outputFilePath);
+}
+
+async function createLandLayer({ bounds, name, resolution, source }) {
+    const inputFilePath = `${outputDirGeojson}/${name}_${resolution}m/countries.geojson`;
+    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/land.geojson`;
+    const commands = [
+        inputFilePath,
+        '-dissolve',
+        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
+        `-o ${outputFilePath}`
+    ].join(' ');
+    await mapshaper.runCommands(commands);
+}
+
+async function createCoastlinesLayer({ bounds, name, resolution, source }) {
+    // TODO: Update source to be a path?
+    const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
+    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/coastlines.geojson`;
+    const commands = [
+        inputFilePath,
+        '-dissolve',
+        '-lines',
+        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
+        // Erase outer lines to avoid unpleasant lines through polygons crossing the antimeridian
+        ['antarctica', 'world'].includes(name) ? '-clip bbox=-179.999,-89.999,179.999,89.999' : '',
+        `-o ${outputFilePath}`
+    ].join(' ');
+    await mapshaper.runCommands(commands);
+    if (['antarctica', 'world'].includes(name)) snapToAntimeridian(outputFilePath)
+}
+
+async function createOceanLayer({ bounds, name, resolution, source }) {
+    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/ocean.geojson`;
+    const eraseFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
+    const commands = [
+        '-rectangle bbox=-180,-90,180,90',
+        bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
+        `-erase ${eraseFilePath}`,
+        `-o ${outputFilePath}`
+    ].join(' ');
+    await mapshaper.runCommands(commands);
+}
+
+async function createRiversLayer({ name, resolution, source }) {
+    const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
+    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/rivers.geojson`;
+    const commands = [
+        inputFilePath,
+        `-clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson`, // Clip to the continent
+        `-o ${outputFilePath}`
+    ].join(' ');
+    await mapshaper.runCommands(commands);
+}
+
+async function createLakesLayer({ name, resolution, source }) {
+    const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
+    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/lakes.geojson`;
+    const commands = [
+        inputFilePath,
+        `-clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson`, // Clip to the continent
+        `-o ${outputFilePath}`
+    ].join(' ');
+    await mapshaper.runCommands(commands);
+}
+
+async function createSubunitsLayer({ name, resolution, source }) {
+    const filter = ['AUS', 'BRA', 'CAN', 'USA'].map((id) => `adm0_a3 === "${id}"`).join(' || ');
+    const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
+    const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/subunits.geojson`;
+    const commands = [
+        inputFilePath,
+        `-filter "${filter}"`,
+        `-clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson`, // Clip to the continent
+        `-o ${outputFilePath}`
+    ].join(' ');
+    await mapshaper.runCommands(commands);
+    addCentroidsToGeojson(outputFilePath);
+}
+
 async function convertLayersToTopojson({ name, resolution }) {
     const regionDir = path.join(outputDirGeojson, `${name}_${resolution}m`);
     if (!fs.existsSync(regionDir)) return;
 
     const outputFile = `${outputDirTopojson}/${name}_${resolution}m.json`;
+    // Scopes with polygons that cross the antimeridian need to be stitched (via the topology call)
     if (["antarctica", "world"].includes(name)) {
-    // if (false) {
-        const files = fs.readdirSync(regionDir)
         const geojsonObjects = {}
-        for (const file of files) {
-            const filePath = path.join(regionDir, file)
-            const layer = file.split(".")[0]
-            let stitchedGeojson = geoStitch(getJsonFile(filePath))
-            // stitchedGeojson = rewind(stitchedGeojson, true)
-            // fs.writeFileSync(filePath, JSON.stringify(stitchedGeojson));
-            geojsonObjects[layer] = stitchedGeojson
-            // geojsonObjects[layer] = getJsonFile(filePath)
+        for (const layer of Object.keys(config.layers)) {
+            const filePath = path.join(regionDir, `${layer}.geojson`)
+            geojsonObjects[layer] = rewindGeojson(getJsonFile(filePath))
         }
-        const topojsonTopology = topology(geojsonObjects)
-        // const topojsonTopology = topojsonLib.topology(geojsonObjects, {
-        //   verbose: true,
-        //   'property-transform': f => f.properties
-        // })
+        const topojsonTopology = topojsonLib.topology(geojsonObjects, { 'property-transform': f => f.properties })
         fs.writeFileSync(outputFile, JSON.stringify(topojsonTopology));
     } else {
         // Layer names default to file names
@@ -231,28 +236,17 @@ async function convertLayersToTopojson({ name, resolution }) {
     }
 
     // Remove extra information from features
-    // const topojson = getJsonFile(outputFile);
-    // const prunedTopojson = pruneProperties(topojson);
-    // fs.writeFileSync(outputFile, JSON.stringify(prunedTopojson));
+    const topojson = getJsonFile(outputFile);
+    const prunedTopojson = pruneProperties(topojson);
+    fs.writeFileSync(outputFile, JSON.stringify(prunedTopojson));
 }
 
 // Get polygon features from UN GeoJSON and patch Antarctica gap
 const inputFilePathUNGeojson = `${inputDir}/${unFilename}.geojson`;
 const inputFilePathUNGeojsonCleaned = `${inputDir}/${unFilename}_cleaned.geojson`;
-// TODO: Update all x-coords close to 180 to be exactly 180
-function snapToAntimeridian(inputFilepath, outputFilepath) {
-    const jsonString = fs.readFileSync(inputFilepath, 'utf8')
-    const updatedString = jsonString
-        .replaceAll(/179\.99\d+,/g, '180,')
-        .replaceAll(/180\.00\d+,/g, '180,')
-
-    fs.writeFileSync(outputFilepath, updatedString);
-}
 snapToAntimeridian(inputFilePathUNGeojson, inputFilePathUNGeojsonCleaned)
 const commandsAllFeaturesCommon = [
-    // TODO: Should I use the cleaned data or leave as is?
     inputFilePathUNGeojsonCleaned,
-    // inputFilePathUNGeojson,
     `-filter 'iso3cd === "ATA"' target=1 + name=antarctica`,
     // Use 'snap-interval' to patch gap in Antarctica
     '-clean snap-interval=0.015 target=antarctica',
@@ -269,7 +263,8 @@ const commandsAllFeaturesCommon = [
     '-erase source=caspian_sea target=all_features',
     // Update country codes for disputed territories at Egypt/Sudan border: https://en.wikipedia.org/wiki/Egypt%E2%80%93Sudan_border
     `-each 'if (globalid === "{CA12D116-7A19-41D1-9622-17C12CCC720D}") iso3cd = "XHT"'`, // Halaib Triangle
-    `-each 'if (globalid === "{9FD54A50-0BFB-4385-B342-1C3BDEE5ED9B}") iso3cd = "XBT"'` // Bir Tawil
+    `-each 'if (globalid === "{9FD54A50-0BFB-4385-B342-1C3BDEE5ED9B}") iso3cd = "XBT"'`, // Bir Tawil
+    `-each 'FID = iso3cd'`
 ]
 
 // Process 50m UN geodata
@@ -305,13 +300,11 @@ await mapshaper.runCommands(commandsLand50m);
 const inputFilePath110m = outputFilePath50m;
 const outputFilePath110m = `${outputDirGeojson}/${unFilename}_110m/all_features.geojson`;
 const commandsAllFeatures110m = [
-    // ...commandsAllFeaturesCommon,
     inputFilePath110m,
-    '-simplify 10% rdp',
+    '-simplify 20%',
     `-o target=1 ${outputFilePath110m}`
 ].join(" ")
 await mapshaper.runCommands(commandsAllFeatures110m);
-console.log(commandsAllFeatures110m)
 
 // Get countries from all polygon features
 const inputFilePathCountries110m = outputFilePath110m;
