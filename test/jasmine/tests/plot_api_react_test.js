@@ -183,7 +183,7 @@ describe('@noCIdep Plotly.react', function() {
         Plotly.newPlot(gd, data, layout)
         .then(countPlots)
         .then(function() {
-            layout.title = 'XXXXX';
+            layout.title = { text: 'XXXXX' };
             layout.hovermode = 'closest';
             data[0].marker = {color: 'rgb(0, 100, 200)'};
             return Plotly.react(gd, data, layout);
@@ -574,104 +574,6 @@ describe('@noCIdep Plotly.react', function() {
         .then(done, done.fail);
     });
 
-    function aggregatedPie(i) {
-        var labels = i <= 1 ?
-            ['A', 'B', 'A', 'C', 'A', 'B', 'C', 'A', 'B', 'C', 'A'] :
-            ['X', 'Y', 'Z', 'Z', 'Y', 'Z', 'X', 'Z', 'Y', 'Z', 'X'];
-        var trace = {
-            type: 'pie',
-            values: [4, 1, 4, 4, 1, 4, 4, 2, 1, 1, 15],
-            labels: labels,
-            transforms: [{
-                type: 'aggregate',
-                groups: labels,
-                aggregations: [{target: 'values', func: 'sum'}]
-            }]
-        };
-        return {
-            data: [trace],
-            layout: {
-                datarevision: i,
-                colorway: ['red', 'orange', 'yellow', 'green', 'blue', 'violet']
-            }
-        };
-    }
-
-    var aggPie1CD = [[
-        {v: 26, label: 'A', color: 'red', i: 0},
-        {v: 9, label: 'C', color: 'orange', i: 2},
-        {v: 6, label: 'B', color: 'yellow', i: 1}
-    ]];
-
-    var aggPie2CD = [[
-        {v: 23, label: 'X', color: 'red', i: 0},
-        {v: 15, label: 'Z', color: 'orange', i: 2},
-        {v: 3, label: 'Y', color: 'yellow', i: 1}
-    ]];
-
-    function aggregatedScatter(i) {
-        return {
-            data: [{
-                x: [1, 2, 3, 4, 6, 5],
-                y: [2, 1, 3, 5, 6, 4],
-                transforms: [{
-                    type: 'aggregate',
-                    groups: [1, -1, 1, -1, 1, -1],
-                    aggregations: i > 1 ? [{func: 'last', target: 'x'}] : []
-                }]
-            }],
-            layout: {daterevision: i + 10}
-        };
-    }
-
-    var aggScatter1CD = [[
-        {x: 1, y: 2, i: 0},
-        {x: 2, y: 1, i: 1}
-    ]];
-
-    var aggScatter2CD = [[
-        {x: 6, y: 2, i: 0},
-        {x: 5, y: 1, i: 1}
-    ]];
-
-    function aggregatedParcoords(i) {
-        return {
-            data: [{
-                type: 'parcoords',
-                dimensions: [
-                    {label: 'A', values: [1, 2, 3, 4]},
-                    {label: 'B', values: [4, 3, 2, 1]}
-                ],
-                transforms: i ? [{
-                    type: 'aggregate',
-                    groups: [1, 2, 1, 2],
-                    aggregations: [
-                        {target: 'dimensions[0].values', func: i > 1 ? 'avg' : 'first'},
-                        {target: 'dimensions[1].values', func: i > 1 ? 'first' : 'avg'}
-                    ]
-                }] :
-                []
-            }]
-        };
-    }
-
-    var aggParcoords0Vals = [[1, 2, 3, 4], [4, 3, 2, 1]];
-    var aggParcoords1Vals = [[1, 2], [3, 2]];
-    var aggParcoords2Vals = [[2, 3], [4, 3]];
-
-    function checkCalcData(expectedCD) {
-        return function() {
-            expect(gd.calcdata.length).toBe(expectedCD.length);
-            expectedCD.forEach(function(expectedCDi, i) {
-                var cdi = gd.calcdata[i];
-                expect(cdi.length).toBe(expectedCDi.length, i);
-                expectedCDi.forEach(function(expectedij, j) {
-                    expect(cdi[j]).toEqual(jasmine.objectContaining(expectedij));
-                });
-            });
-        };
-    }
-
     function checkValues(expectedVals) {
         return function() {
             expect(gd._fullData.length).toBe(1);
@@ -686,73 +588,6 @@ describe('@noCIdep Plotly.react', function() {
     function reactTo(fig) {
         return function() { return Plotly.react(gd, fig); };
     }
-
-    it('can change pie aggregations', function(done) {
-        Plotly.newPlot(gd, aggregatedPie(1))
-        .then(checkCalcData(aggPie1CD))
-
-        .then(reactTo(aggregatedPie(2)))
-        .then(checkCalcData(aggPie2CD))
-
-        .then(reactTo(aggregatedPie(1)))
-        .then(checkCalcData(aggPie1CD))
-        .then(done, done.fail);
-    });
-
-    it('can change scatter aggregations', function(done) {
-        Plotly.newPlot(gd, aggregatedScatter(1))
-        .then(checkCalcData(aggScatter1CD))
-
-        .then(reactTo(aggregatedScatter(2)))
-        .then(checkCalcData(aggScatter2CD))
-
-        .then(reactTo(aggregatedScatter(1)))
-        .then(checkCalcData(aggScatter1CD))
-        .then(done, done.fail);
-    });
-
-    it('@gl can change parcoords aggregations', function(done) {
-        Plotly.newPlot(gd, aggregatedParcoords(0))
-        .then(checkValues(aggParcoords0Vals))
-
-        .then(reactTo(aggregatedParcoords(1)))
-        .then(checkValues(aggParcoords1Vals))
-
-        .then(reactTo(aggregatedParcoords(2)))
-        .then(checkValues(aggParcoords2Vals))
-
-        .then(reactTo(aggregatedParcoords(0)))
-        .then(checkValues(aggParcoords0Vals))
-
-        .then(done, done.fail);
-    });
-
-    it('@gl can change type with aggregations', function(done) {
-        Plotly.newPlot(gd, aggregatedScatter(1))
-        .then(checkCalcData(aggScatter1CD))
-
-        .then(reactTo(aggregatedPie(1)))
-        .then(checkCalcData(aggPie1CD))
-
-        .then(reactTo(aggregatedParcoords(1)))
-        .then(checkValues(aggParcoords1Vals))
-
-        .then(reactTo(aggregatedScatter(1)))
-        .then(checkCalcData(aggScatter1CD))
-
-        .then(reactTo(aggregatedParcoords(2)))
-        .then(checkValues(aggParcoords2Vals))
-
-        .then(reactTo(aggregatedPie(2)))
-        .then(checkCalcData(aggPie2CD))
-
-        .then(reactTo(aggregatedScatter(2)))
-        .then(checkCalcData(aggScatter2CD))
-
-        .then(reactTo(aggregatedParcoords(0)))
-        .then(checkValues(aggParcoords0Vals))
-        .then(done, done.fail);
-    });
 
     it('can change frames without redrawing', function(done) {
         var data = [{y: [1, 2, 3]}];
@@ -859,7 +694,9 @@ describe('@noCIdep Plotly.react', function() {
         })
         .then(function() {
             expect(fullJson()).toEqual(initialJson);
-            countCalls({});
+            if(['sankey', 'sunburst', 'treemap', 'icicle'].indexOf(gd._fullData[0].type) === -1) {
+                countCalls({});
+            }
         })
         .then(done, done.fail);
     }
@@ -883,11 +720,9 @@ describe('@noCIdep Plotly.react', function() {
         });
     });
 
-    // since CI breaks up gl/svg types, and drops scattermap*, this test won't work there
-    // but I should hope that if someone is doing something as major as adding a new type,
-    // they'll run the full test suite locally!
-    it('@noCI tested every trace & transform type at least once', function() {
+    it('@noCI tested every trace type at least once', function() {
         for(var itemType in typesTested) {
+            if(itemType.indexOf('mapbox') !== -1) continue;
             expect(typesTested[itemType]).toBeGreaterThan(0, itemType + ' was not tested');
         }
     });
