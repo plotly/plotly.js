@@ -1,4 +1,4 @@
-exports.downloadCSV = function(allTests) {
+exports.downloadCSV = function(allTests, filename) {
     var str = [
         'number of traces',
         'chart type',
@@ -28,7 +28,7 @@ exports.downloadCSV = function(allTests) {
     var myBlob = new Blob([str], {type: 'text/plain'})
     var url = window.URL.createObjectURL(myBlob);
     a.href = url;
-    a.download = 'results.csv';
+    a.download = (filename || 'results') + '.csv';
     a.style.display = 'none';
     document.body.append(a);
     a.click();

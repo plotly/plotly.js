@@ -198,8 +198,10 @@ function makeScatterGeo(spec) {
 describe('Performance test various traces', function() {
     'use strict';
 
+    var filename;
+
     afterAll(function(done) {
-        downloadCSV(tests);
+        downloadCSV(tests, filename);
         // delay for the download to be completed
         delay(1000)().then(done)
     });
@@ -209,11 +211,28 @@ describe('Performance test various traces', function() {
 
         var testCase = __karma__.config.testCase;
 
+        filename = '';
+
         if(testCase) {
-            if(testCase.tracesType && testCase.tracesType !== spec.traceType) testIt = false;
-            if(testCase.tracesCount && testCase.tracesCount !== spec.nTraces) testIt = false;
-            if(testCase.tracesPoints && testCase.tracesPoints !== spec.n) testIt = false;
-            if((testCase.tracesMode !== 'undefined' && testCase.tracesMode) && testCase.tracesMode !== spec.mode) testIt = false;
+            if(testCase.tracesType) {
+                filename += testCase.tracesType;
+                if(testCase.tracesType !== spec.traceType) testIt = false;
+            }
+
+            if(testCase.tracesMode && testCase.tracesMode !== 'undefined') {
+                filename += '_' + testCase.tracesMode;
+                if(testCase.tracesMode !== spec.mode) testIt = false;
+            }
+
+            if(testCase.tracesPoints) {
+                filename += '_' + testCase.tracesPoints;
+                if(testCase.tracesPoints !== spec.n) testIt = false;
+            }
+
+            if(testCase.tracesCount) {
+                filename += '_' + testCase.tracesCount;
+                if(testCase.tracesCount !== spec.nTraces) testIt = false;
+            }
         }
 
         if(testIt) {
