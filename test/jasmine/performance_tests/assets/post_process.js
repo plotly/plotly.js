@@ -28,7 +28,7 @@ exports.downloadCSV = function(allTests) {
     var myBlob = new Blob([str], {type: 'text/plain'})
     var url = window.URL.createObjectURL(myBlob);
     a.href = url;
-    a.download = 'all.csv';
+    a.download = 'results.csv';
     a.style.display = 'none';
     document.body.append(a);
     a.click();

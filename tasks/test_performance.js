@@ -13,27 +13,33 @@ var pathToJasminePerformanceTests = constants.pathToJasminePerformanceTests;
  *
  * $ npm run test-jasmine -- --performanceTest=<name-of-suite>
  */
+
+var testCases = require('../test/jasmine/performance_tests/assets/test_cases').testCases;
+
 glob(pathToJasminePerformanceTests + '/*.js').then(function(files) {
-    var tasks = files.map(function(file) {
-        return function(cb) {
-            var cmd = [
-                'karma', 'start',
-                path.join(constants.pathToRoot, 'test', 'jasmine', 'karma.conf.js'),
-                '--performanceTest=' + path.basename(file),
-                '--nowatch',
-                '--tracesType=scattergl',
-                '--tracesMode=markers',
-                '--tracesCount=1',
-                '--tracesPoints=1000',
-            ].join(' ');
+    var tasks = [];
+    for(let file of files) {
+        for(let testCase of testCases) {
+            tasks.push(function(cb) {
+                var cmd = [
+                    'karma', 'start',
+                    path.join(constants.pathToRoot, 'test', 'jasmine', 'karma.conf.js'),
+                    '--performanceTest=' + path.basename(file),
+                    '--nowatch',
+                    '--tracesType=' + testCase.traceType,
+                    '--tracesMode=' + testCase.mode,
+                    '--tracesCount=' + testCase.nTraces,
+                    '--tracesPoints=' + testCase.n,
+                ].join(' ');
 
-            console.log('Running: ' + cmd);
+                console.log('Running: ' + cmd);
 
-            exec(cmd, function(err) {
-                cb(null, err);
-            }).stdout.pipe(process.stdout);
-        };
-    });
+                exec(cmd, function(err) {
+                    cb(null, err);
+                }).stdout.pipe(process.stdout);
+            });
+        }
+    }
 
     runSeries(tasks, function(err, results) {
         if(err) throw err;
