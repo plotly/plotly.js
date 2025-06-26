@@ -4,6 +4,7 @@ var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/index');
 var downloadCSV = require('./assets/post_process').downloadCSV;
 var nSamples = require('./assets/constants').nSamples;
+var MAX_RENDERING_TIME = 4000; 
 
 var gd = createGraphDiv();
 
@@ -277,30 +278,47 @@ describe('Performance test various traces', function() {
     tests.forEach(function(spec, index) {
         samples.forEach(function(t) {
             it('turn: ' + t, function(done) {
-                var startTime, endTime;
+                if(t === 0) {
+                    tests[index].raw = [];
+                }
 
-                requestAnimationFrame(function() {
+                var timerID;
+                var requestID1, requestID2;
+
+                var startTime, endTime;                
+
+                requestID1 = requestAnimationFrame(function() {
                     // Wait for actual rendering instead of promise
-                    requestAnimationFrame(function() {
+                    requestID2 = requestAnimationFrame(function() {
                         endTime = performance.now();
 
                         var delta = endTime - startTime;
 
-                        if(t === 0) {
-                            tests[index].raw = [];
+                        if(tests[index].raw[t] === undefined) {
+                            tests[index].raw[t] = delta;
                         }
-                        tests[index].raw[t] = delta;
 
                         if(spec.selector) {
                             var nodes = d3SelectAll(spec.selector);
                             expect(nodes.size()).toEqual(spec.nTraces);
                         }
 
+                        clearTimeout(timerID);
+
                         done();
                     });
                 });
 
                 var mock = generateMock(spec);
+
+                timerID = setTimeout(() => {
+                    tests[index].raw[t] = 'none';
+
+                    cancelAnimationFrame(requestID2);
+                    cancelAnimationFrame(requestID1);
+
+                    done.fail('Takes too much time');
+                }, MAX_RENDERING_TIME);
 
                 startTime = performance.now();
 
