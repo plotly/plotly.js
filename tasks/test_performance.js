@@ -20,7 +20,11 @@ glob(pathToJasminePerformanceTests + '/*.js').then(function(files) {
                 'karma', 'start',
                 path.join(constants.pathToRoot, 'test', 'jasmine', 'karma.conf.js'),
                 '--performanceTest=' + path.basename(file),
-                '--nowatch'
+                '--nowatch',
+                '--tracesType=scattergl',
+                '--tracesMode=markers',
+                '--tracesCount=1',
+                '--tracesPoints=1000',
             ].join(' ');
 
             console.log('Running: ' + cmd);

@@ -276,59 +276,72 @@ describe('Performance test various traces', function() {
     });
 
     tests.forEach(function(spec, index) {
-        samples.forEach(function(t) {
-            it(
-                spec.nTraces + ' ' + spec.traceType +
-                (spec.mode ? ' | mode: ' + spec.mode : '') +
-                ' | size:' + spec.n + ' | turn: ' + t, function(done) {
-                if(t === 0) {
-                    tests[index].raw = [];
-                }
+        var testIt = true;
 
-                var timerID;
-                var requestID1, requestID2;
+        var testCase = __karma__.config.testCase;
 
-                var startTime, endTime;
+        if(testCase) {
+            if(testCase.tracesType && testCase.tracesType !== spec.traceType) testIt = false;
+            if(testCase.tracesCount && testCase.tracesCount !== spec.nTraces) testIt = false;
+            if(testCase.tracesMode && testCase.tracesMode !== spec.mode) testIt = false;
+            if(testCase.tracesPoints && testCase.tracesPoints !== spec.n) testIt = false;
+        }
 
-                requestID1 = requestAnimationFrame(function() {
-                    // Wait for actual rendering instead of promise
-                    requestID2 = requestAnimationFrame(function() {
+        if(testIt) {
+            samples.forEach(function(t) {
+                it(
+                    spec.nTraces + ' ' + spec.traceType +
+                    (spec.mode ? ' | mode: ' + spec.mode : '') +
+                    ' | size:' + spec.n + ' | turn: ' + t, function(done) {
+                    if(t === 0) {
+                        tests[index].raw = [];
+                    }
+
+                    var timerID;
+                    var requestID1, requestID2;
+
+                    var startTime, endTime;
+
+                    requestID1 = requestAnimationFrame(function() {
+                        // Wait for actual rendering instead of promise
+                        requestID2 = requestAnimationFrame(function() {
+                            endTime = performance.now();
+
+                            var delta = endTime - startTime;
+
+                            if(tests[index].raw[t] === undefined) {
+                                tests[index].raw[t] = delta;
+                            }
+
+                            if(spec.selector) {
+                                var nodes = d3SelectAll(spec.selector);
+                                expect(nodes.size()).toEqual(spec.nTraces);
+                            }
+
+                            clearTimeout(timerID);
+
+                            done();
+                        });
+                    });
+
+                    var mock = generateMock(spec);
+
+                    timerID = setTimeout(() => {
                         endTime = performance.now();
 
-                        var delta = endTime - startTime;
+                        tests[index].raw[t] = 'none';
 
-                        if(tests[index].raw[t] === undefined) {
-                            tests[index].raw[t] = delta;
-                        }
+                        cancelAnimationFrame(requestID2);
+                        cancelAnimationFrame(requestID1);
 
-                        if(spec.selector) {
-                            var nodes = d3SelectAll(spec.selector);
-                            expect(nodes.size()).toEqual(spec.nTraces);
-                        }
+                        done.fail('Takes too much time: ' + (endTime - startTime));
+                    }, MAX_RENDERING_TIME);
 
-                        clearTimeout(timerID);
+                    startTime = performance.now();
 
-                        done();
-                    });
+                    Plotly.newPlot(gd, mock);
                 });
-
-                var mock = generateMock(spec);
-
-                timerID = setTimeout(() => {
-                    endTime = performance.now();
-
-                    tests[index].raw[t] = 'none';
-
-                    cancelAnimationFrame(requestID2);
-                    cancelAnimationFrame(requestID1);
-
-                    done.fail('Takes too much time: ' + (endTime - startTime));
-                }, MAX_RENDERING_TIME);
-
-                startTime = performance.now();
-
-                Plotly.newPlot(gd, mock);
             });
-        });
+        }
     });
 });

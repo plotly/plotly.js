@@ -156,7 +156,7 @@ var hasSpecReporter = reporters.indexOf('spec') !== -1;
 if(!hasSpecReporter && argv.showSkipped) reporters.push('spec');
 if(argv.verbose) reporters.push('verbose');
 
-function func(config) {
+var func = function(config) {
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     //
@@ -172,8 +172,18 @@ function func(config) {
         level: 'debug'
     };
 
+    if(isPerformanceTest) {
+        func.defaultConfig.client = func.defaultConfig.client || {};
+        func.defaultConfig.client.testCase = {
+            tracesType: config.tracesType,
+            tracesMode: config.tracesMode,
+            tracesCount: config.tracesCount,
+            tracesPoints: config.tracesPoints,
+        };
+    }
+
     config.set(func.defaultConfig);
-}
+};
 
 func.defaultConfig = {
 
