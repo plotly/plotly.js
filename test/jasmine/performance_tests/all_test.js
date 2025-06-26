@@ -4,7 +4,7 @@ var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/index');
 var downloadCSV = require('./assets/post_process').downloadCSV;
 var nSamples = require('./assets/constants').nSamples;
-var MAX_RENDERING_TIME = 4000; 
+var MAX_RENDERING_TIME = 4000;
 
 var gd = createGraphDiv();
 
@@ -275,9 +275,17 @@ describe('Performance test various traces', function() {
         delay(1000)().then(done)
     });
 
+    afterEach(function(done) {
+        // delay to avoid unexpected crash on CircleCI
+        delay(100)().then(done)
+    });
+
     tests.forEach(function(spec, index) {
         samples.forEach(function(t) {
-            it('turn: ' + t, function(done) {
+            it(
+                spec.nTraces + ' ' + spec.traceType +
+                (spec.mode ? ' | mode: ' + spec.mode : '') +
+                ' | size:' + spec.n + ' | turn: ' + t, function(done) {
                 if(t === 0) {
                     tests[index].raw = [];
                 }
@@ -285,7 +293,7 @@ describe('Performance test various traces', function() {
                 var timerID;
                 var requestID1, requestID2;
 
-                var startTime, endTime;                
+                var startTime, endTime;
 
                 requestID1 = requestAnimationFrame(function() {
                     // Wait for actual rendering instead of promise
@@ -312,12 +320,14 @@ describe('Performance test various traces', function() {
                 var mock = generateMock(spec);
 
                 timerID = setTimeout(() => {
+                    endTime = performance.now();
+
                     tests[index].raw[t] = 'none';
 
                     cancelAnimationFrame(requestID2);
                     cancelAnimationFrame(requestID1);
 
-                    done.fail('Takes too much time');
+                    done.fail('Takes too much time: ' + (endTime - startTime));
                 }, MAX_RENDERING_TIME);
 
                 startTime = performance.now();
