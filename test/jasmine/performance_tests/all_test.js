@@ -275,11 +275,6 @@ describe('Performance test various traces', function() {
         delay(1000)().then(done)
     });
 
-    afterEach(function(done) {
-        // delay to avoid unexpected crash on CircleCI
-        delay(100)().then(done)
-    });
-
     tests.forEach(function(spec, index) {
         samples.forEach(function(t) {
             it(
