@@ -239,7 +239,7 @@ describe('Performance test various traces', function() {
             samples.forEach(function(t) {
                 it(
                     'All points:' + spec.n + ' | ' +
-                    spec.nTraces + 'X' + spec.traceType +
+                    spec.nTraces + ' X ' + spec.traceType +
                     (spec.mode ? ' | mode: ' + spec.mode : '') +
                     ' | turn: ' + t, function(done) {
                     if(t === 0) {

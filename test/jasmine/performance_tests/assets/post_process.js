@@ -1,7 +1,7 @@
 exports.downloadCSV = function(allTests, filename) {
     var str = [
         'number of traces',
-        'chart type',
+        'chart type & mode',
         'data points',
         'run id',
         'rendering time(ms)'
