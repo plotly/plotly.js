@@ -238,9 +238,10 @@ describe('Performance test various traces', function() {
         if(testIt) {
             samples.forEach(function(t) {
                 it(
-                    spec.nTraces + ' ' + spec.traceType +
+                    'All points:' + spec.n + ' | ' +
+                    spec.nTraces + 'X' + spec.traceType +
                     (spec.mode ? ' | mode: ' + spec.mode : '') +
-                    ' | size:' + spec.n + ' | turn: ' + t, function(done) {
+                    ' | turn: ' + t, function(done) {
                     if(t === 0) {
                         tests[index].raw = [];
                     }
@@ -250,9 +251,9 @@ describe('Performance test various traces', function() {
 
                     var startTime, endTime;
 
-                    requestID1 = requestAnimationFrame(function() {
+                    requestID1 = requestAnimationFrame(() => {
                         // Wait for actual rendering instead of promise
-                        requestID2 = requestAnimationFrame(function() {
+                        requestID2 = requestAnimationFrame(() => {
                             endTime = performance.now();
 
                             var delta = endTime - startTime;
