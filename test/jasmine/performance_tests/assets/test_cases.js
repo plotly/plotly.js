@@ -16,8 +16,8 @@ for(let traceType of ['image', 'heatmap', 'contour']) {
     }
 }
 
-var allN = [/*1000, 2000, 4000, 8000, 16000, */32000, 64000, 128000];
-var allNTraces = [1/*, 10, 100*/]
+var allN = [1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000];
+var allNTraces = [1, /*10, */100]
 
 for(let traceType of ['box', 'violin']) {
     for(let mode of ['no_points', 'all_points']) {
