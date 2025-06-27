@@ -101,7 +101,7 @@ glob(pathToJasminePerformanceTests + '/*.js').then(function(files) {
                 ].join(',') + '\n';
             });
 
-            var failedCSV = pathToRoot + '../../../Downloads/failed.csv';
+            var failedCSV = pathToRoot + '../Downloads/failed.csv';
             console.log('Saving:', failedCSV)
             console.log(str);
             fs.writeFileSync(failedCSV, str);
