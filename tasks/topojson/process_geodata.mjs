@@ -378,7 +378,7 @@ const commandsLand50m = [
 ].join(' ');
 await mapshaper.runCommands(commandsLand50m);
 
-// Process 50m UN geodata
+// Process 110m UN geodata
 
 // Get countries from all polygon features
 const inputFilePathCountries110m = outputFilePathCountries50m;
