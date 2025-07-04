@@ -1215,14 +1215,14 @@ function createHoverText(hoverData, opts) {
         var item0 = groupedHoverData[0];
 
         var unifiedhovertemplate = (
-            hovermode === 'y unified' ?
+            hovermode === 'x unified' ?
                 item0.xa :
                 item0.ya
             ).unifiedhovertemplate;
 
         var mainText = !unifiedhovertemplate ? t0 :
             Lib.hovertemplateString(unifiedhovertemplate, {}, fullLayout._d3locale,
-                hovermode === 'y unified' ?
+                hovermode === 'x unified' ?
                     {xa: item0.xa, x: item0.xVal} :
                     {ya: item0.ya, y: item0.yVal}
         );
