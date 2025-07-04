@@ -1,0 +1,33 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: No CI Test
+
+on: push
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: browser-actions/setup-chrome@v1
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: chrome --version
+    - run: ls
+    - run: npm run pretest
+    - run: npm ci
+    - run: npm run cibuild
+    - name: Run headless test
+      uses: coactions/setup-xvfb@v1
+      with:
+        run: ./tasks/noci_test.sh jasmine
