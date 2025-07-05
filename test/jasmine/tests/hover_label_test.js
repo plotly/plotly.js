@@ -6901,6 +6901,73 @@ describe('hovermode: (x|y)unified', function() {
             })
             .then(done, done.fail);
     });
+
+    it('should format title of unified hover in respect to `unifiedhovertemplate` linear axis', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'bar',
+            y: [1, 2, 3]
+        }, {
+            type: 'scatter',
+            y: [2, 3, 1]
+        }], {
+            xaxis: {
+                unifiedhovertemplate: 'X: %{x:.2f}',
+            },
+            hovermode: 'x unified',
+            showlegend: false,
+            width: 500,
+            height: 500,
+            margin: {
+                t: 50,
+                b: 50,
+                l: 50,
+                r: 50
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: 'X: 1.00', items: [
+                'trace 0 : 2',
+                'trace 1 : 3'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should format title of unified hover in respect to `unifiedhovertemplate` date axis', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'bar',
+            x: ['2000-01-01', '2000-02-01', '2000-03-01'],
+            y: [1, 2, 3]
+        }, {
+            type: 'scatter',
+            x: ['2000-01-01', '2000-02-01', '2000-03-01'],
+            y: [2, 3, 1]
+        }], {
+            xaxis: {
+                type: 'date',
+                unifiedhovertemplate: 'X: %{x|%x %X}',
+            },
+            hovermode: 'x unified',
+            showlegend: false,
+            width: 500,
+            height: 500,
+            margin: {
+                t: 50,
+                b: 50,
+                l: 50,
+                r: 50
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: 'X: 02/01/2000 00:00:00', items: [
+                'trace 0 : 2',
+                'trace 1 : 3'
+            ]});
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('hover on traces with (x|y)hoverformat', function() {
