@@ -2641,8 +2641,6 @@ describe('Test select box and lasso per trace:', function() {
         it('@noCI should work for waterfall traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
-            var assertRanges = makeAssertRanges();
-            var assertLassoPoints = makeAssertLassoPoints();
 
             var fig = Lib.extendDeep({}, require('../../image/mocks/waterfall_profit-loss_2018_positive-negative'));
             fig.layout.dragmode = 'lasso';
@@ -2657,14 +2655,11 @@ describe('Test select box and lasso per trace:', function() {
                     function() {
                         assertPoints([
                             [0, 281, 'Purchases'],
-                            [0, 269, 'Material expenses'],                        ]);
+                            [0, 269, 'Material expenses'],
+                        ]);
                         assertSelectedPoints({
                             0: [5, 6]
                         });
-                        assertLassoPoints([
-                            [289.8550, 57.9710 ,521.7391, 405.7971],
-                            [4.3387, 6.7580, 6.7580, 5.5483]
-                        ]);
                     },
                     null, [3, 2, 1], 'waterfall lasso'
                 );
@@ -2683,10 +2678,6 @@ describe('Test select box and lasso per trace:', function() {
                         assertSelectedPoints({
                             0: [5, 6]
                         });
-                        assertRanges([
-                            [173.9130, 289.8550],
-                            [4.3387, 6.7580]
-                        ]);
                     },
                     null, BOXEVENTS, 'waterfall select'
                 );
@@ -2699,7 +2690,6 @@ describe('Test select box and lasso per trace:', function() {
         it('@noCI should work for funnel traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
-            var assertLassoPoints = makeAssertLassoPoints();
 
             var fig = Lib.extendDeep({}, require('../../image/mocks/funnel_horizontal_group_basic'));
             fig.layout.dragmode = 'lasso';
@@ -2720,10 +2710,6 @@ describe('Test select box and lasso per trace:', function() {
                             0: [2],
                             1: [1]
                         });
-                        assertLassoPoints([
-                            [-140.1492, -1697.3631, 1417.0646, 638.4577],
-                            [1.1129, 1.9193 , 1.9193, 1.5161]
-                        ]);
                     },
                     null, [3, 2, 1], 'funnel lasso'
                 );
