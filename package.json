@@ -77,6 +77,7 @@
     "@turf/centroid": "^7.1.0",
     "base64-arraybuffer": "^1.0.2",
     "canvas-fit": "^1.5.0",
+    "chart2music": "^1.13.0",
     "color-alpha": "1.0.4",
     "color-normalize": "1.5.0",
     "color-parse": "2.0.0",
