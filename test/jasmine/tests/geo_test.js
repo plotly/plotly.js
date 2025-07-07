@@ -1799,7 +1799,7 @@ describe('Test event property of interactions on a geo plot:', function() {
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
             expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
             expect(pt.lat).toEqual(57.72, 'points[0].lat');
-            expect(pt.lon).toEqual(-101.68, 'points[0].lon');
+            expect(pt.lon).toEqual(-101.67, 'points[0].lon');
             expect(pt.location).toEqual('CAN', 'points[0].location');
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             expect(pt.text).toEqual(20, 'points[0].text');
@@ -1903,7 +1903,7 @@ describe('Test event property of interactions on a geo plot:', function() {
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
             expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
             expect(pt.lat).toEqual(57.72, 'points[0].lat');
-            expect(pt.lon).toEqual(-101.68, 'points[0].lon');
+            expect(pt.lon).toEqual(-101.67, 'points[0].lon');
             expect(pt.location).toEqual('CAN', 'points[0].location');
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             expect(pt.text).toEqual(20, 'points[0].text');
@@ -1944,7 +1944,7 @@ describe('Test event property of interactions on a geo plot:', function() {
                 expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
                 expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
                 expect(pt.lat).toEqual(57.72, 'points[0].lat');
-                expect(pt.lon).toEqual(-101.68, 'points[0].lon');
+                expect(pt.lon).toEqual(-101.67, 'points[0].lon');
                 expect(pt.location).toEqual('CAN', 'points[0].location');
                 expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
                 expect(pt.text).toEqual(20, 'points[0].text');
@@ -2761,11 +2761,11 @@ describe('Test geo interactions update marker angles:', function() {
         })
         .then(function() {
             newPath = getPath();
-            expect(newPath).toEqual('M0,0L18.22327727600463,8.240883770679762L19.586810955756498,-4.044358612123453Z');
+            expect(newPath).toEqual('M0,0L18.224184922503092,8.238876374264322L19.586365339190138,-4.046516131164082Z');
 
             expect(newPath).not.toEqual(initialPath);
-            expect(newPath).toEqual('M0,0L18.22327727600463,8.240883770679762L19.586810955756498,-4.044358612123453Z');
-            expect(initialPath).toEqual('M0,0L-1.5100144203478312,19.942914943667123L10.500523963798084,17.021721313830223Z');
+            expect(newPath).toEqual('M0,0L18.224184922503092,8.238876374264322L19.586365339190138,-4.046516131164082Z');
+            expect(initialPath).toEqual('M0,0L-1.5094067529528923,19.942960945008643L10.501042615957648,17.021401351764233Z');
         })
         .then(done, done.fail);
     });
