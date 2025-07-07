@@ -1211,10 +1211,26 @@ function createHoverText(hoverData, opts) {
         // mock legend
         var hoverlabel = fullLayout.hoverlabel;
         var font = hoverlabel.font;
+
+        var item0 = groupedHoverData[0];
+
+        var unifiedhovertemplate = (
+            hovermode === 'x unified' ?
+                item0.xa :
+                item0.ya
+            ).unifiedhovertemplate;
+
+        var mainText = !unifiedhovertemplate ? t0 :
+            Lib.hovertemplateString(unifiedhovertemplate, {}, fullLayout._d3locale,
+                hovermode === 'x unified' ?
+                    {xa: item0.xa, x: item0.xVal} :
+                    {ya: item0.ya, y: item0.yVal}
+        );
+
         var mockLayoutIn = {
             showlegend: true,
             legend: {
-                title: {text: t0, font: font},
+                title: {text: mainText, font: font},
                 font: font,
                 bgcolor: hoverlabel.bgcolor,
                 bordercolor: hoverlabel.bordercolor,
