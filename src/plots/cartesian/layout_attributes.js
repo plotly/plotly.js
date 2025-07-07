@@ -768,6 +768,17 @@ module.exports = {
             'and values (if desired) can include html-like tags or MathJax.'
         ].join(' ')
     },
+    loglabels: {
+        valType: 'enumerated',
+        values: ['small digits', 'full value'],
+        dflt: 'small digits',
+        editType: 'calc',
+        description: [
+            'Determines how minor log labels are displayed.',
+            'If *small digits*, small digits are displayed for minor ticks.',
+            'If *full value*, full values are displayed for minor ticks.',
+        ].join(' ')
+    },
     automargin: {
         valType: 'flaglist',
         flags: ['height', 'width', 'left', 'right', 'top', 'bottom'],

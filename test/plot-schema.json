@@ -5188,6 +5188,16 @@
       "min": 0,
       "valType": "number"
      },
+     "loglabels": {
+      "description": "Determines how minor log labels are displayed. If *small digits*, small digits are displayed for minor ticks. If *full value*, full values are displayed for minor ticks.",
+      "dflt": "small digits",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "small digits",
+       "full value"
+      ]
+     },
      "minexponent": {
       "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
       "dflt": 3,
@@ -5868,6 +5878,16 @@
       "editType": "plot",
       "min": 0,
       "valType": "number"
+     },
+     "loglabels": {
+      "description": "Determines how minor log labels are displayed. If *small digits*, small digits are displayed for minor ticks. If *full value*, full values are displayed for minor ticks.",
+      "dflt": "small digits",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "small digits",
+       "full value"
+      ]
      },
      "maxallowed": {
       "description": "Determines the maximum range of this axis.",
@@ -13766,6 +13786,16 @@
      "min": 0,
      "valType": "number"
     },
+    "loglabels": {
+     "description": "Determines how minor log labels are displayed. If *small digits*, small digits are displayed for minor ticks. If *full value*, full values are displayed for minor ticks.",
+     "dflt": "small digits",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "small digits",
+      "full value"
+     ]
+    },
     "matches": {
      "description": "If set to another axis id (e.g. `x2`, `y`), the range of this axis will match the range of the corresponding axis in data-coordinates space. Moreover, matching axes share auto-range values, category lists and histogram auto-bins. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden. Moreover, note that matching axes must have the same `type`.",
      "editType": "calc",
@@ -15326,6 +15356,16 @@
      "editType": "ticks+layoutstyle",
      "min": 0,
      "valType": "number"
+    },
+    "loglabels": {
+     "description": "Determines how minor log labels are displayed. If *small digits*, small digits are displayed for minor ticks. If *full value*, full values are displayed for minor ticks.",
+     "dflt": "small digits",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "small digits",
+      "full value"
+     ]
     },
     "matches": {
      "description": "If set to another axis id (e.g. `x2`, `y`), the range of this axis will match the range of the corresponding axis in data-coordinates space. Moreover, matching axes share auto-range values, category lists and histogram auto-bins. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden. Moreover, note that matching axes must have the same `type`.",
