@@ -156,6 +156,10 @@ var hasSpecReporter = reporters.indexOf('spec') !== -1;
 if(!hasSpecReporter && argv.showSkipped) reporters.push('spec');
 if(argv.verbose) reporters.push('verbose');
 
+if(process.argv.indexOf('--tags=noCI,noCIdep') !== -1) {
+    reporters = ['dots'];
+}
+
 var func = function(config) {
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
