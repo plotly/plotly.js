@@ -13,11 +13,9 @@ topojsonUtils.getTopojsonName = function(geoLayout) {
 };
 
 topojsonUtils.getTopojsonPath = function(topojsonURL, topojsonName) {
-    if (topojsonURL.endsWith('/')) {
-        return topojsonURL + topojsonName + '.json';
-    } else {
-        return topojsonURL + '/' + topojsonName + '.json';
-    }
+    topojsonURL += topojsonURL.endsWith('/') ? '' : '/';
+    
+    return `${topojsonURL}${topojsonName}.json`;
 };
 
 topojsonUtils.getTopojsonFeatures = function(trace, topojson) {
