@@ -27,7 +27,6 @@ for (const vector of Object.values(vectors)) {
                 // Use the shell to handle decompressing
                 if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath, { recursive: true });
                 exec(`unzip -o ${archivePath} -d ${outputPath}`);
-
             } catch (error) {
                 console.error(`Error when downloading file '${archivePath}': ${error}`);
                 continue;
@@ -54,7 +53,6 @@ if (fs.existsSync(archivePath)) {
 
         // Use the shell to handle compression
         exec(`zip -j ${archivePath} ${geojsonFilePath}`);
-
     } catch (error) {
         console.error(`Error when downloading file '${geojsonFilePath}': ${error}`);
     }

@@ -1,10 +1,10 @@
-import rewind from '@mapbox/geojson-rewind'
+import rewind from '@mapbox/geojson-rewind';
 import { geoIdentity, geoPath } from 'd3-geo';
-import { geoStitch } from "d3-geo-projection"
+import { geoStitch } from 'd3-geo-projection';
 import fs from 'fs';
 import mapshaper from 'mapshaper';
 import path from 'path';
-import { topology } from 'topojson-server'
+import { topology } from 'topojson-server';
 import config, { getNEFilename } from './config.mjs';
 
 const { filters, inputDir, layers, resolutions, scopes, unFilename, vectors } = config;
@@ -46,15 +46,13 @@ function addCentroidsToGeojson(geojsonPath) {
 }
 
 // Wind the polygon rings in the correct direction to indicate what is solid and what is whole
-const rewindGeojson = (geojson, clockwise = true) => rewind(geojson, clockwise)
+const rewindGeojson = (geojson, clockwise = true) => rewind(geojson, clockwise);
 
 // Clamp x-coordinates to the antimeridian
 function clampToAntimeridian(inputFilepath, outputFilepath) {
-    outputFilepath ||= inputFilepath
-    const jsonString = fs.readFileSync(inputFilepath, 'utf8')
-    const updatedString = jsonString
-        .replaceAll(/179\.9999\d+,/g, '180,')
-        .replaceAll(/180\.0000\d+,/g, '180,')
+    outputFilepath ||= inputFilepath;
+    const jsonString = fs.readFileSync(inputFilepath, 'utf8');
+    const updatedString = jsonString.replaceAll(/179\.9999\d+,/g, '180,').replaceAll(/180\.0000\d+,/g, '180,');
 
     fs.writeFileSync(outputFilepath, updatedString);
 }
@@ -165,7 +163,7 @@ async function createCoastlinesLayer({ bounds, name, resolution, source }) {
         `-o ${outputFilePath}`
     ].join(' ');
     await mapshaper.runCommands(commands);
-    clampToAntimeridian(outputFilePath)
+    clampToAntimeridian(outputFilePath);
 }
 
 async function createOceanLayer({ bounds, name, resolution, source }) {
@@ -222,14 +220,14 @@ async function convertLayersToTopojson({ name, resolution }) {
 
     const outputFile = `${outputDirTopojson}/${name}_${resolution}m.json`;
     // Scopes with polygons that cross the antimeridian need to be stitched
-    if (["antarctica", "world"].includes(name)) {
-        const geojsonObjects = {}
+    if (['antarctica', 'world'].includes(name)) {
+        const geojsonObjects = {};
         for (const layer of Object.keys(config.layers)) {
-            const filePath = path.join(regionDir, `${layer}.geojson`)
-            geojsonObjects[layer] = geoStitch(rewindGeojson(getJsonFile(filePath)))
+            const filePath = path.join(regionDir, `${layer}.geojson`);
+            geojsonObjects[layer] = geoStitch(rewindGeojson(getJsonFile(filePath)));
         }
         // Convert geojson to topojson
-        const topojsonTopology = topology(geojsonObjects, 1000000)
+        const topojsonTopology = topology(geojsonObjects, 1000000);
         fs.writeFileSync(outputFile, JSON.stringify(topojsonTopology));
     } else {
         // In Mapshaper, layer names default to file names
@@ -251,13 +249,16 @@ const outputFilePathFiji50m = `${outputDirGeojson}/${unFilename}_50m/fiji.geojso
 const outputFilePathFijiAntimeridian50m = `${outputDirGeojson}/${unFilename}_50m/fiji_antimeridian.geojson`;
 const outputFilePathRussia50m = `${outputDirGeojson}/${unFilename}_50m/russia.geojson`;
 const outputFilePathRussiaAntimeridian50m = `${outputDirGeojson}/${unFilename}_50m/russia_antimeridian.geojson`;
-const copyFieldsList = "objectid,iso3cd,m49_cd,nam_en,lbl_en,georeg,geo_cd,sub_cd,int_cd,subreg,intreg,iso2cd,lbl_fr,name_fr,globalid,stscod,isoclr,ct,FID"
+const copyFieldsList =
+    'objectid,iso3cd,m49_cd,nam_en,lbl_en,georeg,geo_cd,sub_cd,int_cd,subreg,intreg,iso2cd,lbl_fr,name_fr,globalid,stscod,isoclr,ct,FID';
 // The following fix up code is necessary to isolate/join/cut the polygons that cross the antimeridian.
 // This is necessary for two reasons: the UN geojson is poor around the antimeridian and Mapshaper
 // doesn't handle antimeridian cutting.
 
 // Fix up Antarctica polygons
-await mapshaper.runCommands(`${inputFilePathUNGeojson} -filter 'iso3cd === "ATA"' target=1 -o ${outputFilePathAntarctica50m}`)
+await mapshaper.runCommands(
+    `${inputFilePathUNGeojson} -filter 'iso3cd === "ATA"' target=1 -o ${outputFilePathAntarctica50m}`
+);
 const commandsAntarctica = [
     outputFilePathAntarctica50m,
     // Use 'snap-interval' to patch gap in Antarctica
@@ -267,19 +268,21 @@ const commandsAntarctica = [
     '-merge-layers target=antarctica,antarctica_rectangle force',
     `-dissolve2 target=antarctica copy-fields=${copyFieldsList}`,
     `-o force target=antarctica ${outputFilePathAntarctica50m}`
-].join(" ")
-await mapshaper.runCommands(commandsAntarctica)
+].join(' ');
+await mapshaper.runCommands(commandsAntarctica);
 
 // Fix up Fiji polygons
-await mapshaper.runCommands(`${inputFilePathUNGeojson} -filter 'iso3cd === "FJI"' target=1 -o ${outputFilePathFiji50m}`)
+await mapshaper.runCommands(
+    `${inputFilePathUNGeojson} -filter 'iso3cd === "FJI"' target=1 -o ${outputFilePathFiji50m}`
+);
 const commandsIsolateFijiAntimeridian = [
     outputFilePathFiji50m,
     '-explode',
     `-each 'id = this.id'`,
     `-filter '[31, 36, 39, 40].includes(id)' target=fiji + name=fiji_antimeridian`,
     `-o target=fiji_antimeridian ${outputFilePathFijiAntimeridian50m}`
-].join(" ")
-await mapshaper.runCommands(commandsIsolateFijiAntimeridian)
+].join(' ');
+await mapshaper.runCommands(commandsIsolateFijiAntimeridian);
 
 const commandsFixFijiAntimeridian = [
     outputFilePathFijiAntimeridian50m,
@@ -293,8 +296,8 @@ const commandsFixFijiAntimeridian = [
     `-dissolve2 target=complete copy-fields=${copyFieldsList}`,
     '-proj wgs84',
     `-o force target=complete ${outputFilePathFijiAntimeridian50m}`
-].join(" ")
-await mapshaper.runCommands(commandsFixFijiAntimeridian)
+].join(' ');
+await mapshaper.runCommands(commandsFixFijiAntimeridian);
 
 const commandsFiji = [
     `-i combine-files ${outputFilePathFiji50m} ${outputFilePathFijiAntimeridian50m}`,
@@ -304,19 +307,21 @@ const commandsFiji = [
     '-merge-layers target=fiji,fiji_antimeridian force name=fiji',
     `-dissolve2 target=fiji copy-fields=${copyFieldsList}`,
     `-o force target=fiji ${outputFilePathFiji50m}`
-].join(" ")
-await mapshaper.runCommands(commandsFiji)
+].join(' ');
+await mapshaper.runCommands(commandsFiji);
 
 // Fix up Russia polygons
-await mapshaper.runCommands(`${inputFilePathUNGeojson} -filter 'iso3cd === "RUS"' target=1 -o ${outputFilePathRussia50m}`)
+await mapshaper.runCommands(
+    `${inputFilePathUNGeojson} -filter 'iso3cd === "RUS"' target=1 -o ${outputFilePathRussia50m}`
+);
 const commandsIsolateRussiaAntimeridian = [
     outputFilePathRussia50m,
     '-explode',
     `-each 'id = this.id'`,
     `-filter '[13, 15].includes(id)' target=russia + name=russia_antimeridian`,
     `-o target=russia_antimeridian ${outputFilePathRussiaAntimeridian50m}`
-].join(" ")
-await mapshaper.runCommands(commandsIsolateRussiaAntimeridian)
+].join(' ');
+await mapshaper.runCommands(commandsIsolateRussiaAntimeridian);
 
 const commandsFixRussiaAntimeridian = [
     outputFilePathRussiaAntimeridian50m,
@@ -330,8 +335,8 @@ const commandsFixRussiaAntimeridian = [
     `-dissolve2 target=complete copy-fields=${copyFieldsList}`,
     '-proj wgs84',
     `-o force target=complete ${outputFilePathRussiaAntimeridian50m}`
-].join(" ")
-await mapshaper.runCommands(commandsFixRussiaAntimeridian)
+].join(' ');
+await mapshaper.runCommands(commandsFixRussiaAntimeridian);
 
 const commandsRussia = [
     `-i combine-files ${outputFilePathRussia50m} ${outputFilePathRussiaAntimeridian50m}`,
@@ -341,8 +346,8 @@ const commandsRussia = [
     '-merge-layers target=russia,russia_antimeridian force name=russia',
     `-dissolve2 target=russia copy-fields=${copyFieldsList}`,
     `-o force target=russia ${outputFilePathRussia50m}`
-].join(" ")
-await mapshaper.runCommands(commandsRussia)
+].join(' ');
+await mapshaper.runCommands(commandsRussia);
 
 // Process 50m UN geodata
 
@@ -366,16 +371,12 @@ const commandsCountries50m = [
     `-o ${outputFilePathCountries50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsCountries50m);
-clampToAntimeridian(outputFilePathCountries50m)
+clampToAntimeridian(outputFilePathCountries50m);
 
 // Get land from all polygon features
 const inputFilePathLand50m = outputFilePathCountries50m;
 const outputFilePathLand50m = `${outputDirGeojson}/${unFilename}_50m/land.geojson`;
-const commandsLand50m = [
-    inputFilePathLand50m,
-    '-dissolve2',
-    `-o ${outputFilePathLand50m}`
-].join(' ');
+const commandsLand50m = [inputFilePathLand50m, '-dissolve2', `-o ${outputFilePathLand50m}`].join(' ');
 await mapshaper.runCommands(commandsLand50m);
 
 // Process 110m UN geodata
@@ -395,11 +396,7 @@ await mapshaper.runCommands(commandsCountries110m);
 // Get land from all polygon features
 const inputFilePathLand110m = outputFilePathCountries110m;
 const outputFilePathLand110m = `${outputDirGeojson}/${unFilename}_110m/land.geojson`;
-const commandsLand110m = [
-    inputFilePathLand110m,
-    '-dissolve2',
-    `-o ${outputFilePathLand110m}`
-].join(' ');
+const commandsLand110m = [inputFilePathLand110m, '-dissolve2', `-o ${outputFilePathLand110m}`].join(' ');
 await mapshaper.runCommands(commandsLand110m);
 
 for (const resolution of resolutions) {
