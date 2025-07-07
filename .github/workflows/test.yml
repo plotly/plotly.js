@@ -27,7 +27,7 @@ jobs:
     - run: npm run pretest
     - run: npm ci
     - run: npm run cibuild
-    - name: Run headless test
+    - name: Run noCI tests
       uses: coactions/setup-xvfb@v1
       with:
         run: ./tasks/noci_test.sh jasmine
