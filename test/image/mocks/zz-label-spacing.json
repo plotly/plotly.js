@@ -1,0 +1,44 @@
+{
+  "data": [
+    {
+      "x": ["A", "B", "C"],
+      "y": [0, 40, 80],
+      "type": "scatter"
+    },
+    {
+      "x": ["A", "B", "C"],
+      "y": [0, 40, 80],
+      "type": "scatter",
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "The vertical grid lines in the subplots should be aligned."
+    },
+    "width": 600,
+    "xaxis": {
+      "anchor": "y"
+     },
+     "xaxis2": {
+      "anchor": "y2"
+     },
+    "yaxis": {
+      "range": [0, 80],
+      "dtick": 20,
+      "side": "right",
+      "ticklabelposition": "inside",
+      "anchor": "x",
+      "domain": [0, 0.45]
+    },
+    "yaxis2": {
+      "range": [0, 100],
+      "dtick": 20,
+      "side": "right",
+      "ticklabelposition": "inside",
+      "anchor": "x2",
+      "domain": [0.55, 1]
+     }
+  }
+}
