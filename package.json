@@ -35,9 +35,9 @@
     "use-draftlogs": "node tasks/use_draftlogs.js",
     "empty-draftlogs": "node tasks/empty_draftlogs.js",
     "empty-dist": "node tasks/empty_dist.js",
-    "build": "npm run empty-dist && npm run preprocess && npm run build_topojson && npm run find-strings && npm run bundle && npm run extra-bundles && npm run locales && npm run schema dist && npm run stats",
+    "build": "npm run empty-dist && npm run preprocess && npm run find-strings && npm run bundle && npm run extra-bundles && npm run locales && npm run schema dist && npm run stats",
     "regl-codegen": "node devtools/regl_codegen/server.mjs",
-    "cibuild": "npm run empty-dist && npm run preprocess && npm run build_topojson && node tasks/cibundle.mjs",
+    "cibuild": "npm run empty-dist && npm run preprocess && node tasks/cibundle.mjs",
     "lint": "npx @biomejs/biome lint",
     "lint-fix": "npx @biomejs/biome format ./test/image/mocks --write; npx @biomejs/biome lint --write || true",
     "pretest": "node tasks/pretest.js",
@@ -60,10 +60,7 @@
     "version": "npm run build && git add -A lib dist build src/version.js",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
     "postpublish": "node tasks/sync_packages.js",
-    "postshrinkwrap": "chttps .",
-    "get_geodata": "node tasks/topojson/get_geodata.mjs",
-    "process_geodata": "node tasks/topojson/process_geodata.mjs",
-    "build_topojson": "npm run get_geodata && npm run process_geodata"
+    "postshrinkwrap": "chttps ."
   },
   "browserify": {
     "transform": [
@@ -124,8 +121,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
-    "@mapbox/geojson-rewind": "^0.5.2",
-    "@placemarkio/check-geojson": "^0.1.14",
     "@plotly/mathjax-v2": "npm:mathjax@2.7.5",
     "@plotly/mathjax-v3": "npm:mathjax@^3.2.2",
     "amdefine": "^1.0.1",
@@ -167,7 +162,6 @@
     "karma-viewport": "1.0.2",
     "lodash": "^4.17.21",
     "madge": "^8.0.0",
-    "mapshaper": "^0.6.102",
     "minify-stream": "^2.1.0",
     "npm-link-check": "^5.0.1",
     "open": "^8.4.2",
@@ -181,7 +175,6 @@
     "stream-browserify": "^3.0.0",
     "style-loader": "^4.0.0",
     "through2": "^4.0.2",
-    "topojson-server": "^3.0.1",
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
     "virtual-webgl": "^1.0.6"
