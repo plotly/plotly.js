@@ -23,7 +23,7 @@ var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doub
 var HOVERMINTIME = require('../../../src/components/fx').constants.HOVERMINTIME;
 
 // use local topojson files
-Plotly.setPlotConfig({ topojsonURL: '/base/dist/topojson/' });
+Plotly.setPlotConfig({ topojsonURL: '/base/topojson/dist' });
 
 function move(fromX, fromY, toX, toY, delay) {
     return new Promise(function(resolve) {

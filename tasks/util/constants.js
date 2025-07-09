@@ -24,7 +24,7 @@ var strictIndex = fs.readFileSync(pathToPlotlyStrict, 'utf-8');
 var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
     .filter(startsWithLowerCase);
 
-var pathToTopojsonSrc = path.join(pathToDist, 'topojson/');
+var pathToTopojsonSrc = path.join(pathToRoot, 'topojson/dist');
 
 var partialBundleNames = [
     'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance', 'strict'

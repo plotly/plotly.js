@@ -118,7 +118,7 @@ if(isFullSuite) {
 }
 
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
-var pathToTopojsonDist = path.join(__dirname, '..', '..', 'dist', 'topojson');
+var pathToTopojsonDist = path.join(__dirname, '..', '..', 'topojson', 'dist');
 var pathToMathJax2 = path.join(__dirname, '..', '..', 'node_modules', '@plotly/mathjax-v2');
 var pathToMathJax3 = path.join(__dirname, '..', '..', 'node_modules', '@plotly/mathjax-v3');
 var pathToVirtualWebgl = path.join(__dirname, '..', '..', 'node_modules', 'virtual-webgl', 'src', 'virtual-webgl.js');

@@ -17,7 +17,7 @@ var Tabs = {
         Plotly.setPlotConfig({
 
             // use local topojson files
-            topojsonURL: "../../dist/topojson/",
+            topojsonURL: "../../topojson/dist",
             // register mapbox access token
             // run `npm run preset` if you haven't yet
             mapboxAccessToken: credentials.MAPBOX_ACCESS_TOKEN,
@@ -267,4 +267,3 @@ function handleOnLoad() {
     Tabs.setPlotConfig();
     plotFromHash();
 }
-
