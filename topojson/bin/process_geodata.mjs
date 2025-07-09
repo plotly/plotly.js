@@ -5,7 +5,7 @@ import fs from 'fs';
 import mapshaper from 'mapshaper';
 import path from 'path';
 import { topology } from 'topojson-server';
-import config, { getNEFilename } from './config.mjs';
+import config, { getNEFilename } from '../config.mjs';
 
 const { filters, inputDir, layers, resolutions, scopes, unFilename, vectors } = config;
 

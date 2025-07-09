@@ -65,9 +65,9 @@ const config = {
             }
         }
     ],
-    outputDirGeojson: './build/geodata/geojson',
-    outputDirTopojson: './dist/topojson',
-    inputDir: './build/geodata',
+    outputDirGeojson: './build/geojson',
+    outputDirTopojson: './dist',
+    inputDir: './build',
     vectors: {
         // 'coastlines', 'countries', 'land', and 'ocean' are derived from UN geodata
         lakes: {

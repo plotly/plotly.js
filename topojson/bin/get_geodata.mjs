@@ -2,11 +2,11 @@ import { exec } from 'child_process';
 import fs from 'fs';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
-import config, { getNEDownloadUrl, getNEFilename } from './config.mjs';
+import config, { getNEDownloadUrl, getNEFilename } from '../config.mjs';
 
-const { resolutions, unDownloadUrl, unFilename, vectors } = config;
+const { inputDir, resolutions, unDownloadUrl, unFilename, vectors } = config;
 
-const outputPath = './build/geodata';
+const outputPath = inputDir;
 
 // Download Natural Earth vector maps
 for (const vector of Object.values(vectors)) {
