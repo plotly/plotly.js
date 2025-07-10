@@ -483,11 +483,32 @@ jobs:
           name: Bundle bundle-stackgl/index.js
           command: cd stackgl_modules && cp index.js INDEX.js && npm run bundle-stackgl
       - run:
-          name: Test stackgl_modules/index.js diff - If failed please remember this file in auto generated and you should not modify it directly until a dependeny change. To suggest changes please submit pull request to the relevant dependency.
+          name: Test stackgl_modules/index.js diff - If failed please remember this file in auto generated and you should not modify it directly until a dependency change. To suggest changes please submit pull request to the relevant dependency.
           command: diff --unified --color stackgl_modules/INDEX.js stackgl_modules/index.js
       - store_artifacts:
           path: stackgl_modules/index.js
           destination: stackgl_modules/index.js
+  
+  test-topojson-build:
+    docker:
+      - image: cimg/node:18.20.4
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - run:
+          name: Set up build environment
+          command: cd topojson && npm ci
+      - run:
+          name: Build topojson
+          command: cd topojson && mv dist dist_backup && npm run build
+      - run:
+          name: Compare existing files with newly built files. Any difference is a failure. A failure might mean that the source data changed.
+          command: diff -qr topojson/dist topojson/dist_backup
+      - run:
+          name: Compress artifacts
+          command: tar -cvzf topojson.tar topojson/dist
+      - store_artifacts:
+          path: topojson.tar
 
 workflows:
   version: 2
