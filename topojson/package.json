@@ -1,8 +1,9 @@
 {
   "scripts": {
+    "clean": "rm -rf build dist",
     "get": "node ./bin/get_geodata.mjs",
     "process": "node ./bin/process_geodata.mjs",
-    "build": "npm run get && npm run process"
+    "build": "npm run clean && npm run get && npm run process"
   },
   "devDependencies": {
     "@mapbox/geojson-rewind": "^0.5.2",
