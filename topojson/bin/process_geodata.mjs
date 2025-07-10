@@ -150,7 +150,6 @@ async function createLandLayer({ bounds, name, resolution, source }) {
 }
 
 async function createCoastlinesLayer({ bounds, name, resolution, source }) {
-    // TODO: Update source to be a path?
     const inputFilePath = `${outputDirGeojson}/${unFilename}_${resolution}m/${source}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/coastlines.geojson`;
     const commands = [
