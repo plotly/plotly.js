@@ -581,3 +581,5 @@ workflows:
       - publish-dist-node-v22
 
       - test-stackgl-bundle
+
+      - test-topojson-build
