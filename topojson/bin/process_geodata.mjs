@@ -106,14 +106,14 @@ function pruneProperties(topojson) {
 function getCentroid(feature) {
     const { type } = feature.geometry;
     const projection = geoIdentity();
-    const path = geoPath(projection);
+    const geoPathGenerator = geoPath(projection);
 
     if (type === 'MultiPolygon') {
         let maxArea = -Infinity;
 
         for (const coordinates of feature.geometry.coordinates) {
             const polygon = { type: 'Polygon', coordinates };
-            const area = path.area(polygon);
+            const area = geoPathGenerator.area(polygon);
             if (area > maxArea) {
                 maxArea = area;
                 feature = polygon;
@@ -121,7 +121,7 @@ function getCentroid(feature) {
         }
     }
 
-    return path.centroid(feature).map((coord) => +coord.toFixed(2));
+    return geoPathGenerator.centroid(feature).map((coord) => +coord.toFixed(2));
 }
 
 async function createCountriesLayer({ bounds, filter, name, resolution, source }) {
