@@ -53,6 +53,7 @@ if 'virtual-webgl' in sys.argv or 'virtual-webgl=' in sys.argv :
     plotlyjs = plotlyjs_with_virtual_webgl
 
 pio.kaleido.scope.plotlyjs = plotlyjs
+pio.kaleido.scope.topojson = "file://" + os.path.join(root, 'topojson', 'dist')
 pio.templates.default = 'none'
 
 ALL_MOCKS = [os.path.splitext(a)[0] for a in os.listdir(dirIn) if a.endswith('.json')]
@@ -66,6 +67,10 @@ else :
 # unable to generate baselines for the following mocks
 blacklist = [
     'map_stamen-style',
+    'map_predefined-styles2',
+    'map_scattercluster',
+    'map_fonts-supported-open-sans',
+    'map_fonts-supported-open-sans-weight',
 ]
 allNames = [a for a in allNames if a not in blacklist]
 

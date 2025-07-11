@@ -73,7 +73,6 @@ function writeLibFiles(obj) {
     }
 }
 
-// copy topojson files from sane-topojson to dist/
 function copyTopojsonFiles() {
     fs.copy(
         constants.pathToTopojsonSrc,

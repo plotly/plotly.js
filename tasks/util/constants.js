@@ -24,20 +24,7 @@ var strictIndex = fs.readFileSync(pathToPlotlyStrict, 'utf-8');
 var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
     .filter(startsWithLowerCase);
 
-var pathToTopojsonSrc;
-try {
-    pathToTopojsonSrc = path.join(path.dirname(require.resolve('sane-topojson')), 'dist/');
-} catch(e) {
-    console.log([
-        '',
-        'WARN: Cannot resolve path to *sane-topojson* package.',
-        '  This can happen when one `npm link sane-topojson`',
-        '  and runs a command in a Docker container.',
-        '  There is nothing to worry, if you see this warning while running',
-        '  `npm run test-image`, `npm run test-export` or `npm run baseline` ;)',
-        ''
-    ].join('\n'));
-}
+var pathToTopojsonSrc = path.join(pathToRoot, 'topojson/dist');
 
 var partialBundleNames = [
     'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance', 'strict'
