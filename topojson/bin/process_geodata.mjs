@@ -358,7 +358,7 @@ const commandsCountries50m = [
     // Remove country polygons with bad geometry
     `-filter '!["ATA", "FJI", "RUS"].includes(iso3cd)' target=un_polygons`,
     '-merge-layers target=un_polygons,antarctica,fiji,russia force name=all_features',
-    // Erase Caspian Sea
+    // Subtract Caspian Sea from country polygons
     `-filter 'globalid === "{BBBEF27F-A6F4-4FBC-9729-77B3A8739409}"' target=all_features + name=caspian_sea`,
     '-erase source=caspian_sea target=all_features',
     // Update country codes for disputed territories at Egypt/Sudan border: https://en.wikipedia.org/wiki/Egypt%E2%80%93Sudan_border
