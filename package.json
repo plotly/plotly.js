@@ -117,7 +117,7 @@
     "to-px": "1.0.1",
     "topojson-client": "^3.1.0",
     "webgl-context": "^2.2.0",
-    "world-calendars": "github:plotly/world-calendars#c82a7815f39d2c7de27e6fee59d7d4537d18304d"
+    "world-calendars": "^1.0.4"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
