@@ -2545,9 +2545,11 @@
      "valType": "enumerated",
      "values": [
       "africa",
+      "antarctica",
       "asia",
       "europe",
       "north america",
+      "oceania",
       "south america",
       "usa",
       "world"
