@@ -1136,6 +1136,20 @@ module.exports = {
         editType: 'ticks'
     },
 
+    minorloglabels: {
+        valType: 'enumerated',
+        values: ['small digits', 'exponential', 'scientific', 'metric'],
+        dflt: 'small digits',
+        editType: 'calc',
+        description: [
+            'Determines how minor log labels are displayed.',
+            'If *small digits*, small digits i.e. 2 or 5 are displayed.',
+            'If *exponential*, exponential notation is applied.',
+            'If *scientific*, scientific notation is applied.',
+            'If *metric*, SI-prefix with one significant digits are displayed.',
+        ].join(' ')
+    },
+
     layer: {
         valType: 'enumerated',
         values: ['above traces', 'below traces'],

@@ -1,0 +1,55 @@
+{
+    "data": [{
+        "name": "small digits",
+        "x": [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+        "y": [0, 1, 2, 3, 4, 5, 6]
+    }, {
+        "name": "exponential",
+        "xaxis": "x2",
+        "yaxis": "y2",
+        "x": [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+        "y": [0, 1, 2, 3, 4, 5, 6]
+    }, {
+        "name": "scientific",
+        "xaxis": "x3",
+        "yaxis": "y3",
+        "x": [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+        "y": [0, 1, 2, 3, 4, 5, 6]
+    }, {
+        "name": "metric",
+        "xaxis": "x4",
+        "yaxis": "y4",
+        "x": [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+        "y": [0, 1, 2, 3, 4, 5, 6]
+    }],
+    "layout": {
+        "grid": {
+            "rows": 4,
+            "columns": 1,
+            "xgap": 0.25,
+            "ygap": 0.25,
+            "pattern": "independent"
+        },
+        "xaxis": {
+            "type": "log",
+            "minorloglabels": "small digits"
+        },
+        "xaxis2": {
+            "type": "log",
+            "minorloglabels": "exponential"
+        },
+        "xaxis3": {
+            "type": "log",
+            "minorloglabels": "scientific"
+        },
+        "xaxis4": {
+            "type": "log",
+            "minorloglabels": "metric"
+        },
+        "title": {
+            "text": "options of minorloglabels"
+        },
+        "width": 1200,
+        "height": 800
+    }
+}

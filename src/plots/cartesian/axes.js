@@ -1918,7 +1918,12 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
             }
         }
     } else if(dtChar0 === 'D') {
-        out.text = String(Math.round(Math.pow(10, Lib.mod(x, 1))));
+        out.text =
+            ax.minorloglabels === 'exponential' ? Math.pow(10, x).toExponential(0) :
+            ax.minorloglabels === 'scientific' ? Math.pow(10, x).toExponential(0).replace(/e\+?/, 'x10<sup>') :
+            ax.minorloglabels === 'metric' ? Lib.numberFormat('0.1s')(Math.pow(10, x)) :
+            /* ax.minorloglabels === 'small digits' */ String(Math.round(Math.pow(10, Lib.mod(x, 1))));
+
         out.fontSize *= 0.75;
     } else throw 'unrecognized dtick ' + String(dtick);
 
@@ -3770,7 +3775,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
                     var sel;
                     if(e.K === ZERO_PATH.K) {
-                        var zerolineLayer = zerolineIsAbove ? mainPlotinfo.zerolinelayerAbove : mainPlotinfo.zerolinelayer; 
+                        var zerolineLayer = zerolineIsAbove ? mainPlotinfo.zerolinelayerAbove : mainPlotinfo.zerolinelayer;
                         sel = zerolineLayer.selectAll('.' + ax._id + 'zl');
                     } else if(e.K === MINORGRID_PATH.K) sel = mainPlotinfo.minorGridlayer.selectAll('.' + ax._id);
                     else if(e.K === GRID_PATH.K) sel = mainPlotinfo.gridlayer.selectAll('.' + ax._id);

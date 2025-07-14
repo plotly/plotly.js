@@ -70,6 +70,10 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
                 coerce('separatethousands');
             }
         }
+
+        if(!options.noLoglabels && axType === 'log') {
+            coerce('minorloglabels');
+        }
     }
 };
 
