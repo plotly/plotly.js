@@ -976,7 +976,7 @@ module.exports = {
         editType: 'none',
         description: descriptionWithDates('hover text')
     },
-    unifiedhovertemplate: {
+    unifiedhovertitle: {
         valType: 'string',
         dflt: '',
         editType: 'none',

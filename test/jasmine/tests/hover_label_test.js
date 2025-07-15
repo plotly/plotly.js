@@ -6902,7 +6902,7 @@ describe('hovermode: (x|y)unified', function() {
             .then(done, done.fail);
     });
 
-    it('should format title of unified hover in respect to `unifiedhovertemplate` linear axis', function(done) {
+    it('should format title of unified hover in respect to `unifiedhovertitle` linear axis', function(done) {
         Plotly.newPlot(gd, [{
             type: 'bar',
             y: [1, 2, 3]
@@ -6911,7 +6911,7 @@ describe('hovermode: (x|y)unified', function() {
             y: [2, 3, 1]
         }], {
             xaxis: {
-                unifiedhovertemplate: 'X: %{x:.2f}',
+                unifiedhovertitle: 'X: %{x:.2f}',
             },
             hovermode: 'x unified',
             showlegend: false,
@@ -6934,7 +6934,7 @@ describe('hovermode: (x|y)unified', function() {
         .then(done, done.fail);
     });
 
-    it('should format title of unified hover in respect to `unifiedhovertemplate` date axis', function(done) {
+    it('should format title of unified hover in respect to `unifiedhovertitle` date axis', function(done) {
         Plotly.newPlot(gd, [{
             type: 'bar',
             x: ['2000-01-01', '2000-02-01', '2000-03-01'],
@@ -6946,7 +6946,7 @@ describe('hovermode: (x|y)unified', function() {
         }], {
             xaxis: {
                 type: 'date',
-                unifiedhovertemplate: 'X: %{x|%x %X}',
+                unifiedhovertitle: 'X: %{x|%x %X}',
             },
             hovermode: 'x unified',
             showlegend: false,

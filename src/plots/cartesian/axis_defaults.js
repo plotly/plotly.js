@@ -102,7 +102,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     if(!options.noHover) {
         if(axType !== 'category') coerce('hoverformat');
-        if(!options.noUnifiedhovertemplate) coerce('unifiedhovertemplate');
+        if(!options.noUnifiedhovertitle) coerce('unifiedhovertitle');
     }
 
     var dfltColor = coerce('color');
