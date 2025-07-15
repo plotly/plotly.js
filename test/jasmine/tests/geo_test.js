@@ -2626,8 +2626,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             _assert('after scroll', [
                 [-94.5, 35.0], 1.3
             ], [
-                // TODO: Verify that this change is acceptable
-                [380.5, 245.9], 974.4
+                [387.1, 245.9], 974.4
             ], [
                 'geo.center.lon', 'geo.center.lon', 'geo.projection.scale'
             ]);
@@ -2637,9 +2636,8 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             _assert('after some relayout call that causes a replot', [
                 [-94.5, 35.0], 1.3
             ], [
-                // TODO: Verify that this change is acceptable
                 // new center values are reflected in translate()
-                [380.5, 245.9], 974.4
+                [387.1, 245.9], 974.4
             ], [
                 'geo.showlakes'
             ]);
