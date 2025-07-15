@@ -5196,15 +5196,14 @@
       "valType": "number"
      },
      "minorloglabels": {
-      "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *exponential*, exponential notation is applied. If *scientific*, scientific notation is applied. If *metric*, SI-prefix with one significant digits are displayed.",
-      "dflt": "small digits",
+      "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+      "dflt": "metric",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
        "small digits",
-       "exponential",
-       "scientific",
-       "metric"
+       "complete",
+       "none"
       ]
      },
      "nticks": {
@@ -5905,15 +5904,14 @@
       "valType": "number"
      },
      "minorloglabels": {
-      "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *exponential*, exponential notation is applied. If *scientific*, scientific notation is applied. If *metric*, SI-prefix with one significant digits are displayed.",
-      "dflt": "small digits",
+      "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+      "dflt": "metric",
       "editType": "plot",
       "valType": "enumerated",
       "values": [
        "small digits",
-       "exponential",
-       "scientific",
-       "metric"
+       "complete",
+       "none"
       ]
      },
      "nticks": {
@@ -13930,15 +13928,14 @@
      }
     },
     "minorloglabels": {
-     "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *exponential*, exponential notation is applied. If *scientific*, scientific notation is applied. If *metric*, SI-prefix with one significant digits are displayed.",
-     "dflt": "small digits",
+     "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+     "dflt": "metric",
      "editType": "calc",
      "valType": "enumerated",
      "values": [
       "small digits",
-      "exponential",
-      "scientific",
-      "metric"
+      "complete",
+      "none"
      ]
     },
     "mirror": {
@@ -15503,15 +15500,14 @@
      }
     },
     "minorloglabels": {
-     "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *exponential*, exponential notation is applied. If *scientific*, scientific notation is applied. If *metric*, SI-prefix with one significant digits are displayed.",
-     "dflt": "small digits",
+     "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+     "dflt": "metric",
      "editType": "calc",
      "valType": "enumerated",
      "values": [
       "small digits",
-      "exponential",
-      "scientific",
-      "metric"
+      "complete",
+      "none"
      ]
     },
     "mirror": {

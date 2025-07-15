@@ -1138,15 +1138,14 @@ module.exports = {
 
     minorloglabels: {
         valType: 'enumerated',
-        values: ['small digits', 'exponential', 'scientific', 'metric'],
-        dflt: 'small digits',
+        values: ['small digits', 'complete', 'none'],
+        dflt: 'metric',
         editType: 'calc',
         description: [
             'Determines how minor log labels are displayed.',
             'If *small digits*, small digits i.e. 2 or 5 are displayed.',
-            'If *exponential*, exponential notation is applied.',
-            'If *scientific*, scientific notation is applied.',
-            'If *metric*, SI-prefix with one significant digits are displayed.',
+            'If *complete*, complete digits are displayed.',
+            'If *none*, no labels are displayed.',
         ].join(' ')
     },
 
