@@ -71,7 +71,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             }
         }
 
-        if(!options.noLoglabels && axType === 'log') {
+        if(!options.noMinorloglabels && axType === 'log') {
             coerce('minorloglabels');
         }
     }
