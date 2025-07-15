@@ -8,12 +8,16 @@
     @include vendor('transition', background-color 0.3s ease 0s);
 }
 
-.modebar--hover > :not(.watermark) {
+.modebar--hover> :not(.watermark) {
     opacity: 0;
     @include vendor('transition', opacity 0.3s ease 0s);
 }
 
 &:hover .modebar--hover .modebar-group {
+    opacity: 1;
+}
+
+&:focus-within .modebar--hover .modebar-group {
     opacity: 1;
 }
 
@@ -25,6 +29,11 @@
     position: relative;
     vertical-align: middle;
     white-space: nowrap;
+
+    a {
+        display: grid;
+        place-content: center;
+    }
 }
 
 .modebar-btn {
@@ -36,15 +45,20 @@
     cursor: pointer;
     line-height: normal;
     box-sizing: border-box;
+    border: none;
+    background: transparent;
 
     svg {
         position: relative;
-        top: 2px;
     }
 
-    &.modebar-btn--logo {
-
+    &:focus-visible {
+        outline: 1px solid black;
+        outline-offset: 1px;
+        border-radius: 3px;
     }
+
+    &.modebar-btn--logo {}
 }
 
 .modebar.vertical {
@@ -53,9 +67,11 @@
     flex-wrap: wrap;
     align-content: flex-end;
     max-height: 100%;
+
     svg {
-      top: -1px;
+        top: -1px;
     }
+
     .modebar-group {
         display: block;
         float: none;
