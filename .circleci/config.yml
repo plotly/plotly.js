@@ -217,7 +217,7 @@ jobs:
   make-baselines-virtual-webgl:
     parallelism: 8
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.8.9
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -235,7 +235,7 @@ jobs:
 
   make-baselines-mathjax3:
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.8.9
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -254,7 +254,7 @@ jobs:
   make-baselines:
     parallelism: 12
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.8.9
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -273,7 +273,7 @@ jobs:
   make-baselines-b64:
     parallelism: 12
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.8.9
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -347,7 +347,7 @@ jobs:
 
   make-exports:
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.8.9
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -488,7 +488,7 @@ jobs:
       - store_artifacts:
           path: stackgl_modules/index.js
           destination: stackgl_modules/index.js
-  
+
   test-topojson-build:
     docker:
       - image: cimg/node:18.20.4
