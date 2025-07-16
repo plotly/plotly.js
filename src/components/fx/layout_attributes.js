@@ -165,6 +165,15 @@ module.exports = {
                 '`namelength - 3` characters and add an ellipsis.'
             ].join(' ')
         },
+        showarrow: {
+            valType: 'boolean',
+            dflt: true,
+            editType: 'none',
+            description: [
+                'Sets whether or not to show the hover label arrow/triangle',
+                'pointing to the data point.'
+            ].join(' ')
+        },
 
         editType: 'none'
     },

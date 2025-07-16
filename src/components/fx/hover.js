@@ -913,7 +913,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, hoverText.commonLabelBoundingBox);
-        alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
+        alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY, fullLayout.hoverlabel.showarrow);
     }    // TODO: tagName hack is needed to appease geo.js's hack of using eventTarget=true
     // we should improve the "fx" API so other plots can use it without these hack.
     if(eventTarget && eventTarget.tagName) {
@@ -1903,7 +1903,7 @@ function getTextShiftX(hoverLabel) {
     };
 }
 
-function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
+function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY, showArrow) {
     var pX = function(x) { return x * scaleX; };
     var pY = function(y) { return y * scaleY; };
 
@@ -1923,19 +1923,26 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
 
         var isMiddle = anchor === 'middle';
 
-        g.select('path')
-            .attr('d', isMiddle ?
+        var pathStr;
+        if(isMiddle) {
             // middle aligned: rect centered on data
-            ('M-' + pX(d.bx / 2 + d.tx2width / 2) + ',' + pY(offsetY - d.by / 2) +
-              'h' + pX(d.bx) + 'v' + pY(d.by) + 'h-' + pX(d.bx) + 'Z') :
+            pathStr = 'M-' + pX(d.bx / 2 + d.tx2width / 2) + ',' + pY(offsetY - d.by / 2) +
+                      'h' + pX(d.bx) + 'v' + pY(d.by) + 'h-' + pX(d.bx) + 'Z';
+        } else if(showArrow !== false) {
             // left or right aligned: side rect with arrow to data
-            ('M0,0L' + pX(horzSign * HOVERARROWSIZE + offsetX) + ',' + pY(HOVERARROWSIZE + offsetY) +
-                'v' + pY(d.by / 2 - HOVERARROWSIZE) +
-                'h' + pX(horzSign * d.bx) +
-                'v-' + pY(d.by) +
-                'H' + pX(horzSign * HOVERARROWSIZE + offsetX) +
-                'V' + pY(offsetY - HOVERARROWSIZE) +
-                'Z'));
+            pathStr = 'M0,0L' + pX(horzSign * HOVERARROWSIZE + offsetX) + ',' + pY(HOVERARROWSIZE + offsetY) +
+                      'v' + pY(d.by / 2 - HOVERARROWSIZE) +
+                      'h' + pX(horzSign * d.bx) +
+                      'v-' + pY(d.by) +
+                      'H' + pX(horzSign * HOVERARROWSIZE + offsetX) +
+                      'V' + pY(offsetY - HOVERARROWSIZE) +
+                      'Z';
+        } else {
+            // left or right aligned: side rect without arrow
+            pathStr = 'M' + pX(horzSign * HOVERARROWSIZE + offsetX) + ',' + pY(offsetY - d.by / 2) +
+                      'h' + pX(horzSign * d.bx) + 'v' + pY(d.by) + 'h' + pX(-horzSign * d.bx) + 'Z';
+        }
+        g.select('path').attr('d', pathStr);
 
         var posX = offsetX + shiftX.textShiftX;
         var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD;
