@@ -185,7 +185,19 @@ exports.scopeDefaults = {
         lataxisRange: [-60, 15],
         projType: 'mercator',
         projRotate: [0, 0, 0]
-    }
+    },
+    antarctica: {
+        lonaxisRange: [-180, 180],
+        lataxisRange: [-90, -60],
+        projType: 'equirectangular',
+        projRotate: [0, 0, 0]
+    },
+    oceania: {
+        lonaxisRange: [-180, 180],
+        lataxisRange: [-50, 25],
+        projType: 'equirectangular',
+        projRotate: [0, 0, 0]
+    },
 };
 
 // angular pad to avoid rounding error around clip angles

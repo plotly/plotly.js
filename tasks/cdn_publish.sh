@@ -29,7 +29,13 @@ for path in `ls $dist/plotly*`; do
 done
 
 # copy topojson files over to the sync folder
-cp $dist/topojson/* $sync
+# NOTE: Temporarily adding the suffix '_un' to avoid overwriting the old topojson
+# which some old plots might depend on
+for filepath in $dist/topojson/*.json; do
+    f=${filepath##*/}
+    f=${f%.*}
+    cp $filepath "$sync/${f%.*}_un.json"
+done
 
 # list folder and files
 echo $sync
