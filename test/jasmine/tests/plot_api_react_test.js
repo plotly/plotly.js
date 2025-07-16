@@ -418,6 +418,8 @@ describe('@noCIdep Plotly.react', function() {
             expect(d3SelectAll('.drag').size()).toBe(11);
             expect(d3SelectAll('.gtitle').text()).toBe('Click to enter Plot title');
             expect(d3SelectAll('.gtitle-subtitle').text()).toBe('Click to enter Plot subtitle');
+
+            afterPlotCnt++; // since it uses newPlot pathway as a result of config change
             countCalls({plot: 1});
 
             return Plotly.react(gd, data, layout, {staticPlot: true});
@@ -425,6 +427,9 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             expect(d3SelectAll('.drag').size()).toBe(0);
             expect(d3SelectAll('.gtitle').size()).toBe(0);
+            expect(d3SelectAll('.gtitle-subtitle').size()).toBe(0);
+
+            afterPlotCnt++; // since it uses newPlot pathway as a result of config change
             countCalls({plot: 1});
 
             return Plotly.react(gd, data, layout, {});
@@ -432,6 +437,9 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             expect(d3SelectAll('.drag').size()).toBe(11);
             expect(d3SelectAll('.gtitle').size()).toBe(0);
+            expect(d3SelectAll('.gtitle-subtitle').size()).toBe(0);
+
+            afterPlotCnt++; // since it uses newPlot pathway as a result of config change
             countCalls({plot: 1});
         })
         .then(done, done.fail);
