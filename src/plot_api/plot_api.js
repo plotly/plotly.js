@@ -64,6 +64,12 @@ function _doPlot(gd, data, layout, config) {
     // Events.init is idempotent and bails early if gd has already been init'd
     Events.init(gd);
 
+    // Add dummy event handler for 'wheel' event for Safari
+    // to enable mouse wheel zoom
+    // https://github.com/d3/d3/issues/3035
+    // https://github.com/plotly/plotly.js/issues/7452
+    d3.select(gd).on('wheel', function() {});
+
     if(Lib.isPlainObject(data)) {
         var obj = data;
         data = obj.data;
