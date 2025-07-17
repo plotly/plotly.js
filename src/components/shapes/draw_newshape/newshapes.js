@@ -1,5 +1,7 @@
 'use strict';
 
+var axis_ids = require('../../../plots/cartesian/axis_ids');
+
 var dragHelpers = require('../../dragelement/helpers');
 var drawMode = dragHelpers.drawMode;
 var openMode = dragHelpers.openMode;
@@ -67,7 +69,6 @@ function newShapes(outlines, dragOptions) {
     clearOutline(gd);
 
     var editHelpers = dragOptions.editHelpers;
-    var plotinfo = dragOptions.plotinfo;
     var modifyItem = (editHelpers || {}).modifyItem;
 
     var allShapes = [];
@@ -85,17 +86,19 @@ function newShapes(outlines, dragOptions) {
                 case 'line':
                 case 'rect':
                 case 'circle':
-                    if (beforeEdit.xref.includes("x") && plotinfo.xaxis.type.includes("category")) {
-                        plotinfo.xaxis.r2c(afterEdit.x0)
-                        modifyItem('x0', plotinfo.xaxis.r2c(afterEdit.x0) - (beforeEdit.x0shift || 0));
-                        modifyItem('x1', plotinfo.xaxis.r2c(afterEdit.x1) - (beforeEdit.x1shift || 0));
+                    
+                    var xaxis = axis_ids.getFromId(gd, beforeEdit.xref);
+                    if (beforeEdit.xref.includes('x') && xaxis.type.includes("category")) {
+                        modifyItem('x0', afterEdit.x0 - (beforeEdit.x0shift || 0));
+                        modifyItem('x1', afterEdit.x1 - (beforeEdit.x1shift || 0));
                     } else {
                         modifyItem('x0', afterEdit.x0);
                         modifyItem('x1', afterEdit.x1);
                     }
-                    if (beforeEdit.yref.includes("y") && plotinfo.yaxis.type.includes("category")) {
-                        modifyItem('y0', plotinfo.xaxis.r2c(afterEdit.y0) - (beforeEdit.y0shift || 0));
-                        modifyItem('y1', plotinfo.xaxis.r2c(afterEdit.y1) - (beforeEdit.y1shift || 0));
+                    var yaxis = axis_ids.getFromId(gd, beforeEdit.yref);
+                    if (beforeEdit.yref.includes('y') && yaxis.type.includes("category")) {
+                        modifyItem('y0', afterEdit.y0 - (beforeEdit.y0shift || 0));
+                        modifyItem('y1', afterEdit.y1 - (beforeEdit.y1shift || 0));
                     } else {
                         modifyItem('y0', afterEdit.y0);
                         modifyItem('y1', afterEdit.y1);
