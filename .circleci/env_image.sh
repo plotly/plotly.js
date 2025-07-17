@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 # install required fonts
-sudo apt-get install fonts-liberation2 fonts-open-sans fonts-noto-cjk fonts-noto-color-emoji
+sudo apt-get install fonts-liberation fonts-open-sans fonts-noto-cjk fonts-noto-color-emoji
 sudo python3 .circleci/download_google_fonts.py
 sudo cp -r .circleci/fonts/ /usr/share/
 sudo fc-cache -f
