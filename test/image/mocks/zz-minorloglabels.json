@@ -1,0 +1,86 @@
+{
+    "data": [{
+        "x": [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+        "y": [0, 1, 2, 3, 4, 5, 6]
+    }, {
+        "xaxis": "x2",
+        "yaxis": "y2",
+        "x": [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+        "y": [0, 1, 2, 3, 4, 5, 6]
+    }, {
+        "xaxis": "x3",
+        "yaxis": "y3",
+        "x": [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+        "y": [0, 1, 2, 3, 4, 5, 6]
+    }, {
+        "xaxis": "x4",
+        "yaxis": "y4",
+        "x": [0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000, 10000, 100000],
+        "y": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    }, {
+        "xaxis": "x5",
+        "yaxis": "y5",
+        "x": [0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000, 10000, 100000],
+        "y": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    }, {
+        "xaxis": "x6",
+        "yaxis": "y6",
+        "x": [0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000, 10000, 100000],
+        "y": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    }],
+    "layout": {
+        "grid": {
+            "rows": 7,
+            "columns": 1,
+            "ygap": 0.8,
+            "pattern": "independent"
+        },
+        "xaxis": {
+            "title": { "text": "none" },
+            "type": "log",
+            "minorloglabels": "none",
+            "minor": { "showgrid": true }
+        },
+        "xaxis2": {
+            "title": { "text": "small digits" },
+            "dtick": "D1",
+            "type": "log",
+            "minorloglabels": "small digits"
+        },
+        "xaxis3": {
+            "title": { "text": "small digits" },
+            "dtick": "D2",
+            "type": "log",
+            "minorloglabels": "small digits"
+        },
+        "xaxis4": {
+            "title": { "text": "complete" },
+            "dtick": "D2",
+            "type": "log",
+            "minorloglabels": "complete",
+            "minor": { "showgrid": true }
+        },
+        "xaxis5": {
+            "title": { "text": "complete <br> exponentformat: 'e'" },
+            "exponentformat": "e",
+            "dtick": "D2",
+            "type": "log",
+            "minorloglabels": "complete",
+            "minor": { "showgrid": true }
+        },
+        "xaxis6": {
+            "title": { "text": "complete <br> exponentformat: 'power'" },
+            "exponentformat": "power",
+            "dtick": "D2",
+            "type": "log",
+            "minorloglabels": "complete",
+            "minor": { "showgrid": true }
+        },
+        "title": {
+            "text": "options of minorloglabels"
+        },
+        "width": 1400,
+        "height": 1200,
+        "showlegend": false
+    }
+}

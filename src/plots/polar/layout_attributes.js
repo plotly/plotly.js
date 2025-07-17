@@ -36,6 +36,7 @@ var axisTickAttrs = overrideAll({
     ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
     labelalias: axesAttrs.labelalias,
+    minorloglabels: axesAttrs.minorloglabels,
     showtickprefix: axesAttrs.showtickprefix,
     tickprefix: axesAttrs.tickprefix,
     showticksuffix: axesAttrs.showticksuffix,

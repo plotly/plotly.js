@@ -2545,9 +2545,11 @@
      "valType": "enumerated",
      "values": [
       "africa",
+      "antarctica",
       "asia",
       "europe",
       "north america",
+      "oceania",
       "south america",
       "usa",
       "world"
@@ -5195,6 +5197,17 @@
       "min": 0,
       "valType": "number"
      },
+     "minorloglabels": {
+      "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+      "dflt": "small digits",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "small digits",
+       "complete",
+       "none"
+      ]
+     },
      "nticks": {
       "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
       "dflt": 0,
@@ -5891,6 +5904,17 @@
       "editType": "plot",
       "min": 0,
       "valType": "number"
+     },
+     "minorloglabels": {
+      "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+      "dflt": "small digits",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "small digits",
+       "complete",
+       "none"
+      ]
      },
      "nticks": {
       "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
@@ -13905,6 +13929,17 @@
       "valType": "number"
      }
     },
+    "minorloglabels": {
+     "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+     "dflt": "small digits",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "small digits",
+      "complete",
+      "none"
+     ]
+    },
     "mirror": {
      "description": "Determines if the axis lines or/and ticks are mirrored to the opposite side of the plotting area. If *true*, the axis lines are mirrored. If *ticks*, the axis lines and ticks are mirrored. If *false*, mirroring is disable. If *all*, axis lines are mirrored on all shared-axes subplots. If *allticks*, axis lines and ticks are mirrored on all shared-axes subplots.",
      "dflt": false,
@@ -15465,6 +15500,17 @@
       "min": 0,
       "valType": "number"
      }
+    },
+    "minorloglabels": {
+     "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+     "dflt": "small digits",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "small digits",
+      "complete",
+      "none"
+     ]
     },
     "mirror": {
      "description": "Determines if the axis lines or/and ticks are mirrored to the opposite side of the plotting area. If *true*, the axis lines are mirrored. If *ticks*, the axis lines and ticks are mirrored. If *false*, mirroring is disable. If *all*, axis lines are mirrored on all shared-axes subplots. If *allticks*, axis lines and ticks are mirrored on all shared-axes subplots.",
