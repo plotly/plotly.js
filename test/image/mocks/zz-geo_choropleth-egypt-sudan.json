@@ -1,0 +1,48 @@
+{
+ "data": [
+  {
+   "type": "choropleth",
+   "name": "Egypt",
+   "locations": ["EGY"],
+   "z": [1],
+   "colorscale": [[0, "orange"], [1, "orange"]],
+   "showscale": false,
+   "showlegend": true
+  },
+  {
+   "type": "choropleth",
+   "name": "Sudan",
+   "locations": ["SDN"],
+   "z": [1],
+   "colorscale": [[0, "green"], [1, "green"]],
+   "showscale": false,
+   "showlegend": true
+  },
+  {
+   "type": "choropleth",
+   "name": "Disputed",
+   "locations": ["XHT", "XBT"],
+   "z": [1, 1],
+   "colorscale": [[0, "red"], [1, "red"]],
+   "showscale": false,
+   "showlegend": true
+  }
+ ],
+ "layout": {
+  "title": {
+   "text": "Used 'XHT' and 'XBT' country codes to show disputed regions between Egypt and Sudan"
+  },
+  "geo": {
+   "showocean": true,
+   "projection": {
+    "rotation": {
+     "lon": 30,
+     "lat": 20
+    },
+    "scale": 7
+   }
+  },
+  "width": 800,
+  "height": 600
+ }
+}
