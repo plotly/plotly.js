@@ -16,7 +16,7 @@ module.exports = {
         description: [
             'Determines the rule used to generate the error bars.',
 
-            'If *constant`, the bar lengths are of a constant value.',
+            'If *constant*, the bar lengths are of a constant value.',
             'Set this constant in `value`.',
 
             'If *percent*, the bar lengths correspond to a percentage of',
