@@ -1139,7 +1139,7 @@ module.exports = {
     minorloglabels: {
         valType: 'enumerated',
         values: ['small digits', 'complete', 'none'],
-        dflt: 'metric',
+        dflt: 'small digits',
         editType: 'calc',
         description: [
             'Determines how minor log labels are displayed.',
