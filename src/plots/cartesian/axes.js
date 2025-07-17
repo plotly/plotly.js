@@ -2972,7 +2972,7 @@ function calcLabelLevelBbox(ax, cls, mainLinePositionShift) {
             // (like in fixLabelOverlaps) instead and use Axes.getPxPosition
             // together with the makeLabelFns outputs and `tickangle`
             // to compute one bbox per (tick value x tick style)
-            if (thisLabel.style('display') !== 'none') {
+            if (thisLabel.node().style.display !== 'none') {
                 var bb = Drawing.bBox(thisLabel.node().parentNode);
                 top = Math.min(top, bb.top);
                 bottom = Math.max(bottom, bb.bottom);
