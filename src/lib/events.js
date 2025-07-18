@@ -65,9 +65,7 @@ var Events = {
          * https://github.com/d3/d3/issues/3035
          * https://github.com/plotly/plotly.js/issues/7452
          */
-        if(typeof plotObj.addEventListener === 'function') {
-            plotObj.addEventListener("wheel", () => {});
-        }
+        plotObj?.addEventListener?.("wheel", () => {});
 
         return plotObj;
     },
