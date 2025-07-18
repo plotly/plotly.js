@@ -9,6 +9,39 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.1.0-rc.0] -- 2025-07-15
+
+### Added
+ - Add property `zerolinelayer` to cartesian axes to allow drawing zeroline above traces [[#7269](https://github.com/plotly/plotly.js/pull/7269)]
+ - Add `pattern.path` attribute as an alternative to the preset `pattern.shape` values, so you can use any SVG path string as a pattern fill. [[#7280](https://github.com/plotly/plotly.js/pull/7280)]
+ - Allow configuration of horizontal legend max height [[#7359](https://github.com/plotly/plotly.js/pull/7359)]
+ - Add support for ticklabelposition "inside"/"outside" for category axes with `tickson` set to "boundaries" [[#7420](https://github.com/plotly/plotly.js/pull/7420)],
+ with thanks to @my-tien for the contribution!
+
+### Changed
+ - Switch to United Nations (coastlines, countries, land, ocean) + Natural Earth (lakes, rivers, subunits) geodata for building topojson used in geo plot
+ - Make 'png' all caps [[#7400](https://github.com/plotly/plotly.js/pull/7400)]
+
+### Fixed
+ - Fix installing dependencies in node v22 [[#7381](https://github.com/plotly/plotly.js/pull/7381)], with thanks to @chaigh-uk for the contribution!
+ - Fix performance warning in scattergl traces, [[#7390](https://github.com/plotly/plotly.js/pull/7390)], with thanks to @MzyzzG for the contribution!
+ - Move css-loader and other dependencies into devDependencies section [[#7407](https://github.com/plotly/plotly.js/pull/7407)]
+ - Fix Persian calendar leap year [[#7456](https://github.com/plotly/plotly.js/pull/7456)]
+
+
+## [3.0.1] -- 2025-02-18
+
+### Changed
+- Update `color-rgba` from 2.1.1 to 3.0.0 to fix hsl color conversion bug [[#7325](https://github.com/plotly/plotly.js/pull/7325)]
+
+### Fixed
+- Fix click event handling for plots in shadow DOM elements [[#7357](https://github.com/plotly/plotly.js/pull/7357)]
+- Fix hoverlabels and other text labels with null values templated in [[#7360](https://github.com/plotly/plotly.js/pull/7360)]
+- Fix importing plotly.js via require on pages with [AMD](https://en.wikipedia.org/wiki/Asynchronous_module_definition) [[#7367](https://github.com/plotly/plotly.js/pull/7367)]
+- Update Romanian locale [[#7351](https://github.com/plotly/plotly.js/pull/7351)]
+- Update Italian locale [[#4425](https://github.com/plotly/plotly.js/pull/4425)]
+- Update Turkish locale [[#7352](https://github.com/plotly/plotly.js/pull/7352)]
+
 ## [3.0.0] -- 2025-01-27
 
 ### Removed

@@ -41,7 +41,7 @@ modeBarButtons.toImage = {
         var opts = gd._context.toImageButtonOptions || {};
         var format = opts.format || 'png';
         return format === 'png' ?
-            _(gd, 'Download plot as a png') : // legacy text
+            _(gd, 'Download plot as a PNG') : // legacy text
             _(gd, 'Download plot'); // generic non-PNG text
     },
     icon: Icons.camera,
