@@ -389,16 +389,16 @@ module.exports = {
             'If true, then zoom is disabled.'
         ].join(' ')
     },
-    modebarbuttons: {
+    modebardisable: {
         valType: 'flaglist',
-        flags: ['auto', 'inout'],
-        extras: ['all', 'none'],
-        dflt: 'all',
+        flags: ['autoscale', 'zoominout'],
+        extras: ['none'],
+        dflt: 'none',
         editType: 'modebar',
         description: [
-            'Determines which modebar buttons impact this axis.',
-            '*auto* allows the autoscale buttons, *inout* allows the',
-            'zoom-in and zoom-out buttons.'
+            'Disables certain modebar buttons for this axis.',
+            '*autoscale* disables the autoscale buttons, *zoominout*',
+            'disables the zoom-in and zoom-out buttons.'
         ].join(' ')
     },
     insiderange: {

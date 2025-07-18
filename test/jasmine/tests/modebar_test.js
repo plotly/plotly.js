@@ -1194,11 +1194,11 @@ describe('ModeBar', function() {
                     assertRange('yaxis2', [0, 4]);
                 });
 
-                it('should respect modebarbuttons attribute', function(done) {
+                it('should respect modebardisable attribute', function(done) {
                     Plotly.relayout(gd, {
-                        'xaxis.modebarbuttons': 'none',
-                        'xaxis2.modebarbuttons': 'auto',
-                        'yaxis.modebarbuttons': 'inout',
+                        'xaxis.modebardisable': 'zoominout+autoscale',
+                        'xaxis2.modebardisable': 'zoominout',
+                        'yaxis.modebardisable': 'autoscale',
                     }).then(function() {
                         var buttonZoomIn = selectButton(modeBar, 'zoomIn2d');
                         var buttonZoomOut = selectButton(modeBar, 'zoomOut2d');

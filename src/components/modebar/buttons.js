@@ -260,9 +260,9 @@ function handleCartesian(gd, ev) {
 
         for(i = 0; i < axList.length; i++) {
             ax = axList[i];
-            allowed = ax.modebarbuttons === 'all' || ax.modebarbuttons.indexOf(
-                (val === 'auto' || val === 'reset') ? 'auto' : 'inout'
-            ) !== -1;
+            allowed = ax.modebardisable === 'none' || ax.modebardisable.indexOf(
+                (val === 'auto' || val === 'reset') ? 'autoscale' : 'zoominout'
+            ) === -1;
 
             if(allowed && !ax.fixedrange) {
                 axName = ax._name;
