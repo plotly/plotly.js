@@ -179,5 +179,10 @@
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
     "virtual-webgl": "^1.0.6"
+  },
+  "overrides": {
+    "falafel": {
+      "acorn": "^8.1.1"
+    }
   }
 }
