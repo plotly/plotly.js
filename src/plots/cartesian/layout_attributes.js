@@ -1146,6 +1146,19 @@ module.exports = {
         editType: 'ticks'
     },
 
+    minorloglabels: {
+        valType: 'enumerated',
+        values: ['small digits', 'complete', 'none'],
+        dflt: 'small digits',
+        editType: 'calc',
+        description: [
+            'Determines how minor log labels are displayed.',
+            'If *small digits*, small digits i.e. 2 or 5 are displayed.',
+            'If *complete*, complete digits are displayed.',
+            'If *none*, no labels are displayed.',
+        ].join(' ')
+    },
+
     layer: {
         valType: 'enumerated',
         values: ['above traces', 'below traces'],
