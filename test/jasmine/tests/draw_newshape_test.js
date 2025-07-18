@@ -1426,6 +1426,43 @@ describe('Activate and edit editable shapes', function() {
 
             .then(done, done.fail);
         });
+
+        it('should be possible to drag shapes referencing non-categorical axes', function(done) {
+            Plotly.newPlot(gd, {
+            data: [
+                {
+                x: ["2015-02-01", "2015-02-02", "2015-02-03"],
+                y: [14, 17, 8],
+                mode: "line",
+                },
+            ],
+            layout: {
+                xaxis: { title: { text: "Date" }, type: "date" },
+                dragmode: "drawline",
+                shapes: [
+                {
+                    type: "rect",
+                    xref: "x",
+                    yref: "paper",
+                    x0: "2015-02-02",
+                    y0: 0,
+                    x1: "2015-02-08",
+                    y1: 1,
+                    opacity: 0.2,
+                    editable: true,
+                },
+                ],
+            },
+            })
+            .then(function() { drag([[257.64, 370], [250, 300]]); }) // move lower left corner up and left
+            .then(function () {
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[0]._input;
+                print(obj);
+                assertPos(obj.path, 'M250,300H1019V100H257.64Z');
+            })
+            .then(done, done.fail);
+        });
     });
 });
 
