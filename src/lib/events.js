@@ -59,6 +59,16 @@ var Events = {
             internalEv.emit(event, data);
         };
 
+        /*
+         * Add a dummy event handler for 'wheel' event for Safari
+         * to enable mouse wheel zoom.
+         * https://github.com/d3/d3/issues/3035
+         * https://github.com/plotly/plotly.js/issues/7452
+         */
+        if(typeof plotObj.addEventListener === 'function') {
+            plotObj.addEventListener("wheel", () => {});
+        }
+
         return plotObj;
     },
 
