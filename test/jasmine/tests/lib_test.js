@@ -2956,6 +2956,67 @@ describe('Test lib.js:', function() {
             });
         });
     });
+
+    describe("User agent", () => {
+        const userAgentStrings = {
+            iOSSafari: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Mobile/15E148 Safari/604.1",
+            iOSChrome: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/138.0.7204.156 Mobile/15E148 Safari/604.1",
+            macChrome: "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+            macSafari: "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Safari/605.1.15",
+            macWKWebView: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+            winFirefox: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
+        }
+
+        describe('isIOS', () => {
+            [userAgentStrings.iOSChrome, userAgentStrings.iOSSafari].forEach(uaString => {
+                it('matches an iOS user agent string', () => {
+                    spyOnProperty(navigator, 'userAgent').and.returnValue(uaString)
+                    expect(Lib.isIOS()).toBe(true)
+                })
+            })
+    
+            it("doesn't match a non-iOS user agent string", () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
+                expect(Lib.isIOS()).toBe(false)
+            })
+        })
+    
+        describe('isSafari', () => {
+            it('matches a Safari user agent string', () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
+                expect(Lib.isSafari()).toBe(true)
+            })
+            
+            it("doesn't match a non-Safari user agent string", () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macChrome)
+                expect(Lib.isSafari()).toBe(false)
+            })
+        })
+
+        describe('isMacWKWebView', () => {
+            it('matches a Safari user agent string', () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macWKWebView)
+                expect(Lib.isMacWKWebView()).toBe(true)
+            })
+            
+            it("doesn't match a non-Safari user agent string", () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
+                expect(Lib.isMacWKWebView()).toBe(false)
+            })
+        })
+
+        describe('getFirefoxVersion', () => {
+            it('gets the Firefox version from the user agent string', () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.winFirefox)
+                expect(Lib.getFirefoxVersion()).toBe(140)
+            })
+            
+            it("returns null for a non-Firefox user agent string", () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
+                expect(Lib.getFirefoxVersion()).toBe(null)
+            })
+        })
+    })
 });
 
 describe('Queue', function() {
