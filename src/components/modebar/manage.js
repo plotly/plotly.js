@@ -269,7 +269,8 @@ function areAllAxesFixed(fullLayout) {
     var axList = axisIds.list({_fullLayout: fullLayout}, null, true);
 
     for(var i = 0; i < axList.length; i++) {
-        if(!axList[i].fixedrange) {
+        var disabled = axList[i].modebardisable;
+        if(!axList[i].fixedrange && disabled !== 'autoscale+zoominout' && disabled !== 'zoominout+autoscale') {
             return false;
         }
     }

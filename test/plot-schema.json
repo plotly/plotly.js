@@ -13953,6 +13953,19 @@
       "allticks"
      ]
     },
+    "modebardisable": {
+     "description": "Disables certain modebar buttons for this axis. *autoscale* disables the autoscale buttons, *zoominout* disables the zoom-in and zoom-out buttons.",
+     "dflt": "none",
+     "editType": "modebar",
+     "extras": [
+      "none"
+     ],
+     "flags": [
+      "autoscale",
+      "zoominout"
+     ],
+     "valType": "flaglist"
+    },
     "nticks": {
      "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
      "dflt": 0,
@@ -15524,6 +15537,19 @@
       "all",
       "allticks"
      ]
+    },
+    "modebardisable": {
+     "description": "Disables certain modebar buttons for this axis. *autoscale* disables the autoscale buttons, *zoominout* disables the zoom-in and zoom-out buttons.",
+     "dflt": "none",
+     "editType": "modebar",
+     "extras": [
+      "none"
+     ],
+     "flags": [
+      "autoscale",
+      "zoominout"
+     ],
+     "valType": "flaglist"
     },
     "nticks": {
      "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
