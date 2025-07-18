@@ -1426,46 +1426,288 @@ describe('Activate and edit editable shapes', function() {
 
             .then(done, done.fail);
         });
+    });
+});
 
-        it('should be possible to drag shapes referencing non-categorical axes', function(done) {
-            Plotly.newPlot(gd, {
-            data: [
-                {
-                x: ["2015-02-01", "2015-02-02", "2015-02-03"],
-                y: [14, 17, 8],
-                mode: "line",
-                },
-            ],
-            layout: {
-                xaxis: { title: { text: "Date" }, type: "date" },
-                dragmode: "drawline",
-                shapes: [
-                {
-                    type: "rect",
-                    xref: "x",
-                    yref: "paper",
-                    x0: "2015-02-02",
-                    y0: 0,
-                    x1: "2015-02-08",
-                    y1: 1,
-                    opacity: 0.2,
-                    editable: true,
-                },
+
+describe('Activate and edit editable shapes - date axes', function() {
+    var fig = {
+        data: [
+            {
+                x: [
+                    0,
+                    50
                 ],
+                y: [
+                    0,
+                    50
+                ]
+            }
+        ],
+        layout: {
+            width: 800,
+            height: 600,
+            margin: {
+                t: 100,
+                b: 50,
+                l: 100,
+                r: 50
             },
+            xaxis: {
+                type: 'date',
+                range: ["1975-07-01", "2380-07-01"]
+            },
+            yaxis: {
+                range: [301.78041543026706, -18.694362017804156]
+            },
+            shapes: [
+                {
+                    editable: true,
+                    layer: 'below',
+                    type: 'rect',
+                    line: {
+                        width: 5
+                    },
+                    fillcolor: 'red',
+                    opacity: 0.5,
+                    xref: 'xaxis',
+                    yref: 'yaxis',
+                    x0: '2025-01-01',
+                    y0: 25,
+                    x1: '2075-01-01',
+                    y1: 75
+                },
+                {
+                    editable: true,
+                    layer: 'top',
+                    type: 'circle',
+                    line: {
+                        width: 5
+                    },
+                    fillcolor: 'green',
+                    opacity: 0.5,
+                    xref: 'xaxis',
+                    yref: 'yaxis',
+                    x0: '2125-01-01',
+                    y0: 25,
+                    x1: '2175-01-01',
+                    y1: 75
+                }
+            ]
+        },
+        config: {
+            editable: false,
+            modeBarButtonsToAdd: [
+                'drawline',
+                'drawopenpath',
+                'drawclosedpath',
+                'drawcircle',
+                'drawrect',
+                'eraseshape'
+            ]
+        }
+    };
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    ['mouse'].forEach(function(device) {
+        it('reactangle using ' + device, function(done) {
+            var i = 0; // shape index
+
+            Plotly.newPlot(gd, {
+                data: fig.data,
+                layout: fig.layout,
+                config: fig.config
             })
-            .then(function() { drag([[257.64, 370], [250, 300]]); }) // move lower left corner up and left
-            .then(function () {
+
+            // shape between 175, 160 and 255, 230
+            .then(function() { click(200, 160); }) // activate shape
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'activate shape by clicking border');
+
                 var shapes = gd._fullLayout.shapes;
-                var obj = shapes[0]._input;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('rect');
                 print(obj);
-                assertPos(obj.path, 'M250,300H1019V100H257.64Z');
+                assertPos({
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
+                }, {
+                    x0: '2025-01-01',
+                    y0: 25,
+                    x1: '2075-01-01',
+                    y1: 75
+                });
             })
+            .then(function() { drag([[255, 230], [300, 200]]); }) // move vertex
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('rect');
+                print(obj);
+                assertPos({
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
+                }, {
+                    x0: '2024-12-30 20:44:36.1846',
+                    y0: 24.997032640949552,
+                    x1: '2103-01-15 16:20:58.3385',
+                    y1: 53.63323442136499
+                });
+            })
+            .then(function() { drag([[300, 200], [255, 230]]); }) // move vertex back
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('rect');
+                print(obj);
+                assertPos({
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
+                }, {
+                    x0: '2024-12-30 20:44:36.1846',
+                    y0: 25,
+                    x1: '2074-12-31 18:56:02.9538',
+                    y1: 75
+                });
+            })
+            .then(function() { drag([[215, 195], [300, 200]]); }) // move shape
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('rect');
+                print(obj);
+                assertPos({
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
+                }, {
+                    x0: '2077-12-16 18:31:40.8',
+                    y0: 24.997032640949552,
+                    x1: '2127-12-18 16:43:07.5692',
+                    y1: 74.99821958456974
+                });
+            })
+            .then(function() { drag([[300, 200], [215, 195]]); }) // move shape back
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('rect');
+                print(obj);
+                assertPos({
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
+                }, {
+                    x0: '2024-12-30 20:44:36.1846',
+                    y0: 25,
+                    x1: '2074-12-31 18:56:02.9538',
+                    y1: 75
+                });
+            })
+            .then(function() { click(100, 100); })
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(undefined, 'deactivate shape by clicking outside');
+            })
+            .then(function() { click(255, 230); })
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'activate shape by clicking on corner');
+            })
+            .then(function() { click(215, 195); })
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(undefined, 'deactivate shape by clicking inside');
+            })
+
+            .then(done, done.fail);
+        });
+
+        it('circle using ' + device, function(done) {
+            var i = 1; // shape index
+
+            Plotly.newPlot(gd, {
+                data: fig.data,
+                layout: fig.layout,
+                config: fig.config
+            })
+
+            // next shape
+            .then(function() { click(355, 225); }) // activate shape
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'activate shape by clicking border');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('circle');
+                print(obj);
+                assertPos({
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
+                }, {
+                    x0: '2125-01-01',
+                    x1: '2175-01-01',
+                    y0: 25,
+                    y1: 75
+                });
+            })
+            .then(function() { drag([[338, 196], [300, 175]]); }) // move vertex
+            .then(function() {
+                var id = gd._fullLayout._activeShapeIndex;
+                expect(id).toEqual(i, 'keep shape active after drag corner');
+
+                var shapes = gd._fullLayout.shapes;
+                var obj = shapes[id]._input;
+                expect(obj.type).toEqual('circle');
+                print(obj);
+                assertPos({
+                    x0: obj.x0,
+                    y0: obj.y0,
+                    x1: obj.x1,
+                    y1: obj.y1
+                }, {
+                    x0: '2186-11-02 07:04:22.7446',
+                    y0: 74.99821958456971,
+                    x1: '2113-03-01 18:44:58.3385',
+                    y1: 10.04154302670623
+                });
+            })
+
             .then(done, done.fail);
         });
     });
 });
-
 
 describe('Activate and edit editable shapes', function() {
     var gd;
