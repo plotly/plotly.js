@@ -22,6 +22,7 @@ function templateFormatStringDescription(opts) {
         'for details on the date formatting syntax.'
     ].join(' ');
 }
+exports.templateFormatStringDescription = templateFormatStringDescription;
 
 function shapeTemplateFormatStringDescription() {
     return [
