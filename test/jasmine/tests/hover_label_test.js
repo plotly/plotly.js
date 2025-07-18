@@ -6911,7 +6911,7 @@ describe('hovermode: (x|y)unified', function() {
             y: [2, 3, 1]
         }], {
             xaxis: {
-                unifiedhovertitle: 'X: %{x:.2f}',
+                unifiedhovertitle: { text: 'X: %{x:.2f}' },
             },
             hovermode: 'x unified',
             showlegend: false,
@@ -6946,7 +6946,7 @@ describe('hovermode: (x|y)unified', function() {
         }], {
             xaxis: {
                 type: 'date',
-                unifiedhovertitle: 'X: %{x|%x %X}',
+                unifiedhovertitle: { text: 'X: %{x|%x %X}' },
             },
             hovermode: 'x unified',
             showlegend: false,

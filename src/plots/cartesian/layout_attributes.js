@@ -977,13 +977,16 @@ module.exports = {
         description: descriptionWithDates('hover text')
     },
     unifiedhovertitle: {
-        valType: 'string',
-        dflt: '',
-        editType: 'none',
-        description: [
-            'Template string used for rendering the title that appear on x or y unified hover box.',
-            templateFormatStringDescription()
-        ].join(' ')
+        text : {
+            valType: 'string',
+            dflt: '',
+            editType: 'none',
+            description: [
+                'Template string used for rendering the title that appear on x or y unified hover box.',
+                templateFormatStringDescription()
+            ].join(' ')
+        },
+        editType: 'none'
     },
     // lines and grids
     showline: {
