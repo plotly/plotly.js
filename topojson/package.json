@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "clean": "rm -rf build dist",
+    "get": "node ./bin/get_geodata.mjs",
+    "process": "node ./bin/process_geodata.mjs",
+    "build": "npm run clean && npm run get && npm run process"
+  },
+  "devDependencies": {
+    "@mapbox/geojson-rewind": "^0.5.2",
+    "d3-geo": "^3.1.1",
+    "d3-geo-projection": "^4.0.0",
+    "mapshaper": "^0.6.106",
+    "topojson-server": "^3.0.1"
+  }
+}
