@@ -160,7 +160,16 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         coerce('projection.parallels', dfltProjParallels);
     }
 
-    coerce('projection.scale');
+    var minscale = coerce('projection.minscale');
+    var maxscale = coerce('projection.maxscale');
+    if(minscale !== undefined && maxscale !== undefined && minscale > maxscale) {
+        geoLayoutOut.projection.minscale = minscale = undefined;
+        geoLayoutOut.projection.maxscale = maxscale = undefined;
+    }
+
+    var scale = coerce('projection.scale');
+    if(minscale !== undefined) geoLayoutOut.projection.scale = scale = Math.max(minscale, scale);
+    if(maxscale !== undefined) geoLayoutOut.projection.scale = scale = Math.min(maxscale, scale);
 
     show = coerce('showland', !visible ? false : undefined);
     if(show) coerce('landcolor');
