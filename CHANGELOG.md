@@ -19,7 +19,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
  with thanks to @my-tien for the contribution!
 
 ### Changed
- - Switch to United Nations (coastlines, countries, land, ocean) + Natural Earth (lakes, rivers, subunits) geodata for building topojson used in geo plot
+ - Switch to United Nations (coastlines, countries, land, ocean) + Natural Earth (lakes, rivers, subunits) geodata for building topojson used in geo plot [[#7393](https://github.com/plotly/plotly.js/pull/7393)]
  - Make 'png' all caps [[#7400](https://github.com/plotly/plotly.js/pull/7400)]
 
 ### Fixed
