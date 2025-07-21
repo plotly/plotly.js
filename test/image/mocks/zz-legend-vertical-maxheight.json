@@ -1,0 +1,358 @@
+{
+ "data": [
+  {
+   "x": [1, 2, 3, 4],
+   "y": [63.69, 62.55, 61.64, 61.39],
+   "type": "scatter",
+   "mode": "lines",
+   "name": "Average",
+   "line": { "color": "rgba(0,0,0,1)" }
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [58.24, 54.93, 42.11, 50.75],
+   "type": "scatter",
+   "mode": "lines",
+   "name": "African American",
+   "line": { "color": "rgba(248,118,109,1)" }
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [51.49, 49.59, 37.12, 31.45],
+   "type": "scatter",
+   "mode": "lines",
+   "name": "Alaska Native",
+   "line": { "color": "rgba(216,144,0,1)" }
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [49.09, 58.54, 53.91, 43.12],
+   "type": "scatter",
+   "mode": "lines",
+   "name": "Alaska Native Multirace",
+   "line": { "color": "rgba(163,165,0,1)" }
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [70.53, 72.51, 72.28, 78.65],
+   "type": "scatter",
+   "mode": "lines",
+   "name": "Asian",
+   "line": { "color": "rgba(57,182,0,1)" }
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [62.69, 59.09, 63.82, 62],
+   "type": "scatter",
+   "mode": "lines",
+   "name": "Hispanic",
+   "line": { "color": "rgba(0,191,125,1)" }
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [76.27, 71.43, 59.83, 64.34],
+   "type": "scatter",
+   "mode": "lines",
+   "name": "Non Hispanic Multirace",
+   "line": { "color": "rgba(0,191,196,1)" }
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [71.15, 81.82, 88.46, 74.29],
+   "type": "scatter",
+   "mode": "lines",
+   "name": "Non Resident Alien",
+   "line": { "color": "rgba(0,176,246,1)" }
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [57.89, 57.38, 52.08, 63.83],
+   "type": "scatter",
+   "mode": "lines",
+   "name": "Unknown",
+   "line": { "color": "rgba(149,144,255,1)" }
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [65.4, 63.27, 65.78, 64.03],
+   "type": "scatter",
+   "mode": "lines",
+   "name": "White",
+   "line": { "color": "rgba(231,107,243,1)" }
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [63.69, 62.55, 61.64, 61.39],
+   "type": "scatter",
+   "mode": "markers",
+   "marker": {
+    "autocolorscale": false,
+    "color": "rgba(0,0,0,1)",
+    "size": 5.6693,
+    "symbol": "circle",
+    "line": { "color": "rgba(0,0,0,1)" }
+   },
+   "name": "Average"
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [58.24, 54.93, 42.11, 50.75],
+   "type": "scatter",
+   "mode": "markers",
+   "marker": {
+    "autocolorscale": false,
+    "color": "rgba(248,118,109,1)",
+    "size": 5.6693,
+    "symbol": "circle",
+    "line": { "color": "rgba(248,118,109,1)" }
+   },
+   "name": "African American"
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [51.49, 49.59, 37.12, 31.45],
+   "type": "scatter",
+   "mode": "markers",
+   "marker": {
+    "autocolorscale": false,
+    "color": "rgba(216,144,0,1)",
+    "size": 5.6693,
+    "symbol": "circle",
+    "line": { "color": "rgba(216,144,0,1)" }
+   },
+   "name": "Alaska Native"
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [49.09, 58.54, 53.91, 43.12],
+   "type": "scatter",
+   "mode": "markers",
+   "marker": {
+    "autocolorscale": false,
+    "color": "rgba(163,165,0,1)",
+    "size": 5.6693,
+    "symbol": "circle",
+    "line": { "color": "rgba(163,165,0,1)" }
+   },
+   "name": "Alaska Native Multirace"
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [70.53, 72.51, 72.28, 78.65],
+   "type": "scatter",
+   "mode": "markers",
+   "marker": {
+    "autocolorscale": false,
+    "color": "rgba(57,182,0,1)",
+    "size": 5.6693,
+    "symbol": "circle",
+    "line": { "color": "rgba(57,182,0,1)" }
+   },
+   "name": "Asian"
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [62.69, 59.09, 63.82, 62],
+   "type": "scatter",
+   "mode": "markers",
+   "marker": {
+    "autocolorscale": false,
+    "color": "rgba(0,191,125,1)",
+    "size": 5.6693,
+    "symbol": "circle",
+    "line": { "color": "rgba(0,191,125,1)" }
+   },
+   "name": "Hispanic"
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [76.27, 71.43, 59.83, 64.34],
+   "type": "scatter",
+   "mode": "markers",
+   "marker": {
+    "autocolorscale": false,
+    "color": "rgba(0,191,196,1)",
+    "size": 5.6693,
+    "symbol": "circle",
+    "line": { "color": "rgba(0,191,196,1)" }
+   },
+   "name": "Non Hispanic Multirace"
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [71.15, 81.82, 88.46, 74.29],
+   "type": "scatter",
+   "mode": "markers",
+   "marker": {
+    "autocolorscale": false,
+    "color": "rgba(0,176,246,1)",
+    "size": 5.6693,
+    "symbol": "circle",
+    "line": { "color": "rgba(0,176,246,1)" }
+   },
+   "name": "Non Resident Alien"
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [57.89, 57.38, 52.08, 63.83],
+   "type": "scatter",
+   "mode": "markers",
+   "marker": {
+    "autocolorscale": false,
+    "color": "rgba(149,144,255,1)",
+    "size": 5.6693,
+    "symbol": "circle",
+    "line": { "color": "rgba(149,144,255,1)" }
+   },
+   "name": "Unknown"
+  },
+  {
+   "x": [1, 2, 3, 4],
+   "y": [65.4, 63.27, 65.78, 64.03],
+   "type": "scatter",
+   "mode": "markers",
+   "marker": {
+    "autocolorscale": false,
+    "color": "rgba(231,107,243,1)",
+    "size": 5.6693,
+    "symbol": "circle",
+    "line": { "color": "rgba(231,107,243,1)" }
+   },
+   "name": "White"
+  }
+ ],
+ "layout": {
+  "margin": {
+   "t": 34.8976,
+   "r": 75.5906,
+   "b": 51.243,
+   "l": 57.6191
+  },
+  "plot_bgcolor": "rgba(255,255,255,1)",
+  "paper_bgcolor": "rgba(255,255,255,1)",
+  "font": {
+   "color": "rgba(34,34,34,1)",
+   "family": "Roboto",
+   "size": 15.9402
+  },
+  "xaxis": {
+   "type": "linear",
+   "autorange": false,
+   "tickmode": "array",
+   "range": [0.4, 4.6],
+   "minor": {
+    "tickvals": [1.5, 2.5, 3.5],
+    "ticks": "inside",
+    "tickwidth": 100,
+    "ticklen": 5,
+    "tickcolor": "orange",
+    "gridcolor": "yellow",
+    "gridwidth": 100,
+    "griddash": "5px"
+   },
+   "ticktext": ["2012", "2013", "2014", "2015"],
+   "tickvals": [1, 2, 3, 4],
+   "ticks": "",
+   "tickcolor": null,
+   "ticklen": 3.653,
+   "tickwidth": 0,
+   "showticklabels": true,
+   "tickfont": {
+    "color": "rgba(77,77,77,1)",
+    "family": "Roboto",
+    "size": 12.7522
+   },
+   "tickangle": -0,
+   "showline": false,
+   "linecolor": null,
+   "linewidth": 0,
+   "showgrid": true,
+   "domain": [0, 1],
+   "gridcolor": "rgba(216,216,216,1)",
+   "gridwidth": 0.6642,
+   "zeroline": false,
+   "anchor": "y",
+   "title": {
+    "text": "Fiscal year",
+    "font": {
+     "color": "rgba(34,34,34,1)",
+     "family": "Roboto",
+     "size": 15.9402
+    }
+   },
+   "hoverformat": ".2f"
+  },
+  "yaxis": {
+   "type": "linear",
+   "autorange": false,
+   "tickmode": "array",
+   "range": [-5, 105],
+   "ticktext": ["0", "25", "50", "75", "100"],
+   "tickvals": [0, 25, 50, 75, 100],
+   "ticks": "",
+   "tickcolor": null,
+   "ticklen": 3.653,
+   "tickwidth": 0,
+   "showticklabels": true,
+   "tickfont": {
+    "color": "rgba(77,77,77,1)",
+    "family": "Roboto",
+    "size": 12.7522
+   },
+   "tickangle": -0,
+   "showline": false,
+   "linecolor": null,
+   "linewidth": 0,
+   "showgrid": true,
+   "domain": [0, 1],
+   "gridcolor": "rgba(216,216,216,1)",
+   "gridwidth": 0.6642,
+   "zeroline": false,
+   "anchor": "x",
+   "title": {
+    "text": "% of students",
+    "font": {
+     "color": "rgba(34,34,34,1)",
+     "family": "Roboto",
+     "size": 15.9402
+    }
+   },
+   "hoverformat": ".2f"
+  },
+  "shapes": [
+   {
+    "type": "rect",
+    "fillcolor": "transparent",
+    "line": {
+     "color": "rgba(0,0,0,1)",
+     "width": 0,
+     "linetype": "solid"
+    },
+    "yref": "paper",
+    "xref": "paper",
+    "x0": 0,
+    "x1": 1,
+    "y0": 0,
+    "y1": 1
+   }
+  ],
+  "showlegend": true,
+  "legend": {
+   "orientation": "v",
+   "x": 0.5,
+   "y": -0.4,
+   "xanchor": "center",
+   "yanchor": "top",
+   "bgcolor": "rgba(255,255,255,0.9)",
+   "bordercolor": "#ccc",
+   "borderwidth": 1,
+   "font": { "size": 10 },
+   "itemsizing": "constant",
+   "itemwidth": 30,
+   "itemclick": "toggle",
+   "itemdoubleclick": "toggleothers",
+   "maxheight": 0.3
+  },
+  "hovermode": "closest"
+ }
+}
