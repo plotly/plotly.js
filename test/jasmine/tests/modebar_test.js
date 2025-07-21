@@ -1193,6 +1193,62 @@ describe('ModeBar', function() {
                     assertRange('xaxis2', [-1, 4]);
                     assertRange('yaxis2', [0, 4]);
                 });
+
+                it('should respect modebardisable attribute', function(done) {
+                    Plotly.relayout(gd, {
+                        'xaxis.modebardisable': 'zoominout+autoscale',
+                        'xaxis2.modebardisable': 'zoominout',
+                        'yaxis.modebardisable': 'autoscale',
+                    }).then(function() {
+                        var buttonZoomIn = selectButton(modeBar, 'zoomIn2d');
+                        var buttonZoomOut = selectButton(modeBar, 'zoomOut2d');
+
+                        assertRange('xaxis', ['2016-01-01', '2016-04-01']);
+                        assertRange('yaxis', [1, 3]);
+                        assertRange('xaxis2', [-1, 4]);
+                        assertRange('yaxis2', [0, 4]);
+
+                        // xaxis and xaxis2 should not be affected by zoom in/out
+                        // yaxis and yaxis2 should be affected as in previous test
+                        buttonZoomIn.click();
+                        assertRange('xaxis', ['2016-01-01', '2016-04-01']);
+                        assertRange('yaxis', [1.5, 2.5]);
+                        assertRange('xaxis2', [-1, 4]);
+                        assertRange('yaxis2', [1, 3]);
+
+                        buttonZoomOut.click();
+                        assertRange('xaxis', ['2016-01-01', '2016-04-01']);
+                        assertRange('yaxis', [1, 3]);
+                        assertRange('xaxis2', [-1, 4]);
+                        assertRange('yaxis2', [0, 4]);
+
+                        return Plotly.relayout(gd, {
+                            'xaxis.range': ['2016-01-23 17:45', '2016-03-09 05:15'],
+                            'yaxis.range': [1.5, 2.5],
+                            'xaxis2.range': [0.25, 2.75],
+                            'yaxis2.range': [1, 3],
+                        });
+                    })
+                    .then(function() {
+                        var buttonAutoScale = selectButton(modeBar, 'autoScale2d');
+                        var buttonResetScale = selectButton(modeBar, 'resetScale2d');
+
+                        // xaxis and yaxis should not be affected by autorange
+                        // xaxis2 and yaxis2 should be affected as in previous test
+                        buttonAutoScale.click();
+                        assertRange('xaxis', ['2016-01-23 17:45', '2016-03-09 05:15']);
+                        assertRange('yaxis', [1.5, 2.5]);
+                        assertRange('xaxis2', [-0.5, 2.5]);
+                        assertRange('yaxis2', [0, 2.105263]);
+
+                        buttonResetScale.click();
+                        assertRange('xaxis', ['2016-01-23 17:45', '2016-03-09 05:15']);
+                        assertRange('yaxis', [1.5, 2.5]);
+                        assertRange('xaxis2', [-1, 4]);
+                        assertRange('yaxis2', [0, 4]);
+                    })
+                    .then(done, done.fail)
+                });
             });
 
             describe('buttons zoom2d, pan2d, select2d and lasso2d', function() {

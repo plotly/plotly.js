@@ -97,24 +97,24 @@ case $1 in
                   find $ROOT/test/image/mocks/gl*     -type f -printf "%f\n"; \
                   find $ROOT/test/image/mocks/map* -type f -printf "%f\n"; \
                 } | sed 's/\.json$//1' | circleci tests split)
-        python3 test/image/make_baseline.py virtual-webgl $SUITE || EXIT_STATE=$?
+        sudo python3 test/image/make_baseline.py virtual-webgl $SUITE || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
     make-baselines-mathjax3)
-        python3 test/image/make_baseline.py mathjax3    legend_mathjax_title_and_items mathjax parcats_grid_subplots table_latex_multitrace_scatter table_plain_birds table_wrapped_birds ternary-mathjax ternary-mathjax-title-place-subtitle || EXIT_STATE=$?
+        sudo python3 test/image/make_baseline.py mathjax3    legend_mathjax_title_and_items mathjax parcats_grid_subplots table_latex_multitrace_scatter table_plain_birds table_wrapped_birds ternary-mathjax ternary-mathjax-title-place-subtitle || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
     make-baselines-b64)
         SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | sed 's/\.json$//1' | circleci tests split)
-        python3 test/image/make_baseline.py b64 $SUITE || EXIT_STATE=$?
+        sudo python3 test/image/make_baseline.py b64 $SUITE || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
     make-baselines)
         SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | sed 's/\.json$//1' | circleci tests split)
-        python3 test/image/make_baseline.py $SUITE || EXIT_STATE=$?
+        sudo python3 test/image/make_baseline.py $SUITE || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
