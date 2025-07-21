@@ -242,7 +242,6 @@ async function convertLayersToTopojson({ name, resolution }) {
 
 // Get required polygon features from UN GeoJSON
 const inputFilePathUNGeojson = `${inputDir}/${unFilename}.geojson`;
-// await mapshaper.runCommands(`${inputFilePathUNGeojson} -filter 'stscod !== undefined' target=1 -clean target=1 -o force ${inputFilePathUNGeojson}`)
 const outputFilePathAntarctica50m = `${outputDirGeojson}/${unFilename}_50m/antarctica.geojson`;
 const outputFilePathFiji50m = `${outputDirGeojson}/${unFilename}_50m/fiji.geojson`;
 const outputFilePathFijiAntimeridian50m = `${outputDirGeojson}/${unFilename}_50m/fiji_antimeridian.geojson`;
