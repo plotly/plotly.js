@@ -3021,7 +3021,13 @@
      "min": -1,
      "valType": "integer"
     },
-    "role": "object"
+    "role": "object",
+    "showarrow": {
+     "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+     "dflt": true,
+     "editType": "none",
+     "valType": "boolean"
+    }
    },
    "hovermode": {
     "description": "Determines the mode of hover interactions. If *closest*, a single hoverlabel will appear for the *closest* point within the `hoverdistance`. If *x* (or *y*), multiple hoverlabels will appear for multiple points at the *closest* x- (or y-) coordinate within the `hoverdistance`, with the caveat that no more than one hoverlabel will appear per trace. If *x unified* (or *y unified*), a single hoverlabel will appear multiple points at the closest x- (or y-) coordinate within the `hoverdistance` with the caveat that no more than one hoverlabel will appear per trace. In this mode, spikelines are enabled by default perpendicular to the specified axis. If false, hover interactions are disabled.",
@@ -16767,7 +16773,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -18966,7 +18984,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -20548,7 +20578,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hoveron": {
      "description": "Do the hover effects highlight individual boxes  or sample points or both?",
@@ -22086,6 +22128,18 @@
       "valType": "string"
      },
      "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "split": {
       "description": "Show hover information (open, close, high, low) in separate labels.",
       "dflt": false,
@@ -25121,7 +25175,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -26402,7 +26468,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -27679,7 +27757,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -28989,7 +29079,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -30550,7 +30652,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hoverongaps": {
      "description": "Determines whether or not gaps (i.e. {nan} or missing values) in the `z` data have hover labels associated with them.",
@@ -33373,7 +33487,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -34588,7 +34714,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -35253,7 +35391,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -37281,7 +37431,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -39112,7 +39274,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hoverongaps": {
      "description": "Determines whether or not gaps (i.e. {nan} or missing values) in the `z` data have hover labels associated with them.",
@@ -40273,7 +40447,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -42914,7 +43100,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -44604,7 +44802,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -45530,7 +45740,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -47616,7 +47838,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -50142,7 +50376,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -51683,7 +51929,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -52511,6 +52769,18 @@
       "valType": "string"
      },
      "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "split": {
       "description": "Show hover information (open, close, high, low) in separate labels.",
       "dflt": false,
@@ -55966,7 +56236,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -57396,7 +57678,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "calc",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "ids": {
      "description": "Assigns id labels to each datum. These ids for object constancy of data points during animation. Should be an array of strings, not numbers or any other type.",
@@ -57830,7 +58124,19 @@
        "editType": "none",
        "valType": "string"
       },
-      "role": "object"
+      "role": "object",
+      "showarrow": {
+       "arrayOk": true,
+       "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+       "dflt": true,
+       "editType": "calc",
+       "valType": "boolean"
+      },
+      "showarrowsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+       "editType": "none",
+       "valType": "string"
+      }
      },
      "hovertemplate": {
       "arrayOk": true,
@@ -58195,7 +58501,19 @@
        "editType": "none",
        "valType": "string"
       },
-      "role": "object"
+      "role": "object",
+      "showarrow": {
+       "arrayOk": true,
+       "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+       "dflt": true,
+       "editType": "calc",
+       "valType": "boolean"
+      },
+      "showarrowsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+       "editType": "none",
+       "valType": "string"
+      }
      },
      "hovertemplate": {
       "arrayOk": true,
@@ -59070,7 +59388,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hoveron": {
      "description": "Do the hover effects highlight individual points (markers or line points) or do they highlight filled regions? If the fill is *toself* or *tonext* and there are no markers or text, then the default is *fills*, otherwise it is *points*.",
@@ -61808,7 +62138,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -64252,7 +64594,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hoveron": {
      "description": "Do the hover effects highlight individual points (markers or line points) or do they highlight filled regions? If the fill is *toself* or *tonext* and there are no markers or text, then the default is *fills*, otherwise it is *points*.",
@@ -66536,7 +66890,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -68978,7 +69344,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -71301,7 +71679,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -72838,7 +73228,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -74320,7 +74722,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hoveron": {
      "description": "Do the hover effects highlight individual points (markers or line points) or do they highlight filled regions? If the fill is *toself* or *tonext* and there are no markers or text, then the default is *fills*, otherwise it is *points*.",
@@ -76630,7 +77044,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -78774,7 +79200,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hoveron": {
      "description": "Do the hover effects highlight individual points (markers or line points) or do they highlight filled regions? If the fill is *toself* or *tonext* and there are no markers or text, then the default is *fills*, otherwise it is *points*.",
@@ -81083,7 +81521,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hoveron": {
      "description": "Do the hover effects highlight individual points (markers or line points) or do they highlight filled regions? If the fill is *toself* or *tonext* and there are no markers or text, then the default is *fills*, otherwise it is *points*.",
@@ -83393,7 +83843,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -85989,7 +86451,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -86800,7 +87274,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -89599,7 +90085,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -90914,7 +91412,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "ids": {
      "description": "Assigns id labels to each datum. These ids for object constancy of data points during animation. Should be an array of strings, not numbers or any other type.",
@@ -91430,7 +91940,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -93591,7 +94113,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hoveron": {
      "description": "Do the hover effects highlight individual violins or sample points or the kernel density estimate or any combination of them?",
@@ -95705,7 +96239,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
@@ -96656,7 +97202,19 @@
       "editType": "none",
       "valType": "string"
      },
-     "role": "object"
+     "role": "object",
+     "showarrow": {
+      "arrayOk": true,
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     },
+     "showarrowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `showarrow`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "hovertemplate": {
      "arrayOk": true,
