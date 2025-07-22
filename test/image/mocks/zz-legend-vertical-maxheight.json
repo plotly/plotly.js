@@ -326,8 +326,8 @@
    "text": "30 Mathematical Functions with Vertical Legend",
    "font": { "size": 18, "color": "#333" }
   },
-  "xaxis": { "title": "X Values", "gridcolor": "#e1e5e9", "zeroline": false },
-  "yaxis": { "title": "Y Values", "gridcolor": "#e1e5e9", "zeroline": false },
+  "xaxis": { "gridcolor": "#e1e5e9", "zeroline": false },
+  "yaxis": { "gridcolor": "#e1e5e9", "zeroline": false },
   "legend": {
    "orientation": "v",
    "x": 0.5,
