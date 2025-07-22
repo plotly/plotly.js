@@ -913,7 +913,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, hoverText.commonLabelBoundingBox);
-        alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY, fullLayout.hoverlabel.showarrow);
+        alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
     }    // TODO: tagName hack is needed to appease geo.js's hack of using eventTarget=true
     // we should improve the "fx" API so other plots can use it without these hack.
     if(eventTarget && eventTarget.tagName) {
@@ -1903,7 +1903,7 @@ function getTextShiftX(hoverLabel) {
     };
 }
 
-function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY, showArrow) {
+function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
     var pX = function(x) { return x * scaleX; };
     var pY = function(y) { return y * scaleY; };
 
@@ -1922,6 +1922,7 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY, showArrow) {
         var offsetY = offsets.y;
 
         var isMiddle = anchor === 'middle';
+        var showArrow = d.trace.hoverlabel.showarrow;
 
         var pathStr;
         if(isMiddle) {
