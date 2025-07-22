@@ -9,6 +9,16 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.0.2] -- 2025-07-22
+
+### Fixed
+ - Fix installing dependencies in node v22 [[#7381](https://github.com/plotly/plotly.js/pull/7381)], with thanks to @chaigh-uk for the contribution!
+ - Fix Persian calendar leap year [[#7456](https://github.com/plotly/plotly.js/pull/7456)]
+ - Fix scroll wheel zoom for geo subplots in Safari [#7474](https://github.com/plotly/plotly.js/pull/7474)
+ - Add method to check for WebKit WebView user agent string [[#7479](https://github.com/plotly/plotly.js/pull/7479)]
+ - Fix edit colorbar title [7487](https://github.com/plotly/plotly.js/pull/7487)
+
+
 ## [3.0.1] -- 2025-02-18
 
 ### Changed
