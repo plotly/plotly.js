@@ -1922,7 +1922,7 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
         var offsetY = offsets.y;
 
         var isMiddle = anchor === 'middle';
-        var showArrow = d.trace.hoverlabel.showarrow;
+        var showArrow = d.trace.hoverlabel?.showarrow;
 
         var pathStr;
         if(isMiddle) {
