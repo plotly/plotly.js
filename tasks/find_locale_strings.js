@@ -28,7 +28,7 @@ function findLocaleStrings() {
             var code = fs.readFileSync(file, 'utf-8');
             var filePartialPath = file.substr(constants.pathToSrc.length);
 
-            falafel(code, {locations: true}, function(node) {
+            falafel(code, { ecmaVersion: 12, locations: true }, function(node) {
                 if(node.type === 'CallExpression' &&
                     (node.callee.name === '_' || node.callee.source() === 'Lib._')
                 ) {
