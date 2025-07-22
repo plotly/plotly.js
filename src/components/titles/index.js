@@ -22,7 +22,7 @@ var SUBTITLE_PADDING_EM = 1.6;
  * @param {DOM element} gd - the graphDiv
  * @param {string} titleClass - the css class of this title
  * @param {object} options - how and what to draw
- *      propContainer - the layout object containing the `title` attribute that 
+ *      propContainer - the layout object containing the `title` attribute that
  *          applies to this title
  *      propName - the full name of the title property (for Plotly.relayout)
  *      [traceIndex] - include only if this property applies to one trace
@@ -102,7 +102,7 @@ function draw(gd, titleClass, options) {
     var editAttr;
     if(prop === 'title.text') editAttr = 'titleText';
     else if(prop.indexOf('axis') !== -1) editAttr = 'axisTitleText';
-    else if(prop.indexOf('colorbar' !== -1)) editAttr = 'colorbarTitleText';
+    else if(prop.indexOf('colorbar') !== -1) editAttr = 'colorbarTitleText';
     var editable = gd._context.edits[editAttr];
 
     function matchesPlaceholder(text, placeholder) {
