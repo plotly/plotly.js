@@ -172,6 +172,7 @@
     "raw-loader": "^4.0.2",
     "read-last-lines": "^1.8.0",
     "run-series": "^1.1.9",
+    "sane-topojson": "^4.0.0",
     "sass": "^1.78.0",
     "stream-browserify": "^3.0.0",
     "style-loader": "^4.0.0",
