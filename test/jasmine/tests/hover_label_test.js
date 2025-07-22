@@ -7073,14 +7073,14 @@ describe('hoverlabel.showarrow', function() {
             margin: {l: 50, t: 50, r: 50, b: 50}
         })
         .then(function() {
-            _hover(200, 200); // Hover over middle point
+            _hover(200, 70); // Hover over middle point
         })
         .then(delay(HOVERMINTIME * 1.1))
         .then(function() {
             var pathD = getHoverPath();
             expect(pathD).not.toBeNull('hover path should exist');
-            // Arrow paths contain 'L' commands for the triangular pointer
-            expect(pathD).toMatch(/M0,0L/, 'path should contain arrow (L command from origin)');
+            // Arrow paths contain 'L' commands starting from 0,0
+            expect(pathD).toMatch(/^M0,0L/, 'path should contain arrow (L command from 0,0)');
         })
         .then(done, done.fail);
     });
@@ -7098,15 +7098,15 @@ describe('hoverlabel.showarrow', function() {
             hoverlabel: { showarrow: false }
         })
         .then(function() {
-            _hover(200, 200); // Hover over middle point
+            _hover(200, 70); // Hover over middle point
         })
         .then(delay(HOVERMINTIME * 1.1))
         .then(function() {
             var pathD = getHoverPath();
             expect(pathD).not.toBeNull('hover path should exist');
-            // No-arrow paths should be simple rectangles (no 'L' commands from origin)
-            expect(pathD).not.toMatch(/M0,0L/, 'path should not contain arrow');
-            expect(pathD).toMatch(/^M-/, 'path should start with rectangle (M- for left edge)');
+            // No-arrow paths should be simple rectangles (no 'L' commands starting at 0,0))
+            expect(pathD).not.toMatch(/^M0,0L/, 'path should not start at 0,0');
+            expect(pathD).toMatch(/^M[\d.-]+,[\d.-]+h/, 'path should start with some numeric point and move horizontally');
         })
         .then(done, done.fail);
     });
@@ -7124,13 +7124,13 @@ describe('hoverlabel.showarrow', function() {
             margin: {l: 50, t: 50, r: 50, b: 50}
         })
         .then(function() {
-            _hover(200, 200); // Hover over middle point
+            _hover(200, 70); // Hover over middle point
         })
         .then(delay(HOVERMINTIME * 1.1))
         .then(function() {
             var pathD = getHoverPath();
             expect(pathD).not.toBeNull('hover path should exist');
-            expect(pathD).not.toMatch(/M0,0L/, 'trace-level showarrow:false should hide arrow');
+            expect(pathD).not.toMatch(/^M0,0L/, 'trace-level showarrow:false should hide arrow');
         })
         .then(done, done.fail);
     });
