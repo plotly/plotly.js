@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v3.0.1
+* plotly.js (geo) v3.0.2
 * Copyright 2012-2025, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38,7 +38,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.0.1";
+      exports.version = "3.0.2";
     }
   });
 
@@ -13737,10 +13737,10 @@ var Plotly = (() => {
     }
   });
 
-  // stylePlugin:/Users/ekl/code/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
+  // stylePlugin:/home/cam/Development/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
   var maplibre_gl_exports = {};
   var init_maplibre_gl2 = __esm({
-    "stylePlugin:/Users/ekl/code/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
+    "stylePlugin:/home/cam/Development/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       init_maplibre_gl();
     }
   });
@@ -15581,6 +15581,8 @@ var Plotly = (() => {
       lib.isIOS = function() {
         return IS_IOS_REGEX.test(window.navigator.userAgent);
       };
+      var IS_MAC_WKWEBVIEW_REGEX = /Macintosh.+AppleWebKit.+Gecko\)$/;
+      lib.isMacWKWebView = () => IS_MAC_WKWEBVIEW_REGEX.test(window.navigator.userAgent);
       var FIREFOX_VERSION_REGEX = /Firefox\/(\d+)\.\d+/;
       lib.getFirefoxVersion = function() {
         var match = FIREFOX_VERSION_REGEX.exec(window.navigator.userAgent);
@@ -16433,6 +16435,10 @@ var Plotly = (() => {
             ev.emit(event, data);
             internalEv.emit(event, data);
           };
+          if (typeof plotObj.addEventListener === "function") {
+            plotObj.addEventListener("wheel", () => {
+            });
+          }
           return plotObj;
         },
         /*
@@ -24960,7 +24966,7 @@ var Plotly = (() => {
         var editAttr;
         if (prop === "title.text") editAttr = "titleText";
         else if (prop.indexOf("axis") !== -1) editAttr = "axisTitleText";
-        else if (prop.indexOf("colorbar" !== -1)) editAttr = "colorbarTitleText";
+        else if (prop.indexOf("colorbar") !== -1) editAttr = "colorbarTitleText";
         var editable = gd._context.edits[editAttr];
         function matchesPlaceholder(text, placeholder2) {
           if (text === void 0 || placeholder2 === void 0) return false;
@@ -34630,6 +34636,7 @@ var Plotly = (() => {
   var require_newshapes = __commonJS({
     "src/components/shapes/draw_newshape/newshapes.js"(exports, module) {
       "use strict";
+      var axis_ids = require_axis_ids();
       var dragHelpers = require_helpers5();
       var drawMode = dragHelpers.drawMode;
       var openMode = dragHelpers.openMode;
@@ -34696,10 +34703,22 @@ var Plotly = (() => {
               case "line":
               case "rect":
               case "circle":
-                modifyItem("x0", afterEdit.x0 - (beforeEdit.x0shift || 0));
-                modifyItem("x1", afterEdit.x1 - (beforeEdit.x1shift || 0));
-                modifyItem("y0", afterEdit.y0 - (beforeEdit.y0shift || 0));
-                modifyItem("y1", afterEdit.y1 - (beforeEdit.y1shift || 0));
+                var xaxis = axis_ids.getFromId(gd, beforeEdit.xref);
+                if (beforeEdit.xref.charAt(0) === "x" && xaxis.type.includes("category")) {
+                  modifyItem("x0", afterEdit.x0 - (beforeEdit.x0shift || 0));
+                  modifyItem("x1", afterEdit.x1 - (beforeEdit.x1shift || 0));
+                } else {
+                  modifyItem("x0", afterEdit.x0);
+                  modifyItem("x1", afterEdit.x1);
+                }
+                var yaxis = axis_ids.getFromId(gd, beforeEdit.yref);
+                if (beforeEdit.yref.charAt(0) === "y" && yaxis.type.includes("category")) {
+                  modifyItem("y0", afterEdit.y0 - (beforeEdit.y0shift || 0));
+                  modifyItem("y1", afterEdit.y1 - (beforeEdit.y1shift || 0));
+                } else {
+                  modifyItem("y0", afterEdit.y0);
+                  modifyItem("y1", afterEdit.y1);
+                }
                 break;
               case "path":
                 modifyItem("path", afterEdit.path);
@@ -60534,17 +60553,20 @@ var Plotly = (() => {
       }
       function azimuthToBearing(angle) {
         angle = angle % 360;
-        if (angle > 0)
-          return angle > 180 ? angle - 360 : angle;
-        return angle < -180 ? angle + 360 : angle;
+        if (angle > 180) {
+          return angle - 360;
+        } else if (angle < -180) {
+          return angle + 360;
+        }
+        return angle;
       }
       function radiansToDegrees(radians) {
-        const degrees = radians % (2 * Math.PI);
-        return degrees * 180 / Math.PI;
+        const normalisedRadians = radians % (2 * Math.PI);
+        return normalisedRadians * 180 / Math.PI;
       }
       function degreesToRadians(degrees) {
-        const radians = degrees % 360;
-        return radians * Math.PI / 180;
+        const normalisedDegrees = degrees % 360;
+        return normalisedDegrees * Math.PI / 180;
       }
       function convertLength(length, originalUnit = "kilometers", finalUnit = "kilometers") {
         if (!(length >= 0)) {
@@ -60636,8 +60658,7 @@ var Plotly = (() => {
       Object.defineProperty(exports, "__esModule", { value: true });
       var _helpers = require_cjs();
       function coordEach(geojson, callback, excludeWrapCoord) {
-        if (geojson === null)
-          return;
+        if (geojson === null) return;
         var j, k, l, geometry, stopG, coords, geometryMaybeCollection, wrapShrink = 0, coordIndex = 0, isGeometryCollection, type = geojson.type, isFeatureCollection = type === "FeatureCollection", isFeature = type === "Feature", stop = isFeatureCollection ? geojson.features.length : 1;
         for (var featureIndex = 0; featureIndex < stop; featureIndex++) {
           geometryMaybeCollection = isFeatureCollection ? geojson.features[featureIndex].geometry : isFeature ? geojson.geometry : geojson;
@@ -60647,8 +60668,7 @@ var Plotly = (() => {
             var multiFeatureIndex = 0;
             var geometryIndex = 0;
             geometry = isGeometryCollection ? geometryMaybeCollection.geometries[geomIndex] : geometryMaybeCollection;
-            if (geometry === null)
-              continue;
+            if (geometry === null) continue;
             coords = geometry.coordinates;
             var geomType = geometry.type;
             wrapShrink = excludeWrapCoord && (geomType === "Polygon" || geomType === "MultiPolygon") ? 1 : 0;
@@ -60679,11 +60699,9 @@ var Plotly = (() => {
                   ) === false)
                     return false;
                   coordIndex++;
-                  if (geomType === "MultiPoint")
-                    multiFeatureIndex++;
+                  if (geomType === "MultiPoint") multiFeatureIndex++;
                 }
-                if (geomType === "LineString")
-                  multiFeatureIndex++;
+                if (geomType === "LineString") multiFeatureIndex++;
                 break;
               case "Polygon":
               case "MultiLineString":
@@ -60699,13 +60717,10 @@ var Plotly = (() => {
                       return false;
                     coordIndex++;
                   }
-                  if (geomType === "MultiLineString")
-                    multiFeatureIndex++;
-                  if (geomType === "Polygon")
-                    geometryIndex++;
+                  if (geomType === "MultiLineString") multiFeatureIndex++;
+                  if (geomType === "Polygon") geometryIndex++;
                 }
-                if (geomType === "Polygon")
-                  multiFeatureIndex++;
+                if (geomType === "Polygon") multiFeatureIndex++;
                 break;
               case "MultiPolygon":
                 for (j = 0; j < coords.length; j++) {
@@ -60764,8 +60779,7 @@ var Plotly = (() => {
         switch (geojson.type) {
           case "FeatureCollection":
             for (i = 0; i < geojson.features.length; i++) {
-              if (callback(geojson.features[i].properties, i) === false)
-                break;
+              if (callback(geojson.features[i].properties, i) === false) break;
             }
             break;
           case "Feature":
@@ -60788,8 +60802,7 @@ var Plotly = (() => {
           callback(geojson, 0);
         } else if (geojson.type === "FeatureCollection") {
           for (var i = 0; i < geojson.features.length; i++) {
-            if (callback(geojson.features[i], i) === false)
-              break;
+            if (callback(geojson.features[i], i) === false) break;
           }
         }
       }
@@ -60798,8 +60811,7 @@ var Plotly = (() => {
         featureEach(geojson, function(currentFeature, featureIndex) {
           if (featureIndex === 0 && initialValue === void 0)
             previousValue = currentFeature;
-          else
-            previousValue = callback(previousValue, currentFeature, featureIndex);
+          else previousValue = callback(previousValue, currentFeature, featureIndex);
         });
         return previousValue;
       }
@@ -60949,11 +60961,9 @@ var Plotly = (() => {
       function segmentEach(geojson, callback) {
         flattenEach(geojson, function(feature2, featureIndex, multiFeatureIndex) {
           var segmentIndex = 0;
-          if (!feature2.geometry)
-            return;
+          if (!feature2.geometry) return;
           var type = feature2.geometry.type;
-          if (type === "Point" || type === "MultiPoint")
-            return;
+          if (type === "Point" || type === "MultiPoint") return;
           var previousCoords;
           var previousFeatureIndex = 0;
           var previousMultiIndex = 0;
@@ -61012,11 +61022,9 @@ var Plotly = (() => {
         return previousValue;
       }
       function lineEach(geojson, callback) {
-        if (!geojson)
-          throw new Error("geojson is required");
+        if (!geojson) throw new Error("geojson is required");
         flattenEach(geojson, function(feature2, featureIndex, multiFeatureIndex) {
-          if (feature2.geometry === null)
-            return;
+          if (feature2.geometry === null) return;
           var type = feature2.geometry.type;
           var coords = feature2.geometry.coordinates;
           switch (type) {
@@ -61059,8 +61067,7 @@ var Plotly = (() => {
       }
       function findSegment(geojson, options) {
         options = options || {};
-        if (!_helpers.isObject.call(void 0, options))
-          throw new Error("options is invalid");
+        if (!_helpers.isObject.call(void 0, options)) throw new Error("options is invalid");
         var featureIndex = options.featureIndex || 0;
         var multiFeatureIndex = options.multiFeatureIndex || 0;
         var geometryIndex = options.geometryIndex || 0;
@@ -61090,16 +61097,14 @@ var Plotly = (() => {
           default:
             throw new Error("geojson is invalid");
         }
-        if (geometry === null)
-          return null;
+        if (geometry === null) return null;
         var coords = geometry.coordinates;
         switch (geometry.type) {
           case "Point":
           case "MultiPoint":
             return null;
           case "LineString":
-            if (segmentIndex < 0)
-              segmentIndex = coords.length + segmentIndex - 1;
+            if (segmentIndex < 0) segmentIndex = coords.length + segmentIndex - 1;
             return _helpers.lineString.call(
               void 0,
               [coords[segmentIndex], coords[segmentIndex + 1]],
@@ -61107,8 +61112,7 @@ var Plotly = (() => {
               options
             );
           case "Polygon":
-            if (geometryIndex < 0)
-              geometryIndex = coords.length + geometryIndex;
+            if (geometryIndex < 0) geometryIndex = coords.length + geometryIndex;
             if (segmentIndex < 0)
               segmentIndex = coords[geometryIndex].length + segmentIndex - 1;
             return _helpers.lineString.call(
@@ -61155,8 +61159,7 @@ var Plotly = (() => {
       }
       function findPoint(geojson, options) {
         options = options || {};
-        if (!_helpers.isObject.call(void 0, options))
-          throw new Error("options is invalid");
+        if (!_helpers.isObject.call(void 0, options)) throw new Error("options is invalid");
         var featureIndex = options.featureIndex || 0;
         var multiFeatureIndex = options.multiFeatureIndex || 0;
         var geometryIndex = options.geometryIndex || 0;
@@ -61186,8 +61189,7 @@ var Plotly = (() => {
           default:
             throw new Error("geojson is invalid");
         }
-        if (geometry === null)
-          return null;
+        if (geometry === null) return null;
         var coords = geometry.coordinates;
         switch (geometry.type) {
           case "Point":
@@ -61197,12 +61199,10 @@ var Plotly = (() => {
               multiFeatureIndex = coords.length + multiFeatureIndex;
             return _helpers.point.call(void 0, coords[multiFeatureIndex], properties, options);
           case "LineString":
-            if (coordIndex < 0)
-              coordIndex = coords.length + coordIndex;
+            if (coordIndex < 0) coordIndex = coords.length + coordIndex;
             return _helpers.point.call(void 0, coords[coordIndex], properties, options);
           case "Polygon":
-            if (geometryIndex < 0)
-              geometryIndex = coords.length + geometryIndex;
+            if (geometryIndex < 0) geometryIndex = coords.length + geometryIndex;
             if (coordIndex < 0)
               coordIndex = coords[geometryIndex].length + coordIndex;
             return _helpers.point.call(void 0, coords[geometryIndex][coordIndex], properties, options);
@@ -74422,6 +74422,16 @@ var Plotly = (() => {
       function PersianCalendar(language) {
         this.local = this.regionalOptions[language || ""] || this.regionalOptions[""];
       }
+      function _leapYear(year) {
+        var x = year - 475;
+        if (year < 0) x++;
+        var c = 0.242197;
+        var v0 = c * x;
+        var v1 = c * (x + 1);
+        var r0 = v0 - Math.floor(v0);
+        var r1 = v1 - Math.floor(v1);
+        return r0 > r1;
+      }
       PersianCalendar.prototype = new main.baseCalendar();
       assign(PersianCalendar.prototype, {
         /** The calendar name.
@@ -74475,13 +74485,13 @@ var Plotly = (() => {
               "Mehr",
               "Aban",
               "Azar",
-              "Day",
+              "Dey",
               "Bahman",
               "Esfand"
             ],
-            monthNamesShort: ["Far", "Ord", "Kho", "Tir", "Mor", "Sha", "Meh", "Aba", "Aza", "Day", "Bah", "Esf"],
-            dayNames: ["Yekshambe", "Doshambe", "Seshambe", "Ch\xE6harshambe", "Panjshambe", "Jom'e", "Shambe"],
-            dayNamesShort: ["Yek", "Do", "Se", "Ch\xE6", "Panj", "Jom", "Sha"],
+            monthNamesShort: ["Far", "Ord", "Kho", "Tir", "Mor", "Sha", "Meh", "Aba", "Aza", "Dey", "Bah", "Esf"],
+            dayNames: ["Yekshanbeh", "Doshanbeh", "Seshanbeh", "Chah\u0101rshanbeh", "Panjshanbeh", "Jom'eh", "Shanbeh"],
+            dayNamesShort: ["Yek", "Do", "Se", "Cha", "Panj", "Jom", "Sha"],
             dayNamesMin: ["Ye", "Do", "Se", "Ch", "Pa", "Jo", "Sh"],
             digits: null,
             dateFormat: "yyyy/mm/dd",
@@ -74496,7 +74506,7 @@ var Plotly = (() => {
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          return ((date.year() - (date.year() > 0 ? 474 : 473)) % 2820 + 474 + 38) * 682 % 2816 < 682;
+          return _leapYear(date.year());
         },
         /** Determine the week of the year for a date.
             @memberof PersianCalendar
@@ -74543,9 +74553,17 @@ var Plotly = (() => {
           year = date.year();
           month = date.month();
           day = date.day();
-          var epBase = year - (year >= 0 ? 474 : 473);
-          var epYear = 474 + mod(epBase, 2820);
-          return day + (month <= 7 ? (month - 1) * 31 : (month - 1) * 30 + 6) + Math.floor((epYear * 682 - 110) / 2816) + (epYear - 1) * 365 + Math.floor(epBase / 2820) * 1029983 + this.jdEpoch - 1;
+          var nLeapYearsSince = 0;
+          if (year > 0) {
+            for (var i = 1; i < year; i++) {
+              if (_leapYear(i)) nLeapYearsSince++;
+            }
+          } else if (year < 0) {
+            for (var i = year; i < 0; i++) {
+              if (_leapYear(i)) nLeapYearsSince--;
+            }
+          }
+          return day + (month <= 7 ? (month - 1) * 31 : (month - 1) * 30 + 6) + (year > 0 ? year - 1 : year) * 365 + nLeapYearsSince + this.jdEpoch - 1;
         },
         /** Create a new date from a Julian date.
             @memberof PersianCalendar
@@ -74553,26 +74571,19 @@ var Plotly = (() => {
             @return {CDate} The equivalent date. */
         fromJD: function(jd) {
           jd = Math.floor(jd) + 0.5;
-          var depoch = jd - this.toJD(475, 1, 1);
-          var cycle = Math.floor(depoch / 1029983);
-          var cyear = mod(depoch, 1029983);
-          var ycycle = 2820;
-          if (cyear !== 1029982) {
-            var aux1 = Math.floor(cyear / 366);
-            var aux2 = mod(cyear, 366);
-            ycycle = Math.floor((2134 * aux1 + 2816 * aux2 + 2815) / 1028522) + aux1 + 1;
+          var y = 475 + (jd - this.toJD(475, 1, 1)) / 365.242197;
+          var year = Math.floor(y);
+          if (year <= 0) year--;
+          if (jd > this.toJD(year, 12, _leapYear(year) ? 30 : 29)) {
+            year++;
+            if (year === 0) year++;
           }
-          var year = ycycle + 2820 * cycle + 474;
-          year = year <= 0 ? year - 1 : year;
           var yday = jd - this.toJD(year, 1, 1) + 1;
           var month = yday <= 186 ? Math.ceil(yday / 31) : Math.ceil((yday - 6) / 30);
           var day = jd - this.toJD(year, month, 1) + 1;
           return this.newDate(year, month, day);
         }
       });
-      function mod(a, b) {
-        return a - b * Math.floor(a / b);
-      }
       main.calendars.persian = PersianCalendar;
       main.calendars.jalali = PersianCalendar;
     }
