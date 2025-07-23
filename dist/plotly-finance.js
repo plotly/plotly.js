@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v3.0.2
+* plotly.js (finance) v3.0.1
 * Copyright 2012-2025, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -42,7 +42,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.0.2";
+      exports.version = "3.0.1";
     }
   });
 
@@ -13741,10 +13741,10 @@ var Plotly = (() => {
     }
   });
 
-  // stylePlugin:/home/cam/Development/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
+  // stylePlugin:/Users/ekl/code/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
   var maplibre_gl_exports = {};
   var init_maplibre_gl2 = __esm({
-    "stylePlugin:/home/cam/Development/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
+    "stylePlugin:/Users/ekl/code/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       init_maplibre_gl();
     }
   });
@@ -15585,8 +15585,6 @@ var Plotly = (() => {
       lib.isIOS = function() {
         return IS_IOS_REGEX.test(window.navigator.userAgent);
       };
-      var IS_MAC_WKWEBVIEW_REGEX = /Macintosh.+AppleWebKit.+Gecko\)$/;
-      lib.isMacWKWebView = () => IS_MAC_WKWEBVIEW_REGEX.test(window.navigator.userAgent);
       var FIREFOX_VERSION_REGEX = /Firefox\/(\d+)\.\d+/;
       lib.getFirefoxVersion = function() {
         var match = FIREFOX_VERSION_REGEX.exec(window.navigator.userAgent);
@@ -16439,10 +16437,6 @@ var Plotly = (() => {
             ev.emit(event, data);
             internalEv.emit(event, data);
           };
-          if (typeof plotObj.addEventListener === "function") {
-            plotObj.addEventListener("wheel", () => {
-            });
-          }
           return plotObj;
         },
         /*
@@ -24970,7 +24964,7 @@ var Plotly = (() => {
         var editAttr;
         if (prop === "title.text") editAttr = "titleText";
         else if (prop.indexOf("axis") !== -1) editAttr = "axisTitleText";
-        else if (prop.indexOf("colorbar") !== -1) editAttr = "colorbarTitleText";
+        else if (prop.indexOf("colorbar" !== -1)) editAttr = "colorbarTitleText";
         var editable = gd._context.edits[editAttr];
         function matchesPlaceholder(text, placeholder2) {
           if (text === void 0 || placeholder2 === void 0) return false;
@@ -34640,7 +34634,6 @@ var Plotly = (() => {
   var require_newshapes = __commonJS({
     "src/components/shapes/draw_newshape/newshapes.js"(exports, module) {
       "use strict";
-      var axis_ids = require_axis_ids();
       var dragHelpers = require_helpers5();
       var drawMode = dragHelpers.drawMode;
       var openMode = dragHelpers.openMode;
@@ -34707,22 +34700,10 @@ var Plotly = (() => {
               case "line":
               case "rect":
               case "circle":
-                var xaxis = axis_ids.getFromId(gd, beforeEdit.xref);
-                if (beforeEdit.xref.charAt(0) === "x" && xaxis.type.includes("category")) {
-                  modifyItem("x0", afterEdit.x0 - (beforeEdit.x0shift || 0));
-                  modifyItem("x1", afterEdit.x1 - (beforeEdit.x1shift || 0));
-                } else {
-                  modifyItem("x0", afterEdit.x0);
-                  modifyItem("x1", afterEdit.x1);
-                }
-                var yaxis = axis_ids.getFromId(gd, beforeEdit.yref);
-                if (beforeEdit.yref.charAt(0) === "y" && yaxis.type.includes("category")) {
-                  modifyItem("y0", afterEdit.y0 - (beforeEdit.y0shift || 0));
-                  modifyItem("y1", afterEdit.y1 - (beforeEdit.y1shift || 0));
-                } else {
-                  modifyItem("y0", afterEdit.y0);
-                  modifyItem("y1", afterEdit.y1);
-                }
+                modifyItem("x0", afterEdit.x0 - (beforeEdit.x0shift || 0));
+                modifyItem("x1", afterEdit.x1 - (beforeEdit.x1shift || 0));
+                modifyItem("y0", afterEdit.y0 - (beforeEdit.y0shift || 0));
+                modifyItem("y1", afterEdit.y1 - (beforeEdit.y1shift || 0));
                 break;
               case "path":
                 modifyItem("path", afterEdit.path);
@@ -73588,16 +73569,6 @@ var Plotly = (() => {
       function PersianCalendar(language) {
         this.local = this.regionalOptions[language || ""] || this.regionalOptions[""];
       }
-      function _leapYear(year) {
-        var x = year - 475;
-        if (year < 0) x++;
-        var c = 0.242197;
-        var v0 = c * x;
-        var v1 = c * (x + 1);
-        var r0 = v0 - Math.floor(v0);
-        var r1 = v1 - Math.floor(v1);
-        return r0 > r1;
-      }
       PersianCalendar.prototype = new main.baseCalendar();
       assign(PersianCalendar.prototype, {
         /** The calendar name.
@@ -73651,13 +73622,13 @@ var Plotly = (() => {
               "Mehr",
               "Aban",
               "Azar",
-              "Dey",
+              "Day",
               "Bahman",
               "Esfand"
             ],
-            monthNamesShort: ["Far", "Ord", "Kho", "Tir", "Mor", "Sha", "Meh", "Aba", "Aza", "Dey", "Bah", "Esf"],
-            dayNames: ["Yekshanbeh", "Doshanbeh", "Seshanbeh", "Chah\u0101rshanbeh", "Panjshanbeh", "Jom'eh", "Shanbeh"],
-            dayNamesShort: ["Yek", "Do", "Se", "Cha", "Panj", "Jom", "Sha"],
+            monthNamesShort: ["Far", "Ord", "Kho", "Tir", "Mor", "Sha", "Meh", "Aba", "Aza", "Day", "Bah", "Esf"],
+            dayNames: ["Yekshambe", "Doshambe", "Seshambe", "Ch\xE6harshambe", "Panjshambe", "Jom'e", "Shambe"],
+            dayNamesShort: ["Yek", "Do", "Se", "Ch\xE6", "Panj", "Jom", "Sha"],
             dayNamesMin: ["Ye", "Do", "Se", "Ch", "Pa", "Jo", "Sh"],
             digits: null,
             dateFormat: "yyyy/mm/dd",
@@ -73672,7 +73643,7 @@ var Plotly = (() => {
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          return _leapYear(date.year());
+          return ((date.year() - (date.year() > 0 ? 474 : 473)) % 2820 + 474 + 38) * 682 % 2816 < 682;
         },
         /** Determine the week of the year for a date.
             @memberof PersianCalendar
@@ -73719,17 +73690,9 @@ var Plotly = (() => {
           year = date.year();
           month = date.month();
           day = date.day();
-          var nLeapYearsSince = 0;
-          if (year > 0) {
-            for (var i = 1; i < year; i++) {
-              if (_leapYear(i)) nLeapYearsSince++;
-            }
-          } else if (year < 0) {
-            for (var i = year; i < 0; i++) {
-              if (_leapYear(i)) nLeapYearsSince--;
-            }
-          }
-          return day + (month <= 7 ? (month - 1) * 31 : (month - 1) * 30 + 6) + (year > 0 ? year - 1 : year) * 365 + nLeapYearsSince + this.jdEpoch - 1;
+          var epBase = year - (year >= 0 ? 474 : 473);
+          var epYear = 474 + mod(epBase, 2820);
+          return day + (month <= 7 ? (month - 1) * 31 : (month - 1) * 30 + 6) + Math.floor((epYear * 682 - 110) / 2816) + (epYear - 1) * 365 + Math.floor(epBase / 2820) * 1029983 + this.jdEpoch - 1;
         },
         /** Create a new date from a Julian date.
             @memberof PersianCalendar
@@ -73737,19 +73700,26 @@ var Plotly = (() => {
             @return {CDate} The equivalent date. */
         fromJD: function(jd) {
           jd = Math.floor(jd) + 0.5;
-          var y = 475 + (jd - this.toJD(475, 1, 1)) / 365.242197;
-          var year = Math.floor(y);
-          if (year <= 0) year--;
-          if (jd > this.toJD(year, 12, _leapYear(year) ? 30 : 29)) {
-            year++;
-            if (year === 0) year++;
+          var depoch = jd - this.toJD(475, 1, 1);
+          var cycle = Math.floor(depoch / 1029983);
+          var cyear = mod(depoch, 1029983);
+          var ycycle = 2820;
+          if (cyear !== 1029982) {
+            var aux1 = Math.floor(cyear / 366);
+            var aux2 = mod(cyear, 366);
+            ycycle = Math.floor((2134 * aux1 + 2816 * aux2 + 2815) / 1028522) + aux1 + 1;
           }
+          var year = ycycle + 2820 * cycle + 474;
+          year = year <= 0 ? year - 1 : year;
           var yday = jd - this.toJD(year, 1, 1) + 1;
           var month = yday <= 186 ? Math.ceil(yday / 31) : Math.ceil((yday - 6) / 30);
           var day = jd - this.toJD(year, month, 1) + 1;
           return this.newDate(year, month, day);
         }
       });
+      function mod(a, b) {
+        return a - b * Math.floor(a / b);
+      }
       main.calendars.persian = PersianCalendar;
       main.calendars.jalali = PersianCalendar;
     }
