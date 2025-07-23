@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v3.0.2
+* plotly.js (basic) v3.0.3
 * Copyright 2012-2025, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38,7 +38,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.0.2";
+      exports.version = "3.0.3";
     }
   });
 
