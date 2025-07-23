@@ -86,7 +86,7 @@ function newShapes(outlines, dragOptions) {
                 case 'line':
                 case 'rect':
                 case 'circle':
-                    
+
                     var xaxis = axis_ids.getFromId(gd, beforeEdit.xref);
                     if (beforeEdit.xref.charAt(0) === 'x' && xaxis.type.includes('category')) {
                         modifyItem('x0', afterEdit.x0 - (beforeEdit.x0shift || 0));
