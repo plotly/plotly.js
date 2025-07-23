@@ -17,8 +17,7 @@ var Tabs = {
         Plotly.setPlotConfig({
 
             // use local topojson files
-            topojsonURL: '../../node_modules/sane-topojson/dist/',
-
+            topojsonURL: "../../topojson/dist",
             // register mapbox access token
             // run `npm run preset` if you haven't yet
             mapboxAccessToken: credentials.MAPBOX_ACCESS_TOKEN,
@@ -77,7 +76,7 @@ var Tabs = {
         };
     },
 
-    // Save a png snapshot and display it below the plot
+    // Save a PNG snapshot and display it below the plot
     snapshot: function(id) {
         var gd = Tabs.getGraph(id);
 
@@ -268,4 +267,3 @@ function handleOnLoad() {
     Tabs.setPlotConfig();
     plotFromHash();
 }
-

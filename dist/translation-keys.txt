@@ -13,7 +13,7 @@ Compare data on hover                                  // components/modebar/but
 Double-click on legend to isolate one trace            // components/legend/handle_click.js:21
 Double-click to zoom back out                          // plots/ternary/ternary.js:681
 Download plot                                          // components/modebar/buttons.js:45
-Download plot as a png                                 // components/modebar/buttons.js:44
+Download plot as a PNG                                 // components/modebar/buttons.js:44
 Draw circle                                            // components/modebar/buttons.js:166
 Draw closed freeform                                   // components/modebar/buttons.js:130
 Draw line                                              // components/modebar/buttons.js:148
