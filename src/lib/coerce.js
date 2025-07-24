@@ -502,8 +502,14 @@ exports.coerceFont = function(coerce, attr, dfltObj, opts) {
  */
 exports.coercePattern = function(coerce, attr, markerColor, hasMarkerColorscale) {
     var shape = coerce(attr + '.shape');
-    if(shape) {
-        coerce(attr + '.solidity');
+    var path;
+    if(!shape) {
+        path = coerce(attr + '.path');
+    }
+    if(shape || path) {
+        if(shape) {
+            coerce(attr + '.solidity');
+        }
         coerce(attr + '.size');
         var fillmode = coerce(attr + '.fillmode');
         var isOverlay = fillmode === 'overlay';

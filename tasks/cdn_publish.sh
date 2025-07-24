@@ -29,7 +29,11 @@ for path in `ls $dist/plotly*`; do
 done
 
 # copy topojson files over to the sync folder
-cp $dist/topojson/* $sync
+# NOTE: Temporarily syncing topojson to 'un' folder to avoid overwriting the old topojson
+# which some old plots might depend on. These can be accessed by setting 'topojsonURL' to
+# 'https://cdn.plot.ly/un/' in the Plotly config.
+mkdir $sync/un
+cp $dist/topojson/* $sync/un
 
 # list folder and files
 echo $sync

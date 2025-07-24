@@ -2545,9 +2545,11 @@
      "valType": "enumerated",
      "values": [
       "africa",
+      "antarctica",
       "asia",
       "europe",
       "north america",
+      "oceania",
       "south america",
       "usa",
       "world"
@@ -3442,6 +3444,12 @@
      "min": 30,
      "valType": "number"
     },
+    "maxheight": {
+     "description": "Sets the max height (in px) of the legend, or max height ratio (reference height * ratio) if less than one. Default value is: 0.5 for horizontal legends; 1 for vertical legends. The minimum allowed height is 30px. For a ratio of 0.5, the legend will take up to 50% of the reference height before displaying a scrollbar. The reference height is the full layout height except for vertically oriented legends with a `yref` of `\"paper\"`, where the reference height is the plot height.",
+     "editType": "legend",
+     "min": 0,
+     "valType": "number"
+    },
     "orientation": {
      "description": "Sets the orientation of the legend.",
      "dflt": "v",
@@ -3896,7 +3904,7 @@
        "symbol": {
         "editType": "plot",
         "icon": {
-         "description": "Sets the symbol icon image (map.layer.layout.icon-image). Full list: https://www.map.com/maki-icons/",
+         "description": "Sets the symbol icon image (map.layer.layout.icon-image). Full list: https://www.mapbox.com/maki-icons/",
          "dflt": "marker",
          "editType": "plot",
          "valType": "string"
@@ -5189,6 +5197,17 @@
       "min": 0,
       "valType": "number"
      },
+     "minorloglabels": {
+      "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+      "dflt": "small digits",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "small digits",
+       "complete",
+       "none"
+      ]
+     },
      "nticks": {
       "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
       "dflt": 0,
@@ -5885,6 +5904,17 @@
       "editType": "plot",
       "min": 0,
       "valType": "number"
+     },
+     "minorloglabels": {
+      "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+      "dflt": "small digits",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "small digits",
+       "complete",
+       "none"
+      ]
      },
      "nticks": {
       "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
@@ -13899,6 +13929,17 @@
       "valType": "number"
      }
     },
+    "minorloglabels": {
+     "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+     "dflt": "small digits",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "small digits",
+      "complete",
+      "none"
+     ]
+    },
     "mirror": {
      "description": "Determines if the axis lines or/and ticks are mirrored to the opposite side of the plotting area. If *true*, the axis lines are mirrored. If *ticks*, the axis lines and ticks are mirrored. If *false*, mirroring is disable. If *all*, axis lines are mirrored on all shared-axes subplots. If *allticks*, axis lines and ticks are mirrored on all shared-axes subplots.",
      "dflt": false,
@@ -13911,6 +13952,19 @@
       "all",
       "allticks"
      ]
+    },
+    "modebardisable": {
+     "description": "Disables certain modebar buttons for this axis. *autoscale* disables the autoscale buttons, *zoominout* disables the zoom-in and zoom-out buttons.",
+     "dflt": "none",
+     "editType": "modebar",
+     "extras": [
+      "none"
+     ],
+     "flags": [
+      "autoscale",
+      "zoominout"
+     ],
+     "valType": "flaglist"
     },
     "nticks": {
      "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
@@ -14705,7 +14759,7 @@
      ]
     },
     "ticklabelposition": {
-     "description": "Determines where tick labels are drawn with respect to the axis Please note that top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*. Similarly left or right has no effect on y axes or when `ticklabelmode` is set to *period*. Has no effect on *multicategory* axes or when `tickson` is set to *boundaries*. When used on axes linked by `matches` or `scaleanchor`, no extra padding for inside labels would be added by autorange, so that the scales could match.",
+     "description": "Determines where tick labels are drawn with respect to the axis. Please note that top or bottom has no effect on x axes or when `ticklabelmode` is set to *period* or when `tickson` is set to *boundaries*. Similarly, left or right has no effect on y axes or when `ticklabelmode` is set to *period* or when `tickson` is set to *boundaries*. Has no effect on *multicategory* axes. When used on axes linked by `matches` or `scaleanchor`, no extra padding for inside labels would be added by autorange, so that the scales could match.",
      "dflt": "outside",
      "editType": "calc",
      "valType": "enumerated",
@@ -14958,6 +15012,16 @@
      "dflt": "#444",
      "editType": "ticks",
      "valType": "color"
+    },
+    "zerolinelayer": {
+     "description": "Sets the layer on which this zeroline is displayed. If *above traces*, this zeroline is displayed above all the subplot's traces If *below traces*, this zeroline is displayed below all the subplot's traces, but above the grid lines. Limitation: *zerolinelayer* currently has no effect if the *zorder* property is set on any trace.",
+     "dflt": "below traces",
+     "editType": "plot",
+     "valType": "enumerated",
+     "values": [
+      "above traces",
+      "below traces"
+     ]
     },
     "zerolinewidth": {
      "description": "Sets the width (in px) of the zero line.",
@@ -15450,6 +15514,17 @@
       "valType": "number"
      }
     },
+    "minorloglabels": {
+     "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+     "dflt": "small digits",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "small digits",
+      "complete",
+      "none"
+     ]
+    },
     "mirror": {
      "description": "Determines if the axis lines or/and ticks are mirrored to the opposite side of the plotting area. If *true*, the axis lines are mirrored. If *ticks*, the axis lines and ticks are mirrored. If *false*, mirroring is disable. If *all*, axis lines are mirrored on all shared-axes subplots. If *allticks*, axis lines and ticks are mirrored on all shared-axes subplots.",
      "dflt": false,
@@ -15462,6 +15537,19 @@
       "all",
       "allticks"
      ]
+    },
+    "modebardisable": {
+     "description": "Disables certain modebar buttons for this axis. *autoscale* disables the autoscale buttons, *zoominout* disables the zoom-in and zoom-out buttons.",
+     "dflt": "none",
+     "editType": "modebar",
+     "extras": [
+      "none"
+     ],
+     "flags": [
+      "autoscale",
+      "zoominout"
+     ],
+     "valType": "flaglist"
     },
     "nticks": {
      "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
@@ -15939,7 +16027,7 @@
      ]
     },
     "ticklabelposition": {
-     "description": "Determines where tick labels are drawn with respect to the axis Please note that top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*. Similarly left or right has no effect on y axes or when `ticklabelmode` is set to *period*. Has no effect on *multicategory* axes or when `tickson` is set to *boundaries*. When used on axes linked by `matches` or `scaleanchor`, no extra padding for inside labels would be added by autorange, so that the scales could match.",
+     "description": "Determines where tick labels are drawn with respect to the axis. Please note that top or bottom has no effect on x axes or when `ticklabelmode` is set to *period* or when `tickson` is set to *boundaries*. Similarly, left or right has no effect on y axes or when `ticklabelmode` is set to *period* or when `tickson` is set to *boundaries*. Has no effect on *multicategory* axes. When used on axes linked by `matches` or `scaleanchor`, no extra padding for inside labels would be added by autorange, so that the scales could match.",
      "dflt": "outside",
      "editType": "calc",
      "valType": "enumerated",
@@ -16192,6 +16280,16 @@
      "dflt": "#444",
      "editType": "ticks",
      "valType": "color"
+    },
+    "zerolinelayer": {
+     "description": "Sets the layer on which this zeroline is displayed. If *above traces*, this zeroline is displayed above all the subplot's traces If *below traces*, this zeroline is displayed below all the subplot's traces, but above the grid lines. Limitation: *zerolinelayer* currently has no effect if the *zorder* property is set on any trace.",
+     "dflt": "below traces",
+     "editType": "plot",
+     "valType": "enumerated",
+     "values": [
+      "above traces",
+      "below traces"
+     ]
     },
     "zerolinewidth": {
      "description": "Sets the width (in px) of the zero line.",
@@ -17807,6 +17905,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
@@ -19834,6 +19943,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
@@ -37562,6 +37682,17 @@
         "overlay"
        ]
       },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "role": "object",
       "shape": {
        "arrayOk": true,
@@ -41224,6 +41355,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
@@ -46455,6 +46597,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
@@ -56226,6 +56379,17 @@
         "overlay"
        ]
       },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "role": "object",
       "shape": {
        "arrayOk": true,
@@ -58611,6 +58775,17 @@
        "replace",
        "overlay"
       ]
+     },
+     "path": {
+      "arrayOk": true,
+      "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+      "editType": "style",
+      "valType": "string"
+     },
+     "pathsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+      "editType": "none",
+      "valType": "string"
      },
      "role": "object",
      "shape": {
@@ -72077,7 +72252,7 @@
      },
      "symbol": {
       "arrayOk": true,
-      "description": "Sets the marker symbol. Full list: https://www.map.com/maki-icons/ Note that the array `marker.color` and `marker.size` are only available for *circle* symbols.",
+      "description": "Sets the marker symbol. Full list: https://www.mapbox.com/maki-icons/ Note that the array `marker.color` and `marker.size` are only available for *circle* symbols.",
       "dflt": "circle",
       "editType": "calc",
       "valType": "string"
@@ -87705,6 +87880,17 @@
         "overlay"
        ]
       },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "role": "object",
       "shape": {
        "arrayOk": true,
@@ -92345,6 +92531,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
