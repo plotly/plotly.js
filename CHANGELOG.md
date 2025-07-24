@@ -9,6 +9,11 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.0.3] -- 2025-07-23
+
+### Fixed
+ - Remove detailed description of font options [[7348](https://github.com/plotly/plotly.js/pull/7348)]
+
 
 ## [3.0.2] -- 2025-07-22
 
