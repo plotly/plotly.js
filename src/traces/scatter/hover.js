@@ -61,16 +61,35 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             return (dyRaw < rad) ? (kink * dyRaw / rad) : (dyRaw - rad + kink);
         };
 
-        // scatter points: d.mrc is the calculated marker radius
-        // adjust the distance so if you're inside the marker it
-        // always will show up regardless of point size, but
-        // prioritize smaller points
         var dxy = function(di) {
-            var rad = Math.max(minRad, di.mrc || 0);
-            var dx = xa.c2p(di.x) - xpx;
-            var dy = ya.c2p(di.y) - ypx;
-            return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - minRad / rad);
-        };
+                // scatter points: d.mrxc and d.mryc are the calculated marker radius
+                // adjust the distance so if you're inside the marker it
+                // always will show up regardless of point size, but
+                // prioritize smaller points
+                if (di.x1 == null && di.y1 == null) {
+                    var rad = Math.max(minRad, di.mrxc || 0, di.mryc || 0);
+                    var dx = xa.c2p(di.x) - xpx;
+                    var dy = ya.c2p(di.y) - ypx;
+                    return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - minRad / rad);
+                }
+
+                var radX = Math.max(minRad, di.mrxc || 0);
+                var radY = Math.max(minRad, di.mryc || 0);
+
+                var x = di.xc || di.x;
+                var y = di.yc || di.y;
+
+                var dx = x - xpx;
+                var dy = y - ypx;
+
+                var d = ((dx * dx) / (radX * radX)) + ((dy * dy) / (radY * radY));
+
+                if (d <= 1) {
+                    return 0;
+                } else {
+                    return Infinity;
+                }
+            };
         var distfn = Fx.getDistanceFunction(hovermode, dx, dy, dxy);
 
         Fx.getClosest(cd, distfn, pointData);
