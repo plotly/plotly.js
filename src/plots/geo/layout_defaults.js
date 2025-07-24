@@ -207,8 +207,6 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     // clear attributes that will get auto-filled later
     if(fitBounds) {
         delete geoLayoutOut.projection.scale;
-        delete geoLayoutOut.projection.minscale;
-        delete geoLayoutOut.projection.maxscale;
 
         if(isScoped) {
             delete geoLayoutOut.center.lon;
