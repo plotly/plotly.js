@@ -486,7 +486,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
         bgRect.node().onmousedown = null;
         var zoom = createGeoZoom(_this, geoLayout)
         bgRect.call(zoom);
-        // Trigger zoom transition to account for min/max scale values
+        // Trigger zoom transition to account for initial min/max scale values
         if (geoLayout.projection.minscale > 0 && !d3.event) zoom.event(bgRect);
         bgRect.on('dblclick.zoom', zoomReset);
         if(!gd._context._scrollZoom.geo) {

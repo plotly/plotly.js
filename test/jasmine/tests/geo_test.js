@@ -2730,6 +2730,83 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         })
         .then(done, done.fail);
     });
+
+    describe('minscale and maxscale', () => {
+        const defaultConfig = {
+            layout: {
+                dragmode: 'pan',
+                geo: { projection: {} },
+                height: 500,
+                width: 700
+            }
+        }
+        let gd;
+
+        beforeEach(() => { gd = createGraphDiv(); });
+
+        afterEach(destroyGraphDiv);
+
+        const allTests = [
+            {
+                name: 'non-clipped',
+                mock: require('../../image/mocks/geo_winkel-tripel')
+            },
+            {
+                name: 'clipped',
+                mock: require('../../image/mocks/geo_orthographic')
+            },
+            {
+                name: 'scoped',
+                mock: require('../../image/mocks/geo_europe-bubbles')
+            }
+        ];
+
+        allTests.forEach(({ mock, name }) => {
+            it(`${name} maxscale`, done => {
+                const fig = Lib.extendDeep({}, mock, defaultConfig);
+                fig.layout.geo.projection.maxscale = 1.2;
+
+                Plotly
+                    .newPlot(gd, fig)
+                    // Zoom in far enough to hit limit
+                    .then(() => scroll([200, 250], [-200, -200]))
+                    .then(() => {
+                        const maxScale = gd._fullLayout.geo._subplot.projection.scaleExtent()[1];
+                        expect(gd._fullLayout.geo._subplot.projection.scale()).toEqual(maxScale);
+                    })
+                    .then(done, done.fail);
+            });
+
+            it(`${name} minscale`, done => {
+                const fig = Lib.extendDeep({}, mock, defaultConfig);
+                fig.layout.geo.projection.minscale = 0.8;
+
+                Plotly
+                    .newPlot(gd, fig)
+                    // Zoom out far enough to hit limit
+                    .then(() => scroll([200, 250], [1000, 1000]))
+                    .then(() => {
+                        const minScale = gd._fullLayout.geo._subplot.projection.scaleExtent()[0];
+                        expect(gd._fullLayout.geo._subplot.projection.scale()).toEqual(minScale);
+                    })
+                    .then(done, done.fail);
+            });
+
+            it(`${name} minscale greater than 1`, done => {
+                const fig = Lib.extendDeep({}, mock, defaultConfig);
+                fig.layout.geo.projection.minscale = 3;
+
+                Plotly
+                    .newPlot(gd, fig)
+                    // The limit should already be hit during plot creation
+                    .then(() => {
+                        const minScale = gd._fullLayout.geo._subplot.projection.scaleExtent()[0];
+                        expect(gd._fullLayout.geo._subplot.projection.scale()).toEqual(minScale);
+                    })
+                    .then(done, done.fail);
+            });
+        });
+    });
 });
 
 describe('Test geo interactions update marker angles:', function() {
@@ -2821,84 +2898,6 @@ describe('plotly_relayouting', function() {
                 })
                 .then(done, done.fail);
             });
-        });
-    });
-});
-
-
-describe('minscale and maxscale', function() {
-    function scroll(pos, delta) {
-        return new Promise(function(resolve) {
-            mouseEvent('mousemove', pos[0], pos[1]);
-            mouseEvent('scroll', pos[0], pos[1], {deltaX: delta[0], deltaY: delta[1]});
-            setTimeout(resolve, 100);
-        });
-    }
-
-    var gd;
-
-    beforeEach(function() { gd = createGraphDiv(); });
-
-    afterEach(destroyGraphDiv);
-
-    var allTests = [
-        {
-            name: 'non-clipped',
-            mock: require('../../image/mocks/geo_winkel-tripel')
-        },
-        {
-            name: 'clipped',
-            mock: require('../../image/mocks/geo_orthographic')
-        },
-        {
-            name: 'scoped',
-            mock: require('../../image/mocks/geo_europe-bubbles')
-        }
-    ];
-
-    allTests.forEach(function(test) {
-        it(test.name + ' maxscale', function(done) {
-            var fig = Lib.extendDeep({}, test.mock);
-            fig.layout.width = 700;
-            fig.layout.height = 500;
-            fig.layout.dragmode = 'pan';
-            if(!fig.layout.geo.projection) fig.layout.geo.projection = {};
-            fig.layout.geo.projection.maxscale = 1.2;
-
-            var initialScale;
-
-            Plotly.newPlot(gd, fig)
-            .then(function() {
-                initialScale = gd._fullLayout.geo._subplot.projection.scale();
-
-                return scroll([200, 250], [-200, -200]);
-            })
-            .then(function() {
-                expect(gd._fullLayout.geo._subplot.projection.scale()).toEqual(1.2 * initialScale);
-            })
-            .then(done, done.fail);
-        });
-
-        it(test.name + ' minscale', function(done) {
-            var fig = Lib.extendDeep({}, test.mock);
-            fig.layout.width = 700;
-            fig.layout.height = 500;
-            fig.layout.dragmode = 'pan';
-            if(!fig.layout.geo.projection) fig.layout.geo.projection = {};
-            fig.layout.geo.projection.minscale = 0.8;
-
-            var initialScale;
-
-            Plotly.newPlot(gd, fig)
-            .then(function() {
-                initialScale = gd._fullLayout.geo._subplot.projection.scale();
-
-                return scroll([200, 250], [200, 200]);
-            })
-            .then(function() {
-                expect(gd._fullLayout.geo._subplot.projection.scale()).toEqual(0.8 * initialScale);
-            })
-            .then(done, done.fail);
         });
     });
 });
