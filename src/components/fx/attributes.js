@@ -21,6 +21,7 @@ module.exports = {
         }),
         align: extendFlat({}, hoverLabelAttrs.align, {arrayOk: true}),
         namelength: extendFlat({}, hoverLabelAttrs.namelength, {arrayOk: true}),
+        showarrow: extendFlat({}, hoverLabelAttrs.showarrow),
         editType: 'none'
     }
 };

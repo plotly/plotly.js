@@ -40,6 +40,7 @@ module.exports = function calc(gd) {
         fillFn(trace.hoverlabel.font.variant, cd, 'htv');
         fillFn(trace.hoverlabel.namelength, cd, 'hnl');
         fillFn(trace.hoverlabel.align, cd, 'hta');
+        fillFn(trace.hoverlabel.showarrow, cd, 'htsa');
     }
 };
 
