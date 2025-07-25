@@ -28,7 +28,7 @@ allNames = [
     'zsmooth_methods',
     'fonts',
     'worldcup',
-    'mathjax'
+    'mathjax',
 ]
 
 failed = 0
