@@ -1922,14 +1922,16 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
         var offsetY = offsets.y;
 
         var isMiddle = anchor === 'middle';
-        var showArrow = d.trace.hoverlabel?.showarrow;
+        // Get 'showarrow' attribute value from trace hoverlabel settings;
+        // if trace has no hoverlabel settings, we should show the arrow by default
+        var showArrow = 'hoverlabel' in d.trace ? d.trace.hoverlabel.showarrow : true;
 
         var pathStr;
         if(isMiddle) {
             // middle aligned: rect centered on data
             pathStr = 'M-' + pX(d.bx / 2 + d.tx2width / 2) + ',' + pY(offsetY - d.by / 2) +
                       'h' + pX(d.bx) + 'v' + pY(d.by) + 'h-' + pX(d.bx) + 'Z';
-        } else if(showArrow !== false) {
+        } else if(showArrow) {
             // left or right aligned: side rect with arrow to data
             pathStr = 'M0,0L' + pX(horzSign * HOVERARROWSIZE + offsetX) + ',' + pY(HOVERARROWSIZE + offsetY) +
                       'v' + pY(d.by / 2 - HOVERARROWSIZE) +
