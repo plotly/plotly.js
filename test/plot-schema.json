@@ -350,6 +350,20 @@
    "dflt": true,
    "valType": "boolean"
   },
+  "sonification": {
+   "description": "Sonification options: whether to enable, options to pass to the library, info to pass to the library, closedCaptions to control how plotly renders the closed-captions element. chart2music is supported and options here include Options and Info from https://www.chart2music.com/docs/API/Config. ",
+   "dflt": {
+    "closedCaptions": {
+     "elClassname": "c2m-plotly-closed_captions",
+     "elId": "c2m-plotly-cc",
+     "generate": false
+    },
+    "enabled": false,
+    "info": {},
+    "options": {}
+   },
+   "valType": "any"
+  },
   "staticPlot": {
    "description": "Determines whether the graphs are interactive or not. If *false*, no interactivity, for export or image generation.",
    "dflt": false,
