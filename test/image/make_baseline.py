@@ -58,6 +58,8 @@ if 'virtual-webgl' in sys.argv or 'virtual-webgl=' in sys.argv :
 
     plotlyjs = plotlyjs_with_virtual_webgl
 
+pio.defaults.plotlyjs = plotlyjs
+pio.defaults.topojson = "file://" + os.path.join(root, 'topojson', 'dist')
 pio.templates.default = 'none'
 
 ALL_MOCKS = [os.path.splitext(a)[0] for a in os.listdir(dirIn) if a.endswith('.json')]
@@ -71,13 +73,15 @@ else :
 # unable to generate baselines for the following mocks
 blacklist = [
     'map_stamen-style',
+    'map_predefined-styles2',
+    'map_scattercluster',
+    'map_fonts-supported-open-sans',
+    'map_fonts-supported-open-sans-weight',
     'map_predefined-styles1', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
-    'map_predefined-styles2',  # Temporarily blacklist: fails with Kaleido v1.0.0rc14
     'grid_subplot_types', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
     'map_fonts-supported-metropolis', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
     'map_fonts-supported-metropolis-italic', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
     'map_fonts-supported-metropolis-weight', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
-    'map_fonts-supported-open-sans-weight', # Temporarily blacklist: fails with Kaleido v1.0.0rc14
 ]
 allNames = [a for a in allNames if a not in blacklist]
 

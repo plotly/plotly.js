@@ -765,6 +765,12 @@ lib.isIOS = function() {
     return IS_IOS_REGEX.test(window.navigator.userAgent);
 };
 
+// The WKWebView user agent string doesn't include 'Safari', so we need a separate test
+// for a UA string like this:
+// Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)
+const IS_MAC_WKWEBVIEW_REGEX = /Macintosh.+AppleWebKit.+Gecko\)$/;
+lib.isMacWKWebView = () => IS_MAC_WKWEBVIEW_REGEX.test(window.navigator.userAgent);
+
 var FIREFOX_VERSION_REGEX = /Firefox\/(\d+)\.\d+/;
 lib.getFirefoxVersion = function() {
     var match = FIREFOX_VERSION_REGEX.exec(window.navigator.userAgent);

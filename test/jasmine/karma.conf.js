@@ -118,7 +118,7 @@ if(isFullSuite) {
 }
 
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
-var pathToSaneTopojsonDist = path.join(__dirname, '..', '..', 'node_modules', 'sane-topojson', 'dist');
+var pathToTopojsonDist = path.join(__dirname, '..', '..', 'topojson', 'dist');
 var pathToMathJax2 = path.join(__dirname, '..', '..', 'node_modules', '@plotly/mathjax-v2');
 var pathToMathJax3 = path.join(__dirname, '..', '..', 'node_modules', '@plotly/mathjax-v3');
 var pathToVirtualWebgl = path.join(__dirname, '..', '..', 'node_modules', 'virtual-webgl', 'src', 'virtual-webgl.js');
@@ -144,6 +144,10 @@ var hasSpecReporter = reporters.indexOf('spec') !== -1;
 
 if(!hasSpecReporter && argv.showSkipped) reporters.push('spec');
 if(argv.verbose) reporters.push('verbose');
+
+if(process.argv.indexOf('--tags=noCI,noCIdep') !== -1) {
+    reporters = ['dots'];
+}
 
 function func(config) {
     // level of logging
@@ -188,12 +192,11 @@ func.defaultConfig = {
     // N.B. the rest of this field is filled below
     files: [
         pathToCustomMatchers,
-        // available to fetch from /base/node_modules/mathjax-v2/
+        // available to fetch from /base/node_modules/@plotly/mathjax-v2/
         // more info: http://karma-runner.github.io/3.0/config/files.html
         {pattern: pathToMathJax2 + '/**', included: false, watched: false, served: true},
         {pattern: pathToMathJax3 + '/**', included: false, watched: false, served: true},
-        // available to fetch from /base/node_modules/sane-topojson/dist/
-        {pattern: pathToSaneTopojsonDist + '/**', included: false, watched: false, served: true}
+        {pattern: pathToTopojsonDist + '/**', included: false, watched: false, served: true}
     ],
 
     // list of files / pattern to exclude

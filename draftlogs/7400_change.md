@@ -1,1 +1,0 @@
- - Make 'png' all caps [[#7400](https://github.com/plotly/plotly.js/pull/7400)]

@@ -2545,9 +2545,11 @@
      "valType": "enumerated",
      "values": [
       "africa",
+      "antarctica",
       "asia",
       "europe",
       "north america",
+      "oceania",
       "south america",
       "usa",
       "world"
@@ -5195,6 +5197,17 @@
       "min": 0,
       "valType": "number"
      },
+     "minorloglabels": {
+      "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+      "dflt": "small digits",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "small digits",
+       "complete",
+       "none"
+      ]
+     },
      "nticks": {
       "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
       "dflt": 0,
@@ -5891,6 +5904,17 @@
       "editType": "plot",
       "min": 0,
       "valType": "number"
+     },
+     "minorloglabels": {
+      "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+      "dflt": "small digits",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "small digits",
+       "complete",
+       "none"
+      ]
      },
      "nticks": {
       "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
@@ -13905,6 +13929,17 @@
       "valType": "number"
      }
     },
+    "minorloglabels": {
+     "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+     "dflt": "small digits",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "small digits",
+      "complete",
+      "none"
+     ]
+    },
     "mirror": {
      "description": "Determines if the axis lines or/and ticks are mirrored to the opposite side of the plotting area. If *true*, the axis lines are mirrored. If *ticks*, the axis lines and ticks are mirrored. If *false*, mirroring is disable. If *all*, axis lines are mirrored on all shared-axes subplots. If *allticks*, axis lines and ticks are mirrored on all shared-axes subplots.",
      "dflt": false,
@@ -13917,6 +13952,19 @@
       "all",
       "allticks"
      ]
+    },
+    "modebardisable": {
+     "description": "Disables certain modebar buttons for this axis. *autoscale* disables the autoscale buttons, *zoominout* disables the zoom-in and zoom-out buttons.",
+     "dflt": "none",
+     "editType": "modebar",
+     "extras": [
+      "none"
+     ],
+     "flags": [
+      "autoscale",
+      "zoominout"
+     ],
+     "valType": "flaglist"
     },
     "nticks": {
      "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
@@ -14711,7 +14759,7 @@
      ]
     },
     "ticklabelposition": {
-     "description": "Determines where tick labels are drawn with respect to the axis Please note that top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*. Similarly left or right has no effect on y axes or when `ticklabelmode` is set to *period*. Has no effect on *multicategory* axes or when `tickson` is set to *boundaries*. When used on axes linked by `matches` or `scaleanchor`, no extra padding for inside labels would be added by autorange, so that the scales could match.",
+     "description": "Determines where tick labels are drawn with respect to the axis. Please note that top or bottom has no effect on x axes or when `ticklabelmode` is set to *period* or when `tickson` is set to *boundaries*. Similarly, left or right has no effect on y axes or when `ticklabelmode` is set to *period* or when `tickson` is set to *boundaries*. Has no effect on *multicategory* axes. When used on axes linked by `matches` or `scaleanchor`, no extra padding for inside labels would be added by autorange, so that the scales could match.",
      "dflt": "outside",
      "editType": "calc",
      "valType": "enumerated",
@@ -15466,6 +15514,17 @@
       "valType": "number"
      }
     },
+    "minorloglabels": {
+     "description": "Determines how minor log labels are displayed. If *small digits*, small digits i.e. 2 or 5 are displayed. If *complete*, complete digits are displayed. If *none*, no labels are displayed.",
+     "dflt": "small digits",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "small digits",
+      "complete",
+      "none"
+     ]
+    },
     "mirror": {
      "description": "Determines if the axis lines or/and ticks are mirrored to the opposite side of the plotting area. If *true*, the axis lines are mirrored. If *ticks*, the axis lines and ticks are mirrored. If *false*, mirroring is disable. If *all*, axis lines are mirrored on all shared-axes subplots. If *allticks*, axis lines and ticks are mirrored on all shared-axes subplots.",
      "dflt": false,
@@ -15478,6 +15537,19 @@
       "all",
       "allticks"
      ]
+    },
+    "modebardisable": {
+     "description": "Disables certain modebar buttons for this axis. *autoscale* disables the autoscale buttons, *zoominout* disables the zoom-in and zoom-out buttons.",
+     "dflt": "none",
+     "editType": "modebar",
+     "extras": [
+      "none"
+     ],
+     "flags": [
+      "autoscale",
+      "zoominout"
+     ],
+     "valType": "flaglist"
     },
     "nticks": {
      "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
@@ -15955,7 +16027,7 @@
      ]
     },
     "ticklabelposition": {
-     "description": "Determines where tick labels are drawn with respect to the axis Please note that top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*. Similarly left or right has no effect on y axes or when `ticklabelmode` is set to *period*. Has no effect on *multicategory* axes or when `tickson` is set to *boundaries*. When used on axes linked by `matches` or `scaleanchor`, no extra padding for inside labels would be added by autorange, so that the scales could match.",
+     "description": "Determines where tick labels are drawn with respect to the axis. Please note that top or bottom has no effect on x axes or when `ticklabelmode` is set to *period* or when `tickson` is set to *boundaries*. Similarly, left or right has no effect on y axes or when `ticklabelmode` is set to *period* or when `tickson` is set to *boundaries*. Has no effect on *multicategory* axes. When used on axes linked by `matches` or `scaleanchor`, no extra padding for inside labels would be added by autorange, so that the scales could match.",
      "dflt": "outside",
      "editType": "calc",
      "valType": "enumerated",
@@ -17833,6 +17905,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
@@ -19860,6 +19943,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
@@ -37588,6 +37682,17 @@
         "overlay"
        ]
       },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "role": "object",
       "shape": {
        "arrayOk": true,
@@ -41250,6 +41355,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
@@ -46481,6 +46597,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
@@ -56252,6 +56379,17 @@
         "overlay"
        ]
       },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "role": "object",
       "shape": {
        "arrayOk": true,
@@ -58637,6 +58775,17 @@
        "replace",
        "overlay"
       ]
+     },
+     "path": {
+      "arrayOk": true,
+      "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+      "editType": "style",
+      "valType": "string"
+     },
+     "pathsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+      "editType": "none",
+      "valType": "string"
      },
      "role": "object",
      "shape": {
@@ -87731,6 +87880,17 @@
         "overlay"
        ]
       },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
+      },
       "role": "object",
       "shape": {
        "arrayOk": true,
@@ -92371,6 +92531,17 @@
         "replace",
         "overlay"
        ]
+      },
+      "path": {
+       "arrayOk": true,
+       "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+       "editType": "style",
+       "valType": "string"
+      },
+      "pathsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `path`.",
+       "editType": "none",
+       "valType": "string"
       },
       "role": "object",
       "shape": {
