@@ -5,6 +5,7 @@ var colorAttrs = require('../../components/color/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var templateFormatStringDescription = require('../../plots/template_attributes').templateFormatStringDescription;
 var descriptionWithDates = require('../../plots/cartesian/axis_format_attributes').descriptionWithDates;
 
 var ONEDAY = require('../../constants/numerical').ONEDAY;
@@ -986,6 +987,18 @@ module.exports = {
         dflt: '',
         editType: 'none',
         description: descriptionWithDates('hover text')
+    },
+    unifiedhovertitle: {
+        text : {
+            valType: 'string',
+            dflt: '',
+            editType: 'none',
+            description: [
+                'Template string used for rendering the title that appear on x or y unified hover box.',
+                templateFormatStringDescription()
+            ].join(' ')
+        },
+        editType: 'none'
     },
     // lines and grids
     showline: {
