@@ -42,7 +42,7 @@ function assertJasmineSuites() {
             var code = fs.readFileSync(file, 'utf-8');
             var bn = path.basename(file);
 
-            falafel(code, {locations: true}, function(node) {
+            falafel(code, { ecmaVersion: 12, locations: true }, function(node) {
                 var lineInfo = '[line ' + node.loc.start.line + '] :';
 
                 if(node.type === 'Identifier' && BLACK_LIST.indexOf(node.name) !== -1) {
@@ -108,7 +108,7 @@ function assertSrcContents() {
 
             // parse through code string while keeping track of comments
             var comments = [];
-            falafel(code, {onComment: comments, locations: true}, function(node) {
+            falafel(code, { ecmaVersion: 12, locations: true, onComment: comments }, function(node) {
                 // look for .classList
                 if(node.type === 'MemberExpression') {
                     var source = node.source();

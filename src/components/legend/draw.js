@@ -769,8 +769,12 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var traceGroupGap = legendObj.tracegroupgap;
     var legendGroupWidths = {};
 
-    var { maxheight, orientation, yref } = legendObj;
-    var heightToBeScaled = orientation === "v" && yref === "paper" ? gs.h : fullLayout.height;
+    const { orientation, yref } = legendObj;
+    let { maxheight } = legendObj;
+    const useFullLayoutHeight = isBelowPlotArea || isAbovePlotArea && !(orientation === "v" && yref === "paper")
+    // Set default maxheight here since it depends on values passed in by user
+    maxheight ||= useFullLayoutHeight ? 0.5 : 1;
+    const heightToBeScaled = useFullLayoutHeight ? fullLayout.height : gs.h;
     legendObj._maxHeight = Math.max(maxheight > 1 ? maxheight : maxheight * heightToBeScaled, 30);
 
     var toggleRectWidth = 0;
