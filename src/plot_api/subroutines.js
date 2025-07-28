@@ -429,7 +429,7 @@ exports.drawMainTitle = function(gd) {
 
     if(title.text && title.automargin) {
         var titleObj = d3.selectAll('.gtitle');
-        var titleHeight = Drawing.bBox(d3.selectAll('.g-gtitle').node()).height;
+        var titleHeight = d3.selectAll('.g-gtitle').node().getBBox().height;
         var pushMargin = needsMarginPush(gd, title, titleHeight);
         if(pushMargin > 0) {
             applyTitleAutoMargin(gd, y, pushMargin, titleHeight);

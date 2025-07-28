@@ -452,7 +452,7 @@ function drawColorBar(g, opts, gd) {
 
             var bb;
             if(mathJaxNode) {
-                bb = Drawing.bBox(mathJaxNode);
+                bb = mathJaxNode.getBBox();
                 titleWidth = bb.width;
                 titleHeight = bb.height;
                 if(titleHeight > lineSize) {
@@ -461,7 +461,7 @@ function drawColorBar(g, opts, gd) {
                     titleTrans[1] -= (titleHeight - lineSize) / 2;
                 }
             } else if(titleText.node() && !titleText.classed(cn.jsPlaceholder)) {
-                bb = Drawing.bBox(titleText.node());
+                bb = titleText.node().getBBox();
                 titleWidth = bb.width;
                 titleHeight = bb.height;
             }
@@ -606,7 +606,7 @@ function drawColorBar(g, opts, gd) {
         var bb;
         var innerThickness = thickPx + outlinewidth / 2;
         if(ticklabelposition.indexOf('inside') === -1) {
-            bb = Drawing.bBox(axLayer.node());
+            bb = axLayer.node().getBBox();
             innerThickness += isVertical ? bb.width : bb.height;
         }
 
@@ -627,7 +627,7 @@ function drawColorBar(g, opts, gd) {
                 (isVertical && topOrBottom) ||
                 (!isVertical && !topOrBottom)
             )) {
-                bb = Drawing.bBox(mathJaxNode);
+                bb = mathJaxNode.getBBox();
                 titleWidth = bb.width;
                 _titleHeight = bb.height;
             } else {

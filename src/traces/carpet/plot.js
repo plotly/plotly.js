@@ -145,7 +145,7 @@ function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
             .text(label.text)
             .call(svgTextUtils.convertToTspans, gd);
 
-        var bbox = Drawing.bBox(this);
+        var bbox = this.getBBox();
 
         labelEl.attr('transform',
                 // Translate to the correct point:

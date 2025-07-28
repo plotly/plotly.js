@@ -182,7 +182,7 @@ exports.toSVG = function(gd) {
                 'data-unformatted': attributions
             });
 
-        var bBox = Drawing.bBox(attributionText.node());
+        var bBox = attributionText.node().getBBox();
 
         // Break into multiple lines twice larger than domain
         var maxWidth = size.w * (domain.x[1] - domain.x[0]);
@@ -193,7 +193,7 @@ exports.toSVG = function(gd) {
                 .attr('data-unformatted', multilineAttributions)
                 .call(svgTextUtils.convertToTspans, gd);
 
-            bBox = Drawing.bBox(attributionText.node());
+            bBox = attributionText.node().getBBox();
         }
         attributionText.attr('transform', strTranslate(-3, -bBox.height + 8));
 

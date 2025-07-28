@@ -495,7 +495,7 @@ function findDimensions(gd, menuOpts) {
         var text = button.select('.' + constants.itemTextClassName);
 
         // width is given by max width of all buttons
-        var tWidth = text.node() && Drawing.bBox(text.node()).width;
+        var tWidth = text.node() && text.node().getBBox().width;
         var wEff = Math.max(tWidth + constants.textPadX, constants.minWidth);
 
         // height is determined by item text

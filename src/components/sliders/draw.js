@@ -133,7 +133,7 @@ function findDimensions(gd, sliderOpts) {
 
         var textNode = text.node();
         if(textNode) {
-            var bBox = Drawing.bBox(textNode);
+            var bBox = textNode.getBBox();
             labelHeight = Math.max(labelHeight, bBox.height);
             maxLabelWidth = Math.max(maxLabelWidth, bBox.width);
         }
@@ -185,7 +185,7 @@ function findDimensions(gd, sliderOpts) {
 
         sliderLabels.each(function(stepOpts) {
             var curValPrefix = drawCurrentValue(dummyGroup, sliderOpts, stepOpts.label);
-            var curValSize = (curValPrefix.node() && Drawing.bBox(curValPrefix.node())) || {width: 0, height: 0};
+            var curValSize = (curValPrefix.node() && curValPrefix.node().getBBox()) || {width: 0, height: 0};
             var lines = svgTextUtils.lineCount(curValPrefix);
             dims.currentValueMaxWidth = Math.max(dims.currentValueMaxWidth, Math.ceil(curValSize.width));
             dims.currentValueHeight = Math.max(dims.currentValueHeight, Math.ceil(curValSize.height));
