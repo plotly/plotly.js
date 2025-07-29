@@ -1211,10 +1211,26 @@ function createHoverText(hoverData, opts) {
         // mock legend
         var hoverlabel = fullLayout.hoverlabel;
         var font = hoverlabel.font;
+
+        var item0 = groupedHoverData[0];
+
+        var unifiedhovertitleText = ((
+            hovermode === 'x unified' ?
+                item0.xa :
+                item0.ya
+            ).unifiedhovertitle || {}).text;
+
+        var mainText = !unifiedhovertitleText ? t0 :
+            Lib.hovertemplateString(unifiedhovertitleText, {}, fullLayout._d3locale,
+                hovermode === 'x unified' ?
+                    {xa: item0.xa, x: item0.xVal} :
+                    {ya: item0.ya, y: item0.yVal}
+        );
+
         var mockLayoutIn = {
             showlegend: true,
             legend: {
-                title: {text: t0, font: font},
+                title: {text: mainText, font: font},
                 font: font,
                 bgcolor: hoverlabel.bgcolor,
                 bordercolor: hoverlabel.bordercolor,
@@ -1922,20 +1938,30 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
         var offsetY = offsets.y;
 
         var isMiddle = anchor === 'middle';
+        // Get 'showarrow' attribute value from trace hoverlabel settings;
+        // if trace has no hoverlabel settings, we should show the arrow by default
+        var showArrow = 'hoverlabel' in d.trace ? d.trace.hoverlabel.showarrow : true;
 
-        g.select('path')
-            .attr('d', isMiddle ?
+        var pathStr;
+        if(isMiddle) {
             // middle aligned: rect centered on data
-            ('M-' + pX(d.bx / 2 + d.tx2width / 2) + ',' + pY(offsetY - d.by / 2) +
-              'h' + pX(d.bx) + 'v' + pY(d.by) + 'h-' + pX(d.bx) + 'Z') :
+            pathStr = 'M-' + pX(d.bx / 2 + d.tx2width / 2) + ',' + pY(offsetY - d.by / 2) +
+                      'h' + pX(d.bx) + 'v' + pY(d.by) + 'h-' + pX(d.bx) + 'Z';
+        } else if(showArrow) {
             // left or right aligned: side rect with arrow to data
-            ('M0,0L' + pX(horzSign * HOVERARROWSIZE + offsetX) + ',' + pY(HOVERARROWSIZE + offsetY) +
-                'v' + pY(d.by / 2 - HOVERARROWSIZE) +
-                'h' + pX(horzSign * d.bx) +
-                'v-' + pY(d.by) +
-                'H' + pX(horzSign * HOVERARROWSIZE + offsetX) +
-                'V' + pY(offsetY - HOVERARROWSIZE) +
-                'Z'));
+            pathStr = 'M0,0L' + pX(horzSign * HOVERARROWSIZE + offsetX) + ',' + pY(HOVERARROWSIZE + offsetY) +
+                      'v' + pY(d.by / 2 - HOVERARROWSIZE) +
+                      'h' + pX(horzSign * d.bx) +
+                      'v-' + pY(d.by) +
+                      'H' + pX(horzSign * HOVERARROWSIZE + offsetX) +
+                      'V' + pY(offsetY - HOVERARROWSIZE) +
+                      'Z';
+        } else {
+            // left or right aligned: side rect without arrow
+            pathStr = 'M' + pX(horzSign * HOVERARROWSIZE + offsetX) + ',' + pY(offsetY - d.by / 2) +
+                      'h' + pX(horzSign * d.bx) + 'v' + pY(d.by) + 'h' + pX(-horzSign * d.bx) + 'Z';
+        }
+        g.select('path').attr('d', pathStr);
 
         var posX = offsetX + shiftX.textShiftX;
         var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD;

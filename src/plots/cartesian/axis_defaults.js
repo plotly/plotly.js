@@ -100,7 +100,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
 
-    if(axType !== 'category' && !options.noHover) coerce('hoverformat');
+    if(!options.noHover) {
+        if(axType !== 'category') coerce('hoverformat');
+        if(!options.noUnifiedhovertitle) {
+            coerce('unifiedhovertitle.text');
+        }
+    }
 
     var dfltColor = coerce('color');
     // if axis.color was provided, use it for fonts too; otherwise,
