@@ -1945,4 +1945,95 @@ describe('ModeBar', function() {
             });
         });
     });
+
+    describe('copyToClipboard button', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should be present when clipboard API is supported', function(done) {
+            // Mock clipboard API support
+            var originalClipboard = navigator.clipboard;
+            navigator.clipboard = { write: function() { return Promise.resolve(); } };
+
+            Plotly.newPlot(gd, [{
+                x: [1, 2, 3],
+                y: [1, 2, 3]
+            }])
+            .then(function() {
+                var modeBar = gd._fullLayout._modeBar;
+                var copyButton = selectButton(modeBar, 'copyToClipboard');
+                expect(copyButton.node).toBeDefined();
+                expect(copyButton.node.getAttribute('data-title')).toBe('Copy plot to clipboard');
+
+                // Restore original clipboard
+                navigator.clipboard = originalClipboard;
+            })
+            .then(done)
+            .catch(failTest);
+        });
+
+        it('should not be present when clipboard API is not supported', function(done) {
+            // Mock no clipboard API support
+            var originalClipboard = navigator.clipboard;
+            navigator.clipboard = undefined;
+
+            Plotly.newPlot(gd, [{
+                x: [1, 2, 3],
+                y: [1, 2, 3]
+            }])
+            .then(function() {
+                var modeBar = gd._fullLayout._modeBar;
+                var copyButton = selectButton(modeBar, 'copyToClipboard');
+                expect(copyButton.node).toBeNull();
+
+                // Restore original clipboard
+                navigator.clipboard = originalClipboard;
+            })
+            .then(done)
+            .catch(failTest);
+        });
+
+        it('should call clipboard API when clicked', function(done) {
+            var clipboardWriteCalled = false;
+            var originalClipboard = navigator.clipboard;
+            
+            // Mock successful clipboard API
+            navigator.clipboard = {
+                write: function(items) {
+                    clipboardWriteCalled = true;
+                    expect(items.length).toBe(1);
+                    expect(items[0]).toEqual(jasmine.any(ClipboardItem));
+                    return Promise.resolve();
+                }
+            };
+
+            Plotly.newPlot(gd, [{
+                x: [1, 2, 3],
+                y: [1, 2, 3]
+            }])
+            .then(function() {
+                var copyButton = selectButton(gd._fullLayout._modeBar, 'copyToClipboard');
+                copyButton.click();
+
+                // Wait a bit for async operations
+                setTimeout(function() {
+                    expect(clipboardWriteCalled).toBe(true);
+                    
+                    // Restore original clipboard
+                    navigator.clipboard = originalClipboard;
+                    done();
+                }, 100);
+            })
+            .catch(function(err) {
+                // Restore original clipboard
+                navigator.clipboard = originalClipboard;
+                failTest(err);
+            });
+        });
+    });
 });

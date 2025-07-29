@@ -67,6 +67,70 @@ modeBarButtons.toImage = {
     }
 };
 
+modeBarButtons.copyToClipboard = {
+    name: 'copyToClipboard',
+    title: function(gd) { return _(gd, 'Copy plot to clipboard'); },
+    icon: Icons.clipboard,
+    click: function(gd) {
+        var toImageButtonOptions = gd._context.toImageButtonOptions || {};
+        var opts = {
+            format: 'png',
+            imageDataOnly: true
+        };
+
+        Lib.notifier(_(gd, 'Copying to clipboard...'), 'long');
+
+        ['width', 'height', 'scale'].forEach(function(key) {
+            if(key in toImageButtonOptions) {
+                opts[key] = toImageButtonOptions[key];
+            }
+        });
+
+        Registry.call('toImage', gd, opts)
+          .then(function(imageData) {
+              // Convert base64 to blob
+              var byteString = atob(imageData);
+              var arrayBuffer = new ArrayBuffer(byteString.length);
+              var uint8Array = new Uint8Array(arrayBuffer);
+              
+              for(var i = 0; i < byteString.length; i++) {
+                  uint8Array[i] = byteString.charCodeAt(i);
+              }
+              
+              var blob = new Blob([arrayBuffer], { type: 'image/png' });
+              
+              // Modern clipboard API
+              if(navigator.clipboard && navigator.clipboard.write) {
+                  var clipboardItem = new ClipboardItem({
+                      'image/png': blob
+                  });
+                  
+                  return navigator.clipboard.write([clipboardItem])
+                    .then(function() {
+                        Lib.notifier(_(gd, 'Plot copied to clipboard!'), 'long');
+                    });
+              } else {
+                  // Fallback: copy data URL as text
+                  var dataUrl = 'data:image/png;base64,' + imageData;
+                  if(navigator.clipboard && navigator.clipboard.writeText) {
+                      return navigator.clipboard.writeText(dataUrl)
+                        .then(function() {
+                            Lib.notifier(_(gd, 'Image data copied as text'), 'long');
+                        });
+                  } else {
+                      throw new Error('Clipboard API not supported');
+                  }
+              }
+          })
+          .catch(function(err) {
+              console.error('Failed to copy to clipboard:', err);
+              Lib.notifier(_(gd, 'Clipboard failed, downloading instead...'), 'long');
+              // Fallback to download
+              Registry.call('downloadImage', gd, {format: 'png'});
+          });
+    }
+};
+
 modeBarButtons.sendDataToCloud = {
     name: 'sendDataToCloud',
     title: function(gd) { return _(gd, 'Edit in Chart Studio'); },
