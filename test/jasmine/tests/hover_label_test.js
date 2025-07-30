@@ -6901,6 +6901,73 @@ describe('hovermode: (x|y)unified', function() {
             })
             .then(done, done.fail);
     });
+
+    it('should format title of unified hover in respect to `unifiedhovertitle` linear axis', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'bar',
+            y: [1, 2, 3]
+        }, {
+            type: 'scatter',
+            y: [2, 3, 1]
+        }], {
+            xaxis: {
+                unifiedhovertitle: { text: 'X: %{x:.2f}' },
+            },
+            hovermode: 'x unified',
+            showlegend: false,
+            width: 500,
+            height: 500,
+            margin: {
+                t: 50,
+                b: 50,
+                l: 50,
+                r: 50
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: 'X: 1.00', items: [
+                'trace 0 : 2',
+                'trace 1 : 3'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should format title of unified hover in respect to `unifiedhovertitle` date axis', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'bar',
+            x: ['2000-01-01', '2000-02-01', '2000-03-01'],
+            y: [1, 2, 3]
+        }, {
+            type: 'scatter',
+            x: ['2000-01-01', '2000-02-01', '2000-03-01'],
+            y: [2, 3, 1]
+        }], {
+            xaxis: {
+                type: 'date',
+                unifiedhovertitle: { text: 'X: %{x|%x %X}' },
+            },
+            hovermode: 'x unified',
+            showlegend: false,
+            width: 500,
+            height: 500,
+            margin: {
+                t: 50,
+                b: 50,
+                l: 50,
+                r: 50
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: 'X: 02/01/2000 00:00:00', items: [
+                'trace 0 : 2',
+                'trace 1 : 3'
+            ]});
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('hover on traces with (x|y)hoverformat', function() {
@@ -7034,6 +7101,103 @@ describe('hover on traces with (x|y)hoverformat', function() {
                 name: '',
                 nums: '(02/01/2000, 4.00)'
             });
+        })
+        .then(done, done.fail);
+    });
+});
+
+describe('hoverlabel.showarrow', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(x, y) {
+        mouseEvent('mousemove', x, y);
+        Lib.clearThrottle();
+    }
+
+    function getHoverPath() {
+        var hoverLabels = d3SelectAll('g.hovertext');
+        if (hoverLabels.size() === 0) return null;
+        return hoverLabels.select('path').attr('d');
+    }
+
+    it('should show hover arrow by default', function(done) {
+        Plotly.newPlot(gd, [{
+            x: [1, 2, 3],
+            y: [1, 2, 1],
+            type: 'scatter',
+            mode: 'markers'
+        }], {
+            width: 400,
+            height: 400,
+            margin: {l: 50, t: 50, r: 50, b: 50}
+        })
+        .then(function() {
+            _hover(200, 70); // Hover over middle point
+        })
+        .then(delay(HOVERMINTIME * 1.1))
+        .then(function() {
+            var pathD = getHoverPath();
+            expect(pathD).not.toBeNull('hover path should exist');
+            // Arrow paths contain 'L' commands starting from 0,0
+            expect(pathD).toMatch(/^M0,0L/, 'path should contain arrow (L command from 0,0)');
+        })
+        .then(done, done.fail);
+    });
+
+    it('should hide hover arrow when showarrow is false', function(done) {
+        Plotly.newPlot(gd, [{
+            x: [1, 2, 3],
+            y: [1, 2, 1],
+            type: 'scatter',
+            mode: 'markers'
+        }], {
+            width: 400,
+            height: 400,
+            margin: {l: 50, t: 50, r: 50, b: 50},
+            hoverlabel: { showarrow: false }
+        })
+        .then(function() {
+            _hover(200, 70); // Hover over middle point
+        })
+        .then(delay(HOVERMINTIME * 1.1))
+        .then(function() {
+            var pathD = getHoverPath();
+            expect(pathD).not.toBeNull('hover path should exist');
+            // No-arrow paths should be simple rectangles (no 'L' commands starting at 0,0))
+            expect(pathD).not.toMatch(/^M0,0L/, 'path should not start at 0,0');
+            expect(pathD).toMatch(/^M[\d.-]+,[\d.-]+h/, 'path should start with some numeric point and move horizontally');
+        })
+        .then(done, done.fail);
+    });
+
+    it('should work at trace level', function(done) {
+        Plotly.newPlot(gd, [{
+            x: [1, 2, 3],
+            y: [1, 2, 1],
+            type: 'scatter',
+            mode: 'markers',
+            hoverlabel: { showarrow: false }
+        }], {
+            width: 400,
+            height: 400,
+            margin: {l: 50, t: 50, r: 50, b: 50}
+        })
+        .then(function() {
+            _hover(200, 70); // Hover over middle point
+        })
+        .then(delay(HOVERMINTIME * 1.1))
+        .then(function() {
+            var pathD = getHoverPath();
+            expect(pathD).not.toBeNull('hover path should exist');
+            expect(pathD).not.toMatch(/^M0,0L/, 'trace-level showarrow:false should hide arrow');
         })
         .then(done, done.fail);
     });

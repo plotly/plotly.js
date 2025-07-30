@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v3.0.1
+* plotly.js (geo) v3.1.0-rc.0
 * Copyright 2012-2025, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38,7 +38,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.0.1";
+      exports.version = "3.1.0-rc.0";
     }
   });
 
@@ -11213,8 +11213,14 @@ var Plotly = (() => {
       };
       exports.coercePattern = function(coerce, attr, markerColor, hasMarkerColorscale) {
         var shape = coerce(attr + ".shape");
-        if (shape) {
-          coerce(attr + ".solidity");
+        var path;
+        if (!shape) {
+          path = coerce(attr + ".path");
+        }
+        if (shape || path) {
+          if (shape) {
+            coerce(attr + ".solidity");
+          }
           coerce(attr + ".size");
           var fillmode = coerce(attr + ".fillmode");
           var isOverlay = fillmode === "overlay";
@@ -13078,6 +13084,11 @@ var Plotly = (() => {
           arrayOk: true,
           editType: "style"
         },
+        path: {
+          valType: "string",
+          arrayOk: true,
+          editType: "style"
+        },
         fillmode: {
           valType: "enumerated",
           values: ["replace", "overlay"],
@@ -13737,10 +13748,10 @@ var Plotly = (() => {
     }
   });
 
-  // stylePlugin:/Users/ekl/code/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
+  // stylePlugin:/home/cam/Development/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
   var maplibre_gl_exports = {};
   var init_maplibre_gl2 = __esm({
-    "stylePlugin:/Users/ekl/code/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
+    "stylePlugin:/home/cam/Development/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       init_maplibre_gl();
     }
   });
@@ -21471,6 +21482,12 @@ var Plotly = (() => {
           dflt: colorAttrs.defaultLine,
           editType: "ticks"
         },
+        zerolinelayer: {
+          valType: "enumerated",
+          values: ["above traces", "below traces"],
+          dflt: "below traces",
+          editType: "plot"
+        },
         zerolinewidth: {
           valType: "number",
           dflt: 1,
@@ -23700,13 +23717,14 @@ var Plotly = (() => {
       function setFillStyle(sel, trace, gd, forLegend) {
         var markerPattern = trace.fillpattern;
         var fillgradient = trace.fillgradient;
-        var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, 0, "");
+        var pAttr = drawing.getPatternAttr;
+        var patternShape = markerPattern && (pAttr(markerPattern.shape, 0, "") || pAttr(markerPattern.path, 0, ""));
         if (patternShape) {
-          var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
-          var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
+          var patternBGColor = pAttr(markerPattern.bgcolor, 0, null);
+          var patternFGColor = pAttr(markerPattern.fgcolor, 0, null);
           var patternFGOpacity = markerPattern.fgopacity;
-          var patternSize = drawing.getPatternAttr(markerPattern.size, 0, 8);
-          var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, 0, 0.3);
+          var patternSize = pAttr(markerPattern.size, 0, 8);
+          var patternSolidity = pAttr(markerPattern.solidity, 0, 0.3);
           var patternID = trace.uid;
           drawing.pattern(
             sel,
@@ -24056,6 +24074,16 @@ var Plotly = (() => {
               fill: fgRGB
             };
             break;
+          default:
+            width = size;
+            height = size;
+            patternTag = "path";
+            patternAttrs = {
+              d: shape,
+              opacity,
+              fill: fgRGB
+            };
+            break;
         }
         var str = [
           shape || "noSh",
@@ -24188,7 +24216,8 @@ var Plotly = (() => {
             if (!gradientInfo[gradientType]) gradientType = 0;
           }
           var markerPattern = marker.pattern;
-          var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, d.i, "");
+          var pAttr = drawing.getPatternAttr;
+          var patternShape = markerPattern && (pAttr(markerPattern.shape, d.i, "") || pAttr(markerPattern.path, d.i, ""));
           if (gradientType && gradientType !== "none") {
             var gradientColor = d.mgc;
             if (gradientColor) perPointGradient = true;
@@ -24210,12 +24239,12 @@ var Plotly = (() => {
               fgcolor = pt.color;
               perPointPattern = true;
             }
-            var patternFGColor = drawing.getPatternAttr(fgcolor, d.i, pt && pt.color || null);
-            var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
+            var patternFGColor = pAttr(fgcolor, d.i, pt && pt.color || null);
+            var patternBGColor = pAttr(markerPattern.bgcolor, d.i, null);
             var patternFGOpacity = markerPattern.fgopacity;
-            var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
-            var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
-            perPointPattern = perPointPattern || d.mcc || Lib.isArrayOrTypedArray(markerPattern.shape) || Lib.isArrayOrTypedArray(markerPattern.bgcolor) || Lib.isArrayOrTypedArray(markerPattern.fgcolor) || Lib.isArrayOrTypedArray(markerPattern.size) || Lib.isArrayOrTypedArray(markerPattern.solidity);
+            var patternSize = pAttr(markerPattern.size, d.i, 8);
+            var patternSolidity = pAttr(markerPattern.solidity, d.i, 0.3);
+            perPointPattern = perPointPattern || d.mcc || Lib.isArrayOrTypedArray(markerPattern.shape) || Lib.isArrayOrTypedArray(markerPattern.path) || Lib.isArrayOrTypedArray(markerPattern.bgcolor) || Lib.isArrayOrTypedArray(markerPattern.fgcolor) || Lib.isArrayOrTypedArray(markerPattern.size) || Lib.isArrayOrTypedArray(markerPattern.solidity);
             var patternID = trace.uid;
             if (perPointPattern) patternID += "-" + d.i;
             drawing.pattern(
@@ -24960,7 +24989,7 @@ var Plotly = (() => {
         var editAttr;
         if (prop === "title.text") editAttr = "titleText";
         else if (prop.indexOf("axis") !== -1) editAttr = "axisTitleText";
-        else if (prop.indexOf("colorbar" !== -1)) editAttr = "colorbarTitleText";
+        else if (prop.indexOf(true)) editAttr = "colorbarTitleText";
         var editable = gd._context.edits[editAttr];
         function matchesPlaceholder(text, placeholder2) {
           if (text === void 0 || placeholder2 === void 0) return false;
@@ -28029,6 +28058,7 @@ var Plotly = (() => {
               if (plotinfo.minorGridlayer) plotinfo.minorGridlayer.selectAll("path").remove();
               if (plotinfo.gridlayer) plotinfo.gridlayer.selectAll("path").remove();
               if (plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll("path").remove();
+              if (plotinfo.zerolinelayerAbove) plotinfo.zerolinelayerAbove.selectAll("path").remove();
               fullLayout._infolayer.select(".g-" + xa._id + "title").remove();
               fullLayout._infolayer.select(".g-" + ya._id + "title").remove();
             }
@@ -28081,6 +28111,7 @@ var Plotly = (() => {
         var axLetter = axId.charAt(0);
         var counterLetter = axes.counterLetter(axId);
         var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
+        var zerolineIsAbove = ax.zerolinelayer === "above traces";
         if (!mainPlotinfo) return;
         ax._shiftPusher = ax.autoshift || overlayingShiftedAx.indexOf(ax._id) !== -1 || overlayingShiftedAx.indexOf(ax.overlaying) !== -1;
         if (ax._shiftPusher & ax.anchor === "free") {
@@ -28149,7 +28180,7 @@ var Plotly = (() => {
             });
             axes.drawZeroLine(gd, ax, {
               counterAxis,
-              layer: plotinfo.zerolinelayer,
+              layer: zerolineIsAbove ? plotinfo.zerolinelayerAbove : plotinfo.zerolinelayer,
               path: gridPath,
               transFn: transTickFn
             });
@@ -28536,6 +28567,7 @@ var Plotly = (() => {
       }
       function getTickLabelUV(ax) {
         var ticklabelposition = ax.ticklabelposition || "";
+        var tickson = ax.tickson || "";
         var has = function(str) {
           return ticklabelposition.indexOf(str) !== -1;
         };
@@ -28544,7 +28576,7 @@ var Plotly = (() => {
         var isRight = has("right");
         var isBottom = has("bottom");
         var isInside = has("inside");
-        var isAligned = isBottom || isLeft || isTop || isRight;
+        var isAligned = tickson !== "boundaries" && (isBottom || isLeft || isTop || isRight);
         if (!isAligned && !isInside) return [0, 0];
         var side = ax.side;
         var u = isAligned ? (ax.tickwidth || 0) / 2 : 0;
@@ -28579,6 +28611,7 @@ var Plotly = (() => {
       };
       axes.makeLabelFns = function(ax, shift, angle) {
         var ticklabelposition = ax.ticklabelposition || "";
+        var tickson = ax.tickson || "";
         var has = function(str) {
           return ticklabelposition.indexOf(str) !== -1;
         };
@@ -28586,9 +28619,9 @@ var Plotly = (() => {
         var isLeft = has("left");
         var isRight = has("right");
         var isBottom = has("bottom");
-        var isAligned = isBottom || isLeft || isTop || isRight;
+        var isAligned = tickson !== "boundaries" && (isBottom || isLeft || isTop || isRight);
         var insideTickLabels = has("inside");
-        var labelsOverTicks = ticklabelposition === "inside" && ax.ticks === "inside" || !insideTickLabels && ax.ticks === "outside" && ax.tickson !== "boundaries";
+        var labelsOverTicks = ticklabelposition === "inside" && ax.ticks === "inside" || !insideTickLabels && ax.ticks === "outside" && tickson !== "boundaries";
         var labelStandoff = 0;
         var labelShift = 0;
         var tickLen = labelsOverTicks ? ax.ticklen : 0;
@@ -28805,6 +28838,7 @@ var Plotly = (() => {
         opts = opts || {};
         var fullLayout = gd._fullLayout;
         var axId = ax._id;
+        var zerolineIsAbove = ax.zerolinelayer === "above traces";
         var cls = opts.cls || axId + "tick";
         var vals = opts.vals.filter(function(d) {
           return d.text;
@@ -28950,8 +28984,10 @@ var Plotly = (() => {
                 var isPeriodLabel = e.K === "tick" && e.L === "text" && ax.ticklabelmode === "period";
                 var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
                 var sel;
-                if (e.K === ZERO_PATH.K) sel = mainPlotinfo.zerolinelayer.selectAll("." + ax._id + "zl");
-                else if (e.K === MINORGRID_PATH.K) sel = mainPlotinfo.minorGridlayer.selectAll("." + ax._id);
+                if (e.K === ZERO_PATH.K) {
+                  var zerolineLayer = zerolineIsAbove ? mainPlotinfo.zerolinelayerAbove : mainPlotinfo.zerolinelayer;
+                  sel = zerolineLayer.selectAll("." + ax._id + "zl");
+                } else if (e.K === MINORGRID_PATH.K) sel = mainPlotinfo.minorGridlayer.selectAll("." + ax._id);
                 else if (e.K === GRID_PATH.K) sel = mainPlotinfo.gridlayer.selectAll("." + ax._id);
                 else sel = mainPlotinfo[ax._id.charAt(0) + "axislayer"];
                 sel.each(function() {
@@ -29042,6 +29078,7 @@ var Plotly = (() => {
               }
             } else {
               var ticklabelposition = ax.ticklabelposition || "";
+              var tickson = ax.tickson || "";
               var has = function(str) {
                 return ticklabelposition.indexOf(str) !== -1;
               };
@@ -29049,7 +29086,7 @@ var Plotly = (() => {
               var isLeft = has("left");
               var isRight = has("right");
               var isBottom = has("bottom");
-              var isAligned = isBottom || isLeft || isTop || isRight;
+              var isAligned = tickson !== "boundaries" && (isBottom || isLeft || isTop || isRight);
               var pad = !isAligned ? 0 : (ax.tickwidth || 0) + 2 * TEXTPAD;
               for (i = 0; i < lbbArray.length - 1; i++) {
                 if (Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
@@ -29969,6 +30006,11 @@ var Plotly = (() => {
           dflt: colorAttrs.defaultLine,
           editType: "legend"
         },
+        maxheight: {
+          valType: "number",
+          min: 0,
+          editType: "legend"
+        },
         borderwidth: {
           valType: "number",
           min: 0,
@@ -30265,6 +30307,7 @@ var Plotly = (() => {
         coerce("groupclick");
         coerce("xanchor", defaultXAnchor);
         coerce("yanchor", defaultYAnchor);
+        coerce("maxheight", isHorizontal ? 0.5 : 1);
         coerce("valign");
         Lib.noneOrAll(containerIn, containerOut, ["x", "y"]);
         var titleText = coerce("title.text");
@@ -31015,10 +31058,11 @@ var Plotly = (() => {
             }
             var fillColor = mcc || d0.mc || marker.color;
             var markerPattern = marker.pattern;
-            var patternShape = markerPattern && Drawing.getPatternAttr(markerPattern.shape, 0, "");
+            var pAttr = Drawing.getPatternAttr;
+            var patternShape = markerPattern && (pAttr(markerPattern.shape, 0, "") || pAttr(markerPattern.path, 0, ""));
             if (patternShape) {
-              var patternBGColor = Drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
-              var patternFGColor = Drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
+              var patternBGColor = pAttr(markerPattern.bgcolor, 0, null);
+              var patternFGColor = pAttr(markerPattern.fgcolor, 0, null);
               var patternFGOpacity = markerPattern.fgopacity;
               var patternSize = dimAttr(markerPattern.size, 8, 10);
               var patternSolidity = dimAttr(markerPattern.solidity, 0.5, 1);
@@ -31884,10 +31928,9 @@ var Plotly = (() => {
         var isAbovePlotArea = legendObj.y > 1 || legendObj.y === 1 && yanchor === "bottom";
         var traceGroupGap = legendObj.tracegroupgap;
         var legendGroupWidths = {};
-        legendObj._maxHeight = Math.max(
-          isBelowPlotArea || isAbovePlotArea ? fullLayout.height / 2 : gs.h,
-          30
-        );
+        var { maxheight, orientation, yref } = legendObj;
+        var heightToBeScaled = orientation === "v" && yref === "paper" ? gs.h : fullLayout.height;
+        legendObj._maxHeight = Math.max(maxheight > 1 ? maxheight : maxheight * heightToBeScaled, 30);
         var toggleRectWidth = 0;
         legendObj._width = 0;
         legendObj._height = 0;
@@ -36288,7 +36331,7 @@ var Plotly = (() => {
         title: function(gd) {
           var opts = gd._context.toImageButtonOptions || {};
           var format = opts.format || "png";
-          return format === "png" ? _(gd, "Download plot as a png") : (
+          return format === "png" ? _(gd, "Download plot as a PNG") : (
             // legacy text
             _(gd, "Download plot")
           );
@@ -47030,7 +47073,7 @@ var Plotly = (() => {
             list.push(format("unused", base, p, valIn));
           } else if (!Lib.validate(valIn, nestedSchema)) {
             list.push(format("value", base, p, valIn));
-          } else if (nestedSchema.valType === "enumerated" && (nestedSchema.coerceNumber && valIn !== +valOut || valIn !== valOut)) {
+          } else if (nestedSchema.valType === "enumerated" && (nestedSchema.coerceNumber && valIn !== +valOut || !isArrayOrTypedArray(valIn) && valIn !== valOut || String(valIn) !== String(valOut))) {
             list.push(format("dynamic", base, p, valIn, valOut));
           }
         }
@@ -50730,10 +50773,12 @@ var Plotly = (() => {
           }
         }
         if (!opts.noZeroLine) {
+          var zeroLineLayer = coerce2("zerolinelayer");
           var zeroLineColor = coerce2("zerolinecolor", dfltColor);
           var zeroLineWidth = coerce2("zerolinewidth");
           var showZeroLine = coerce("zeroline", opts.showGrid || !!zeroLineColor || !!zeroLineWidth);
           if (!showZeroLine) {
+            delete containerOut.zerolinelayer;
             delete containerOut.zerolinecolor;
             delete containerOut.zerolinewidth;
           }
@@ -50851,11 +50896,11 @@ var Plotly = (() => {
         if (containerOut.showline || containerOut.ticks) coerce("mirror");
         var isMultiCategory = axType === "multicategory";
         if (!options.noTickson && (axType === "category" || isMultiCategory) && (containerOut.ticks || containerOut.showgrid)) {
-          var ticksonDflt;
-          if (isMultiCategory) ticksonDflt = "boundaries";
-          var tickson = coerce("tickson", ticksonDflt);
-          if (tickson === "boundaries") {
+          if (isMultiCategory) {
+            coerce("tickson", "boundaries");
             delete containerOut.ticklabelposition;
+          } else {
+            coerce("tickson");
           }
         }
         if (isMultiCategory) {
@@ -51926,6 +51971,11 @@ var Plotly = (() => {
             }
             plotinfo.overplot = ensureSingle(plotgroup, "g", "overplot");
             plotinfo.plot = ensureSingle(plotinfo.overplot, "g", id);
+            if (mainplotinfo && hasMultipleZ) {
+              plotinfo.zerolinelayerAbove = mainplotinfo.zerolinelayerAbove;
+            } else {
+              plotinfo.zerolinelayerAbove = ensureSingle(plotgroup, "g", "zerolinelayer-above");
+            }
             if (!hasZ) {
               plotinfo.xlines = ensureSingle(plotgroup, "path", "xlines-above");
               plotinfo.ylines = ensureSingle(plotgroup, "path", "ylines-above");
@@ -51946,6 +51996,7 @@ var Plotly = (() => {
           plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
           plotinfo.gridlayer = mainplotinfo.gridlayer;
           plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+          plotinfo.zerolinelayerAbove = mainplotinfo.zerolinelayerAbove;
           ensureSingle(mainplotinfo.overlinesBelow, "path", xId);
           ensureSingle(mainplotinfo.overlinesBelow, "path", yId);
           ensureSingle(mainplotinfo.overaxesBelow, "g", xId);
@@ -59438,6 +59489,18 @@ var Plotly = (() => {
           lataxisRange: [-60, 15],
           projType: "mercator",
           projRotate: [0, 0, 0]
+        },
+        antarctica: {
+          lonaxisRange: [-180, 180],
+          lataxisRange: [-90, -60],
+          projType: "equirectangular",
+          projRotate: [0, 0, 0]
+        },
+        oceania: {
+          lonaxisRange: [-180, 180],
+          lataxisRange: [-50, 25],
+          projType: "equirectangular",
+          projRotate: [0, 0, 0]
         }
       };
       exports.clipPad = 1e-3;
@@ -59980,7 +60043,8 @@ var Plotly = (() => {
         ].join("");
       };
       topojsonUtils.getTopojsonPath = function(topojsonURL, topojsonName) {
-        return topojsonURL + topojsonName + ".json";
+        topojsonURL += topojsonURL.endsWith("/") ? "" : "/";
+        return `${topojsonURL}${topojsonName}.json`;
       };
       topojsonUtils.getTopojsonFeatures = function(trace, topojson) {
         var layer = locationmodeToLayer[trace.locationmode];
@@ -60534,17 +60598,20 @@ var Plotly = (() => {
       }
       function azimuthToBearing(angle) {
         angle = angle % 360;
-        if (angle > 0)
-          return angle > 180 ? angle - 360 : angle;
-        return angle < -180 ? angle + 360 : angle;
+        if (angle > 180) {
+          return angle - 360;
+        } else if (angle < -180) {
+          return angle + 360;
+        }
+        return angle;
       }
       function radiansToDegrees(radians) {
-        const degrees = radians % (2 * Math.PI);
-        return degrees * 180 / Math.PI;
+        const normalisedRadians = radians % (2 * Math.PI);
+        return normalisedRadians * 180 / Math.PI;
       }
       function degreesToRadians(degrees) {
-        const radians = degrees % 360;
-        return radians * Math.PI / 180;
+        const normalisedDegrees = degrees % 360;
+        return normalisedDegrees * Math.PI / 180;
       }
       function convertLength(length, originalUnit = "kilometers", finalUnit = "kilometers") {
         if (!(length >= 0)) {
@@ -60636,8 +60703,7 @@ var Plotly = (() => {
       Object.defineProperty(exports, "__esModule", { value: true });
       var _helpers = require_cjs();
       function coordEach(geojson, callback, excludeWrapCoord) {
-        if (geojson === null)
-          return;
+        if (geojson === null) return;
         var j, k, l, geometry, stopG, coords, geometryMaybeCollection, wrapShrink = 0, coordIndex = 0, isGeometryCollection, type = geojson.type, isFeatureCollection = type === "FeatureCollection", isFeature = type === "Feature", stop = isFeatureCollection ? geojson.features.length : 1;
         for (var featureIndex = 0; featureIndex < stop; featureIndex++) {
           geometryMaybeCollection = isFeatureCollection ? geojson.features[featureIndex].geometry : isFeature ? geojson.geometry : geojson;
@@ -60647,8 +60713,7 @@ var Plotly = (() => {
             var multiFeatureIndex = 0;
             var geometryIndex = 0;
             geometry = isGeometryCollection ? geometryMaybeCollection.geometries[geomIndex] : geometryMaybeCollection;
-            if (geometry === null)
-              continue;
+            if (geometry === null) continue;
             coords = geometry.coordinates;
             var geomType = geometry.type;
             wrapShrink = excludeWrapCoord && (geomType === "Polygon" || geomType === "MultiPolygon") ? 1 : 0;
@@ -60679,11 +60744,9 @@ var Plotly = (() => {
                   ) === false)
                     return false;
                   coordIndex++;
-                  if (geomType === "MultiPoint")
-                    multiFeatureIndex++;
+                  if (geomType === "MultiPoint") multiFeatureIndex++;
                 }
-                if (geomType === "LineString")
-                  multiFeatureIndex++;
+                if (geomType === "LineString") multiFeatureIndex++;
                 break;
               case "Polygon":
               case "MultiLineString":
@@ -60699,13 +60762,10 @@ var Plotly = (() => {
                       return false;
                     coordIndex++;
                   }
-                  if (geomType === "MultiLineString")
-                    multiFeatureIndex++;
-                  if (geomType === "Polygon")
-                    geometryIndex++;
+                  if (geomType === "MultiLineString") multiFeatureIndex++;
+                  if (geomType === "Polygon") geometryIndex++;
                 }
-                if (geomType === "Polygon")
-                  multiFeatureIndex++;
+                if (geomType === "Polygon") multiFeatureIndex++;
                 break;
               case "MultiPolygon":
                 for (j = 0; j < coords.length; j++) {
@@ -60764,8 +60824,7 @@ var Plotly = (() => {
         switch (geojson.type) {
           case "FeatureCollection":
             for (i = 0; i < geojson.features.length; i++) {
-              if (callback(geojson.features[i].properties, i) === false)
-                break;
+              if (callback(geojson.features[i].properties, i) === false) break;
             }
             break;
           case "Feature":
@@ -60788,8 +60847,7 @@ var Plotly = (() => {
           callback(geojson, 0);
         } else if (geojson.type === "FeatureCollection") {
           for (var i = 0; i < geojson.features.length; i++) {
-            if (callback(geojson.features[i], i) === false)
-              break;
+            if (callback(geojson.features[i], i) === false) break;
           }
         }
       }
@@ -60798,8 +60856,7 @@ var Plotly = (() => {
         featureEach(geojson, function(currentFeature, featureIndex) {
           if (featureIndex === 0 && initialValue === void 0)
             previousValue = currentFeature;
-          else
-            previousValue = callback(previousValue, currentFeature, featureIndex);
+          else previousValue = callback(previousValue, currentFeature, featureIndex);
         });
         return previousValue;
       }
@@ -60949,11 +61006,9 @@ var Plotly = (() => {
       function segmentEach(geojson, callback) {
         flattenEach(geojson, function(feature2, featureIndex, multiFeatureIndex) {
           var segmentIndex = 0;
-          if (!feature2.geometry)
-            return;
+          if (!feature2.geometry) return;
           var type = feature2.geometry.type;
-          if (type === "Point" || type === "MultiPoint")
-            return;
+          if (type === "Point" || type === "MultiPoint") return;
           var previousCoords;
           var previousFeatureIndex = 0;
           var previousMultiIndex = 0;
@@ -61012,11 +61067,9 @@ var Plotly = (() => {
         return previousValue;
       }
       function lineEach(geojson, callback) {
-        if (!geojson)
-          throw new Error("geojson is required");
+        if (!geojson) throw new Error("geojson is required");
         flattenEach(geojson, function(feature2, featureIndex, multiFeatureIndex) {
-          if (feature2.geometry === null)
-            return;
+          if (feature2.geometry === null) return;
           var type = feature2.geometry.type;
           var coords = feature2.geometry.coordinates;
           switch (type) {
@@ -61059,8 +61112,7 @@ var Plotly = (() => {
       }
       function findSegment(geojson, options) {
         options = options || {};
-        if (!_helpers.isObject.call(void 0, options))
-          throw new Error("options is invalid");
+        if (!_helpers.isObject.call(void 0, options)) throw new Error("options is invalid");
         var featureIndex = options.featureIndex || 0;
         var multiFeatureIndex = options.multiFeatureIndex || 0;
         var geometryIndex = options.geometryIndex || 0;
@@ -61090,16 +61142,14 @@ var Plotly = (() => {
           default:
             throw new Error("geojson is invalid");
         }
-        if (geometry === null)
-          return null;
+        if (geometry === null) return null;
         var coords = geometry.coordinates;
         switch (geometry.type) {
           case "Point":
           case "MultiPoint":
             return null;
           case "LineString":
-            if (segmentIndex < 0)
-              segmentIndex = coords.length + segmentIndex - 1;
+            if (segmentIndex < 0) segmentIndex = coords.length + segmentIndex - 1;
             return _helpers.lineString.call(
               void 0,
               [coords[segmentIndex], coords[segmentIndex + 1]],
@@ -61107,8 +61157,7 @@ var Plotly = (() => {
               options
             );
           case "Polygon":
-            if (geometryIndex < 0)
-              geometryIndex = coords.length + geometryIndex;
+            if (geometryIndex < 0) geometryIndex = coords.length + geometryIndex;
             if (segmentIndex < 0)
               segmentIndex = coords[geometryIndex].length + segmentIndex - 1;
             return _helpers.lineString.call(
@@ -61155,8 +61204,7 @@ var Plotly = (() => {
       }
       function findPoint(geojson, options) {
         options = options || {};
-        if (!_helpers.isObject.call(void 0, options))
-          throw new Error("options is invalid");
+        if (!_helpers.isObject.call(void 0, options)) throw new Error("options is invalid");
         var featureIndex = options.featureIndex || 0;
         var multiFeatureIndex = options.multiFeatureIndex || 0;
         var geometryIndex = options.geometryIndex || 0;
@@ -61186,8 +61234,7 @@ var Plotly = (() => {
           default:
             throw new Error("geojson is invalid");
         }
-        if (geometry === null)
-          return null;
+        if (geometry === null) return null;
         var coords = geometry.coordinates;
         switch (geometry.type) {
           case "Point":
@@ -61197,12 +61244,10 @@ var Plotly = (() => {
               multiFeatureIndex = coords.length + multiFeatureIndex;
             return _helpers.point.call(void 0, coords[multiFeatureIndex], properties, options);
           case "LineString":
-            if (coordIndex < 0)
-              coordIndex = coords.length + coordIndex;
+            if (coordIndex < 0) coordIndex = coords.length + coordIndex;
             return _helpers.point.call(void 0, coords[coordIndex], properties, options);
           case "Polygon":
-            if (geometryIndex < 0)
-              geometryIndex = coords.length + geometryIndex;
+            if (geometryIndex < 0) geometryIndex = coords.length + geometryIndex;
             if (coordIndex < 0)
               coordIndex = coords[geometryIndex].length + coordIndex;
             return _helpers.point.call(void 0, coords[geometryIndex][coordIndex], properties, options);
@@ -74422,6 +74467,16 @@ var Plotly = (() => {
       function PersianCalendar(language) {
         this.local = this.regionalOptions[language || ""] || this.regionalOptions[""];
       }
+      function _leapYear(year) {
+        var x = year - 475;
+        if (year < 0) x++;
+        var c = 0.242197;
+        var v0 = c * x;
+        var v1 = c * (x + 1);
+        var r0 = v0 - Math.floor(v0);
+        var r1 = v1 - Math.floor(v1);
+        return r0 > r1;
+      }
       PersianCalendar.prototype = new main.baseCalendar();
       assign(PersianCalendar.prototype, {
         /** The calendar name.
@@ -74475,13 +74530,13 @@ var Plotly = (() => {
               "Mehr",
               "Aban",
               "Azar",
-              "Day",
+              "Dey",
               "Bahman",
               "Esfand"
             ],
-            monthNamesShort: ["Far", "Ord", "Kho", "Tir", "Mor", "Sha", "Meh", "Aba", "Aza", "Day", "Bah", "Esf"],
-            dayNames: ["Yekshambe", "Doshambe", "Seshambe", "Ch\xE6harshambe", "Panjshambe", "Jom'e", "Shambe"],
-            dayNamesShort: ["Yek", "Do", "Se", "Ch\xE6", "Panj", "Jom", "Sha"],
+            monthNamesShort: ["Far", "Ord", "Kho", "Tir", "Mor", "Sha", "Meh", "Aba", "Aza", "Dey", "Bah", "Esf"],
+            dayNames: ["Yekshanbeh", "Doshanbeh", "Seshanbeh", "Chah\u0101rshanbeh", "Panjshanbeh", "Jom'eh", "Shanbeh"],
+            dayNamesShort: ["Yek", "Do", "Se", "Cha", "Panj", "Jom", "Sha"],
             dayNamesMin: ["Ye", "Do", "Se", "Ch", "Pa", "Jo", "Sh"],
             digits: null,
             dateFormat: "yyyy/mm/dd",
@@ -74496,7 +74551,7 @@ var Plotly = (() => {
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          return ((date.year() - (date.year() > 0 ? 474 : 473)) % 2820 + 474 + 38) * 682 % 2816 < 682;
+          return _leapYear(date.year());
         },
         /** Determine the week of the year for a date.
             @memberof PersianCalendar
@@ -74543,9 +74598,17 @@ var Plotly = (() => {
           year = date.year();
           month = date.month();
           day = date.day();
-          var epBase = year - (year >= 0 ? 474 : 473);
-          var epYear = 474 + mod(epBase, 2820);
-          return day + (month <= 7 ? (month - 1) * 31 : (month - 1) * 30 + 6) + Math.floor((epYear * 682 - 110) / 2816) + (epYear - 1) * 365 + Math.floor(epBase / 2820) * 1029983 + this.jdEpoch - 1;
+          var nLeapYearsSince = 0;
+          if (year > 0) {
+            for (var i = 1; i < year; i++) {
+              if (_leapYear(i)) nLeapYearsSince++;
+            }
+          } else if (year < 0) {
+            for (var i = year; i < 0; i++) {
+              if (_leapYear(i)) nLeapYearsSince--;
+            }
+          }
+          return day + (month <= 7 ? (month - 1) * 31 : (month - 1) * 30 + 6) + (year > 0 ? year - 1 : year) * 365 + nLeapYearsSince + this.jdEpoch - 1;
         },
         /** Create a new date from a Julian date.
             @memberof PersianCalendar
@@ -74553,26 +74616,19 @@ var Plotly = (() => {
             @return {CDate} The equivalent date. */
         fromJD: function(jd) {
           jd = Math.floor(jd) + 0.5;
-          var depoch = jd - this.toJD(475, 1, 1);
-          var cycle = Math.floor(depoch / 1029983);
-          var cyear = mod(depoch, 1029983);
-          var ycycle = 2820;
-          if (cyear !== 1029982) {
-            var aux1 = Math.floor(cyear / 366);
-            var aux2 = mod(cyear, 366);
-            ycycle = Math.floor((2134 * aux1 + 2816 * aux2 + 2815) / 1028522) + aux1 + 1;
+          var y = 475 + (jd - this.toJD(475, 1, 1)) / 365.242197;
+          var year = Math.floor(y);
+          if (year <= 0) year--;
+          if (jd > this.toJD(year, 12, _leapYear(year) ? 30 : 29)) {
+            year++;
+            if (year === 0) year++;
           }
-          var year = ycycle + 2820 * cycle + 474;
-          year = year <= 0 ? year - 1 : year;
           var yday = jd - this.toJD(year, 1, 1) + 1;
           var month = yday <= 186 ? Math.ceil(yday / 31) : Math.ceil((yday - 6) / 30);
           var day = jd - this.toJD(year, month, 1) + 1;
           return this.newDate(year, month, day);
         }
       });
-      function mod(a, b) {
-        return a - b * Math.floor(a / b);
-      }
       main.calendars.persian = PersianCalendar;
       main.calendars.jalali = PersianCalendar;
     }

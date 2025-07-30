@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "3.0.1",
+  "version": "3.1.0-rc.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -59,8 +59,7 @@
     "preversion": "check-node-version --node 18 --npm 10 && npm-link-check && npm ls --prod --all",
     "version": "npm run build && git add -A lib dist build src/version.js",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
-    "postpublish": "node tasks/sync_packages.js",
-    "postshrinkwrap": "chttps ."
+    "postpublish": "node tasks/sync_packages.js"
   },
   "browserify": {
     "transform": [
@@ -130,7 +129,6 @@
     "buffer": "^6.0.3",
     "canvas": "^3.1.0",
     "check-node-version": "^4.2.1",
-    "chttps": "^1.0.6",
     "css-loader": "^7.1.2",
     "deep-equal": "^2.2.3",
     "ecstatic": "^4.1.4",
@@ -171,7 +169,6 @@
     "raw-loader": "^4.0.2",
     "read-last-lines": "^1.8.0",
     "run-series": "^1.1.9",
-    "sane-topojson": "^4.0.0",
     "sass": "^1.78.0",
     "stream-browserify": "^3.0.0",
     "style-loader": "^4.0.0",
@@ -179,5 +176,10 @@
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
     "virtual-webgl": "^1.0.6"
+  },
+  "overrides": {
+    "falafel": {
+      "acorn": "^8.1.1"
+    }
   }
 }
