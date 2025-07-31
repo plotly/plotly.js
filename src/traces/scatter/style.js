@@ -11,10 +11,13 @@ function style(gd) {
         return d[0].trace.opacity;
     });
 
+    var xa = gd._fullLayout.xaxis;
+    var ya = gd._fullLayout.yaxis;
+
     s.selectAll('g.points').each(function(d) {
         var sel = d3.select(this);
         var trace = d.trace || d[0].trace;
-        stylePoints(sel, trace, gd);
+        stylePoints(sel, trace, xa, ya, gd);
     });
 
     s.selectAll('g.text').each(function(d) {
@@ -32,22 +35,22 @@ function style(gd) {
     Registry.getComponentMethod('errorbars', 'style')(s);
 }
 
-function stylePoints(sel, trace, gd) {
-    Drawing.pointStyle(sel.selectAll('path.point'), trace, gd);
+function stylePoints(sel, trace, xa, ya, gd) {
+    Drawing.pointStyle(sel.selectAll('path.point'), trace, xa, ya, gd);
 }
 
 function styleText(sel, trace, gd) {
     Drawing.textPointStyle(sel.selectAll('text'), trace, gd);
 }
 
-function styleOnSelect(gd, cd, sel) {
+function styleOnSelect(gd, cd, sel, xa, ya) {
     var trace = cd[0].trace;
 
     if(trace.selectedpoints) {
         Drawing.selectedPointStyle(sel.selectAll('path.point'), trace);
         Drawing.selectedTextStyle(sel.selectAll('text'), trace);
     } else {
-        stylePoints(sel, trace, gd);
+        stylePoints(sel, trace, xa, ya, gd);
         styleText(sel, trace, gd);
     }
 }
