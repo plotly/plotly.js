@@ -32,7 +32,7 @@ module.exports = createGeoZoom;
 function initZoom(geo, projection) {
     return d3.behavior.zoom()
         .translate(projection.translate())
-        .scale(projection.scale());
+        .scale(projection.getScale());
 }
 
 // sync zoom updates with user & full layout
@@ -60,7 +60,7 @@ function sync(geo, projection, cb) {
     }
 
     cb(set);
-    set('projection.scale', projection.scale() / geo.fitScale);
+    set('projection.scale', projection.getScale() / geo.fitScale);
     set('fitbounds', false);
     gd.emit('plotly_relayout', eventData);
 }
@@ -75,13 +75,13 @@ function zoomScoped(geo, projection) {
 
     function handleZoom() {
         projection
-            .scale(d3.event.scale)
+            .setScale(d3.event.scale)
             .translate(d3.event.translate);
         geo.render(true);
 
         var center = projection.invert(geo.midPt);
         geo.graphDiv.emit('plotly_relayouting', {
-            'geo.projection.scale': projection.scale() / geo.fitScale,
+            'geo.projection.scale': projection.getScale() / geo.fitScale,
             'geo.center.lon': center[0],
             'geo.center.lat': center[1]
         });
@@ -143,12 +143,12 @@ function zoomNonClipped(geo, projection) {
         mouse1 = d3.mouse(this);
 
         if(outside(mouse0)) {
-            zoom.scale(projection.scale());
+            zoom.scale(projection.getScale());
             zoom.translate(projection.translate());
             return;
         }
 
-        projection.scale(d3.event.scale);
+        projection.setScale(d3.event.scale);
         projection.translate([translate0[0], d3.event.translate[1]]);
 
         if(!zoomPoint) {
@@ -167,7 +167,7 @@ function zoomNonClipped(geo, projection) {
         var rotate = projection.rotate();
         var center = projection.invert(geo.midPt);
         geo.graphDiv.emit('plotly_relayouting', {
-            'geo.projection.scale': projection.scale() / geo.fitScale,
+            'geo.projection.scale': projection.getScale() / geo.fitScale,
             'geo.center.lon': center[0],
             'geo.center.lat': center[1],
             'geo.projection.rotation.lon': -rotate[0]
@@ -199,7 +199,7 @@ function zoomNonClipped(geo, projection) {
 // zoom for clipped projections
 // inspired by https://www.jasondavies.com/maps/d3.geo.zoom.js
 function zoomClipped(geo, projection) {
-    var view = {r: projection.rotate(), k: projection.scale()};
+    var view = {r: projection.rotate(), k: projection.getScale()};
     var zoom = initZoom(geo, projection);
     var event = d3eventDispatch(zoom, 'zoomstart', 'zoom', 'zoomend');
     var zooming = 0;
@@ -221,7 +221,8 @@ function zoomClipped(geo, projection) {
         zoomOn.call(zoom, 'zoom', function() {
             var mouse1 = d3.mouse(this);
 
-            projection.scale(view.k = d3.event.scale);
+            projection.setScale(d3.event.scale);
+            view.k = projection.getScale();
 
             if(!zoomPoint) {
                 // if no zoomPoint, the mouse wasn't over the actual geography yet
@@ -272,7 +273,7 @@ function zoomClipped(geo, projection) {
 
         var _rotate = projection.rotate();
         geo.graphDiv.emit('plotly_relayouting', {
-            'geo.projection.scale': projection.scale() / geo.fitScale,
+            'geo.projection.scale': projection.getScale() / geo.fitScale,
             'geo.projection.rotation.lon': -_rotate[0],
             'geo.projection.rotation.lat': -_rotate[1]
         });
