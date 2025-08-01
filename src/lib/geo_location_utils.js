@@ -4,6 +4,7 @@ var d3 = require('@plotly/d3');
 var { area: turfArea } = require('@turf/area');
 var { centroid: turfCentroid } = require('@turf/centroid');
 var { bbox: turfBbox } = require('@turf/bbox');
+const countries = require("i18n-iso-countries");
 
 var identity = require('./identity');
 var loggers = require('./loggers');
@@ -11,7 +12,6 @@ var isPlainObject = require('./is_plain_object');
 var nestedProperty = require('./nested_property');
 var polygon = require('./polygon');
 
-const countries = require("i18n-iso-countries");
 countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
 
 var locationmodeToIdFinder = {
