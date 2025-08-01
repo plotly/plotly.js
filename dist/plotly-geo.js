@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v3.1.0-rc.0
+* plotly.js (geo) v3.1.0-rc.1
 * Copyright 2012-2025, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38,7 +38,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.1.0-rc.0";
+      exports.version = "3.1.0-rc.1";
     }
   });
 
@@ -10331,6 +10331,11 @@ var Plotly = (() => {
             dflt: 15,
             editType: "none"
           },
+          showarrow: {
+            valType: "boolean",
+            dflt: true,
+            editType: "none"
+          },
           editType: "none"
         },
         selectdirection: {
@@ -10364,6 +10369,7 @@ var Plotly = (() => {
           }),
           align: extendFlat({}, hoverLabelAttrs.align, { arrayOk: true }),
           namelength: extendFlat({}, hoverLabelAttrs.namelength, { arrayOk: true }),
+          showarrow: extendFlat({}, hoverLabelAttrs.showarrow),
           editType: "none"
         }
       };
@@ -13149,6 +13155,20 @@ var Plotly = (() => {
       var docs = require_docs();
       var FORMAT_LINK = docs.FORMAT_LINK;
       var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
+      function templateFormatStringDescription(opts) {
+        var supportOther = opts && opts.supportOther;
+        return [
+          "Variables are inserted using %{variable},",
+          'for example "y: %{y}"' + (supportOther ? " as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown." : "."),
+          `Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".`,
+          FORMAT_LINK,
+          "for details on the formatting syntax.",
+          `Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".`,
+          DATE_FORMAT_LINK,
+          "for details on the date formatting syntax."
+        ].join(" ");
+      }
+      exports.templateFormatStringDescription = templateFormatStringDescription;
       function describeVariables(extra) {
         var descPart = extra.description ? " " + extra.description : "";
         var keys = extra.keys || [];
@@ -15592,6 +15612,8 @@ var Plotly = (() => {
       lib.isIOS = function() {
         return IS_IOS_REGEX.test(window.navigator.userAgent);
       };
+      var IS_MAC_WKWEBVIEW_REGEX = /Macintosh.+AppleWebKit.+Gecko\)$/;
+      lib.isMacWKWebView = () => IS_MAC_WKWEBVIEW_REGEX.test(window.navigator.userAgent);
       var FIREFOX_VERSION_REGEX = /Firefox\/(\d+)\.\d+/;
       lib.getFirefoxVersion = function() {
         var match = FIREFOX_VERSION_REGEX.exec(window.navigator.userAgent);
@@ -16001,9 +16023,12 @@ var Plotly = (() => {
         "X .ease-bg": "-webkit-transition:background-color .3s ease 0s;-moz-transition:background-color .3s ease 0s;-ms-transition:background-color .3s ease 0s;-o-transition:background-color .3s ease 0s;transition:background-color .3s ease 0s;",
         "X .modebar--hover>:not(.watermark)": "opacity:0;-webkit-transition:opacity .3s ease 0s;-moz-transition:opacity .3s ease 0s;-ms-transition:opacity .3s ease 0s;-o-transition:opacity .3s ease 0s;transition:opacity .3s ease 0s;",
         "X:hover .modebar--hover .modebar-group": "opacity:1;",
+        "X:focus-within .modebar--hover .modebar-group": "opacity:1;",
         "X .modebar-group": "float:left;display:inline-block;box-sizing:border-box;padding-left:8px;position:relative;vertical-align:middle;white-space:nowrap;",
-        "X .modebar-btn": "position:relative;font-size:16px;padding:3px 4px;height:22px;cursor:pointer;line-height:normal;box-sizing:border-box;",
-        "X .modebar-btn svg": "position:relative;top:2px;",
+        "X .modebar-group a": "display:grid;place-content:center;",
+        "X .modebar-btn": "position:relative;font-size:16px;padding:3px 4px;height:22px;cursor:pointer;line-height:normal;box-sizing:border-box;border:none;background:rgba(0,0,0,0);",
+        "X .modebar-btn svg": "position:relative;",
+        "X .modebar-btn:focus-visible": "outline:1px solid #000;outline-offset:1px;border-radius:3px;",
         "X .modebar.vertical": "display:flex;flex-direction:column;flex-wrap:wrap;align-content:flex-end;max-height:100%;",
         "X .modebar.vertical svg": "top:-1px;",
         "X .modebar.vertical .modebar-group": "display:block;float:none;padding-left:0px;padding-bottom:8px;",
@@ -16444,6 +16469,10 @@ var Plotly = (() => {
             ev.emit(event, data);
             internalEv.emit(event, data);
           };
+          if (typeof plotObj.addEventListener === "function") {
+            plotObj.addEventListener("wheel", () => {
+            });
+          }
           return plotObj;
         },
         /*
@@ -20934,6 +20963,7 @@ var Plotly = (() => {
       var dash = require_attributes4().dash;
       var extendFlat = require_extend().extendFlat;
       var templatedArray = require_plot_template().templatedArray;
+      var templateFormatStringDescription = require_template_attributes().templateFormatStringDescription;
       var descriptionWithDates = require_axis_format_attributes().descriptionWithDates;
       var ONEDAY = require_numerical().ONEDAY;
       var constants = require_constants2();
@@ -21128,6 +21158,13 @@ var Plotly = (() => {
           valType: "boolean",
           dflt: false,
           editType: "calc"
+        },
+        modebardisable: {
+          valType: "flaglist",
+          flags: ["autoscale", "zoominout"],
+          extras: ["none"],
+          dflt: "none",
+          editType: "modebar"
         },
         insiderange: {
           valType: "info_array",
@@ -21452,6 +21489,14 @@ var Plotly = (() => {
           editType: "none",
           description: descriptionWithDates("hover text")
         },
+        unifiedhovertitle: {
+          text: {
+            valType: "string",
+            dflt: "",
+            editType: "none"
+          },
+          editType: "none"
+        },
         // lines and grids
         showline: {
           valType: "boolean",
@@ -21555,6 +21600,12 @@ var Plotly = (() => {
           griddash,
           showgrid,
           editType: "ticks"
+        },
+        minorloglabels: {
+          valType: "enumerated",
+          values: ["small digits", "complete", "none"],
+          dflt: "small digits",
+          editType: "calc"
         },
         layer: {
           valType: "enumerated",
@@ -22188,6 +22239,9 @@ var Plotly = (() => {
               coerce("minexponent");
               coerce("separatethousands");
             }
+          }
+          if (!options.noMinorloglabels && axType === "log") {
+            coerce("minorloglabels");
           }
         }
       };
@@ -24989,7 +25043,7 @@ var Plotly = (() => {
         var editAttr;
         if (prop === "title.text") editAttr = "titleText";
         else if (prop.indexOf("axis") !== -1) editAttr = "axisTitleText";
-        else if (prop.indexOf(true)) editAttr = "colorbarTitleText";
+        else if (prop.indexOf("colorbar") !== -1) editAttr = "colorbarTitleText";
         var editable = gd._context.edits[editAttr];
         function matchesPlaceholder(text, placeholder2) {
           if (text === void 0 || placeholder2 === void 0) return false;
@@ -27731,17 +27785,25 @@ var Plotly = (() => {
         }
         if (tickformat || dtChar0 === "L") {
           out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
-        } else if (isNumeric(dtick) || dtChar0 === "D" && Lib.mod(x + 0.01, 1) < 0.1) {
-          var p = Math.round(x);
+        } else if (isNumeric(dtick) || dtChar0 === "D" && (ax.minorloglabels === "complete" || Lib.mod(x + 0.01, 1) < 0.1)) {
+          var isMinor;
+          if (ax.minorloglabels === "complete" && !(Lib.mod(x + 0.01, 1) < 0.1)) {
+            isMinor = true;
+            out.fontSize *= 0.75;
+          }
+          var exponentialString = Math.pow(10, x).toExponential(0);
+          var parts = exponentialString.split("e");
+          var p = +parts[1];
           var absP = Math.abs(p);
           var exponentFormat = ax.exponentformat;
           if (exponentFormat === "power" || isSIFormat(exponentFormat) && beyondSI(p)) {
-            if (p === 0) out.text = 1;
-            else if (p === 1) out.text = "10";
-            else out.text = "10<sup>" + (p > 1 ? "" : MINUS_SIGN) + absP + "</sup>";
+            out.text = parts[0];
+            if (absP > 0) out.text += "x10";
+            if (out.text === "1x10") out.text = "10";
+            if (p !== 0 && p !== 1) out.text += "<sup>" + (p > 0 ? "" : MINUS_SIGN) + absP + "</sup>";
             out.fontSize *= 1.25;
           } else if ((exponentFormat === "e" || exponentFormat === "E") && absP > 2) {
-            out.text = "1" + exponentFormat + (p > 0 ? "+" : MINUS_SIGN) + absP;
+            out.text = parts[0] + exponentFormat + (p > 0 ? "+" : MINUS_SIGN) + absP;
           } else {
             out.text = numFormat(Math.pow(10, x), ax, "", "fakehover");
             if (dtick === "D1" && ax._id.charAt(0) === "y") {
@@ -27749,7 +27811,10 @@ var Plotly = (() => {
             }
           }
         } else if (dtChar0 === "D") {
-          out.text = String(Math.round(Math.pow(10, Lib.mod(x, 1))));
+          out.text = ax.minorloglabels === "none" ? "" : (
+            /* ax.minorloglabels === 'small digits' */
+            String(Math.round(Math.pow(10, Lib.mod(x, 1))))
+          );
           out.fontSize *= 0.75;
         } else throw "unrecognized dtick " + String(dtick);
         if (ax.dtick === "D1") {
@@ -28489,11 +28554,13 @@ var Plotly = (() => {
           right = -Infinity;
           ax._selections[cls].each(function() {
             var thisLabel = selectTickLabel(this);
-            var bb = Drawing.bBox(thisLabel.node().parentNode);
-            top = Math.min(top, bb.top);
-            bottom = Math.max(bottom, bb.bottom);
-            left = Math.min(left, bb.left);
-            right = Math.max(right, bb.right);
+            if (thisLabel.node().style.display !== "none") {
+              var bb = Drawing.bBox(thisLabel.node().parentNode);
+              top = Math.min(top, bb.top);
+              bottom = Math.max(bottom, bb.bottom);
+              left = Math.min(left, bb.left);
+              right = Math.max(right, bb.right);
+            }
           });
         } else {
           var dummyCalc = axes.makeLabelFns(ax, mainLinePositionShift);
@@ -28895,7 +28962,7 @@ var Plotly = (() => {
                 transform,
                 "text-anchor": anchor
               });
-              thisText.style("opacity", 1);
+              thisText.style("display", null);
               if (ax._adjustTickLabelsOverflow) {
                 ax._adjustTickLabelsOverflow();
               }
@@ -28938,9 +29005,9 @@ var Plotly = (() => {
               }
               var t = thisLabel.select("text");
               if (adjust) {
-                if (hideOverflow) t.style("opacity", 0);
-              } else {
-                t.style("opacity", 1);
+                if (hideOverflow) t.style("display", "none");
+              } else if (t.node().style.display !== "none") {
+                t.style("display", null);
                 if (side === "bottom" || side === "right") {
                   visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
                 } else {
@@ -29000,7 +29067,7 @@ var Plotly = (() => {
                     var t = d3.select(this);
                     if (q < ax["_visibleLabelMax_" + anchorAx2._id] && q > ax["_visibleLabelMin_" + anchorAx2._id]) {
                       t.style("display", "none");
-                    } else if (e.K === "tick" && !idx) {
+                    } else if (e.K === "tick" && !idx && t.node().style.display !== "none") {
                       t.style("display", null);
                     }
                   });
@@ -32972,10 +33039,18 @@ var Plotly = (() => {
           if (groupedHoverData.length === 0) return [];
           var hoverlabel = fullLayout.hoverlabel;
           var font = hoverlabel.font;
+          var item0 = groupedHoverData[0];
+          var unifiedhovertitleText = ((hovermode === "x unified" ? item0.xa : item0.ya).unifiedhovertitle || {}).text;
+          var mainText = !unifiedhovertitleText ? t0 : Lib.hovertemplateString(
+            unifiedhovertitleText,
+            {},
+            fullLayout._d3locale,
+            hovermode === "x unified" ? { xa: item0.xa, x: item0.xVal } : { ya: item0.ya, y: item0.yVal }
+          );
           var mockLayoutIn = {
             showlegend: true,
             legend: {
-              title: { text: t0, font },
+              title: { text: mainText, font },
               font,
               bgcolor: hoverlabel.bgcolor,
               bordercolor: hoverlabel.bordercolor,
@@ -33507,13 +33582,16 @@ var Plotly = (() => {
           var offsetX = offsets.x;
           var offsetY = offsets.y;
           var isMiddle = anchor === "middle";
-          g.select("path").attr("d", isMiddle ? (
-            // middle aligned: rect centered on data
-            "M-" + pX(d.bx / 2 + d.tx2width / 2) + "," + pY(offsetY - d.by / 2) + "h" + pX(d.bx) + "v" + pY(d.by) + "h-" + pX(d.bx) + "Z"
-          ) : (
-            // left or right aligned: side rect with arrow to data
-            "M0,0L" + pX(horzSign * HOVERARROWSIZE + offsetX) + "," + pY(HOVERARROWSIZE + offsetY) + "v" + pY(d.by / 2 - HOVERARROWSIZE) + "h" + pX(horzSign * d.bx) + "v-" + pY(d.by) + "H" + pX(horzSign * HOVERARROWSIZE + offsetX) + "V" + pY(offsetY - HOVERARROWSIZE) + "Z"
-          ));
+          var showArrow = "hoverlabel" in d.trace ? d.trace.hoverlabel.showarrow : true;
+          var pathStr;
+          if (isMiddle) {
+            pathStr = "M-" + pX(d.bx / 2 + d.tx2width / 2) + "," + pY(offsetY - d.by / 2) + "h" + pX(d.bx) + "v" + pY(d.by) + "h-" + pX(d.bx) + "Z";
+          } else if (showArrow) {
+            pathStr = "M0,0L" + pX(horzSign * HOVERARROWSIZE + offsetX) + "," + pY(HOVERARROWSIZE + offsetY) + "v" + pY(d.by / 2 - HOVERARROWSIZE) + "h" + pX(horzSign * d.bx) + "v-" + pY(d.by) + "H" + pX(horzSign * HOVERARROWSIZE + offsetX) + "V" + pY(offsetY - HOVERARROWSIZE) + "Z";
+          } else {
+            pathStr = "M" + pX(horzSign * HOVERARROWSIZE + offsetX) + "," + pY(offsetY - d.by / 2) + "h" + pX(horzSign * d.bx) + "v" + pY(d.by) + "h" + pX(-horzSign * d.bx) + "Z";
+          }
+          g.select("path").attr("d", pathStr);
           var posX = offsetX + shiftX.textShiftX;
           var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD;
           var textAlign = d.textAlign || "auto";
@@ -33881,6 +33959,7 @@ var Plotly = (() => {
         coerce("hoverlabel.bgcolor", opts.bgcolor);
         coerce("hoverlabel.bordercolor", opts.bordercolor);
         coerce("hoverlabel.namelength", opts.namelength);
+        coerce("hoverlabel.showarrow", opts.showarrow);
         Lib.coerceFont(coerce, "hoverlabel.font", opts.font);
         coerce("hoverlabel.align", opts.align);
       };
@@ -34003,6 +34082,7 @@ var Plotly = (() => {
           fillFn(trace.hoverlabel.font.variant, cd, "htv");
           fillFn(trace.hoverlabel.namelength, cd, "hnl");
           fillFn(trace.hoverlabel.align, cd, "hta");
+          fillFn(trace.hoverlabel.showarrow, cd, "htsa");
         }
       };
       function paste(traceAttr, cd, cdAttr, fn) {
@@ -34673,6 +34753,7 @@ var Plotly = (() => {
   var require_newshapes = __commonJS({
     "src/components/shapes/draw_newshape/newshapes.js"(exports, module) {
       "use strict";
+      var axis_ids = require_axis_ids();
       var dragHelpers = require_helpers5();
       var drawMode = dragHelpers.drawMode;
       var openMode = dragHelpers.openMode;
@@ -34739,10 +34820,22 @@ var Plotly = (() => {
               case "line":
               case "rect":
               case "circle":
-                modifyItem("x0", afterEdit.x0 - (beforeEdit.x0shift || 0));
-                modifyItem("x1", afterEdit.x1 - (beforeEdit.x1shift || 0));
-                modifyItem("y0", afterEdit.y0 - (beforeEdit.y0shift || 0));
-                modifyItem("y1", afterEdit.y1 - (beforeEdit.y1shift || 0));
+                var xaxis = axis_ids.getFromId(gd, beforeEdit.xref);
+                if (beforeEdit.xref.charAt(0) === "x" && xaxis.type.includes("category")) {
+                  modifyItem("x0", afterEdit.x0 - (beforeEdit.x0shift || 0));
+                  modifyItem("x1", afterEdit.x1 - (beforeEdit.x1shift || 0));
+                } else {
+                  modifyItem("x0", afterEdit.x0);
+                  modifyItem("x1", afterEdit.x1);
+                }
+                var yaxis = axis_ids.getFromId(gd, beforeEdit.yref);
+                if (beforeEdit.yref.charAt(0) === "y" && yaxis.type.includes("category")) {
+                  modifyItem("y0", afterEdit.y0 - (beforeEdit.y0shift || 0));
+                  modifyItem("y1", afterEdit.y1 - (beforeEdit.y1shift || 0));
+                } else {
+                  modifyItem("y0", afterEdit.y0);
+                  modifyItem("y1", afterEdit.y1);
+                }
                 break;
               case "path":
                 modifyItem("path", afterEdit.path);
@@ -36558,10 +36651,13 @@ var Plotly = (() => {
           var mag = val === "in" ? 0.5 : 2;
           var r0 = (1 + mag) / 2;
           var r1 = (1 - mag) / 2;
-          var axName;
+          var axName, allowed;
           for (i = 0; i < axList.length; i++) {
             ax = axList[i];
-            if (!ax.fixedrange) {
+            allowed = ax.modebardisable === "none" || ax.modebardisable.indexOf(
+              val === "auto" || val === "reset" ? "autoscale" : "zoominout"
+            ) === -1;
+            if (allowed && !ax.fixedrange) {
               axName = ax._name;
               if (val === "auto") {
                 aobj[axName + ".autorange"] = true;
@@ -37177,8 +37273,9 @@ var Plotly = (() => {
         var fullLayout = this.graphInfo._fullLayout;
         var modeBarId = "modebar-" + fullLayout._uid;
         this.element.setAttribute("id", modeBarId);
+        this.element.setAttribute("role", "toolbar");
         this._uid = modeBarId;
-        this.element.className = "modebar";
+        this.element.className = "modebar modebar--custom";
         if (context.displayModeBar === "hover") this.element.className += " modebar--hover ease-bg";
         if (fullLayout.modebar.orientation === "v") {
           this.element.className += " vertical";
@@ -37244,13 +37341,18 @@ var Plotly = (() => {
       };
       proto.createButton = function(config) {
         var _this = this;
-        var button = document.createElement("a");
+        var button = document.createElement("button");
+        button.setAttribute("type", "button");
         button.setAttribute("rel", "tooltip");
         button.className = "modebar-btn";
         var title = config.title;
         if (title === void 0) title = config.name;
         else if (typeof title === "function") title = title(this.graphInfo);
-        if (title || title === 0) button.setAttribute("data-title", title);
+        if (title || title === 0) {
+          button.setAttribute("data-title", title);
+          button.setAttribute("aria-label", title);
+        }
+        ;
         if (config.attr !== void 0) button.setAttribute("data-attr", config.attr);
         var val = config.val;
         if (val !== void 0) {
@@ -37605,7 +37707,8 @@ var Plotly = (() => {
       function areAllAxesFixed(fullLayout) {
         var axList = axisIds.list({ _fullLayout: fullLayout }, null, true);
         for (var i = 0; i < axList.length; i++) {
-          if (!axList[i].fixedrange) {
+          var disabled = axList[i].modebardisable;
+          if (!axList[i].fixedrange && disabled !== "autoscale+zoominout" && disabled !== "zoominout+autoscale") {
             return false;
           }
         }
@@ -50858,7 +50961,12 @@ var Plotly = (() => {
         setConvert(containerOut, layoutOut);
         handleRangeDefaults(containerIn, containerOut, coerce, options);
         handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
-        if (axType !== "category" && !options.noHover) coerce("hoverformat");
+        if (!options.noHover) {
+          if (axType !== "category") coerce("hoverformat");
+          if (!options.noUnifiedhovertitle) {
+            coerce("unifiedhovertitle.text");
+          }
+        }
         var dfltColor = coerce("color");
         var dfltFontColor = dfltColor !== layoutAttributes.color.dflt ? dfltColor : font.color;
         var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
@@ -51369,6 +51477,7 @@ var Plotly = (() => {
             grid: layoutOut.grid
           });
           coerce("fixedrange");
+          coerce("modebardisable");
           addMissingMatchedAxis();
           axLayoutOut._input = axLayoutIn;
         }
@@ -51389,6 +51498,7 @@ var Plotly = (() => {
             );
           }
           coerce("fixedrange");
+          coerce("modebardisable");
         }
         for (i = 0; i < yNames.length; i++) {
           axName = yNames[i];
@@ -51397,6 +51507,7 @@ var Plotly = (() => {
           var anchoredAxis = layoutOut[id2name(axLayoutOut.anchor)];
           var fixedRangeDflt = getComponentMethod("rangeslider", "isVisible")(anchoredAxis);
           coerce("fixedrange", fixedRangeDflt);
+          coerce("modebardisable");
         }
         constraints.handleDefaults(layoutIn, layoutOut, {
           axIds: allAxisIds.concat(missingMatchedAxisIds).sort(axisIds.idSort),
