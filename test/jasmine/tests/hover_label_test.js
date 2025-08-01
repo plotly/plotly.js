@@ -1188,7 +1188,7 @@ describe('hover info', function() {
                 });
             })
             .then(done, done.fail);
-        });
+        });        
 
         it('will show a category range if you ask nicely', function(done) {
             var gd = createGraphDiv();
@@ -1216,6 +1216,41 @@ describe('hover info', function() {
                 });
             })
             .then(done, done.fail);
+        });
+
+        it('will update when switching from one empty bin to another', done => {
+            const gd = createGraphDiv();
+
+            Plotly
+                .newPlot(
+                    gd,
+                    [{
+                        x: [
+                            0.025,0.025,0.025,0.025,0.025,
+                            0.075,0.075,0.075,0.075,0.075,
+                            0.125,0.125,0.125,0.125,0.125,0.125,
+                            0.175,0.175,0.175,0.175,
+                            0.475,0.475,0.475
+                        ],
+                        xbins: { start: 0, end: 0.5, size: 0.10 },
+                        type: 'histogram'
+                    }],
+                    {
+                        hovermode: 'x',
+                        width: 500,
+                        height: 400,
+                        margin: {l: 0, t: 0, r: 0, b: 0}
+                    }
+                )
+                .then(() => {
+                    let hoverData;
+                    gd.on('plotly_hover', e => { hoverData = e; });
+                    _hoverNatural(gd, 250, 200);
+                    expect(hoverData.points[0].binNumber).toBe(2)
+                    _hoverNatural(gd, 300, 200);
+                    expect(hoverData.points[0].binNumber).toBe(3)
+                })
+                .then(done, done.fail);
         });
     });
 

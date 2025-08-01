@@ -2283,7 +2283,8 @@ function hoverChanged(gd, evt, oldhoverdata) {
 
         if(oldPt.curveNumber !== newPt.curveNumber ||
             String(oldPt.pointNumber) !== String(newPt.pointNumber) ||
-            String(oldPt.pointNumbers) !== String(newPt.pointNumbers)
+            String(oldPt.pointNumbers) !== String(newPt.pointNumbers) ||
+            oldPt.binNumber !== newPt.binNumber
         ) {
             return true;
         }
