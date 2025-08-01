@@ -3677,7 +3677,7 @@ axes.drawLabels = function(gd, ax, opts) {
                     ax._adjustTickLabelsOverflow();
                 }
             } else {
-                var mjWidth = Drawing.bBox(mathjaxGroup.node()).width;
+                var mjWidth = mathjaxGroup.node().getBBox().width;
                 var mjShift = mjWidth * {end: -0.5, start: 0.5}[anchor];
                 mathjaxGroup.attr('transform', transform + strTranslate(mjShift, 0));
             }
@@ -3851,7 +3851,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
                 var x = ax.l2p(d.x);
                 var thisLabel = selectTickLabel(this);
-                var bb = Drawing.bBox(thisLabel.node());
+                var labelWidth = thisLabel.node().getBBox().width;
                 maxLines = Math.max(maxLines, svgTextUtils.lineCount(thisLabel));
 
                 lbbArray.push({
@@ -3859,10 +3859,10 @@ axes.drawLabels = function(gd, ax, opts) {
                     top: 0,
                     bottom: 10,
                     height: 10,
-                    left: x - bb.width / 2,
+                    left: x - labelWidth / 2,
                     // impose a 2px gap
-                    right: x + bb.width / 2 + 2,
-                    width: bb.width + 2
+                    right: x + labelWidth / 2 + 2,
+                    width: labelWidth + 2
                 });
             });
 
