@@ -1,0 +1,352 @@
+{
+ "responsive": true,
+ "displayModeBar": true,
+ "displaylogo": false,
+ "modeBarButtonsToRemove": ["pan2d", "lasso2d", "select2d"],
+ "data": [
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "mode": "lines+markers",
+   "name": "Linear",
+   "line": { "color": "#1f77b4", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [1, 4, 9, 16, 25, 36, 49, 64, 81, 100],
+   "mode": "lines+markers",
+   "name": "Quadratic",
+   "line": { "color": "#ff7f0e", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [1, 8, 27, 64, 125, 216, 343, 512, 729, 1000],
+   "mode": "lines+markers",
+   "name": "Cubic",
+   "line": { "color": "#2ca02c", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    1.5, 2.25, 3.375, 5.0625, 7.59375, 11.390625, 17.0859375, 25.62890625,
+    38.443359375, 57.6650390625
+   ],
+   "mode": "lines+markers",
+   "name": "Exponential",
+   "line": { "color": "#d62728", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    1, 1.6931471805599454, 2.0986122886681096, 2.386294361119891,
+    2.6094379124341005, 2.791759469228055, 2.9459101490553135,
+    3.0794415416798357, 3.1972245773362196, 3.302585092994046
+   ],
+   "mode": "lines+markers",
+   "name": "Logarithmic",
+   "line": { "color": "#9467bd", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    12.397127693021016, 14.207354924039482, 14.987474933020273,
+    14.546487134128409, 12.992360720519782, 10.705600040299336, 8.2460838615519,
+    6.215987523460359, 5.112349411674515, 5.205378626684308
+   ],
+   "mode": "lines+markers",
+   "name": "Sine",
+   "line": { "color": "#8c564b", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    14.387912809451864, 12.7015115293407, 10.353686008338515, 7.919265817264288,
+    5.994281922265332, 5.050037516997773, 5.317716563546019, 6.731781895681941,
+    8.946021002846102, 11.418310927316131
+   ],
+   "mode": "lines+markers",
+   "name": "Cosine",
+   "line": { "color": "#e377c2", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    10.618672499219247, 11.368273616683386, 12.520316435100678,
+    15.144303244252637, 38.20283989434344, 1.4274766507438663,
+    6.580306914190985, 8.167971420653178, 9.054544741793924, 9.714906913851445
+   ],
+   "mode": "lines+markers",
+   "name": "Tangent",
+   "line": { "color": "#7f7f7f", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    3, 4.242640687119286, 5.196152422706632, 6, 6.708203932499369,
+    7.348469228349534, 7.937253933193772, 8.485281374238571, 9,
+    9.486832980505138
+   ],
+   "mode": "lines+markers",
+   "name": "Square Root",
+   "line": { "color": "#bcbd22", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [0.01, 0.16, 0.81, 2.56, 6.25, 12.96, 24.01, 40.96, 65.61, 100],
+   "mode": "lines+markers",
+   "name": "Power 4",
+   "line": { "color": "#17becf", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [0.001, 0.032, 0.243, 1.024, 3.125, 7.776, 16.807, 32.768, 59.049, 100],
+   "mode": "lines+markers",
+   "name": "Power 5",
+   "line": { "color": "#a6cee3", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    0.0001, 0.0064, 0.0729, 0.4096, 1.5625, 4.6656, 11.7649, 26.2144, 53.1441,
+    100
+   ],
+   "mode": "lines+markers",
+   "name": "Power 6",
+   "line": { "color": "#fb9a99", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    20, 10, 6.666666666666667, 5, 4, 3.3333333333333335, 2.857142857142857, 2.5,
+    2.2222222222222223, 2
+   ],
+   "mode": "lines+markers",
+   "name": "Inverse",
+   "line": { "color": "#fdbf6f", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    11, 10.5, 10.333333333333334, 10.25, 10.2, 10.166666666666666,
+    10.142857142857142, 10.125, 10.11111111111111, 10.1
+   ],
+   "mode": "lines+markers",
+   "name": "Reciprocal",
+   "line": { "color": "#cab2d6", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [6, 5, 4, 3, 2, 3, 4, 5, 6, 7],
+   "mode": "lines+markers",
+   "name": "Absolute",
+   "line": { "color": "#ffff99", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [0, 2, 2, 4, 4, 6, 6, 8, 8, 10],
+   "mode": "lines+markers",
+   "name": "Floor",
+   "line": { "color": "#b15928", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [2, 2, 4, 4, 6, 6, 8, 8, 10, 10],
+   "mode": "lines+markers",
+   "name": "Ceiling",
+   "line": { "color": "#fdb462", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [9, 8, 9, 8, 9, 8, 9, 8, 9, 8],
+   "mode": "lines+markers",
+   "name": "Modulo 2",
+   "line": { "color": "#b3de69", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [8, 9, 7, 8, 9, 7, 8, 9, 7, 8],
+   "mode": "lines+markers",
+   "name": "Modulo 3",
+   "line": { "color": "#fccde5", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [6, 7, 8, 9, 5, 6, 7, 8, 9, 5],
+   "mode": "lines+markers",
+   "name": "Modulo 5",
+   "line": { "color": "#d9d9d9", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [0.1, 0.2, 0.6, 2.4, 12, 12, 12, 12, 12, 12],
+   "mode": "lines+markers",
+   "name": "Factorial",
+   "line": { "color": "#ff9896", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [1, 2, 6, 8, 10, 12, 14, 15, 15, 15],
+   "mode": "lines+markers",
+   "name": "Fibonacci",
+   "line": { "color": "#c5b0d5", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    1.2, 1.44, 1.728, 2.0736, 2.4883199999999994, 2.9859839999999993,
+    3.583180799999999, 4.2998169599999985, 5.1597803519999985, 6.191736422399997
+   ],
+   "mode": "lines+markers",
+   "name": "Geometric",
+   "line": { "color": "#c49c94", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [5, 7, 9, 11, 13, 15, 17, 19, 21, 23],
+   "mode": "lines+markers",
+   "name": "Arithmetic",
+   "line": { "color": "#f7b6d2", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    10, 6.666666666666667, 5, 4, 3.3333333333333335, 2.857142857142857, 2.5,
+    2.2222222222222223, 2, 1.8181818181818181
+   ],
+   "mode": "lines+markers",
+   "name": "Harmonic",
+   "line": { "color": "#dbdb8d", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [2, 3, 6, 11, 18, 27, 38, 51, 66, 83],
+   "mode": "lines+markers",
+   "name": "Polynomial 1",
+   "line": { "color": "#9edae5", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [0, 0, 6, 24, 60, 120, 210, 336, 504, 720],
+   "mode": "lines+markers",
+   "name": "Polynomial 2",
+   "line": { "color": "#393b79", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [0, 1, 16, 81, 256, 625, 1296, 2401, 4096, 6561],
+   "mode": "lines+markers",
+   "name": "Polynomial 3",
+   "line": { "color": "#637939", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    1, 1.6666666666666667, 2.5, 3.4, 4.333333333333333, 5.285714285714286, 6.25,
+    7.222222222222222, 8.2, 9.181818181818182
+   ],
+   "mode": "lines+markers",
+   "name": "Rational",
+   "line": { "color": "#8c6d31", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  },
+  {
+   "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   "y": [
+    14.279578078204434, 13.808496892213324, 10.564834427515008,
+    6.8972988409819305, 5.520939944916718, 7.181768512202332,
+    10.098046421574775, 11.660787498142922, 10.814763856863712,
+    8.935261038258345
+   ],
+   "mode": "lines+markers",
+   "name": "Trigonometric",
+   "line": { "color": "#843c39", "width": 2 },
+   "marker": { "size": 4, "opacity": 0.7 },
+   "opacity": 0.8
+  }
+ ],
+ "layout": {
+  "title": {
+   "text": "30 Mathematical Functions with Vertical Legend",
+   "font": { "size": 18, "color": "#333" }
+  },
+  "xaxis": { "gridcolor": "#e1e5e9", "zeroline": false },
+  "yaxis": { "gridcolor": "#e1e5e9", "zeroline": false },
+  "legend": {
+   "orientation": "v",
+   "x": 0.5,
+   "y": -0.4,
+   "xanchor": "center",
+   "yanchor": "top",
+   "bgcolor": "rgba(255,255,255,0.9)",
+   "bordercolor": "#ccc",
+   "borderwidth": 1,
+   "font": { "size": 10 },
+   "itemsizing": "constant",
+   "itemwidth": 30,
+   "itemclick": "toggle",
+   "itemdoubleclick": "toggleothers"
+  },
+  "plot_bgcolor": "white",
+  "paper_bgcolor": "white",
+  "margin": { "l": 60, "r": 40, "t": 80, "b": 150 },
+  "hovermode": "closest",
+  "showlegend": true
+ }
+}
