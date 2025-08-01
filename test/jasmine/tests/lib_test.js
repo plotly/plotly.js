@@ -340,11 +340,12 @@ describe('Test lib.js:', function() {
         });
 
         it('should access properties of objects in an array with index -1', function() {
-            var obj = {arr: [{a: 1}, {a: 2}, {b: 3}]};
+            var obj = {arr: [{a: 1}, {a: null}, {b: 3}]};
             var prop = np(obj, 'arr[-1].a');
 
-            expect(prop.get()).toEqual([1, 2, undefined]);
-            expect(obj).toEqual({arr: [{a: 1}, {a: 2}, {b: 3}]});
+            expect(prop.get()).toEqual([1, undefined, undefined]);
+            expect(prop.get(true)).toEqual([1, null, undefined]);
+            expect(obj).toEqual({arr: [{a: 1}, {a: null}, {b: 3}]});
 
             prop.set(5);
             expect(prop.get()).toBe(5);
@@ -2443,6 +2444,14 @@ describe('Test lib.js:', function() {
         it('should work with the number *0* (nested case)', function() {
             expect(Lib.templateString('%{x.y}', {x: {y: 0}})).toEqual('0');
         });
+
+        it('preserves null and NaN', function() {
+            expect(Lib.templateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
+        });
     });
 
     describe('hovertemplateString', function() {
@@ -2469,6 +2478,16 @@ describe('Test lib.js:', function() {
 
         it('should work with the number *0* (nested case)', function() {
             expect(Lib.hovertemplateString('%{x.y}', {}, locale, {x: {y: 0}})).toEqual('0');
+        });
+
+        it('preserves null and NaN', function() {
+            expect(Lib.hovertemplateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {},
+                locale,
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
         });
 
         it('subtitutes multiple matches', function() {
@@ -2535,6 +2554,16 @@ describe('Test lib.js:', function() {
 
         it('looks for default label if no format is provided', function() {
             expect(Lib.texttemplateString('y: %{y}', {yLabel: '0.1'}, locale, {y: 0.123})).toEqual('y: 0.1');
+        });
+
+        it('preserves null and NaN', function() {
+            expect(Lib.texttemplateString(
+                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
+                {},
+                locale,
+                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
+            ))
+            .toEqual('null NaN null NaN null NaN');
         });
 
         it('warns user up to 10 times if a variable cannot be found', function() {
@@ -2927,6 +2956,67 @@ describe('Test lib.js:', function() {
             });
         });
     });
+
+    describe("User agent", () => {
+        const userAgentStrings = {
+            iOSSafari: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Mobile/15E148 Safari/604.1",
+            iOSChrome: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/138.0.7204.156 Mobile/15E148 Safari/604.1",
+            macChrome: "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+            macSafari: "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Safari/605.1.15",
+            macWKWebView: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+            winFirefox: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
+        }
+
+        describe('isIOS', () => {
+            [userAgentStrings.iOSChrome, userAgentStrings.iOSSafari].forEach(uaString => {
+                it('matches an iOS user agent string', () => {
+                    spyOnProperty(navigator, 'userAgent').and.returnValue(uaString)
+                    expect(Lib.isIOS()).toBe(true)
+                })
+            })
+    
+            it("doesn't match a non-iOS user agent string", () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
+                expect(Lib.isIOS()).toBe(false)
+            })
+        })
+    
+        describe('isSafari', () => {
+            it('matches a Safari user agent string', () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
+                expect(Lib.isSafari()).toBe(true)
+            })
+            
+            it("doesn't match a non-Safari user agent string", () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macChrome)
+                expect(Lib.isSafari()).toBe(false)
+            })
+        })
+
+        describe('isMacWKWebView', () => {
+            it('matches a Safari user agent string', () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macWKWebView)
+                expect(Lib.isMacWKWebView()).toBe(true)
+            })
+            
+            it("doesn't match a non-Safari user agent string", () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
+                expect(Lib.isMacWKWebView()).toBe(false)
+            })
+        })
+
+        describe('getFirefoxVersion', () => {
+            it('gets the Firefox version from the user agent string', () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.winFirefox)
+                expect(Lib.getFirefoxVersion()).toBe(140)
+            })
+            
+            it("returns null for a non-Firefox user agent string", () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
+                expect(Lib.getFirefoxVersion()).toBe(null)
+            })
+        })
+    })
 });
 
 describe('Queue', function() {

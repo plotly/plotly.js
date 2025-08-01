@@ -1,0 +1,58 @@
+{
+ "data": [
+  {
+   "type": "bar",
+   "x": [-1, 0, 2, 3],
+   "y": [-1, 2, -3, 4],
+   "name": "xy"
+  },
+  {
+   "line": {
+    "width": 10
+   },
+   "mode": "lines",
+   "x": [-1, 0, 2, 3],
+   "y": [-3, 1, -1, 2],
+   "xaxis": "x2",
+   "yaxis": "y2",
+   "name": "x2y2"
+  }
+ ],
+ "layout": {
+  "title": {
+    "text": "All zerolines above traces (x/x2: pink, y/y2: black)"
+  },
+  "width": 600,
+  "height": 400,
+  "xaxis": {
+   "zeroline": true,
+   "zerolinewidth": 5,
+   "zerolinecolor": "pink",
+   "zerolinelayer": "above traces"
+  },
+  "xaxis2": {
+   "overlaying": "x",
+   "zeroline": true,
+   "zerolinewidth": 5,
+   "zerolinecolor": "pink",
+   "zerolinelayer": "above traces",
+   "side": "top"
+  },
+  "yaxis": {
+    "zeroline": true,
+    "zerolinewidth": 5,
+    "zerolinecolor": "black",
+    "zerolinelayer": "above traces",
+    "range": [-1, 4]
+  },
+  "yaxis2": {
+    "zeroline": true,
+    "zerolinewidth": 5,
+    "zerolinecolor": "black",
+    "zerolinelayer": "above traces",
+    "range": [-3, 2],
+   "overlaying": "y",
+   "side": "right"
+  }
+ }
+}

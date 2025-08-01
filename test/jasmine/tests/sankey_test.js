@@ -787,7 +787,7 @@ describe('sankey tests', function() {
             .then(done, done.fail);
         });
 
-        it('@noCI should position hover labels correctly', function(done) {
+        it('@noCI should position hover labels correctly - horizontal', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
@@ -804,10 +804,18 @@ describe('sankey tests', function() {
                 var pos = g.node().getBoundingClientRect();
                 expect(pos.x).toBeCloseTo(555, -1.5, 'it should have correct x position');
                 expect(pos.y).toBeCloseTo(196, -1.5, 'it should have correct y position');
-                return Plotly.restyle(gd, 'orientation', 'v');
             })
+            .then(done, done.fail);
+        });
+
+        it('@noCI should position hover labels correctly - vertical ', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+            mock.data[0].orientation = 'v';
+
+            Plotly.newPlot(gd, mockCopy)
             .then(function() {
-                _hover(520, 500);
+                _hover(600, 200);
 
                 assertLabel(
                     ['source: Thermal generation', 'target: Losses', '787TWh'],
@@ -816,8 +824,8 @@ describe('sankey tests', function() {
 
                 var g = d3Select('.hovertext');
                 var pos = g.node().getBoundingClientRect();
-                expect(pos.x).toBeCloseTo(279, -1.5, 'it should have correct x position');
-                expect(pos.y).toBeCloseTo(500, -1.5, 'it should have correct y position');
+                expect(pos.x).toBeCloseTo(781, -1.5);
+                expect(pos.y).toBeCloseTo(196, -1.5);
             })
             .then(done, done.fail);
         });
@@ -1290,7 +1298,7 @@ describe('sankey tests', function() {
                   .then(done, done.fail);
         });
 
-        it('@noCI should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
+        it('should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, fig)
@@ -1513,7 +1521,7 @@ function assertLabel(content, style) {
 
 function assertMultipleLabels(contentArray, styleArray) {
     var g = d3SelectAll('.hovertext');
-    expect(g.size()).toEqual(contentArray.length, 'wrong number of hoverlabels, expected to find ' + contentArray.length);
+    expect(g.size()).toEqual(contentArray.length);
     g.each(function(el, i) {
         _assertLabelGroup(d3Select(this), contentArray[i], styleArray[i]);
     });

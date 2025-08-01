@@ -1899,18 +1899,30 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
 
     if(tickformat || (dtChar0 === 'L')) {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
-    } else if(isNumeric(dtick) || ((dtChar0 === 'D') && (Lib.mod(x + 0.01, 1) < 0.1))) {
-        var p = Math.round(x);
+    } else if(isNumeric(dtick) || ((dtChar0 === 'D') &&
+        (ax.minorloglabels === 'complete' || Lib.mod(x + 0.01, 1) < 0.1))) {
+
+        var isMinor;
+        if(ax.minorloglabels === 'complete' && !(Lib.mod(x + 0.01, 1) < 0.1)) {
+            isMinor = true;
+            out.fontSize *= 0.75;
+        }
+
+        var exponentialString = Math.pow(10, x).toExponential(0);
+        var parts = exponentialString.split('e');
+
+        var p = +parts[1];
         var absP = Math.abs(p);
         var exponentFormat = ax.exponentformat;
         if(exponentFormat === 'power' || (isSIFormat(exponentFormat) && beyondSI(p))) {
-            if(p === 0) out.text = 1;
-            else if(p === 1) out.text = '10';
-            else out.text = '10<sup>' + (p > 1 ? '' : MINUS_SIGN) + absP + '</sup>';
+            out.text = parts[0];
+            if(absP > 0) out.text += 'x10';
+            if(out.text === '1x10') out.text = '10';
+            if(p !== 0 && p !== 1) out.text += '<sup>' + (p > 0 ? '' : MINUS_SIGN) + absP + '</sup>';
 
             out.fontSize *= 1.25;
         } else if((exponentFormat === 'e' || exponentFormat === 'E') && absP > 2) {
-            out.text = '1' + exponentFormat + (p > 0 ? '+' : MINUS_SIGN) + absP;
+            out.text = parts[0] + exponentFormat + (p > 0 ? '+' : MINUS_SIGN) + absP;
         } else {
             out.text = numFormat(Math.pow(10, x), ax, '', 'fakehover');
             if(dtick === 'D1' && ax._id.charAt(0) === 'y') {
@@ -1918,7 +1930,10 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
             }
         }
     } else if(dtChar0 === 'D') {
-        out.text = String(Math.round(Math.pow(10, Lib.mod(x, 1))));
+        out.text =
+            ax.minorloglabels === 'none' ? '' :
+            /* ax.minorloglabels === 'small digits' */ String(Math.round(Math.pow(10, Lib.mod(x, 1))));
+
         out.fontSize *= 0.75;
     } else throw 'unrecognized dtick ' + String(dtick);
 
@@ -2365,6 +2380,7 @@ axes.draw = function(gd, arg, opts) {
                 if(plotinfo.minorGridlayer) plotinfo.minorGridlayer.selectAll('path').remove();
                 if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
                 if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
+                if(plotinfo.zerolinelayerAbove) plotinfo.zerolinelayerAbove.selectAll('path').remove();
 
                 fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
                 fullLayout._infolayer.select('.g-' + ya._id + 'title').remove();
@@ -2462,6 +2478,7 @@ axes.drawOne = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var counterLetter = axes.counterLetter(axId);
     var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
+    var zerolineIsAbove = ax.zerolinelayer === 'above traces';
 
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
@@ -2576,7 +2593,7 @@ axes.drawOne = function(gd, ax, opts) {
             });
             axes.drawZeroLine(gd, ax, {
                 counterAxis: counterAxis,
-                layer: plotinfo.zerolinelayer,
+                layer: zerolineIsAbove ? plotinfo.zerolinelayerAbove : plotinfo.zerolinelayer,
                 path: gridPath,
                 transFn: transTickFn
             });
@@ -2955,11 +2972,13 @@ function calcLabelLevelBbox(ax, cls, mainLinePositionShift) {
             // (like in fixLabelOverlaps) instead and use Axes.getPxPosition
             // together with the makeLabelFns outputs and `tickangle`
             // to compute one bbox per (tick value x tick style)
-            var bb = Drawing.bBox(thisLabel.node().parentNode);
-            top = Math.min(top, bb.top);
-            bottom = Math.max(bottom, bb.bottom);
-            left = Math.min(left, bb.left);
-            right = Math.max(right, bb.right);
+            if (thisLabel.node().style.display !== 'none') {
+                var bb = Drawing.bBox(thisLabel.node().parentNode);
+                top = Math.min(top, bb.top);
+                bottom = Math.max(bottom, bb.bottom);
+                left = Math.min(left, bb.left);
+                right = Math.max(right, bb.right);
+            }
         });
     } else {
         var dummyCalc = axes.makeLabelFns(ax, mainLinePositionShift);
@@ -3071,6 +3090,7 @@ function getPosX(d) {
 // v is a shift perpendicular to the axis
 function getTickLabelUV(ax) {
     var ticklabelposition = ax.ticklabelposition || '';
+    var tickson = ax.tickson || '';
     var has = function(str) {
         return ticklabelposition.indexOf(str) !== -1;
     };
@@ -3081,7 +3101,7 @@ function getTickLabelUV(ax) {
     var isBottom = has('bottom');
     var isInside = has('inside');
 
-    var isAligned = isBottom || isLeft || isTop || isRight;
+    var isAligned = (tickson !== 'boundaries') && (isBottom || isLeft || isTop || isRight);
 
     // early return
     if(!isAligned && !isInside) return [0, 0];
@@ -3165,6 +3185,8 @@ axes.makeTickPath = function(ax, shift, sgn, opts) {
  */
 axes.makeLabelFns = function(ax, shift, angle) {
     var ticklabelposition = ax.ticklabelposition || '';
+    var tickson = ax.tickson || '';
+
     var has = function(str) {
         return ticklabelposition.indexOf(str) !== -1;
     };
@@ -3173,12 +3195,12 @@ axes.makeLabelFns = function(ax, shift, angle) {
     var isLeft = has('left');
     var isRight = has('right');
     var isBottom = has('bottom');
-    var isAligned = isBottom || isLeft || isTop || isRight;
+    var isAligned = (tickson !== 'boundaries') && (isBottom || isLeft || isTop || isRight);
 
     var insideTickLabels = has('inside');
     var labelsOverTicks =
         (ticklabelposition === 'inside' && ax.ticks === 'inside') ||
-        (!insideTickLabels && ax.ticks === 'outside' && ax.tickson !== 'boundaries');
+        (!insideTickLabels && ax.ticks === 'outside' && tickson !== 'boundaries');
 
     var labelStandoff = 0;
     var labelShift = 0;
@@ -3555,6 +3577,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
     var fullLayout = gd._fullLayout;
     var axId = ax._id;
+    var zerolineIsAbove = ax.zerolinelayer === 'above traces';
     var cls = opts.cls || axId + 'tick';
 
     var vals = opts.vals.filter(function(d) { return d.text; });
@@ -3648,7 +3671,7 @@ axes.drawLabels = function(gd, ax, opts) {
                     'text-anchor': anchor
                 });
 
-                thisText.style('opacity', 1); // visible
+                thisText.style('display', null); // visible
 
                 if(ax._adjustTickLabelsOverflow) {
                     ax._adjustTickLabelsOverflow();
@@ -3706,9 +3729,9 @@ axes.drawLabels = function(gd, ax, opts) {
 
                 var t = thisLabel.select('text');
                 if(adjust) {
-                    if(hideOverflow) t.style('opacity', 0); // hidden
-                } else {
-                    t.style('opacity', 1); // visible
+                    if(hideOverflow) t.style('display', 'none'); // hidden
+                } else if(t.node().style.display !== 'none'){
+                    t.style('display', null);
 
                     if(side === 'bottom' || side === 'right') {
                         visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
@@ -3763,8 +3786,10 @@ axes.drawLabels = function(gd, ax, opts) {
                     var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
 
                     var sel;
-                    if(e.K === ZERO_PATH.K) sel = mainPlotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
-                    else if(e.K === MINORGRID_PATH.K) sel = mainPlotinfo.minorGridlayer.selectAll('.' + ax._id);
+                    if(e.K === ZERO_PATH.K) {
+                        var zerolineLayer = zerolineIsAbove ? mainPlotinfo.zerolinelayerAbove : mainPlotinfo.zerolinelayer;
+                        sel = zerolineLayer.selectAll('.' + ax._id + 'zl');
+                    } else if(e.K === MINORGRID_PATH.K) sel = mainPlotinfo.minorGridlayer.selectAll('.' + ax._id);
                     else if(e.K === GRID_PATH.K) sel = mainPlotinfo.gridlayer.selectAll('.' + ax._id);
                     else sel = mainPlotinfo[ax._id.charAt(0) + 'axislayer'];
 
@@ -3783,7 +3808,7 @@ axes.drawLabels = function(gd, ax, opts) {
                                 q > ax['_visibleLabelMin_' + anchorAx._id]
                             ) {
                                 t.style('display', 'none'); // hidden
-                            } else if(e.K === 'tick' && !idx) {
+                            } else if(e.K === 'tick' && !idx && t.node().style.display !== 'none') {
                                 t.style('display', null); // visible
                             }
                         });
@@ -3890,6 +3915,8 @@ axes.drawLabels = function(gd, ax, opts) {
                 }
             } else {
                 var ticklabelposition = ax.ticklabelposition || '';
+                var tickson = ax.tickson ||'';
+
                 var has = function(str) {
                     return ticklabelposition.indexOf(str) !== -1;
                 };
@@ -3897,7 +3924,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 var isLeft = has('left');
                 var isRight = has('right');
                 var isBottom = has('bottom');
-                var isAligned = isBottom || isLeft || isTop || isRight;
+                var isAligned = (tickson !== 'boundaries') && (isBottom || isLeft || isTop || isRight);
                 var pad = !isAligned ? 0 :
                 (ax.tickwidth || 0) + 2 * TEXTPAD;
 

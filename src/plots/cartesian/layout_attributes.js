@@ -5,6 +5,7 @@ var colorAttrs = require('../../components/color/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var templateFormatStringDescription = require('../../plots/template_attributes').templateFormatStringDescription;
 var descriptionWithDates = require('../../plots/cartesian/axis_format_attributes').descriptionWithDates;
 
 var ONEDAY = require('../../constants/numerical').ONEDAY;
@@ -334,7 +335,7 @@ module.exports = {
         description: [
             'If *normal*, the range is computed in relation to the extrema',
             'of the input data.',
-            'If *tozero*`, the range extends to 0,',
+            'If *tozero*, the range extends to 0,',
             'regardless of the input data',
             'If *nonnegative*, the range is non-negative,',
             'regardless of the input data.',
@@ -387,6 +388,18 @@ module.exports = {
         description: [
             'Determines whether or not this axis is zoom-able.',
             'If true, then zoom is disabled.'
+        ].join(' ')
+    },
+    modebardisable: {
+        valType: 'flaglist',
+        flags: ['autoscale', 'zoominout'],
+        extras: ['none'],
+        dflt: 'none',
+        editType: 'modebar',
+        description: [
+            'Disables certain modebar buttons for this axis.',
+            '*autoscale* disables the autoscale buttons, *zoominout*',
+            'disables the zoom-in and zoom-out buttons.'
         ].join(' ')
     },
     insiderange: {
@@ -663,12 +676,13 @@ module.exports = {
         dflt: 'outside',
         editType: 'calc',
         description: [
-            'Determines where tick labels are drawn with respect to the axis',
+            'Determines where tick labels are drawn with respect to the axis.',
             'Please note that',
-            'top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*.',
-            'Similarly',
-            'left or right has no effect on y axes or when `ticklabelmode` is set to *period*.',
-            'Has no effect on *multicategory* axes or when `tickson` is set to *boundaries*.',
+            'top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*',
+            'or when `tickson` is set to *boundaries*. Similarly,',
+            'left or right has no effect on y axes or when `ticklabelmode` is set to *period*',
+            'or when `tickson` is set to *boundaries*.',
+            'Has no effect on *multicategory* axes.',
             'When used on axes linked by `matches` or `scaleanchor`,',
             'no extra padding for inside labels would be added by autorange,',
             'so that the scales could match.'
@@ -974,6 +988,18 @@ module.exports = {
         editType: 'none',
         description: descriptionWithDates('hover text')
     },
+    unifiedhovertitle: {
+        text : {
+            valType: 'string',
+            dflt: '',
+            editType: 'none',
+            description: [
+                'Template string used for rendering the title that appear on x or y unified hover box.',
+                templateFormatStringDescription()
+            ].join(' ')
+        },
+        editType: 'none'
+    },
     // lines and grids
     showline: {
         valType: 'boolean',
@@ -1015,6 +1041,19 @@ module.exports = {
         dflt: colorAttrs.defaultLine,
         editType: 'ticks',
         description: 'Sets the line color of the zero line.'
+    },
+    zerolinelayer: {
+        valType: 'enumerated',
+        values: ['above traces', 'below traces'],
+        dflt: 'below traces',
+        editType: 'plot',
+        description: [
+            'Sets the layer on which this zeroline is displayed.',
+            'If *above traces*, this zeroline is displayed above all the subplot\'s traces',
+            'If *below traces*, this zeroline is displayed below all the subplot\'s traces,',
+            'but above the grid lines. Limitation: *zerolinelayer* currently has no effect',
+            'if the *zorder* property is set on any trace.'
+        ].join(' ')
     },
     zerolinewidth: {
         valType: 'number',
@@ -1120,6 +1159,19 @@ module.exports = {
         showgrid: showgrid,
 
         editType: 'ticks'
+    },
+
+    minorloglabels: {
+        valType: 'enumerated',
+        values: ['small digits', 'complete', 'none'],
+        dflt: 'small digits',
+        editType: 'calc',
+        description: [
+            'Determines how minor log labels are displayed.',
+            'If *small digits*, small digits i.e. 2 or 5 are displayed.',
+            'If *complete*, complete digits are displayed.',
+            'If *none*, no labels are displayed.',
+        ].join(' ')
     },
 
     layer: {
