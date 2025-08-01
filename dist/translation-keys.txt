@@ -22,22 +22,22 @@ Draw rectangle                                         // components/modebar/but
 Edit in Chart Studio                                   // components/modebar/buttons.js:72
 Erase active shape                                     // components/modebar/buttons.js:175
 Lasso Select                                           // components/modebar/buttons.js:121
-Orbital rotation                                       // components/modebar/buttons.js:341
+Orbital rotation                                       // components/modebar/buttons.js:344
 Pan                                                    // components/modebar/buttons.js:101
-Produced with Plotly.js                                // components/modebar/modebar.js:324
-Reset                                                  // components/modebar/buttons.js:514
+Produced with Plotly.js                                // components/modebar/modebar.js:329
+Reset                                                  // components/modebar/buttons.js:517
 Reset axes                                             // components/modebar/buttons.js:213
-Reset camera to default                                // components/modebar/buttons.js:380
-Reset camera to last save                              // components/modebar/buttons.js:389
-Reset view                                             // components/modebar/buttons.js:586
-Reset views                                            // components/modebar/buttons.js:624
+Reset camera to default                                // components/modebar/buttons.js:383
+Reset camera to last save                              // components/modebar/buttons.js:392
+Reset view                                             // components/modebar/buttons.js:589
+Reset views                                            // components/modebar/buttons.js:627
 Show closest data on hover                             // components/modebar/buttons.js:223
 Snapshot succeeded                                     // components/modebar/buttons.js:62
 Sorry, there was a problem downloading your snapshot!  // components/modebar/buttons.js:65
 Taking snapshot - this may take a few seconds          // components/modebar/buttons.js:52
-Toggle Spike Lines                                     // components/modebar/buttons.js:644
-Toggle show closest data on hover                      // components/modebar/buttons.js:439
-Turntable rotation                                     // components/modebar/buttons.js:350
+Toggle Spike Lines                                     // components/modebar/buttons.js:647
+Toggle show closest data on hover                      // components/modebar/buttons.js:442
+Turntable rotation                                     // components/modebar/buttons.js:353
 Zoom                                                   // components/modebar/buttons.js:91
 Zoom in                                                // components/modebar/buttons.js:183
 Zoom out                                               // components/modebar/buttons.js:193
