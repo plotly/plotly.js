@@ -309,7 +309,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
         // Edge case: single-valued histogram overlaying others
         // Use them all together to calculate the bin size for the single-valued one
         // Don't re-calculate bin width if user manually specified it
-        // Check if bingroup or trace[binAttr] (xbins or ybins) is defined
+        // Check if bingroup or bin size is defined
         if(isOverlay && !Registry.traceIs(trace, '2dMap') && newBinSpec._dataSpan === 0 &&
         pa.type !== 'category' && pa.type !== 'multicategory' &&
         trace.bingroup === '' && trace._input?.[binAttr]?.size === undefined) {
