@@ -1514,16 +1514,39 @@ drawing.bBox = function(node, inTester, hash) {
     var bb = {};
     if (node.tagName !== "text") {
         var nodeBB = node.getBBox();
-        bb = {
-            height: nodeBB.height,
-            width: nodeBB.width,
-            left: nodeBB.x,
-            top: nodeBB.y,
-            right: nodeBB.x + nodeBB.width,
-            bottom: nodeBB.y + nodeBB.height
-        };
+        if (Object.keys(nodeBB).length) {
+            bb = {
+                height: nodeBB.height,
+                width: nodeBB.width,
+                left: nodeBB.x,
+                top: nodeBB.y,
+                right: nodeBB.x + nodeBB.width,
+                bottom: nodeBB.y + nodeBB.height
+            };
+        } else {
+            bb = testNodeInTester(node, inTester);
+        }
     } else {
-        var testNode, tester;
+       bb = testNodeInTester(node, inTester);
+    }
+
+    // make sure we don't have too many saved boxes,
+    // or a long session could overload on memory
+    // by saving boxes for long-gone elements
+    if(savedBBoxesCount >= maxSavedBBoxes) {
+        drawing.savedBBoxes = {};
+        savedBBoxesCount = 0;
+    }
+
+    // cache this bbox
+    if(hash) drawing.savedBBoxes[hash] = bb;
+    savedBBoxesCount++;
+
+    return Lib.extendFlat({}, bb);
+};
+
+function testNodeInTester(node, inTester) {
+     var testNode, tester;
         if(inTester) {
             testNode = node;
         } else {
@@ -1554,22 +1577,8 @@ drawing.bBox = function(node, inTester, hash) {
             right: testRect.right - refRect.left,
             bottom: testRect.bottom - refRect.top
         };
-    }
-
-    // make sure we don't have too many saved boxes,
-    // or a long session could overload on memory
-    // by saving boxes for long-gone elements
-    if(savedBBoxesCount >= maxSavedBBoxes) {
-        drawing.savedBBoxes = {};
-        savedBBoxesCount = 0;
-    }
-
-    // cache this bbox
-    if(hash) drawing.savedBBoxes[hash] = bb;
-    savedBBoxesCount++;
-
-    return Lib.extendFlat({}, bb);
-};
+        return bb;
+}
 
 // capture everything about a node (at least in our usage) that
 // impacts its bounding box, given that bBox clears x, y, and transform
