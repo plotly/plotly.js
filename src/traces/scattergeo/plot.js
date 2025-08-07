@@ -13,7 +13,18 @@ var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var subTypes = require('../scatter/subtypes');
 var style = require('./style');
 
+const breakingChangeWarning = [
+    'The library used by the *country names* `locationmode` option is changing in an upcoming version.',
+    'Country names in existing plots may not work in the new version.'
+].join(' ');
+let firstPlot = true;
+
 function plot(gd, geo, calcData) {
+    if(firstPlot) {
+        firstPlot = false;
+        Lib.warn(breakingChangeWarning);
+    }
+
     var scatterLayer = geo.layers.frontplot.select('.scatterlayer');
     var gTraces = Lib.makeTraceGroups(scatterLayer, calcData, 'trace scattergeo');
 
