@@ -326,7 +326,7 @@ function drawColorBar(g, opts, gd) {
     function drawTitle(titleClass, titleOpts) {
         var dfltTitleOpts = {
             propContainer: ax,
-            propName: opts._propPrefix + 'title',
+            propName: opts._propPrefix + 'title.text',
             traceIndex: opts._traceIndex,
             _meta: opts._meta,
             placeholder: fullLayout._dfltTitle.colorbar,

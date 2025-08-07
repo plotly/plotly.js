@@ -560,7 +560,7 @@ proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
     var cx = _this.cx;
     var cy = _this.cy;
     var radialLayout = _this.getRadial(polarLayout);
-    var titleClass = _this.id + 'title';
+    var titleClass = _this.id + 'title.text';
 
     var pad = 0;
 
