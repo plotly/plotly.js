@@ -362,7 +362,7 @@
   },
   "topojsonURL": {
    "description": "Set the URL to topojson used in geo charts. By default, the topojson files are fetched from cdn.plot.ly. For example, set this option to: <path-to-plotly.js>/dist/topojson/ to render geographical feature using the topojson files that ship with the plotly.js module.",
-   "dflt": "https://cdn.plot.ly/",
+   "dflt": "https://cdn.plot.ly/un/",
    "noBlank": true,
    "valType": "string"
   },
@@ -25337,7 +25337,7 @@
      "valType": "number"
     },
     "locationmode": {
-     "description": "Determines the set of locations used to match entries in `locations` to regions on the map. Values *ISO-3*, *USA-states*, *country names* correspond to features on the base map and value *geojson-id* corresponds to features from a custom GeoJSON linked to the `geojson` attribute.",
+     "description": "The library used by the *country names* `locationmode` option is changing in an upcoming version. Country names in existing plots may not work in the new version. Determines the set of locations used to match entries in `locations` to regions on the map. Values *ISO-3*, *USA-states*, *country names* correspond to features on the base map and value *geojson-id* corresponds to features from a custom GeoJSON linked to the `geojson` attribute.",
      "dflt": "ISO-3",
      "editType": "calc",
      "valType": "enumerated",
@@ -66942,7 +66942,7 @@
      }
     },
     "locationmode": {
-     "description": "Determines the set of locations used to match entries in `locations` to regions on the map. Values *ISO-3*, *USA-states*, *country names* correspond to features on the base map and value *geojson-id* corresponds to features from a custom GeoJSON linked to the `geojson` attribute.",
+     "description": "The library used by the *country names* `locationmode` option is changing in an upcoming version. Country names in existing plots may not work in the new version. Determines the set of locations used to match entries in `locations` to regions on the map. Values *ISO-3*, *USA-states*, *country names* correspond to features on the base map and value *geojson-id* corresponds to features from a custom GeoJSON linked to the `geojson` attribute.",
      "dflt": "ISO-3",
      "editType": "calc",
      "valType": "enumerated",
