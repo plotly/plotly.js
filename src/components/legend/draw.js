@@ -771,7 +771,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
 
     const { orientation, yref } = legendObj;
     let { maxheight } = legendObj;
-    const useFullLayoutHeight = (isBelowPlotArea || isAbovePlotArea) && !(orientation === "v" && yref === "paper")
+    const useFullLayoutHeight = isBelowPlotArea || isAbovePlotArea || !(orientation === "v" && yref === "paper")
     // Set default maxheight here since it depends on values passed in by user
     maxheight ||= useFullLayoutHeight ? 0.5 : 1;
     const heightToBeScaled = useFullLayoutHeight ? fullLayout.height : gs.h;
