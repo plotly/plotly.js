@@ -27,7 +27,8 @@ with thanks to @my-tien for the contribution!
 - Switch to United Nations (coastlines, countries, land, ocean) + Natural Earth (lakes, rivers, subunits) geodata for building topojson used in geo plot [[#7393](https://github.com/plotly/plotly.js/pull/7393)]
 - Make 'png' all caps [[#7400](https://github.com/plotly/plotly.js/pull/7400)]
 - Refactor files related to UN topojson [[#7481](https://github.com/plotly/plotly.js/pull/7481)]
-- Add breaking change warning for *country names* `locationmode` option in choropleth, scattergeo plots
+- Update default `topojsonURL` to point to new UN topojson [[#7514](https://github.com/plotly/plotly.js/pull/7514)]
+- Add breaking change warning for *country names* `locationmode` option in choropleth, scattergeo plots [[#7514](https://github.com/plotly/plotly.js/pull/7514)]
 
 ### Fixed
 - Fix performance warning in scattergl traces, [[#7390](https://github.com/plotly/plotly.js/pull/7390)], with thanks to @MzyzzG for the contribution!
@@ -37,6 +38,7 @@ with thanks to @my-tien for the contribution!
   with thanks to @my-tien for the contribution!
 - Update legend maxheight calculation logic [[#7483](https://github.com/plotly/plotly.js/pull/7483)] 
 - Fix hover event not triggered on consecutive empty bins (count=0) with `hovermode:'x'` for histogram [[#7503](https://github.com/plotly/plotly.js/pull/7503)], with thanks to @Lexachoc for the contribution!
+- Remove **form-data** nested dependency associated with [CVE-2025-7783](https://github.com/advisories/GHSA-fjxv-7rqg-78g4) [[#7514](https://github.com/plotly/plotly.js/pull/7514)], with thanks to @KyleBoyer for the contribution!
 
 
 ## [3.1.0-rc.1] -- 2025-08-01
