@@ -63,7 +63,7 @@ function horizontalAlignTitle(titleEl, legendObj, bw) {
     var titleOffset = 0;
     var textNode = titleEl.node();
 
-    var width = Drawing.bBox(textNode).width;  // width of the title text
+    var width = textNode.getBBox().width;  // width of the title text
 
     if(legendObj.title.side === 'top center') {
         titleOffset = 0.5 * (legendObj._width - 2 * bw - 2 * constants.titlePad - width);
@@ -658,7 +658,7 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
     var height, width;
 
     if(mathjaxNode) {
-        var mathjaxBB = Drawing.bBox(mathjaxNode);
+        var mathjaxBB = mathjaxNode.getBBox();
 
         height = mathjaxBB.height;
         width = mathjaxBB.width;
@@ -679,7 +679,7 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
         var textNode = textEl.node();
 
         height = lineHeight * textLines;
-        width = textNode ? Drawing.bBox(textNode).width : 0;
+        width = textNode ? textNode.getBBox().width : 0;
 
         // approximation to height offset to center the font
         // to avoid getBoundingClientRect
