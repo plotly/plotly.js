@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v3.1.0-rc.1
+* plotly.js (cartesian) v3.1.0
 * Copyright 2012-2025, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38,7 +38,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.1.0-rc.1";
+      exports.version = "3.1.0";
     }
   });
 
@@ -11469,7 +11469,8 @@ var Plotly = (() => {
         topojsonURL: {
           valType: "string",
           noBlank: true,
-          dflt: "https://cdn.plot.ly/"
+          // TODO: Switch the default back to 'https://cdn.plot.ly/' once we remove the legacy maps
+          dflt: "https://cdn.plot.ly/un/"
         },
         mapboxAccessToken: {
           valType: "string",
@@ -30374,7 +30375,7 @@ var Plotly = (() => {
         coerce("groupclick");
         coerce("xanchor", defaultXAnchor);
         coerce("yanchor", defaultYAnchor);
-        coerce("maxheight", isHorizontal ? 0.5 : 1);
+        coerce("maxheight");
         coerce("valign");
         Lib.noneOrAll(containerIn, containerOut, ["x", "y"]);
         var titleText = coerce("title.text");
@@ -31995,8 +31996,11 @@ var Plotly = (() => {
         var isAbovePlotArea = legendObj.y > 1 || legendObj.y === 1 && yanchor === "bottom";
         var traceGroupGap = legendObj.tracegroupgap;
         var legendGroupWidths = {};
-        var { maxheight, orientation, yref } = legendObj;
-        var heightToBeScaled = orientation === "v" && yref === "paper" ? gs.h : fullLayout.height;
+        const { orientation, yref } = legendObj;
+        let { maxheight } = legendObj;
+        const useFullLayoutHeight = isBelowPlotArea || isAbovePlotArea || orientation !== "v" || yref !== "paper";
+        maxheight || (maxheight = useFullLayoutHeight ? 0.5 : 1);
+        const heightToBeScaled = useFullLayoutHeight ? fullLayout.height : gs.h;
         legendObj._maxHeight = Math.max(maxheight > 1 ? maxheight : maxheight * heightToBeScaled, 30);
         var toggleRectWidth = 0;
         legendObj._width = 0;
@@ -33830,7 +33834,7 @@ var Plotly = (() => {
         for (var i = oldhoverdata.length - 1; i >= 0; i--) {
           var oldPt = oldhoverdata[i];
           var newPt = gd._hoverdata[i];
-          if (oldPt.curveNumber !== newPt.curveNumber || String(oldPt.pointNumber) !== String(newPt.pointNumber) || String(oldPt.pointNumbers) !== String(newPt.pointNumbers)) {
+          if (oldPt.curveNumber !== newPt.curveNumber || String(oldPt.pointNumber) !== String(newPt.pointNumber) || String(oldPt.pointNumbers) !== String(newPt.pointNumbers) || oldPt.binNumber !== newPt.binNumber) {
             return true;
           }
         }
