@@ -60,13 +60,18 @@ var Events = {
         };
 
         /*
-         * Add a dummy event handler for 'wheel' event for Safari
-         * to enable mouse wheel zoom.
-         * https://github.com/d3/d3/issues/3035
-         * https://github.com/plotly/plotly.js/issues/7452
-         */
+        * Add a dummy event handler for 'wheel' event for Safari
+        * to enable mouse wheel zoom.
+        * https://github.com/d3/d3/issues/3035
+        * https://github.com/plotly/plotly.js/issues/7452
+        *
+        * We set {passive: true} for better performance
+        * and to avoid a Violation warning in Chromium.
+        * https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
+        * https://github.com/plotly/plotly.js/issues/7516
+        */
         if(typeof plotObj.addEventListener === 'function') {
-            plotObj.addEventListener("wheel", () => {});
+            plotObj.addEventListener("wheel", () => {}, { passive: true });
         }
 
         return plotObj;
