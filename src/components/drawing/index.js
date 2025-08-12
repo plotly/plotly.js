@@ -103,6 +103,16 @@ drawing.setRect = function(s, x, y, w, h) {
 drawing.translatePoint = function(d, sel, xa, ya) {
     var x = xa.c2p(d.x);
     var y = ya.c2p(d.y);
+    if (isNumeric(d.x1)) {
+        x = (xa.c2p(d.x1) + x) / 2;
+    }
+    if (isNumeric(d.y1)) {
+        y = (ya.c2p(d.y1) + y) / 2;
+    }
+
+    // Store middle point for use on hover
+    d.xc = x;
+    d.yc = y;
 
     if(isNumeric(x) && isNumeric(y) && sel.node()) {
         // for multiline text this works better
@@ -378,9 +388,9 @@ drawing.symbolNumber = function(v) {
         0 : Math.floor(Math.max(v, 0));
 };
 
-function makePointPath(symbolNumber, r, t, s) {
+function makePointPath(symbolNumber, rx, ry, t, s) {
     var base = symbolNumber % 100;
-    return drawing.symbolFuncs[base](r, t, s) + (symbolNumber >= 200 ? DOTPATH : '');
+    return drawing.symbolFuncs[base](rx, ry, t, s) + (symbolNumber >= 200 ? DOTPATH : '');
 }
 
 var stopFormatter = numberFormat('~f');
@@ -765,10 +775,10 @@ drawing.getPatternAttr = function(mp, i, dflt) {
     return mp;
 };
 
-drawing.pointStyle = function(s, trace, gd, pt) {
+drawing.pointStyle = function(s, trace, xa, ya, gd, pt) {
     if(!s.size()) return;
 
-    var fns = drawing.makePointStyleFns(trace);
+    var fns = drawing.makePointStyleFns(trace, xa, ya);
 
     s.each(function(d) {
         drawing.singlePointStyle(d, d3.select(this), trace, fns, gd, pt);
@@ -786,21 +796,27 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd, pt) {
             (d.mo === undefined ? marker.opacity : d.mo)
     );
 
-    if(fns.ms2mrc) {
-        var r;
+    if(fns.ms2mrx && fns.ms2mry) {
+        var rx, ry;
 
         // handle multi-trace graph edit case
         if(d.ms === 'various' || marker.size === 'various') {
-            r = 3;
+            rx = ry = 3;
         } else {
-            r = fns.ms2mrc(d.ms);
+            rx = fns.ms2mrx(d);
+            ry = fns.ms2mry(d);
         }
 
         // store the calculated size so hover can use it
-        d.mrc = r;
+        d.mrxc = rx;
+        d.mryc = ry;
 
+        // TODO: Can we remove mrc?
+        d.mrc = Math.max(rx, ry);
+
+        // TODO: Update selected size to handle ranges
         if(fns.selectedSizeFn) {
-            r = d.mrc = fns.selectedSizeFn(d);
+            d.mrc = fns.selectedSizeFn(d);
         }
 
         // turn the symbol into a sanitized number
@@ -813,7 +829,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd, pt) {
         var angle = getMarkerAngle(d, trace);
         var standoff = getMarkerStandoff(d, trace);
 
-        sel.attr('d', makePointPath(x, r, angle, standoff));
+        sel.attr('d', makePointPath(x, rx, ry, angle, standoff));
     }
 
     var perPointGradient = false;
@@ -935,7 +951,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd, pt) {
     }
 };
 
-drawing.makePointStyleFns = function(trace) {
+drawing.makePointStyleFns = function(trace, xa, ya) {
     var out = {};
     var marker = trace.marker;
 
@@ -945,9 +961,28 @@ drawing.makePointStyleFns = function(trace) {
     out.lineScale = drawing.tryColorscale(marker, 'line');
 
     if(Registry.traceIs(trace, 'symbols')) {
-        out.ms2mrc = subTypes.isBubble(trace) ?
-            makeBubbleSizeFn(trace) :
-            function() { return (marker.size || 6) / 2; };
+        const ms2mrc = subTypes.isBubble(trace)
+            ? makeBubbleSizeFn(trace)
+            : function() { return (marker.size || 6) / 2; };
+
+        out.ms2mrx = function (trace) {
+            var mr = ms2mrc(trace.ms);
+            if (trace.x1 == null) {
+                return mr;
+            }
+            var x = xa.c2p(trace.x);
+            var x1 = xa.c2p(trace.x1);
+            return Math.max(Math.abs(x1 - x) / 2, mr);
+        }
+        out.ms2mry = function(trace) {
+            var mr = ms2mrc(trace.ms)
+            if (trace.y1 == null) {
+                return mr;
+            }
+            var y = ya.c2p(trace.y);
+            var y1 = ya.c2p(trace.y1);
+            return Math.max(Math.abs(y1 - y) / 2, mr);
+        }
     }
 
     if(trace.selectedpoints) {
@@ -1074,7 +1109,7 @@ drawing.selectedPointStyle = function(s, trace) {
             var mx = d.mx || marker.symbol || 0;
             var mrc2 = fns.selectedSizeFn(d);
 
-            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace)));
+            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2, mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace)));
 
             // save for Drawing.selectedTextStyle
             d.mrc2 = mrc2;
