@@ -238,7 +238,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             else if(Color.opacity((trace.line || {}).color)) {
                 color = trace.line.color;
             }
-
+            var hovertemplate = false;
+            if(trace.mode === 'lines') {
+                hovertemplate = trace.hovertemplate;
+            }
             Lib.extendFlat(pointData, {
                 // never let a 2D override 1D type as closest point
                 // also: no spikeDistance, it's not allowed for fills
@@ -248,7 +251,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 y0: hoverLabelCoords.y0,
                 y1: hoverLabelCoords.y1,
                 color: color,
-                hovertemplate: false
+                hovertemplate: hovertemplate,
             });
 
             delete pointData.index;
