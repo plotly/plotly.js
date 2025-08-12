@@ -9,18 +9,7 @@ var findExtremes = require('../../plots/cartesian/autorange').findExtremes;
 
 var style = require('./style').style;
 
-const breakingChangeWarning = [
-    'The library used by the *country names* `locationmode` option is changing in an upcoming version.',
-    'Country names in existing plots may not work in the new version.'
-].join(' ');
-let firstPlot = true;
-
 function plot(gd, geo, calcData) {
-    if(firstPlot) {
-        firstPlot = false;
-        Lib.warn(breakingChangeWarning);
-    }
-
     var choroplethLayer = geo.layers.backplot.select('.choroplethlayer');
 
     Lib.makeTraceGroups(choroplethLayer, calcData, 'trace choropleth').each(function(calcTrace) {
