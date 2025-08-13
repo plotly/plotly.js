@@ -127,11 +127,11 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         svgTextUtils.convertToTspans(s, gd);
         return s;
     });
-    var textBB = Drawing.bBox(labelText.node());
+    var textBBHeight = labelText.node().getBBox().height;
 
     // Calculate correct (x,y) for text
     // We also determine true xanchor since xanchor depends on position when set to 'auto'
-    var textPos = calcTextPosition(shapex0, shapey0, shapex1, shapey1, options, textangle, textBB);
+    var textPos = calcTextPosition(shapex0, shapey0, shapex1, shapey1, options, textangle, textBBHeight);
     var textx = textPos.textx;
     var texty = textPos.texty;
     var xanchor = textPos.xanchor;
@@ -160,7 +160,7 @@ function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
     return -180 / Math.PI * Math.atan2(dy, dx);
 }
 
-function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actualTextAngle, textBB) {
+function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actualTextAngle, textBBHeight) {
     var textPosition = shapeOptions.label.textposition;
     var textAngle = shapeOptions.label.textangle;
     var textPadding = shapeOptions.label.padding;
@@ -270,7 +270,7 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
     var shiftFraction = FROM_TL[yanchor];
     // Adjust so that text is anchored at top of first line rather than at baseline of first line
     var baselineAdjust = shapeOptions.label.font.size;
-    var textHeight = textBB.height;
+    var textHeight = textBBHeight;
     var xshift = (textHeight * shiftFraction - baselineAdjust) * sinA;
     var yshift = -(textHeight * shiftFraction - baselineAdjust) * cosA;
 

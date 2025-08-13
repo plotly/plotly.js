@@ -178,7 +178,7 @@ function reposition(gd, buttons, opts, axName, selector) {
         var rect = button.select('.selector-rect');
         var text = button.select('.selector-text');
 
-        var tWidth = text.node() && Drawing.bBox(text.node()).width;
+        var tWidth = text.node() && text.node().getBBox().width;
         var tHeight = opts.font.size * LINE_SPACING;
         var tLines = svgTextUtils.lineCount(text);
 

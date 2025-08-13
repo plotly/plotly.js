@@ -1511,37 +1511,24 @@ drawing.bBox = function(node, inTester, hash) {
             if(out) return Lib.extendFlat({}, out);
         }
     }
-    var testNode, tester;
-    if(inTester) {
-        testNode = node;
+    var bb = {};
+    if (node.tagName !== "text") {
+        var nodeBB = node.getBBox();
+        if (Object.keys(nodeBB).length) {
+            bb = {
+                height: nodeBB.height,
+                width: nodeBB.width,
+                left: nodeBB.x,
+                top: nodeBB.y,
+                right: nodeBB.x + nodeBB.width,
+                bottom: nodeBB.y + nodeBB.height
+            };
+        } else {
+            bb = testNodeInTester(node, inTester);
+        }
     } else {
-        tester = drawing.tester.node();
-
-        // copy the node to test into the tester
-        testNode = node.cloneNode(true);
-        tester.appendChild(testNode);
+       bb = testNodeInTester(node, inTester);
     }
-
-    // standardize its position (and newline tspans if any)
-    d3.select(testNode)
-        .attr('transform', null)
-        .call(svgTextUtils.positionText, 0, 0);
-
-    var testRect = testNode.getBoundingClientRect();
-    var refRect = drawing.testref
-        .node()
-        .getBoundingClientRect();
-
-    if(!inTester) tester.removeChild(testNode);
-
-    var bb = {
-        height: testRect.height,
-        width: testRect.width,
-        left: testRect.left - refRect.left,
-        top: testRect.top - refRect.top,
-        right: testRect.right - refRect.left,
-        bottom: testRect.bottom - refRect.top
-    };
 
     // make sure we don't have too many saved boxes,
     // or a long session could overload on memory
@@ -1557,6 +1544,41 @@ drawing.bBox = function(node, inTester, hash) {
 
     return Lib.extendFlat({}, bb);
 };
+
+function testNodeInTester(node, inTester) {
+     var testNode, tester;
+        if(inTester) {
+            testNode = node;
+        } else {
+            tester = drawing.tester.node();
+    
+            // copy the node to test into the tester
+            testNode = node.cloneNode(true);
+            tester.appendChild(testNode);
+        }
+    
+        // standardize its position (and newline tspans if any)
+        d3.select(testNode)
+            .attr('transform', null)
+            .call(svgTextUtils.positionText, 0, 0);
+    
+        var testRect = testNode.getBoundingClientRect();
+        var refRect = drawing.testref
+            .node()
+            .getBoundingClientRect();
+    
+        if(!inTester) tester.removeChild(testNode);
+    
+        var bb = {
+            height: testRect.height,
+            width: testRect.width,
+            left: testRect.left - refRect.left,
+            top: testRect.top - refRect.top,
+            right: testRect.right - refRect.left,
+            bottom: testRect.bottom - refRect.top
+        };
+        return bb;
+}
 
 // capture everything about a node (at least in our usage) that
 // impacts its bounding box, given that bBox clears x, y, and transform
