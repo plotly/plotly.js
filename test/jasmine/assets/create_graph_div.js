@@ -1,8 +1,8 @@
 'use strict';
 
-module.exports = function createGraphDiv() {
+module.exports = function createGraphDiv(divId = 'graph') {
     var gd = document.createElement('div');
-    gd.id = 'graph';
+    gd.id = divId;
     document.body.appendChild(gd);
 
     // force the graph to be at position 0,0 no matter what
