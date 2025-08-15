@@ -8,7 +8,6 @@ var Lib = require('../../../src/lib');
 var rgb = require('../../../src/components/color').rgb;
 
 var createGraphDiv = require('../assets/create_graph_div');
-var createShadowGraphDiv = require('../assets/create_shadow_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 
@@ -984,7 +983,7 @@ describe('Title automargining', function() {
 
     it('computes title automargins independently when multiple plots exist', function(done) {
         var gd1 = gd; 
-        var gd2 = createShadowGraphDiv();
+        var gd2 = createGraphDiv('title-automargining-2');
 
         var dataLocal = [{x: [1, 2], y: [1, 2]}];
 
@@ -1020,6 +1019,9 @@ describe('Title automargining', function() {
             var t2 = gd2._fullLayout._size.t;
 
             expect(t1).toBeGreaterThan(t2);
+        }).then(function() {
+            var el = document.getElementById('title-automargining-2');
+            if(el) document.body.removeChild(el);
         })
         .then(done, done.fail);
     });
