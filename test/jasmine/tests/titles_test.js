@@ -8,6 +8,7 @@ var Lib = require('../../../src/lib');
 var rgb = require('../../../src/components/color').rgb;
 
 var createGraphDiv = require('../assets/create_graph_div');
+var createShadowGraphDiv = require('../assets/create_shadow_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 
@@ -979,6 +980,48 @@ describe('Title automargining', function() {
             expect(gd._fullLayout._size.b).toBeCloseTo(57, -1);
             expect(gd._fullLayout._size.h).toBeCloseTo(243, -1);
         }).then(done, done.fail);
+    });
+
+    it('computes title automargins independently when multiple plots exist', function(done) {
+        var gd1 = gd; 
+        var gd2 = createShadowGraphDiv();
+
+        var dataLocal = [{x: [1, 2], y: [1, 2]}];
+
+        var layout1 = {
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            height: 300,
+            width: 400,
+            title: {
+                text: 'Large title for plot 1',
+                font: {size: 36},
+                yref: 'paper',
+                automargin: true
+            }
+        };
+
+        var layout2 = {
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            height: 300,
+            width: 400,
+            title: {
+                text: 'Small',
+                font: {size: 12},
+                yref: 'paper',
+                automargin: true
+            }
+        };
+
+        Plotly.newPlot(gd1, dataLocal, layout1)
+        .then(function() { return Plotly.newPlot(gd2, dataLocal, layout2); })
+        .then(function() {
+            // Each graph should compute its own top automargin from its own title bbox
+            var t1 = gd1._fullLayout._size.t;
+            var t2 = gd2._fullLayout._size.t;
+
+            expect(t1).toBeGreaterThan(t2);
+        })
+        .then(done, done.fail);
     });
 });
 
