@@ -1,56 +1,48 @@
 'use strict';
 
-var tinycolor = require('tinycolor2');
-var isNumeric = require('fast-isnumeric');
-var isTypedArray = require('../../lib/array').isTypedArray;
+const isNumeric = require('fast-isnumeric');
+const isTypedArray = require('../../lib/array').isTypedArray;
+const color = require('color').default
 
-var color = module.exports = {};
+const { background, defaultLine, defaults, lightLine } = require('./attributes');
 
-var colorAttrs = require('./attributes');
-color.defaults = colorAttrs.defaults;
-var defaultLine = color.defaultLine = colorAttrs.defaultLine;
-color.lightLine = colorAttrs.lightLine;
-var background = color.background = colorAttrs.background;
+const rgb = cstr => {
+    const { r, g, b } = color(cstr).rgb().object();
+    return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+}
 
-/*
- * tinyRGB: turn a tinycolor into an rgb string, but
- * unlike the built-in tinycolor.toRgbString this never includes alpha
- */
-color.tinyRGB = function(tc) {
-    var c = tc.toRgb();
-    return 'rgb(' + Math.round(c.r) + ', ' +
-        Math.round(c.g) + ', ' + Math.round(c.b) + ')';
-};
+const opacity = cstr => cstr ? color(cstr).alpha() : 0;
 
-color.rgb = function(cstr) { return color.tinyRGB(tinycolor(cstr)); };
-
-color.opacity = function(cstr) { return cstr ? tinycolor(cstr).getAlpha() : 0; };
-
-color.addOpacity = function(cstr, op) {
-    var c = tinycolor(cstr).toRgb();
-    return 'rgba(' + Math.round(c.r) + ', ' +
-        Math.round(c.g) + ', ' + Math.round(c.b) + ', ' + op + ')';
+const addOpacity = (cstr, op) => {
+    const c = color(cstr).rgb().object();
+    return `rgba(${Math.round(c.r)}, ${Math.round(c.g)}, ${Math.round(c.b)}, ${op})`;
 };
 
 // combine two colors into one apparent color
 // if back has transparency or is missing,
-// color.background is assumed behind it
-color.combine = function(front, back) {
-    var fc = tinycolor(front).toRgb();
-    if(fc.a === 1) return tinycolor(front).toRgbString();
+// background is assumed behind it
+const combine = (front, back = background) => {
+    const fc = color(front).rgb().object();
+    fc.alpha ||= 1;
+    if(fc.alpha === 1) return color(front).rgb().string();
 
-    var bc = tinycolor(back || background).toRgb();
-    var bcflat = bc.a === 1 ? bc : {
-        r: 255 * (1 - bc.a) + bc.r * bc.a,
-        g: 255 * (1 - bc.a) + bc.g * bc.a,
-        b: 255 * (1 - bc.a) + bc.b * bc.a
+    const bc = color(back).rgb().object;
+    bc.alpha ||= 1;
+    const bcflat = bc.alpha === 1
+        ? bc
+        : {
+            r: 255 * (1 - bc.alpha) + bc.r * bc.alpha,
+            g: 255 * (1 - bc.alpha) + bc.g * bc.alpha,
+            b: 255 * (1 - bc.alpha) + bc.b * bc.alpha
+        };
+    
+    const fcflat = {
+        r: bcflat.r * (1 - fc.alpha) + fc.r * fc.alpha,
+        g: bcflat.g * (1 - fc.alpha) + fc.g * fc.alpha,
+        b: bcflat.b * (1 - fc.alpha) + fc.b * fc.alpha
     };
-    var fcflat = {
-        r: bcflat.r * (1 - fc.a) + fc.r * fc.a,
-        g: bcflat.g * (1 - fc.a) + fc.g * fc.a,
-        b: bcflat.b * (1 - fc.a) + fc.b * fc.a
-    };
-    return tinycolor(fcflat).toRgbString();
+
+    return color(fcflat).string();
 };
 
 /*
@@ -59,17 +51,17 @@ color.combine = function(front, back) {
  * Ignores alpha channel values.
  * The resulting color is computed as: factor * first + (1 - factor) * second.
  */
-color.interpolate = function(first, second, factor) {
-    var fc = tinycolor(first).toRgb();
-    var sc = tinycolor(second).toRgb();
+const interpolate = (first, second, factor) => {
+    const fc = color(first).rgb().object();
+    const sc = color(second).rgb().object();
 
-    var ic = {
+    const ic = {
         r: factor * fc.r + (1 - factor) * sc.r,
         g: factor * fc.g + (1 - factor) * sc.g,
         b: factor * fc.b + (1 - factor) * sc.b,
     };
 
-    return tinycolor(ic).toRgbString();
+    return color(ic).rgb().string();
 };
 
 /*
@@ -80,34 +72,27 @@ color.interpolate = function(first, second, factor) {
  * If lightAmount / darkAmount are used, we adjust by these percentages,
  * otherwise we go all the way to white or black.
  */
-color.contrast = function(cstr, lightAmount, darkAmount) {
-    var tc = tinycolor(cstr);
+const contrast = (cstr, lightAmount, darkAmount) => {
+    let c = color(cstr)
 
-    if(tc.getAlpha() !== 1) tc = tinycolor(color.combine(cstr, background));
+    if(c.alpha() !== 1) c = color(combine(cstr, background));
 
-    var newColor = tc.isDark() ?
-        (lightAmount ? tc.lighten(lightAmount) : background) :
-        (darkAmount ? tc.darken(darkAmount) : defaultLine);
+    const newColor = color(
+        c.isDark()
+            ? (lightAmount ? c.lighten(lightAmount / 100) : background)
+            : (darkAmount ? c.darken(darkAmount / 100) : defaultLine)
+    );
 
-    return newColor.toString();
+    return newColor.rgb().string();
 };
 
-color.stroke = function(s, c) {
-    var tc = tinycolor(c);
-    s.style({stroke: color.tinyRGB(tc), 'stroke-opacity': tc.getAlpha()});
-};
+const stroke = (s, cstr) => s.style({ stroke: rgb(cstr), 'stroke-opacity': opacity(cstr) });
 
-color.fill = function(s, c) {
-    var tc = tinycolor(c);
-    s.style({
-        fill: color.tinyRGB(tc),
-        'fill-opacity': tc.getAlpha()
-    });
-};
+const fill = (s, cstr) => s.style({ fill: rgb(cstr), 'fill-opacity': opacity(cstr) });
 
 // search container for colors with the deprecated rgb(fractions) format
 // and convert them to rgb(0-255 values)
-color.clean = function(container) {
+const clean = container => {
     if(!container || typeof container !== 'object') return;
 
     var keys = Object.keys(container);
@@ -134,13 +119,13 @@ color.clean = function(container) {
 
             var el0 = val[0];
             if(!Array.isArray(el0) && el0 && typeof el0 === 'object') {
-                for(j = 0; j < val.length; j++) color.clean(val[j]);
+                for(j = 0; j < val.length; j++) clean(val[j]);
             }
-        } else if(val && typeof val === 'object' && !isTypedArray(val)) color.clean(val);
+        } else if(val && typeof val === 'object' && !isTypedArray(val)) clean(val);
     }
 };
 
-function cleanOne(val) {
+const cleanOne = val => {
     if(isNumeric(val) || typeof val !== 'string') return val;
 
     var valTrim = val.trim();
@@ -180,4 +165,23 @@ function cleanOne(val) {
 
     if(rgba) return 'rgba(' + rgbStr + ', ' + parts[3] + ')';
     return 'rgb(' + rgbStr + ')';
+}
+
+const isDark = cstr => color(cstr).isDark()
+
+module.exports = {
+    addOpacity,
+    background,
+    clean,
+    combine,
+    contrast,
+    defaultLine,
+    defaults,
+    fill,
+    interpolate,
+    isDark,
+    lightLine,
+    opacity,
+    rgb,
+    stroke
 }
