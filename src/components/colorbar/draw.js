@@ -373,7 +373,7 @@ function drawColorBar(g, opts, gd) {
             }
 
             drawTitle(ax._id + 'title', {
-                attributes: {x: x, y: y, 'text-anchor': isVertical ? 'start' : 'middle'}
+                attributes: {x: x, y: y, 'text-anchor': isVertical ? title.align : 'middle'}
             });
         }
     }
