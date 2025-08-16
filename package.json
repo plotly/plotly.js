@@ -136,7 +136,7 @@
     "esbuild-plugin-browserify-adapter": "^0.1.4",
     "esbuild-plugin-environment": "^0.4.0",
     "esbuild-plugin-glsl": "^1.2.2",
-    "esbuild-style-plugin": "^1.6.3",
+    "esbuild-plugin-inline-css": "^0.0.1",
     "extra-iterable": "^2.5.22",
     "falafel": "^2.2.5",
     "fs-extra": "^10.1.0",
