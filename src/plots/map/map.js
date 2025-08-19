@@ -695,14 +695,128 @@ proto.getMapLayers = function() {
     return this.map.getStyle().layers;
 };
 
+async function getClusterData (e, _map, gd, self, curveNumber, click) {
+    const features = _map.queryRenderedFeatures(e.point, {
+        layers: [e.features[0].layer.id]
+    });
+
+    const evt = e
+    evt.target = _map
+
+    var xy = [
+        evt.originalEvent.offsetX,
+        evt.originalEvent.offsetY
+    ];
+
+    evt.target.getBoundingClientRect = function() { return bb; };
+
+    self.xaxis.p2c = function() { return _map.unproject(xy).lng; };
+    self.yaxis.p2c = function() { return _map.unproject(xy).lat; };
+    const x0 = _map.project(e.lngLat).x;
+    const y0 = _map.project(e.lngLat).y;
+
+    var bb = {
+        x0,
+        x1: x0 + 2,
+        y0,
+        y1: y0 + 2,
+    };
+
+    const clusterId = features[0].properties.cluster_id;
+    const clusterSource = await _map.getSource(e.features[0].source);
+    const point_count = features[0].properties.point_count
+
+    // Get all points under a cluster
+    const points = await clusterSource.getClusterLeaves(clusterId, point_count, 0)
+
+    // Assuming 'points' contains the data you want to use for the hover event
+    // You need to map this data to the corresponding data points in your Plotly graph
+    // For example, let's assume you have a mapping function `mapToPlotlyData` that does this
+
+    const plotlyData = mapToPlotlyData(points, curveNumber);
+
+    // Prepare the hover event data
+    const hoverData = plotlyData.map(point => {
+        // Convert coordinates to strings for comparison
+        const latStr = point.y.toFixed(4);
+        const lonStr = point.x.toFixed(4);
+
+        // Access the original data for the current curve
+        const originalData = gd.data[point.curveNumber];
+
+        // Find the matching text from the original data
+        const text = findMatchingText(latStr, lonStr, originalData);
+
+        return {
+            lon: lonStr,
+            lat: latStr,
+            curveNumber: point.curveNumber,
+            pointNumber: point.pointNumber,
+            pointIndex: point.pointNumber,
+            data: gd.data[point.curveNumber],
+            fullData: gd._fullData[point.curveNumber],
+            bbox: bb,
+            x: point.x,
+            y: point.y,
+            text: text // Include the matched text
+        };
+    });
+
+    gd._hoverdata = hoverData;
+
+    if (!click) {
+        // Emit the Plotly hover event
+        gd.emit('plotly_hover', {
+            event: evt, // Pass the original event if needed
+            points: hoverData,
+            xaxes: [self.xaxis], // Array of x-axes involved
+            yaxes: [self.yaxis], // Array of y-axes involved
+            xvals: hoverData.map(d => d.x), // Array of x values
+            yvals: hoverData.map(d => d.y),  // Array of y values
+        });
+    } else {
+        // Emit the Plotly click event
+        gd.emit('plotly_click', {
+            event: evt.originalEvent, // Pass the original event if needed
+            points: hoverData,
+        });
+    }
+}
+
+// Function to find matching text for a given lat/lon in the original data
+function findMatchingText(lat, lon, originalData) {
+    const matchIndex = originalData.lat.findIndex((latVal, index) =>
+        latVal === lat && originalData.lon[index] === lon
+    );
+    return matchIndex !== -1 ? originalData.text[matchIndex] : '';
+}
+
+// Example function to map cluster points to Plotly data
+function mapToPlotlyData(points, curveNumber= 0) {
+    // Implement your logic to map cluster points to Plotly data
+    // This is a placeholder function
+    return points.map((point, index) => ({
+        x: point.geometry.coordinates[0],
+        y: point.geometry.coordinates[1],
+        curveNumber, // Replace with the actual curve number if needed
+        pointNumber: index //
+        // Add any other necessary data mapping
+    }));
+}
+
 // convenience wrapper that first check in 'below' references
 // a layer that exist and then add the layer to the map,
 proto.addLayer = function(opts, below) {
     var map = this.map;
+    var gd = this.gd
 
     if(typeof below === 'string') {
         if(below === '') {
             map.addLayer(opts, below);
+            if (opts.id.includes('cluster')) {
+                map.on('mouseover', opts.id, async (e) => {await getClusterData(e, map, gd, this)})
+                map.on('click', opts.id, async (e) => {await getClusterData(e, map, gd, this, 0, true)})
+            }
             return;
         }
 
@@ -710,6 +824,10 @@ proto.addLayer = function(opts, below) {
         for(var i = 0; i < mapLayers.length; i++) {
             if(below === mapLayers[i].id) {
                 map.addLayer(opts, below);
+                if (opts.id.includes('cluster')) {
+                    map.on('mouseover', opts.id, async (e) => {await getClusterData(e, map, gd, this, i)})
+                    map.on('click', opts.id, async (e) => {await getClusterData(e, map, gd, this, i, true)})
+                }
                 return;
             }
         }
@@ -723,6 +841,10 @@ proto.addLayer = function(opts, below) {
     }
 
     map.addLayer(opts);
+    if (opts.id.includes('cluster')) {
+        map.on('mouseover', opts.id, async (e) => {await getClusterData(e, map, gd, this)})
+        map.on('click', opts.id, async (e) => {await getClusterData(e, map, gd, this, 0, true)})
+    }
 };
 
 // convenience method to project a [lon, lat] array to pixel coords
