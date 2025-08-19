@@ -36,6 +36,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('xhoverformat');
     coerce('yhoverformat');
 
+    coerce('tooltip');
+    coerce('tooltiptemplate');
+
     handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noAngleRef: true, noStandOff: true});
 
     var isOpen = isOpenSymbol(traceOut.marker.symbol);
