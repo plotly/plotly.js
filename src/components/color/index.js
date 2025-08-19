@@ -167,19 +167,26 @@ const cleanOne = val => {
     return 'rgb(' + rgbStr + ')';
 }
 
-const isDark = cstr => color(cstr).isDark()
+const equals = (cstr1, cstr2) => cstr1 && cstr2 && color(cstr1).rgb().string() === color(cstr2).rgb().string();
+
+const isValid = cstr => {
+    try { return !!color(cstr); }
+    catch { return false; }
+}
 
 module.exports = {
     addOpacity,
     background,
     clean,
+    color,
     combine,
     contrast,
     defaultLine,
     defaults,
+    equals,
     fill,
     interpolate,
-    isDark,
+    isValid,
     lightLine,
     opacity,
     rgb,
