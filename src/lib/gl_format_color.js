@@ -1,7 +1,6 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
 var rgba = require('color-normalize');
 
 var Colorscale = require('../components/colorscale');
@@ -78,11 +77,10 @@ function parseColorScale(cont) {
 
     return colorscale.map(function(elem) {
         var index = elem[0];
-        var color = tinycolor(elem[1]);
-        var rgb = color.toRgb();
+        const { r, g, b, alpha = 1 } = Color.color(elem[1]).rgb().object();
         return {
             index: index,
-            rgb: [rgb.r, rgb.g, rgb.b, rgb.a]
+            rgb: [r, g, b, alpha]
         };
     });
 }

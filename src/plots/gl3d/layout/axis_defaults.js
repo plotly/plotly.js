@@ -1,6 +1,6 @@
 'use strict';
 
-var colorMix = require('tinycolor2').mix;
+const Color = require('../../../components/color');
 
 var Lib = require('../../../lib');
 var Template = require('../../../plot_api/plot_template');
@@ -58,7 +58,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
             },
             options.fullLayout);
 
-        coerce('gridcolor', colorMix(containerOut.color, options.bgColor, gridLightness).toRgbString());
+        coerce('gridcolor', Color.mix(containerOut.color, options.bgColor, gridLightness));
         coerce('title.text', axName[0]);  // shouldn't this be on-par with 2D?
 
         containerOut.setScale = Lib.noop;

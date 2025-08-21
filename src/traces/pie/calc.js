@@ -1,7 +1,6 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
 
 var Color = require('../../components/color');
 
@@ -89,15 +88,12 @@ function calc(gd, trace) {
 
 function makePullColorFn(colorMap) {
     return function pullColor(color, id) {
-        if(!color) return false;
+        if(!color || !Color.isValid(color)) return false;
 
-        color = tinycolor(color);
-        if(!color.isValid()) return false;
+        const newColor = Color.addOpacity(color, color.getAlpha());
+        if(!colorMap[id]) colorMap[id] = newColor;
 
-        color = Color.addOpacity(color, color.getAlpha());
-        if(!colorMap[id]) colorMap[id] = color;
-
-        return color;
+        return newColor;
     };
 }
 
@@ -154,11 +150,11 @@ function generateExtendedColors(colorList, extendedColorWays) {
         colors = colorList.slice();
 
         for(i = 0; i < colorList.length; i++) {
-            colors.push(tinycolor(colorList[i]).lighten(20).toHexString());
+            colors.push(Color.color(colorList[i]).lighten(0.2).hex());
         }
 
         for(i = 0; i < colorList.length; i++) {
-            colors.push(tinycolor(colorList[i]).darken(20).toHexString());
+            colors.push(Color.color(colorList[i]).darken(0.2).hex());
         }
         extendedColorWays[colorString] = colors;
     }

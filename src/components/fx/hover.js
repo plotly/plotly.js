@@ -2,7 +2,6 @@
 
 var d3 = require('@plotly/d3');
 var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
 
 var Lib = require('../../lib');
 var pushUnique = Lib.pushUnique;
@@ -2128,8 +2127,9 @@ function createSpikelines(gd, closestPoints, opts) {
             hLinePointX = xa._offset + hLinePoint.x;
             hLinePointY = ya._offset + hLinePoint.y;
         }
-        var dfltHLineColor = tinycolor.readability(hLinePoint.color, contrastColor) < 1.5 ?
-            Color.contrast(contrastColor) : hLinePoint.color;
+        var dfltHLineColor = Color.color(hLinePoint.color).contrast(contrastColor) < 1.5
+            ? Color.contrast(contrastColor)
+            : hLinePoint.color;
         var yMode = ya.spikemode;
         var yThickness = ya.spikethickness;
         var yColor = ya.spikecolor || dfltHLineColor;
@@ -2207,8 +2207,9 @@ function createSpikelines(gd, closestPoints, opts) {
             vLinePointX = xa._offset + vLinePoint.x;
             vLinePointY = ya._offset + vLinePoint.y;
         }
-        var dfltVLineColor = tinycolor.readability(vLinePoint.color, contrastColor) < 1.5 ?
-            Color.contrast(contrastColor) : vLinePoint.color;
+        var dfltVLineColor = Color.color(vLinePoint.color).contrast(contrastColor) < 1.5
+            ? Color.contrast(contrastColor)
+            : vLinePoint.color;
         var xMode = xa.spikemode;
         var xThickness = xa.spikethickness;
         var xColor = xa.spikecolor || dfltVLineColor;

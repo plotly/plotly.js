@@ -170,9 +170,29 @@ const cleanOne = val => {
 const equals = (cstr1, cstr2) => cstr1 && cstr2 && color(cstr1).rgb().string() === color(cstr2).rgb().string();
 
 const isValid = cstr => {
-    try { return !!color(cstr); }
+    try { return cstr && !!color(cstr); }
     catch { return false; }
 }
+
+const mix = (cstr1, cstr2, weight) => color(cstr1).mix(color(cstr2), weight / 100).rgb().string();
+
+const mostReadable = (baseColor, colorList = []) => {
+    let bestColor;
+    let bestContrast = -Infinity;
+
+    for (const cstr of colorList) {
+        const contrast = color(baseColor).contrast(color(cstr));
+        if (contrast > bestContrast) {
+            bestContrast = contrast;
+            bestColor = color(cstr).rgb().string();
+        }
+    }
+    
+    // Fall back to black/white if provided colors don't have proper contrast level
+    return bestColor && color(baseColor).level(color(bestColor))
+        ? bestColor
+        : mostReadable(baseColor, ["#000", "#fff"]);
+};
 
 module.exports = {
     addOpacity,
@@ -188,6 +208,8 @@ module.exports = {
     interpolate,
     isValid,
     lightLine,
+    mix,
+    mostReadable,
     opacity,
     rgb,
     stroke

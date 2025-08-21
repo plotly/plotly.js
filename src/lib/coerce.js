@@ -1,7 +1,6 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
 
 var extendFlat = require('./extend').extendFlat;
 
@@ -169,7 +168,7 @@ exports.valObjectMeta = {
         coerceFunction: function(v, propOut, dflt) {
             if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
 
-            if(tinycolor(v).isValid()) propOut.set(v);
+            if(Color.isValid(v)) propOut.set(v);
             else propOut.set(dflt);
         }
     },
@@ -181,11 +180,8 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            function isColor(color) {
-                return tinycolor(color).isValid();
-            }
             if(!Array.isArray(v) || !v.length) propOut.set(dflt);
-            else if(v.every(isColor)) propOut.set(v);
+            else if(v.every(color => Color.isvalid(color))) propOut.set(v);
             else propOut.set(dflt);
         }
     },

@@ -1,7 +1,6 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
-var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Drawing = require('../../components/drawing');
@@ -344,10 +343,10 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         rcount = Math.round(rcount / pixcount);
         gcount = Math.round(gcount / pixcount);
         bcount = Math.round(bcount / pixcount);
-        var avgColor = tinycolor('rgb(' + rcount + ',' + gcount + ',' + bcount + ')');
-
+        const cstr = `rgb(${rcount}, ${gcount}, ${bcount})`;
+        
         gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
-        gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
+        gd._hmlumcount = (gd._hmlumcount||0) + pixcount * Color.color(cstr).luminosity();
 
         var image3 = plotGroup.selectAll('image')
             .data(cd);
@@ -536,7 +535,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                         fontColor = Color.contrast(
                             d.z === undefined ? gd._fullLayout.plot_bgcolor :
                             'rgba(' +
-                                sclFunc(d.z).join() +
+                                sclFunc(d.z).map(Math.round).join() +
                             ')'
                         );
                     }
