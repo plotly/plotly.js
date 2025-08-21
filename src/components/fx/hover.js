@@ -2127,7 +2127,7 @@ function createSpikelines(gd, closestPoints, opts) {
             hLinePointX = xa._offset + hLinePoint.x;
             hLinePointY = ya._offset + hLinePoint.y;
         }
-        var dfltHLineColor = Color.color(hLinePoint.color).contrast(contrastColor) < 1.5
+        var dfltHLineColor = Color.color(hLinePoint.color).contrast(Color.color(contrastColor)) < 1.5
             ? Color.contrast(contrastColor)
             : hLinePoint.color;
         var yMode = ya.spikemode;
@@ -2207,7 +2207,8 @@ function createSpikelines(gd, closestPoints, opts) {
             vLinePointX = xa._offset + vLinePoint.x;
             vLinePointY = ya._offset + vLinePoint.y;
         }
-        var dfltVLineColor = Color.color(vLinePoint.color).contrast(contrastColor) < 1.5
+
+        var dfltVLineColor = Color.color(vLinePoint.color).contrast(Color.color(contrastColor)) < 1.5
             ? Color.contrast(contrastColor)
             : vLinePoint.color;
         var xMode = xa.spikemode;

@@ -26,7 +26,7 @@ const combine = (front, back = background) => {
     fc.alpha ||= 1;
     if(fc.alpha === 1) return color(front).rgb().string();
 
-    const bc = color(back).rgb().object;
+    const bc = color(back).rgb().object();
     bc.alpha ||= 1;
     const bcflat = bc.alpha === 1
         ? bc
@@ -77,6 +77,7 @@ const contrast = (cstr, lightAmount, darkAmount) => {
 
     if(c.alpha() !== 1) c = color(combine(cstr, background));
 
+    // TODO: Should the API change such that lightAmount/darkAmount are passed in as decimal instead of percent number?
     const newColor = color(
         c.isDark()
             ? (lightAmount ? c.lighten(lightAmount / 100) : background)
