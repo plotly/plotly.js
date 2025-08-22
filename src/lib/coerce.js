@@ -181,7 +181,7 @@ exports.valObjectMeta = {
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
             if(!Array.isArray(v) || !v.length) propOut.set(dflt);
-            else if(v.every(color => Color.isvalid(color))) propOut.set(v);
+            else if(v.every(color => Color.isValid(color))) propOut.set(v);
             else propOut.set(dflt);
         }
     },
@@ -450,7 +450,7 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
  * Variation on coerce
  *
  * Uses coerce to get attribute value if user input is valid,
- * returns attribute default if user input it not valid or
+ * returns attribute default if user input is not valid or
  * returns false if there is no user input.
  */
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
