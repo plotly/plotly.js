@@ -120,7 +120,7 @@
     "world-calendars": "^1.0.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.8.3",
+    "@biomejs/biome": "2.2.0",
     "@plotly/mathjax-v2": "npm:mathjax@2.7.5",
     "@plotly/mathjax-v3": "npm:mathjax@^3.2.2",
     "amdefine": "^1.0.1",
