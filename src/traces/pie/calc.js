@@ -90,7 +90,7 @@ function makePullColorFn(colorMap) {
     return function pullColor(color, id) {
         if(!color || !Color.isValid(color)) return false;
 
-        const newColor = Color.addOpacity(color, color.getAlpha());
+        const newColor = Color.addOpacity(color, Color.opacity(color));
         if(!colorMap[id]) colorMap[id] = newColor;
 
         return newColor;
