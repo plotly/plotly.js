@@ -401,7 +401,7 @@ function drawColorBar(g, opts, gd) {
                             ax.tickfont.size :
                             0
                     ) + (
-                        ax.ticks !== 'intside' ?
+                        ax.ticks !== 'inside' ?
                             opts.ticklen || 0 :
                             0
                     );
