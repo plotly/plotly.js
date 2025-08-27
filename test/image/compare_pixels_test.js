@@ -63,6 +63,10 @@ argv._.forEach(function(pattern) {
 var blacklist = [
     'map_angles',
     'map_stamen-style',
+    'map_predefined-styles2',
+    'map_scattercluster',
+    'map_fonts-supported-open-sans',
+    'map_fonts-supported-open-sans-weight',
 ];
 
 if(virtualWebgl) {

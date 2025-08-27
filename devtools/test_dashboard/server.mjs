@@ -62,22 +62,45 @@ console.log('watching esbuild...');
 await ctx.watch();
 
 function devServer() {
-    var server = http.createServer(ecstatic({
+    const staticFilesHandler = ecstatic({
         root: constants.pathToRoot,
         cache: 0,
         gzip: true,
         cors: true
-    }));
+    });
+
+    const server = http.createServer((req, res) => {
+        if(strict) {
+            res.setHeader(
+                'Content-Security-Policy',
+                // Comment/uncomment for testing CSP. Changes require a server restart.
+                [
+                    // "default-src 'self'",
+                    "script-src 'self'",
+                    "style-src 'self' 'unsafe-inline'",
+                    // "img-src 'self' data: blob:",
+                    // "font-src 'self' data:",
+                    // "connect-src 'self'",
+                    // "object-src 'none'",
+                    // "base-uri 'self';",
+                    "worker-src blob:",
+                ].join("; ")
+            )
+        }
+
+        staticFilesHandler(req, res)
+    })
 
     // Start the server up!
     server.listen(PORT);
 
+    let indexName = 'index';
+    if(mathjax3) indexName += '-mathjax3'
+    else if(mathjax3chtml) indexName += '-mathjax3chtml'
+    indexName += '.html'
+
     // open up browser window
-    open('http://localhost:' + PORT + '/devtools/test_dashboard/index' + (
-        strict ? '-strict' :
-        mathjax3 ? '-mathjax3' :
-        mathjax3chtml ? '-mathjax3chtml' : ''
-    ) + '.html');
+    open(`http://localhost:${PORT}/devtools/test_dashboard/${indexName}${strict ? '?strict=true' : ''}`);
 }
 
 function getMockFiles() {

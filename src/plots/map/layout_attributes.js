@@ -168,7 +168,7 @@ var attrs = module.exports = overrideAll({
                 'GeoJSON geometries.',
                 'With `sourcetype` set to *vector*, the following values are allowed:',
                 ' *circle*, *line*, *fill* and *symbol*.',
-                'With `sourcetype` set to *raster* or `*image*`, only the *raster* value is allowed.'
+                'With `sourcetype` set to *raster* or *image*, only the *raster* value is allowed.'
             ].join(' ')
         },
 

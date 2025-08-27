@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v3.0.1
+* plotly.js (cartesian) v3.1.0
 * Copyright 2012-2025, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38,7 +38,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.0.1";
+      exports.version = "3.1.0";
     }
   });
 
@@ -10331,6 +10331,11 @@ var Plotly = (() => {
             dflt: 15,
             editType: "none"
           },
+          showarrow: {
+            valType: "boolean",
+            dflt: true,
+            editType: "none"
+          },
           editType: "none"
         },
         selectdirection: {
@@ -10364,6 +10369,7 @@ var Plotly = (() => {
           }),
           align: extendFlat({}, hoverLabelAttrs.align, { arrayOk: true }),
           namelength: extendFlat({}, hoverLabelAttrs.namelength, { arrayOk: true }),
+          showarrow: extendFlat({}, hoverLabelAttrs.showarrow),
           editType: "none"
         }
       };
@@ -11213,8 +11219,14 @@ var Plotly = (() => {
       };
       exports.coercePattern = function(coerce, attr, markerColor, hasMarkerColorscale) {
         var shape = coerce(attr + ".shape");
-        if (shape) {
-          coerce(attr + ".solidity");
+        var path;
+        if (!shape) {
+          path = coerce(attr + ".path");
+        }
+        if (shape || path) {
+          if (shape) {
+            coerce(attr + ".solidity");
+          }
           coerce(attr + ".size");
           var fillmode = coerce(attr + ".fillmode");
           var isOverlay = fillmode === "overlay";
@@ -11457,7 +11469,8 @@ var Plotly = (() => {
         topojsonURL: {
           valType: "string",
           noBlank: true,
-          dflt: "https://cdn.plot.ly/"
+          // TODO: Switch the default back to 'https://cdn.plot.ly/' once we remove the legacy maps
+          dflt: "https://cdn.plot.ly/un/"
         },
         mapboxAccessToken: {
           valType: "string",
@@ -13078,6 +13091,11 @@ var Plotly = (() => {
           arrayOk: true,
           editType: "style"
         },
+        path: {
+          valType: "string",
+          arrayOk: true,
+          editType: "style"
+        },
         fillmode: {
           valType: "enumerated",
           values: ["replace", "overlay"],
@@ -13138,6 +13156,20 @@ var Plotly = (() => {
       var docs = require_docs();
       var FORMAT_LINK = docs.FORMAT_LINK;
       var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
+      function templateFormatStringDescription(opts) {
+        var supportOther = opts && opts.supportOther;
+        return [
+          "Variables are inserted using %{variable},",
+          'for example "y: %{y}"' + (supportOther ? " as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown." : "."),
+          `Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".`,
+          FORMAT_LINK,
+          "for details on the formatting syntax.",
+          `Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".`,
+          DATE_FORMAT_LINK,
+          "for details on the date formatting syntax."
+        ].join(" ");
+      }
+      exports.templateFormatStringDescription = templateFormatStringDescription;
       function describeVariables(extra) {
         var descPart = extra.description ? " " + extra.description : "";
         var keys = extra.keys || [];
@@ -13737,10 +13769,10 @@ var Plotly = (() => {
     }
   });
 
-  // stylePlugin:/Users/ekl/code/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
+  // stylePlugin:/home/cam/Development/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
   var maplibre_gl_exports = {};
   var init_maplibre_gl2 = __esm({
-    "stylePlugin:/Users/ekl/code/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
+    "stylePlugin:/home/cam/Development/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       init_maplibre_gl();
     }
   });
@@ -15581,6 +15613,8 @@ var Plotly = (() => {
       lib.isIOS = function() {
         return IS_IOS_REGEX.test(window.navigator.userAgent);
       };
+      var IS_MAC_WKWEBVIEW_REGEX = /Macintosh.+AppleWebKit.+Gecko\)$/;
+      lib.isMacWKWebView = () => IS_MAC_WKWEBVIEW_REGEX.test(window.navigator.userAgent);
       var FIREFOX_VERSION_REGEX = /Firefox\/(\d+)\.\d+/;
       lib.getFirefoxVersion = function() {
         var match = FIREFOX_VERSION_REGEX.exec(window.navigator.userAgent);
@@ -15990,9 +16024,12 @@ var Plotly = (() => {
         "X .ease-bg": "-webkit-transition:background-color .3s ease 0s;-moz-transition:background-color .3s ease 0s;-ms-transition:background-color .3s ease 0s;-o-transition:background-color .3s ease 0s;transition:background-color .3s ease 0s;",
         "X .modebar--hover>:not(.watermark)": "opacity:0;-webkit-transition:opacity .3s ease 0s;-moz-transition:opacity .3s ease 0s;-ms-transition:opacity .3s ease 0s;-o-transition:opacity .3s ease 0s;transition:opacity .3s ease 0s;",
         "X:hover .modebar--hover .modebar-group": "opacity:1;",
+        "X:focus-within .modebar--hover .modebar-group": "opacity:1;",
         "X .modebar-group": "float:left;display:inline-block;box-sizing:border-box;padding-left:8px;position:relative;vertical-align:middle;white-space:nowrap;",
-        "X .modebar-btn": "position:relative;font-size:16px;padding:3px 4px;height:22px;cursor:pointer;line-height:normal;box-sizing:border-box;",
-        "X .modebar-btn svg": "position:relative;top:2px;",
+        "X .modebar-group a": "display:grid;place-content:center;",
+        "X .modebar-btn": "position:relative;font-size:16px;padding:3px 4px;height:22px;cursor:pointer;line-height:normal;box-sizing:border-box;border:none;background:rgba(0,0,0,0);",
+        "X .modebar-btn svg": "position:relative;",
+        "X .modebar-btn:focus-visible": "outline:1px solid #000;outline-offset:1px;border-radius:3px;",
         "X .modebar.vertical": "display:flex;flex-direction:column;flex-wrap:wrap;align-content:flex-end;max-height:100%;",
         "X .modebar.vertical svg": "top:-1px;",
         "X .modebar.vertical .modebar-group": "display:block;float:none;padding-left:0px;padding-bottom:8px;",
@@ -16433,6 +16470,10 @@ var Plotly = (() => {
             ev.emit(event, data);
             internalEv.emit(event, data);
           };
+          if (typeof plotObj.addEventListener === "function") {
+            plotObj.addEventListener("wheel", () => {
+            });
+          }
           return plotObj;
         },
         /*
@@ -20923,6 +20964,7 @@ var Plotly = (() => {
       var dash = require_attributes4().dash;
       var extendFlat = require_extend().extendFlat;
       var templatedArray = require_plot_template().templatedArray;
+      var templateFormatStringDescription = require_template_attributes().templateFormatStringDescription;
       var descriptionWithDates = require_axis_format_attributes().descriptionWithDates;
       var ONEDAY = require_numerical().ONEDAY;
       var constants = require_constants2();
@@ -21117,6 +21159,13 @@ var Plotly = (() => {
           valType: "boolean",
           dflt: false,
           editType: "calc"
+        },
+        modebardisable: {
+          valType: "flaglist",
+          flags: ["autoscale", "zoominout"],
+          extras: ["none"],
+          dflt: "none",
+          editType: "modebar"
         },
         insiderange: {
           valType: "info_array",
@@ -21441,6 +21490,14 @@ var Plotly = (() => {
           editType: "none",
           description: descriptionWithDates("hover text")
         },
+        unifiedhovertitle: {
+          text: {
+            valType: "string",
+            dflt: "",
+            editType: "none"
+          },
+          editType: "none"
+        },
         // lines and grids
         showline: {
           valType: "boolean",
@@ -21470,6 +21527,12 @@ var Plotly = (() => {
           valType: "color",
           dflt: colorAttrs.defaultLine,
           editType: "ticks"
+        },
+        zerolinelayer: {
+          valType: "enumerated",
+          values: ["above traces", "below traces"],
+          dflt: "below traces",
+          editType: "plot"
         },
         zerolinewidth: {
           valType: "number",
@@ -21538,6 +21601,12 @@ var Plotly = (() => {
           griddash,
           showgrid,
           editType: "ticks"
+        },
+        minorloglabels: {
+          valType: "enumerated",
+          values: ["small digits", "complete", "none"],
+          dflt: "small digits",
+          editType: "calc"
         },
         layer: {
           valType: "enumerated",
@@ -22171,6 +22240,9 @@ var Plotly = (() => {
               coerce("minexponent");
               coerce("separatethousands");
             }
+          }
+          if (!options.noMinorloglabels && axType === "log") {
+            coerce("minorloglabels");
           }
         }
       };
@@ -23700,13 +23772,14 @@ var Plotly = (() => {
       function setFillStyle(sel, trace, gd, forLegend) {
         var markerPattern = trace.fillpattern;
         var fillgradient = trace.fillgradient;
-        var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, 0, "");
+        var pAttr = drawing.getPatternAttr;
+        var patternShape = markerPattern && (pAttr(markerPattern.shape, 0, "") || pAttr(markerPattern.path, 0, ""));
         if (patternShape) {
-          var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
-          var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
+          var patternBGColor = pAttr(markerPattern.bgcolor, 0, null);
+          var patternFGColor = pAttr(markerPattern.fgcolor, 0, null);
           var patternFGOpacity = markerPattern.fgopacity;
-          var patternSize = drawing.getPatternAttr(markerPattern.size, 0, 8);
-          var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, 0, 0.3);
+          var patternSize = pAttr(markerPattern.size, 0, 8);
+          var patternSolidity = pAttr(markerPattern.solidity, 0, 0.3);
           var patternID = trace.uid;
           drawing.pattern(
             sel,
@@ -24056,6 +24129,16 @@ var Plotly = (() => {
               fill: fgRGB
             };
             break;
+          default:
+            width = size;
+            height = size;
+            patternTag = "path";
+            patternAttrs = {
+              d: shape,
+              opacity,
+              fill: fgRGB
+            };
+            break;
         }
         var str = [
           shape || "noSh",
@@ -24188,7 +24271,8 @@ var Plotly = (() => {
             if (!gradientInfo[gradientType]) gradientType = 0;
           }
           var markerPattern = marker.pattern;
-          var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, d.i, "");
+          var pAttr = drawing.getPatternAttr;
+          var patternShape = markerPattern && (pAttr(markerPattern.shape, d.i, "") || pAttr(markerPattern.path, d.i, ""));
           if (gradientType && gradientType !== "none") {
             var gradientColor = d.mgc;
             if (gradientColor) perPointGradient = true;
@@ -24210,12 +24294,12 @@ var Plotly = (() => {
               fgcolor = pt.color;
               perPointPattern = true;
             }
-            var patternFGColor = drawing.getPatternAttr(fgcolor, d.i, pt && pt.color || null);
-            var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
+            var patternFGColor = pAttr(fgcolor, d.i, pt && pt.color || null);
+            var patternBGColor = pAttr(markerPattern.bgcolor, d.i, null);
             var patternFGOpacity = markerPattern.fgopacity;
-            var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
-            var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
-            perPointPattern = perPointPattern || d.mcc || Lib.isArrayOrTypedArray(markerPattern.shape) || Lib.isArrayOrTypedArray(markerPattern.bgcolor) || Lib.isArrayOrTypedArray(markerPattern.fgcolor) || Lib.isArrayOrTypedArray(markerPattern.size) || Lib.isArrayOrTypedArray(markerPattern.solidity);
+            var patternSize = pAttr(markerPattern.size, d.i, 8);
+            var patternSolidity = pAttr(markerPattern.solidity, d.i, 0.3);
+            perPointPattern = perPointPattern || d.mcc || Lib.isArrayOrTypedArray(markerPattern.shape) || Lib.isArrayOrTypedArray(markerPattern.path) || Lib.isArrayOrTypedArray(markerPattern.bgcolor) || Lib.isArrayOrTypedArray(markerPattern.fgcolor) || Lib.isArrayOrTypedArray(markerPattern.size) || Lib.isArrayOrTypedArray(markerPattern.solidity);
             var patternID = trace.uid;
             if (perPointPattern) patternID += "-" + d.i;
             drawing.pattern(
@@ -24960,7 +25044,7 @@ var Plotly = (() => {
         var editAttr;
         if (prop === "title.text") editAttr = "titleText";
         else if (prop.indexOf("axis") !== -1) editAttr = "axisTitleText";
-        else if (prop.indexOf("colorbar" !== -1)) editAttr = "colorbarTitleText";
+        else if (prop.indexOf("colorbar") !== -1) editAttr = "colorbarTitleText";
         var editable = gd._context.edits[editAttr];
         function matchesPlaceholder(text, placeholder2) {
           if (text === void 0 || placeholder2 === void 0) return false;
@@ -27702,17 +27786,25 @@ var Plotly = (() => {
         }
         if (tickformat || dtChar0 === "L") {
           out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
-        } else if (isNumeric(dtick) || dtChar0 === "D" && Lib.mod(x + 0.01, 1) < 0.1) {
-          var p = Math.round(x);
+        } else if (isNumeric(dtick) || dtChar0 === "D" && (ax.minorloglabels === "complete" || Lib.mod(x + 0.01, 1) < 0.1)) {
+          var isMinor;
+          if (ax.minorloglabels === "complete" && !(Lib.mod(x + 0.01, 1) < 0.1)) {
+            isMinor = true;
+            out.fontSize *= 0.75;
+          }
+          var exponentialString = Math.pow(10, x).toExponential(0);
+          var parts = exponentialString.split("e");
+          var p = +parts[1];
           var absP = Math.abs(p);
           var exponentFormat = ax.exponentformat;
           if (exponentFormat === "power" || isSIFormat(exponentFormat) && beyondSI(p)) {
-            if (p === 0) out.text = 1;
-            else if (p === 1) out.text = "10";
-            else out.text = "10<sup>" + (p > 1 ? "" : MINUS_SIGN) + absP + "</sup>";
+            out.text = parts[0];
+            if (absP > 0) out.text += "x10";
+            if (out.text === "1x10") out.text = "10";
+            if (p !== 0 && p !== 1) out.text += "<sup>" + (p > 0 ? "" : MINUS_SIGN) + absP + "</sup>";
             out.fontSize *= 1.25;
           } else if ((exponentFormat === "e" || exponentFormat === "E") && absP > 2) {
-            out.text = "1" + exponentFormat + (p > 0 ? "+" : MINUS_SIGN) + absP;
+            out.text = parts[0] + exponentFormat + (p > 0 ? "+" : MINUS_SIGN) + absP;
           } else {
             out.text = numFormat(Math.pow(10, x), ax, "", "fakehover");
             if (dtick === "D1" && ax._id.charAt(0) === "y") {
@@ -27720,7 +27812,10 @@ var Plotly = (() => {
             }
           }
         } else if (dtChar0 === "D") {
-          out.text = String(Math.round(Math.pow(10, Lib.mod(x, 1))));
+          out.text = ax.minorloglabels === "none" ? "" : (
+            /* ax.minorloglabels === 'small digits' */
+            String(Math.round(Math.pow(10, Lib.mod(x, 1))))
+          );
           out.fontSize *= 0.75;
         } else throw "unrecognized dtick " + String(dtick);
         if (ax.dtick === "D1") {
@@ -28029,6 +28124,7 @@ var Plotly = (() => {
               if (plotinfo.minorGridlayer) plotinfo.minorGridlayer.selectAll("path").remove();
               if (plotinfo.gridlayer) plotinfo.gridlayer.selectAll("path").remove();
               if (plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll("path").remove();
+              if (plotinfo.zerolinelayerAbove) plotinfo.zerolinelayerAbove.selectAll("path").remove();
               fullLayout._infolayer.select(".g-" + xa._id + "title").remove();
               fullLayout._infolayer.select(".g-" + ya._id + "title").remove();
             }
@@ -28081,6 +28177,7 @@ var Plotly = (() => {
         var axLetter = axId.charAt(0);
         var counterLetter = axes.counterLetter(axId);
         var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
+        var zerolineIsAbove = ax.zerolinelayer === "above traces";
         if (!mainPlotinfo) return;
         ax._shiftPusher = ax.autoshift || overlayingShiftedAx.indexOf(ax._id) !== -1 || overlayingShiftedAx.indexOf(ax.overlaying) !== -1;
         if (ax._shiftPusher & ax.anchor === "free") {
@@ -28149,7 +28246,7 @@ var Plotly = (() => {
             });
             axes.drawZeroLine(gd, ax, {
               counterAxis,
-              layer: plotinfo.zerolinelayer,
+              layer: zerolineIsAbove ? plotinfo.zerolinelayerAbove : plotinfo.zerolinelayer,
               path: gridPath,
               transFn: transTickFn
             });
@@ -28458,11 +28555,13 @@ var Plotly = (() => {
           right = -Infinity;
           ax._selections[cls].each(function() {
             var thisLabel = selectTickLabel(this);
-            var bb = Drawing.bBox(thisLabel.node().parentNode);
-            top = Math.min(top, bb.top);
-            bottom = Math.max(bottom, bb.bottom);
-            left = Math.min(left, bb.left);
-            right = Math.max(right, bb.right);
+            if (thisLabel.node().style.display !== "none") {
+              var bb = Drawing.bBox(thisLabel.node().parentNode);
+              top = Math.min(top, bb.top);
+              bottom = Math.max(bottom, bb.bottom);
+              left = Math.min(left, bb.left);
+              right = Math.max(right, bb.right);
+            }
           });
         } else {
           var dummyCalc = axes.makeLabelFns(ax, mainLinePositionShift);
@@ -28536,6 +28635,7 @@ var Plotly = (() => {
       }
       function getTickLabelUV(ax) {
         var ticklabelposition = ax.ticklabelposition || "";
+        var tickson = ax.tickson || "";
         var has = function(str) {
           return ticklabelposition.indexOf(str) !== -1;
         };
@@ -28544,7 +28644,7 @@ var Plotly = (() => {
         var isRight = has("right");
         var isBottom = has("bottom");
         var isInside = has("inside");
-        var isAligned = isBottom || isLeft || isTop || isRight;
+        var isAligned = tickson !== "boundaries" && (isBottom || isLeft || isTop || isRight);
         if (!isAligned && !isInside) return [0, 0];
         var side = ax.side;
         var u = isAligned ? (ax.tickwidth || 0) / 2 : 0;
@@ -28579,6 +28679,7 @@ var Plotly = (() => {
       };
       axes.makeLabelFns = function(ax, shift, angle) {
         var ticklabelposition = ax.ticklabelposition || "";
+        var tickson = ax.tickson || "";
         var has = function(str) {
           return ticklabelposition.indexOf(str) !== -1;
         };
@@ -28586,9 +28687,9 @@ var Plotly = (() => {
         var isLeft = has("left");
         var isRight = has("right");
         var isBottom = has("bottom");
-        var isAligned = isBottom || isLeft || isTop || isRight;
+        var isAligned = tickson !== "boundaries" && (isBottom || isLeft || isTop || isRight);
         var insideTickLabels = has("inside");
-        var labelsOverTicks = ticklabelposition === "inside" && ax.ticks === "inside" || !insideTickLabels && ax.ticks === "outside" && ax.tickson !== "boundaries";
+        var labelsOverTicks = ticklabelposition === "inside" && ax.ticks === "inside" || !insideTickLabels && ax.ticks === "outside" && tickson !== "boundaries";
         var labelStandoff = 0;
         var labelShift = 0;
         var tickLen = labelsOverTicks ? ax.ticklen : 0;
@@ -28805,6 +28906,7 @@ var Plotly = (() => {
         opts = opts || {};
         var fullLayout = gd._fullLayout;
         var axId = ax._id;
+        var zerolineIsAbove = ax.zerolinelayer === "above traces";
         var cls = opts.cls || axId + "tick";
         var vals = opts.vals.filter(function(d) {
           return d.text;
@@ -28861,7 +28963,7 @@ var Plotly = (() => {
                 transform,
                 "text-anchor": anchor
               });
-              thisText.style("opacity", 1);
+              thisText.style("display", null);
               if (ax._adjustTickLabelsOverflow) {
                 ax._adjustTickLabelsOverflow();
               }
@@ -28904,9 +29006,9 @@ var Plotly = (() => {
               }
               var t = thisLabel.select("text");
               if (adjust) {
-                if (hideOverflow) t.style("opacity", 0);
-              } else {
-                t.style("opacity", 1);
+                if (hideOverflow) t.style("display", "none");
+              } else if (t.node().style.display !== "none") {
+                t.style("display", null);
                 if (side === "bottom" || side === "right") {
                   visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
                 } else {
@@ -28950,8 +29052,10 @@ var Plotly = (() => {
                 var isPeriodLabel = e.K === "tick" && e.L === "text" && ax.ticklabelmode === "period";
                 var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
                 var sel;
-                if (e.K === ZERO_PATH.K) sel = mainPlotinfo.zerolinelayer.selectAll("." + ax._id + "zl");
-                else if (e.K === MINORGRID_PATH.K) sel = mainPlotinfo.minorGridlayer.selectAll("." + ax._id);
+                if (e.K === ZERO_PATH.K) {
+                  var zerolineLayer = zerolineIsAbove ? mainPlotinfo.zerolinelayerAbove : mainPlotinfo.zerolinelayer;
+                  sel = zerolineLayer.selectAll("." + ax._id + "zl");
+                } else if (e.K === MINORGRID_PATH.K) sel = mainPlotinfo.minorGridlayer.selectAll("." + ax._id);
                 else if (e.K === GRID_PATH.K) sel = mainPlotinfo.gridlayer.selectAll("." + ax._id);
                 else sel = mainPlotinfo[ax._id.charAt(0) + "axislayer"];
                 sel.each(function() {
@@ -28964,7 +29068,7 @@ var Plotly = (() => {
                     var t = d3.select(this);
                     if (q < ax["_visibleLabelMax_" + anchorAx2._id] && q > ax["_visibleLabelMin_" + anchorAx2._id]) {
                       t.style("display", "none");
-                    } else if (e.K === "tick" && !idx) {
+                    } else if (e.K === "tick" && !idx && t.node().style.display !== "none") {
                       t.style("display", null);
                     }
                   });
@@ -29042,6 +29146,7 @@ var Plotly = (() => {
               }
             } else {
               var ticklabelposition = ax.ticklabelposition || "";
+              var tickson = ax.tickson || "";
               var has = function(str) {
                 return ticklabelposition.indexOf(str) !== -1;
               };
@@ -29049,7 +29154,7 @@ var Plotly = (() => {
               var isLeft = has("left");
               var isRight = has("right");
               var isBottom = has("bottom");
-              var isAligned = isBottom || isLeft || isTop || isRight;
+              var isAligned = tickson !== "boundaries" && (isBottom || isLeft || isTop || isRight);
               var pad = !isAligned ? 0 : (ax.tickwidth || 0) + 2 * TEXTPAD;
               for (i = 0; i < lbbArray.length - 1; i++) {
                 if (Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
@@ -29969,6 +30074,11 @@ var Plotly = (() => {
           dflt: colorAttrs.defaultLine,
           editType: "legend"
         },
+        maxheight: {
+          valType: "number",
+          min: 0,
+          editType: "legend"
+        },
         borderwidth: {
           valType: "number",
           min: 0,
@@ -30265,6 +30375,7 @@ var Plotly = (() => {
         coerce("groupclick");
         coerce("xanchor", defaultXAnchor);
         coerce("yanchor", defaultYAnchor);
+        coerce("maxheight");
         coerce("valign");
         Lib.noneOrAll(containerIn, containerOut, ["x", "y"]);
         var titleText = coerce("title.text");
@@ -31015,10 +31126,11 @@ var Plotly = (() => {
             }
             var fillColor = mcc || d0.mc || marker.color;
             var markerPattern = marker.pattern;
-            var patternShape = markerPattern && Drawing.getPatternAttr(markerPattern.shape, 0, "");
+            var pAttr = Drawing.getPatternAttr;
+            var patternShape = markerPattern && (pAttr(markerPattern.shape, 0, "") || pAttr(markerPattern.path, 0, ""));
             if (patternShape) {
-              var patternBGColor = Drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
-              var patternFGColor = Drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
+              var patternBGColor = pAttr(markerPattern.bgcolor, 0, null);
+              var patternFGColor = pAttr(markerPattern.fgcolor, 0, null);
               var patternFGOpacity = markerPattern.fgopacity;
               var patternSize = dimAttr(markerPattern.size, 8, 10);
               var patternSolidity = dimAttr(markerPattern.solidity, 0.5, 1);
@@ -31884,10 +31996,12 @@ var Plotly = (() => {
         var isAbovePlotArea = legendObj.y > 1 || legendObj.y === 1 && yanchor === "bottom";
         var traceGroupGap = legendObj.tracegroupgap;
         var legendGroupWidths = {};
-        legendObj._maxHeight = Math.max(
-          isBelowPlotArea || isAbovePlotArea ? fullLayout.height / 2 : gs.h,
-          30
-        );
+        const { orientation, yref } = legendObj;
+        let { maxheight } = legendObj;
+        const useFullLayoutHeight = isBelowPlotArea || isAbovePlotArea || orientation !== "v" || yref !== "paper";
+        maxheight || (maxheight = useFullLayoutHeight ? 0.5 : 1);
+        const heightToBeScaled = useFullLayoutHeight ? fullLayout.height : gs.h;
+        legendObj._maxHeight = Math.max(maxheight > 1 ? maxheight : maxheight * heightToBeScaled, 30);
         var toggleRectWidth = 0;
         legendObj._width = 0;
         legendObj._height = 0;
@@ -32929,10 +33043,18 @@ var Plotly = (() => {
           if (groupedHoverData.length === 0) return [];
           var hoverlabel = fullLayout.hoverlabel;
           var font = hoverlabel.font;
+          var item0 = groupedHoverData[0];
+          var unifiedhovertitleText = ((hovermode === "x unified" ? item0.xa : item0.ya).unifiedhovertitle || {}).text;
+          var mainText = !unifiedhovertitleText ? t0 : Lib.hovertemplateString(
+            unifiedhovertitleText,
+            {},
+            fullLayout._d3locale,
+            hovermode === "x unified" ? { xa: item0.xa, x: item0.xVal } : { ya: item0.ya, y: item0.yVal }
+          );
           var mockLayoutIn = {
             showlegend: true,
             legend: {
-              title: { text: t0, font },
+              title: { text: mainText, font },
               font,
               bgcolor: hoverlabel.bgcolor,
               bordercolor: hoverlabel.bordercolor,
@@ -33464,13 +33586,16 @@ var Plotly = (() => {
           var offsetX = offsets.x;
           var offsetY = offsets.y;
           var isMiddle = anchor === "middle";
-          g.select("path").attr("d", isMiddle ? (
-            // middle aligned: rect centered on data
-            "M-" + pX(d.bx / 2 + d.tx2width / 2) + "," + pY(offsetY - d.by / 2) + "h" + pX(d.bx) + "v" + pY(d.by) + "h-" + pX(d.bx) + "Z"
-          ) : (
-            // left or right aligned: side rect with arrow to data
-            "M0,0L" + pX(horzSign * HOVERARROWSIZE + offsetX) + "," + pY(HOVERARROWSIZE + offsetY) + "v" + pY(d.by / 2 - HOVERARROWSIZE) + "h" + pX(horzSign * d.bx) + "v-" + pY(d.by) + "H" + pX(horzSign * HOVERARROWSIZE + offsetX) + "V" + pY(offsetY - HOVERARROWSIZE) + "Z"
-          ));
+          var showArrow = "hoverlabel" in d.trace ? d.trace.hoverlabel.showarrow : true;
+          var pathStr;
+          if (isMiddle) {
+            pathStr = "M-" + pX(d.bx / 2 + d.tx2width / 2) + "," + pY(offsetY - d.by / 2) + "h" + pX(d.bx) + "v" + pY(d.by) + "h-" + pX(d.bx) + "Z";
+          } else if (showArrow) {
+            pathStr = "M0,0L" + pX(horzSign * HOVERARROWSIZE + offsetX) + "," + pY(HOVERARROWSIZE + offsetY) + "v" + pY(d.by / 2 - HOVERARROWSIZE) + "h" + pX(horzSign * d.bx) + "v-" + pY(d.by) + "H" + pX(horzSign * HOVERARROWSIZE + offsetX) + "V" + pY(offsetY - HOVERARROWSIZE) + "Z";
+          } else {
+            pathStr = "M" + pX(horzSign * HOVERARROWSIZE + offsetX) + "," + pY(offsetY - d.by / 2) + "h" + pX(horzSign * d.bx) + "v" + pY(d.by) + "h" + pX(-horzSign * d.bx) + "Z";
+          }
+          g.select("path").attr("d", pathStr);
           var posX = offsetX + shiftX.textShiftX;
           var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD;
           var textAlign = d.textAlign || "auto";
@@ -33709,7 +33834,7 @@ var Plotly = (() => {
         for (var i = oldhoverdata.length - 1; i >= 0; i--) {
           var oldPt = oldhoverdata[i];
           var newPt = gd._hoverdata[i];
-          if (oldPt.curveNumber !== newPt.curveNumber || String(oldPt.pointNumber) !== String(newPt.pointNumber) || String(oldPt.pointNumbers) !== String(newPt.pointNumbers)) {
+          if (oldPt.curveNumber !== newPt.curveNumber || String(oldPt.pointNumber) !== String(newPt.pointNumber) || String(oldPt.pointNumbers) !== String(newPt.pointNumbers) || oldPt.binNumber !== newPt.binNumber) {
             return true;
           }
         }
@@ -33838,6 +33963,7 @@ var Plotly = (() => {
         coerce("hoverlabel.bgcolor", opts.bgcolor);
         coerce("hoverlabel.bordercolor", opts.bordercolor);
         coerce("hoverlabel.namelength", opts.namelength);
+        coerce("hoverlabel.showarrow", opts.showarrow);
         Lib.coerceFont(coerce, "hoverlabel.font", opts.font);
         coerce("hoverlabel.align", opts.align);
       };
@@ -33960,6 +34086,7 @@ var Plotly = (() => {
           fillFn(trace.hoverlabel.font.variant, cd, "htv");
           fillFn(trace.hoverlabel.namelength, cd, "hnl");
           fillFn(trace.hoverlabel.align, cd, "hta");
+          fillFn(trace.hoverlabel.showarrow, cd, "htsa");
         }
       };
       function paste(traceAttr, cd, cdAttr, fn) {
@@ -34630,6 +34757,7 @@ var Plotly = (() => {
   var require_newshapes = __commonJS({
     "src/components/shapes/draw_newshape/newshapes.js"(exports, module) {
       "use strict";
+      var axis_ids = require_axis_ids();
       var dragHelpers = require_helpers5();
       var drawMode = dragHelpers.drawMode;
       var openMode = dragHelpers.openMode;
@@ -34696,10 +34824,22 @@ var Plotly = (() => {
               case "line":
               case "rect":
               case "circle":
-                modifyItem("x0", afterEdit.x0 - (beforeEdit.x0shift || 0));
-                modifyItem("x1", afterEdit.x1 - (beforeEdit.x1shift || 0));
-                modifyItem("y0", afterEdit.y0 - (beforeEdit.y0shift || 0));
-                modifyItem("y1", afterEdit.y1 - (beforeEdit.y1shift || 0));
+                var xaxis = axis_ids.getFromId(gd, beforeEdit.xref);
+                if (beforeEdit.xref.charAt(0) === "x" && xaxis.type.includes("category")) {
+                  modifyItem("x0", afterEdit.x0 - (beforeEdit.x0shift || 0));
+                  modifyItem("x1", afterEdit.x1 - (beforeEdit.x1shift || 0));
+                } else {
+                  modifyItem("x0", afterEdit.x0);
+                  modifyItem("x1", afterEdit.x1);
+                }
+                var yaxis = axis_ids.getFromId(gd, beforeEdit.yref);
+                if (beforeEdit.yref.charAt(0) === "y" && yaxis.type.includes("category")) {
+                  modifyItem("y0", afterEdit.y0 - (beforeEdit.y0shift || 0));
+                  modifyItem("y1", afterEdit.y1 - (beforeEdit.y1shift || 0));
+                } else {
+                  modifyItem("y0", afterEdit.y0);
+                  modifyItem("y1", afterEdit.y1);
+                }
                 break;
               case "path":
                 modifyItem("path", afterEdit.path);
@@ -36288,7 +36428,7 @@ var Plotly = (() => {
         title: function(gd) {
           var opts = gd._context.toImageButtonOptions || {};
           var format = opts.format || "png";
-          return format === "png" ? _(gd, "Download plot as a png") : (
+          return format === "png" ? _(gd, "Download plot as a PNG") : (
             // legacy text
             _(gd, "Download plot")
           );
@@ -36515,10 +36655,13 @@ var Plotly = (() => {
           var mag = val === "in" ? 0.5 : 2;
           var r0 = (1 + mag) / 2;
           var r1 = (1 - mag) / 2;
-          var axName;
+          var axName, allowed;
           for (i = 0; i < axList.length; i++) {
             ax = axList[i];
-            if (!ax.fixedrange) {
+            allowed = ax.modebardisable === "none" || ax.modebardisable.indexOf(
+              val === "auto" || val === "reset" ? "autoscale" : "zoominout"
+            ) === -1;
+            if (allowed && !ax.fixedrange) {
               axName = ax._name;
               if (val === "auto") {
                 aobj[axName + ".autorange"] = true;
@@ -37134,8 +37277,9 @@ var Plotly = (() => {
         var fullLayout = this.graphInfo._fullLayout;
         var modeBarId = "modebar-" + fullLayout._uid;
         this.element.setAttribute("id", modeBarId);
+        this.element.setAttribute("role", "toolbar");
         this._uid = modeBarId;
-        this.element.className = "modebar";
+        this.element.className = "modebar modebar--custom";
         if (context.displayModeBar === "hover") this.element.className += " modebar--hover ease-bg";
         if (fullLayout.modebar.orientation === "v") {
           this.element.className += " vertical";
@@ -37201,13 +37345,18 @@ var Plotly = (() => {
       };
       proto.createButton = function(config) {
         var _this = this;
-        var button = document.createElement("a");
+        var button = document.createElement("button");
+        button.setAttribute("type", "button");
         button.setAttribute("rel", "tooltip");
         button.className = "modebar-btn";
         var title = config.title;
         if (title === void 0) title = config.name;
         else if (typeof title === "function") title = title(this.graphInfo);
-        if (title || title === 0) button.setAttribute("data-title", title);
+        if (title || title === 0) {
+          button.setAttribute("data-title", title);
+          button.setAttribute("aria-label", title);
+        }
+        ;
         if (config.attr !== void 0) button.setAttribute("data-attr", config.attr);
         var val = config.val;
         if (val !== void 0) {
@@ -37562,7 +37711,8 @@ var Plotly = (() => {
       function areAllAxesFixed(fullLayout) {
         var axList = axisIds.list({ _fullLayout: fullLayout }, null, true);
         for (var i = 0; i < axList.length; i++) {
-          if (!axList[i].fixedrange) {
+          var disabled = axList[i].modebardisable;
+          if (!axList[i].fixedrange && disabled !== "autoscale+zoominout" && disabled !== "zoominout+autoscale") {
             return false;
           }
         }
@@ -47030,7 +47180,7 @@ var Plotly = (() => {
             list.push(format("unused", base, p, valIn));
           } else if (!Lib.validate(valIn, nestedSchema)) {
             list.push(format("value", base, p, valIn));
-          } else if (nestedSchema.valType === "enumerated" && (nestedSchema.coerceNumber && valIn !== +valOut || valIn !== valOut)) {
+          } else if (nestedSchema.valType === "enumerated" && (nestedSchema.coerceNumber && valIn !== +valOut || !isArrayOrTypedArray(valIn) && valIn !== valOut || String(valIn) !== String(valOut))) {
             list.push(format("dynamic", base, p, valIn, valOut));
           }
         }
@@ -50730,10 +50880,12 @@ var Plotly = (() => {
           }
         }
         if (!opts.noZeroLine) {
+          var zeroLineLayer = coerce2("zerolinelayer");
           var zeroLineColor = coerce2("zerolinecolor", dfltColor);
           var zeroLineWidth = coerce2("zerolinewidth");
           var showZeroLine = coerce("zeroline", opts.showGrid || !!zeroLineColor || !!zeroLineWidth);
           if (!showZeroLine) {
+            delete containerOut.zerolinelayer;
             delete containerOut.zerolinecolor;
             delete containerOut.zerolinewidth;
           }
@@ -50813,7 +50965,12 @@ var Plotly = (() => {
         setConvert(containerOut, layoutOut);
         handleRangeDefaults(containerIn, containerOut, coerce, options);
         handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
-        if (axType !== "category" && !options.noHover) coerce("hoverformat");
+        if (!options.noHover) {
+          if (axType !== "category") coerce("hoverformat");
+          if (!options.noUnifiedhovertitle) {
+            coerce("unifiedhovertitle.text");
+          }
+        }
         var dfltColor = coerce("color");
         var dfltFontColor = dfltColor !== layoutAttributes.color.dflt ? dfltColor : font.color;
         var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
@@ -50851,11 +51008,11 @@ var Plotly = (() => {
         if (containerOut.showline || containerOut.ticks) coerce("mirror");
         var isMultiCategory = axType === "multicategory";
         if (!options.noTickson && (axType === "category" || isMultiCategory) && (containerOut.ticks || containerOut.showgrid)) {
-          var ticksonDflt;
-          if (isMultiCategory) ticksonDflt = "boundaries";
-          var tickson = coerce("tickson", ticksonDflt);
-          if (tickson === "boundaries") {
+          if (isMultiCategory) {
+            coerce("tickson", "boundaries");
             delete containerOut.ticklabelposition;
+          } else {
+            coerce("tickson");
           }
         }
         if (isMultiCategory) {
@@ -51324,6 +51481,7 @@ var Plotly = (() => {
             grid: layoutOut.grid
           });
           coerce("fixedrange");
+          coerce("modebardisable");
           addMissingMatchedAxis();
           axLayoutOut._input = axLayoutIn;
         }
@@ -51344,6 +51502,7 @@ var Plotly = (() => {
             );
           }
           coerce("fixedrange");
+          coerce("modebardisable");
         }
         for (i = 0; i < yNames.length; i++) {
           axName = yNames[i];
@@ -51352,6 +51511,7 @@ var Plotly = (() => {
           var anchoredAxis = layoutOut[id2name(axLayoutOut.anchor)];
           var fixedRangeDflt = getComponentMethod("rangeslider", "isVisible")(anchoredAxis);
           coerce("fixedrange", fixedRangeDflt);
+          coerce("modebardisable");
         }
         constraints.handleDefaults(layoutIn, layoutOut, {
           axIds: allAxisIds.concat(missingMatchedAxisIds).sort(axisIds.idSort),
@@ -51926,6 +52086,11 @@ var Plotly = (() => {
             }
             plotinfo.overplot = ensureSingle(plotgroup, "g", "overplot");
             plotinfo.plot = ensureSingle(plotinfo.overplot, "g", id);
+            if (mainplotinfo && hasMultipleZ) {
+              plotinfo.zerolinelayerAbove = mainplotinfo.zerolinelayerAbove;
+            } else {
+              plotinfo.zerolinelayerAbove = ensureSingle(plotgroup, "g", "zerolinelayer-above");
+            }
             if (!hasZ) {
               plotinfo.xlines = ensureSingle(plotgroup, "path", "xlines-above");
               plotinfo.ylines = ensureSingle(plotgroup, "path", "ylines-above");
@@ -51946,6 +52111,7 @@ var Plotly = (() => {
           plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
           plotinfo.gridlayer = mainplotinfo.gridlayer;
           plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+          plotinfo.zerolinelayerAbove = mainplotinfo.zerolinelayerAbove;
           ensureSingle(mainplotinfo.overlinesBelow, "path", xId);
           ensureSingle(mainplotinfo.overlinesBelow, "path", yId);
           ensureSingle(mainplotinfo.overaxesBelow, "g", xId);
@@ -64220,7 +64386,7 @@ var Plotly = (() => {
           return _supportsPixelated;
         }
         _supportsPixelated = false;
-        var unsupportedBrowser = Lib.isSafari() || Lib.isIOS();
+        var unsupportedBrowser = Lib.isSafari() || Lib.isMacWKWebView() || Lib.isIOS();
         if (window.navigator.userAgent && !unsupportedBrowser) {
           var declarations = Array.from(constants.CSS_DECLARATIONS).reverse();
           var supports = window.CSS && window.CSS.supports || window.supportsCSS;
@@ -71632,7 +71798,7 @@ var Plotly = (() => {
         }
         var symVal = 42;
         obj[sym] = symVal;
-        for (sym in obj) {
+        for (var _ in obj) {
           return false;
         }
         if (typeof Object.keys === "function" && Object.keys(obj).length !== 0) {
@@ -71649,7 +71815,10 @@ var Plotly = (() => {
           return false;
         }
         if (typeof Object.getOwnPropertyDescriptor === "function") {
-          var descriptor = Object.getOwnPropertyDescriptor(obj, sym);
+          var descriptor = (
+            /** @type {PropertyDescriptor} */
+            Object.getOwnPropertyDescriptor(obj, sym)
+          );
           if (descriptor.value !== symVal || descriptor.enumerable !== true) {
             return false;
           }
@@ -71667,6 +71836,14 @@ var Plotly = (() => {
       module.exports = function hasToStringTagShams() {
         return hasSymbols() && !!Symbol.toStringTag;
       };
+    }
+  });
+
+  // node_modules/es-object-atoms/index.js
+  var require_es_object_atoms = __commonJS({
+    "node_modules/es-object-atoms/index.js"(exports, module) {
+      "use strict";
+      module.exports = Object;
     }
   });
 
@@ -71726,6 +71903,118 @@ var Plotly = (() => {
     }
   });
 
+  // node_modules/math-intrinsics/abs.js
+  var require_abs = __commonJS({
+    "node_modules/math-intrinsics/abs.js"(exports, module) {
+      "use strict";
+      module.exports = Math.abs;
+    }
+  });
+
+  // node_modules/math-intrinsics/floor.js
+  var require_floor = __commonJS({
+    "node_modules/math-intrinsics/floor.js"(exports, module) {
+      "use strict";
+      module.exports = Math.floor;
+    }
+  });
+
+  // node_modules/math-intrinsics/max.js
+  var require_max = __commonJS({
+    "node_modules/math-intrinsics/max.js"(exports, module) {
+      "use strict";
+      module.exports = Math.max;
+    }
+  });
+
+  // node_modules/math-intrinsics/min.js
+  var require_min = __commonJS({
+    "node_modules/math-intrinsics/min.js"(exports, module) {
+      "use strict";
+      module.exports = Math.min;
+    }
+  });
+
+  // node_modules/math-intrinsics/pow.js
+  var require_pow = __commonJS({
+    "node_modules/math-intrinsics/pow.js"(exports, module) {
+      "use strict";
+      module.exports = Math.pow;
+    }
+  });
+
+  // node_modules/math-intrinsics/round.js
+  var require_round = __commonJS({
+    "node_modules/math-intrinsics/round.js"(exports, module) {
+      "use strict";
+      module.exports = Math.round;
+    }
+  });
+
+  // node_modules/math-intrinsics/isNaN.js
+  var require_isNaN = __commonJS({
+    "node_modules/math-intrinsics/isNaN.js"(exports, module) {
+      "use strict";
+      module.exports = Number.isNaN || function isNaN2(a) {
+        return a !== a;
+      };
+    }
+  });
+
+  // node_modules/math-intrinsics/sign.js
+  var require_sign = __commonJS({
+    "node_modules/math-intrinsics/sign.js"(exports, module) {
+      "use strict";
+      var $isNaN = require_isNaN();
+      module.exports = function sign(number) {
+        if ($isNaN(number) || number === 0) {
+          return number;
+        }
+        return number < 0 ? -1 : 1;
+      };
+    }
+  });
+
+  // node_modules/gopd/gOPD.js
+  var require_gOPD = __commonJS({
+    "node_modules/gopd/gOPD.js"(exports, module) {
+      "use strict";
+      module.exports = Object.getOwnPropertyDescriptor;
+    }
+  });
+
+  // node_modules/gopd/index.js
+  var require_gopd = __commonJS({
+    "node_modules/gopd/index.js"(exports, module) {
+      "use strict";
+      var $gOPD = require_gOPD();
+      if ($gOPD) {
+        try {
+          $gOPD([], "length");
+        } catch (e) {
+          $gOPD = null;
+        }
+      }
+      module.exports = $gOPD;
+    }
+  });
+
+  // node_modules/es-define-property/index.js
+  var require_es_define_property = __commonJS({
+    "node_modules/es-define-property/index.js"(exports, module) {
+      "use strict";
+      var $defineProperty = Object.defineProperty || false;
+      if ($defineProperty) {
+        try {
+          $defineProperty({}, "a", { value: 1 });
+        } catch (e) {
+          $defineProperty = false;
+        }
+      }
+      module.exports = $defineProperty;
+    }
+  });
+
   // node_modules/has-symbols/index.js
   var require_has_symbols = __commonJS({
     "node_modules/has-symbols/index.js"(exports, module) {
@@ -71750,17 +72039,20 @@ var Plotly = (() => {
     }
   });
 
-  // node_modules/has-proto/index.js
-  var require_has_proto = __commonJS({
-    "node_modules/has-proto/index.js"(exports, module) {
+  // node_modules/get-proto/Reflect.getPrototypeOf.js
+  var require_Reflect_getPrototypeOf = __commonJS({
+    "node_modules/get-proto/Reflect.getPrototypeOf.js"(exports, module) {
       "use strict";
-      var test = {
-        foo: {}
-      };
-      var $Object = Object;
-      module.exports = function hasProto() {
-        return { __proto__: test }.foo === test.foo && !({ __proto__: null } instanceof $Object);
-      };
+      module.exports = typeof Reflect !== "undefined" && Reflect.getPrototypeOf || null;
+    }
+  });
+
+  // node_modules/get-proto/Object.getPrototypeOf.js
+  var require_Object_getPrototypeOf = __commonJS({
+    "node_modules/get-proto/Object.getPrototypeOf.js"(exports, module) {
+      "use strict";
+      var $Object = require_es_object_atoms();
+      module.exports = $Object.getPrototypeOf || null;
     }
   });
 
@@ -71849,6 +72141,110 @@ var Plotly = (() => {
     }
   });
 
+  // node_modules/call-bind-apply-helpers/functionCall.js
+  var require_functionCall = __commonJS({
+    "node_modules/call-bind-apply-helpers/functionCall.js"(exports, module) {
+      "use strict";
+      module.exports = Function.prototype.call;
+    }
+  });
+
+  // node_modules/call-bind-apply-helpers/functionApply.js
+  var require_functionApply = __commonJS({
+    "node_modules/call-bind-apply-helpers/functionApply.js"(exports, module) {
+      "use strict";
+      module.exports = Function.prototype.apply;
+    }
+  });
+
+  // node_modules/call-bind-apply-helpers/reflectApply.js
+  var require_reflectApply = __commonJS({
+    "node_modules/call-bind-apply-helpers/reflectApply.js"(exports, module) {
+      "use strict";
+      module.exports = typeof Reflect !== "undefined" && Reflect && Reflect.apply;
+    }
+  });
+
+  // node_modules/call-bind-apply-helpers/actualApply.js
+  var require_actualApply = __commonJS({
+    "node_modules/call-bind-apply-helpers/actualApply.js"(exports, module) {
+      "use strict";
+      var bind = require_function_bind();
+      var $apply = require_functionApply();
+      var $call = require_functionCall();
+      var $reflectApply = require_reflectApply();
+      module.exports = $reflectApply || bind.call($call, $apply);
+    }
+  });
+
+  // node_modules/call-bind-apply-helpers/index.js
+  var require_call_bind_apply_helpers = __commonJS({
+    "node_modules/call-bind-apply-helpers/index.js"(exports, module) {
+      "use strict";
+      var bind = require_function_bind();
+      var $TypeError = require_type();
+      var $call = require_functionCall();
+      var $actualApply = require_actualApply();
+      module.exports = function callBindBasic(args) {
+        if (args.length < 1 || typeof args[0] !== "function") {
+          throw new $TypeError("a function is required");
+        }
+        return $actualApply(bind, $call, args);
+      };
+    }
+  });
+
+  // node_modules/dunder-proto/get.js
+  var require_get = __commonJS({
+    "node_modules/dunder-proto/get.js"(exports, module) {
+      "use strict";
+      var callBind = require_call_bind_apply_helpers();
+      var gOPD = require_gopd();
+      var hasProtoAccessor;
+      try {
+        hasProtoAccessor = /** @type {{ __proto__?: typeof Array.prototype }} */
+        [].__proto__ === Array.prototype;
+      } catch (e) {
+        if (!e || typeof e !== "object" || !("code" in e) || e.code !== "ERR_PROTO_ACCESS") {
+          throw e;
+        }
+      }
+      var desc = !!hasProtoAccessor && gOPD && gOPD(
+        Object.prototype,
+        /** @type {keyof typeof Object.prototype} */
+        "__proto__"
+      );
+      var $Object = Object;
+      var $getPrototypeOf = $Object.getPrototypeOf;
+      module.exports = desc && typeof desc.get === "function" ? callBind([desc.get]) : typeof $getPrototypeOf === "function" ? (
+        /** @type {import('./get')} */
+        function getDunder(value) {
+          return $getPrototypeOf(value == null ? value : $Object(value));
+        }
+      ) : false;
+    }
+  });
+
+  // node_modules/get-proto/index.js
+  var require_get_proto = __commonJS({
+    "node_modules/get-proto/index.js"(exports, module) {
+      "use strict";
+      var reflectGetProto = require_Reflect_getPrototypeOf();
+      var originalGetProto = require_Object_getPrototypeOf();
+      var getDunderProto = require_get();
+      module.exports = reflectGetProto ? function getProto(O) {
+        return reflectGetProto(O);
+      } : originalGetProto ? function getProto(O) {
+        if (!O || typeof O !== "object" && typeof O !== "function") {
+          throw new TypeError("getProto: not an object");
+        }
+        return originalGetProto(O);
+      } : getDunderProto ? function getProto(O) {
+        return getDunderProto(O);
+      } : null;
+    }
+  });
+
   // node_modules/hasown/index.js
   var require_hasown = __commonJS({
     "node_modules/hasown/index.js"(exports, module) {
@@ -71865,6 +72261,7 @@ var Plotly = (() => {
     "node_modules/get-intrinsic/index.js"(exports, module) {
       "use strict";
       var undefined2;
+      var $Object = require_es_object_atoms();
       var $Error = require_es_errors();
       var $EvalError = require_eval();
       var $RangeError = require_range();
@@ -71872,6 +72269,13 @@ var Plotly = (() => {
       var $SyntaxError = require_syntax();
       var $TypeError = require_type();
       var $URIError = require_uri();
+      var abs = require_abs();
+      var floor = require_floor();
+      var max = require_max();
+      var min = require_min();
+      var pow = require_pow();
+      var round = require_round();
+      var sign = require_sign();
       var $Function = Function;
       var getEvalledConstructor = function(expressionSyntax) {
         try {
@@ -71879,14 +72283,8 @@ var Plotly = (() => {
         } catch (e) {
         }
       };
-      var $gOPD = Object.getOwnPropertyDescriptor;
-      if ($gOPD) {
-        try {
-          $gOPD({}, "");
-        } catch (e) {
-          $gOPD = null;
-        }
-      }
+      var $gOPD = require_gopd();
+      var $defineProperty = require_es_define_property();
       var throwTypeError = function() {
         throw new $TypeError();
       };
@@ -71903,10 +72301,11 @@ var Plotly = (() => {
         }
       }() : throwTypeError;
       var hasSymbols = require_has_symbols()();
-      var hasProto = require_has_proto()();
-      var getProto = Object.getPrototypeOf || (hasProto ? function(x) {
-        return x.__proto__;
-      } : null);
+      var getProto = require_get_proto();
+      var $ObjectGPO = require_Object_getPrototypeOf();
+      var $ReflectGPO = require_Reflect_getPrototypeOf();
+      var $apply = require_functionApply();
+      var $call = require_functionCall();
       var needsEval = {};
       var TypedArray = typeof Uint8Array === "undefined" || !getProto ? undefined2 : getProto(Uint8Array);
       var INTRINSICS = {
@@ -71935,6 +72334,7 @@ var Plotly = (() => {
         "%eval%": eval,
         // eslint-disable-line no-eval
         "%EvalError%": $EvalError,
+        "%Float16Array%": typeof Float16Array === "undefined" ? undefined2 : Float16Array,
         "%Float32Array%": typeof Float32Array === "undefined" ? undefined2 : Float32Array,
         "%Float64Array%": typeof Float64Array === "undefined" ? undefined2 : Float64Array,
         "%FinalizationRegistry%": typeof FinalizationRegistry === "undefined" ? undefined2 : FinalizationRegistry,
@@ -71951,7 +72351,8 @@ var Plotly = (() => {
         "%MapIteratorPrototype%": typeof Map === "undefined" || !hasSymbols || !getProto ? undefined2 : getProto((/* @__PURE__ */ new Map())[Symbol.iterator]()),
         "%Math%": Math,
         "%Number%": Number,
-        "%Object%": Object,
+        "%Object%": $Object,
+        "%Object.getOwnPropertyDescriptor%": $gOPD,
         "%parseFloat%": parseFloat,
         "%parseInt%": parseInt,
         "%Promise%": typeof Promise === "undefined" ? undefined2 : Promise,
@@ -71977,7 +72378,19 @@ var Plotly = (() => {
         "%URIError%": $URIError,
         "%WeakMap%": typeof WeakMap === "undefined" ? undefined2 : WeakMap,
         "%WeakRef%": typeof WeakRef === "undefined" ? undefined2 : WeakRef,
-        "%WeakSet%": typeof WeakSet === "undefined" ? undefined2 : WeakSet
+        "%WeakSet%": typeof WeakSet === "undefined" ? undefined2 : WeakSet,
+        "%Function.prototype.call%": $call,
+        "%Function.prototype.apply%": $apply,
+        "%Object.defineProperty%": $defineProperty,
+        "%Object.getPrototypeOf%": $ObjectGPO,
+        "%Math.abs%": abs,
+        "%Math.floor%": floor,
+        "%Math.max%": max,
+        "%Math.min%": min,
+        "%Math.pow%": pow,
+        "%Math.round%": round,
+        "%Math.sign%": sign,
+        "%Reflect.getPrototypeOf%": $ReflectGPO
       };
       if (getProto) {
         try {
@@ -72066,11 +72479,11 @@ var Plotly = (() => {
       };
       var bind = require_function_bind();
       var hasOwn = require_hasown();
-      var $concat = bind.call(Function.call, Array.prototype.concat);
-      var $spliceApply = bind.call(Function.apply, Array.prototype.splice);
-      var $replace = bind.call(Function.call, String.prototype.replace);
-      var $strSlice = bind.call(Function.call, String.prototype.slice);
-      var $exec = bind.call(Function.call, RegExp.prototype.exec);
+      var $concat = bind.call($call, Array.prototype.concat);
+      var $spliceApply = bind.call($apply, Array.prototype.splice);
+      var $replace = bind.call($call, String.prototype.replace);
+      var $strSlice = bind.call($call, String.prototype.slice);
+      var $exec = bind.call($call, RegExp.prototype.exec);
       var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
       var reEscapeChar = /\\(\\)?/g;
       var stringToPath = function stringToPath2(string) {
@@ -72150,7 +72563,7 @@ var Plotly = (() => {
               if (!allowMissing) {
                 throw new $TypeError("base intrinsic for " + name + " exists, but the property is not available.");
               }
-              return void 0;
+              return void undefined2;
             }
             if ($gOPD && i + 1 >= parts.length) {
               var desc = $gOPD(value, part);
@@ -72171,40 +72584,6 @@ var Plotly = (() => {
         }
         return value;
       };
-    }
-  });
-
-  // node_modules/es-define-property/index.js
-  var require_es_define_property = __commonJS({
-    "node_modules/es-define-property/index.js"(exports, module) {
-      "use strict";
-      var GetIntrinsic = require_get_intrinsic();
-      var $defineProperty = GetIntrinsic("%Object.defineProperty%", true) || false;
-      if ($defineProperty) {
-        try {
-          $defineProperty({}, "a", { value: 1 });
-        } catch (e) {
-          $defineProperty = false;
-        }
-      }
-      module.exports = $defineProperty;
-    }
-  });
-
-  // node_modules/gopd/index.js
-  var require_gopd = __commonJS({
-    "node_modules/gopd/index.js"(exports, module) {
-      "use strict";
-      var GetIntrinsic = require_get_intrinsic();
-      var $gOPD = GetIntrinsic("%Object.getOwnPropertyDescriptor%", true);
-      if ($gOPD) {
-        try {
-          $gOPD([], "length");
-        } catch (e) {
-          $gOPD = null;
-        }
-      }
-      module.exports = $gOPD;
     }
   });
 
@@ -86845,6 +87224,16 @@ var Plotly = (() => {
       function PersianCalendar(language) {
         this.local = this.regionalOptions[language || ""] || this.regionalOptions[""];
       }
+      function _leapYear(year) {
+        var x = year - 475;
+        if (year < 0) x++;
+        var c = 0.242197;
+        var v0 = c * x;
+        var v1 = c * (x + 1);
+        var r0 = v0 - Math.floor(v0);
+        var r1 = v1 - Math.floor(v1);
+        return r0 > r1;
+      }
       PersianCalendar.prototype = new main.baseCalendar();
       assign(PersianCalendar.prototype, {
         /** The calendar name.
@@ -86898,13 +87287,13 @@ var Plotly = (() => {
               "Mehr",
               "Aban",
               "Azar",
-              "Day",
+              "Dey",
               "Bahman",
               "Esfand"
             ],
-            monthNamesShort: ["Far", "Ord", "Kho", "Tir", "Mor", "Sha", "Meh", "Aba", "Aza", "Day", "Bah", "Esf"],
-            dayNames: ["Yekshambe", "Doshambe", "Seshambe", "Ch\xE6harshambe", "Panjshambe", "Jom'e", "Shambe"],
-            dayNamesShort: ["Yek", "Do", "Se", "Ch\xE6", "Panj", "Jom", "Sha"],
+            monthNamesShort: ["Far", "Ord", "Kho", "Tir", "Mor", "Sha", "Meh", "Aba", "Aza", "Dey", "Bah", "Esf"],
+            dayNames: ["Yekshanbeh", "Doshanbeh", "Seshanbeh", "Chah\u0101rshanbeh", "Panjshanbeh", "Jom'eh", "Shanbeh"],
+            dayNamesShort: ["Yek", "Do", "Se", "Cha", "Panj", "Jom", "Sha"],
             dayNamesMin: ["Ye", "Do", "Se", "Ch", "Pa", "Jo", "Sh"],
             digits: null,
             dateFormat: "yyyy/mm/dd",
@@ -86919,7 +87308,7 @@ var Plotly = (() => {
             @throws Error if an invalid year or a different calendar used. */
         leapYear: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
-          return ((date.year() - (date.year() > 0 ? 474 : 473)) % 2820 + 474 + 38) * 682 % 2816 < 682;
+          return _leapYear(date.year());
         },
         /** Determine the week of the year for a date.
             @memberof PersianCalendar
@@ -86966,9 +87355,17 @@ var Plotly = (() => {
           year = date.year();
           month = date.month();
           day = date.day();
-          var epBase = year - (year >= 0 ? 474 : 473);
-          var epYear = 474 + mod(epBase, 2820);
-          return day + (month <= 7 ? (month - 1) * 31 : (month - 1) * 30 + 6) + Math.floor((epYear * 682 - 110) / 2816) + (epYear - 1) * 365 + Math.floor(epBase / 2820) * 1029983 + this.jdEpoch - 1;
+          var nLeapYearsSince = 0;
+          if (year > 0) {
+            for (var i = 1; i < year; i++) {
+              if (_leapYear(i)) nLeapYearsSince++;
+            }
+          } else if (year < 0) {
+            for (var i = year; i < 0; i++) {
+              if (_leapYear(i)) nLeapYearsSince--;
+            }
+          }
+          return day + (month <= 7 ? (month - 1) * 31 : (month - 1) * 30 + 6) + (year > 0 ? year - 1 : year) * 365 + nLeapYearsSince + this.jdEpoch - 1;
         },
         /** Create a new date from a Julian date.
             @memberof PersianCalendar
@@ -86976,26 +87373,19 @@ var Plotly = (() => {
             @return {CDate} The equivalent date. */
         fromJD: function(jd) {
           jd = Math.floor(jd) + 0.5;
-          var depoch = jd - this.toJD(475, 1, 1);
-          var cycle = Math.floor(depoch / 1029983);
-          var cyear = mod(depoch, 1029983);
-          var ycycle = 2820;
-          if (cyear !== 1029982) {
-            var aux1 = Math.floor(cyear / 366);
-            var aux2 = mod(cyear, 366);
-            ycycle = Math.floor((2134 * aux1 + 2816 * aux2 + 2815) / 1028522) + aux1 + 1;
+          var y = 475 + (jd - this.toJD(475, 1, 1)) / 365.242197;
+          var year = Math.floor(y);
+          if (year <= 0) year--;
+          if (jd > this.toJD(year, 12, _leapYear(year) ? 30 : 29)) {
+            year++;
+            if (year === 0) year++;
           }
-          var year = ycycle + 2820 * cycle + 474;
-          year = year <= 0 ? year - 1 : year;
           var yday = jd - this.toJD(year, 1, 1) + 1;
           var month = yday <= 186 ? Math.ceil(yday / 31) : Math.ceil((yday - 6) / 30);
           var day = jd - this.toJD(year, month, 1) + 1;
           return this.newDate(year, month, day);
         }
       });
-      function mod(a, b) {
-        return a - b * Math.floor(a / b);
-      }
       main.calendars.persian = PersianCalendar;
       main.calendars.jalali = PersianCalendar;
     }
