@@ -46,16 +46,6 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     addWrapper(pathToBundle);
 
-    if(pathToBundle.endsWith('.js')) {
-        var len = pathToBundle.length;
-        var cssOutput = pathToBundle.slice(0, len - 3) + '.css';
-
-        // remove unwanted css file
-        if (fs.existsSync(cssOutput)) {
-            fs.unlinkSync(cssOutput);
-        }
-    }
-
     if(cb) cb();
 }
 
