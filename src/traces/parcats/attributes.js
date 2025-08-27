@@ -65,8 +65,8 @@ module.exports = {
         ],
         description: [
             'This value here applies when hovering over dimensions.',
-            'Note that `*categorycount`, *colorcount* and *bandcolorcount*',
-            'are only available when `hoveron` contains the *color* flag'
+            'Note that *categorycount*, *colorcount* and *bandcolorcount*',
+            'are only available when `hoveron` contains the *color* flag. '
         ].join(' ')
     }),
 
