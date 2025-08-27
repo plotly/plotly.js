@@ -47932,7 +47932,7 @@
      "valType": "number"
     },
     "source": {
-     "description": "Specifies the data URI of the image to be visualized. The URI consists of \"data:image/[<media subtype>][;base64],<data>\"",
+     "description": "Specifies the data URI of the image to be visualized. The URI consists of \"data:image/[<media subtype\\\\>][;base64\\\\],<data\\\\>\"",
      "editType": "calc",
      "valType": "string"
     },
