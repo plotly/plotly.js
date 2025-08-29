@@ -156,11 +156,10 @@ exports.valObjectMeta = {
         description: [
             'A string describing color.',
             'Supported formats:',
-            '- hex (e.g. \'#d3d3d3\')',
-            '- rgb (e.g. \'rgb(255, 0, 0)\')',
-            '- rgba (e.g. \'rgb(255, 0, 0, 0.5)\')',
+            "- hex (e.g. '#d3d3d3', '#d3d3d3aa)",
+            "- rgb (e.g. 'rgb(255, 0, 0)', 'rgb(255 0 0)')",
+            "- rgba (e.g. 'rgba(255, 0, 0, 0.5)', 'rgba(255 0 0 / 0.5)')",
             '- hsl (e.g. \'hsl(0, 100%, 50%)\')',
-            '- hsv (e.g. \'hsv(0, 100%, 100%)\')',
             '- named colors (full list: http://www.w3.org/TR/css3-color/#svg-color)'
         ].join(' '),
         requiredOpts: [],
