@@ -1,0 +1,56 @@
+---
+description: How to migrate from Mapbox traces to Maplibre traces.
+display_as: maps
+language: plotly_js
+layout: base
+name: Migrate to Maplibre
+order: 1
+page_type: example_index
+permalink: javascript/maplibre-migration/
+thumbnail: thumbnail/area.jpg
+---
+
+<p>With the release of Plotly.js v2.35.0, we are introducing a new set of trace types for maps with tile underlays:</p>
+
+<ul>
+    <li>Choroplethmap</li>
+    <li>Scattermap</li>
+    <li>Densitymap</li>
+</ul>
+
+<p>These traces replace the existing Mapbox traces, <code>Choroplethmapbox</code>, <code>Scattermapbox</code>,
+    <code>Densitymapbox</code>, but use <a href="https://maplibre.org">MapLibre</a> as the map renderer rather than
+    Mapbox.
+</p>
+
+<p>When switching to the new traces, keep an eye out for improved rendering performance, WebGL2 support, and over time,
+    improved features in the Plotly map traces inherited from the MapLibre renderer, including projection support, globe
+    views, terrain support, and support for modern mapping standards.</p>
+
+<p>You can learn more about the motivations for this change in our <a
+        href="https://plotly.com/blog/plotly-is-switching-to-maplibre/">announcement
+        post</a>.</p>
+
+<p>As a result of removing Mapbox as the rendering engine, we're also removing the Mapbox branding from these trace
+    names.
+    This means that migrating from Mapbox traces to MapLibre traces will require some code changes in your projects.</p>
+
+<ol>
+    <li>Change trace names from <code>*mapbox</code> to <code>*map</code>. For any existing trace name ending in
+        <code>*mapbox</code>,
+        ensure you've removed the "box" suffix.
+    </li>
+    <li>If in use, update <code>layout.mapbox</code> argument in your layout configuration to <code>layout.map</code>.
+        The nested properties are identical in the new map traces, so no other changes should be required.</li>
+    <li>If in use, update <code>mapbox_style</code> to <code>map_style</code>.</li>
+    <li>Verify your <code>map_style</code> settings. With <code>mapbox</code> traces, we bundle <code>basic</code>,
+        <code>streets</code>,
+        <code>outdoors</code>, <code>light</code>, <code>dark</code>, <code>satellite</code>, and
+        <code>satellite-streets</code> styles,
+        using Mapbox styling. These style names are still available, but they now reference slightly different styles
+        provided by other tools.
+    </li>
+</ol>
+
+<p>Note that Mapbox API keys are no longer required for Plotly-provided styles, but using external styles in your Plotly
+    maps remains supported with the existing API.</p>

@@ -1,0 +1,25 @@
+---
+name: Include Locale Config
+language: plotly_js
+suite: tick-formatting
+order: 4.0
+sitemap: false
+arrangement: horizontal
+---
+
+var x = ['2013-02-04', '2013-04-05', '2013-06-06', '2013-08-07', '2013-10-02'];
+var y = [1, 4, 3, 6, 2];
+var data = [{
+  x: x,
+  y: y,
+  type: 'scatter'
+}];
+var layout = {
+  xaxis: {
+    tickformat: '%a %e %b \n %Y'
+  }
+}
+
+Plotly.newPlot('myDiv', data, layout, {
+  locale: 'fr' // For more info, see: https://github.com/plotly/plotly.js/blob/master/dist/README.md#to-include-localization and https://github.com/plotly/plotly.js/tree/master/dist
+});

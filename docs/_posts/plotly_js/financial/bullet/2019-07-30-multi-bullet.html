@@ -1,0 +1,88 @@
+---
+name: Multi Bullet
+language: plotly_js
+suite: bullet-charts
+order: 4
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+  Bullet charts can be stacked for comparing several values at once as illustrated below:
+---
+var data = [
+  {
+    type: "indicator",
+    mode: "number+gauge+delta",
+    value: 180,
+    delta: { reference: 200 },
+    domain: { x: [0.25, 1], y: [0.08, 0.25] },
+    title: { text: "Revenue" },
+    gauge: {
+      shape: "bullet",
+      axis: { range: [null, 300] },
+      threshold: {
+        line: { color: "black", width: 2 },
+        thickness: 0.75,
+        value: 170
+      },
+      steps: [
+        { range: [0, 150], color: "gray" },
+        {
+          range: [150, 250],
+          color: "lightgray"
+        }
+      ],
+      bar: { color: "black" }
+    }
+  },
+  {
+    type: "indicator",
+    mode: "number+gauge+delta",
+    value: 35,
+    delta: { reference: 200 },
+    domain: { x: [0.25, 1], y: [0.4, 0.6] },
+    title: { text: "Profit" },
+    gauge: {
+      shape: "bullet",
+      axis: { range: [null, 100] },
+      threshold: {
+        line: { color: "black", width: 2 },
+        thickness: 0.75,
+        value: 50
+      },
+      steps: [
+        { range: [0, 25], color: "gray" },
+        { range: [25, 75], color: "lightgray" }
+      ],
+      bar: { color: "black" }
+    }
+  },
+  {
+    type: "indicator",
+    mode: "number+gauge+delta",
+    value: 220,
+    delta: { reference: 200 },
+    domain: { x: [0.25, 1], y: [0.7, 0.9] },
+    title: { text: "Satisfaction" },
+    gauge: {
+      shape: "bullet",
+      axis: { range: [null, 300] },
+      threshold: {
+        line: { color: "black", width: 2 },
+        thickness: 0.75,
+        value: 210
+      },
+      steps: [
+        { range: [0, 150], color: "gray" },
+        { range: [150, 250], color: "lightgray" }
+      ],
+      bar: { color: "black" }
+    }
+  }
+];
+
+var layout = {
+  width: 600, height: 250,
+  margin: { t: 10, r: 25, l: 25, b: 10 }
+};
+Plotly.newPlot('myDiv', data, layout);

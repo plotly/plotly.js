@@ -1,0 +1,29 @@
+---
+name: Control Text Orientation Inside Sunburst Chart Sectors
+language: plotly_js
+suite: sunburst
+order: 6
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  The `insidetextorientation` attribute controls the orientation of the text inside chart sectors. When set to *auto*, text may be oriented in any direction in order to be as big as possible in the middle of a sector. The *horizontal* option orients text to be parallel with the bottom of the chart, and may make text smaller in order to achieve that goal. The *radial* option orients text along the radius of the sector. The *tangential* option orients text perpendicular to the radius of the sector.
+---
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/coffee-flavors.csv', function(err, rows){
+  function unpack(rows, key) {
+  return rows.map(function(row) {return row[key]})
+}
+
+  var data = [{
+        type: "sunburst",
+        maxdepth: 2,
+        ids: unpack(rows, 'ids'),
+        labels: unpack(rows, 'labels'),
+        parents: unpack(rows, 'parents'),
+        textposition: 'inside',
+        insidetextorientation: 'radial'
+  }]
+
+  var layout = {margin: {l: 0, r: 0, b: 0, t:0}}
+
+  Plotly.newPlot('myDiv', data, layout)
+})

@@ -1,0 +1,15 @@
+---
+name: Dropdown Events
+permalink: javascript/dropdowns/
+description: Use Plotly to create custom dropdowns in D3.js-based JavaScript charts.
+layout: base
+thumbnail: thumbnail/dropdown.jpg
+language: plotly_js
+page_type: example_index
+display_as: controls
+order: 1
+redirect_from: javascript-graphing-library/high-dimension-data/
+redirect_from: javascript/high-dimension-data/
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","dropdowns-events" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

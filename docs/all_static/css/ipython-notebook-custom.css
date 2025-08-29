@@ -1,0 +1,247 @@
+div.input_area>div.highlight>pre {
+  padding: 1px;
+}
+
+.cell div.input_area {
+    border: 0;
+    background: rgb(244, 244, 248);
+}
+
+.cell .cm-s-ipython span.cm-keyword {
+    color: #447bdc;
+}
+
+.cell h1 {
+    font-family: "Open sans",verdana,arial,sans-serif;
+}
+.cell .text_cell_render h1 {
+    font-weight: 300;
+    font-size: 50px;
+    line-height: 55px;
+    letter-spacing: -0.25px;
+    color: #0089fe;
+    margin-bottom: 0em;
+    margin-top: 0em;
+    display: block;
+    white-space: nowrap;
+    margin: 0;
+}
+.cell h2 {
+    font-family: "Open sans",verdana,arial,sans-serif;
+}
+.cell .text_cell_render h2 {
+    font-weight: 300;
+    font-size: 42px;
+    font-style: normal;
+    line-height: 47px;
+    color:#0089fe;
+    display: block;
+    white-space: nowrap;
+    margin: 0;
+}
+.cell h3 {
+    font-family: "Open sans",verdana,arial,sans-serif;
+}
+.cell .text_cell_render h3 {
+    font-weight: 300;
+    font-size: 36px;
+    line-height: 40px;
+    color:#0089fe;
+    display: block;
+    white-space: nowrap;
+    margin: 0;
+}
+.cell h4 {
+    font-family: "Open sans",verdana,arial,sans-serif;
+}
+.cell .text_cell_render h4 {
+    font-weight: 300;
+    font-size: 30px;
+    line-height: 33px;
+    color:#0089fe;
+    display: block;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.cell h5 {
+    font-family: "Open sans",verdana,arial,sans-serif;
+}
+.cell .text_cell_render h5 {
+    font-weight: 300;
+    font-size: 24px;
+    line-height: 26px;
+    color:#0089fe;
+    display: block;
+    white-space: nowrap;
+    margin: 0;
+    font-style: normal;
+}
+
+.cell h6 {
+    font-family: "Open sans",verdana,arial,sans-serif;
+}
+.cell .text_cell_render h6 {
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 20px;
+    color:#0089fe;
+    font-style: normal;
+    display: block;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.cell h1:hover .anchor-link,
+.cell h2:hover .anchor-link,
+.cell h3:hover .anchor-link,
+.cell h4:hover .anchor-link,
+.cell h5:hover .anchor-link,
+.cell h6:hover .anchor-link {
+    visibility: visible;
+}
+
+.cell a.anchor-link {
+    visibility: hidden;
+}
+
+.cell div.text_cell_render{
+    font-family: "Open sans",verdana,arial,sans-serif;
+    line-height: 110%;
+    text-align:justify;
+    text-justify:inter-word;
+    color: #1e4a7b;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 25px;
+}
+.cell div.text_cell_render p{
+    color: #1e4a7b;
+    font-size: 18px;
+    line-height: 25px;
+
+}
+.cell.code_cell{
+    font-size: 14px;
+}
+
+.cell code {
+  color: #1e4a7b;
+}
+
+.cell div.output_subarea.output_text.output_pyout {
+    overflow-x: auto;
+    overflow-y: scroll;
+    max-height: 300px;
+}
+.cell div.output_subarea.output_stream.output_stdout.output_text {
+    overflow-x: auto;
+    overflow-y: scroll;
+    max-height: 300px;
+}
+.cell div.output_subarea.output_html.rendered_html {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    max-width: 100%;
+  /*  overflow-y: scroll; */
+  /*  max-height: 300px;   */
+}
+
+.cell .rendered_html code{
+    background-color: transparent;
+    white-space: inherit;
+}
+.cell ul{
+    /* color:#265cc3; */
+    margin: 2em;
+}
+.cell ul li{
+    padding-left: 0.5em;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+}
+.cell ul li li{
+    padding-left: 0.2em;
+    margin-bottom: 0.2em;
+    margin-top: 0.2em;
+}
+.cell ol{
+    /* color:#265cc3; */
+    margin: 2em;
+}
+.cell ol li{
+    padding-left: 0.5em;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+}
+.cell /*.prompt{
+    display: None;
+} */
+.cell ul li{
+    padding-left: 0.5em;
+    margin-bottom: 0.5em;
+    margin-top: 0.2em;
+}
+.cell a{
+  font-weight: bold;
+}
+.cell a.prompt {
+  text-decoration: initial;
+  font-weight: normal;
+}
+.cell a:link{
+   color:#265cc3;
+}
+.cell a:visited{
+   color: #1d3b84;
+}
+.cell a:hover{
+   color: #1d3b84;
+}
+.cell a:focus{
+   color:#265cc3;
+}
+.cell a:active{
+   color:#265cc3;
+}
+.cell .rendered_html :link {
+   text-decoration: none;
+}
+.cell .rendered_html :hover {
+   text-decoration: none;
+}
+.cell .rendered_html :visited {
+  text-decoration: none;
+}
+.cell .rendered_html :focus {
+  text-decoration: none;
+}
+.cell .rendered_html :active {
+  text-decoration: none;
+}
+.cell .warning{
+    color: rgb( 240, 20, 20 )
+}
+.cell hr {
+  color: #f3f3f3;
+  background-color: #f3f3f3;
+  height: 1px;
+}
+.cell blockquote{
+  display:block;
+  background: #f3f3f3;
+  font-family: "Open sans",verdana,arial,sans-serif;
+  width:610px;
+  padding: 15px 15px 15px 15px;
+  text-align:justify;
+  text-justify:inter-word;
+  }
+.cell   blockquote p {
+    margin-bottom: 0;
+    line-height: 125%;
+    font-size: 100%;
+  }
+
+code{
+  font-weight: 200 !important;
+}

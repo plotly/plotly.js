@@ -1,0 +1,67 @@
+---
+name: Lines Positioned Relative to the Plot and to the Axis
+language: plotly_js
+suite: shape
+order: 6
+sitemap: false
+arrangement: horizontal
+---
+
+var trace1 = {
+  x: [2, 6],
+  y: [1, 1],
+  text: ['Line positioned relative to the plot', 'Line positioned relative to the axes'],
+  mode: 'text'
+};
+
+var layout = {
+  title: {
+    text: 'Lines Positioned Relative to the Plot & to the Axes'
+  },
+  xaxis: {
+    range: [0, 8]
+  },
+  yaxis: {
+    range: [0, 2]
+  },
+  width: 500,
+  height: 500,
+  shapes: [
+
+    //Line reference to the axes
+
+    {
+      type: 'line',
+      xref: 'x',
+      yref: 'y',
+      x0: 4,
+      y0: 0,
+      x1: 8,
+      y1: 1,
+      line: {
+        color: 'rgb(55, 128, 191)',
+        width: 3
+      }
+    },
+
+    //Line reference to the plot
+
+    {
+      type: 'line',
+      xref: 'paper',
+      yref: 'paper',
+      x0: 0,
+      y0: 0,
+      x1: 0.5,
+      y1: 0.5,
+      line: {
+        color: 'rgb(50, 171, 96)',
+        width: 3
+      }
+    }
+  ]
+};
+
+var data = [trace1];
+
+Plotly.newPlot('myDiv', data, layout);

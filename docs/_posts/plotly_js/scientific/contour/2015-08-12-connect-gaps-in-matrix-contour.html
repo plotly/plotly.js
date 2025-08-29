@@ -1,0 +1,93 @@
+---
+name: Connect the Gaps between Null Values in the Z Matrix
+language: plotly_js
+suite: contour
+order: 7
+sitemap: false
+arrangement: horizontal
+---
+var trace1 = {
+  z: [[null, null, null, 12, 13, 14, 15, 16],
+      [null, 1, null, 11, null, null, null, 17],
+      [null, 2, 6, 7, null, null, null, 18],
+      [null, 3, null, 8, null, null, null, 19],
+      [5, 4, 10, 9, null, null, null, 20],
+      [null, null, null, 27, null, null, null, 21],
+      [null, null, null, 26, 25, 24, 23, 22]],
+  type: 'contour',
+  showscale: false,
+  xaxis: 'x1',
+  yaxis: 'y1'
+};
+
+var trace2 = {
+  z: [[null, null, null, 12, 13, 14, 15, 16],
+      [null, 1, null, 11, null, null, null, 17],
+      [null, 2, 6, 7, null, null, null, 18],
+      [null, 3, null, 8, null, null, null, 19],
+      [5, 4, 10, 9, null, null, null, 20],
+      [null, null, null, 27, null, null, null, 21],
+      [null, null, null, 26, 25, 24, 23, 22]],
+  connectgaps: true,
+  type: 'contour',
+  showscale: false,
+  xaxis: 'x2',
+  yaxis: 'y2'
+};
+
+var trace3 = {
+  z: [[null, null, null, 12, 13, 14, 15, 16],
+      [null, 1, null, 11, null, null, null, 17],
+      [null, 2, 6, 7, null, null, null, 18],
+      [null, 3, null, 8, null, null, null, 19],
+      [5, 4, 10, 9, null, null, null, 20],
+      [null, null, null, 27, null, null, null, 21],
+      [null, null, null, 26, 25, 24, 23, 22]],
+  zsmooth: 'best',
+  type: 'heatmap',
+  showscale: false,
+  xaxis: 'x3',
+  yaxis: 'y3'
+};
+
+var trace4 = {
+  z: [[null, null, null, 12, 13, 14, 15, 16],
+      [null, 1, null, 11, null, null, null, 17],
+      [null, 2, 6, 7, null, null, null, 18],
+      [null, 3, null, 8, null, null, null, 19],
+      [5, 4, 10, 9, null, null, null, 20],
+      [null, null, null, 27, null, null, null, 21],
+      [null, null, null, 26, 25, 24, 23, 22]],
+  zsmooth: 'best',
+  type: 'heatmap',
+  showscale: false,
+  connectgaps: true,
+  xaxis: 'x4',
+  yaxis: 'y4'
+};
+
+var data = [trace1, trace2, trace3, trace4];
+
+var layout = {
+  title: {
+    text: 'Connect the Gaps Between Null Values in the Z Matrix'
+  },
+  xaxis: {domain: [0, 0.45],
+    anchor: 'y1'},
+  yaxis: {domain: [0.55, 1],
+    anchor: 'x1'},
+  xaxis2: {domain: [0.55, 1],
+    anchor: 'y2'},
+  yaxis2: {domain: [0.55, 1],
+    anchor: 'x2'},
+  xaxis3: {domain: [0, 0.45],
+    anchor: 'y3'},
+  yaxis3: {domain: [0, 0.45],
+    anchor: 'x3'},
+  xaxis4: {domain: [0.55, 1],
+    anchor: 'y4'},
+  yaxis4: {domain: [0, 0.45],
+    anchor: 'x4'}
+};
+
+Plotly.newPlot('myDiv', data, layout);

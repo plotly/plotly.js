@@ -1,0 +1,32 @@
+---
+name: Multi Funnelarea
+language: plotly_js
+suite: funnel
+order: 5
+sitemap: false
+arrangement: horizontal
+---
+var gd = document.getElementById('myDiv');
+var data = [{type: 'funnelarea', scalegroup: "first", values: [500, 450, 340, 230, 220, 110],
+    textinfo: "value", title: {position: "top center", text: "Sales for Sale Person A in U.S."},
+    domain: {x: [0, 0.5], y: [0, 0.5]}},
+{
+    type: 'funnelarea', scalegroup: "first", values: [600, 500, 400, 300, 200, 100], textinfo: "value",
+    title: {position: "top center", text: "Sales of Sale Person B in Canada"},
+    domain: {x: [0, 0.5], y: [0.55, 1]}},
+{
+    type:'funnelarea', scalegroup: "second", values: [510, 480, 440, 330, 220, 100], textinfo: "value",
+    title: {position: "top left", text: "Sales of Sale Person A in Canada"},
+    domain: {x: [0.55, 1], y: [0, 0.5]}},
+{
+  type: 'funnelarea', scalegroup: "second", values: [360, 250, 240, 130, 120, 60],
+  textinfo: "value", title: {position: "top left", text: "Sales of Sale Person B in U.S."},
+  domain: {x: [0.55, 1], y: [0.55, 1]}}];
+
+var layout = {width: 600,shapes: [
+            {x0: 0, x1: 0.5, y0: 0, y1: 0.5},
+            {x0: 0, x1: 0.5, y0: 0.55, y1: 1},
+            {x0: 0.55, x1: 1, y0: 0, y1: 0.5},
+            {x0: 0.55, x1: 1, y0: 0.55, y1: 1}]}
+
+Plotly.newPlot('myDiv', data, layout);

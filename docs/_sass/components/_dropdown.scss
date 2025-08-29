@@ -1,0 +1,35 @@
+.dropdown-content {
+  @extend .z-depth-1;
+  background-color: #FFFFFF;
+  margin: 0;
+  display: none;
+  min-width: 100px;
+  max-height: 650px;
+  overflow-y: auto;
+  opacity: 0;
+  position: absolute;
+  white-space: nowrap; // Force one line
+  z-index: 1;
+  will-change: width, height;
+
+  li {
+    clear: both;
+    color: $off-black;
+    cursor: pointer;
+    line-height: 1.5rem;
+    width: 100%;
+    text-align: left;
+    text-transform: none;
+
+    &:hover, &.active {
+      background-color: #eee;
+    }
+
+    & > a, & > span {
+      font-size: 1.2rem;
+      color: $dropdown-color;
+      display: block;
+      padding: 1rem 1rem;
+    }
+  }
+}

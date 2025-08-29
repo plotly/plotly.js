@@ -1,0 +1,100 @@
+---
+name: Parallel Categories Linked Brushing
+arrangement: horizontal
+language: plotly_js
+suite: parcats
+order: 4
+sitemap: false
+markdown_content: |
+  This example demonstrates how the `plotly_selected` and `plotly_click` events can be used to implement linked
+  brushing between 3 categorical dimensions displayed with a `parcats` trace and 2 continuous dimensions displayed
+  with a `scatter` trace.
+
+  This example also sets the `line.shape` property to `hspline` to cause the ribbons to curve between categories.
+---
+var gd = document.getElementById("myDiv");
+var categoricalDimensionLabels = [
+  'body-style',
+  'drive-wheels',
+  'fuel-type'
+];
+
+d3.csv(
+  'https://raw.githubusercontent.com/plotly/datasets/master/imports-85.csv',
+  function(carsData) {
+    // Preprocess Data
+    var mpg = carsData.map(function(row) { return row['highway-mpg'] });
+    var horsepower = carsData.map(function(row) { return row['horsepower'] });
+
+    var categoricalDimensions = categoricalDimensionLabels.map(
+      function(dimLabel) {
+        // Extract column
+        var values = carsData.map(function(row) {
+          return row[dimLabel]
+        });
+
+        return {
+          values: values,
+          label: dimLabel
+        };
+      });
+
+    // Colors
+    var color = new Int8Array(carsData.length);
+    var colorscale = [[0, 'gray'], [1, 'firebrick']];
+
+    // Layout
+    var layout = {
+      width: 600,
+      height: 800,
+      xaxis: {title: {text: 'Horsepower'}},
+      yaxis: {domain: [0.6, 1], title: {text: 'MPG'}},
+      dragmode: 'lasso',
+      hovermode: 'closest'
+    };
+
+    // Build Traces
+    var traces = [
+      {type: 'scatter',
+       x: horsepower,
+       y: mpg,
+       marker: {color: 'gray'},
+       mode: 'markers',
+       selected: {'marker': {'color': 'firebrick'}},
+       unselected: {'marker': {'opacity': 0.3}}
+      },
+      {type: 'parcats',
+       domain: {y: [0, 0.4]},
+       dimensions:categoricalDimensions,
+       line: {
+         colorscale: colorscale,
+         cmin: 0,
+         cmax: 1,
+         color: color,
+         shape: 'hspline'},
+       labelfont: {size: 14}
+      }
+    ];
+
+    // Make plot
+    Plotly.newPlot('myDiv', traces, layout);
+
+    // Update color on selection and click
+    var update_color = function(points_data) {
+      var new_color = new Int8Array(carsData.length);
+      var selection = []
+      for(var i = 0; i < points_data.points.length; i++) {
+        new_color[points_data.points[i].pointNumber] = 1;
+        selection.push(points_data.points[i].pointNumber);
+      }
+
+      // Update selected points in scatter plot
+      Plotly.restyle('myDiv', {'selectedpoints': [selection]}, 0)
+
+      // Update color of selected paths in parallel categories diagram
+      Plotly.restyle('myDiv', {'line.color': [new_color]}, 1)
+    };
+
+    gd.on('plotly_selected', update_color);
+    gd.on('plotly_click', update_color);
+  });

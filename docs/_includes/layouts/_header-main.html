@@ -1,0 +1,105 @@
+<div class="menu-mobile">
+    <div class="switch-mode">
+        <div class="icon-dark"></div>
+        <div class="switch"></div>
+        <div class="icon-light"></div>
+    </div>
+    <div class="close-menu"></div>
+    <ul>
+        <li><a style="font-weight: bold;"
+                href="https://community.plotly.com/c/{% if page.permalink contains 'javascript' %}plotly-js/6{% elsif page.permalink contains 'python' %}plotly-python/5{% endif %}">Forum</a>
+        </li>
+        <li><a style="font-weight: bold;" href="https://plotly.com/get-pricing/">Pricing</a></li>
+        <li><a style="font-weight: bold;" href="https://dash.plotly.com">Dash</a></li>
+
+    </ul>
+</div>
+<div class="header-container">
+    <header class="header-main --default">
+        <div class="--wrap">
+            <div class="--wrap-left">
+                <div class="-identity">
+                    <a href="https://plotly.com/"><img src="/all_static/images/graphing_library_dark.svg"
+                            style="height: 30px;" class="logo-dark"></a>
+                    <a href="/graphing-libraries/"><img src="/all_static/images/graphing_library.svg"
+                            style="height: 30px;" class="logo-white"></a>
+
+
+                </div>
+            </div>
+            <div class="--wrap-right">
+                <nav class="--nav-meta" role="navigation">
+                    <ul>
+                        <li class="languages">
+                            {% assign language = page.language %}
+                            {% if language == "python" %}
+                            <a class="{{language}}">
+                                <div class="icon"></div>
+                                Python (v{{site.data.pyversion.version}})
+                            </a>
+                            {% elsif language == "plotly_js" %}
+                            <a class="{{language}}">
+                                <div class="icon"></div>
+                                Javascript (v{{site.data.jsversion.version}})
+                            </a>
+                            {% elsif language == "javascript" %}
+                            <a class="{{language}}">
+                                <div class="icon"></div>
+                                Javascript (v{{site.data.jsversion.version}})
+                            </a>
+                            {% else %}
+                            <a class="{{language}}">
+                                Languages
+                            </a>
+                            {% endif %}
+
+                            <ul>
+                                <li>
+                                    <a href="https://plotly.com/python/" class="python">
+                                        <div class="icon"></div>Python (v{{site.data.pyversion.version}})
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://plotly.com/javascript/" class="plotly_js">
+                                        <div class="icon"></div>Javascript (v{{site.data.jsversion.version}})
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://dash.plotly.com/" class="dash">
+                                        <div class="icon"></div>Dash
+                                    </a>
+                                </li>
+                            </ul>
+
+                        </li>
+                        <li><a style="font-weight: bold;"
+                                href="https://community.plotly.com/c/{% if page.permalink contains 'javascript' %}plotly-js/6{% elsif page.permalink contains 'python' %}plotly-python/5{% endif %}">Forum</a>
+                        </li>
+                        <li><a style="font-weight: bold;" href="https://plotly.com/get-pricing/">Pricing</a></li>
+                        <li><a style="font-weight: bold;" href="https://dash.plotly.com">Dash</a></li>
+                        <!--<li><a style="font-weight: bold;" href="http://plotly.cloud">Dash Cloud</a></li>-->
+
+                        {% if page.permalink contains "python/" %}
+                        <iframe style="padding-top: 5px;"
+                            src="https://ghbtns.com/github-btn.html?user=plotly&repo=plotly.py&type=star&count=true&size=large"
+                            frameborder="0" scrolling="0" width="160px" height="40px"></iframe>
+                        {% elsif page.permalink contains "javascript/" %}
+                        <iframe
+                            src="https://ghbtns.com/github-btn.html?user=plotly&repo=plotly.js&type=star&count=true&size=large"
+                            style="padding-top: 5px;" frameborder="0" scrolling="0" width="160px"
+                            height="40px"></iframe>
+                        {% endif %}
+                    </ul>
+                    <div class="switch-mode">
+                        <div class="icon-dark"></div>
+                        <div class="switch"></div>
+                        <div class="icon-light"></div>
+                    </div>
+                </nav>
+            </div>
+            <div class="menu-icon">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </header>
+</div>

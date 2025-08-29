@@ -1,0 +1,56 @@
+---
+name: Grouped Scatter Plot with Custom Scatter Gap
+language: plotly_js
+suite: line_and_scatter
+order: 6
+sitemap: false
+arrangement: horizontal
+---
+
+var trace1 = {
+  x: ['South Korea', 'China', 'Canada'],
+  y: [24, 10, 9],
+  name: 'Gold',
+  type: 'scatter',
+  mode: 'markers'
+};
+
+var trace2 = {
+  x: ['South Korea', 'China', 'Canada'],
+  y: [13, 15, 12],
+  name: 'Silver',
+  type: 'scatter',
+  mode: 'markers'
+};
+
+var trace3 = {
+  x: ['South Korea', 'China', 'Canada'],
+  y: [11, 8, 12],
+  name: 'Bronze',
+  type: 'scatter',
+  mode: 'markers'
+};
+
+var data = [trace1, trace2, trace3];
+
+var layout = {
+  scattermode: 'group',
+  title: {
+    text: 'Grouped by Country'
+  },
+  xaxis: {
+    title: {
+      text: 'Country'
+    }
+  },
+  yaxis: {
+    title: {
+      text: 'Medals'
+    }
+  },
+  scattergap: 0.7
+};
+
+Plotly.newPlot('myDiv', data, layout);
+
+

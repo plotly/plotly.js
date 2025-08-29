@@ -1,0 +1,23 @@
+<h3>Share your Plotly chart with a link for free</h3>
+
+<p>To save your chart online for free, please {% if page.language == "python" %}<a href="https://plotly.com/python/getting-started-with-chart-studio/">create a Chart Studio account</a>
+{% elsif page.language == "plotly_js %}
+create a Chart Studio account
+{% endif %} to retrieve your free API key.</p>
+
+<p>To save private charts (not discoverable or viewable by anyone but you and trusted collaborators), there is a $14/month hosting option (billed annually). Revenue from private chart hosting on Chart Studio also supports the open-source development team maintaining the Plotly Python library.</p>
+
+<p>Please click "Upgrade" in the Chart Creator <a href="https://chart-studio.plotly.com/create/">if you wish to support our work!</a></p>
+
+
+{% if page.language == "python" %}
+<h4>Example usage - upload a plot to Chart Studio</h4>
+<pre>import plotly.express as px
+import chart_studio.plotly as py
+
+fig = px.scatter(x=[0, 1, 2, 3, 4], y=[0, 1, 4, 9, 16])
+
+py.plot(fig, filename = 'basic-line', auto_open=True)</pre>
+{% elsif page.language == "plotly_js %}
+
+{% endif %}

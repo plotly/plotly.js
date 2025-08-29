@@ -1,0 +1,40 @@
+---
+name: Change the Default Locale
+language: plotly_js
+suite: configuration
+order: 7.5
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Load and register a non-default locale by adding `<script src="https://cdn.plot.ly/plotly-locale-YOUR-LOCALE-latest.js"></script>`
+  to your HTML after the plotly.js tag and then reference the locale in the `config`. For Example, the codepen example below has
+  `<script src="https://cdn.plot.ly/plotly-locale-fr-latest.js"></script>` in its HTML.  For more information and a list of available locales, see
+  [https://github.com/plotly/plotly.js/blob/master/dist/README.md#to-include-localization](https://github.com/plotly/plotly.js/blob/master/dist/README.md#to-include-localization)
+---
+var trace1 = {
+  type: "scatter",
+  mode: "lines",
+  x: ['2018-01-01', '2018-08-31'],
+  y: [10, 5],
+  line: {color: '#17BECF'}
+};
+
+var trace2 = {
+  type: "scatter",
+  mode: "lines",
+  x: ['2018-01-01', '2018-08-31'],
+  y: [3,7],
+  line: {color: '#7F7F7F'}
+};
+
+var data = [trace1,trace2];
+
+var layout = {
+  title: {
+    text: 'Custom Locale'
+  }
+};
+
+var config = {locale: 'fr'};
+
+Plotly.newPlot('myDiv', data, layout, config);

@@ -1,0 +1,27 @@
+---
+name: Basic Gauge
+language: plotly_js
+suite: gauge-charts
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+  A radial gauge chart has a circular arc, which displays a single value to estimate progress toward a goal.
+  The bar shows the target value, and the shading represents the progress toward that goal. Gauge charts, known as
+  speedometer charts as well. This chart type is usually used to illustrate key business indicators.
+
+  The example below displays a basic gauge chart with default attributes. For more information about different added attributes check [indicator](https://plotly.com/javascript/indicator/) tutorial.
+---
+var data = [
+	{
+		domain: { x: [0, 1], y: [0, 1] },
+		value: 270,
+		title: { text: "Speed" },
+		type: "indicator",
+		mode: "gauge+number"
+	}
+];
+
+var layout = { width: 600, height: 500, margin: { t: 0, b: 0 } };
+Plotly.newPlot('myDiv', data, layout);

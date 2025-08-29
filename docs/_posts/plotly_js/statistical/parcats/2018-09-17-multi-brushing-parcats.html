@@ -1,0 +1,109 @@
+---
+name: Parallel Categories with Multi-Color Linked Brushing
+plot_url: https://codepen.io/plotly/embed/EOjmrW/?height=801&theme-id=15263&default-tab=result
+arrangement: horizontal
+language: plotly_js
+suite: parcats
+order: 5
+sitemap: false
+markdown_content: |
+  This example extends the previous example to support brushing with multiple colors.  The radio buttons above may
+  be used to select the active color, and this color will be applied when points are selected in the `scatter`
+  trace and when categories or ribbons are clicked in the `parcats` trace.
+---
+var gd = document.getElementById('myDiv');
+var categoricalDimensionLabels = [
+  'body-style',
+  'drive-wheels',
+  'fuel-type'
+];
+
+d3.csv(
+  'https://raw.githubusercontent.com/plotly/datasets/master/imports-85.csv',
+  function(carsData) {
+    // Preprocess Data
+    var mpg = carsData.map(function(row) { return row['highway-mpg'] });
+    var horsepower = carsData.map(function(row) { return row['horsepower'] });
+
+    var categoricalDimensions = categoricalDimensionLabels.map(
+      function(dimLabel) {
+        // Extract column
+        var values = carsData.map(function(row) {
+          return row[dimLabel]
+        });
+
+        return {
+          values: values,
+          label: dimLabel
+        };
+      }
+    );
+
+    // Colors
+    var color = new Int8Array(carsData.length);
+    var colorscale = [[0, 'gray'], [0.33, 'gray'],
+                      [0.33, 'firebrick'], [0.66, 'firebrick'],
+                      [0.66, 'blue'], [1.0, 'blue']];
+
+    // Layout
+    var layout = {
+      width: 600,
+      height: 800,
+      xaxis: {title: {text: 'Horsepower'}},
+      yaxis: {domain: [0.6, 1], title: {text: 'MPG'}},
+      dragmode: 'lasso',
+      hovermode: 'closest'
+    };
+
+    // Build Traces
+    var traces = [
+      {type: 'scatter',
+       x: horsepower,
+       y: mpg,
+       marker: {color: color,
+                colorscale: colorscale,
+                cmin: -0.5,
+                cmax: 2.5,
+                showscale: true,
+                colorbar: {tickvals: [0, 1, 2],
+                           ticktext: ['None', 'Red', 'Blue']}},
+       mode: 'markers',
+      },
+      {type: 'parcats',
+       domain: {y: [0, 0.4]},
+       dimensions:categoricalDimensions,
+       line: {
+         colorscale: colorscale,
+         cmin: -0.5,
+         cmax: 2.5,
+         color: color,
+         shape: 'hspline'},
+       labelfont: {size: 14}
+      }
+    ];
+
+    // Make plot
+    Plotly.newPlot('myDiv', traces, layout);
+
+    // Update color on selection and click
+    var update_color = function(points_data) {
+      var new_color = color;
+      var color_value = document.querySelector('input[name="rate"]:checked').value;
+      console.log(color_value);
+      var selection = []
+      for(var i = 0; i < points_data.points.length; i++) {
+        new_color[points_data.points[i].pointNumber] = color_value;
+        selection.push(points_data.points[i].pointNumber);
+      }
+
+      // Update selected points in scatter plot
+      Plotly.restyle'myDiv', {'marker.color': [new_color]}, 0)
+
+      // Update color of selected paths in parallel categories diagram
+      Plotly.restyle'myDiv',
+                     {'line.color': [new_color]}, 1)
+    };
+
+    gd.on('plotly_selected', update_color);
+    gd.on('plotly_click', update_color);
+  });

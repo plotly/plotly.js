@@ -1,0 +1,65 @@
+{% assign counter = 0 %}
+{%- for example in examples -%}
+  {% assign counter=counter | plus:1 %}
+    <div class="section">
+      <div class="row auto-eg-padding">
+        <div class=" row twelve columns">
+          <h3 id="{{ example.name | replace:' ','-' | remove:',' | downcase | strip_html }}">
+            <a class="no_underline plot-blue" href="#{{ example.name | replace:' ','-' | remove:',' | downcase | strip_html }}">{{ example.name }}</a>
+          </h3>
+        </div>
+
+        <div class="row">
+          <div class="{% if example.arrangement contains 'horizontal' %}twelve{% else %}six{% endif %} columns">
+            {% if example.markdown_content %}
+              {{ example.markdown_content | markdownify }}
+            {% endif %}
+            {% if example.content != "" %}
+              <div class="z-depth-1">
+                <pre><code class="{{page.language}}">{{ example.content | xml_escape }}</code></pre>
+              </div>
+            {% endif %}
+            {% if example.description %}
+              <blockquote>
+                {{ example.description }}
+              </blockquote>
+            {% endif %}
+          </div>
+          {% if example.plot_url %}
+            <div class="{% if example.arrangement contains 'horizontal' %}twelve{% else %}six{% endif %} columns">
+              {% if example.plot_url contains '.gif' or example.plot_url contains '.png' %}
+                <img src="{{ example.plot_url }}" />
+              {% else %}
+                <iframe id="auto-examples" src="{{ example.plot_url }}{% if example.plot_url contains 'plot.ly' %}.embed{% endif %}"
+                style="width: {% if example.width %}{{example.width}}px;{% else %}100%;{% endif %} height: {% if example.height %}{{example.height}}px;{% else %}550px;{% endif %} border: none;"></iframe>
+              {% endif %}
+            </div>
+          {% elsif page.language == "plotly_js" and (example.content contains "'myDiv'" or example.content contains '"myDiv"') %}
+            {% if example.content contains "d3." %}
+              {% assign d3 = "\n\t&lt;script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'>&lt;/script&gt;" %}
+            {% else %}
+              {% assign d3 = "" %}
+            {% endif %}
+
+            {% if example.content contains "remember to load MathJax.js" %}
+              {% assign mathjax = "\n\t&lt;script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML'>&lt;/script&gt;" %}
+            {% else %}
+              {% assign mathjax = "" %}
+            {% endif %}
+            <div class="{% if example.arrangement contains 'horizontal' %}twelve{% else %}six{% endif %} columns">
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;" action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js {{example.name}}&quot;,&quot;html&quot;:&quot;&lt;head&gt;\n\t&lt;!-- Load plotly.js into the DOM --&gt;{{ mathjax }}\n\t&lt;script src='https://cdn.plot.ly/plotly-{{site.data.jsversion.version}}.min.js'>&lt;/script&gt;{{ d3 }}\n&lt;/head>\n\n&lt;body&gt;\n\t&lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;\n&lt;/body&gt;&quot;,&quot;js&quot;:{{example.content | jsonify | escape }}}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              {% capture unique_myDiv %}myDiv_{{counter}}{% endcapture %}
+              <div style="max-width: 100%; margin: auto" id="{{unique_myDiv}}"></div>
+              <script>
+                {{ example.content | replace: 'myDiv', unique_myDiv | replace: "your access token", site.data.mapbox_token['token']}}
+              </script>
+            </div>
+          {% endif %}
+        </div>
+    </div>
+{%- endfor -%}
+

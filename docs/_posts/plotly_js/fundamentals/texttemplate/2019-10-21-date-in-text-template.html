@@ -1,0 +1,31 @@
+---
+name: Set Date in Text Template
+language: plotly_js
+suite: texttemplate
+order: 3
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+   The following example displays how to show date by setting [axis.type](https://plotly.com/javascript/reference/layout/yaxis/#layout-yaxis-type) in [funnel charts](https://plotly.com/javascript/funnel-charts/).
+---
+var data = [{
+  type: 'funnel',
+  name: 'Montreal',
+  orientation: "h",
+  y: ["2018-01-01", "2018-07-01", "2019-01-01", "2020-01-01"],
+  x: [100, 60, 40, 20],
+  textposition: "inside",
+  texttemplate: "%{label}"
+},{
+  type: "funnel",
+  name: 'Vancouver',
+  orientation: "h",
+  y: ["2018-01-01", "2018-07-01", "2019-01-01", "2020-01-01"],
+  x: [90, 70, 50, 10],
+  textposition: "inside",
+  textinfo: "label"}]
+
+var layout = {yaxis: {type: 'date'}}
+
+Plotly.newPlot("myDiv", data, layout)

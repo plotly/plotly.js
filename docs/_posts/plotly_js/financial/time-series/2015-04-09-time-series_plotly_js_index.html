@@ -1,0 +1,16 @@
+---
+description: How to plot D3.js-based date and time in Plotly.js. An example of a time-series
+  plot.
+display_as: financial
+language: plotly_js
+layout: base
+name: Time Series
+order: 5
+page_type: example_index
+permalink: javascript/time-series/
+redirect_from: javascript-graphing-library/time-series/
+thumbnail: thumbnail/time-series.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","time-series" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

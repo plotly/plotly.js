@@ -1,0 +1,25 @@
+---
+name: 2D Histogram Contour Colorscale
+language: plotly_js
+suite: hist2dcontour
+order: 2
+sitemap: false
+arrangement: horizontal
+---
+
+var x = [];
+var y = [];
+for (var i = 0; i < 500; i ++) {
+	x[i] = Math.random();
+	y[i] = Math.random() + 1;
+}
+
+var data = [
+  {
+    x: x,
+    y: y,
+    colorscale: 'Blues',
+    type: 'histogram2dcontour'
+  }
+];
+Plotly.newPlot('myDiv', data);

@@ -1,0 +1,71 @@
+---
+name: Adding Lines to Maps
+language: plotly_js
+suite: scatter-tile-maps
+order: 4
+sitemap: false
+arrangement: horizontal
+---
+
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/c34aaa0b1b3cddad335173cb7bc0181897201ee6/2011_february_aa_flight_paths.csv', function(err, rows){
+    function unpack(rows, key) {
+        return rows.map(function(row) { return row[key]; });}
+
+    function getMaxOfArray(numArray) {
+        return Math.max.apply(null, numArray);
+    }
+
+    var data = [];
+    var count = unpack(rows, 'cnt');
+    var startLongitude = unpack(rows, 'start_lon');
+    var endLongitude = unpack(rows, 'end_lon');
+    var startLat = unpack(rows, 'start_lat');
+    var endLat = unpack(rows, 'end_lat');
+
+    for ( var i = 0 ; i < count.length; i++ ) {
+        var opacityValue = count[i]/getMaxOfArray(count);
+
+        var result = {
+            type: 'scattermap',
+            lon: [ startLongitude[i] , endLongitude[i] ],
+            lat: [ startLat[i] , endLat[i] ],
+            mode: 'lines',
+            line: {
+                width: 1,
+                color: 'red'
+            },
+            opacity: opacityValue
+        };
+
+        data.push(result);
+    };
+
+    layout = {
+      dragmode: 'zoom',
+      map: {
+        center: {
+          lat: 38.03697222,
+          lon: -90.70916722
+        },
+        domain: {
+          x: [0, 1],
+          y: [0, 1]
+        },
+        style: 'dark',
+        zoom: 2
+      },
+      margin: {
+        r: 0,
+        t: 0,
+        b: 0,
+        l: 0,
+        pad: 0
+      },
+      paper_bgcolor: '#191A1A',
+      plot_bgcolor: '#191A1A',
+      showlegend: false
+   };
+
+  Plotly.newPlot("myDiv", data, layout, {showLink: false});
+
+});

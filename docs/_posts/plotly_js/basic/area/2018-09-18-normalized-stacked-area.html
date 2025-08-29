@@ -1,0 +1,17 @@
+---
+name: Normalized Stacked Area Chart
+language: plotly_js
+suite: area
+order: 2.1
+sitemap: false
+arrangement: horizontal
+---
+var plotDiv = document.getElementById('plot');
+var traces = [
+	{x: [1,2,3], y: [2,1,4], stackgroup: 'one', groupnorm:'percent'},
+	{x: [1,2,3], y: [1,1,2], stackgroup: 'one'},
+	{x: [1,2,3], y: [3,0,2], stackgroup: 'one'}
+];
+
+Plotly.newPlot('myDiv', traces, {title: {text: 'Normalized stacked and filled line chart'}});
+

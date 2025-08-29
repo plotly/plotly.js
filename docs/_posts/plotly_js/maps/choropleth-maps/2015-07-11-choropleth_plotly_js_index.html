@@ -1,0 +1,15 @@
+---
+description: How to make a D3.js-based choropleth map in JavaScript. A choropleth
+  map shades geographic regions by value.
+display_as: maps
+language: plotly_js
+layout: base
+name: Choropleth Maps
+order: 9
+permalink: javascript/choropleth-maps/
+redirect_from: javascript-graphing-library/choropleth-maps/
+thumbnail: thumbnail/choropleth.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","choropleth-maps" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

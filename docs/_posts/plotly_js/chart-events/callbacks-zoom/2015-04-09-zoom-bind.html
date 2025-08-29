@@ -1,0 +1,27 @@
+---
+name: Binding to Zoom Events
+plot_url: https://codepen.io/plotly/embed/dogexw/?height=530&theme-id=15263&default-tab=result
+language: plotly_js
+suite: zoom-events
+sitemap: false
+order: 0
+arrangement: horizontal
+---
+var graphDiv = document.getElementById('myDiv');
+
+var N = 40,
+    x = d3.range(N),
+    y = d3.range(N).map( d3.random.normal() ),
+    data = [ { x:x, y:y } ];
+    layout = { title: {text: 'Click-drag to zoom' }};
+
+Plotly.newPlot(graphDiv, data, layout);
+
+graphDiv.on('plotly_relayout',
+    function(eventdata){
+        alert( 'ZOOM!' + '\n\n' +
+            'Event data:' + '\n' +
+             JSON.stringify(eventdata) + '\n\n' +
+            'x-axis start:' + eventdata['xaxis.range[0]'] + '\n' +
+            'x-axis end:' + eventdata['xaxis.range[1]'] );
+    });

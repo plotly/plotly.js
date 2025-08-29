@@ -1,0 +1,38 @@
+---
+name: Enumerated Ticks with Tickvals and Ticktext
+language: plotly_js
+suite: axes
+order: 2
+sitemap: false
+arrangement: horizontal
+---
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/stockdata.csv', function(err, rows){
+function unpack(rows, key) {
+  return rows.map(function(row)
+  { return row[key]; });}
+
+var trace1 = {
+  x:unpack(rows, 'Date'),
+  y: unpack(rows, 'IBM'),
+  mode: 'markers',
+  marker: {
+    size: 7,
+    line: {
+    width: 0.5},
+    opacity: 0.8},
+  type: 'scatter'
+};
+
+var layout = {
+  title: {
+    text: 'IBM Stock Data: Jan 2007 - Mar 2016'
+  },
+  xaxis: {
+    tickvals: ['2007-01-01', '2007-09-01', '2008-01-01', '2008-09-01', '2009-01-01', '2010-01-01', '2011-01-01', '2011-02-14', '2012-01-01', '2013-01-01', '2014-01-01', '2015-01-01', '2016-01-01'],
+    ticktext: ['2007', 'Financial Crisis Starts', '2008', 'Financial Crisis Ends', '2009', '2010', '2011', 'IBM wins Jeopardy!', '2012', '2013', '2014', '2015', '2016']
+  }
+};
+
+var data = [trace1];
+Plotly.newPlot('myDiv', data, layout);
+});

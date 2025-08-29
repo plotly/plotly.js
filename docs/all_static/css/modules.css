@@ -1,0 +1,1088 @@
+/**************************
+HEADER STYLING
+**************************/
+
+.headerbar-leftside {
+  margin-left: 70px;
+  display: inline-block;
+  float: left;
+  max-width: 200px;
+  white-space: nowrap;
+  margin-right: 70px;
+  height: 78px;
+  line-height: 78px;
+}
+
+.logo{
+  font-size: 26px !important;
+  font-weight: 200;
+  color: #447BDC;
+  text-decoration: none;
+}
+
+.logo:hover{
+  color: #2d56aa;
+}
+
+.ploticon-plotlylogo {
+  font-family: "plotlylogo";
+}
+
+.logo em {
+    font-style: normal;
+}
+
+.headerbar-rightside {
+  display: inline-block;
+  float: right;
+  margin-left: 0px;
+  max-width: 500px;
+  white-space: nowrap;
+  margin-right: 70px;
+/*  margin-top: 25px; */
+}
+
+.headerbar-nav {
+  display: inline-block;
+  vertical-align: super;
+}
+
+.headerbar-nav-item {
+  color: #69738a;
+  display: inline-block;
+  font-size: 14px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: center;
+  font-family: "Open sans",verdana,arial,sans-serif;
+  text-decoration: none;
+}
+
+.headerbar a{
+  text-decoration: none;
+}
+
+.headerbar-nav-item:hover, .headerbar-nav-item.lateralmenu-item.is-active{
+  color: #447bcd;
+  cursor: pointer;
+}
+
+@media (max-width: 1100px) {
+  .headerbar{
+  width: 100%;
+  min-width: 150px;
+  }
+
+  .headerbar-leftside {
+  margin-left: 20px;
+  max-width: 100px;
+  margin-right: 25px;
+  }
+}
+
+/***********************
+DROP-DOWN MENU
+************************/
+.dropdown {
+  position: relative;
+  display: inline-block;
+  overflow-y: visible;
+}
+
+.dropdown-menu {
+  position: absolute;
+  z-index: 1000;
+  display: none;
+  min-width: 150px;
+  border: 1px solid rgba(0,0,0,.2);
+  margin: 0;
+  top: 65px;
+  background-color: #fff;
+  padding: 0 10px;
+  border-radius: 2px;
+  padding: 5px 15px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,.1);
+}
+
+.dropdown-menu:after, .dropdown-menu:before {
+  box-sizing: border-box;
+}
+
+.dropdown-menu-item {
+  border-bottom: 1px solid #E7E8E9;
+  font-weight: 600;
+  display: block;
+  clear: both;
+  font-size: 14px;
+  line-height: 28px;
+}
+
+.dropdown-menu-item:last-child {
+  border-bottom: 0px none #E7E8E9;
+}
+
+.dropdown-menu-item{
+  display: block;
+  padding: 4px 6px;
+  margin: 0;
+  white-space: nowrap;
+  width: 90%;
+  text-align: left;
+  font-size: 14px;
+  line-height: 21px;
+  color: #5D667A;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dropdown-menu-item:hover {
+  color: #447bdc;
+}
+
+.carret{
+    width: 0;
+    height: 0;
+    border-top: 4px solid #000;
+    border-left: 4px solid transparent;
+    margin-left: 2px;
+    display: inline-block;
+    vertical-align: middle;
+    content: "";
+    box-sizing: border-box;
+}
+
+/***********************
+SOCIAL SHARE STYLING
+************************/
+.share_bar{
+  height: 40px;
+  margin: auto;
+  width: 300px;
+}
+.share_one{
+  padding-top: 10px;
+  display: inline;
+}
+.share_two{
+  display: inline;
+}
+
+/*************************
+FOOTER STYLING
+**************************/
+
+.footer-bottom {
+  font-size: 12px;
+}
+
+.footerarea h6 {
+  color: #447bdc;
+  font-size: 13px;
+  font-weight: 700;
+  padding-bottom: 0px;
+  text-align: left;
+  text-transform: uppercase;
+  line-height: 8px;
+}
+
+.footerarea li, .footerarea a, .footerarea p{
+  color: #8c97af;
+  font-size: 12px;
+  font-weight: 400;
+  list-style: none;
+  line-height: 4px;
+  margin-top: 15px;
+}
+
+@media (max-width: 550px) {
+  .footer-bottom li, .footer-bottom a, .footer-bottom p{
+  margin-top: 2px;
+  margin: 0 0 10px 3px;}
+
+}
+
+.footerarea a{
+  text-decoration: none;
+  color: #8c97af;
+}
+
+.footerarea a:hover{
+  color: #69738a;
+}
+
+.social_icon{
+  color: #447bdc;
+  font-size: 21px;
+}
+
+.plotly-social-media-small{
+  display: inline-block;
+}
+
+.plotly-social-media-small li{
+  display: inline;
+  padding-right: 8px;
+}
+
+/***********************
+NAVIGATION BAR STYLING
+***********************/
+
+.navigation-bar p, .navigation-bar a {
+  font-weight: 800;
+  margin-top: 10px;
+  text-transform: uppercase;
+  line-height: 40px;
+  text-decoration: none;
+  display: inline;
+  font-size: 13px
+}
+.navigation-bar a{
+  color: #447bdc;
+  margin: 0px 20px;
+}
+.navigation-bar p{
+  float: left;
+  color: #69738a;
+}
+#nav-not-active{
+  color: #69738a;
+}
+
+@media (max-width: 400px) {
+  .navigation-bar p, .navigation-bar a {
+      font-size: 12px;}
+}
+@media (max-width: 550px) {
+  .navigation-bar .float-right{
+    display: none;}
+}
+
+#forklink{
+font-weight: 300;
+font-family: "Open sans",verdana,arial,sans-serif;
+font-size: 14px;
+}
+
+/*****************************
+ALL TUTORIALS SECTION STYLING
+*****************************/
+/* Spacing modifications */
+
+#alltutorialsect{
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.sectionseparator_b .titlecenter{
+  background-color: rgb(244, 244, 248);
+}
+
+.sectionseparator_a li, .sectionseparator_b li, .sectionseparator_a a, .sectionseparator_b a{
+  list-style: none;
+  font-size: 12px;
+  text-decoration: none;
+/*  color: #8c97af; */
+}
+
+
+.sectionseparator_a a:hover, .sectionseparator_b a:hover{
+/*  color: #69738a; */
+}
+/* Title Styling */
+
+.tutorialsect_title{
+  padding-top: 20px;
+  padding-bottom: 10px;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Tutorial Block Titles */
+
+.titlecenter{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 100px;
+  padding-right: 8px;
+  padding-left: 8px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: rgb(244, 244, 248);
+}
+
+.titlecenter h5{
+    margin-top: auto;
+  margin-bottom: auto;
+  }
+.tutorialsect_title{
+    padding-left: 0px;
+  }
+
+@media (min-width: 550px) {
+  .tutorialsect_title{
+    padding-left: 5%;
+  }
+  .titlecenter h5{
+  font-size: 16px;
+  }
+}
+
+/* Larger than tablet */
+@media (min-width: 750px) {
+
+.titlecenter h5{
+  font-size: 16px;
+  }
+}
+
+/* Larger than desktop */
+@media (min-width: 1000px) {
+
+.titlecenter h5{
+  font-size: 18px;
+  }
+}
+
+/* Larger than Desktop HD */
+@media (min-width: 1200px) {
+
+.titlecenter h5{
+  font-size: 18px;
+  }
+}
+
+/* Excel logo */
+
+.container-excel{
+  position: relative;
+}
+
+.excel-logo{
+  z-index: 999;
+  position: absolute;
+  max-width: 20%;
+  right: 4px;
+  bottom: 4px;
+}
+
+
+
+/********
+BUTTONS
+*********/
+
+
+
+.button {
+    background-color: #447bdc;
+    border: medium none;
+    border-radius: 2px;
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0 5px;
+    padding: 5px 1em;
+    text-transform: uppercase;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.\--enterprise-quaternary {
+    background: None;
+    border: 1px solid #45A9FF;
+    color: #ffffff;
+}
+
+.button a{
+  text-decoration: none;}
+
+@media (max-width: 550px) {
+  .button {
+    min-width: 100%;
+          margin: 5px 0;
+    padding: 5px 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .button {
+    margin: 0 0px 10px;
+  }
+}
+
+.secondary {
+    background: none repeat scroll 0 0 #8c97af;
+      border: medium none;
+    border-radius: 2px;
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0 5px;
+    padding: 5px 1em;
+    text-transform: uppercase;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.button:hover, .button.lateralmenu-item.is-active{
+  background: none repeat scroll 0 0 #2d56aa;
+  color: white;
+}
+
+.\--enterprise-quaternary:hover {
+    background: #45A9FF;
+    color: #ffffff;
+}
+
+.secondary:hover {
+  background: none repeat scroll 0 0 #69738a;
+  color: white;
+}
+
+
+
+/***********************
+TUTORIAL HOME PAGE STYLING
+************************/
+
+.tuthome-padding{
+  padding-top: 40px;
+  padding-bottom: 80px;
+}
+
+.tuthome-padding-b{
+  padding-bottom: 40px;
+}
+
+.tuthome-section-bg{
+    background-color: #F3F3F3;
+    width: 100%;
+}
+
+.tuthome-section{
+  border-bottom-color: #cccccc;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+.tuthome-section:last-child{
+  border-bottom-width: 0px;
+  border-bottom-style: none;
+}
+
+.tuthome-section li{
+  list-style: none;
+  font-size: 12px;
+  text-decoration: none;
+  color: #8c97af;
+}
+
+.tuthome-section a:hover, .tuthome-section a:hover{
+  color: #69738a;
+}
+/* Button Styling */
+
+
+#loadMore, #loadMore a, #loadMore a:hover{
+  display: block;
+  clear: both;
+  color: #ffffff;
+  text-align: center;
+
+}
+
+#loadMore{
+
+    margin-left: 1%;
+    margin-right: 1%;
+    text-decoration: none;
+  font-size: 12px;
+}
+
+@media (min-width: 550px){
+  #loadMore {
+  margin-left: 37.5%;
+  width: 25%;
+  font-size: 8px;
+  }
+}
+
+
+/********************
+CLIENT APIS Rollover styling
+********************/
+
+.categories-apis{
+  position: relative;
+  height: 150px;
+  padding: 0px;
+  text-align: center;
+  font-weight: 400;
+  box-sizing: content-box;
+}
+
+#pythonapi_img, #matlabapi_img, #r_api_img, #pythonapi_text, #matlabapi_text, #r_api_text{
+  position: absolute;
+  width: 100%;
+}
+
+#pythonapi_img, #matlabapi_img, #r_api_img, {
+  z-index: 99;
+}
+
+#pythonapi_text, #matlabapi_text, #r_api_text{
+  z-index: 999;
+}
+
+
+#pythonapi_text, #matlabapi_text, #r_api_text{
+  padding: 15px 0px;
+  text-align: center;
+  font-weight: 400;
+}
+
+.titlecenterapi{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  height: 150px;
+  padding-right: 8px;
+  padding-left: 8px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.titlecenterapi h6{
+    margin-top: auto;
+  margin-bottom: auto;
+  }
+
+
+
+@media (min-width: 550px) {
+  .categories, .categories-apis{
+      height: 60px;
+      padding: 3px;
+  }
+  .categories-apis p{
+     font-size: 11px;
+     line-height: 13px;
+  }
+  .categories-apis h6{
+     font-size: 13px;
+     line-height: 15px;
+  }
+  .titlecenterapi{
+     height: 60px;
+  }
+  #pythonapi_text, #matlabapi_text, #r_api_text{
+  padding: 0px 0px;
+  }
+
+}
+
+/* Larger than tablet */
+@media (min-width: 750px) {
+  .categories, .categories-apis{
+      min-height: 80px;
+      padding: 10px;
+  }
+  .categories-apis p{
+     font-size: 12px;
+     line-height: 14px;
+  }
+  .categories-apis h6{
+     font-size: 18px;
+        line-height: 20px;
+  }
+  .titlecenterapi{
+     height: 80px;
+  }
+}
+
+/* Larger than desktop */
+@media (min-width: 1000px) {
+  .categories, .categories-apis{
+  height: 100px;
+  padding: 10px;
+  }
+  .categories-apis p{
+  font-size: 15px;
+  line-height: 21px;
+  }
+  .categories-apis h6{
+  font-size: 21px;
+  line-height: 27px;
+  }
+  .titlecenterapi{
+     height: 100px;
+  }
+}
+
+/* Larger than Desktop HD */
+@media (min-width: 1200px) {
+  .categories, .categories-apis{
+      height: 150px;
+      padding: 10px;
+  }
+  .categories-apis p{
+    font-size: 15px;
+    line-height: 21px;
+  }
+  .categories-apis h6{
+  font-size: 21px;
+  line-height: 27px;
+  }
+  .titlecenterapi{
+     height: 150px;
+  }
+}
+
+/*************************
+POP-UP MENU STYLING
+**************************/
+.popupheader a{
+  line-height: 78px;
+}
+
+.popupmenu li{
+  list-style: none;
+}
+
+.popupmenu a{
+  color: #69738a;
+  text-decoration: none;
+    font-size: 40px;
+    font-weight: 200;
+}
+.popupmenu a:hover{
+  color: #447bdc;
+}
+
+#popmenufull{
+  z-index: 99999;
+  position: fixed;
+  opacity: 0.95;
+  background-color: #ffffff;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  text-align: center;
+  vertical-align: middle;
+  overflow-y: scroll;
+}
+
+.popupheader{
+  display: block;
+  width: 100%;
+  clear: both;
+  height: 80px;
+}
+
+.popupmenu{
+  padding-top: 20px;
+}
+
+.close{
+  float: right;
+  height: 30px;
+  width: 30px;
+  margin-right: 40px;
+  margin-top: 20px;
+}
+
+.sub-popmenu a{
+  font-size: 20px;
+}
+
+/****************
+TUTORIAL STYLING
+****************/
+.graphembed{
+  max-height: 300px;
+}
+
+h3 code{
+  padding: 0rem .2rem;
+}
+
+/**************
+API SPLASH
+**************/
+
+.api-splash{
+  background-image:url('https://images.plot.ly/excel/plotlyjs/plotlyjs-banner-background.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  max-width: 100%;
+  height: 300px;
+  padding: 0px;
+  background-position: center top;
+}
+.api-splash-mute{
+    height: 100%;
+    width: 100%;
+  background: -moz-linear-gradient(top,  rgba(14,14,14,0.8) 0%, rgba(255,255,255,0) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(14,14,14,0.8)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(14,14,14,0.8) 0%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(14,14,14,0.8) 0%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(14,14,14,0.8) 0%,rgba(255,255,255,0) 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  rgba(14,14,14,0.8) 0%,rgba(255,255,255,0) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cc0e0e0e', endColorstr='#00ffffff',GradientType=0 ); /* IE6-9 */
+}
+.api-splash h1{
+  margin-top: 0px;
+  margin-bottom: 20px;
+  margin-left: 10px;
+  color: white;
+  text-align: center;
+}
+.api-splash h3{
+  color: white;
+  text-align: center;
+}
+.api-sect-padding{
+  padding-top: 40px;
+}
+
+/* Larger than mobile */
+@media (min-width: 400px) {
+  .api-splash{
+    height: 300px;
+    }
+}
+/* Larger than phablet (also point when grid becomes active) */
+@media (min-width: 550px) {
+  .api-splash{
+    height: 300px;
+    }
+}
+
+/* Larger than tablet */
+@media (min-width: 750px) {
+  .api-splash{
+    height: 350px;
+    }
+}
+
+/* Larger than desktop */
+@media (min-width: 1000px) {
+  .api-splash{
+    height: 400px;
+    }
+}
+.transbar{
+background-color: transparent;
+border: none;
+margin-top: 0px;
+margin-bottom: 30px;
+top:0;
+width: 100%;
+position: absolute;
+}
+.transbar-link{
+ color: #ffffff;
+ border: none;
+}
+.transbar-link:hover{
+color: #ffc938;
+border:none;
+}
+.is-fixed {
+    background-color: white;
+    border: 1px solid #e7e8e9;
+    color: #69738a;
+    height: 80px;
+    line-height: 80px;
+    position: fixed;
+    top: 0;
+    transition: background-color 0.4s linear 0s, border 0.4s linear 0s;
+    z-index: 99;
+  margin-top: 0px;
+}
+
+
+/**************
+LANGUAGE PAGES
+**************/
+.btnrow{
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.btnrow-full-bleed{
+  background: whitesmoke;
+  padding: 50px 0 50px 0;
+  margin: 100px 0 80px 0;
+}
+
+.btnrow-full-bleed a.button{
+  color: #444;
+  font-size: 16px;
+  font-weight: 300;
+  background: none !important;
+}
+
+.btnrow-full-bleed a.button:hover{
+  background: none !important;
+  opacity: 0.5;
+}
+
+/**************
+TIP BOX
+**************/
+.tipbox{
+  text-align: center;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 0px;}
+
+.tipbox img{
+  display: inline-block;
+  padding-right: 20px;
+}
+
+.tipbox p{
+  display: inline-block;
+  font-size: 16px;
+  vertical-align: 130%;
+}
+
+/**************
+API THUMNAIL LIST
+**************/
+@media (max-width: 550px) {
+  .api-sect-padding img{
+    max-height: 200px;
+    margin: auto;
+  }
+}
+
+.api-thum-img{
+  width: 60px;
+}
+
+/***********************
+NAVIGATION BAR STYLING
+***********************/
+.lang_nav_button{
+  background-color: transparent;
+    border: medium none;
+    border-radius: 0px;
+    color: #447adb;
+    cursor: pointer;
+    display: inline-block;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+    margin: 0 5px;
+    padding: 5px 1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  vertical-align: middle;
+}
+.lang_nav_button-div{
+  display: inline-block;
+}
+
+.lang_nav_button:hover{
+  background-color: whitesmoke;
+}
+.lang_nav_button{
+    font-weight: 400;
+    text-decoration: none;
+}
+
+@media (max-width: 550px) {
+  .lang_nav_button-div {
+    min-width: 100%;
+    }
+  .lang_nav_button {
+    min-width: 100%;
+      margin: 5px 0;
+    padding: 5px 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .lang_nav_button {
+    margin: 0 0px 10px;
+  }
+}
+
+.lang_nav_thum{
+  max-width: 20px;
+  vertical-align: middle;
+  display: inline;
+  padding-right: 5px;
+}
+
+.lang_nav_act{
+  background-color: transparent;
+  border-bottom: 3px solid #447adb;
+  border-top: 3px solid #447adb;
+}
+
+
+/***********************
+LANGUAGE INDEX PAGE STYLING
+***********************/
+  .three-column-clear{
+    clear: none;}
+  .five-column-clear{
+    clear: both;}
+
+@media (max-width: 750px) {
+  .three-column-clear{
+    clear: both;}
+  .five-column-clear{
+    clear: none;}
+}
+
+@media (max-width: 550px) {
+  .three-column-clear{
+    clear: none;}
+  .five-column-clear{
+    clear: none;}
+}
+/***********************
+GETTING STARTED STYLING
+***********************/
+
+.getstartarea h2{
+  color: #274478;
+  margin-bottom: 10.5px;
+  line-height: 1.5;
+  font-size: 30px;
+
+}
+
+.content-box{
+  max-width: 100%;
+  padding: 25px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  text-align: left;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+}
+.content-box p{
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.content-box code{
+  margin: 0px;
+}
+
+.content-box pre{
+  padding: 0px;
+  margin-bottom: 1em;
+}
+
+.content-box pre > code{
+  background: #edf1f8;
+}
+
+.content-box-two{
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #edf1f8;
+  text-align: left;
+}
+
+.terminal{
+
+}
+
+/***********************
+PLOTLY.JS VERSION NUMBER
+************************/
+.version-number{
+  margin-top: 10px;
+      color: grey;
+      opacity: 0.6;
+}
+
+.plotlyjs-download{
+  text-decoration: none;
+  font-size: 18px;
+  display: inline-block;
+  padding: 12px 24px;
+  margin: 0px 30px;
+}
+
+@media (max-width: 700px){
+  .plotlyjs-download{
+    padding: 5px 0px;
+    margin: 0px 0px;
+    min-width: 98%;
+  }
+}
+
+/***************************
+SYNTAX HIGHLIGHTER OVERRIDES
+***************************/
+.hljs{
+  background-color: rgb(244, 244, 248) !important;
+}
+
+/**********************
+FLOATING REFERENCE NAV
+**********************/
+
+#reference-side-nav{
+  position: fixed;
+  left: 0px;
+  top: 410px;
+  float:left;
+  background: whitesmoke;
+  padding: 20px;
+  height: 100%;
+  border: thin solid #ddd;
+}
+
+#reference-side-nav ul{
+  list-style: none;
+  list-style-type: none;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+#reference-side-nav li{
+  margin-bottom: 0px !important;
+  font-size: 12px;
+}
+
+#reference-side-nav li a{
+  color: #444;
+}
+
+.underline{
+  text-decoration: underline !important;
+}
+
+.scrollspy-highlight{
+    background: #00a8e6 !important;
+    padding: 4px;
+}
+
+.scrollspy-highlight a{
+  color: #fff !important;
+}

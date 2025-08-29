@@ -1,0 +1,63 @@
+---
+name: Update Data
+plot_url:
+language: plotly_js
+suite: events
+order: 7
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  The following Plotly events emit update information when the event is triggered: [`plotly_restyle`]() and [`plotly_relayout`]().
+  The update emitted with `plotly_restyle` is similar across plot types and includes an array containing an object of the newly updated
+  attributes and an array of the trace numbers that were updated.
+
+  For Cartesian (2D) plots, `plotly_relayout` emits only the xaxis and yaxis ranges which were directly changed by the triggering event.
+  For 3D plots, [`layout.scene.camera`](https://plotly.com/javascript/reference/layout/scene/#layout-scene-camera) data is similarly emitted.
+  See the full structures below:
+---
+// plotly_restyle update
+[
+  {update},  // update object -- attribute updated: new value
+  [0]       // array of traces updated
+]
+
+// plotly_relayout update: Cartesian
+//// Upon resizing plot:
+{
+ xaxis.range[0]: , // new value if xaxis.range[0] was updated
+ xaxis.range[1]: ,
+ yaxis.range[0]: , // new value if yaxis.range[0] was updated
+ yaxis.range[1]:
+}
+//// Upon autosizing plot:
+{
+ xaxis.autorange: true,
+ yaxis.autorange: true
+}
+
+// plotly_relayout update: 3D
+// a subset of the following data will be emitted depending on
+// which attributes were changed by the triggering event.
+{
+  scene: {
+    center: { // https://plotly.com/javascript/reference/layout/scene/#layout-scene-camera-center
+      x: 0,
+      y: 0,
+      z: 0
+    }
+  },
+  {
+    eye: { // https://plotly.com/javascript/reference/layout/scene/#layout-scene-camera-eye
+      x: 1.25,
+      y: 1.25,
+      z: 1.25
+    }
+  }.
+  {
+    up: { // https://plotly.com/javascript/reference/layout/scene/#layout-scene-camera-up
+      x: 0,
+      y: 0,
+      z: 1
+    }
+  }
+}

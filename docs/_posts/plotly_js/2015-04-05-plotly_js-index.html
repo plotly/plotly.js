@@ -1,0 +1,177 @@
+---
+name: Plotly JavaScript Graphing Library
+permalink: /javascript/
+description: A free open source interactive javascript graphing library. Plotly.js is built on d3.js and webgl and supports over 20 types of interactive charts.
+language: plotly_js
+layout: langindex
+display_as: false
+redirect_from: /javascript-graphing-library/
+---
+<script src="//cdn.plot.ly/plotly-{{site.data.jsversion.version}}.min.js"></script>
+
+<header class="--welcome">
+    <div class="--welcome-body">
+        <!--div.--wrap-inner-->
+        <div class="--title">
+
+            <div class="--body">
+                <h1>Plotly JavaScript Open Source Graphing Library</h1>
+                <p>
+                    Built on top of <a target="_blank" href="https://d3js.org/">d3.js</a> and <a target="_blank" href="https://github.com/stackgl">stack.gl</a>, Plotly.js is a high-level, declarative charting library. plotly.js ships with over 40 chart types, including 3D charts, statistical graphs, and SVG maps.
+                    <br>plotly.js is <a href="/javascript/is-plotly-free">free and open source</a> and you can <a target="_blank" href="https://github.com/plotly/plotly.js">view the source, report issues or contribute on GitHub</a>.
+                </p>
+            </div>
+        </div>
+        <div class="--title">
+          <div class="--body">
+            {% include layouts/dashplug.html %}
+            <br>
+            <details>
+                <summary>Read more about plotly.js features</summary>
+                <section class="tutorial-content --tutorial-index --base">
+
+                <div class="js-splash--feature-block">
+
+                    <div class="block-title">
+                        Sophisticated chart types
+                    </div>
+                    <div class="block-content">
+                        <code>plotly.js</code> abstracts the types of statistical and scientific charts that you would find in packages like matplotlib, ggplot2, or MATLAB.
+                    </div>
+
+                    <!-- <div class="graph" style="height: 75vh" id="contour-plot"></div> -->
+                    <div style="border: 1px solid #C2C2C2; width: 100%; text-align: center;">
+                        <a class="image-link" style="display: inline-block;" href="https://plotly.com/~mdtusz/72.embed"><img style="width: 100%" src="{{site.imgurl}}images/turbulence-simulation.jpg"/></a>
+                    </div>
+                    <pre><code class="js-splash--code-block">d3.json('https://plotly.com/~DanielCarrera/13.json', function(figure){
+                  var trace = {
+                    x: figure.data[0].x, y: figure.data[0].y, z: figure.data[0].z,
+                    type: 'contour', autocolorscale: false,
+                    colorscale: [[0,"rgb(  0,  0,  0)"],[0.3,"rgb(230,  0,  0)"],[0.6,"rgb(255,210,  0)"],[1,"rgb(255,255,255)"]],
+                    reversescale: true, zmax: 2.5, zmin: -2.5
+                  };
+                  var layout = {
+                    title: {
+                      text: 'turbulence simulation'
+                  },
+                    xaxis: {
+                      title: {
+                          text: 'radial direction'
+                      },
+                      showline: true,
+                      mirror: 'allticks',
+                      ticks: 'inside'
+                    },
+                    yaxis: {
+                        title: {
+                            text: 'vertical direction'
+                        },
+                        showline: true,
+                        mirror: 'allticks',
+                        ticks: 'inside'
+                    },
+                    margin: {l: 40, b: 40, t: 60},
+                    annotations: [{
+                      showarrow: false,
+                      text: 'Credit: <a target="_blank" href="https://plotly.com/~DanielCarrera">Daniel Carrera</a>',
+                      x: 0, y: 0, xref: 'paper', yref: 'paper'
+                    }]
+                  }
+                  Plotly.newPlot(document.getElementById('contour-plot'), [trace], layout, {showLink: false});
+                });</code></pre>
+
+
+
+                    <div class="block-title">Fully customizable</div>
+                    <div class="block-content">
+                        <code>plotly.js</code> charts are described declaratively as JSON objects. Every aspect of the charts, such as colors, grid lines, and the legend, has a corresponding set of JSON attributes.
+                        <div style=" padding-top: 15px; padding-bottom: 10px; text-align: right; height: 30px;">
+                            <a style="float: right" target="_blank" href="https://plotly.com/javascript/reference">view all of the available attributes</a>
+                        </div>
+                    </div>
+
+                    <pre><code class="js-splash--code-block">d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/wind_speed_laurel_nebraska.csv', function(rows){
+                    var trace = {
+                      type: 'scatter',                    // set the chart type
+                      mode: 'lines',                      // connect points with lines
+                      x: rows.map(function(row){          // set the x-data
+                        return row['Time'];
+                      }),
+                      y: rows.map(function(row){          // set the x-data
+                        return row['10 Min Sampled Avg'];
+                      }),
+                      line: {                             // set the width of the line.
+                        width: 1
+                      },
+                      error_y: {
+                        array: rows.map(function(row){    // set the height of the error bars
+                          return row['10 Min Std Dev'];
+                        }),
+                        thickness: 0.5,                   // set the thickness of the error bars
+                        width: 0
+                      }
+                    };
+
+                    var layout = {
+                      yaxis: {
+                        title: {
+                          text: "Wind Speed"
+                        }
+                      },       // set the y axis title
+                      xaxis: {
+                        showgrid: false,                  // remove the x-axis grid lines
+                        tickformat: "%B, %Y"              // customize the date format to "month, day"
+                      },
+                      margin: {                           // update the left, bottom, right, top margin
+                        l: 40, b: 10, r: 10, t: 20
+                      }
+                    };
+
+                    Plotly.newPlot(document.getElementById('wind-speed'), [trace], layout, {showLink: false});
+                });</code></pre>
+
+
+
+                    <div class="block-title">High performance</div>
+                    <div style="width: 100%" class="block-content">
+                        <div class="js-splash--inline-text-header">
+                            Most plotly graphs are drawn with SVG. This offers great compatibility across browsers and publication-quality vector image export. Unfortunately, there are inherent performance limitations with the number of SVG elements that you can draw in the DOM.<br><br>
+                            <code>plotly.js</code> uses <a target="_blank" href="http://stack.gl">stack.gl</a> for high performance 2D and 3D charting.<br><br>
+                        </div>
+                        <div style="position: relative;" class="row">
+                            <div class="js-splash--inline-image-left">
+                                <a class="image-link" style="display: inline-block;" href="https://plotly.com/~chris/17389.embed"><img style="width: 100%" src="{{site.imgurl}}images/hue-value-vs.jpg"/></a>
+                            </div>
+                            <div class="js-splash--inline-text-right">
+                                This chart was drawn with the <code>plotly.js</code> chart type <code>scattergl</code>. <code>scattergl</code> charts render an order of magnitude faster than their SVG counterparts.<br>
+                            </div>
+                        </div>
+                        <div style="position: relative; width: 100%" class="row">
+                            <div class="js-splash--inline-image-right">
+                                <a class="image-link" style="display: inline-block; width: 100%;" href="https://plotly.com/~chriddyp/1780.embed">
+                                <img style="width: 100%;" src="{{site.imgurl}}images/surface-plot.jpg"/>
+                                </a>
+                            </div>
+                            <div class="js-splash--inline-text-left">
+                                All 3D charts in <code>plotly.js</code> are rendered with WebGL, leveraging the power of the GPU for fast interactivity.
+                                <a class="js-splash--chart-link" target="_blank" href="https://plotly.com/~chris/17389.embed">view the interactive version</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="block-title">Universal</div>
+                    <div class="block-content">
+                        By abstracting charts to a declarative JSON structure, <code>plotly.js</code> is used as a browser-based charting library for <a target="_blank" href="https://plotly.com/python/">Python</a>, <a target="_blank" href="https://plotly.com/r/">R</a>, <a target="_blank" href="https://plotly.com/matlab/">MATLAB</a>.
+                    </div>
+
+                </div>
+                </section>
+            </details>
+          </div>
+
+
+        </div>
+    </div>
+</header>
+
+{% assign languagelist = site.posts | where:"language","plotly_js"  | sort: "order" %}
+{% include posts/mainlang_documentation_eg.html %}

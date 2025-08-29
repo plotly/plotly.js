@@ -1,0 +1,14 @@
+---
+name: Zoom Events
+permalink: javascript/zoom-events/
+description: How to bind callback functions to zoom events in D3.js-based JavaScript charts.
+layout: base
+thumbnail: thumbnail/zoom.jpg
+language: plotly_js
+page_type: example_index
+display_as: chart_events
+order: 4
+redirect_from: javascript-graphing-library/zoom-events/
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","zoom-events" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

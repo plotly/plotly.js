@@ -1,0 +1,33 @@
+---
+name: Customizing Individual Bar Base
+language: plotly_js
+suite: bar
+order: 8.5
+sitemap: false
+arrangement: horizontal
+---
+
+var data = [
+  {
+    type: 'bar',
+    x: ['2016','2017','2018'],
+    y: [500,600,700],
+    base: [-500,-600,-700],
+    hovertemplate: '%{base}',
+    marker: {
+      color: 'red'
+    },
+    name: 'expenses'
+  },
+  {
+    type: 'bar',
+    x: ['2016','2017','2018'],
+    y: [300,400,700],
+    base: 0,
+    marker: {
+      color: 'blue'
+    },
+    name: 'revenue'
+  }]
+
+Plotly.newPlot('myDiv', data);

@@ -1,0 +1,24 @@
+---
+name: Normalized Histogram
+arrangement: horizontal
+language: plotly_js
+suite: histogram
+order: 9
+sitemap: false
+---
+var x = [];
+for (var i = 0; i < 500; i ++) {
+	x[i] = Math.random();
+}
+
+var data = [
+  {
+    x: x,
+    type: 'histogram',
+	histnorm: 'probability',
+	marker: {
+        color: 'rgb(255,255,100)',
+     },
+  }
+];
+Plotly.newPlot('myDiv', data);

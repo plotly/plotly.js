@@ -1,0 +1,50 @@
+---
+name: Isosurface with Additional Slices
+language: plotly_js
+suite: isosurface
+order: 3
+sitemap: false
+arrangement: horizontal
+---
+
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/clebsch-cubic.csv', function(err, rows){
+  function unpack(rows, key) {
+  return rows.map(function(row) {return parseFloat(row[key]); });
+}
+
+var data = [
+    {
+        type: "isosurface",
+        x: unpack(rows, 'x'),
+        y: unpack(rows, 'y'),
+        z: unpack(rows, 'z'),
+        value: unpack(rows, 'value'),
+        isomin: -100,
+        isomax: 100,
+        surface: {show: true, count: 1, fill: 0.8},
+        slices: {z: {
+          show: true, locations: [-0.3, 0.5]
+        }},
+        caps: {
+            x: {show: false},
+            y: {show: false},
+            z: {show: false}
+        },
+    }
+];
+
+var layout = {
+    margin: {t:0, l:0, b:0},
+    scene: {
+        camera: {
+            eye: {
+                x: 1.86,
+                y: 0.61,
+                z: 0.98
+            }
+        }
+    }
+};
+
+Plotly.newPlot('myDiv', data, layout, {showSendToCloud: true});
+});

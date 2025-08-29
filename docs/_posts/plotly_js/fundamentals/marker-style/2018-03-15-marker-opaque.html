@@ -1,0 +1,45 @@
+---
+name: Fully Opaque
+language: plotly_js
+suite: marker-style
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Fully opaque, the default setting, is useful for non-overlapping markers. When many points overlap it can be hard to observe density.
+---
+
+var x = Array.from({length: 500}, () => Math.random()*(6-3)+3);
+var y = Array.from({length: 500}, () => Math.random()*(6-3)+3);
+
+var data = [{
+  x: x,
+  y: y,
+  type: 'scatter',
+  mode: 'markers',
+  marker: {
+    color: 'rgb(17, 157, 255)',
+    size: 20,
+    line: {
+      color: 'rgb(231, 99, 250)',
+      width: 2
+    }
+  },
+  showlegend: false
+  }, {
+  x: [2,2],
+  y: [4.25,4.75],
+  type: 'scatter',
+  mode: 'markers',
+  marker: {
+    color: 'rgb(17, 157, 255)',
+    size: 60,
+    line: {
+      color: 'rgb(231, 99, 250)',
+      width: 6
+    }
+  },
+  showlegend: false
+}]
+
+Plotly.newPlot('myDiv', data)

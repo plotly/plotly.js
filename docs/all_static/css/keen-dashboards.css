@@ -1,0 +1,316 @@
+
+/*
+ * Full-page application style
+ */
+
+body.application {
+  background: #f2f2f2;
+  padding: 60px 20px 0;
+}
+body.application > .container-fluid {
+  padding-left: 0;
+  padding-right: 0;
+}
+body.application div[class^="col-"] {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+body.application div[class^="col-"] div[class^="col-"] {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+body.application hr {
+  border-color: #d7d7d7;
+  margin: 10px 0;
+}
+
+.navbar-inverse {
+  background-color: #3d4a57;
+  border-color: #333;
+}
+.navbar-inverse .navbar-nav > li > a,
+.navbar .navbar-brand {
+  color: #fbfbfb;
+  text-decoration: none;
+}
+
+.main-nav > li > a:hover {
+  border-bottom: 2px solid transparent;
+  -webkit-transition: border 300ms ease;
+  -o-transition: border 300ms ease;
+  transition: border 300ms ease;
+  border-bottom-color: white;
+}
+
+.return-link, .return-link:focus, .return-link:hover {
+  text-decoration: none;
+}
+
+.chart-wrapper {
+  background: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 3px;
+  margin-bottom: 10px;
+}
+.chart-wrapper .chart-title {
+  border-bottom: 1px solid #d7d7d7;
+  color: #666;
+  font-size: 14px;
+  font-weight: 200;
+  padding: 7px 10px 4px;
+}
+
+.chart-wrapper .chart-stage {
+  /*min-height: 240px;*/
+  overflow: hidden;
+  padding: 5px 10px;
+  position: relative;
+}
+
+.chart-wrapper .chart-notes {
+  background: #fbfbfb;
+  border-top: 1px solid #e2e2e2;
+  color: #808080;
+  font-size: 12px;
+  padding: 8px 10px 5px;
+}
+
+.dash-title{
+  font-size: 18px !important;
+  margin: 0px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.2rem !important;
+}
+
+.dash-title-languages{
+  font-weight: 200 !important;
+  font-color: white !important;
+}
+
+#forklink{
+  font-weight: 300;
+  font-family: "Open sans",verdana,arial,sans-serif;
+  font-size: 14px;
+  color: white;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* Industries dashboards */
+
+.navbar-industries .navbar-nav > li > a,
+.navbar .navbar-brand {
+  color: inherit;
+  text-decoration: none;
+}
+
+.navbar-industries .navbar-nav > li > a:hover,
+.navbar .navbar-brand:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+.navbar-industries{
+  font-weight: 200;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.btn{
+  border: 0px;
+  border-radius: 0px;
+}
+
+.create-dashboard-cta{
+    border: 1px solid #444;
+    border-radius: 2px;
+    padding: 6px;
+}
+
+#wrap {
+  margin-top: 20px;
+}
+
+.phone {
+  height: 435px;
+  width: 230px;
+  border: 2px solid #698197;
+  border-radius: 50px;
+  margin-left: 60px;
+  margin-right: 60px;
+  display: inline-block;
+  text-align: center;
+}
+
+.speaker {
+  height: 7px;
+  width: 45px;
+  border-radius: 30px;
+  border: 2px solid #698197;
+  margin-top: 7%;
+  margin-left: 38.5%;
+  display: inline-block;
+}
+
+.camera {
+  height: 7px;
+  width: 7px;
+  border-radius: 50%;
+  border: 2px solid #698197;
+  margin-top: 7%;
+  margin-left: 12%;
+  display: inline-block;
+}
+
+.screen {
+  height: 76%;
+  width: 88%;
+  border: 2px solid #698197;
+  margin-top: 9%;
+  margin-bottom: 10.5%;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+}
+
+.btn {
+  height: 5%;
+  width: 25%;
+  border-radius: 30px;
+  border: 2px solid #698197;
+  margin-top: -5.5%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#iphone .speaker {
+  height: 7px;
+  width: 45px;
+  border-radius: 30px;
+  border: 2px solid #698197;
+  margin-top: 10%;
+  margin-left: 2%;
+  display: inline-block;
+}
+
+#iphone .camera {
+  height: 7px;
+  width: 7px;
+  border-radius: 50%;
+  border: 2px solid #698197;
+  margin-top: 10%;
+  margin-left: 31%;
+  display: inline-block;
+}
+
+#iphone .screen {
+  height: 73%;
+  width: 88%;
+  border: 2px solid #698197;
+  margin-top: 9%;
+  margin-bottom: 10.5%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#iphone .btn {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  border: 2px solid #698197;
+  margin-top: -7%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#credit {
+  position: absolute;
+  font-family: sans-serif;
+  font-size: 12px;
+  color: #698197;
+  margin-top: 70px;
+  left: 20px;
+}
+
+a,
+a:visited {
+  text-decoration: none;
+  color: #698197;
+}
+
+a:focus,
+a:hover {
+  color: #256097;
+}
+
+@media screen and (max-width: 600px) {
+    .navbar-right{
+        display: none;
+    }
+}
+
+blockquote {
+  color: #888;
+  font-weight: 300;
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+blockquote p {
+  display: inline;
+  color: #888;
+  font-weight: 300;
+}
+
+.dashboard-description h2{
+  font-weight: 300 !important;
+}
+
+.dashboard-description p{
+  font-weight: 300 !important;
+  font-size: 18px;
+}
+
+.dashboard-description ul{
+  font-weight: 300 !important;
+  font-size: 18px;
+}
+
+.dashboard-description li{
+  font-weight: 300 !important;  
+  font-size: 18px;
+  margin-bottom: 20px; 
+}
+
+.btn-try-it-out {
+    -webkit-transition: background-color .2s ease-out;
+    -moz-transition: background-color .2s ease-out;
+    -ms-transition: background-color .2s ease-out;
+    -o-transition: background-color .2s ease-out;
+    transition: background-color .2s ease-out;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid #FFF;
+    border-radius: 3px;
+    color: #FFF;
+    display: inline-block;
+    font-size: 20px;
+    font-weight: 400;
+    height: 68px;
+    line-height: 55px;
+    padding: 4px 50px;
+    text-transform: none;
+    margin: 80px 0 40px 0;
+    text-decoration: none;
+}
+

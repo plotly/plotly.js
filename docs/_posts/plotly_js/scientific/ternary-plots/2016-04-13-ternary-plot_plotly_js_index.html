@@ -1,0 +1,16 @@
+---
+description: How to create D3.js-based ternary plots. Examples of Ternary Plots with
+  plotly.
+display_as: scientific
+language: plotly_js
+layout: base
+name: Ternary Plots
+order: 3
+page_type: example_index
+permalink: javascript/ternary-plots/
+redirect_from: javascript/ternary-plot/
+thumbnail: thumbnail/ternary-plot.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","ternary-plot" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

@@ -1,0 +1,66 @@
+plugins:
+- jekyll-redirect-from
+- jekyll-sitemap
+- algoliasearch-jekyll
+
+# ---
+# Assets
+# ---
+imgurl: https://images.plot.ly/plotly-documentation/
+#stylesheet: https://s3-us-west-1.amazonaws.com/plotly-tutorials/assets/css/api/main.css
+
+
+# ---
+# Excludes
+# ---
+exclude: [Gemfile, Gemfile.lock, Makefile, node_modules]
+
+# ---
+# Markdown / Syntax
+# ---
+kramdown:
+  input: GFM
+markdown: redcarpet
+redcarpet:
+  extensions: ["tables", "fenced_code_blocks"]
+
+# ---
+# Algolia Search
+# ---
+# Run make search_readme for more information on search
+
+algolia:
+  application_id: '7EK9KHJW8M'
+  index_name:     'python_docs'
+  read_only_api_key: '4dae07ded6a721de73bde7356eec9280'
+  excluded_files:
+    # - '*.ipynb'
+    - '*.png'
+    - '*.Rmd'
+    - '*.R'
+    - '_posts/dashboards'
+    - '_posts/ggplot2'
+    - '_posts/julia'
+    - '_posts/matlab'
+    - '_posts/misc'
+    - '_posts/nodejs'
+    - '_posts/plotly_js'
+    - '_posts/r'
+    - '_posts/reference_pages'
+    - '_posts/scala'
+    - '_posts/temp'
+  settings:
+    attributesToIndex:
+      - name
+      - description
+      - title
+      - h1
+      - h2
+      - h3
+      - h4
+      - h5
+      - h6
+      - unordered(text)
+      - unordered(tags)
+
+excerpt_separator: <!-- excerpt-end -->

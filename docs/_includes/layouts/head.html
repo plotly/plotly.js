@@ -1,0 +1,64 @@
+<head>
+  <!-- This page was last built at {{ "now" | date: "%Y-%m-%d %H:%M" }} -->
+
+  <meta charset="utf-8" />
+
+  <link rel="canonical" href="https://plotly.com{{page.url}}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,500&display=swap" rel="stylesheet" />
+
+  <!-- Media query magic - http://stackoverflow.com/questions/19945658/my-iphone-thinks-its-980px-wide -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="/all_static/javascripts/algolia/instantsearch.js"></script>
+  <script src="/all_static/javascripts/algolia/polyfill.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+  <script>
+    const theme = localStorage.getItem('theme');
+    if (theme === "dark-mode") {
+      var root = document.getElementsByTagName('html')[0]; // '0' to assign the first (and only `HTML` tag)
+      root.setAttribute('class', 'dark-mode');
+    }
+
+  </script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+  <link href="https://esm.sh/@markprompt/css@0.18.0?css" rel="stylesheet" />
+  <link href="/all_static/css/markprompt.css" rel="stylesheet" />
+  {% if page.layout == "base" %}
+
+  <!-- Mathjax -->
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+  {% if page.language == "plotly_js" %}
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+  {% endif %}
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-{{site.data.jsversion.version}}.min.js"></script>
+  {% endif %}
+  <!--
+      //// Stylesheets
+      -->
+
+  <!-- Fonts -->
+  <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic|Ubuntu+Mono:400,700|Asap" rel="stylesheet" type="text/css" />
+
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+
+  <!-- Main Stylesheets -->
+  <link rel="stylesheet" type="text/css" href="/all_static/css/main.css?version={{ site.data.cache_bust_css | truncate: 10, '' }}" />
+  <link rel="stylesheet" type="text/css" href="/all_static/css/improve.css?version={{ "now" | date: "%Y-%m-%d-%H-%M"
+  }}">
+
+  <!-- Icon -->
+  <link rel="shortcut icon" href="https://dash.plotly.com/assets/favicon.ico" />
+
+  <!-- Google Tags-->
+  {% include layouts/google-tag-head.html %}
+
+  <!-- META TAGS -->
+  {% include layouts/seo.html %}
+</head>

@@ -1,0 +1,13 @@
+---
+name: Filled-Area Animation
+permalink: javascript/filled-area-animation/
+description: How to make an animated filled-area plot with Plotly JS
+layout: base
+thumbnail: thumbnail/apple_stock_animation.gif
+language: plotly_js
+page_type: example_index
+display_as: animations
+order: 3
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","filled-area-animations" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

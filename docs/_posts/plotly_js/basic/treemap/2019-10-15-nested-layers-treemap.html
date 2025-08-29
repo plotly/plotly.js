@@ -1,0 +1,24 @@
+---
+name: Nested Layers in Treemap
+language: plotly_js
+suite: treemap
+order: 6
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  The following example uses hierarchical data that includes layers and grouping. Treemap and [Sunburst](https://plotly.com/javascript/sunburst-charts/) charts reveal insights into the data, and the format of your hierarchical data. [maxdepth](https://plotly.com/javascript/reference/treemap/#treemap-maxdepth) attribute sets the number of rendered sectors from the given level.
+---
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/coffee-flavors.csv', function(err, rows){
+  function unpack(rows, key) {
+  return rows.map(function(row) { return row[key]});
+}
+
+var data = [{
+      type: "treemap",
+      ids: unpack(rows, 'ids'),
+      labels: unpack(rows, 'labels'),
+      parents: unpack(rows, 'parents')
+    }];
+
+Plotly.newPlot('myDiv', data);
+})

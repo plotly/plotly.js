@@ -1,0 +1,30 @@
+---
+name: Zero Line Layer
+language: plotly_js
+suite: axes
+order: 12
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+   *New in 3.1*
+   
+   By default, zero lines are displayed below traces. Set `zerolinelayer="above traces"` on an axis to display its zero line above traces.
+---
+var trace1 = {
+  x: ['A', 'B', 'C', 'D', 'A'],
+  y: [2, 0, 4, -3, 2],
+  fill: 'toself',
+  mode: 'none',
+  fillcolor: 'lightpink',
+  type: 'scatter'
+};
+
+var data = [trace1];
+
+var layout = {
+  yaxis: {
+    zerolinelayer: "above traces"  // Change to "below traces" to see the difference
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout);

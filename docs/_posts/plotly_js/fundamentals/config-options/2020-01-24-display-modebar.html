@@ -1,0 +1,26 @@
+---
+name: Force The Modebar to Always Be Visible
+language: plotly_js
+suite: configuration
+order: 4
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+    When users hover over a figure generated with `plotly.js`, a `modebar` appears in the top-right of the figure. This presents users with several options for interacting with the figure.
+
+    By default, the `modebar` is only visible while the user is hovering over the chart. If you would like the `modebar` to always be visible regardless of whether or not the user is currently hovering over the figure, set the `displayModeBar` attribute in the `config` of your figure to `true`.
+---
+var data = [{
+    y:['Marc', 'Henrietta', 'Jean', 'Claude', 'Jeffrey', 'Jonathan', 'Jennifer', 'Zacharias'],
+      x: [90, 40, 60, 80, 75, 92, 87, 73],
+      type: 'bar',
+      orientation: 'h'}]
+
+var layout = {
+    title: {
+        text: 'Always Display the Modebar'
+    },
+    showlegend: false
+}
+
+Plotly.newPlot('myDiv', data, layout, {displayModeBar: true})

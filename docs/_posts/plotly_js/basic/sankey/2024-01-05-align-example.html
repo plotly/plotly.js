@@ -1,0 +1,38 @@
+---
+name: Node Alignment
+language: plotly_js
+suite: sankey
+order: 7
+sitemap: false
+arrangement: horizontal
+markdown_content : |
+  You can set the alignment of nodes using `node.align`. In this example, we align nodes to the "right". `node.align` can also be set to "left", "center", or "justify". The default is "justify" if ``node.align` is not set, and is similar to aligning to the "left", except that nodes without outgoing links are moved to the right of the figure.
+---
+
+var data = {
+  type: "sankey",
+  orientation: "h",
+  node: {
+    label: ["0", "1", "2", "3", "4", "5"],
+    align: "right",
+  },
+
+  link: {
+    source: [0, 1, 4, 2, 1],
+    target: [1, 4, 5, 4, 3],
+    value: [4, 2, 3, 1, 2],
+  },
+};
+
+var data = [data];
+
+var layout = {
+  title: {
+    text: "Align Nodes (Right)"
+  },
+  font: {
+    size: 10,
+  },
+};
+
+Plotly.newPlot('myDiv', data, layout);

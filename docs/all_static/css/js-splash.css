@@ -1,0 +1,461 @@
+/* Override header css
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.headerbar {
+  position: absolute;
+  top: 0;
+  background-color: rgba(255, 255, 255, 0);
+  z-index: 99;
+}
+
+.logo {
+  color: white;
+}
+.headerbar-nav-item {
+  color: white;
+}
+
+.hamburgerlink {
+  display: none;
+}
+
+h1, h2, h3, h4, h5. h6{
+  font-family: ;'Open sans',verdana,arial,sans-serif
+}
+
+/* JS splash header for white backgrounds
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.headerbar-white {
+  position: relative !important;
+}
+
+.headerbar-white .logo {
+  color: #69738a;
+}
+
+.headerbar-white .headerbar-nav-item {
+  color: #69738a;
+}
+
+.headerbar-white #signup{
+  color: #69738a;
+}
+
+.headerbar-white .typeform-share{
+  color: #69738a;
+}
+
+.headerbar-white #signup:hover{
+  background: #45A9FF;
+  color: white;
+}
+
+.headerbar-white .typeform-share:hover{
+  background: #45A9FF;
+  color: white;
+}
+
+/* Grid
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 40px;
+  box-sizing: border-box; }
+.column,
+.columns {
+  width: 100%;
+  float: left;
+  box-sizing: border-box; }
+
+/* For devices larger than 400px */
+@media (min-width: 400px) {
+  .container {
+    width: 85%;
+    padding: 0; }
+}
+
+
+/* Base Styles
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* NOTE
+html is set to 62.5% so that all the REM measurements throughout Skeleton
+are based on 10px sizing. So basically 1.5rem = 15px :) */
+html {
+  font-size: 62.5%; }
+body {
+  font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
+  line-height: 1.6;
+  font-weight: 300;
+  color: #222; }
+
+.js-splash--code-block {
+  background: #FCFCF5 ;
+  border: 1px solid #C2C2C2;
+  border-bottom-right-radius: 2px;
+  border-bottom-left-radius: 2px;
+  margin-top: 0px;
+  border-top: 0;
+  padding-top: 5px;
+  padding-left: 10px;
+}
+/*test*/
+
+.example-section-break {
+  display: none;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+  width: 100%;
+}
+
+.click-to-expand {
+  height: 40px;
+  background: #FCFCF5 ;
+  border: 1px solid #C2C2C2;
+  border-radius: 2px;
+  padding-left: 30px;
+}
+
+.graph, .js-splash--responsive-chart-image {
+  border: 1px solid #C2C2C2;
+  border-top-right-radius: 2px;
+  border-top-left-radius: 2px;
+}
+
+p {
+  margin-top: 0; }
+
+code {
+  font-size: inherit;
+  font-family: monospace;
+  background: #FFFFFF;
+  border: 0px;
+  padding: 0;
+  margin: 0;
+}
+
+/* Navigation */
+.js-splash--navigation-section-title {
+  text-transform: uppercase;
+  font-size: 1.5rem;
+  color: #5A82A7;
+  line-height: 1.5rem;
+  /* line-height: 3.2rem; */
+  margin-bottom: 0.8rem;
+  font-weight: 400;
+  /*margin-top: 15px;*/
+}
+
+.js-splash--navigation-item {
+  font-size: 1.4rem;
+  color: #616161;
+  line-height: 12px;
+  height: 12px;
+  padding-left: 10px;
+  border-left: 1px solid #CED6FF;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: block;
+}
+
+.js-splash--navigation-item:hover {
+  border-left: 1px solid #B4B4B4;
+}
+
+.js-splash--navigation-item-container {
+  padding-bottom: 2rem;
+}
+
+/*
+_________*/
+.js-splash--banner-container {
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  text-align: center;
+  color: white;
+  font-weight: 300;
+  letter-spacing: 0;
+}
+
+
+/* Links
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+a {
+  color: #447BDC;
+  text-decoration: none;
+ }
+a:hover {
+  color: #0FA0CE; }
+
+headerbar a:hover {
+  color: white; }
+
+/*
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.js-splash--section-title {
+  font-size: 2rem;
+  letter-spacing: 1px;
+  line-height: 2.4rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid #D8D8D8;
+  width: 100%;
+  padding-bottom: 5px;
+  margin-bottom: 30px;
+  color: #616161;
+  margin-top: 60px;
+}
+
+.block-title {
+  font-size: 20px;
+  line-height: 20px;
+  height: 20px;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: #646464;
+  margin-top: 50px;
+}
+.block-content {
+  font-size: 1.8rem;
+  width: 75%;
+  line-height: 30px;
+  margin-top: 10px;
+  margin-bottom: 16px;
+}
+
+.image-link {
+  border: thin solid white;
+}
+
+.image-link:hover {
+  border: thin solid #447BDC;
+  transition: border ease-in-out 0.3s;
+}
+
+.example-section-title > a {
+  color: #646464;
+  font-weight: 400;
+  font-size: 20px;
+}
+
+/* Media Queries
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+/*
+Note: The best way to structure the use of media queries is to create the queries
+near the relevant code. For example, if you wanted to change the styles for buttons
+on small devices, paste the mobile query code up in the buttons section and style it
+there.
+*/
+
+.js-splash--container {
+  width: calc(100% - 380px);
+  margin-left: 280px;
+  margin-right: 100px;
+}
+
+.no-side-bar {
+  margin-left: 10px; /* if no-side-bar, align to left */
+}
+
+.js-splash--navigation-sidebar {
+  float: left;
+  width: 230px;
+  position: fixed;
+  overflow-y: auto;
+  height: 100%;
+  margin-left: 40px;
+  margin-top: 20px;
+  z-index: 99;
+}
+
+.js-splash--navigation-inline {
+  display: none !important;
+}
+
+.js-splash--inline-text-header {
+  width: 75%;
+}
+
+.js-splash--inline-image-left {
+  float: left;
+  width: 75%;
+}
+
+.js-splash--inline-text-right {
+  width: 25%;
+  top: 50%;
+  position: absolute;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  left: 75%;
+}
+
+.js-splash--inline-text-left {
+  margin-top: 30px;
+  width: 25%;
+  top: 50%;
+  position: absolute;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  left: 0%;
+}
+
+.js-splash--inline-image-right {
+  width: 75%;
+  left: 25%;
+  float: right;
+}
+
+.js-splash--chart-link {
+  margin-top: 30px;
+  display: block;
+}
+
+.js-splash--responsive-chart-image {
+  display: none;
+  width: 100%;
+}
+
+.js-splash--feature-block {
+  margin-left: 20px;
+}
+
+/* Larger than desktop */
+@media (max-width: 1150px) {
+  .js-splash--container {
+    width: calc(100% - 310px);
+    margin-left: 280px;
+    margin-right: 30px;
+  }
+
+  /* This is implicit: we only break the the text-left, image-right row, because the other 3D image on this page looks good unbroken*/
+  .js-splash--inline-text-right {
+    margin-top: 30px;
+    width: 100%;
+    top: initial;
+    position: initial;
+    transform: initial;
+    left: initial;
+
+  }
+  .js-splash--inline-image-left {
+    width: 100%;
+  }
+}
+
+@media(max-width: 950px) {
+  .js-splash--container {
+    width: calc(100% - 60px);
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+
+  /* Break out the 3D chart into two lines*/
+  .js-splash--inline-text-left {
+    margin-top: 30px;
+    width: 100%;
+    top: initial;
+    position: initial;
+    transform: initial;
+    left: initial;
+
+  }
+  .js-splash--inline-image-right {
+    width: 100%;
+  }
+
+  .js-splash--chart-link {
+    margin-top: 0px;
+    display: inline;
+  }
+
+  .block-content {
+      width: 100%;
+  }
+
+  .js-splash--inline-text-header {
+    width: 100%;
+  }
+
+
+  .js-splash--navigation-inline {
+    display: block !important;
+  }
+
+  .js-splash--navigation-sidebar {
+    display: none;
+  }
+
+}
+
+@media (max-width: 500px) {
+  .js-splash--responsive-chart-image {
+    display: block;
+  }
+  .js-splash--responsive-chart-js {
+    display: none;
+  }
+}
+
+@media (max-width: 375px) {
+  /* weird hack to get multi-lines to look OK */
+  .js-splash--navigation-item {
+    height: 1%;
+  }
+
+  .js-splash--feature-block {
+    margin-left: 0px;
+  }
+}
+
+/* Larger than mobile */
+@media (min-width: 400px) {}
+
+/* Larger than phablet (also point when grid becomes active) */
+@media (min-width: 550px) {}
+
+/* Larger than tablet */
+@media (min-width: 750px) {}
+
+
+/* Larger than Desktop HD */
+@media (min-width: 1200px) {}
+
+/* Sponsor Styling */
+
+.sponsor{
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 400;
+  font-size: 1.5rem;
+  color: #8B8B8B;
+  margin-top: 40px;
+  margin-bottom: 10px;
+}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,157 @@
+a, a:focus, a:hover, a:active {
+  color: #00afd7;
+}
+
+h1, h2, h3 {
+  font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 12px 0;
+}
+h1 {
+  font-size: 32px;
+  font-weight: 100;
+  letter-spacing: .02em;
+  line-height: 48px;
+  margin: 12px 0;
+}
+h2 {
+  color: #2a333c;
+  font-weight: 200;
+  font-size: 21px;
+  font-weight: 200 !important;
+}
+h3 {
+  color: rgb(84, 102, 120);
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: -0.28px;
+  line-height: 29.39px;
+  font-weight: 200 !important;
+}
+
+.btn {
+  background: transparent;
+  border: 1px solid white;
+}
+
+.keen-logo {
+  height: 38px;
+  margin: 0 15px 0 0;
+  width: 150px;
+}
+
+.navbar-toggle {
+  background-color: rgba(255,255,255,.25);
+}
+.navbar-toggle .icon-bar {
+  background: #fff;
+}
+
+
+.navbar-nav {
+  margin: 5px 0 0;
+}
+.navbar-nav > li > a {
+  font-size: 15px;
+  font-weight: 200;
+  letter-spacing: 0.03em;
+  padding-top: 19px;
+  text-shadow: 0 0 2px rgba(0,0,0,.1);
+}
+.navbar-nav > li > a:focus,
+.navbar-nav > li > a:hover {
+  background: transparent none;
+}
+
+.navbar-nav > li > a.navbar-btn {
+  background-color: rgba(255,255,255,.25);
+  border: medium none;
+  padding: 10px 15px;
+}
+.navbar-nav > li > a.navbar-btn:focus,
+.navbar-nav > li > a.navbar-btn:hover {
+  background-color: rgba(255,255,255,.35);
+}
+.navbar-collapse {
+  box-shadow: none;
+}
+
+.masthead {
+  background-color: #00afd7;
+  background-image: url("../img/bg-bars.png");
+  background-position: 0 -290px;
+  background-repeat: repeat-x;
+  color: #fff;
+  margin: 0 0 24px;
+  padding: 20px 0;
+}
+.masthead h1 {
+  margin: 0;
+}
+.masthead small,
+.masthead a,
+.masthead a:focus,
+.masthead a:hover,
+.masthead a:active {
+  color: #fff;
+}
+.masthead p {
+  color: #b3e7f3;
+  font-weight: 100;
+  letter-spacing: .05em;
+}
+
+
+
+.hero {
+  background-position: 50% 100%;
+  min-height: 450px;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 48px;
+  margin: 120px 0 0;
+}
+.hero .lead {
+  margin-bottom: 32px;
+}
+.hero a.hero-btn {
+  border: 2px solid #fff;
+  display: block;
+  font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 200;
+  margin: 0 auto 12px;
+  padding: 12px 0 6px;
+  width: 320px;
+}
+.hero a.hero-btn:focus,
+.hero a.hero-btn:hover {
+  border-color: transparent;
+  background-color: #fff;
+  color: #00afd7;
+}
+
+
+.sample-item {
+  margin-bottom: 24px;
+}
+
+.signup {
+  float: left;
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: -6px;
+  margin-right: 10px;
+}
+
+.love {
+  border-top: 1px solid #d7d7d7;
+  color: #546678;
+  margin: 24px 0 0;
+  padding: 15px 0;
+  text-align: center;
+}
+
+.love p {
+  margin-bottom: 0;
+}

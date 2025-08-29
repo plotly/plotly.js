@@ -1,0 +1,26 @@
+---
+description: How to set the configuration options for figures in JavaScript.
+display_as: file_settings
+language: plotly_js
+layout: base
+name: Configuration Options
+order: 1
+page_type: example_index
+permalink: javascript/configuration-options/
+thumbnail: thumbnail/modebar-icons.png
+---
+
+<script src="https://cdn.plot.ly/plotly-locale-fr-latest.js"></script>
+
+The plotly.js <code>config</code> argument sets properties like the mode bar buttons and the interactivity in the chart.
+It's the last argument in <code>Plotly.newPlot</code> calls.
+<br>
+
+View the full list of configuration options in the
+<a href="https://github.com/plotly/plotly.js/blob/master/src/plot_api/plot_config.js#L22-L86" target="_blank">
+plotly.js source code on GitHub
+</a>.
+<br>
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","configuration" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

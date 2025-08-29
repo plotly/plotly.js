@@ -1,0 +1,17 @@
+---
+name: Funnelarea Plot
+language: plotly_js
+suite: funnel
+order: 4
+sitemap: false
+arrangement: horizontal
+---
+var gd = document.getElementById('myDiv');
+var data = [{type: 'funnelarea', values: [5, 4, 3, 2, 1], text: ["The 1st", "The 2nd", "The 3rd", "The 4th", "The 5th"],
+      marker: {colors: ["59D4E8", "DDB6C6", "A696C8", "67EACA", "94D2E6"],
+                line: {color: ["3E4E88", "606470", "3E4E88", "606470", "3E4E88"], width: [2, 1, 5, 0, 3]}},
+      textfont: {family: "Old Standard TT", size: 13, color: "black"}, opacity: 0.65}];
+
+var layout = {margin: {l: 200 , r: 200}, funnelmode: "stack", showlegend: 'True'}
+
+Plotly.newPlot('myDiv', data, layout);

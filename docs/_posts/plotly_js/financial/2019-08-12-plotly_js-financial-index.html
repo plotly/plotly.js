@@ -1,0 +1,27 @@
+---
+permalink: javascript/financial-charts/
+description: Plotly.js makes interactive, publication-quality graphs online. Examples of how to make financial charts.
+name: Financial Charts
+layout: langindex
+language: plotly_js
+display_as: financial
+thumbnail: thumbnail/mixed.jpg
+---
+
+
+<header class="--welcome">
+	<div class="--welcome-body">
+		<!--div.--wrap-inner-->
+		<div class="--title">
+
+			<div class="--body">
+				<h1>Plotly.js Financial Charts</h1>
+				<p>{{page.description}}</p>
+				{% include layouts/dashplug.html %}
+			</div>
+		</div>
+	</div>
+</header>
+
+		{% assign languagelist = site.posts | where:"language","plotly_js" | where:"display_as","financial" | where: "layout","base" | sort: "order" %}
+        {% include posts/documentation_eg.html %}

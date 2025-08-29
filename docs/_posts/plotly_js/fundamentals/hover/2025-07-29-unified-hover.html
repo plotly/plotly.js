@@ -1,0 +1,43 @@
+---
+name: Unified Hover Mode
+language: plotly_js
+suite: hover
+order: 4
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+   If "x unified" (or "y unified"), a single hoverlabel will appear for multiple points at the closest x- (or y-) coordinate within the `hoverdistance` with the caveat that no more than one hoverlabel will appear per trace.
+---
+var data = [
+  {
+    x: ['2020-01-01', '2020-02-01', '2020-03-01', '2020-04-01'],
+    y: [10, 15, 12, 18],
+    mode: 'markers+lines',
+    name: 'Series A',
+    hovertemplate: null,
+    type: 'scatter'
+  },
+  {
+    x: ['2020-01-01', '2020-02-01', '2020-03-01', '2020-04-01'],
+    y: [8, 12, 16, 14],
+    mode: 'markers+lines',
+    name: 'Series B',
+    hovertemplate: null,
+    type: 'scatter'
+  }
+];
+
+var layout = {
+  title: {
+    text: "layout.hovermode='x unified'"
+  },
+  hovermode: 'x unified',
+  xaxis: {
+    title: 'Date'
+  },
+  yaxis: {
+    title: 'Value'
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout);

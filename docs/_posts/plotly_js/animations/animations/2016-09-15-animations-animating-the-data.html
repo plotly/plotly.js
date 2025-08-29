@@ -1,0 +1,34 @@
+---
+name: Animating the Data
+plot_url: https://codepen.io/plotly/embed/ZpWPpj/?height=500&theme-id=15263&default-tab=result
+language: plotly_js
+suite: animations
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  The animate command lets you add dynamic behavior to Plotly graphs in a number of different ways. At its core, `Plotly.animate` transitions traces to a new state or sequence of states. When you tell Plotly to animate, it merges the properties you've supplied into the current state of the plot. Therefore to animate a trace, *you must first plot the trace you wish to animate*.
+
+  The example below transitions to new y-values each time the button is pressed. Since the transition animation occurs within a frame, `frame.duration` must be set at least as long as `transition.duration`. Note that to prevent artifacts while animating, the default line simplification algorithm is explicitly disabled. Currently, only scatter traces may be smoothly transitioned from one state to the next. Other traces are compatible with frames and animations but will be updated instantaneously.
+---
+Plotly.newPlot('myDiv', [{
+  x: [1, 2, 3],
+  y: [0, 0.5, 1],
+  line: {simplify: false},
+}]);
+
+function randomize() {
+  Plotly.animate('myDiv', {
+    data: [{y: [Math.random(), Math.random(), Math.random()]}],
+    traces: [0],
+    layout: {}
+  }, {
+    transition: {
+      duration: 500,
+      easing: 'cubic-in-out'
+    },
+    frame: {
+      duration: 500
+    }
+  })
+}
