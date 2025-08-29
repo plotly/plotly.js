@@ -35,22 +35,32 @@ function makeRegex(regexStr) {
     );
 }
 
-module.exports = function() {
-    var allChunks = [];
-    return through(function(chunk, enc, next) {
-        allChunks.push(chunk);
-        next();
-    }, function(done) {
-        var str = Buffer.concat(allChunks).toString('utf-8');
-        this.push(
-            str
-                .replace(makeStringRegex('description'), '')
-                .replace(makeJoinedArrayRegex('description'), '')
-                .replace(makeArrayRegex('requiredOpts'), '')
-                .replace(makeArrayRegex('otherOpts'), '')
-                .replace(makeStringRegex('role'), '')
-                .replace(makeStringRegex('hrName'), '')
-        );
-        done();
-    });
+module.exports = path => {
+    const allChunks = [];
+    return through(
+        (chunk, _, next) => {
+            allChunks.push(chunk);
+            next();
+        },
+        function(done) {
+            const str = Buffer.concat(allChunks).toString('utf-8');
+
+            // Return JSON as stringified JSON so that ESBuild will handle transformation
+            if(path.toLowerCase().endsWith('.json')) {
+                this.push(JSON.stringify(str));
+                done();
+            }
+
+            this.push(
+                str
+                    .replace(makeStringRegex('description'), '')
+                    .replace(makeJoinedArrayRegex('description'), '')
+                    .replace(makeArrayRegex('requiredOpts'), '')
+                    .replace(makeArrayRegex('otherOpts'), '')
+                    .replace(makeStringRegex('role'), '')
+                    .replace(makeStringRegex('hrName'), '')
+            );
+            done();
+        }
+    );
 };
