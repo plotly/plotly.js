@@ -605,6 +605,14 @@ module.exports = function style(s, gd, legend) {
                     ];
                     useGradient = false;
                     break;
+                case 'bar3d' :
+                    ptsData = [ // TODO: Fix me!
+                        ['M-6,6H0L-6,-6Z'],
+                        ['M6,6H0L6,-6Z'],
+                        ['M-6,-6H6L0,6Z']
+                    ];
+                    useGradient = false;
+                    break;
             }
         }
 
