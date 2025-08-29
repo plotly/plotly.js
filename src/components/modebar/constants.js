@@ -13,11 +13,12 @@ var DRAW_MODES = [
 ];
 
 var backButtons = [
+    'tooltip',
     'v1hovermode',
     'hoverclosest',
     'hovercompare',
     'togglehover',
-    'togglespikelines'
+    'togglespikelines',
 ].concat(DRAW_MODES);
 
 var foreButtons = [];
