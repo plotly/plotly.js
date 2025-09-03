@@ -2616,7 +2616,17 @@ function react(gd, data, layout, config) {
         }
 
         if(configChanged) {
-            plotDone = exports.newPlot(gd, data, layout, config);
+            // Save event listeners as newPlot will remove them
+            const eventListeners = gd._ev.eventNames().map(name => [name, gd._ev.listeners(name)]);
+            plotDone = exports.newPlot(gd, data, layout, config)
+                .then(() => {
+                    for (const [name, callbacks] of eventListeners) {
+                        callbacks.forEach((cb) => gd.on(name, cb));
+                    }
+                    
+                    // Call react in case transition should have occurred along with config change
+                    return exports.react(gd, data, layout, config)
+                });
         } else {
             gd.data = data || [];
             helpers.cleanData(gd.data);
@@ -2683,7 +2693,7 @@ function react(gd, data, layout, config) {
             // only used when 'transition' is set by user and
             // when at least one animatable attribute has changed,
             // N.B. config changed aren't animatable
-            if(newFullLayout.transition && !configChanged && (restyleFlags.anim || relayoutFlags.anim)) {
+            if(newFullLayout.transition && (restyleFlags.anim || relayoutFlags.anim)) {
                 if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
 
                 Plots.doCalcdata(gd);
@@ -2692,7 +2702,7 @@ function react(gd, data, layout, config) {
                 seq.push(function() {
                     return Plots.transitionFromReact(gd, restyleFlags, relayoutFlags, oldFullLayout);
                 });
-            } else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
+            } else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot) {
                 gd._fullLayout._skipDefaults = true;
                 seq.push(exports._doPlot);
             } else {
@@ -2737,11 +2747,8 @@ function react(gd, data, layout, config) {
         }
     }
 
-    return plotDone.then(function() {
-        gd.emit('plotly_react', {
-            data: data,
-            layout: layout
-        });
+    return plotDone.then(() => {
+        if (!configChanged) gd.emit('plotly_react', { config, data, layout });
 
         return gd;
     });
