@@ -4,6 +4,8 @@ var scatterAttrs = require('../scatter/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
+var annotationAttrs = require('../../components/annotations/attributes');
 var scatterGlAttrs = require('../scattergl/attributes');
 var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
@@ -131,6 +133,12 @@ module.exports = {
     }),
 
     hovertemplate: hovertemplateAttrs(),
+    tooltip: {values: extendFlat({}, annotationAttrs),
+        valType: 'any',
+        description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+        editType: 'calc'
+    },
+    tooltiptemplate: tooltiptemplateAttrs(),
 
     xhoverformat: axisHoverFormat('x'),
     yhoverformat: axisHoverFormat('y'),
