@@ -2615,129 +2615,140 @@ function react(gd, data, layout, config) {
             configChanged = diffConfig(oldConfig, gd._context);
         }
 
-        gd.data = data || [];
-        helpers.cleanData(gd.data);
-        gd.layout = layout || {};
-        helpers.cleanLayout(gd.layout);
-
-        applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
-
-        // "true" skips updating calcdata and remapping arrays from calcTransforms,
-        // which supplyDefaults usually does at the end, but we may need to NOT do
-        // if the diff (which we haven't determined yet) says we'll recalc
-        Plots.supplyDefaults(gd, {skipUpdateCalc: true});
-
-        var newFullData = gd._fullData;
-        var newFullLayout = gd._fullLayout;
-        var immutable = newFullLayout.datarevision === undefined;
-        var transition = newFullLayout.transition;
-
-        var relayoutFlags = diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition);
-        var newDataRevision = relayoutFlags.newDataRevision;
-        var restyleFlags = diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision);
-
-        // TODO: how to translate this part of relayout to Plotly.react?
-        // // Setting width or height to null must reset the graph's width / height
-        // // back to its initial value as computed during the first pass in Plots.plotAutoSize.
-        // //
-        // // To do so, we must manually set them back here using the _initialAutoSize cache.
-        // if(['width', 'height'].indexOf(ai) !== -1 && vi === null) {
-        //     fullLayout[ai] = gd._initialAutoSize[ai];
-        // }
-
-        if(updateAutosize(gd)) relayoutFlags.layoutReplot = true;
-
-        // clear calcdata and empty categories if required
-        if(restyleFlags.calc || relayoutFlags.calc) {
-            gd.calcdata = undefined;
-            var allNames = Object.getOwnPropertyNames(newFullLayout);
-            for(var q = 0; q < allNames.length; q++) {
-                var name = allNames[q];
-                var start = name.substring(0, 5);
-                if(start === 'xaxis' || start === 'yaxis') {
-                    var emptyCategories = newFullLayout[name]._emptyCategories;
-                    if(emptyCategories) emptyCategories();
-                }
-            }
-        // otherwise do the calcdata updates and calcTransform array remaps that we skipped earlier
+        if(configChanged) {
+            // Save event listeners as newPlot will remove them
+            const eventListeners = gd._ev.eventNames().map(name => [name, gd._ev.listeners(name)]);
+            plotDone = exports.newPlot(gd, data, layout, config)
+                .then(() => {
+                    for (const [name, callbacks] of eventListeners) {
+                        callbacks.forEach((cb) => gd.on(name, cb));
+                    }
+                    
+                    // Call react in case transition should have occurred along with config change
+                    return exports.react(gd, data, layout, config)
+                });
         } else {
-            Plots.supplyDefaultsUpdateCalc(gd.calcdata, newFullData);
-        }
+            gd.data = data || [];
+            helpers.cleanData(gd.data);
+            gd.layout = layout || {};
+            helpers.cleanLayout(gd.layout);
 
-        // Note: what restyle/relayout use impliedEdits and clearAxisTypes for
-        // must be handled by the user when using Plotly.react.
+            applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
 
-        // fill in redraw sequence
-        var seq = [];
+            // "true" skips updating calcdata and remapping arrays from calcTransforms,
+            // which supplyDefaults usually does at the end, but we may need to NOT do
+            // if the diff (which we haven't determined yet) says we'll recalc
+            Plots.supplyDefaults(gd, {skipUpdateCalc: true});
 
-        if(frames) {
-            gd._transitionData = {};
-            Plots.createTransitionData(gd);
-            seq.push(addFrames);
-        }
+            var newFullData = gd._fullData;
+            var newFullLayout = gd._fullLayout;
+            var immutable = newFullLayout.datarevision === undefined;
+            var transition = newFullLayout.transition;
 
-        // Transition pathway,
-        // only used when 'transition' is set by user and
-        // when at least one animatable attribute has changed,
-        // N.B. config changed aren't animatable
-        if(newFullLayout.transition && !configChanged && (restyleFlags.anim || relayoutFlags.anim)) {
-            if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
+            var relayoutFlags = diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition);
+            var newDataRevision = relayoutFlags.newDataRevision;
+            var restyleFlags = diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision);
 
-            Plots.doCalcdata(gd);
-            subroutines.doAutoRangeAndConstraints(gd);
+            // TODO: how to translate this part of relayout to Plotly.react?
+            // // Setting width or height to null must reset the graph's width / height
+            // // back to its initial value as computed during the first pass in Plots.plotAutoSize.
+            // //
+            // // To do so, we must manually set them back here using the _initialAutoSize cache.
+            // if(['width', 'height'].indexOf(ai) !== -1 && vi === null) {
+            //     fullLayout[ai] = gd._initialAutoSize[ai];
+            // }
 
-            seq.push(function() {
-                return Plots.transitionFromReact(gd, restyleFlags, relayoutFlags, oldFullLayout);
-            });
-        } else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
-            gd._fullLayout._skipDefaults = true;
-            seq.push(exports._doPlot);
-        } else {
-            for(var componentType in relayoutFlags.arrays) {
-                var indices = relayoutFlags.arrays[componentType];
-                if(indices.length) {
-                    var drawOne = Registry.getComponentMethod(componentType, 'drawOne');
-                    if(drawOne !== Lib.noop) {
-                        for(var i = 0; i < indices.length; i++) {
-                            drawOne(gd, indices[i]);
-                        }
-                    } else {
-                        var draw = Registry.getComponentMethod(componentType, 'draw');
-                        if(draw === Lib.noop) {
-                            throw new Error('cannot draw components: ' + componentType);
-                        }
-                        draw(gd);
+            if(updateAutosize(gd)) relayoutFlags.layoutReplot = true;
+
+            // clear calcdata and empty categories if required
+            if(restyleFlags.calc || relayoutFlags.calc) {
+                gd.calcdata = undefined;
+                var allNames = Object.getOwnPropertyNames(newFullLayout);
+                for(var q = 0; q < allNames.length; q++) {
+                    var name = allNames[q];
+                    var start = name.substring(0, 5);
+                    if(start === 'xaxis' || start === 'yaxis') {
+                        var emptyCategories = newFullLayout[name]._emptyCategories;
+                        if(emptyCategories) emptyCategories();
                     }
                 }
+            // otherwise do the calcdata updates and calcTransform array remaps that we skipped earlier
+            } else {
+                Plots.supplyDefaultsUpdateCalc(gd.calcdata, newFullData);
             }
 
-            seq.push(Plots.previousPromises);
-            if(restyleFlags.style) seq.push(subroutines.doTraceStyle);
-            if(restyleFlags.colorbars || relayoutFlags.colorbars) seq.push(subroutines.doColorBars);
-            if(relayoutFlags.legend) seq.push(subroutines.doLegend);
-            if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
-            if(relayoutFlags.axrange) addAxRangeSequence(seq);
-            if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
-            if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
-            if(relayoutFlags.camera) seq.push(subroutines.doCamera);
-            seq.push(emitAfterPlot);
+            // Note: what restyle/relayout use impliedEdits and clearAxisTypes for
+            // must be handled by the user when using Plotly.react.
+
+            // fill in redraw sequence
+            var seq = [];
+
+            if(frames) {
+                gd._transitionData = {};
+                Plots.createTransitionData(gd);
+                seq.push(addFrames);
+            }
+
+            // Transition pathway,
+            // only used when 'transition' is set by user and
+            // when at least one animatable attribute has changed,
+            // N.B. config changed aren't animatable
+            if(newFullLayout.transition && (restyleFlags.anim || relayoutFlags.anim)) {
+                if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
+
+                Plots.doCalcdata(gd);
+                subroutines.doAutoRangeAndConstraints(gd);
+
+                seq.push(function() {
+                    return Plots.transitionFromReact(gd, restyleFlags, relayoutFlags, oldFullLayout);
+                });
+            } else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot) {
+                gd._fullLayout._skipDefaults = true;
+                seq.push(exports._doPlot);
+            } else {
+                for(var componentType in relayoutFlags.arrays) {
+                    var indices = relayoutFlags.arrays[componentType];
+                    if(indices.length) {
+                        var drawOne = Registry.getComponentMethod(componentType, 'drawOne');
+                        if(drawOne !== Lib.noop) {
+                            for(var i = 0; i < indices.length; i++) {
+                                drawOne(gd, indices[i]);
+                            }
+                        } else {
+                            var draw = Registry.getComponentMethod(componentType, 'draw');
+                            if(draw === Lib.noop) {
+                                throw new Error('cannot draw components: ' + componentType);
+                            }
+                            draw(gd);
+                        }
+                    }
+                }
+
+                seq.push(Plots.previousPromises);
+                if(restyleFlags.style) seq.push(subroutines.doTraceStyle);
+                if(restyleFlags.colorbars || relayoutFlags.colorbars) seq.push(subroutines.doColorBars);
+                if(relayoutFlags.legend) seq.push(subroutines.doLegend);
+                if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
+                if(relayoutFlags.axrange) addAxRangeSequence(seq);
+                if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
+                if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
+                if(relayoutFlags.camera) seq.push(subroutines.doCamera);
+                seq.push(emitAfterPlot);
+            }
+
+            seq.push(
+                Plots.rehover,
+                Plots.redrag,
+                Plots.reselect
+            );
+
+            plotDone = Lib.syncOrAsync(seq, gd);
+            if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
         }
-
-        seq.push(
-            Plots.rehover,
-            Plots.redrag,
-            Plots.reselect
-        );
-
-        plotDone = Lib.syncOrAsync(seq, gd);
-        if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
     }
 
-    return plotDone.then(function() {
-        gd.emit('plotly_react', {
-            data: data,
-            layout: layout
-        });
+    return plotDone.then(() => {
+        if (!configChanged) gd.emit('plotly_react', { config, data, layout });
 
         return gd;
     });
@@ -3675,11 +3686,11 @@ function makePlotFramework(gd) {
         // The plot container should always take the full with the height of its
         // parent (the graph div). This ensures that for responsive plots
         // without a height or width set, the paper div will take up the full
-        // height & width of the graph div. 
+        // height & width of the graph div.
         // So, for responsive plots without a height or width set, if the plot
         // container's height is left to 'auto', its height will be dictated by
         // its childrens' height. (The plot container's only child is the paper
-        // div.) 
+        // div.)
         // In this scenario, the paper div's height will be set to 100%,
         // which will be 100% of the plot container's auto height. That is
         // meaninglesss, so the browser will use the paper div's children to set
