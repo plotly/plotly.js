@@ -212,7 +212,7 @@ module.exports = function(gd) {
         if(axisOpts.side === 'bottom') {
             Titles.draw(gd, axisOpts._id + 'title', {
                 propContainer: axisOpts,
-                propName: axisOpts._name + '.title',
+                propName: axisOpts._name + '.title.text',
                 placeholder: fullLayout._dfltTitle.x,
                 attributes: {
                     x: axisOpts._offset + axisOpts._length / 2,
