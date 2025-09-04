@@ -161,6 +161,8 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     }
 
     coerce('projection.scale');
+    coerce('projection.minscale');
+    coerce('projection.maxscale');
 
     show = coerce('showland', !visible ? false : undefined);
     if(show) coerce('landcolor');

@@ -484,7 +484,10 @@ proto.updateFx = function(fullLayout, geoLayout) {
 
     if(dragMode === 'pan') {
         bgRect.node().onmousedown = null;
-        bgRect.call(createGeoZoom(_this, geoLayout));
+        var zoom = createGeoZoom(_this, geoLayout)
+        bgRect.call(zoom);
+        // Trigger zoom transition to account for initial min/max scale values
+        if (geoLayout.projection.minscale > 0 && !d3.event) zoom.event(bgRect);
         bgRect.on('dblclick.zoom', zoomReset);
         if(!gd._context._scrollZoom.geo) {
             bgRect.on('wheel.zoom', null);
@@ -709,6 +712,15 @@ function getProjection(geoLayout) {
 
     projection.precision(constants.precision);
 
+    // https://d3js.org/d3-zoom#zoom_scaleExtent
+    projection.scaleExtent = () => {
+        var minscale = projLayout.minscale;
+        var maxscale = projLayout.maxscale === -1 ? Infinity : projLayout.maxscale;
+        var max = Math.max(minscale, maxscale);
+        var min = Math.min(minscale, maxscale);
+        return [100 * min, 100 * max];
+    };
+    
     if(geoLayout._isSatellite) {
         projection.tilt(projLayout.tilt).distance(projLayout.distance);
     }
