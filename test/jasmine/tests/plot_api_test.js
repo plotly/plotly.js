@@ -1903,12 +1903,12 @@ describe('Test plot api', function() {
             expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {y: [1]});
             }).toThrow(new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
-                                 'corrispondence with the keys and number of traces in the update object'));
+                                 'correspondence with the keys and number of traces in the update object'));
 
             expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {x: [1, 2]});
             }).toThrow(new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
-                                 'corrispondence with the keys and number of traces in the update object'));
+                                 'correspondence with the keys and number of traces in the update object'));
         });
 
         it('should throw an error when update keys mismatch trace keys', function() {

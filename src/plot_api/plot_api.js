@@ -742,7 +742,7 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
             (!(key in maxPoints) || !Array.isArray(maxPoints[key]) ||
             maxPoints[key].length !== update[key].length)) {
             throw new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
-                            'corrispondence with the keys and number of traces in the update object');
+                            'correspondence with the keys and number of traces in the update object');
         }
     }
 }

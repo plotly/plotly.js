@@ -9,6 +9,72 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.1.0]
+
+### Added
+- Add property `zerolinelayer` to cartesian axes to allow drawing zeroline above traces [[#7269](https://github.com/plotly/plotly.js/pull/7269)]
+- Add `pattern.path` attribute as an alternative to the preset `pattern.shape` values, so you can use any SVG path string as a pattern fill. [[#7280](https://github.com/plotly/plotly.js/pull/7280)]
+- Allow configuration of horizontal legend max height [[#7359](https://github.com/plotly/plotly.js/pull/7359)]
+- Add `modebardisable` attribute to cartesian axes, to allow fine control over which buttons affect which axes [[#7358](https://github.com/plotly/plotly.js/pull/7358)]
+- Add support for ticklabelposition "inside"/"outside" for category axes with `tickson` set to "boundaries" [[#7420](https://github.com/plotly/plotly.js/pull/7420)],
+with thanks to @my-tien for the contribution!
+- Add `unifiedhovertitle.text` to format unified hover titles [[#7439](https://github.com/plotly/plotly.js/pull/7439)]
+- Add `layout.hoverlabel.showarrow` (and `trace.hoverlabel.showarrow`) attribute to allow hiding the triangular caret that appears on the hover label box [[#7451](https://github.com/plotly/plotly.js/pull/7451)]
+- Add `minorloglabels` to cartesian axes [[#7468](https://github.com/plotly/plotly.js/pull/7468)]
+- Make modebar keyboard-accessible via tabbing [[#7492](https://github.com/plotly/plotly.js/pull/7492)], with thanks to @davidangarita1 for the contribution!
+
+### Changed
+- Switch to United Nations (coastlines, countries, land, ocean) + Natural Earth (lakes, rivers, subunits) geodata for building topojson used in geo plot [[#7393](https://github.com/plotly/plotly.js/pull/7393)]
+- Make 'png' all caps [[#7400](https://github.com/plotly/plotly.js/pull/7400)]
+- Refactor files related to UN topojson [[#7481](https://github.com/plotly/plotly.js/pull/7481)]
+- Update default `topojsonURL` to point to new UN topojson [[#7514](https://github.com/plotly/plotly.js/pull/7514)]
+- Add breaking change warning for *country names* `locationmode` option in choropleth, scattergeo plots [[#7514](https://github.com/plotly/plotly.js/pull/7514)]
+
+### Fixed
+- Fix performance warning in scattergl traces, [[#7390](https://github.com/plotly/plotly.js/pull/7390)], with thanks to @MzyzzG for the contribution!
+- Move css-loader and other dependencies into devDependencies section [[#7407](https://github.com/plotly/plotly.js/pull/7407)]
+- Fix hidden ticklabels taking up plot space [[#7417](https://github.com/plotly/plotly.js/pull/7417)]
+- Fix editable shapes (regression introduced in 2.34.0) [[#7470](https://github.com/plotly/plotly.js/pull/7470)],
+  with thanks to @my-tien for the contribution!
+- Update legend maxheight calculation logic [[#7483](https://github.com/plotly/plotly.js/pull/7483)] 
+- Fix hover event not triggered on consecutive empty bins (count=0) with `hovermode:'x'` for histogram [[#7503](https://github.com/plotly/plotly.js/pull/7503)], with thanks to @Lexachoc for the contribution!
+- Remove **form-data** nested dependency associated with [CVE-2025-7783](https://github.com/advisories/GHSA-fjxv-7rqg-78g4) [[#7514](https://github.com/plotly/plotly.js/pull/7514)], with thanks to @KyleBoyer for the contribution!
+
+
+## [3.1.0-rc.1] -- 2025-08-01
+
+### Added
+- Add modebardisable attribute to cartesian axes, to allow fine control over which buttons affect which axes [[#7358](https://github.com/plotly/plotly.js/pull/7358)]
+- Add `unifiedhovertitle.text` to format unified hover titles [[#7439](https://github.com/plotly/plotly.js/pull/7439)]
+- Add `layout.hoverlabel.showarrow` (and `trace.hoverlabel.showarrow`) attribute to allow hiding the triangular caret that appears on the hover label box [[#7451](https://github.com/plotly/plotly.js/pull/7451)]
+- Add `minorloglabels` to cartesian axes [[#7468](https://github.com/plotly/plotly.js/pull/7468)]
+- Make modebar keyboard-accessible via tabbing [[#7492](https://github.com/plotly/plotly.js/pull/7492)], with thanks to @davidangarita1 for the contribution!
+
+### Changed
+- Refactor files related to UN topojson [[#7481](https://github.com/plotly/plotly.js/pull/7481)]
+
+### Fixed
+- Fix hidden ticklabels taking up plot space [[#7417](https://github.com/plotly/plotly.js/pull/7417)]
+- Fix editable shapes (regression introduced in 2.34.0) [[#7470](https://github.com/plotly/plotly.js/pull/7470)],
+  with thanks to @my-tien for the contribution!
+
+
+## [3.0.3] -- 2025-07-23
+
+### Fixed
+ - Remove detailed description of font options [[7348](https://github.com/plotly/plotly.js/pull/7348)]
+
+
+## [3.0.2] -- 2025-07-22
+
+### Fixed
+ - Fix installing dependencies in node v22 [[#7381](https://github.com/plotly/plotly.js/pull/7381)], with thanks to @chaigh-uk for the contribution!
+ - Fix Persian calendar leap year [[#7456](https://github.com/plotly/plotly.js/pull/7456)]
+ - Fix scroll wheel zoom for geo subplots in Safari [[#7474](https://github.com/plotly/plotly.js/pull/7474)]
+ - Add method to check for WebKit WebView user agent string [[#7479](https://github.com/plotly/plotly.js/pull/7479)]
+ - Fix edit colorbar title [[7487](https://github.com/plotly/plotly.js/pull/7487)]
+
+
 ## [3.1.0-rc.0] -- 2025-07-15
 
 ### Added
@@ -19,7 +85,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
  with thanks to @my-tien for the contribution!
 
 ### Changed
- - Switch to United Nations (coastlines, countries, land, ocean) + Natural Earth (lakes, rivers, subunits) geodata for building topojson used in geo plot
+ - Switch to United Nations (coastlines, countries, land, ocean) + Natural Earth (lakes, rivers, subunits) geodata for building topojson used in geo plot [[#7393](https://github.com/plotly/plotly.js/pull/7393)]
  - Make 'png' all caps [[#7400](https://github.com/plotly/plotly.js/pull/7400)]
 
 ### Fixed

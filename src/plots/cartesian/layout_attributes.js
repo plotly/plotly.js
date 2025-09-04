@@ -5,6 +5,7 @@ var colorAttrs = require('../../components/color/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var templateFormatStringDescription = require('../../plots/template_attributes').templateFormatStringDescription;
 var descriptionWithDates = require('../../plots/cartesian/axis_format_attributes').descriptionWithDates;
 
 var ONEDAY = require('../../constants/numerical').ONEDAY;
@@ -334,7 +335,7 @@ module.exports = {
         description: [
             'If *normal*, the range is computed in relation to the extrema',
             'of the input data.',
-            'If *tozero*`, the range extends to 0,',
+            'If *tozero*, the range extends to 0,',
             'regardless of the input data',
             'If *nonnegative*, the range is non-negative,',
             'regardless of the input data.',
@@ -387,6 +388,18 @@ module.exports = {
         description: [
             'Determines whether or not this axis is zoom-able.',
             'If true, then zoom is disabled.'
+        ].join(' ')
+    },
+    modebardisable: {
+        valType: 'flaglist',
+        flags: ['autoscale', 'zoominout'],
+        extras: ['none'],
+        dflt: 'none',
+        editType: 'modebar',
+        description: [
+            'Disables certain modebar buttons for this axis.',
+            '*autoscale* disables the autoscale buttons, *zoominout*',
+            'disables the zoom-in and zoom-out buttons.'
         ].join(' ')
     },
     insiderange: {
@@ -974,6 +987,18 @@ module.exports = {
         dflt: '',
         editType: 'none',
         description: descriptionWithDates('hover text')
+    },
+    unifiedhovertitle: {
+        text : {
+            valType: 'string',
+            dflt: '',
+            editType: 'none',
+            description: [
+                'Template string used for rendering the title that appear on x or y unified hover box.',
+                templateFormatStringDescription()
+            ].join(' ')
+        },
+        editType: 'none'
     },
     // lines and grids
     showline: {
