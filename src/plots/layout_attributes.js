@@ -451,4 +451,14 @@ module.exports = {
         ].join(' '),
         editType: 'none'
     }),
+
+    sketchmode: {
+        valType: 'boolean',
+        dflt: false,
+        editType: 'plot',
+        description: [
+            'Determines whether the plot should be rendered with sketch-style appearance.',
+            'When set to `true`, plot elements will have a hand-drawn, sketchy look.'
+        ].join(' ')
+    },
 };

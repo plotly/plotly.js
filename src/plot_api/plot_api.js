@@ -3,6 +3,7 @@
 var d3 = require('@plotly/d3');
 var isNumeric = require('fast-isnumeric');
 var hasHover = require('has-hover');
+var rough = require('roughjs');
 
 var Lib = require('../lib');
 var nestedProperty = Lib.nestedProperty;
@@ -385,6 +386,9 @@ function _doPlot(gd, data, layout, config) {
         Plots.previousPromises
     );
 
+    // Implement sketchmode here (needs to happen once everything is drawn)
+    seq.push(sketchifyFunc(gd));
+
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
     var plotDone = Lib.syncOrAsync(seq, gd);
@@ -394,6 +398,76 @@ function _doPlot(gd, data, layout, config) {
         emitAfterPlot(gd);
         return gd;
     });
+}
+
+function pathIsClosed(path) {
+    // A closed path ends with 'Z' or 'z' (closepath)
+    if(!path) return false;
+    return path.trim().slice(-1).toLowerCase() === 'z';
+}
+
+function extractRoughPathString(roughPath) {
+    const pathElements = d3.select(roughPath).selectAll('path')[0];
+    const pathStrings = pathElements.map(p => p.getAttribute('d') || '');
+    // Return concatenated pathStrings
+    return pathStrings.join(' ');
+}
+
+function sketchifyFunc(gd) {
+    function sketchify() {
+        // Get value of `sketchmode` from the layout
+        var sketchmode = gd._fullLayout.sketchmode;
+        if(!sketchmode) return;
+
+        // Get the root svg nodes
+        const mainSvgs = d3.select(gd).selectAll('.main-svg')[0];
+
+        for(var mainSvg of mainSvgs) {
+            let roughSvg = rough.svg(mainSvg);
+
+            // Traverse all paths in the mainSvg and replace them with rough paths
+            d3.select(mainSvg).selectAll('path').each(function() {
+                const path = d3.select(this);
+                const d = path.attr('d');
+                const isClosedPath = pathIsClosed(d);
+
+                const pathStyle = path.attr('style') || '';
+                const pathFill = (pathStyle.match(/fill:\s*([^;]*)/) || [])[1];
+                const pathStroke = (pathStyle.match(/stroke:\s*([^;]*)/) || [])[1];
+                const fillStyle = isClosedPath ? 'hachure' : 'solid';
+
+                if(d) {
+                    const options = {
+                        stroke: (pathStroke !== 'none') ? pathStroke : pathFill,
+                        fill: (pathFill !== 'none') ? pathFill : pathStroke,
+                        fillStyle: fillStyle,
+                        fillWeight: 3,
+                        hachureAngle: -45,
+                        hachureGap: 6,
+                    }
+
+                    const roughPath = roughSvg.path(d, options);
+
+                    const roughPathString = extractRoughPathString(roughPath);
+
+                    if(!roughPathString) return;
+
+                    // replace 'd' attribute of original path with that of rough path
+                    const strokeWidth = 2;
+                    path.attr('d', roughPathString);
+
+                    path.attr('style', undefined);
+                    path.attr('stroke-width', '1')
+                    path.attr('fill', 'none');
+                    if(pathFill || pathStroke) {
+                        const strokeToSet = (pathStroke && pathStroke !== 'none') ? pathStroke : pathFill;
+                        path.attr('stroke', strokeToSet);
+                    }
+                }
+            });
+        }
+    }
+    return sketchify;
 }
 
 function emitAfterPlot(gd) {
@@ -1768,6 +1842,8 @@ function relayout(gd, astr, val) {
         relayout, [gd, specs.redoit]
     );
 
+    seq.push(sketchifyFunc(gd));
+
     var plotDone = Lib.syncOrAsync(seq, gd);
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
@@ -2287,6 +2363,8 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
         Plots.redrag,
         Plots.reselect
     );
+
+    seq.push(sketchifyFunc(gd));
 
     Queue.add(gd,
         update, [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces],
