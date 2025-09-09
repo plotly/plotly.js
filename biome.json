@@ -9,6 +9,7 @@
       "**/test/**",
       "**/tasks/**",
       "**/devtools/**",
+      "**/topojson/**",
       "!**/test/plot-schema.json",
       "!**/dist",
       "!**/stackgl_modules",
@@ -88,17 +89,7 @@
         "noVar": "off",
         "noConsole": { "level": "off", "options": { "allow": ["log"] } }
       }
-    },
-    "includes": [
-      "**",
-      "!**/stackgl_modules",
-      "!**/node_modules",
-      "!**/dist",
-      "!**/build",
-      "!**/tasks/test_amdefine.js",
-      "!**/tasks/test_requirejs.js",
-      "!**/test/jasmine/assets/jquery-1.8.3.min.js"
-    ]
+    }
   },
   "javascript": {
     "globals": [
