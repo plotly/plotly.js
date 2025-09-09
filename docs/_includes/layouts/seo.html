@@ -56,7 +56,7 @@
     <meta name="twitter:card" content="photo" />
     <meta name="twitter:title" content={{title}}/>
     <meta name="twitter:url" content="{% if page.permalink %}https://plotly.com/{{page.permalink}}{% endif %}"/>
-    <meta name="twitter:description" content={{description}}/>
+    <meta name="twitter:description" content="{{description | xml_escape}}"/>
     <meta name="twitter:image" content="{% if page.imageurl %}{{page.imageurl}}{% else %}{% if page.thumbnail%}{{site.imgurl}}{{page.thumbnail}}{%else%}https://help.plot.ly/images/twitter-default.png{% endif %}{% endif %}">
     <meta name="twitter:site" content="@plotlygraphs"/>
 
