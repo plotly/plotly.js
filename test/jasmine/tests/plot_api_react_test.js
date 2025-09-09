@@ -425,6 +425,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             expect(d3SelectAll('.drag').size()).toBe(0);
             expect(d3SelectAll('.gtitle').size()).toBe(0);
+            expect(d3SelectAll('.gtitle-subtitle').size()).toBe(0);
             countCalls({plot: 1});
 
             return Plotly.react(gd, data, layout, {});
@@ -432,6 +433,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             expect(d3SelectAll('.drag').size()).toBe(11);
             expect(d3SelectAll('.gtitle').size()).toBe(0);
+            expect(d3SelectAll('.gtitle-subtitle').size()).toBe(0);
             countCalls({plot: 1});
         })
         .then(done, done.fail);
