@@ -142,7 +142,7 @@ async function createLandLayer({ bounds, name, resolution, source }) {
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/land.geojson`;
     const commands = [
         inputFilePath,
-        '-dissolve',
+        '-dissolve2',
         bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
         `-o ${outputFilePath}`
     ].join(' ');
@@ -200,7 +200,10 @@ async function createLakesLayer({ name, resolution, source }) {
 }
 
 async function createSubunitsLayer({ name, resolution, source }) {
-    const filter = ['AUS', 'BRA', 'CAN', 'USA'].map((id) => `adm0_a3 === "${id}"`).join(' || ');
+    // Only include USA for 'usa' scope since the UN and NE borders don't match exactly and slivers of Canada creep in
+    const filter = (name === 'usa' ? ['USA'] : ['AUS', 'BRA', 'CAN', 'USA'])
+        .map((id) => `adm0_a3 === "${id}"`)
+        .join(' || ');
     const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/subunits.geojson`;
     const commands = [
@@ -365,7 +368,8 @@ const commandsCountries50m = [
     `-each 'if (globalid === "{9FD54A50-0BFB-4385-B342-1C3BDEE5ED9B}") iso3cd = "XBT"'`, // Bir Tawil
     `-each 'if (iso3cd) iso3cd = iso3cd.toUpperCase()'`,
     `-filter '${filters.countries}'`,
-    '-clean',
+    // Snap polygons to clean up land, coastlines layers
+    '-clean snap-interval=0.00013',
     `-o ${outputFilePathCountries50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsCountries50m);
