@@ -369,7 +369,7 @@ const commandsCountries50m = [
     `-each 'if (iso3cd) iso3cd = iso3cd.toUpperCase()'`,
     `-filter '${filters.countries}'`,
     // Snap polygons to clean up land, coastlines layers
-    '-clean snap-interval=0.00013',
+    '-clean snap-interval=0.000125',
     `-o ${outputFilePathCountries50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsCountries50m);
@@ -388,9 +388,8 @@ const inputFilePathCountries110m = outputFilePathCountries50m;
 const outputFilePathCountries110m = `${outputDirGeojson}/${unFilename}_110m/countries.geojson`;
 const commandsCountries110m = [
     inputFilePathCountries110m,
-    '-simplify 20%',
-    // Use 'snap-interval' to fix alignment issues with continental USA, Alaska, and Mexico
-    '-clean snap-interval=0.015',
+    '-simplify 21%',
+    '-clean',
     `-o ${outputFilePathCountries110m}`
 ].join(' ');
 await mapshaper.runCommands(commandsCountries110m);
