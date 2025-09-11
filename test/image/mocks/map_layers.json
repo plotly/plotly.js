@@ -189,7 +189,7 @@
     {
      "sourcetype": "raster",
      "source": [
-        "https://camdecoster.dev/_astro/avatar.BkcRA08j_Z2eyGjN.webp"
+        "https://basemap.nationalmap.gov/arcgis/services/USGSImageryOnly/MapServer/WMSServer?bbox={bbox-epsg-3857}&format=image/png&service=WMS&request=GetMap&crs=EPSG:3857&transparent=true&width=256&height=256&version=1.3.0&layers=0&styles=default"
      ],
      "below": "aeroway-line"
     },
