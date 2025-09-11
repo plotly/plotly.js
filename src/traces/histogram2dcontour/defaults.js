@@ -26,6 +26,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('xhoverformat');
     coerce('yhoverformat');
     coerce('hovertemplate');
+
+    coerce('tooltip');
+    coerce('tooltiptemplate');
     if(
         traceOut.contours &&
         traceOut.contours.coloring === 'heatmap'
