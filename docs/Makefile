@@ -1,6 +1,7 @@
 # Manage plotly.js documentation.
 
 JEKYLL=bundle exec jekyll
+RUN = uv run
 SCHEMA_SRC=../test/plot-schema.json
 SCHEMA_DST=_data/plotschema.json
 
@@ -13,6 +14,26 @@ build:
 	@mkdir -p _data
 	cp ${SCHEMA_SRC} ${SCHEMA_DST}
 	${JEKYLL} build
+
+## examples: build example documentation in ./tmp
+examples:
+	@rm -rf tmp
+	@mkdir -p tmp
+	${RUN} bin/example_pages.py --indir _posts/plotly_js --outdir tmp/javascript --jsversion 3.2.1 --verbose 1
+
+## format: reformat Python code
+format:
+	@ruff format bin
+
+## lint: check code and project
+lint:
+	@ruff check bin
+
+## reference: build reference documentation in ./tmp
+reference:
+	@rm -rf tmp
+	@mkdir -p tmp
+	${RUN} bin/reference_pages.py --schema ${SCHEMA_SRC} --outdir tmp/reference _posts/reference_pages/javascript/*.html
 
 ## serve: display documentation
 serve:
