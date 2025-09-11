@@ -1,10 +1,10 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
-var countryRegex = require('country-regex');
 var { area: turfArea } = require('@turf/area');
 var { centroid: turfCentroid } = require('@turf/centroid');
 var { bbox: turfBbox } = require('@turf/bbox');
+const countries = require("i18n-iso-countries");
 
 var identity = require('./identity');
 var loggers = require('./loggers');
@@ -12,8 +12,7 @@ var isPlainObject = require('./is_plain_object');
 var nestedProperty = require('./nested_property');
 var polygon = require('./polygon');
 
-// make list of all country iso3 ids from at runtime
-var countryIds = Object.keys(countryRegex);
+countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
 
 var locationmodeToIdFinder = {
     'ISO-3': identity,
@@ -22,11 +21,12 @@ var locationmodeToIdFinder = {
 };
 
 function countryNameToISO3(countryName) {
-    for(var i = 0; i < countryIds.length; i++) {
-        var iso3 = countryIds[i];
-        var regex = new RegExp(countryRegex[iso3]);
-
-        if(regex.test(countryName.trim().toLowerCase())) return iso3;
+    // remove sequences of whitespaces
+    var cleanName = countryName.replace(/\s+/g, ' ').trim();
+    var alpha3Code = countries.getAlpha3Code(cleanName, "en")
+    
+    if (alpha3Code !== undefined) {
+        return alpha3Code;
     }
 
     loggers.log('Unrecognized country name: ' + countryName + '.');
