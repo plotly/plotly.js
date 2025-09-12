@@ -77,6 +77,14 @@ module.exports = {
             'where `x0` is the starting coordinate and `dx` the step.'
         ].join(' ')
     },
+    x1: {
+        valType: 'any',
+        arrayOk: true,
+        dflt: 0,
+        editType: 'calc+clearAxisTypes',
+        anim: true,
+        description: 'Sets the x1 range coordinates.'
+    },
     dx: {
         valType: 'number',
         dflt: 1,
@@ -94,8 +102,7 @@ module.exports = {
         description: 'Sets the y coordinates.'
     },
     y0: {
-        valType: 'any',
-        dflt: 0,
+        valType: 'data_array',
         editType: 'calc+clearAxisTypes',
         anim: true,
         description: [
@@ -104,6 +111,14 @@ module.exports = {
             'Use with `dy`',
             'where `y0` is the starting coordinate and `dy` the step.'
         ].join(' ')
+    },
+    y1: {
+        valType: 'any',
+        arrayOk: true,
+        dflt: 0,
+        editType: 'calc+clearAxisTypes',
+        anim: true,
+        description: 'Sets the y1 range coordinates.'
     },
     dy: {
         valType: 'number',
