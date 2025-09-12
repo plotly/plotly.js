@@ -8,6 +8,9 @@ var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
 var Sieve = require('./sieve.js');
+var TEXTPAD = require('./constants').TEXTPAD;
+var Drawing = require('../../components/drawing');
+var d3 = require('@plotly/d3');
 
 /*
  * Bar chart stacking/grouping positioning and autoscaling calculations
@@ -567,10 +570,14 @@ function setBaseAndTop(sa, sieve) {
             }
         }
 
-        fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+        var extremesOpts = {
             tozero: tozero,
             padded: true
-        });
+        };
+
+        addTextPadding(extremesOpts, fullTrace, sa);
+
+        fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, extremesOpts);
     }
 }
 
@@ -641,12 +648,17 @@ function stackBars(sa, sieve, opts) {
 
         // if barnorm is set, let normalizeBars update the axis range
         if(!opts.norm) {
-            fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+            var extremesOpts = {
                 // N.B. we don't stack base with 'base',
                 // so set tozero:true always!
                 tozero: true,
                 padded: true
-            });
+            };
+
+            // Add text padding if needed
+            addTextPadding(extremesOpts, fullTrace, sa);
+
+            fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, extremesOpts);
         }
     }
 }
@@ -752,10 +764,13 @@ function normalizeBars(sa, sieve, opts) {
             }
         }
 
-        fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
+        var extremesOpts = {
             tozero: tozero,
             padded: padded
-        });
+        };
+        addTextPadding(extremesOpts, fullTrace, sa);
+
+        fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, extremesOpts);
     }
 }
 
@@ -862,6 +877,98 @@ function collectExtents(calcTraces, pa) {
 
 function getAxisLetter(ax) {
     return ax._id.charAt(0);
+}
+
+function measureTextWidth(txt, font) {
+    var element = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    var sel = d3.select(element);
+    sel.text(txt)
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('data-unformatted', txt)
+        .call(Drawing.font, font);
+
+    var width = Drawing.bBox(sel.node()).width;
+
+    // Clean up the temporary element
+    element.remove();
+
+    return width;
+}
+
+function findExtremeIndices(values) {
+    var maxPositiveIdx = -1, maxNegativeIdx = -1;
+    var maxPositiveVal = -Infinity, maxNegativeVal = Infinity;
+
+    for(var i = 0; i < values.length; i++) {
+        if(values[i] > 0 && values[i] > maxPositiveVal) {
+            maxPositiveVal = values[i];
+            maxPositiveIdx = i;
+        }
+        if(values[i] < 0 && values[i] < maxNegativeVal) {
+            maxNegativeVal = values[i];
+            maxNegativeIdx = i;
+        }
+    }
+    return {positive: maxPositiveIdx, negative: maxNegativeIdx};
+}
+
+function getMaxLineCount(texts) {
+    var maxLines = 1;
+    for(var i = 0; i < texts.length; i++) {
+        if(texts[i]) {
+            var lineCount = (texts[i].toString().match(/<br>/gi) || []).length + 1;
+            maxLines = Math.max(maxLines, lineCount);
+        }
+    }
+    return maxLines;
+}
+
+function addTextPadding(extremesOpts, trace, sa) {
+    var textpos = trace.textposition;
+    if(!trace.text || !textpos) return;
+
+    var hasOutsideText = Array.isArray(textpos) ? 
+        textpos.indexOf('outside') !== -1 : textpos === 'outside';
+    if(!hasOutsideText) return;
+
+    var font = trace.outsidetextfont || trace.textfont;
+    var fontSize = font && font.size;
+    if(!fontSize) return;
+
+    if(Array.isArray(fontSize)) {
+        fontSize = Math.max.apply(Math, fontSize.filter(function(s) { return typeof s === 'number'; }));
+        if(!fontSize) return;
+    }
+
+    var isHorizontal = trace.orientation === 'h';
+    var values = isHorizontal ? trace.x : trace.y;
+    if(!values) return;
+
+    var extremes = findExtremeIndices(values);
+    var positivePadding = 0, negativePadding = 0;
+
+    if(isHorizontal) {
+        if(extremes.positive >= 0 && trace.text[extremes.positive]) {
+            positivePadding = measureTextWidth(trace.text[extremes.positive], font) + TEXTPAD;
+        }
+        if(extremes.negative >= 0 && trace.text[extremes.negative]) {
+            negativePadding = measureTextWidth(trace.text[extremes.negative], font) + TEXTPAD;
+        }
+    } else {
+        // For vertical bars, calculate height based on text for each extreme bar
+        if(extremes.positive >= 0 && trace.text[extremes.positive]) {
+            var positiveTexts = [trace.text[extremes.positive]];
+            positivePadding = fontSize * getMaxLineCount(positiveTexts) + TEXTPAD;
+        }
+        if(extremes.negative >= 0 && trace.text[extremes.negative]) {
+            var negativeTexts = [trace.text[extremes.negative]];
+            negativePadding = fontSize * getMaxLineCount(negativeTexts) + TEXTPAD;
+        }
+    }
+
+    if(extremes.positive >= 0 && positivePadding > 0) extremesOpts.ppadplus = positivePadding;
+    if(extremes.negative >= 0 && negativePadding > 0) extremesOpts.ppadminus = negativePadding;
 }
 
 module.exports = {
