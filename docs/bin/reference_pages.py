@@ -7,6 +7,8 @@ from pathlib import Path
 import re
 import sys
 
+from utils import _log, _str
+
 
 INCLUDE_BLOCK_RE = re.compile(
     r'{%\s*include\s+posts/reference-block.html\s+parentlink="(.+?)"\s+block="(.+?)"\s+parentpath="(.+?)"\s+mustmatch="(.+?)"\s*%}'
@@ -114,7 +116,7 @@ def main():
             _log(not m, f"failed to match include in {src_path}")
             continue
 
-        output_path = args.outdir / "reference" / title.replace(".", "/") / "index.html"
+        output_path = args.outdir / title.replace(".", "/") / "index.html"
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(html)
 
@@ -138,13 +140,6 @@ def _get(value, key, default=None):
         return default
     assert isinstance(value, dict), f"{value} not recognized"
     return value.get(key, default)
-
-
-def _log(condition, msg):
-    """Conditionally report progress."""
-    if condition:
-        print(msg, file=sys.stderr)
-    return condition
 
 
 def _parse_args():
@@ -237,7 +232,7 @@ def _reference_block_valtype(src_path, accum, key, value):
         accum.append(f"{inner}<em>Type:</em> {_get(value, 'valType')} string.\n\n")
         flags = _get(value, "flags")
         if not flags:
-            print(f"no flags for flaglist in {src_path}", file=sys.stderr)
+            print(f"no flags for flaglist {key} in {src_path}", file=sys.stderr)
             return
 
         accum.append(f"{inner}Any combination of ")

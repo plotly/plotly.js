@@ -15,11 +15,17 @@ build:
 	cp ${SCHEMA_SRC} ${SCHEMA_DST}
 	${JEKYLL} build
 
+## examples: build example documentation in ./tmp
+examples:
+	@rm -rf tmp
+	@mkdir -p tmp
+	${RUN} bin/example_pages.py --indir _posts/plotly_js --outdir tmp/javascript --verbose 1
+
 ## reference: build reference documentation in ./tmp
 reference:
 	@rm -rf tmp
 	@mkdir -p tmp
-	${RUN} bin/make_reference_pages.py --schema ${SCHEMA_SRC} --outdir tmp _posts/reference_pages/javascript/*.html
+	${RUN} bin/reference_pages.py --schema ${SCHEMA_SRC} --outdir tmp/reference _posts/reference_pages/javascript/*.html
 
 ## serve: display documentation
 serve:
