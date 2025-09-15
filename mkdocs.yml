@@ -1,0 +1,24 @@
+site_name: "Plotly.js Docs"
+site_url: 'https://plotly.com/javascript/'
+docs_dir: pages
+site_dir: doc
+
+validation:
+  absolute_links: relative_to_docs
+  anchors: info
+  unrecognized_links: info
+  not_found: info
+
+plugins:
+  - search
+  - gen-files:
+      scripts:
+        - bin/generate_reference_pages.py
+
+theme:
+  name: "material"
+
+markdown_extensions:
+  - footnotes
+  - pymdownx.snippets:
+        base_path: ["docs/tmp"]

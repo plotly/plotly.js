@@ -1,0 +1,4582 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://plotly.com/javascript/reference/image/">
+      
+      
+        <link rel="prev" href="../icicle/">
+      
+      
+        <link rel="next" href="../indicator/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>image - Plotly.js Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#image" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Plotly.js Docs" class="md-header__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Plotly.js Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              image
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Plotly.js Docs" class="md-nav__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Plotly.js Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/2D-Histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2D-Histogram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/2d-histogram-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2d-histogram-contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3d-axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-hover/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3d-hover
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-isosurface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3d-isosurface-plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-line-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3d-line-plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3d-mesh
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-point-clustering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3d-point-clustering
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-scatter-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3d-scatter-plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3d-subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-surface-lighting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3d-surface-lighting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-surface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3d-surface-plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/LaTeX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LaTeX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ajax-call/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ajax-call
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    bar-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/box-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    box-plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bubble-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    bubble-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bubble-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    bubble-maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bullet-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    bullet-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/candlestick-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    candlestick-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/carpet-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    carpet-contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/carpet-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    carpet-plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/carpet-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    carpet-scatter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choropleth-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choropleth-maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/click-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    click-events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/colorway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    colorway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cone-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    cone-plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/configuration-options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    configuration-options
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/continuous-error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    continuous-error-bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/contour-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contour-plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/custom-buttons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    custom-buttons
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/disable-zoom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    disable-zoom
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/dot-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dot-plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/dropdowns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dropdowns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    error-bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/figure-labels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    figure-labels
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/filled-area-animation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    filled-area-animation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/filled-area-on-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    filled-area-on-map
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/filled-area-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    filled-area-plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/font/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    font
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/funnel-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnel-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/gapminder-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    gapminder-example
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/gauge-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    gauge-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/graphing-multiple-chart-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    graphing-multiple-chart-types
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    heatmaps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/histograms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histograms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/horizontal-bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    horizontal-bar-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/horizontal-legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    horizontal-legend
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/hover-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    hover-events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/hover-text-and-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    hover-text-and-formatting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    images
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    indicator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/insets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    insets
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/lasso-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    lasso-selection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/layout-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    layout-template
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    legend
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/line-and-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    line-and-scatter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/line-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    line-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/lines-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    lines-on-maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/log-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    log-plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/map-animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    map-animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/mixed-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mixed-subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/multiple-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    multiple-axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ohlc-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ohlc-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/parallel-categories-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parallel-categories-diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/parallel-coordinates-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parallel-coordinates-plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/pie-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    pie-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/plotlyjs-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    plotlyjs-events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/polar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    polar-chart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/radar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    radar-chart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/range-slider/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    range-slider
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/react/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    react
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/remove-trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    remove-trace
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/responsive-fluid-layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    responsive-fluid-layout
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ribbon-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ribbon-plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sankey-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sankey-diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/scatter-plots-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter-plots-on-maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/scatter-tile-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter-tile-maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/setting-graph-size/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    setting-graph-size
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/shapes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    shapes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sliders/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sliders
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/spc-control-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    spc-control-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    splom
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    streaming
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/streamtube-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    streamtube-plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sunburst-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sunburst-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/table-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    table-subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    table
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ternary-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ternary-contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ternary-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ternary-plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/text-and-annotations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    text-and-annotations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/texttemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    texttemplate
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tick-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    tick-formatting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tile-county-choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    tile-county-choropleth
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tile-density-heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    tile-density-heatmaps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tile-map-layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    tile-map-layers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/time-series/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    time-series
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/treemaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    treemaps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/trisurf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    trisurf
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/uirevision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    uirevision
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    violin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/waterfall-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    waterfall-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/webgl-vs-svg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    webgl-vs-svg
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/wind-rose-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wind-rose-charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/zoom-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    zoom-events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    bar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../barpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    barpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../box/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    box
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../candlestick/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    candlestick
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    carpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choropleth
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choroplethmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choroplethmapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    cone
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contourcarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contourcarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../densitymap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../densitymapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../funnel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnel
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../funnelarea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnelarea
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../heatmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    heatmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histogram2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histogram2dcontour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2dcontour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../icicle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    icicle
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    image
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    indicator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../isosurface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    isosurface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    layout
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mesh3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ohlc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ohlc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcats
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parcoords/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcoords
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pie/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    pie
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sankey/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sankey
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatter3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattercarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattercarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattergeo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergeo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattergl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattermap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattermapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatterpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatterpolargl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolargl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattersmith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattersmith
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatterternary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterternary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    splom
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streamtube/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    streamtube
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sunburst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sunburst
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    surface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    table
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../treemap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    treemap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    violin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../volume/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    volume
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waterfall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    waterfall
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="image">image</h1>
+<div class="description">
+  A <code>image</code> trace is an object with the key <code>"type"</code> equal to <code>"image"</code>
+  (i.e. <code>{"type": "image"}</code>) and any of the keys listed below.
+  <br><br>Display an image, i.e. data on a 2D regular raster. By default, when an image is displayed in a subplot, its y axis will be reversed (ie. `autorange: 'reversed'`), constrained to the domain (ie. `constrain: 'domain'`) and it will have the same scale as its x axis (ie. `scaleanchor: 'x,`) in order for pixels to be rendered as squares.<br><br>
+</div>
+<ul>
+<li>
+<a class="attribute-name" id="image-colormodel" href="#image-colormodel">
+    colormodel
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"rgb"</code>| <code>"rgba"</code>| <code>"rgba256"</code>| <code>"hsl"</code>| <code>"hsla"</code>                    )
+<p>Color model used to map the numerical color components described in `z` into colors. If `source` is specified, this attribute will be set to `rgba256` otherwise it defaults to `rgb`.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-customdata" href="#image-customdata">
+    customdata
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, "scatter" traces also appends customdata items in the markers DOM elements</p>
+</li>
+<li>
+<a class="attribute-name" id="image-dx" href="#image-dx">
+    dx
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>1</code>
+<p>Set the pixel&#x27;s horizontal size.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-dy" href="#image-dy">
+    dy
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>1</code>
+<p>Set the pixel&#x27;s vertical size</p>
+</li>
+<li>
+<a class="attribute-name" id="image-hoverinfo" href="#image-hoverinfo">
+    hoverinfo
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "x", "y", "z", "color", "name", "text" joined with a <code>"+"</code>
+                    OR "all", "none", "skip".
+
+                    <br><em>Examples:</em> <code>"x"</code>, <code>"y"</code>, <code>"x+y"</code>, <code>"x+y+z"</code>, <code>"all"</code>
+
+                <br><em>Default:</em> <code>"x+y+z+text+name"</code>
+<p>Determines which trace information appear on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-hoverlabel" href="#image-hoverlabel">
+    hoverlabel
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="image-align" href="#image-align">
+    align
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"left"</code>| <code>"right"</code>| <code>"auto"</code>                    )
+                <br><em>Default:</em> <code>"auto"</code>
+<p>Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines</p>
+</li>
+<li>
+<a class="attribute-name" id="image-bgcolor" href="#image-bgcolor">
+    bgcolor
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> color or array of colors<p>Sets the background color of the hover labels for this trace</p>
+</li>
+<li>
+<a class="attribute-name" id="image-bordercolor" href="#image-bordercolor">
+    bordercolor
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> color or array of colors<p>Sets the border color of the hover labels for this trace.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-font" href="#image-font">
+    font
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets the font used in hover labels.</p>
+<ul>
+<li>
+<a class="attribute-name" id="image-color" href="#image-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> color or array of colors</li>
+<li>
+<a class="attribute-name" id="image-family" href="#image-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-lineposition" href="#image-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-shadow" href="#image-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> string or array of strings                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-size" href="#image-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> number or array of numbers greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="image-style" href="#image-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-textcase" href="#image-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-variant" href="#image-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-weight" href="#image-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> integer or array of integers between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="image-namelength" href="#image-namelength">
+    namelength
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> integer or array of integers greater than or equal to -1
+                <br><em>Default:</em> <code>15</code>
+<p>Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer &gt;3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-showarrow" href="#image-showarrow">
+    showarrow
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> boolean                <br><em>Default:</em> <code>true</code>
+<p>Sets whether or not to show the hover label arrow/triangle pointing to the data point.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="image-hovertemplate" href="#image-hovertemplate">
+    hovertemplate
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example &quot;y: %{y}&quot; as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, "xother" will be added to those with different x positions from the first point. An underscore before or after "(x|y)other" will add a space on that side, only when this field is shown. Numbers are formatted using d3-format&#x27;s syntax %{variable:d3-format}, for example &quot;Price: %{y:$.2f}&quot;. https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format&#x27;s syntax %{variable|d3-time-format}, for example &quot;Day: %{2019-01-01|%A}&quot;. https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `z`, `color` and `colormodel`. Anything contained in tag `&lt;extra&gt;` is displayed in the secondary box, for example `&lt;extra&gt;%{fullData.name}&lt;/extra&gt;`. To hide the secondary box completely, use an empty tag `&lt;extra&gt;&lt;/extra&gt;`.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-hovertext" href="#image-hovertext">
+    hovertext
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Same as `text`.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-ids" href="#image-ids">
+    ids
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Assigns id labels to each datum. These ids for object constancy of data points during animation. Should be an array of strings, not numbers or any other type.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-legend" href="#image-legend">
+    legend
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> subplotid
+                <br><em>Default:</em> <code>legend</code>
+<p>Sets the reference to a legend to show this trace in. References to these legends are "legend", "legend2", "legend3", etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-legendgrouptitle" href="#image-legendgrouptitle">
+    legendgrouptitle
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="image-font" href="#image-font">
+    font
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets this legend group&#x27;s title font.</p>
+<ul>
+<li>
+<a class="attribute-name" id="image-color" href="#image-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> color</li>
+<li>
+<a class="attribute-name" id="image-family" href="#image-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> string<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-lineposition" href="#image-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-shadow" href="#image-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> string                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-size" href="#image-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> number greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="image-style" href="#image-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-textcase" href="#image-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-variant" href="#image-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-weight" href="#image-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> integer between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="image-text" href="#image-text">
+    text
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> string<p>Sets the title of the legend group.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="image-legendrank" href="#image-legendrank">
+    legendrank
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>1000</code>
+<p>Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with "reversed" `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-legendwidth" href="#image-legendwidth">
+    legendwidth
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> number<p>Sets the width (in px or fraction) of the legend for this trace.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-meta" href="#image-meta">
+    meta
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-name" href="#image-name">
+    name
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> string<p>Sets the trace name. The trace name appears as the legend item and on hover.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-opacity" href="#image-opacity">
+    opacity
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> number less than or equal to 1
+                <br><em>Default:</em> <code>1</code>
+<p>Sets the opacity of the trace.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-source" href="#image-source">
+    source
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> string<p>Specifies the data URI of the image to be visualized. The URI consists of &quot;data:image/[&lt;media subtype\\&gt;][;base64\\],&lt;data\\&gt;&quot;</p>
+</li>
+<li>
+<a class="attribute-name" id="image-text" href="#image-text">
+    text
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Sets the text elements associated with each z value.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-type" href="#image-type">
+    type
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br />
+<em>Type:</em> "image"
+</li>
+<li>
+<a class="attribute-name" id="image-uid" href="#image-uid">
+    uid
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> string<p>Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-uirevision" href="#image-uirevision">
+    uirevision
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Controls persistence of some user-driven changes to the trace: `constraintrange` in `parcoords` traces, as well as some `editable: true` modifications such as `name` and `colorbar.title`. Defaults to `layout.uirevision`. Note that other user-driven trace attribute changes are controlled by `layout` attributes: `trace.visible` is controlled by `layout.legend.uirevision`, `selectedpoints` is controlled by `layout.selectionrevision`, and `colorbar.(x|y)` (accessible with `config: {editable: true}`) is controlled by `layout.editrevision`. Trace changes are tracked by `uid`, which only falls back on trace index if no `uid` is provided. So if your app can add/remove traces before the end of the `data` array, such that the same trace has a different index, you can still preserve user-driven changes if you give each trace a `uid` that stays with it as it moves.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-visible" href="#image-visible">
+    visible
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>true</code>| <code>false</code>| <code>"legendonly"</code>                    )
+                <br><em>Default:</em> <code>"True"</code>
+<p>Determines whether or not this trace is visible. If "legendonly", the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).</p>
+</li>
+<li>
+<a class="attribute-name" id="image-x0" href="#image-x0">
+    x0
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Set the image&#x27;s x position. The left edge of the image (or the right edge if the x axis is reversed or dx is negative) will be found at xmin=x0-dx/2</p>
+</li>
+<li>
+<a class="attribute-name" id="image-xaxis" href="#image-xaxis">
+    xaxis
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> subplotid
+                <br><em>Default:</em> <code>x</code>
+<p>Sets a reference between this trace&#x27;s x coordinates and a 2D cartesian x axis. If "x" (the default value), the x coordinates refer to `layout.xaxis`. If "x2", the x coordinates refer to `layout.xaxis2`, and so on.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-y0" href="#image-y0">
+    y0
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Set the image&#x27;s y position. The top edge of the image (or the bottom edge if the y axis is NOT reversed or if dy is negative) will be found at ymin=y0-dy/2. By default when an image trace is included, the y axis will be reversed so that the image is right-side-up, but you can disable this by setting yaxis.autorange=true or by providing an explicit y axis range.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-yaxis" href="#image-yaxis">
+    yaxis
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> subplotid
+                <br><em>Default:</em> <code>y</code>
+<p>Sets a reference between this trace&#x27;s y coordinates and a 2D cartesian y axis. If "y" (the default value), the y coordinates refer to `layout.yaxis`. If "y2", the y coordinates refer to `layout.yaxis2`, and so on.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-z" href="#image-z">
+    z
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>A 2-dimensional array in which each element is an array of 3 or 4 numbers representing a color.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-zmax" href="#image-zmax">
+    zmax
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+{inner}<em>Type:</em> {array}
+<p>Array defining the higher bound for each color component. Note that the default value will depend on the colormodel. For the `rgb` colormodel, it is [255, 255, 255]. For the `rgba` colormodel, it is [255, 255, 255, 1]. For the `rgba256` colormodel, it is [255, 255, 255, 255]. For the `hsl` colormodel, it is [360, 100, 100]. For the `hsla` colormodel, it is [360, 100, 100, 1].</p>
+</li>
+<li>
+<a class="attribute-name" id="image-zmin" href="#image-zmin">
+    zmin
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+{inner}<em>Type:</em> {array}
+<p>Array defining the lower bound for each color component. Note that the default value will depend on the colormodel. For the `rgb` colormodel, it is [0, 0, 0]. For the `rgba` colormodel, it is [0, 0, 0, 0]. For the `rgba256` colormodel, it is [0, 0, 0, 0]. For the `hsl` colormodel, it is [0, 0, 0]. For the `hsla` colormodel, it is [0, 0, 0, 0].</p>
+</li>
+<li>
+<a class="attribute-name" id="image-zorder" href="#image-zorder">
+    zorder
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+                    <em>Type:</em> integer<p>Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.</p>
+</li>
+<li>
+<a class="attribute-name" id="image-zsmooth" href="#image-zsmooth">
+    zsmooth
+</a>
+<br><em>Parent:</em> <code>data[type=image]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"fast"</code>| <code>false</code>                    )
+<p>Picks a smoothing algorithm used to smooth `z` data. This only applies for image traces that use the `source` attribute.</p>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

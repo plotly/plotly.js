@@ -8,3 +8,10 @@ dependencies = [
     "python-frontmatter",
     "ruff"
 ]
+
+[project.optional-dependencies]
+dev_build = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocs-gen-files"
+]
