@@ -1888,3 +1888,4 @@ function getMarkerAngle(d, trace) {
 }
 
 drawing.getMarkerAngle = getMarkerAngle;
+drawing.rotate = rotate;

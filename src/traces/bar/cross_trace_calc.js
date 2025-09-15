@@ -2,7 +2,9 @@
 
 var isNumeric = require('fast-isnumeric');
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
+var svgTextUtils = require('../../lib/svg_text_utils');
 var BADNUM = require('../../constants/numerical').BADNUM;
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
@@ -243,7 +245,7 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces, opts) {
             sieveBars(sieve);
             normalizeBars(sa, sieve, opts);
         } else {
-            setBaseAndTop(sa, sieve);
+            setBaseAndTop(sa, sieve, gd);
         }
     }
 }
@@ -542,7 +544,7 @@ function updatePositionAxis(pa, sieve, allowMinDtick) {
 // store these bar bases and tops in calcdata
 // and make sure the size axis includes zero,
 // along with the bases and tops of each bar.
-function setBaseAndTop(sa, sieve) {
+function setBaseAndTop(sa, sieve, gd) {
     var calcTraces = sieve.traces;
     var sLetter = getAxisLetter(sa);
 
@@ -574,9 +576,7 @@ function setBaseAndTop(sa, sieve) {
             tozero: tozero,
             padded: true
         };
-
-        addTextPadding(extremesOpts, fullTrace, sa);
-
+        addTextPadding(extremesOpts, fullTrace, sa, gd);
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, extremesOpts);
     }
 }
@@ -654,10 +654,7 @@ function stackBars(sa, sieve, opts) {
                 tozero: true,
                 padded: true
             };
-
-            // Add text padding if needed
             addTextPadding(extremesOpts, fullTrace, sa);
-
             fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, extremesOpts);
         }
     }
@@ -769,7 +766,6 @@ function normalizeBars(sa, sieve, opts) {
             padded: padded
         };
         addTextPadding(extremesOpts, fullTrace, sa);
-
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, extremesOpts);
     }
 }
@@ -879,21 +875,34 @@ function getAxisLetter(ax) {
     return ax._id.charAt(0);
 }
 
-function measureTextWidth(txt, font) {
-    var element = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+function measureText(txt, font, textAngle, gd) {
+    var element = document.createElementNS(xmlnsNamespaces.svg, 'text');
     var sel = d3.select(element);
     sel.text(txt)
         .attr('x', 0)
         .attr('y', 0)
         .attr('data-unformatted', txt)
+        .call(svgTextUtils.convertToTspans, gd)
         .call(Drawing.font, font);
 
     var width = Drawing.bBox(sel.node()).width;
+    var height = Drawing.bBox(sel.node()).height;
 
     // Clean up the temporary element
     element.remove();
 
-    return width;
+    if(textAngle) {
+        var rotated = Drawing.rotate(textAngle, [width, height]);
+        return {
+            'width': rotated[0],
+            'height': rotated[1],
+        }
+    }
+
+    return {
+        'width': width,
+        'height': height,
+    }
 }
 
 function findExtremeIndices(values) {
@@ -924,7 +933,7 @@ function getMaxLineCount(texts) {
     return maxLines;
 }
 
-function addTextPadding(extremesOpts, trace, sa) {
+function addTextPadding(extremesOpts, trace, sa, gd) {
     var textpos = trace.textposition;
     if(!trace.text || !textpos) return;
 
@@ -947,23 +956,36 @@ function addTextPadding(extremesOpts, trace, sa) {
 
     var extremes = findExtremeIndices(values);
     var positivePadding = 0, negativePadding = 0;
+    var textAnglePositive = Array.isArray(trace.textangle) ? trace.textangle[extremes.positive] : trace.textangle;
+    var textAngleNegative = Array.isArray(trace.textangle) ? trace.textangle[extremes.negative] : trace.textangle;
+    var positiveText, negativeText;
 
     if(isHorizontal) {
         if(extremes.positive >= 0 && trace.text[extremes.positive]) {
-            positivePadding = measureTextWidth(trace.text[extremes.positive], font) + TEXTPAD;
+            positiveText = trace.text[extremes.positive];
+            positivePadding = measureText(positiveText, font, textAnglePositive).width + TEXTPAD;
         }
         if(extremes.negative >= 0 && trace.text[extremes.negative]) {
-            negativePadding = measureTextWidth(trace.text[extremes.negative], font) + TEXTPAD;
+            negativeText = trace.text[extremes.negative];
+            negativePadding = measureText(negativeText, font, textAngleNegative).width + TEXTPAD;
         }
     } else {
         // For vertical bars, calculate height based on text for each extreme bar
         if(extremes.positive >= 0 && trace.text[extremes.positive]) {
-            var positiveTexts = [trace.text[extremes.positive]];
-            positivePadding = fontSize * getMaxLineCount(positiveTexts) + TEXTPAD;
+            positiveText = trace.text[extremes.positive];
+            if(textAnglePositive) {
+                positivePadding = measureText(trace.text[extremes.positive], font, textAnglePositive).height + TEXTPAD;
+            } else {
+                positivePadding = fontSize * getMaxLineCount(positiveText) + TEXTPAD;
+            }
         }
         if(extremes.negative >= 0 && trace.text[extremes.negative]) {
-            var negativeTexts = [trace.text[extremes.negative]];
-            negativePadding = fontSize * getMaxLineCount(negativeTexts) + TEXTPAD;
+            var negativeText = trace.text[extremes.negative];
+            if(textAngleNegative) {
+                negativePadding = measureText(negativeText, font, textAngleNegative).height + TEXTPAD;
+            } else {
+                negativePadding = fontSize * getMaxLineCount(negativeText) + TEXTPAD;
+            }
         }
     }
 
