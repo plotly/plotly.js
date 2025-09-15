@@ -1,0 +1,28 @@
+---
+name: Set Marker Symbols
+language: plotly_js
+suite: scatter-tile-maps
+order: 5
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+     This example uses [symbol attribute](https://plotly.com/javascript/reference/scattermap/#scattermap-marker-symbol) to set the marker symbol.
+---
+var data = [
+	{
+		type: "scattermap",
+		mode: "markers+text+lines",
+		lon: [-75, -80, -50],
+		lat: [45, 20, -20],
+		marker: { size: 20, symbol: ["bus", "harbor", "airport"] },
+		text: ["Bus", "Harbor", "Airport"],
+		textposition: "bottom right"
+	}
+];
+
+var layout = {
+	map: { style: "outdoors", zoom: 0.7 },
+	showlegend: false, height: 500, width: 700
+};
+
+Plotly.newPlot("myDiv", data, layout);

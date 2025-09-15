@@ -1,0 +1,59 @@
+---
+name: Set Different Attributes in Treemap
+language: plotly_js
+suite: treemap
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  This example uses the following attributes:
+  <ol>
+      <li> [values](https://plotly.com/javascript/reference/treemap/#treemap-values): sets the values associated with each of the sectors.</li>
+      <li> [textinfo](https://plotly.com/javascript/reference/treemap/#treemap-textinfo): determines which trace information appear on the graph that can be 'text', 'value', 'current path', 'percent root', 'percent entry', and 'percent parent', or any combination of them. </li>
+      <li> [pathbar](https://plotly.com/javascript/reference/treemap/#treemap-pathbar): a main extra feature of treemap to display the current path of the visible portion of the hierarchical map. It may also be useful for zooming out of the graph.</li>
+      <li> [branchvalues](https://plotly.com/javascript/reference/treemap/#treemap-branchvalues): determines how the items in `values` are summed. When set to "total", items in `values` are taken to be value of all its descendants. In the example below Eva = 65, which is equal to 14 + 12 + 10 + 2 + 6 + 6 + 1 + 4. </li>
+  </ol>
+  When set to "remainder", items in `values` corresponding to the root and the branches sectors are taken to be the extra part not part of the sum of the values at their leaves.
+---
+var labels = ["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"]
+var parents = ["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve"]
+var data = [{
+      type: "treemap",
+      labels: labels,
+      parents: parents,
+      values:  [10, 14, 12, 10, 2, 6, 6, 1, 4],
+      textinfo: "label+value+percent parent+percent entry",
+      domain: {"x": [0, 0.48]},
+      outsidetextfont: {"size": 20, "color": "#377eb8"},
+      marker: {"line": {"width": 2}},
+      pathbar: {"visible": false}
+    },{
+      type: "treemap",
+      branchvalues: "total",
+      labels: labels,
+      parents: parents,
+      domain: {x: [0.52, 1]},
+      values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+      textinfo: "label+value+percent parent+percent entry",
+      outsidetextfont: {"size": 20, "color": "#377eb8"},
+      marker: {"line": {"width": 2}},
+      pathbar: {"visible": false}
+    }];
+var layout = {
+  annotations: [{
+    showarrow: false,
+    text: "branchvalues: <b>remainder</b>",
+    x: 0.25,
+    xanchor: "center",
+    y: 1.1,
+    yanchor: "bottom"
+    }, {
+    showarrow: false,
+    text: "branchvalues: <b>total</b>",
+    x: 0.75,
+    xanchor: "center",
+    y: 1.1,
+    yanchor: "bottom"
+    }]}
+
+Plotly.newPlot('myDiv', data, layout)

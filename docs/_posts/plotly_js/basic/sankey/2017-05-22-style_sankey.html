@@ -1,0 +1,57 @@
+---
+name: Style Sankey Diagram
+language: plotly_js
+suite: sankey
+order: 5
+sitemap: false
+arrangement: horizontal
+description:
+---
+
+d3.json('https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/mocks/sankey_energy_dark.json', function(fig){
+
+var data = {
+  type: "sankey",
+  domain: {
+    x: [0,1],
+    y: [0,1]
+  },
+  orientation: "h",
+  valueformat: ".0f",
+  valuesuffix: "TWh",
+  node: {
+    pad: 15,
+    thickness: 15,
+    line: {
+      color: "black",
+      width: 0.5
+    },
+   label: fig.data[0].node.label,
+   color: fig.data[0].node.color
+      },
+  link: {
+    source: fig.data[0].link.source,
+    target: fig.data[0].link.target,
+    value: fig.data[0].link.value,
+    label: fig.data[0].link.label
+  }
+}
+
+var data = [data]
+
+var layout = {
+  title: {
+    text: "Energy forecast for 2050<br>Source: Department of Energy & Climate Change, Tom Counsell via <a href='https://bost.ocks.org/mike/sankey/'>Mike Bostock</a>"
+  },
+  width: 1118,
+  height: 772,
+  font: {
+    size: 10,
+    color: 'white'
+  },
+  plot_bgcolor: 'black',
+  paper_bgcolor: 'black'
+}
+
+Plotly.newPlot('myDiv', data, layout)
+});

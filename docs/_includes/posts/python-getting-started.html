@@ -1,0 +1,130 @@
+<section class="section">
+    <h2 >Installation</h2>
+    <div class="content-box">
+        <p>
+            To install Plotly's Python package, use the package manager pip inside your terminal.
+        </p>
+
+        <pre><code>$ pip install plotly</code></pre>
+        <p>
+            or
+        </p>
+        <pre><code>$ sudo pip install plotly</code></pre>
+
+        <p >
+            If you don't have <b>pip</b> installed on your machine, <a  href="https://pip.pypa.io/en/latest/installing.html" target="_blank">click here</a> for pip's installation instructions.
+        </p>
+
+        <p >
+            Plotly's Python package is updated frequently! To upgrade, run:
+        </p>
+        <pre><code>$ pip install plotly --upgrade</code></pre>
+
+    </div>
+</section>
+
+<section class="section">
+    <h2 >Initialization</h2>
+    <div class="content-box">
+        <p>
+            Plotly for Python can be configured to render locally inside Jupyter (IPython) notebooks,
+            locally inside your web browser, or remotely in your online Plotly account.<br>
+            Remote hosting on Plotly is free for public use. For private use, <a href="https://plotly.com/products/cloud">view our paid plans</a>.<br>
+        </p>
+
+        <h4>Offline Use</h4>
+        <p><b>Standalone HTML</b></p><br>
+        <p>Offline mode will save an HTML file locally and open it inside your web browser.</p><br>
+        <pre><code class="python">import plotly
+print(plotly.__version__)  # version >1.9.4 required
+from plotly.graph_objs import Scatter, Layout
+plotly.offline.plot({
+"data": [
+    Scatter(x=[1, 2, 3, 4], y=[4, 1, 3, 7])
+],
+"layout": Layout(
+    title="hello world"
+)
+})</code></pre>
+
+Learn more by calling help:
+
+<pre><code class="python">
+import plotly
+help(plotly.offline.plot)
+</code></pre><br>
+
+        <p><b>Inside Jupyter/IPython Notebooks</b></p><br>
+        <pre><code class="python">import plotly
+print(plotly.__version__)           # version 1.9.4 required
+plotly.offline.init_notebook_mode() # run at the start of every notebook
+plotly.offline.iplot({
+"data": [{
+    "x": [1, 2, 3],
+    "y": [4, 2, 5]
+}],
+"layout": {
+    "title": "hello world"
+}
+})</code></pre><br/>
+
+        <p><a href="https://plotly.com/python/offline">Learn more about offline mode</a></p>
+
+        <h4>Hosting on Plotly</h4>
+
+        <p>
+            Plotly provides a web-service for hosting graphs. <a href="https://plotly.com/api_signup">Create a free account</a> to get started.
+            Graphs are saved inside your online Plotly account and you control the privacy. Public hosting is free, for private hosting, check out our <a href="https://plotly.com/products/cloud">paid plans</a>.
+        </p>
+
+        <p>
+            In the terminal, copy and paste the following to install the Plotly library and set your user credentials.
+        </p>
+
+        <pre><code>$ pip install plotly
+$ python -c "import plotly; plotly.tools.set_credentials_file(username='DemoAccount', api_key='lr1c37zw81')"</code></pre>
+
+        <p >
+            You'll need to replace <code class="no-padding">'DemoAccount'</code> and <code class="no-padding">'lr1c37zw81'</code> with your Plotly username and <a href="https://plotly.com/settings/api/" target="_blank">API key</a>.
+        </p>
+
+        <p >
+            <a href="https://plotly.com/settings/api/" target="_blank">Find my API key.</a>
+        </p>
+
+        <br>
+
+        <p>
+            To host your graph in your plotly account:
+        </p>
+        <pre><code class="python">import plotly.plotly as py      # Every function in this module will communicate with an external plotly server
+py.plot({                      # use `py.iplot` inside the ipython notebook
+"data": [{
+    "x": [1, 2, 3],
+    "y": [4, 2, 5]
+}],
+"layout": {
+    "title": "hello world"
+}
+}, filename='hello world',      # name of the file as saved in your plotly account
+sharing='public')            # 'public' | 'private' | 'secret': Learn more: https://plotly.com/python/privacy</code></pre>
+
+        <h4>Special Instructions for <a class="no_underline"  href="https://plotly.com/product/enterprise/">Plotly On-Premise</a> users</h4>
+
+        Your API key for account on the public cloud will be different than the API key in Plotly On-Premise. Visit https://plotly.your-company.com/settings/api/ to find your Plotly On-Premise API key. Remember to replace "your-company.com" with the URL of your Plotly On-Premise server.
+
+        <p>If your company has a Plotly On-Premise server, change the Python Open Source Graphing Library endpoint so that it points to your company's Plotly server instead of Plotly's cloud.</p>
+
+        <br>
+
+        <p>In your Terminal, enter:<p>
+
+        <pre><code class="terminal">
+$ python -c "import plotly; plotly.tools.set_config_file(plotly_domain='https://plotly.your-company.com',
+plotly_streaming_domain='stream-plotly.your-company.com', plotly_api_domain='https://api-plotly.your-company.com')"
+        </code></pre>
+
+        <p>Make sure to replace "your-company.com" with the URL of your Plotly On-Premise server. <b>Questions? Email support@plot.ly</b></p>
+
+    </div>
+</section>

@@ -1,0 +1,21 @@
+{% if page.thumbnail %}
+<li style="background-image: url({{site.imgurl}}{{page.thumbnail}});" class="--grid-item">
+    <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+        <div class="--item-meta"><span>{{page.name}}</span></div>
+        <div class="--item-image">
+            <span>View Tutorial</span>
+            <img src="{{site.imgurl}}{{page.thumbnail}}" alt="{{page.name}}">
+        </div>
+    </a>
+</li>
+{% else %}
+<li style="background-image: url(https://raw.githubusercontent.com/plotly/graphing-library-docs/master/all_static/images/thumbnails/{{page.language}}/{{page.thumnail_github}});" class="--grid-item">
+    <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+        <div class="--item-meta"><span>{{page.name}}</span></div>
+        <div class="--item-image">
+            <span>View Tutorial</span>
+            <img src="https://raw.githubusercontent.com/plotly/graphing-library-docs/master/all_static/images/thumbnails/{{ page.language }}/{{ page.thumnail_github }}" alt="{{page.name}}">
+        </div>
+    </a>
+</li>
+{% endif %}

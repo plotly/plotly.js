@@ -1,0 +1,64 @@
+---
+name: Bind Components to the Appearance of a Plot
+plot_url: https://codepen.io/plotly/embed/ZBzZZO/?height=558&theme-id=15263&default-tab=result
+language: plotly_js
+suite: slider-components-events
+sitemap: false
+order: 2
+arrangement: horizontal
+---
+Plotly.newPlot('myDiv', [{
+  x: [1, 2, 3],
+  y: [2, 1, 3]
+}], {
+  sliders: [{
+    pad: {t: 30},
+    len: 0.5,
+    x: 0.5,
+    currentvalue: {
+      xanchor: 'right',
+      prefix: 'color: ',
+      font: {
+        color: '#888',
+        size: 20
+      }
+    },
+    // If all of a component's commands affect a single attribute, the component
+    // will be bound to the plot and will automatically update to reflect changes.
+    steps: [{
+      label: 'red',
+      method: 'restyle',
+      args: ['line.color', 'red']
+    }, {
+      label: 'green',
+      method: 'restyle',
+      args: ['line.color', 'green']
+    }, {
+      label: 'blue',
+      method: 'restyle',
+      args: ['line.color', 'blue']
+    }]
+  }],
+  updatemenus: [{
+    pad: {t: 60, r: 30},
+    type: 'buttons',
+    xanchor: 'left',
+    yanchor: 'top',
+    x: 00,
+    y: 0,
+    direction: 'right',
+    buttons: [{
+      label: 'red',
+      method: 'restyle',
+      args: ['line.color', 'red']
+    }, {
+      label: 'green',
+      method: 'restyle',
+      args: ['line.color', 'green']
+    }, {
+      label: 'blue',
+      method: 'restyle',
+      args: ['line.color', 'blue']
+    }]
+  }]
+});

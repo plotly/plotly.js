@@ -1,0 +1,13 @@
+---
+description: How to make D3.js-based carpet scatter plots in Plotly.js.
+display_as: scientific
+language: plotly_js
+layout: base
+name: Carpet Scatter Plot
+order: 10
+permalink: javascript/carpet-scatter/
+thumbnail: thumbnail/scattercarpet.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","scattercarpet" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

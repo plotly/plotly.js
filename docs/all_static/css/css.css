@@ -1,0 +1,82 @@
+/*
+   Supplemental css for Plotly API Docs
+
+     -- for any misc fixes or updates that don't warrant using scss.
+*/
+
+/* Search form */
+.algolia__input {
+  margin-bottom: 1rem;
+  font-size: 20px;
+  padding:.25rem .5rem;
+}
+
+/* Search results container */
+.algolia__initial-content {
+  display:block;
+}
+.algolia__initial-content--hidden {
+  display:none;
+}
+.algolia__search-content {
+  display:none;
+}
+.algolia__search-content--active {
+  display:block;
+}
+
+/* Search results */
+.algolia__result {
+  margin-bottom: 1rem;
+}
+.algolia__result-link {
+  font-size: 1.25rem;
+  font-weight:bold;
+}
+.algolia__result-date {
+  font-size:0.8rem;
+}
+.algolia__result-text {
+  font-size: 0.9rem;
+}
+.algolia__result-link .algolia__result-highlight {
+  background-color:#D3E8F6;
+  background-color: rgba(38,139,210,0.2);
+}
+.algolia__result-text .algolia__result-highlight {
+  font-weight:bold;
+}
+
+/* Theming */
+.theme-base-08 .algolia__result-link .algolia__result-highlight {
+  background-color:#EED9D9;
+  background-color: rgba(172,65,66,0.2);
+}
+.theme-base-09 .algolia__result-link .algolia__result-highlight {
+  background-color: #F6E6DA;
+  background-color: rgba(210,132,69,0.2);
+}
+.theme-base-0a .algolia__result-link .algolia__result-highlight {
+  background-color: #FDF2E3;
+  background-color: rgba(244,191,117,0.2);
+}
+.theme-base-0b .algolia__result-link .algolia__result-highlight {
+  background-color: #E9EEDE;
+  background-color: rgba(144,169,89,0.2);
+}
+.theme-base-0c .algolia__result-link .algolia__result-highlight {
+  background-color: #E3F0EE;
+  background-color: rgba(117,181,170,0.2);
+}
+.theme-base-0d .algolia__result-link .algolia__result-highlight {
+  background-color: #E1ECF0;
+  background-color: rgba(106,159,181,0.2);
+}
+.theme-base-0e .algolia__result-link .algolia__result-highlight {
+  background-color: #EEE3EC;
+  background-color: rgba(170,117,159,0.2);
+}
+.theme-base-0f .algolia__result-link .algolia__result-highlight {
+  background-color: #E9DDD6;
+  background-color: rgba(143,85,54,0.2);
+}

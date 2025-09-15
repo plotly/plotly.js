@@ -1,0 +1,23 @@
+---
+name:
+language: plotly_js
+suite: treemap
+order: 5
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  This example uses marker.colorscale to change the sector's color.
+---
+var values = ["11", "12", "13", "14", "15", "20", "30"]
+var labels = ["A1", "A2", "A3", "A4", "A5", "B1", "B2"]
+var parents = ["", "A1", "A2", "A3", "A4", "", "B1"]
+
+var data = [{
+  type: 'treemap',
+  values: values,
+  labels: labels,
+  parents: parents,
+  marker: {colorscale: 'Blues'}
+}]
+
+Plotly.newPlot('myDiv', data)

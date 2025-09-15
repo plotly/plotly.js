@@ -1,0 +1,63 @@
+---
+name: Setting Title Automargin
+language: plotly_js
+suite: labels
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+   Set `automargin` to `true` to allow the title to push the figure margins.
+   With `yref` set to `paper`, `automargin` expands the margins to make the title visible,
+   but doesn't push outside the container. With `yref` set to `container`, `automargin`
+   expands the margins, but doesn't overlap with the plot area, tick labels, and axis titles.
+---
+
+var trace1 = {
+  x: [1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992, 1997, 2002, 2007],
+  y: [69.39,
+      70.26,
+      71.24,
+      71.52,
+      71.89,
+      72.22,
+      73.84,
+      74.32,
+      76.33,
+      77.55,
+      79.11,
+      80.204
+  ],
+  type: 'scatter'
+};
+var trace2 = {
+  x: [1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992, 1997, 2002, 2007],
+  y: [69.12,
+      70.33,
+      70.93,
+      71.1,
+      71.93,
+      73.49,
+      74.74,
+      76.32,
+      77.56,
+      78.83,
+      80.37,
+      81.235
+  ],
+  type: 'scatter'
+};
+var data = [trace1, trace2];
+var layout = {
+  title: {
+      text: 'Population',
+      font: {
+          family: 'Courier New, monospace',
+          size: 70
+      },
+      yref: 'paper',
+      automargin: true,
+  },
+  showlegend: false
+};
+
+Plotly.newPlot('myDiv', data, layout);

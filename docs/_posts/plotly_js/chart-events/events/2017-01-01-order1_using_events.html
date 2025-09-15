@@ -1,0 +1,17 @@
+---
+name: Using Plotly.js Events
+plot_url:
+language: plotly_js
+suite: events
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Plotly graphs emit events prefixed with plotly_ (i.e. `'plotly_click'`, `'plotly_hover'`, `'plotly_relayout'`) when interacted with (clicked, hovered, zoomed). Event handlers can be bound to events using the `.on` method that is exposed by the plot div object.
+
+  In addition to the event handler, some events emit additional information about the point(s) or plot  interacted with. The following documentation organizes Plotly events based on the accessible information emitted with the event: [event data](), [update data](), or [no additional data](). The following page provides a description and example of each Plotly event as well as the structure of the data or update returned with the event.
+---
+myDiv.on('plotly_event', function(){
+    	// do something;
+	});
+

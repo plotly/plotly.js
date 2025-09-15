@@ -1,0 +1,13 @@
+{
+  "name": "aterrien/jQuery-Knob",
+  "version": "1.2.10",
+  "main": "js/jquery.knob.js",
+  "description": "Nice, downward compatible, touchable, jQuery dial.",
+  "license": "MIT",
+  "ignore": [],
+  "dependencies": {
+    "jquery": ">=1.7.0"
+  },
+  "devDependencies": {}
+}
+

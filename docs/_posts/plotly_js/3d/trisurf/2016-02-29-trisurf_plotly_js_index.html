@@ -1,0 +1,13 @@
+---
+description: How to make Trisurf in javascript.
+display_as: 3d_charts
+language: plotly_js
+layout: base
+name: Tri-Surf Plots
+order: 6
+permalink: javascript/trisurf/
+thumbnail: thumbnail/trisurf.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","trisurf" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

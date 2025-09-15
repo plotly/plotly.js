@@ -1,0 +1,55 @@
+---
+permalink: /python/reference/index/
+layout: langindex
+page_type: reference
+language: python
+name: Reference Index
+description: Figure attribute reference for Plotly's Python open-source graphing library.
+---
+<h2>Python Figure Reference</h2>
+
+<br />
+<p>The pages linked in the sidebar together form the exhaustive reference for all of the attributes in the core <a href="/python/figure-structure/">figure data structure</a>
+that the <code>plotly</code> library operates on. They are automatically-generated from the
+ <a href="https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plot-schema.json">machine-readable Plotly.js schema reference</a>.</p>
+</p>
+
+<h3>How to use these Reference pages</h3>
+
+<p>Figures are represented as trees with named nodes called "attributes".
+The root node of the tree has three top-level attributes: <code>data</code>, <code>layout</code> and <code>frames</code>.
+Attributes are referred to in text and in this reference by their full "path" i.e. the dot-delimited concatenation of their parents.
+For example <code>"layout.width"</code> refers to the attribute whose key is <code>"width"</code> inside a dict which is
+the value associated with a key <code>"layout"</code> at the root of the figure. If one of the parents is a list rather
+than a dict, a set of brackets is inserted in the path when referring to the attribute in the abstract,
+e.g. <code>"layout.annotations[].text"</code>. Finally, as explained below, the top-level "data"
+attribute defines a list of typed objects called "traces" with the schema dependent upon the type,
+and these attributes' paths are listed in this reference as
+<code>"data[type=scatter].name"</code>. When <a href="/python/creating-and-updating-figures/">manipulating
+a <code>plotly.graph_objects.Figure</code> object</a>, attributes can be set either directly
+using Python object attributes e.g. <code>fig.layout.title.font.family="Open Sans"</code>
+or using <a href="/python/creating-and-updating-figures/#magic-underscore-notation">update methods
+and "magic underscores"</a> e.g. <code>fig.update_layout(title_font_family="Open Sans")</code></p>
+
+<br />
+<p>When building a figure, it is <em>not necessary to populate every attribute</em>
+of every object. At render-time, the JavaScript layer will compute default values
+for each required unspecified attribute, depending upon the ones that are specified,
+as documented in this page. An example of this would be <code>layout.xaxis.range</code>,
+which may be specified explicitly, but if not will be computed based on the range of <code>x</code> values for
+every trace linked to that axis. The JavaScript layer will ignore unknown attributes
+or malformed values, although the <code>plotly.graph_objects</code> module provides
+Python-side validation for attribute values. Note also that if <a href="/python/templates/">the <code>layout.template</code>
+key is present (as it is by default)</a> then default values will be drawn first from the contents
+of the template and only if missing from there will the JavaScript layer infer further defaults.
+The built-in template can be disabled by setting <code>layout.template="none"</code>.</p>
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />

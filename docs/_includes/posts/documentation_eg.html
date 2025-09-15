@@ -1,0 +1,861 @@
+{% assign show_header = false %}
+
+{% if page.language != "python" and page.language != "plotly_js" and page.language != "r" %}
+{% assign show_header = "true" %}
+{% endif %}
+
+{% comment %}First, check which sections this page should contain checking all of the posts{% endcomment %}
+{%- for page in languagelist -%}
+{% if page.display_as == "file_settings" %}
+{% assign file_settings = true %}
+{% elsif page.display_as == "chart_type" or page.display_as == "basic" %}
+{% assign chart_type = true %}
+{% elsif page.display_as == "statistical" %}
+{% assign statistical = true %}
+{% elsif page.display_as == "scientific" %}
+{% assign scientific = true %}
+{% elsif page.display_as == "advanced_charts"%}
+{% assign advanced_charts = true %}
+{% elsif page.display_as == "maps" %}
+{% assign maps = true %}
+{% elsif page.display_as == "financial" %}
+{% assign financial = true %}
+{% elsif page.display_as == "3d_charts" %}
+{% assign 3d_charts = true %}
+{% elsif page.display_as == "multiple_axes" %}
+{% assign multiple_axes = true %}
+{% elsif page.display_as == "controls" %}
+{% assign controls = true %}
+{% elsif page.display_as == "animations" %}
+{% assign animations = true %}
+{% elsif page.display_as == "chart_events" %}
+{% assign chart_events = true %}
+{% elsif page.display_as == "financial_analysis" %}
+{% assign financial_analysis = true %}
+{% elsif page.display_as == "chart_studio" %}
+{% assign chart_studio = true %}
+{% elsif page.display_as == "advanced_opt" %}
+{% assign advanced_opt = true %}
+{% elsif page.display_as == "ai_ml" %}
+{% assign ai_ml = true %}
+{% elsif page.display_as == "bio" %}
+{% assign bio = true %}
+
+<!-- START OF GGPLOT CUSTOM LAYOUT -->
+{% elsif page.display_as == "aesthetics" %}
+{% assign aesthetics = true %}
+{% elsif page.display_as == "geoms" %}
+{% assign geoms = true %}
+{% elsif page.display_as == "faceting" %}
+{% assign faceting = true %}
+{% elsif page.display_as == "other" %}
+{% assign other = true %}
+{% elsif page.display_as == "theme" %}
+{% assign theme = true %}
+<!-- END OF GGPLOT CUSTOM LAYOUT -->
+{% endif %}
+{%- endfor -%}
+
+{% comment %} these are the pages that don't have images to show {% endcomment %}
+{%- for page in languagelist -%}
+{% if page.display_as == "layout_opt" %}
+{% assign layout_options = true %}
+{% elsif page.display_as == "style_opt" %}
+{% assign style_options = true %}
+{% elsif page.display_as == "legacy_charts" %}
+{% assign legacy_charts = true %}
+{% elsif page.display_as == "databases" %}
+{% assign databases = true %}
+{% elsif page.display_as == "tutorial" %}
+{% assign tutorial = true %}
+{% elsif page.display_as == "get_request" %}
+{% assign get_request = true %}
+{% elsif page.display_as == "report_generation" %}
+{% assign report_generation = true %}
+{% elsif page.display_as == "mathematics" %}
+{% assign mathematics = true %}
+{% elsif page.display_as == "statistics" %}
+{% assign statistics = true %}
+{% elsif page.display_as == "peak-analysis" %}
+{% assign peak-analysis = true %}
+{% elsif page.display_as == "signal-analysis" %}
+{% assign signal-analysis = true %}
+{% elsif page.display_as == "text_documents" %}
+{% assign text_documents = true %}
+{% endif %}
+{%- endfor -%}
+
+{% include both/py4_note.html %}
+
+
+
+
+
+{% if file_settings %}
+<section class="--tutorial-section">
+    <header class="--section-header">
+
+        {% if show_header %}
+        <a href="#fundamentals" name="fundamentals" id="fundamentals">Fundamentals</a>
+        {% endif %}
+
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "file_settings" %}
+
+            {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if ai_ml %}
+<section class="--tutorial-section" id="ai_ml">
+    <header class="--section-header">
+        {% if show_header %}
+
+        <a href="#ai_ml">Artificial Intelligence and Machine Learning</a>
+
+        {% endif %}
+
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "ai_ml" %}
+
+            {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if bio %}
+<section class="--tutorial-section" id="bio">
+    <header class="--section-header">
+        {% if show_header %}
+
+        <a href="#bio">Bio</a>
+
+        {% endif %}
+
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "bio" %}
+
+            {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if chart_type %}
+<section class="--tutorial-section">
+    <header class="--section-header">
+        {% if show_header %}
+
+        <a href="#basic-charts" name="basic" id="basic-charts">Basic Charts</a>
+
+        {% endif %}
+
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "chart_type" or page.display_as == "basic" %}
+
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if statistical %}
+<section class="--tutorial-section" id="statistical-charts">
+    <header class="--section-header">
+        {% if show_header %}
+
+        <a href="#statistical-charts">Statistical Charts</a>
+
+        {% endif %}
+
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "statistical" %}
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if scientific %}
+<section class="--tutorial-section" id="scientific-charts">
+    <header class="--section-header">
+        {% if show_header %}
+
+        <a href="#scientific-charts">Scientific Charts</a>
+
+        {% endif %}
+
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "scientific" %}
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if financial %}
+<section class="--tutorial-section" id="financial-charts">
+    <header class="--section-header">
+        {% if show_header %}
+
+        <a href="#financial-charts">Financial Charts</a>
+
+        {% endif %}
+
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "financial" %}
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if maps %}
+<section class="--tutorial-section" id="maps">
+    <header class="--section-header">
+        {% if show_header %}
+
+        <a href="#maps">Maps</a>
+
+        {% endif %}
+
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "maps" %}
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if 3d_charts %}
+<section class="--tutorial-section" id="3d-charts">
+    <header class="--section-header">
+        {% if show_header %}
+
+        <a href="#3d-charts">3D Charts</a>
+
+        {% endif %}
+
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "3d_charts" %}
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if multiple_axes %}
+<section class="--tutorial-section" id="multiple-axes-subplots-and-insets">
+    <header class="--section-header">
+        {% if show_header %}
+
+        <a href="#multiple-axes-subplots-and-insets">Subplots</a>
+
+        {% endif %}
+
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "multiple_axes" %}
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if chart_events and page.language =="python" %}
+<section class="--tutorial-section" id="chart-events">
+    <header class="--section-header"><a href="#chart-events">Jupyter Widgets Interaction</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "chart_events" %}
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+
+{% if chart_events and page.language == 'plotly_js' %}
+<section class="--tutorial-section" id="chart-events">
+    <header class="--section-header"><a href="#chart-events">Custom Chart Events</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "chart_events" %}
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if controls %}
+<section class="--tutorial-section" id="controls">
+    <header class="--section-header"><a href="#controls">Add Custom Controls</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "controls" %}
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if animations %}
+<section class="--tutorial-section" id="animations">
+    <header class="--section-header"><a href="#animations">Animations</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "animations" %}
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if chart_studio %}
+<section class="--tutorial-section">
+    <header class="--section-header"><a href="#chart-studio" name="chart-studio" id="chart-studio">Chart Studio Integration</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "chart_studio" %}
+
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if financial_analysis %}
+<section class="--tutorial-section" id="financial-analysis">
+    <header class="--section-header"><a href="#financial-analysis">Financial Analysis</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "financial_analysis" %}
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if layout_options_ggplot %}
+<hr>
+<h4 class="example-section-title" id="layout-options">
+<a class="no_underline plot-blue" href="#layout-options">Layout Options</a></h4>
+<div class="row">
+<div class="six columns">
+<ul >
+
+{% assign counter=0 %}
+{%- for page in languagelist -%}
+{% if page.display_as == "layout_opt" %}
+{% if counter == 6 %}</ul></div><div class="six columns"><ul>{% endif %}
+<li><a class="no-list-style" href="/{{page.permalink}}">{{page.name}}</a></li>
+{% assign counter=counter | plus:1 %}
+{% endif %}
+{%- endfor -%}
+</ul>
+</div>
+</div>
+{% endif %}
+
+{% if advanced_opt %}
+<section class="--tutorial-section no-image" id="advanced-options">
+    <header class="--section-header"><a href="#advanced-options">Advanced</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "advanced_opt" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+                </a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if style_options %}
+<section class="--tutorial-section no-image" id="style-options">
+    <header class="--section-header"><a href="#style-options">Style Options</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "style_opt" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+                </a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if layout_options %}
+<section class="--tutorial-section no-image" id="layout-options">
+    <header class="--section-header"><a href="#layout-options">Layout Options</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "layout_opt" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+                </a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if legacy_charts %}
+<section class="--tutorial-section no-image" id="legacy-charts">
+    <header class="--section-header"><a href="#legacy-charts">Legacy Charts</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "legacy_charts" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+                </a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if databases %}
+<section class="--tutorial-section no-image" id="databases">
+    <header class="--section-header"><a href="#databases">Connecting to Databases</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "databases" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+
+                </a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if report_generation %}
+<section class="--tutorial-section no-image" id="report-generation">
+    <header class="--section-header"><a href="#report-generation">Report Generation</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "report_generation" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+
+                </a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if tutorial %}
+<section class="--tutorial-section no-image" id="tutorial">
+    <header class="--section-header"><a href="#tutorial">Tutorial</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "tutorial" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+				</a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if get_request %}
+<section class="--tutorial-section no-image" id="static-image-export">
+    <header class="--section-header"><a href="#static-image-export">Image Export &amp; Retrieving Plots</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "get_request" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+                </a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if mathematics %}
+<section class="--tutorial-section no-image" id="mathematics">
+    <header class="--section-header"><a href="#mathematics">Mathematics</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "mathematics" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+                </a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if statistics %}
+<section class="--tutorial-section no-image" id="statistics">
+    <header class="--section-header"><a href="#statistics">Statistics</a>
+
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "statistics" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+                </a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if peak-analysis %}
+<section class="--tutorial-section no-image" id="peak-analysis">
+    <header class="--section-header"><a href="#peak-analysis">Peak Analysis</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "peak-analysis" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+                </a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+{% if signal-analysis %}
+<section class="--tutorial-section no-image" id="signal-analysis">
+    <header class="--section-header"><a href="#signal-analysis">Signal Analysis</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {% assign counter=0 %}
+            {%- for page in languagelist -%}
+            {% if page.display_as == "signal-analysis" %}
+
+            <li class="--grid-item">
+                <a href="{% if page.permalink contains 'http' %}{{page.permalink}}{% else %}/{{page.permalink}}{% endif %}">
+                    <div class="--item-meta"><span>{{page.name}}</span></div>
+                </a>
+            </li>
+            {% assign counter=counter | plus:1 %}
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+<!-- START OF GGPLOT CUSTOM LAYOUT -->
+
+<!-- Aesthetics -->
+{% if aesthetics %}
+<section class="--tutorial-section">
+    <header class="--section-header"><a href="#aes" id="aes">Aesthetics</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "aesthetics" %}
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+
+{% endif %}
+
+<!-- Geoms -->
+{% if geoms %}
+<section class="--tutorial-section">
+    <header class="--section-header"><a href="#geoms" id="geoms">Geoms</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "geoms" %}
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+<!-- Faceting -->
+{% if faceting %}
+<section class="--tutorial-section">
+    <header class="--section-header"><a href="#faceting" id="faceting">Faceting</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "faceting" %}
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+<!-- Other -->
+{% if other %}
+<section class="--tutorial-section">
+    <header class="--section-header"><a href="#other" id="other">Other</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "other" %}
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+
+<!-- theme -->
+
+{% if theme %}
+
+<section class="--tutorial-section">
+    <header class="--section-header"><a href="#theme" id="theme">theme</a>
+    </header>
+    <section class="--grid">
+        <ul class="--grid-list">
+            {%- for page in languagelist -%}
+            {% if page.display_as == "theme" %}
+
+
+                        {% include layouts/grid-item.html %}
+
+
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+    </section>
+</section>
+{% endif %}
+<!-- END OF GGPLOT CUSTOM LAYOUT -->

@@ -1,0 +1,26 @@
+---
+name: Basic Bullet Charts
+language: plotly_js
+suite: bullet-charts
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+  Stephen Few's Bullet Chart was invented to replace dashboard [gauges](https://plotly.com/javascript/gauge-charts/) and meters, combining both types of charts into simple bar charts with qualitative bars (steps), quantitative bar (bar) and performance line (threshold); all into one simple layout.
+  Steps typically are broken into several values, which are defined with an array. The bar represent the actual value that a particular variable reached, and the threshold usually indicate a goal point relative to the value achieved by the bar. See [indicator page](https://plotly.com/javascript/gauge-charts/) for more detail.
+---
+var data = [
+  {
+    type: "indicator",
+    mode: "number+gauge+delta",
+    gauge: { shape: "bullet" },
+    delta: { reference: 300 },
+    value: 220,
+    domain: { x: [0, 1], y: [0, 1] },
+    title: { text: "Profit" }
+  }
+];
+
+var layout = { width: 600, height: 250 };
+Plotly.newPlot('myDiv', data, layout);

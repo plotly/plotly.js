@@ -1,0 +1,15 @@
+---
+name: Hover Events
+permalink: javascript/hover-events/
+description: How to bind callback functions to hover events in D3.js-based JavaScript charts.
+layout: base
+thumbnail: thumbnail/hover.jpg
+language: plotly_js
+page_type: example_index
+display_as: chart_events
+order: 2
+arrangement: horizontal
+redirect_from: javascript-graphing-library/hover-events/
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","hover-events" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

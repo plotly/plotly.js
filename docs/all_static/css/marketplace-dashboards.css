@@ -1,0 +1,32 @@
+.navbar-inverse {
+    background-color: rgb(226, 105, 86) !important;
+    border-color: rgb(226, 105, 86) !important;
+}    
+
+.body.application{
+	background: rgb(299,299,299) !important;
+}
+
+#preamble li a{
+	line-height: 3rem !important;
+}
+
+.control-box{
+	position:absolute;
+	top:10px;
+	left:10px;
+	width: 100%;
+}
+
+.control-box button{
+	display: inline-block;
+}
+
+.control-box input{
+	display: inline-block;
+	width: 150px;
+}
+
+.control-box span{
+	display: inline-block;
+}

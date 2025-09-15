@@ -1,0 +1,14 @@
+---
+name: Click Events
+permalink: javascript/click-events/
+description: How to bind callback functions to click events in D3.js-based JavaScript charts. 
+layout: base
+thumbnail: thumbnail/click.jpg
+language: plotly_js
+page_type: example_index
+display_as: chart_events
+order: 1
+redirect_from: javascript-graphing-library/click-events/
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","click-events" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

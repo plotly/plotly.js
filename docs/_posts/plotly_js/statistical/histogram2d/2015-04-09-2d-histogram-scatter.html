@@ -1,0 +1,65 @@
+---
+name: 2D Histogram Overlaid with a Scatter Chart
+language: plotly_js
+suite: histogram2d
+order: 2
+sitemap: false
+arrangement: horizontal
+---
+var x0 = [];
+var y0 = [];
+var x1 = [];
+var y1 = [];
+var x2 = [];
+var y2 = [];
+
+for (var i = 0; i < 500; i ++)
+{
+	x0[i] = Math.random() + 1;
+	y0[i] = Math.random() + 1.5;
+}
+
+for (var i = 0; i < 100; i ++)
+{
+	x1[i] = Math.random();
+	y1[i] = Math.random() + 1;
+}
+
+for (var i = 0; i < 500; i ++)
+{
+	x2[i] = Math.random()*2;
+	y2[i] = Math.random()*3;
+}
+
+var trace1 = {
+  x: x0,
+  y: y0,
+  mode: 'markers',
+  marker: {
+    symbol: 'circle',
+    opacity: 0.7,
+	 color:'rgb(200,111,200)',
+  },
+  type: 'scatter',
+};
+var trace2 = {
+  x: x1,
+  y: y1,
+  mode: 'markers',
+  marker: {
+    symbol: 'square',
+    opacity: 0.7,
+	 color:'cyan',
+  },
+  type: 'scatter'
+};
+var trace3 = {
+  x: x2,
+  y: y2,
+  type: 'histogram2d',
+  colorscale : [['0' , 'rgb(0,225,100)'],['1', 'rgb(100,0,200)']],
+  
+};
+
+var data = [trace1, trace2, trace3];
+Plotly.newPlot('myDiv', data);

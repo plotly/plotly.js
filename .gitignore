@@ -1,4 +1,7 @@
 node_modules
+_site
+
+__pycache__
 
 build/*
 !build/plotcss.js

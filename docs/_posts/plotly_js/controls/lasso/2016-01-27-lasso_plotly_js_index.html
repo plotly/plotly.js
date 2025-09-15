@@ -1,0 +1,15 @@
+---
+name: Lasso Selection
+permalink: javascript/lasso-selection/
+description: How to bind callback functions to lasso selection in JavaScript D3.js-based charts.
+layout: base
+thumbnail: thumbnail/lasso.jpg
+language: plotly_js
+page_type: example_index
+display_as: controls
+order: 4
+arrangement: horizontal
+redirect_from: javascript-graphing-library/lasso-selection/
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","lasso-selection" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

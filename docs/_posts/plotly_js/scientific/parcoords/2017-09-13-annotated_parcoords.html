@@ -1,0 +1,61 @@
+---
+name: Annotated Parallel Coordinates Plot
+language: plotly_js
+suite: parcoords
+order: 2.5
+sitemap: false
+arrangement: horizontal
+description:
+---
+
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/iris-id.csv', function(err, rows){
+
+function unpack(rows, key) {
+  return rows.map(function(row) {
+    return row[key];
+  });
+}
+
+var data = [{
+  type: 'parcoords',
+  pad: [80,80,80,80],
+  line: {
+    color: unpack(rows, 'species_id'),
+    colorscale: [[0, 'red'], [0.5, 'green'], [1, 'blue']]
+  },
+
+  dimensions: [{
+    range: [2, 4.5],
+    label: 'sepal_width',
+    values: unpack(rows, 'sepal_width')
+  }, {
+    constraintrange: [5, 6],
+    range: [4,8],
+    label: 'sepal_length',
+    values: unpack(rows, 'sepal_length')
+  }, {
+    label: 'petal_width',
+    range: [0, 2.5],
+    values: unpack(rows, 'petal_width')
+  }, {
+    label: 'petal_length',
+    range: [1, 7],
+    values: unpack(rows, 'petal_length')
+  }]
+}];
+
+var layout = {
+  width: 800,
+  annotations: [
+	  {showarrow: false,
+      text: 'Higher sepal width',
+      x: 0, y: 1, xref: 'paper', yref: 'paper'},
+	  {showarrow: false,
+      text: 'Lower petal width and length',
+      x: 0.9, y: .25, xref: 'paper', yref: 'paper'
+    }]
+};
+
+Plotly.newPlot('myDiv', data, layout);
+
+});

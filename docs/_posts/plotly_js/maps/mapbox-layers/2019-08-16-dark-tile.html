@@ -1,0 +1,26 @@
+---
+name: Dark tiles
+language: plotly_js
+suite: map-layers
+order: 7
+sitemap: false
+arrangement: horizontal
+---
+var url = "https://maplibre.org/maplibre-gl-js/docs/assets/significant-earthquakes-2015.geojson";
+
+d3.json(url, (err, raw) => {
+  var lon = raw.features.map(f => f.geometry.coordinates[0]);
+  var lat = raw.features.map(f => f.geometry.coordinates[1]);
+  var z = raw.features.map(f => f.properties.mag);
+
+  var data = [
+    { type: "scattermap", lon: lon, lat: lat, z: z, hoverinfo: "y" }
+  ];
+
+  var layout = {
+    map: { style: "dark", zoom: 2, center: { lon: -150, lat: 60 } },
+    margin: { t: 0, b: 0 }
+  };
+
+  Plotly.newPlot('myDiv', data, layout);
+});

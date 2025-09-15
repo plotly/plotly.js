@@ -1,0 +1,28 @@
+---
+permalink: javascript/plotly-fundamentals/
+redirect_from: javascript/modularizing-monolithic-javascript-projects/
+description: Plotly.js makes interactive, publication-quality graphs online. Tutorials and tips about fundamental features of Plotly JS
+name: Fundamentals
+layout: langindex
+display_as: file_settings
+language: plotly_js
+thumbnail: thumbnail/mixed.jpg
+---
+
+
+<header class="--welcome">
+	<div class="--welcome-body">
+		<!--div.--wrap-inner-->
+		<div class="--title">
+
+			<div class="--body">
+				<h1>Plotly.js Fundamentals</h1>
+				<p>{{page.description}}</p>
+				{% include layouts/dashplug.html %}
+			</div>
+		</div>
+	</div>
+</header>
+
+		{% assign languagelist = site.posts | where:"language","plotly_js" | where:"display_as","file_settings" | where: "layout","base" | sort: "order" %}
+        {% include posts/documentation_eg.html %}

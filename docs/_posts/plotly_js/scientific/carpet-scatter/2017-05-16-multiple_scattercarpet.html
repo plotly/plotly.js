@@ -1,0 +1,106 @@
+---
+name: Add Multiple Carpet Scatter Traces
+language: plotly_js
+suite: scattercarpet
+order: 3
+sitemap: false
+arrangement: horizontal
+description:
+---
+
+var trace1 = {
+      type: "carpet",
+      a: [0.1, 0.2, 0.3],
+      b: [1, 2, 3],
+      y: [
+        [1, 2.2, 3],
+        [1.5, 2.7, 3.5],
+        [1.7, 2.9, 3.7]
+      ],
+      cheaterslope: 1,
+      aaxis: {
+        title: {
+          text: "a"
+        },
+        tickmode: "linear",
+        dtick: 0.05,
+        minorgridcount: 9
+      },
+      baxis: {
+        title: {
+          text: "b"
+        },
+        tickmode: "linear",
+        dtick: 0.5,
+        minorgridcount: 9
+      }
+}
+
+var trace2 = {
+  type: "scattercarpet",
+  name: "b = 1.5",
+  a: [0.05, 0.15, 0.25, 0.35],
+  b: [1.5, 1.5, 1.5, 1.5]
+}
+
+var trace3 = {
+  type: "scattercarpet",
+  name: "b = 2",
+  a: [0.05, 0.15, 0.25, 0.35],
+  b: [2, 2, 2, 2]
+}
+
+var trace4 = {
+  type: "scattercarpet",
+  name: "b = 2.5",
+  a: [0.05, 0.15, 0.25, 0.35],
+  b: [2.5, 2.5, 2.5, 2.5]
+}
+
+var trace5 = {
+  type: "scattercarpet",
+  name: "a = 0.15",
+  a: [0.15, 0.15, 0.15, 0.15],
+  b: [0.5, 1.5, 2.5, 3.5],
+  line: {
+        smoothing: 1,
+        shape: "spline"
+  }
+}
+
+var trace6 = {
+  type: "scattercarpet",
+  name: "a = 0.2",
+  a: [0.2, 0.2, 0.2, 0.2],
+  b: [0.5, 1.5, 2.5, 3.5],
+  line: {
+        smoothing: 1,
+        shape: "spline"
+  },
+  marker: {
+        size: [10, 20, 30, 40],
+        color: ["#000", "#f00", "#ff0", "#fff"]
+  }
+}
+
+var trace7 = {
+  type: "scattercarpet",
+  name: "a = 0.25",
+  a: [0.25, 0.25, 0.25, 0.25],
+  b: [0.5, 1.5, 2.5, 3.5],
+  line: {
+        smoothing: 1,
+        shape: "spline"
+  }
+}
+
+var data = [trace1,trace2,trace3,trace4,trace5,trace6,trace7]
+
+var layout = {
+  title: {
+    text: "scattercarpet extrapolation, clipping, and smoothing"
+  },
+  hovermode: "closest"
+}
+
+Plotly.newPlot('myDiv', data, layout)

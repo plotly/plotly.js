@@ -1,0 +1,28 @@
+---
+name: Basic Parallel Categories Diagram with Counts
+arrangement: horizontal
+language: plotly_js
+suite: parcats
+order: 2
+sitemap: false
+markdown_content: |
+  If the frequency of occurrence for each combination of attributes is known in advance, this can be specified using
+  the `counts` property
+---
+var trace1 = {
+  type: 'parcats',
+  dimensions: [
+    {label: 'Hair',
+     values: ['Black', 'Brown', 'Brown', 'Brown', 'Red']},
+    {label: 'Eye',
+     values: ['Brown', 'Brown', 'Brown', 'Blue', 'Blue']},
+    {label: 'Sex',
+     values: ['Female', 'Male', 'Female', 'Male', 'Male']}],
+  counts: [6, 10, 40, 23, 7]
+};
+
+var data = [ trace1 ];
+
+var layout = {width: 600};
+
+Plotly.newPlot('myDiv', data, layout);

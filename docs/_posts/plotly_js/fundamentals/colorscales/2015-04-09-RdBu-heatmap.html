@@ -1,0 +1,23 @@
+---
+name: RdBu Colorscale
+language: plotly_js
+suite: colorscales
+order: 16
+sitemap: false
+arrangement: horizontal
+---
+
+d3.json('https://raw.githubusercontent.com/plotly/datasets/master/custom_heatmap_colorscale.json', function(figure) {
+var data = [{
+  z: figure.z,
+    colorscale: 'RdBu',
+    type: 'heatmap'
+  }
+];
+var layout = {
+  title: {
+      text: 'RdBu'
+  }
+};
+Plotly.newPlot('myDiv', data, layout);
+});

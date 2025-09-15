@@ -1,0 +1,26 @@
+---
+name: Display Edit in Chart Studio Modebar Button
+language: plotly_js
+suite: configuration
+order: 7.1
+sitemap: false
+arrangement: horizontal
+---
+var data = [{
+  values: [19, 26, 55],
+  labels: ['Residential', 'Non-Residential', 'Utility'],
+  type: 'pie'
+}];
+
+var layout = {
+  title: {
+      text: 'Show Edit in Chart Studio Modebar Button'
+  }
+};
+
+var config = {
+  showEditInChartStudio: true,
+  plotlyServerURL: "https://chart-studio.plotly.com"
+};
+
+Plotly.newPlot('myDiv', data, layout, config);

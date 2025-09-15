@@ -1,0 +1,58 @@
+---
+name: Layout Attributes with respect to Formatting Ticks
+language: plotly_js
+suite: tick-formatting
+sitemap: false
+arrangement: horizontal
+order: 0
+---
+
+
+
+{
+  xaxis: {
+    /* show/hide tick labels (defaults to true) */
+    showticklabels: boolean,
+    /*  Set the tick mode for the axis "auto" or "linear" or "array" */
+    tickmode: 'auto',
+
+    /* Set the placement of the first tick*/
+    tick0: '',
+    /* Set the step in-between ticks*/
+    dtick: '',
+    /* Specifies the maximum number of ticks */
+    nticks: 0,
+
+    /* Set the values at which ticks on this axis appear */
+    tickvals: [ /* */ ],
+    /* Set the text displayed at the ticks position via tickvals */
+    ticktext: [ /* */ ],
+    /* Set the source reference for tickvals */
+    tickvalssrc: '',
+    /* Set the source reference for ticktext */
+    tickvtextsrc: '',
+
+    /* Set the tick label formatting rule using d3 formatting mini-languages */
+    tickformat: '',
+    /* Set the tickformat per zoom level */
+    tickformatstops: {
+      enabled: true,
+      /* Set the range of the dtick values which describe the zoom level, it is possible to omit "min" or "max" value by passing "null" */
+      dtickrange: ["min", "max"],
+      /* dtickformat for described zoom level, the same as "tickformat" */
+      value: string,
+    },
+
+    /* Set the ticks to display with a prefix: "all" or "first" or "last" or "none" */
+    showtickprefix: 'all',
+    tickprefix: string,
+
+    /* Set the ticks to display with a suffix: "all" or "first" or "last" or "none" */
+    showticksuffix: 'all',
+    ticksuffix: string,
+
+    /* Determines a formatting rule for the tick exponents: "none" or "e" or "E" or "power" or "SI" or "B" */
+    exponentformat: 'B',
+  }
+  /* similarly for yaxis */
+}

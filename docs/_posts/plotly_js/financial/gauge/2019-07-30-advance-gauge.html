@@ -1,0 +1,37 @@
+---
+name: Add Steps, Threshold, and Delta
+language: plotly_js
+suite: gauge-charts
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+  The following examples include "steps" attribute shown as shading inside the radial arc, "delta" which is the
+  difference of the value and goal (reference - value), and "threshold" to determine boundaries that visually alert you if the value cross a defined threshold.
+---
+var data = [
+  {
+    domain: { x: [0, 1], y: [0, 1] },
+    value: 450,
+    title: { text: "Speed" },
+    type: "indicator",
+    mode: "gauge+number+delta",
+    delta: { reference: 380 },
+    gauge: {
+      axis: { range: [null, 500] },
+      steps: [
+        { range: [0, 250], color: "lightgray" },
+        { range: [250, 400], color: "gray" }
+      ],
+      threshold: {
+        line: { color: "red", width: 4 },
+        thickness: 0.75,
+        value: 490
+      }
+    }
+  }
+];
+
+var layout = { width: 600, height: 450, margin: { t: 0, b: 0 } };
+Plotly.newPlot('myDiv', data, layout);

@@ -1,0 +1,31 @@
+---
+name: Data Cards / Big Numbers
+language: plotly_js
+suite: indicator
+order: 4.1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+    Data card helps to display more contextual information about the data. Sometimes one number is all you want to see in a report, such as total sales, annual revenue, etc. This example shows how to visualize these big numbers:
+---
+var data = [
+  {
+    type: "indicator",
+    mode: "number+delta",
+    value: 400,
+    number: { prefix: "$" },
+    delta: { position: "top", reference: 320 },
+    domain: { x: [0, 1], y: [0, 1] }
+  }
+];
+
+var layout = {
+  paper_bgcolor: "lightgray",
+  width: 600,
+  height: 200,
+  margin: { t: 0, b: 0, l: 0, r: 0 }
+};
+
+Plotly.newPlot('myDiv', data, layout);
+

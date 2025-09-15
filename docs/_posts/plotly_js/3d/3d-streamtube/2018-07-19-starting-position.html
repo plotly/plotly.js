@@ -1,0 +1,55 @@
+---
+name: Starting Position and Segments
+language: plotly_js
+suite: streamtube
+order: 3
+sitemap: false
+arrangement: horizontal
+---
+
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/streamtube-wind.csv', function(err, rows){
+
+    function unpack(rows, key) {
+        return rows.map(function(row) { return +row[key]; });
+    }
+
+    var data = [{
+      type: 'streamtube',
+      x: unpack(rows, 'x'),
+      y: unpack(rows, 'y'),
+      z: unpack(rows, 'z'),
+      u: unpack(rows, 'u'),
+      v: unpack(rows, 'v'),
+      w: unpack(rows, 'w'),
+      starts: {
+        x: Array(16).fill(80),
+        y: [20,30,40,50,20,30,40,50,20,30,40,50,20,30,40,50],
+        z: [0,0,0,0,5,5,5,5,10,10,10,10,15,15,15,15]
+      },
+      sizeref: 0.3,
+      colorscale: "Portland",
+      showscale: false,
+      maxdisplayed: 3000
+    }]
+
+    var layout = {
+      scene: {
+        aspectratio: {
+          x: 2,
+          y: 1,
+          z: 0.3
+        }
+      },
+      margin: {
+        t: 20,
+        b: 20,
+        l: 20,
+        r: 20
+      },
+      width: 600,
+      height: 400
+    }
+
+    Plotly.newPlot('myDiv', data, layout);
+
+});

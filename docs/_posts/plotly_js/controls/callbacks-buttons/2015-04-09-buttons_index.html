@@ -1,0 +1,14 @@
+---
+name: Button Events
+permalink: javascript/custom-buttons/
+description: How to bind callback functions to custom buttons in D3.js-based JavaScript charts.
+layout: base
+thumbnail: thumbnail/custom-buttons.jpg
+language: plotly_js
+page_type: example_index
+display_as: controls
+order: 2
+redirect_from: javascript-graphing-library/custom-buttons/
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","button-events" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}
