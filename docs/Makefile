@@ -17,9 +17,8 @@ build:
 
 ## examples: build example documentation in ./tmp
 examples:
-	@rm -rf tmp
 	@mkdir -p tmp
-	${RUN} bin/example_pages.py --indir _posts/plotly_js --outdir tmp/javascript --jsversion 3.2.1 --verbose 1
+	${RUN} bin/example_pages.py --indir _posts/plotly_js --outdir tmp/javascript --jsversion 3.2.1
 
 ## format: reformat Python code
 format:
@@ -31,7 +30,6 @@ lint:
 
 ## reference: build reference documentation in ./tmp
 reference:
-	@rm -rf tmp
 	@mkdir -p tmp
 	${RUN} bin/reference_pages.py --schema ${SCHEMA_SRC} --outdir tmp/reference _posts/reference_pages/javascript/*.html
 
