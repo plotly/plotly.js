@@ -2373,6 +2373,18 @@
       "valType": "number"
      },
      "editType": "plot",
+     "maxscale": {
+      "description": "Maximal zoom level of the map view. A maxscale of *2* (200%) corresponds to a zoom level where the map is twice as big as the base layer.",
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "minscale": {
+      "description": "Minimal zoom level of the map view. A minscale of *0.5* (50%) corresponds to a zoom level where the map has half the size of base zoom level.",
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
      "parallels": {
       "description": "For conic projection types only. Sets the parallels (tangent, secant) where the cone intersects the sphere.",
       "editType": "plot",
