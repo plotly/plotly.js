@@ -217,6 +217,46 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.insidetextfont.size).toBe(20);
     });
 
+    it('should set cliponaxis to false when text has value and textposition is outside', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            text: ['A', 'B', 'C'],
+            textposition: 'outside'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.cliponaxis).toBe(false);
+    });
+
+    it('should set cliponaxis to default (true) when text is not provided', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            textposition: 'outside'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.cliponaxis).toBe(true);
+    });
+
+    it('should set cliponaxis to default (true) when textposition is not outside', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            text: ['A', 'B', 'C'],
+            textposition: 'inside'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.cliponaxis).toBe(true);
+    });
+
+    it('should respect explicit cliponaxis setting even with text and outside position', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            text: ['A', 'B', 'C'],
+            textposition: 'outside',
+            cliponaxis: true
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.cliponaxis).toBe(true);
+    });
+
     it('should inherit layout.calendar', function() {
         traceIn = {
             x: [1, 2, 3],
