@@ -149,11 +149,12 @@ function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
         if(moduleHasUnselected) coerce('unselected.textfont.color');
         if(moduleHasConstrain) coerce('constraintext');
         if(moduleHasCliponaxis) {
-            if(traceOut.text && textposition === 'outside') {
-                // When `textposition` is `'outside'`, bar labels are very frequently clipped
-                // since text is not included in autorange calculations.
-                // So we set `cliponaxis` to `false` by default in that case to prevent clipping;
-                // otherwise we use the normal default for `cliponaxis`, which is `true`.
+            if(traceOut.text && ['auto', 'outside'].includes(textposition)) {
+                // When `textposition` is `'outside'` (or `auto`), bar labels outside
+                // the bar are very frequently clipped since text is not included
+                // in autorange calculations. So we set `cliponaxis` to `false` by default
+                // in that case to prevent clipping; otherwise we use the normal default
+                // for `cliponaxis`, which is `true`.
                 coerce('cliponaxis', false);
             } else {
                 coerce('cliponaxis');

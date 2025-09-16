@@ -363,7 +363,7 @@ module.exports = {
             'are clipped about the subplot axes.',
             'To show markers and text nodes above axis lines and tick labels,',
             'make sure to set `xaxis.layer` and `yaxis.layer` to *below traces*.',
-            'Defaults to *true*, except for bar traces with `textposition` set to *outside*',
+            'Defaults to *true*, except for bar traces with `textposition` set to *auto* or *outside*',
             'in which case the default is *false*.'
         ].join(' ')
     },

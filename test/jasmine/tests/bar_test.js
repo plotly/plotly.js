@@ -227,6 +227,25 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.cliponaxis).toBe(false);
     });
 
+    it('should set cliponaxis to false when text has value and textposition is auto', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            text: ['A', 'B', 'C'],
+            textposition: 'auto'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.cliponaxis).toBe(false);
+    });
+
+    it('should set cliponaxis to false when text has value and textposition is unspecified', function() {
+        traceIn = {
+            y: [1, 2, 3],
+            text: ['A', 'B', 'C'],
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.cliponaxis).toBe(false);
+    });
+
     it('should set cliponaxis to default (true) when text is not provided', function() {
         traceIn = {
             y: [1, 2, 3],
