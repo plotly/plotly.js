@@ -3,20 +3,21 @@ from pathlib import Path
 import mkdocs_gen_files
 
 def generate_pages(path, output_dir, parent, nav=None):
+    """
+    Walks through the path and generates markdown files that 
+    include the corresponding html snippets in it.
+    """
     with os.scandir(path) as it:
         entries = sorted(it, key= lambda e: e.name)
         for folder in entries:
             dir_name = folder.name + ".md"
-            # print(dir_name)
-            # Make md file storing its snippet
             file_path = os.path.join(output_dir, dir_name)
-            # print(file_path)
 
             with open(file_path, 'w') as f:
                 f.write(f'# {folder.name}\n')
                 f.write(f'--8<-- \"{parent}/{folder.name}/index.html\"\n')
 
-            # Add to navigation
+            # Add markdown file to navigation
             if nav is not None:
                 nav[(folder.name)] = dir_name
 
@@ -24,7 +25,6 @@ def generate_pages(path, output_dir, parent, nav=None):
 
 nav = mkdocs_gen_files.Nav()
 
-# Walk through the docs/tmp/ directory and generate .md files that include the html snippets in it
 parent = Path(__file__).resolve().parents[1]
 ref_path = f"{parent}/docs/tmp/reference" 
 ref_output_dir = f"{parent}/pages/reference/"
