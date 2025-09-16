@@ -1,19 +1,28 @@
 import os
 from pathlib import Path
+import mkdocs_gen_files
 
-def generate_pages(path, output_dir, parent):
+def generate_pages(path, output_dir, parent, nav=None):
     with os.scandir(path) as it:
-        for folder in it:
+        entries = sorted(it, key= lambda e: e.name)
+        for folder in entries:
             dir_name = folder.name + ".md"
             # print(dir_name)
             # Make md file storing its snippet
             file_path = os.path.join(output_dir, dir_name)
+            # print(file_path)
 
             with open(file_path, 'w') as f:
                 f.write(f'# {folder.name}\n')
                 f.write(f'--8<-- \"{parent}/{folder.name}/index.html\"\n')
 
+            # Add to navigation
+            if nav is not None:
+                nav[(folder.name)] = dir_name
+
     it.close()
+
+nav = mkdocs_gen_files.Nav()
 
 # Walk through the docs/tmp/ directory and generate .md files that include the html snippets in it
 parent = Path(__file__).resolve().parents[1]
@@ -27,6 +36,8 @@ examples_output_dir = f"{parent}/pages/examples/"
 os.makedirs(ref_output_dir, exist_ok=True)
 os.makedirs(examples_output_dir, exist_ok=True)
 
-generate_pages(ref_path, ref_output_dir, "reference")
+generate_pages(ref_path, ref_output_dir, "reference", nav)
 generate_pages(examples_path, examples_output_dir, "javascript")
 
+with mkdocs_gen_files.open("reference/SUMMARY.md", "w") as nav_file:  
+    nav_file.writelines(nav.build_literate_nav())  

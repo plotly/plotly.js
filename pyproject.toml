@@ -13,5 +13,6 @@ dependencies = [
 dev_build = [
     "mkdocs",
     "mkdocs-material",
-    "mkdocs-gen-files"
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
 ]
