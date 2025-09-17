@@ -19,6 +19,13 @@ INCLUDE_TRACE_RE = re.compile(
 TITLE_RE = re.compile(r"<h2>.+?<code>(.+?)</code>.*</h2>")
 
 
+PLOT_SCHEMA_METADATA = """\
+---
+trace_name: {trace_name}
+---
+
+"""
+
 PLOT_SCHEMA_CONTENT = """\
 <div class="description">
   A <code>{trace_name}</code> trace is an object with the key <code>"type"</code> equal to <code>"{trace_data_attributes_type}"</code>
@@ -237,7 +244,7 @@ def _reference_block_valtype(src_path, accum, key, value):
             accum.append(f" or array of {_get(value, 'valType')}s\n")
         accum.append(f"{inner}, one of (\n")
         for i, sub_value in enumerate(_get(value, "values")):
-            _comma(accum, i, "|")
+            _comma(accum, i, " | ")
             accum.append(f"<code>{_bool_or_star(sub_value)}</code>")
         accum.append(f"{inner})\n")
 
@@ -380,12 +387,15 @@ def _reference_block_object(
 
 def _reference_trace(args, schema, src_path, trace_name, trace_data):
     """Generate HTML documentation for a trace."""
+    plot_schema_metadata = PLOT_SCHEMA_METADATA.format(
+        trace_name=trace_name,
+    )
     plot_schema_content = PLOT_SCHEMA_CONTENT.format(
         trace_name=trace_name,
         trace_data_attributes_type=trace_data["attributes"]["type"],
         trace_data_meta_description=trace_data["meta"]["description"],
     )
-    accum = [plot_schema_content]
+    accum = [plot_schema_metadata, plot_schema_content]
 
     parent_link = trace_name
     parent_path = f"data[type={trace_name}]"
