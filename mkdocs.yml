@@ -148,3 +148,6 @@ nav:
   - Lasso Selection: examples/lasso-selection.md
   - Range Slider and Selector: examples/range-slider.md
 - API Reference: reference/
+
+extra:
+  js-version: "3.2.1"
