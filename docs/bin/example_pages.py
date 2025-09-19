@@ -71,11 +71,9 @@ def _make_html(args, examples):
 
 
 HTML_NAME = """\
-    <div class=" row twelve columns">
       <h3 id="{name}">
         <a class="no_underline plot-blue" href="#{name}">{name}</a>
       </h3>
-    </div>
 """
 
 
@@ -88,11 +86,9 @@ def _make_html_name(accum, path, header):
 
 
 HTML_TEXT = """\
-  <div class="{columns} columns">
     {markdown_content}
     {page_content}
     {description}
-  </div>
 """
 
 HTML_TEXT_PAGE_CONTENT = """\
@@ -110,7 +106,7 @@ HTML_TEXT_DESCRIPTION = """\
 
 def _make_html_text(accum, path, header, content):
     """Make text of example."""
-    columns = "twelve" if "horizontal" in header.get("arrangement", "") else "six"
+    # columns = "twelve" if "horizontal" in header.get("arrangement", "") else "six"
     markdown_content = markdown(header.get("markdown_content", ""))
     page_content = (
         HTML_TEXT_PAGE_CONTENT.format(text=escape(content)) if content else ""
@@ -119,7 +115,6 @@ def _make_html_text(accum, path, header, content):
     description = HTML_TEXT_DESCRIPTION.format(text=description) if description else ""
     accum.append(
         HTML_TEXT.format(
-            columns=columns,
             markdown_content=markdown_content,
             page_content=page_content,
             description=description,
@@ -131,7 +126,6 @@ MYDIV_D3 = "\n\t&lt;script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17
 MYDIV_MATHJAX = "\n\t&lt;script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML'>&lt;/script&gt;"
 
 MYDIV = """\
-            <div class="{columns} columns">
               <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
                     action="https://codepen.io/pen/define" method="POST" target="_blank">
                 <input type="hidden" name="data"
@@ -142,7 +136,6 @@ MYDIV = """\
               <script>
                 {content_mydiv}
               </script>
-            </div>
 """
 
 
@@ -153,7 +146,7 @@ def _make_mydiv(args, accum, path, header, content, counter):
 
     d3 = MYDIV_D3 if "d3." in content else ""
     mathjax = MYDIV_MATHJAX if "remember to load MathJax.js" in content else ""
-    columns = "twelve" if "horizontal" in header.get("arrangement", "") else "six"
+    # columns = "twelve" if "horizontal" in header.get("arrangement", "") else "six"
     name = header["name"]
     unique_mydiv = f"myDiv_{counter}"
     content_mydiv = content.replace("myDiv", unique_mydiv)
@@ -169,7 +162,6 @@ def _make_mydiv(args, accum, path, header, content, counter):
         MYDIV.format(
             d3=d3,
             mathjax=mathjax,
-            columns=columns,
             name=name,
             unique_mydiv=unique_mydiv,
             content_mydiv=content_mydiv,
@@ -182,10 +174,8 @@ def _make_mydiv(args, accum, path, header, content, counter):
 
 
 PLOT_URL = """\
-            <div class="{columns} columns">
               {plot_url_img}
               {plot_url_embed}
-            </div>
 """
 
 PLOT_URL_IMG = """\
