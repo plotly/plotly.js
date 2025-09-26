@@ -581,9 +581,15 @@ workflows:
           requires:
             - install-and-cibuild
 
-      - publish-dist
+      - publish-dist:
+          filters:
+            branches:
+              only: master
 
-      - publish-dist-node-v22
+      - publish-dist-node-v22:
+          filters:
+            branches:
+              only: master
 
       - test-stackgl-bundle
 

@@ -11,6 +11,16 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var selectButton = require('../assets/modebar_button');
 var failTest = require('../assets/fail_test');
 
+// Ensure default environment doesn't expose clipboard API so button counts remain stable
+// Individual clipboard tests will explicitly mock/enable it as needed.
+var __origClipboard__ = (typeof navigator !== 'undefined') ? navigator.clipboard : undefined;
+beforeAll(function() {
+    if(typeof navigator !== 'undefined') navigator.clipboard = undefined;
+});
+afterAll(function() {
+    if(typeof navigator !== 'undefined') navigator.clipboard = __origClipboard__;
+});
+
 describe('ModeBar', function() {
     'use strict';
 
@@ -2001,13 +2011,15 @@ describe('ModeBar', function() {
         it('should call clipboard API when clicked', function(done) {
             var clipboardWriteCalled = false;
             var originalClipboard = navigator.clipboard;
+            var originalClipboardItem = window.ClipboardItem;
             
             // Mock successful clipboard API
+            window.ClipboardItem = window.ClipboardItem || function ClipboardItem(data) { this.data = data; };
             navigator.clipboard = {
                 write: function(items) {
                     clipboardWriteCalled = true;
                     expect(items.length).toBe(1);
-                    expect(items[0]).toEqual(jasmine.any(ClipboardItem));
+                    expect(items[0] instanceof ClipboardItem).toBeTrue();
                     return Promise.resolve();
                 }
             };
@@ -2026,12 +2038,14 @@ describe('ModeBar', function() {
                     
                     // Restore original clipboard
                     navigator.clipboard = originalClipboard;
+                    window.ClipboardItem = originalClipboardItem;
                     done();
                 }, 100);
             })
             .catch(function(err) {
                 // Restore original clipboard
                 navigator.clipboard = originalClipboard;
+                window.ClipboardItem = originalClipboardItem;
                 failTest(err);
             });
         });
