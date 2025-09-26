@@ -10,29 +10,21 @@ var OPTIONAL_COMMA = ',?';
 
 // one line string with or without trailing comma
 function makeStringRegex(attr) {
-    return makeRegex(
-        WHITESPACE_BEFORE + attr + ': \'.*\'' + OPTIONAL_COMMA
-    );
+    return makeRegex(WHITESPACE_BEFORE + attr + ": '.*'" + OPTIONAL_COMMA);
 }
 
 // joined array of strings with or without trailing comma
 function makeJoinedArrayRegex(attr) {
-    return makeRegex(
-        WHITESPACE_BEFORE + attr + ': \\[[\\s\\S]*?\\]' + '\\.join\\(.*' + OPTIONAL_COMMA
-    );
+    return makeRegex(WHITESPACE_BEFORE + attr + ': \\[[\\s\\S]*?\\]' + '\\.join\\(.*' + OPTIONAL_COMMA);
 }
 
 // array with or without trailing comma
 function makeArrayRegex(attr) {
-    return makeRegex(
-        WHITESPACE_BEFORE + attr + ': \\[[\\s\\S]*?\\]' + OPTIONAL_COMMA
-    );
+    return makeRegex(WHITESPACE_BEFORE + attr + ': \\[[\\s\\S]*?\\]' + OPTIONAL_COMMA);
 }
 
 function makeRegex(regexStr) {
-    return (
-        new RegExp(regexStr, 'g')
-    );
+    return new RegExp(regexStr, 'g');
 }
 
 const allRegexes = [
@@ -44,15 +36,18 @@ const allRegexes = [
     makeStringRegex('hrName')
 ];
 
-var esbuildPluginStripMeta = {
+const esbuildPluginStripMeta = {
     name: 'strip-meta-attributes',
     setup(build) {
         const loader = 'js';
-        build.onLoad({ filter: /\.js$/ }, async file => ({
-            contents: await fs.promises.readFile(file.path, 'utf-8').then(c => {
-                allRegexes.forEach(r => { c = c.replace(r, ''); });
+        build.onLoad({ filter: /\.js$/ }, async (file) => ({
+            contents: await fs.promises.readFile(file.path, 'utf-8').then((c) => {
+                allRegexes.forEach((r) => {
+                    c = c.replace(r, '');
+                });
                 return c;
-            }), loader
+            }),
+            loader
         }));
     }
 };
