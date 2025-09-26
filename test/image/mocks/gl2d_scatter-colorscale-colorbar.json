@@ -36,8 +36,10 @@
    "marker": {
     "size": 20
    },
+   "text": ["orange"],
+   "textposition": "top center",
    "type": "scattergl",
-   "mode": "markers"
+   "mode": "text+markers"
   }
  ],
  "layout": {
