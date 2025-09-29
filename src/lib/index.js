@@ -1182,25 +1182,18 @@ function templateFormatString(string, labels, d3locale) {
             }
         }
 
-        // Apply mult/div operation (if applicable)
-        if (value !== undefined) {
-            if (parsedOp === '*') value *= parsedNumber;
-            if (parsedOp === '/') value /= parsedNumber;
-        }
-
-        if (value === undefined && opts) {
-            if (opts.count < opts.max) {
-                lib.warn("Variable '" + key + "' in " + opts.name + ' could not be found!');
-                value = match;
-            }
-
-            if (opts.count === opts.max) {
-                lib.warn('Too many ' + opts.name + ' warnings - additional warnings will be suppressed');
-            }
+        if (value === undefined) {
+            const { count, max, name } = opts;
+            if (count < max) lib.warn(`Variable '${key}' in ${name} could not be found!`);
+            if (count === max) lib.warn(`Too many '${name}' warnings - additional warnings will be suppressed`);
             opts.count++;
 
-            return match;
+            // TODO: Make return valuable configurable with a reasonable default (like 'N/A')
+            return '';
         }
+
+        if (parsedOp === '*') value *= parsedNumber;
+        if (parsedOp === '/') value /= parsedNumber;
 
         if (format) {
             var fmt;
