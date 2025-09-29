@@ -62,7 +62,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 
 ```html
 <head>
-    <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>
+    <script src="https://cdn.plot.ly/plotly-3.1.1.min.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="gd"></div>

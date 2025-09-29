@@ -9,7 +9,22 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
-## [3.1.0]
+## [3.1.1] -- 2025-09-29
+
+### Fixed
+- Update plot with all config changes during call to `Plotly.react` [[#7475](https://github.com/plotly/plotly.js/pull/7475)]
+- Fix wheel event handler `Violation` in Chromium by setting `passive: true` [[#7517](https://github.com/plotly/plotly.js/pull/7517)]
+- Fix `locationmode` warning to be less aggressive: show warning only when `locationmode` is `'country names'` [[#7520](https://github.com/plotly/plotly.js/pull/7520)]
+- Refactor `drawMainTitle` to use context-specific selections for title and subtitle, avoiding conflicts when multiple plots are present on the same page [[#7522](https://github.com/plotly/plotly.js/pull/7522)], with thanks to @davibarbosa2 for the contribution!
+- Fix broken styling of map attributions [[#7526](https://github.com/plotly/plotly.js/pull/7526)]
+- Calculate colorscale properly for histogram when marker `cmin`/`cmax`/`cmid` values are undefined [[#7534](https://github.com/plotly/plotly.js/pull/7534)]
+- Tidy up some stray characters in attribute descriptions [[#7539](https://github.com/plotly/plotly.js/pull/7539)], [[#7540](https://github.com/plotly/plotly.js/pull/7540)]
+- Fix some typos (and a conditional check) [[#7542](https://github.com/plotly/plotly.js/pull/7542)], with thanks to @musvaage for the contribution!
+- Fix cropping of subunits in USA topojson, clean up land and coastlines layers for all topojson [[#7555](https://github.com/plotly/plotly.js/pull/7555)]
+- Fix issue causing empty ScatterGL plots when using text elements [#7563](https://github.com/plotly/plotly.js/pull/7563)
+
+
+## [3.1.0]  -- 2025-08-08
 
 ### Added
 - Add property `zerolinelayer` to cartesian axes to allow drawing zeroline above traces [[#7269](https://github.com/plotly/plotly.js/pull/7269)]
