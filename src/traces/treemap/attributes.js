@@ -25,14 +25,7 @@ module.exports = {
     tiling: {
         packing: {
             valType: 'enumerated',
-            values: [
-                'squarify',
-                'binary',
-                'dice',
-                'slice',
-                'slice-dice',
-                'dice-slice'
-            ],
+            values: ['squarify', 'binary', 'dice', 'slice', 'slice-dice', 'dice-slice'],
             dflt: 'squarify',
             editType: 'plot',
             description: [
@@ -60,15 +53,10 @@ module.exports = {
 
         flip: {
             valType: 'flaglist',
-            flags: [
-                'x',
-                'y'
-            ],
+            flags: ['x', 'y'],
             dflt: '',
             editType: 'plot',
-            description: [
-                'Determines if the positions obtained from solver are flipped on each axis.'
-            ].join(' ')
+            description: ['Determines if the positions obtained from solver are flipped on each axis.'].join(' ')
         },
 
         pad: {
@@ -76,86 +64,75 @@ module.exports = {
             min: 0,
             dflt: 3,
             editType: 'plot',
-            description: [
-                'Sets the inner padding (in px).'
-            ].join(' ')
+            description: ['Sets the inner padding (in px).'].join(' ')
         },
 
-        editType: 'calc',
+        editType: 'calc'
     },
 
-    marker: extendFlat({
-        pad: {
-            t: {
-                valType: 'number',
-                min: 0,
-                editType: 'plot',
+    marker: extendFlat(
+        {
+            pad: {
+                t: {
+                    valType: 'number',
+                    min: 0,
+                    editType: 'plot',
+                    description: ['Sets the padding form the top (in px).'].join(' ')
+                },
+                l: {
+                    valType: 'number',
+                    min: 0,
+                    editType: 'plot',
+                    description: ['Sets the padding form the left (in px).'].join(' ')
+                },
+                r: {
+                    valType: 'number',
+                    min: 0,
+                    editType: 'plot',
+                    description: ['Sets the padding form the right (in px).'].join(' ')
+                },
+                b: {
+                    valType: 'number',
+                    min: 0,
+                    editType: 'plot',
+                    description: ['Sets the padding form the bottom (in px).'].join(' ')
+                },
+
+                editType: 'calc'
+            },
+
+            colors: sunburstAttrs.marker.colors,
+
+            pattern: pattern,
+
+            depthfade: {
+                valType: 'enumerated',
+                values: [true, false, 'reversed'],
+                editType: 'style',
                 description: [
-                    'Sets the padding form the top (in px).'
+                    'Determines if the sector colors are faded towards',
+                    'the background from the leaves up to the headers.',
+                    'This option is unavailable when a `colorscale` is present,',
+                    'defaults to false when `marker.colors` is set,',
+                    'but otherwise defaults to true.',
+                    'When set to *reversed*, the fading direction is inverted,',
+                    'that is the top elements within hierarchy are drawn with fully saturated colors',
+                    'while the leaves are faded towards the background color.'
                 ].join(' ')
             },
-            l: {
+
+            line: sunburstAttrs.marker.line,
+
+            cornerradius: {
                 valType: 'number',
                 min: 0,
+                dflt: 0,
                 editType: 'plot',
-                description: [
-                    'Sets the padding form the left (in px).'
-                ].join(' ')
-            },
-            r: {
-                valType: 'number',
-                min: 0,
-                editType: 'plot',
-                description: [
-                    'Sets the padding form the right (in px).'
-                ].join(' ')
-            },
-            b: {
-                valType: 'number',
-                min: 0,
-                editType: 'plot',
-                description: [
-                    'Sets the padding form the bottom (in px).'
-                ].join(' ')
+                description: ['Sets the maximum rounding of corners (in px).'].join(' ')
             },
 
             editType: 'calc'
         },
-
-        colors: sunburstAttrs.marker.colors,
-
-        pattern: pattern,
-
-        depthfade: {
-            valType: 'enumerated',
-            values: [true, false, 'reversed'],
-            editType: 'style',
-            description: [
-                'Determines if the sector colors are faded towards',
-                'the background from the leaves up to the headers.',
-                'This option is unavailable when a `colorscale` is present,',
-                'defaults to false when `marker.colors` is set,',
-                'but otherwise defaults to true.',
-                'When set to *reversed*, the fading direction is inverted,',
-                'that is the top elements within hierarchy are drawn with fully saturated colors',
-                'while the leaves are faded towards the background color.'
-            ].join(' ')
-        },
-
-        line: sunburstAttrs.marker.line,
-
-        cornerradius: {
-            valType: 'number',
-            min: 0,
-            dflt: 0,
-            editType: 'plot',
-            description: [
-                'Sets the maximum rounding of corners (in px).'
-            ].join(' ')
-        },
-
-        editType: 'calc',
-    },
         colorScaleAttrs('marker', {
             colorAttr: 'colors',
             anim: false // TODO: set to anim: true?
@@ -176,32 +153,18 @@ module.exports = {
 
         side: {
             valType: 'enumerated',
-            values: [
-                'top',
-                'bottom'
-            ],
+            values: ['top', 'bottom'],
             dflt: 'top',
             editType: 'plot',
-            description: [
-                'Determines on which side of the the treemap the',
-                '`pathbar` should be presented.'
-            ].join(' ')
+            description: ['Determines on which side of the the treemap the', '`pathbar` should be presented.'].join(' ')
         },
 
         edgeshape: {
             valType: 'enumerated',
-            values: [
-                '>',
-                '<',
-                '|',
-                '/',
-                '\\'
-            ],
+            values: ['>', '<', '|', '/', '\\'],
             dflt: '>',
             editType: 'plot',
-            description: [
-                'Determines which shape is used for edges between `barpath` labels.'
-            ].join(' ')
+            description: ['Determines which shape is used for edges between `barpath` labels.'].join(' ')
         },
 
         thickness: {
@@ -224,15 +187,21 @@ module.exports = {
     text: pieAttrs.text,
     textinfo: sunburstAttrs.textinfo,
     // TODO: incorporate `label` and `value` in the eventData
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: constants.eventDataKeys.concat(['label', 'value'])
-    }),
+    texttemplate: texttemplateAttrs(
+        { editType: 'plot' },
+        {
+            keys: constants.eventDataKeys.concat(['label', 'value'])
+        }
+    ),
 
     hovertext: pieAttrs.hovertext,
     hoverinfo: sunburstAttrs.hoverinfo,
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: constants.eventDataKeys
-    }),
+    hovertemplate: hovertemplateAttrs(
+        {},
+        {
+            keys: constants.eventDataKeys
+        }
+    ),
 
     textfont: pieAttrs.textfont,
     insidetextfont: pieAttrs.insidetextfont,
@@ -242,25 +211,29 @@ module.exports = {
             'This option refers to the root of the hierarchy',
             'presented on top left corner of a treemap graph.',
             'Please note that if a hierarchy has multiple root nodes,',
-            'this option won\'t have any effect and `insidetextfont` would be used.'
+            "this option won't have any effect and `insidetextfont` would be used."
         ].join(' ')
     }),
 
     textposition: {
         valType: 'enumerated',
         values: [
-            'top left', 'top center', 'top right',
-            'middle left', 'middle center', 'middle right',
-            'bottom left', 'bottom center', 'bottom right'
+            'top left',
+            'top center',
+            'top right',
+            'middle left',
+            'middle center',
+            'middle right',
+            'bottom left',
+            'bottom center',
+            'bottom right'
         ],
         dflt: 'top left',
         editType: 'plot',
-        description: [
-            'Sets the positions of the `text` elements.'
-        ].join(' ')
+        description: ['Sets the positions of the `text` elements.'].join(' ')
     },
     sort: pieAttrs.sort,
     root: sunburstAttrs.root,
 
-    domain: domainAttrs({name: 'treemap', trace: true, editType: 'calc'}),
+    domain: domainAttrs({ name: 'treemap', trace: true, editType: 'calc' })
 };

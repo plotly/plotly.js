@@ -13,16 +13,12 @@ module.exports = {
     x: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: [
-            'Sets the sample data to be binned on the x axis.'
-        ].join(' ')
+        description: ['Sets the sample data to be binned on the x axis.'].join(' ')
     },
     y: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: [
-            'Sets the sample data to be binned on the y axis.'
-        ].join(' ')
+        description: ['Sets the sample data to be binned on the y axis.'].join(' ')
     },
 
     xhoverformat: axisHoverFormat('x'),
@@ -33,7 +29,7 @@ module.exports = {
             'Sets hover text elements associated with each bar.',
             'If a single string, the same string appears over all bars.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s coordinates.'
+            "this trace's coordinates."
         ].join(' ')
     }),
     hovertext: extendFlat({}, barAttrs.hovertext, {
@@ -196,16 +192,22 @@ module.exports = {
         ].join(' ')
     },
 
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: constants.eventDataKeys
-    }),
+    hovertemplate: hovertemplateAttrs(
+        {},
+        {
+            keys: constants.eventDataKeys
+        }
+    ),
 
-    texttemplate: texttemplateAttrs({
-        arrayOk: false,
-        editType: 'plot'
-    }, {
-        keys: ['label', 'value']
-    }),
+    texttemplate: texttemplateAttrs(
+        {
+            arrayOk: false,
+            editType: 'plot'
+        },
+        {
+            keys: ['label', 'value']
+        }
+    ),
 
     textposition: extendFlat({}, barAttrs.textposition, {
         arrayOk: false

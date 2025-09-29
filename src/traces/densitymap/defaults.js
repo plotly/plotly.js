@@ -13,7 +13,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var lat = coerce('lat') || [];
 
     var len = Math.min(lon.length, lat.length);
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -28,5 +28,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     coerce('hovertemplate');
 
-    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'z' });
 };

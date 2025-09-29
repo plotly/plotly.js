@@ -12,7 +12,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var len = handleRThetaDefaults(traceIn, traceOut, layout, coerce);
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }

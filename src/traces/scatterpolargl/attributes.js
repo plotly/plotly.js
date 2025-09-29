@@ -15,9 +15,12 @@ module.exports = {
     thetaunit: scatterPolarAttrs.thetaunit,
 
     text: scatterPolarAttrs.text,
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['r', 'theta', 'text']
-    }),
+    texttemplate: texttemplateAttrs(
+        { editType: 'plot' },
+        {
+            keys: ['r', 'theta', 'text']
+        }
+    ),
     hovertext: scatterPolarAttrs.hovertext,
     hovertemplate: scatterPolarAttrs.hovertemplate,
 

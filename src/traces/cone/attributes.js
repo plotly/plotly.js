@@ -12,26 +12,17 @@ var attrs = {
     x: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: [
-            'Sets the x coordinates of the vector field',
-            'and of the displayed cones.'
-        ].join(' ')
+        description: ['Sets the x coordinates of the vector field', 'and of the displayed cones.'].join(' ')
     },
     y: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: [
-            'Sets the y coordinates of the vector field',
-            'and of the displayed cones.'
-        ].join(' ')
+        description: ['Sets the y coordinates of the vector field', 'and of the displayed cones.'].join(' ')
     },
     z: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: [
-            'Sets the z coordinates of the vector field',
-            'and of the displayed cones.'
-        ].join(' ')
+        description: ['Sets the z coordinates of the vector field', 'and of the displayed cones.'].join(' ')
     },
 
     u: {
@@ -119,7 +110,7 @@ var attrs = {
             'With `sizemode` set to *raw*, its default value is *1*.',
             'With `sizemode` set to *scaled*, `sizeref` is unitless, its default value is *0.5*.',
             'With `sizemode` set to *absolute*, `sizeref` has the same units as the u/v/w vector field,',
-            'its the default value is half the sample\'s maximum vector norm.'
+            "its the default value is half the sample's maximum vector norm."
         ].join(' ')
     },
 
@@ -129,8 +120,8 @@ var attrs = {
         values: ['tip', 'tail', 'cm', 'center'],
         dflt: 'cm',
         description: [
-            'Sets the cones\' anchor with respect to their x/y/z positions.',
-            'Note that *cm* denote the cone\'s center of mass which corresponds to',
+            "Sets the cones' anchor with respect to their x/y/z positions.",
+            "Note that *cm* denote the cone's center of mass which corresponds to",
             '1/4 from the tail to tip.'
         ].join(' ')
     },
@@ -154,7 +145,7 @@ var attrs = {
         description: 'Same as `text`.'
     },
 
-    hovertemplate: hovertemplateAttrs({editType: 'calc'}, {keys: ['norm']}),
+    hovertemplate: hovertemplateAttrs({ editType: 'calc' }, { keys: ['norm'] }),
     uhoverformat: axisHoverFormat('u', 1),
     vhoverformat: axisHoverFormat('v', 1),
     whoverformat: axisHoverFormat('w', 1),
@@ -162,18 +153,21 @@ var attrs = {
     yhoverformat: axisHoverFormat('y'),
     zhoverformat: axisHoverFormat('z'),
 
-    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
+    showlegend: extendFlat({}, baseAttrs.showlegend, { dflt: false })
 };
 
-extendFlat(attrs, colorScaleAttrs('', {
-    colorAttr: 'u/v/w norm',
-    showScaleDflt: true,
-    editTypeOverride: 'calc'
-}));
+extendFlat(
+    attrs,
+    colorScaleAttrs('', {
+        colorAttr: 'u/v/w norm',
+        showScaleDflt: true,
+        editTypeOverride: 'calc'
+    })
+);
 
 var fromMesh3d = ['opacity', 'lightposition', 'lighting'];
 
-fromMesh3d.forEach(function(k) {
+fromMesh3d.forEach(function (k) {
     attrs[k] = mesh3dAttrs[k];
 });
 

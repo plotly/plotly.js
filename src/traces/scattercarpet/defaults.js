@@ -27,7 +27,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var b = coerce('b');
     var len = Math.min(a.length, b.length);
 
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -41,39 +41,39 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
     coerce('mode', defaultMode);
 
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
+    if (subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { gradient: true });
     }
 
-    if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {backoff: true});
+    if (subTypes.hasLines(traceOut)) {
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, { backoff: true });
         handleLineShapeDefaults(traceIn, traceOut, coerce);
         coerce('connectgaps');
     }
 
-    if(subTypes.hasText(traceOut)) {
+    if (subTypes.hasText(traceOut)) {
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
     var dfltHoverOn = [];
 
-    if(subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
+    if (subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
         coerce('marker.maxdisplayed');
         dfltHoverOn.push('points');
     }
 
     coerce('fill');
-    if(traceOut.fill !== 'none') {
+    if (traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
-        if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
+        if (!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
     }
 
-    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
+    if (traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
         dfltHoverOn.push('fills');
     }
 
     var hoverOn = coerce('hoveron', dfltHoverOn.join('+') || 'points');
-    if(hoverOn !== 'fills') coerce('hovertemplate');
+    if (hoverOn !== 'fills') coerce('hovertemplate');
 
     coerce('zorder');
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);

@@ -18,9 +18,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var y = coerce('y');
     var z = coerce('z');
 
-    if(
-        !u || !u.length || !v || !v.length || !w || !w.length ||
-        !x || !x.length || !y || !y.length || !z || !z.length
+    if (
+        !u ||
+        !u.length ||
+        !v ||
+        !v.length ||
+        !w ||
+        !w.length ||
+        !x ||
+        !x.length ||
+        !y ||
+        !y.length ||
+        !z ||
+        !z.length
     ) {
         traceOut.visible = false;
         return;
@@ -40,7 +50,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('lightposition.y');
     coerce('lightposition.z');
 
-    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'c' });
 
     coerce('text');
     coerce('hovertext');

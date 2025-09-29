@@ -30,9 +30,12 @@ module.exports = {
     },
 
     text: scatterAttrs.text,
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['real', 'imag', 'text']
-    }),
+    texttemplate: texttemplateAttrs(
+        { editType: 'plot' },
+        {
+            keys: ['real', 'imag', 'text']
+        }
+    ),
     hovertext: scatterAttrs.hovertext,
 
     line: {
@@ -49,7 +52,7 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
 
     marker: scatterAttrs.marker,
-    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, {dflt: false}),
+    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, { dflt: false }),
 
     textposition: scatterAttrs.textposition,
     textfont: scatterAttrs.textfont,

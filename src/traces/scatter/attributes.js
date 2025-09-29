@@ -46,9 +46,7 @@ function axisPeriod0(axis) {
 function axisPeriodAlignment(axis) {
     return {
         valType: 'enumerated',
-        values: [
-            'start', 'middle', 'end'
-        ],
+        values: ['start', 'middle', 'end'],
         dflt: 'middle',
         editType: 'calc',
         description: [
@@ -82,10 +80,7 @@ module.exports = {
         dflt: 1,
         editType: 'calc',
         anim: true,
-        description: [
-            'Sets the x coordinate step.',
-            'See `x0` for more info.'
-        ].join(' ')
+        description: ['Sets the x coordinate step.', 'See `x0` for more info.'].join(' ')
     },
     y: {
         valType: 'data_array',
@@ -110,10 +105,7 @@ module.exports = {
         dflt: 1,
         editType: 'calc',
         anim: true,
-        description: [
-            'Sets the y coordinate step.',
-            'See `y0` for more info.'
-        ].join(' ')
+        description: ['Sets the y coordinate step.', 'See `y0` for more info.'].join(' ')
     },
 
     xperiod: axisPeriod('x'),
@@ -227,15 +219,13 @@ module.exports = {
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y) coordinates.',
+            "this trace's (x,y) coordinates.",
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
         ].join(' ')
     },
 
-    texttemplate: texttemplateAttrs({}, {
-
-    }),
+    texttemplate: texttemplateAttrs({}, {}),
     hovertext: {
         valType: 'string',
         dflt: '',
@@ -246,7 +236,7 @@ module.exports = {
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y) coordinates.',
+            "this trace's (x,y) coordinates.",
             'To be seen, trace `hoverinfo` must contain a *text* flag.'
         ].join(' ')
     },
@@ -276,9 +266,12 @@ module.exports = {
             'or text, then the default is *fills*, otherwise it is *points*.'
         ].join(' ')
     },
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: constants.eventDataKeys
-    }),
+    hovertemplate: hovertemplateAttrs(
+        {},
+        {
+            keys: constants.eventDataKeys
+        }
+    ),
 
     line: {
         color: {
@@ -318,8 +311,9 @@ module.exports = {
                 '*0* corresponds to no smoothing (equivalent to a *linear* shape).'
             ].join(' ')
         },
-        dash: extendFlat({}, dash, {editType: 'style'}),
-        backoff: { // we want to have a similar option for the start of the line
+        dash: extendFlat({}, dash, { editType: 'style' }),
+        backoff: {
+            // we want to have a similar option for the start of the line
             valType: 'number',
             min: 0,
             dflt: 'auto',
@@ -400,10 +394,9 @@ module.exports = {
             values: ['radial', 'horizontal', 'vertical', 'none'],
             dflt: 'none',
             editType: 'calc',
-            description: [
-                'Sets the type/orientation of the color gradient for the fill.',
-                'Defaults to *none*.'
-            ].join(' ')
+            description: ['Sets the type/orientation of the color gradient for the fill.', 'Defaults to *none*.'].join(
+                ' '
+            )
         },
         start: {
             valType: 'number',
@@ -444,161 +437,156 @@ module.exports = {
             ].join(' ')
         },
         editType: 'calc',
-        description: [
-            'Sets a fill gradient.',
-            'If not specified, the fillcolor is used instead.'
-        ].join(' ')
+        description: ['Sets a fill gradient.', 'If not specified, the fillcolor is used instead.'].join(' ')
     }),
     fillpattern: pattern,
-    marker: extendFlat({
-        symbol: {
-            valType: 'enumerated',
-            values: Drawing.symbolList,
-            dflt: 'circle',
-            arrayOk: true,
-            editType: 'style',
-            description: [
-                'Sets the marker symbol type.',
-                'Adding 100 is equivalent to appending *-open* to a symbol name.',
-                'Adding 200 is equivalent to appending *-dot* to a symbol name.',
-                'Adding 300 is equivalent to appending *-open-dot*',
-                'or *dot-open* to a symbol name.'
-            ].join(' ')
-        },
-        opacity: {
-            valType: 'number',
-            min: 0,
-            max: 1,
-            arrayOk: true,
-            editType: 'style',
-            anim: true,
-            description: 'Sets the marker opacity.'
-        },
-        angle: {
-            valType: 'angle',
-            dflt: 0,
-            arrayOk: true,
-            editType: 'plot',
-            anim: false, // TODO: possibly set to true in future
-            description: [
-                'Sets the marker angle in respect to `angleref`.'
-            ].join(' ')
-        },
-        angleref: {
-            valType: 'enumerated',
-            values: ['previous', 'up'],
-            dflt: 'up',
-            editType: 'plot',
-            anim: false,
-            description: [
-                'Sets the reference for marker angle.',
-                'With *previous*, angle 0 points along the line from the previous point to this one.',
-                'With *up*, angle 0 points toward the top of the screen.'
-            ].join(' ')
-        },
-        standoff: {
-            valType: 'number',
-            min: 0,
-            dflt: 0,
-            arrayOk: true,
-            editType: 'plot',
-            anim: true,
-            description: [
-                'Moves the marker away from the data point in the direction of `angle` (in px).',
-                'This can be useful for example if you have another marker at this',
-                'location and you want to point an arrowhead marker at it.'
-            ].join(' ')
-        },
-        size: {
-            valType: 'number',
-            min: 0,
-            dflt: 6,
-            arrayOk: true,
-            editType: 'calc',
-            anim: true,
-            description: 'Sets the marker size (in px).'
-        },
-        maxdisplayed: {
-            valType: 'number',
-            min: 0,
-            dflt: 0,
-            editType: 'plot',
-            description: [
-                'Sets a maximum number of points to be drawn on the graph.',
-                '*0* corresponds to no limit.'
-            ].join(' ')
-        },
-        sizeref: {
-            valType: 'number',
-            dflt: 1,
-            editType: 'calc',
-            description: [
-                'Has an effect only if `marker.size` is set to a numerical array.',
-                'Sets the scale factor used to determine the rendered size of',
-                'marker points. Use with `sizemin` and `sizemode`.'
-            ].join(' ')
-        },
-        sizemin: {
-            valType: 'number',
-            min: 0,
-            dflt: 0,
-            editType: 'calc',
-            description: [
-                'Has an effect only if `marker.size` is set to a numerical array.',
-                'Sets the minimum size (in px) of the rendered marker points.'
-            ].join(' ')
-        },
-        sizemode: {
-            valType: 'enumerated',
-            values: ['diameter', 'area'],
-            dflt: 'diameter',
-            editType: 'calc',
-            description: [
-                'Has an effect only if `marker.size` is set to a numerical array.',
-                'Sets the rule for which the data in `size` is converted',
-                'to pixels.'
-            ].join(' ')
-        },
-
-        line: extendFlat({
-            width: {
+    marker: extendFlat(
+        {
+            symbol: {
+                valType: 'enumerated',
+                values: Drawing.symbolList,
+                dflt: 'circle',
+                arrayOk: true,
+                editType: 'style',
+                description: [
+                    'Sets the marker symbol type.',
+                    'Adding 100 is equivalent to appending *-open* to a symbol name.',
+                    'Adding 200 is equivalent to appending *-dot* to a symbol name.',
+                    'Adding 300 is equivalent to appending *-open-dot*',
+                    'or *dot-open* to a symbol name.'
+                ].join(' ')
+            },
+            opacity: {
                 valType: 'number',
                 min: 0,
+                max: 1,
                 arrayOk: true,
                 editType: 'style',
                 anim: true,
-                description: 'Sets the width (in px) of the lines bounding the marker points.'
+                description: 'Sets the marker opacity.'
             },
-            editType: 'calc'
-        },
-            colorScaleAttrs('marker.line', {anim: true})
-        ),
-        gradient: {
-            type: {
+            angle: {
+                valType: 'angle',
+                dflt: 0,
+                arrayOk: true,
+                editType: 'plot',
+                anim: false, // TODO: possibly set to true in future
+                description: ['Sets the marker angle in respect to `angleref`.'].join(' ')
+            },
+            angleref: {
                 valType: 'enumerated',
-                values: ['radial', 'horizontal', 'vertical', 'none'],
-                arrayOk: true,
-                dflt: 'none',
-                editType: 'calc',
+                values: ['previous', 'up'],
+                dflt: 'up',
+                editType: 'plot',
+                anim: false,
                 description: [
-                    'Sets the type of gradient used to fill the markers'
+                    'Sets the reference for marker angle.',
+                    'With *previous*, angle 0 points along the line from the previous point to this one.',
+                    'With *up*, angle 0 points toward the top of the screen.'
                 ].join(' ')
             },
-            color: {
-                valType: 'color',
+            standoff: {
+                valType: 'number',
+                min: 0,
+                dflt: 0,
+                arrayOk: true,
+                editType: 'plot',
+                anim: true,
+                description: [
+                    'Moves the marker away from the data point in the direction of `angle` (in px).',
+                    'This can be useful for example if you have another marker at this',
+                    'location and you want to point an arrowhead marker at it.'
+                ].join(' ')
+            },
+            size: {
+                valType: 'number',
+                min: 0,
+                dflt: 6,
                 arrayOk: true,
                 editType: 'calc',
+                anim: true,
+                description: 'Sets the marker size (in px).'
+            },
+            maxdisplayed: {
+                valType: 'number',
+                min: 0,
+                dflt: 0,
+                editType: 'plot',
                 description: [
-                    'Sets the final color of the gradient fill:',
-                    'the center color for radial, the right for horizontal,',
-                    'or the bottom for vertical.',
+                    'Sets a maximum number of points to be drawn on the graph.',
+                    '*0* corresponds to no limit.'
                 ].join(' ')
+            },
+            sizeref: {
+                valType: 'number',
+                dflt: 1,
+                editType: 'calc',
+                description: [
+                    'Has an effect only if `marker.size` is set to a numerical array.',
+                    'Sets the scale factor used to determine the rendered size of',
+                    'marker points. Use with `sizemin` and `sizemode`.'
+                ].join(' ')
+            },
+            sizemin: {
+                valType: 'number',
+                min: 0,
+                dflt: 0,
+                editType: 'calc',
+                description: [
+                    'Has an effect only if `marker.size` is set to a numerical array.',
+                    'Sets the minimum size (in px) of the rendered marker points.'
+                ].join(' ')
+            },
+            sizemode: {
+                valType: 'enumerated',
+                values: ['diameter', 'area'],
+                dflt: 'diameter',
+                editType: 'calc',
+                description: [
+                    'Has an effect only if `marker.size` is set to a numerical array.',
+                    'Sets the rule for which the data in `size` is converted',
+                    'to pixels.'
+                ].join(' ')
+            },
+
+            line: extendFlat(
+                {
+                    width: {
+                        valType: 'number',
+                        min: 0,
+                        arrayOk: true,
+                        editType: 'style',
+                        anim: true,
+                        description: 'Sets the width (in px) of the lines bounding the marker points.'
+                    },
+                    editType: 'calc'
+                },
+                colorScaleAttrs('marker.line', { anim: true })
+            ),
+            gradient: {
+                type: {
+                    valType: 'enumerated',
+                    values: ['radial', 'horizontal', 'vertical', 'none'],
+                    arrayOk: true,
+                    dflt: 'none',
+                    editType: 'calc',
+                    description: ['Sets the type of gradient used to fill the markers'].join(' ')
+                },
+                color: {
+                    valType: 'color',
+                    arrayOk: true,
+                    editType: 'calc',
+                    description: [
+                        'Sets the final color of the gradient fill:',
+                        'the center color for radial, the right for horizontal,',
+                        'or the bottom for vertical.'
+                    ].join(' ')
+                },
+                editType: 'calc'
             },
             editType: 'calc'
         },
-        editType: 'calc'
-    },
-        colorScaleAttrs('marker', {anim: true})
+        colorScaleAttrs('marker', { anim: true })
     ),
     selected: {
         marker: {
@@ -668,17 +656,20 @@ module.exports = {
     textposition: {
         valType: 'enumerated',
         values: [
-            'top left', 'top center', 'top right',
-            'middle left', 'middle center', 'middle right',
-            'bottom left', 'bottom center', 'bottom right'
+            'top left',
+            'top center',
+            'top right',
+            'middle left',
+            'middle center',
+            'middle right',
+            'bottom left',
+            'bottom center',
+            'bottom right'
         ],
         dflt: 'middle center',
         arrayOk: true,
         editType: 'calc',
-        description: [
-            'Sets the positions of the `text` elements',
-            'with respects to the (x,y) coordinates.'
-        ].join(' ')
+        description: ['Sets the positions of the `text` elements', 'with respects to the (x,y) coordinates.'].join(' ')
     },
     textfont: fontAttrs({
         editType: 'calc',

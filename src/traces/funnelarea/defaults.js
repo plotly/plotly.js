@@ -20,14 +20,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._hasLabels = res.hasLabels;
     traceOut._hasValues = res.hasValues;
 
-    if(!traceOut._hasLabels &&
-        traceOut._hasValues
-    ) {
+    if (!traceOut._hasLabels && traceOut._hasValues) {
         coerce('label0');
         coerce('dlabel');
     }
 
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -40,12 +38,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var textData = coerce('text');
     var textTemplate = coerce('texttemplate');
     var textInfo;
-    if(!textTemplate) textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
+    if (!textTemplate) textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
 
     coerce('hovertext');
     coerce('hovertemplate');
 
-    if(textTemplate || (textInfo && textInfo !== 'none')) {
+    if (textTemplate || (textInfo && textInfo !== 'none')) {
         var textposition = coerce('textposition');
         handleText(traceIn, traceOut, layout, coerce, textposition, {
             moduleHasSelected: false,
@@ -55,14 +53,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             moduleHasTextangle: false,
             moduleHasInsideanchor: false
         });
-    } else if(textInfo === 'none') {
+    } else if (textInfo === 'none') {
         coerce('textposition', 'none');
     }
 
     handleDomainDefaults(traceOut, layout, coerce);
 
     var title = coerce('title.text');
-    if(title) {
+    if (title) {
         coerce('title.position');
         Lib.coerceFont(coerce, 'title.font', layout.font);
     }

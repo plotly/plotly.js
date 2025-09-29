@@ -20,7 +20,7 @@ var attachFxHandlers = require('./fx');
 var constants = require('./constants');
 var helpers = require('./helpers');
 
-exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
+exports.plot = function (gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var layer = fullLayout._sunburstlayer;
     var join, onComplete;
@@ -32,49 +32,52 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
 
     clearMinTextSize('sunburst', fullLayout);
 
-    join = layer.selectAll('g.trace.sunburst')
-        .data(cdmodule, function(cd) { return cd[0].trace.uid; });
+    join = layer.selectAll('g.trace.sunburst').data(cdmodule, function (cd) {
+        return cd[0].trace.uid;
+    });
 
     // using same 'stroke-linejoin' as pie traces
-    join.enter().append('g')
-        .classed('trace', true)
-        .classed('sunburst', true)
-        .attr('stroke-linejoin', 'round');
+    join.enter().append('g').classed('trace', true).classed('sunburst', true).attr('stroke-linejoin', 'round');
 
     join.order();
 
-    if(hasTransition) {
-        if(makeOnCompleteCallback) {
+    if (hasTransition) {
+        if (makeOnCompleteCallback) {
             // If it was passed a callback to register completion, make a callback. If
             // this is created, then it must be executed on completion, otherwise the
             // pos-transition redraw will not execute:
             onComplete = makeOnCompleteCallback();
         }
 
-        var transition = d3.transition()
+        var transition = d3
+            .transition()
             .duration(transitionOpts.duration)
             .ease(transitionOpts.easing)
-            .each('end', function() { onComplete && onComplete(); })
-            .each('interrupt', function() { onComplete && onComplete(); });
+            .each('end', function () {
+                onComplete && onComplete();
+            })
+            .each('interrupt', function () {
+                onComplete && onComplete();
+            });
 
-        transition.each(function() {
+        transition.each(function () {
             // Must run the selection again since otherwise enters/updates get grouped together
             // and these get executed out of order. Except we need them in order!
-            layer.selectAll('g.trace').each(function(cd) {
+            layer.selectAll('g.trace').each(function (cd) {
                 plotOne(gd, cd, this, transitionOpts);
             });
         });
     } else {
-        join.each(function(cd) {
+        join.each(function (cd) {
             plotOne(gd, cd, this, transitionOpts);
         });
 
-        if(fullLayout.uniformtext.mode) {
+        if (fullLayout.uniformtext.mode) {
             resizeText(gd, fullLayout._sunburstlayer.selectAll('.trace'), 'sunburst');
         }
     }
 
-    if(isFullReplot) {
+    if (isFullReplot) {
         join.exit().remove();
     }
 };
@@ -99,10 +102,10 @@ function plotOne(gd, cd, element, transitionOpts) {
     var vpw = gs.w * (domain.x[1] - domain.x[0]);
     var vph = gs.h * (domain.y[1] - domain.y[0]);
     var rMax = 0.5 * Math.min(vpw, vph);
-    var cx = cd0.cx = gs.l + gs.w * (domain.x[1] + domain.x[0]) / 2;
-    var cy = cd0.cy = gs.t + gs.h * (1 - domain.y[0]) - vph / 2;
+    var cx = (cd0.cx = gs.l + (gs.w * (domain.x[1] + domain.x[0])) / 2);
+    var cy = (cd0.cy = gs.t + gs.h * (1 - domain.y[0]) - vph / 2);
 
-    if(!entry) {
+    if (!entry) {
         return slices.remove();
     }
 
@@ -111,9 +114,9 @@ function plotOne(gd, cd, element, transitionOpts) {
     // stash of 'previous' position data used by tweening functions
     var prevLookup = {};
 
-    if(hasTransition) {
+    if (hasTransition) {
         // Important: do this before binding new sliceData!
-        slices.each(function(pt) {
+        slices.each(function (pt) {
             prevLookup[helpers.getPtId(pt)] = {
                 rpx0: pt.rpx0,
                 rpx1: pt.rpx1,
@@ -122,7 +125,7 @@ function plotOne(gd, cd, element, transitionOpts) {
                 transform: pt.transform
             };
 
-            if(!prevEntry && helpers.isEntry(pt)) {
+            if (!prevEntry && helpers.isEntry(pt)) {
                 prevEntry = pt;
             }
         });
@@ -136,7 +139,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     var yOffset = 0;
     var cutoff = maxDepth;
     // N.B. handle multiple-root special case
-    if(cd0.hasMultipleRoots && helpers.isHierarchyRoot(entry)) {
+    if (cd0.hasMultipleRoots && helpers.isHierarchyRoot(entry)) {
         sliceData = sliceData.slice(1);
         maxHeight -= 1;
         yOffset = 1;
@@ -144,11 +147,13 @@ function plotOne(gd, cd, element, transitionOpts) {
     }
 
     // filter out slices that won't show up on graph
-    sliceData = sliceData.filter(function(pt) { return pt.y1 <= cutoff; });
+    sliceData = sliceData.filter(function (pt) {
+        return pt.y1 <= cutoff;
+    });
 
     var baseX = getRotationAngle(trace.rotation);
-    if(baseX) {
-        sliceData.forEach(function(pt) {
+    if (baseX) {
+        sliceData.forEach(function (pt) {
             pt.x0 += baseX;
             pt.x1 += baseX;
         });
@@ -156,30 +161,43 @@ function plotOne(gd, cd, element, transitionOpts) {
 
     // partition span ('y') to sector radial px value
     var maxY = Math.min(maxHeight, maxDepth);
-    var y2rpx = function(y) { return (y - yOffset) / maxY * rMax; };
+    var y2rpx = function (y) {
+        return ((y - yOffset) / maxY) * rMax;
+    };
     // (radial px value, partition angle ('x'))  to px [x,y]
-    var rx2px = function(r, x) { return [r * Math.cos(x), -r * Math.sin(x)]; };
+    var rx2px = function (r, x) {
+        return [r * Math.cos(x), -r * Math.sin(x)];
+    };
     // slice path generation fn
-    var pathSlice = function(d) { return Lib.pathAnnulus(d.rpx0, d.rpx1, d.x0, d.x1, cx, cy); };
+    var pathSlice = function (d) {
+        return Lib.pathAnnulus(d.rpx0, d.rpx1, d.x0, d.x1, cx, cy);
+    };
     // slice text translate x/y
 
-    var getTargetX = function(d) { return cx + getTextXY(d)[0] * (d.transform.rCenter || 0) + (d.transform.x || 0); };
-    var getTargetY = function(d) { return cy + getTextXY(d)[1] * (d.transform.rCenter || 0) + (d.transform.y || 0); };
+    var getTargetX = function (d) {
+        return cx + getTextXY(d)[0] * (d.transform.rCenter || 0) + (d.transform.x || 0);
+    };
+    var getTargetY = function (d) {
+        return cy + getTextXY(d)[1] * (d.transform.rCenter || 0) + (d.transform.y || 0);
+    };
 
     slices = slices.data(sliceData, helpers.getPtId);
 
-    slices.enter().append('g')
-        .classed('slice', true);
+    slices.enter().append('g').classed('slice', true);
 
-    if(hasTransition) {
-        slices.exit().transition()
-            .each(function() {
+    if (hasTransition) {
+        slices
+            .exit()
+            .transition()
+            .each(function () {
                 var sliceTop = d3.select(this);
 
                 var slicePath = sliceTop.select('path.surface');
-                slicePath.transition().attrTween('d', function(pt2) {
+                slicePath.transition().attrTween('d', function (pt2) {
                     var interp = makeExitSliceInterpolator(pt2);
-                    return function(t) { return pathSlice(interp(t)); };
+                    return function (t) {
+                        return pathSlice(interp(t));
+                    };
                 });
 
                 var sliceTextGroup = sliceTop.select('g.slicetext');
@@ -194,18 +212,18 @@ function plotOne(gd, cd, element, transitionOpts) {
 
     // next x1 (i.e. sector end angle) of previous entry
     var nextX1ofPrevEntry = null;
-    if(hasTransition && prevEntry) {
+    if (hasTransition && prevEntry) {
         var prevEntryId = helpers.getPtId(prevEntry);
-        slices.each(function(pt) {
-            if(nextX1ofPrevEntry === null && (helpers.getPtId(pt) === prevEntryId)) {
+        slices.each(function (pt) {
+            if (nextX1ofPrevEntry === null && helpers.getPtId(pt) === prevEntryId) {
                 nextX1ofPrevEntry = pt.x1;
             }
         });
     }
 
     var updateSlices = slices;
-    if(hasTransition) {
-        updateSlices = updateSlices.transition().each('end', function() {
+    if (hasTransition) {
+        updateSlices = updateSlices.transition().each('end', function () {
             // N.B. gd._transitioning is (still) *true* by the time
             // transition updates get here
             var sliceTop = d3.select(this);
@@ -217,10 +235,10 @@ function plotOne(gd, cd, element, transitionOpts) {
         });
     }
 
-    updateSlices.each(function(pt) {
+    updateSlices.each(function (pt) {
         var sliceTop = d3.select(this);
 
-        var slicePath = Lib.ensureSingle(sliceTop, 'path', 'surface', function(s) {
+        var slicePath = Lib.ensureSingle(sliceTop, 'path', 'surface', function (s) {
             s.style('pointer-events', isStatic ? 'none' : 'all');
         });
 
@@ -232,13 +250,15 @@ function plotOne(gd, cd, element, transitionOpts) {
         pt.startangle = -(pt.x0 - Math.PI / 2);
         pt.stopangle = -(pt.x1 - Math.PI / 2);
         pt.halfangle = 0.5 * Math.min(Lib.angleDelta(pt.x0, pt.x1) || Math.PI, Math.PI);
-        pt.ring = 1 - (pt.rpx0 / pt.rpx1);
+        pt.ring = 1 - pt.rpx0 / pt.rpx1;
         pt.rInscribed = getInscribedRadiusFraction(pt, trace);
 
-        if(hasTransition) {
-            slicePath.transition().attrTween('d', function(pt2) {
+        if (hasTransition) {
+            slicePath.transition().attrTween('d', function (pt2) {
                 var interp = makeUpdateSliceInterpolator(pt2);
-                return function(t) { return pathSlice(interp(t)); };
+                return function (t) {
+                    return pathSlice(interp(t));
+                };
             });
         } else {
             slicePath.attr('d', pathSlice);
@@ -259,7 +279,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         slicePath.call(styleOne, pt, trace, gd);
 
         var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext');
-        var sliceText = Lib.ensureSingle(sliceTextGroup, 'text', '', function(s) {
+        var sliceText = Lib.ensureSingle(sliceTextGroup, 'text', '', function (s) {
             // prohibit tex interpretation until we can handle
             // tex and regular text together
             s.attr('data-notex', 1);
@@ -267,7 +287,8 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         var font = Lib.ensureUniformFontSize(gd, helpers.determineTextFont(trace, pt, fullLayout.font));
 
-        sliceText.text(exports.formatSliceLabel(pt, entry, trace, cd, fullLayout))
+        sliceText
+            .text(exports.formatSliceLabel(pt, entry, trace, cd, fullLayout))
             .classed('slicetext', true)
             .attr('text-anchor', 'middle')
             .call(Drawing.font, font)
@@ -279,7 +300,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         pt.transform.targetX = getTargetX(pt);
         pt.transform.targetY = getTargetY(pt);
 
-        var strTransform = function(d, textBB) {
+        var strTransform = function (d, textBB) {
             var transform = d.transform;
             computeTransform(transform, textBB);
 
@@ -289,10 +310,12 @@ function plotOne(gd, cd, element, transitionOpts) {
             return Lib.getTextTransform(transform);
         };
 
-        if(hasTransition) {
-            sliceText.transition().attrTween('transform', function(pt2) {
+        if (hasTransition) {
+            sliceText.transition().attrTween('transform', function (pt2) {
                 var interp = makeUpdateTextInterpolator(pt2);
-                return function(t) { return strTransform(interp(t), textBB); };
+                return function (t) {
+                    return strTransform(interp(t), textBB);
+                };
             });
         } else {
             sliceText.attr('transform', strTransform(pt, textBB));
@@ -305,36 +328,39 @@ function plotOne(gd, cd, element, transitionOpts) {
         var entryPrev = prevLookup[helpers.getPtId(entry)];
         var next;
 
-        if(entryPrev) {
+        if (entryPrev) {
             var a = (pt.x1 > entryPrev.x1 ? 2 * Math.PI : 0) + baseX;
             // if pt to remove:
             // - if 'below' where the root-node used to be: shrink it radially inward
             // - otherwise, collapse it clockwise or counterclockwise which ever is shortest to theta=0
-            next = pt.rpx1 < entryPrev.rpx1 ?
-                {x0: pt.x0, x1: pt.x1, rpx0: 0, rpx1: 0} :
-                {x0: a, x1: a, rpx0: pt.rpx0, rpx1: pt.rpx1};
+            next =
+                pt.rpx1 < entryPrev.rpx1
+                    ? { x0: pt.x0, x1: pt.x1, rpx0: 0, rpx1: 0 }
+                    : { x0: a, x1: a, rpx0: pt.rpx0, rpx1: pt.rpx1 };
         } else {
             // this happens when maxdepth is set, when leaves must
             // be removed and the rootPt is new (i.e. does not have a 'prev' object)
             var parent;
             var parentId = helpers.getPtId(pt.parent);
-            slices.each(function(pt2) {
-                if(helpers.getPtId(pt2) === parentId) {
-                    return parent = pt2;
+            slices.each(function (pt2) {
+                if (helpers.getPtId(pt2) === parentId) {
+                    return (parent = pt2);
                 }
             });
             var parentChildren = parent.children;
             var ci;
-            parentChildren.forEach(function(pt2, i) {
-                if(helpers.getPtId(pt2) === id) {
-                    return ci = i;
+            parentChildren.forEach(function (pt2, i) {
+                if (helpers.getPtId(pt2) === id) {
+                    return (ci = i);
                 }
             });
             var n = parentChildren.length;
             var interp = interpolate(parent.x0, parent.x1);
             next = {
-                rpx0: rMax, rpx1: rMax,
-                x0: interp(ci / n), x1: interp((ci + 1) / n)
+                rpx0: rMax,
+                rpx1: rMax,
+                x0: interp(ci / n),
+                x1: interp((ci + 1) / n)
             };
         }
 
@@ -344,36 +370,36 @@ function plotOne(gd, cd, element, transitionOpts) {
     function makeUpdateSliceInterpolator(pt) {
         var prev0 = prevLookup[helpers.getPtId(pt)];
         var prev;
-        var next = {x0: pt.x0, x1: pt.x1, rpx0: pt.rpx0, rpx1: pt.rpx1};
+        var next = { x0: pt.x0, x1: pt.x1, rpx0: pt.rpx0, rpx1: pt.rpx1 };
 
-        if(prev0) {
+        if (prev0) {
             // if pt already on graph, this is easy
             prev = prev0;
         } else {
             // for new pts:
-            if(prevEntry) {
+            if (prevEntry) {
                 // if trace was visible before
-                if(pt.parent) {
-                    if(nextX1ofPrevEntry) {
+                if (pt.parent) {
+                    if (nextX1ofPrevEntry) {
                         // if new branch, twist it in clockwise or
                         // counterclockwise which ever is shorter to
                         // its final angle
                         var a = (pt.x1 > nextX1ofPrevEntry ? 2 * Math.PI : 0) + baseX;
-                        prev = {x0: a, x1: a};
+                        prev = { x0: a, x1: a };
                     } else {
                         // if new leaf (when maxdepth is set),
                         // grow it radially and angularly from
                         // its parent node
-                        prev = {rpx0: rMax, rpx1: rMax};
+                        prev = { rpx0: rMax, rpx1: rMax };
                         Lib.extendFlat(prev, interpX0X1FromParent(pt));
                     }
                 } else {
                     // if new root-node, grow it radially
-                    prev = {rpx0: 0, rpx1: 0};
+                    prev = { rpx0: 0, rpx1: 0 };
                 }
             } else {
                 // start sector of new traces from theta=0
-                prev = {x0: baseX, x1: baseX};
+                prev = { x0: baseX, x1: baseX };
             }
         }
 
@@ -385,7 +411,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         var prev;
         var transform = pt.transform;
 
-        if(prev0) {
+        if (prev0) {
             prev = prev0;
         } else {
             prev = {
@@ -401,10 +427,10 @@ function plotOne(gd, cd, element, transitionOpts) {
             };
 
             // for new pts:
-            if(prevEntry) {
+            if (prevEntry) {
                 // if trace was visible before
-                if(pt.parent) {
-                    if(nextX1ofPrevEntry) {
+                if (pt.parent) {
+                    if (nextX1ofPrevEntry) {
                         // if new branch, twist it in clockwise or
                         // counterclockwise which ever is shorter to
                         // its final angle
@@ -433,13 +459,13 @@ function plotOne(gd, cd, element, transitionOpts) {
 
         // smooth out start/end from entry, to try to keep text inside sector
         // while keeping transition smooth
-        var pow = transform.rCenter === 0 ? 3 :
-            prev.transform.rCenter === 0 ? 1 / 3 :
-            1;
+        var pow = transform.rCenter === 0 ? 3 : prev.transform.rCenter === 0 ? 1 / 3 : 1;
         var _rCenterFn = interpolate(prev.transform.rCenter, transform.rCenter);
-        var rCenterFn = function(t) { return _rCenterFn(Math.pow(t, pow)); };
+        var rCenterFn = function (t) {
+            return _rCenterFn(Math.pow(t, pow));
+        };
 
-        return function(t) {
+        return function (t) {
             var rpx1 = rpx1Fn(t);
             var x0 = x0Fn(t);
             var x1 = x1Fn(t);
@@ -476,7 +502,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         var parentPrev = prevLookup[helpers.getPtId(parent)];
         var out = {};
 
-        if(parentPrev) {
+        if (parentPrev) {
             // if parent is visible
             var parentChildren = parent.children;
             var ci = parentChildren.indexOf(pt);
@@ -497,15 +523,14 @@ function plotOne(gd, cd, element, transitionOpts) {
 // x[0-1] keys are angles [radians]
 // y[0-1] keys are hierarchy heights [integers]
 function partition(entry) {
-    return d3Hierarchy.partition()
-        .size([2 * Math.PI, entry.height + 1])(entry);
+    return d3Hierarchy.partition().size([2 * Math.PI, entry.height + 1])(entry);
 }
 
-exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
+exports.formatSliceLabel = function (pt, entry, trace, cd, fullLayout) {
     var texttemplate = trace.texttemplate;
     var textinfo = trace.textinfo;
 
-    if(!texttemplate && (!textinfo || textinfo === 'none')) {
+    if (!texttemplate && (!textinfo || textinfo === 'none')) {
         return '';
     }
 
@@ -517,112 +542,105 @@ exports.formatSliceLabel = function(pt, entry, trace, cd, fullLayout) {
     var parent = helpers.getParent(hierarchy, pt);
     var val = helpers.getValue(pt);
 
-    if(!texttemplate) {
+    if (!texttemplate) {
         var parts = textinfo.split('+');
-        var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
+        var hasFlag = function (flag) {
+            return parts.indexOf(flag) !== -1;
+        };
         var thisText = [];
         var tx;
 
-        if(hasFlag('label') && cdi.label) {
+        if (hasFlag('label') && cdi.label) {
             thisText.push(cdi.label);
         }
 
-        if(cdi.hasOwnProperty('v') && hasFlag('value')) {
+        if (cdi.hasOwnProperty('v') && hasFlag('value')) {
             thisText.push(helpers.formatValue(cdi.v, separators));
         }
 
-        if(!isRoot) {
-            if(hasFlag('current path')) {
+        if (!isRoot) {
+            if (hasFlag('current path')) {
                 thisText.push(helpers.getPath(pt.data));
             }
 
             var nPercent = 0;
-            if(hasFlag('percent parent')) nPercent++;
-            if(hasFlag('percent entry')) nPercent++;
-            if(hasFlag('percent root')) nPercent++;
+            if (hasFlag('percent parent')) nPercent++;
+            if (hasFlag('percent entry')) nPercent++;
+            if (hasFlag('percent root')) nPercent++;
             var hasMultiplePercents = nPercent > 1;
 
-            if(nPercent) {
+            if (nPercent) {
                 var percent;
-                var addPercent = function(key) {
+                var addPercent = function (key) {
                     tx = helpers.formatPercent(percent, separators);
 
-                    if(hasMultiplePercents) tx += ' of ' + key;
+                    if (hasMultiplePercents) tx += ' of ' + key;
                     thisText.push(tx);
                 };
 
-                if(hasFlag('percent parent') && !isRoot) {
+                if (hasFlag('percent parent') && !isRoot) {
                     percent = val / helpers.getValue(parent);
                     addPercent('parent');
                 }
-                if(hasFlag('percent entry')) {
+                if (hasFlag('percent entry')) {
                     percent = val / helpers.getValue(entry);
                     addPercent('entry');
                 }
-                if(hasFlag('percent root')) {
+                if (hasFlag('percent root')) {
                     percent = val / helpers.getValue(hierarchy);
                     addPercent('root');
                 }
             }
         }
 
-        if(hasFlag('text')) {
+        if (hasFlag('text')) {
             tx = Lib.castOption(trace, cdi.i, 'text');
-            if(Lib.isValidTextValue(tx)) thisText.push(tx);
+            if (Lib.isValidTextValue(tx)) thisText.push(tx);
         }
 
         return thisText.join('<br>');
     }
 
     var txt = Lib.castOption(trace, cdi.i, 'texttemplate');
-    if(!txt) return '';
+    if (!txt) return '';
     var obj = {};
-    if(cdi.label) obj.label = cdi.label;
-    if(cdi.hasOwnProperty('v')) {
+    if (cdi.label) obj.label = cdi.label;
+    if (cdi.hasOwnProperty('v')) {
         obj.value = cdi.v;
         obj.valueLabel = helpers.formatValue(cdi.v, separators);
     }
 
     obj.currentPath = helpers.getPath(pt.data);
 
-    if(!isRoot) {
+    if (!isRoot) {
         obj.percentParent = val / helpers.getValue(parent);
-        obj.percentParentLabel = helpers.formatPercent(
-            obj.percentParent, separators
-        );
+        obj.percentParentLabel = helpers.formatPercent(obj.percentParent, separators);
         obj.parent = helpers.getPtLabel(parent);
     }
 
     obj.percentEntry = val / helpers.getValue(entry);
-    obj.percentEntryLabel = helpers.formatPercent(
-        obj.percentEntry, separators
-    );
+    obj.percentEntryLabel = helpers.formatPercent(obj.percentEntry, separators);
     obj.entry = helpers.getPtLabel(entry);
 
     obj.percentRoot = val / helpers.getValue(hierarchy);
-    obj.percentRootLabel = helpers.formatPercent(
-        obj.percentRoot, separators
-    );
+    obj.percentRootLabel = helpers.formatPercent(obj.percentRoot, separators);
     obj.root = helpers.getPtLabel(hierarchy);
 
-    if(cdi.hasOwnProperty('color')) {
+    if (cdi.hasOwnProperty('color')) {
         obj.color = cdi.color;
     }
     var ptTx = Lib.castOption(trace, cdi.i, 'text');
-    if(Lib.isValidTextValue(ptTx) || ptTx === '') obj.text = ptTx;
+    if (Lib.isValidTextValue(ptTx) || ptTx === '') obj.text = ptTx;
     obj.customdata = Lib.castOption(trace, cdi.i, 'customdata');
     return Lib.texttemplateString(txt, obj, fullLayout._d3locale, obj, trace._meta || {});
 };
 
 function getInscribedRadiusFraction(pt) {
-    if(pt.rpx0 === 0 && Lib.isFullCircle([pt.x0, pt.x1])) {
+    if (pt.rpx0 === 0 && Lib.isFullCircle([pt.x0, pt.x1])) {
         // special case of 100% with no hole
         return 1;
     } else {
-        return Math.max(0, Math.min(
-            1 / (1 + 1 / Math.sin(pt.halfangle)),
-            pt.ring / 2
-        ));
+        return Math.max(0, Math.min(1 / (1 + 1 / Math.sin(pt.halfangle)), pt.ring / 2));
     }
 }
 

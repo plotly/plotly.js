@@ -9,7 +9,7 @@ var colormodel = require('./constants').colormodel;
 var cm = ['rgb', 'rgba', 'rgba256', 'hsl', 'hsla'];
 var zminDesc = [];
 var zmaxDesc = [];
-for(var i = 0; i < cm.length; i++) {
+for (var i = 0; i < cm.length; i++) {
     var cr = colormodel[cm[i]];
     zminDesc.push('For the `' + cm[i] + '` colormodel, it is [' + (cr.zminDflt || cr.min).join(', ') + '].');
     zmaxDesc.push('For the `' + cm[i] + '` colormodel, it is [' + (cr.zmaxDflt || cr.max).join(', ') + '].');
@@ -28,7 +28,7 @@ module.exports = extendFlat({
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'A 2-dimensional array in which each element is an array of 3 or 4 numbers representing a color.',
+            'A 2-dimensional array in which each element is an array of 3 or 4 numbers representing a color.'
         ].join(' ')
     },
     colormodel: {
@@ -54,10 +54,10 @@ module.exports = extendFlat({
     zmin: {
         valType: 'info_array',
         items: [
-            {valType: 'number', editType: 'calc'},
-            {valType: 'number', editType: 'calc'},
-            {valType: 'number', editType: 'calc'},
-            {valType: 'number', editType: 'calc'}
+            { valType: 'number', editType: 'calc' },
+            { valType: 'number', editType: 'calc' },
+            { valType: 'number', editType: 'calc' },
+            { valType: 'number', editType: 'calc' }
         ],
         editType: 'calc',
         description: [
@@ -69,10 +69,10 @@ module.exports = extendFlat({
     zmax: {
         valType: 'info_array',
         items: [
-            {valType: 'number', editType: 'calc'},
-            {valType: 'number', editType: 'calc'},
-            {valType: 'number', editType: 'calc'},
-            {valType: 'number', editType: 'calc'}
+            { valType: 'number', editType: 'calc' },
+            { valType: 'number', editType: 'calc' },
+            { valType: 'number', editType: 'calc' },
+            { valType: 'number', editType: 'calc' }
         ],
         editType: 'calc',
         description: [
@@ -86,7 +86,7 @@ module.exports = extendFlat({
         dflt: 0,
         editType: 'calc+clearAxisTypes',
         description: [
-            'Set the image\'s x position. The left edge of the image',
+            "Set the image's x position. The left edge of the image",
             '(or the right edge if the x axis is reversed or dx is negative)',
             'will be found at xmin=x0-dx/2'
         ].join(' ')
@@ -96,7 +96,7 @@ module.exports = extendFlat({
         dflt: 0,
         editType: 'calc+clearAxisTypes',
         description: [
-            'Set the image\'s y position. The top edge of the image',
+            "Set the image's y position. The top edge of the image",
             '(or the bottom edge if the y axis is NOT reversed or if dy is negative)',
             'will be found at ymin=y0-dy/2. By default when an image trace is',
             'included, the y axis will be reversed so that the image is right-side-up,',
@@ -108,13 +108,13 @@ module.exports = extendFlat({
         valType: 'number',
         dflt: 1,
         editType: 'calc',
-        description: 'Set the pixel\'s horizontal size.'
+        description: "Set the pixel's horizontal size."
     },
     dy: {
         valType: 'number',
         dflt: 1,
         editType: 'calc',
-        description: 'Set the pixel\'s vertical size'
+        description: "Set the pixel's vertical size"
     },
     text: {
         valType: 'data_array',
@@ -130,9 +130,12 @@ module.exports = extendFlat({
         flags: ['x', 'y', 'z', 'color', 'name', 'text'],
         dflt: 'x+y+z+text+name'
     }),
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: ['z', 'color', 'colormodel']
-    }),
+    hovertemplate: hovertemplateAttrs(
+        {},
+        {
+            keys: ['z', 'color', 'colormodel']
+        }
+    ),
 
-    zorder: zorder,
+    zorder: zorder
 });

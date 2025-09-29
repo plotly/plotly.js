@@ -51,15 +51,12 @@ module.exports = {
     values: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-            'Sets the values of the sectors.',
-            'If omitted, we count occurrences of each label.'
-        ].join(' ')
+        description: ['Sets the values of the sectors.', 'If omitted, we count occurrences of each label.'].join(' ')
     },
 
     marker: {
         colors: {
-            valType: 'data_array',  // TODO 'color_array' ?
+            valType: 'data_array', // TODO 'color_array' ?
             editType: 'calc',
             description: [
                 'Sets the color of each sector.',
@@ -74,9 +71,7 @@ module.exports = {
                 dflt: colorAttrs.defaultLine,
                 arrayOk: true,
                 editType: 'style',
-                description: [
-                    'Sets the color of the line enclosing each sector.'
-                ].join(' ')
+                description: ['Sets the color of the line enclosing each sector.'].join(' ')
             },
             width: {
                 valType: 'number',
@@ -84,9 +79,7 @@ module.exports = {
                 dflt: 0,
                 arrayOk: true,
                 editType: 'style',
-                description: [
-                    'Sets the width (in px) of the line enclosing each sector.'
-                ].join(' ')
+                description: ['Sets the width (in px) of the line enclosing each sector.'].join(' ')
             },
             editType: 'calc'
         },
@@ -115,15 +108,15 @@ module.exports = {
             'If a single string, the same string appears for',
             'all data points.',
             'If an array of string, the items are mapped in order of',
-            'this trace\'s sectors.',
+            "this trace's sectors.",
             'To be seen, trace `hoverinfo` must contain a *text* flag.'
         ].join(' ')
     },
 
-// 'see eg:'
-// 'https://www.e-education.psu.edu/natureofgeoinfo/sites/www.e-education.psu.edu.natureofgeoinfo/files/image/hisp_pies.gif',
-// '(this example involves a map too - may someday be a whole trace type',
-// 'of its own. but the point is the size of the whole pie is important.)'
+    // 'see eg:'
+    // 'https://www.e-education.psu.edu/natureofgeoinfo/sites/www.e-education.psu.edu.natureofgeoinfo/files/image/hisp_pies.gif',
+    // '(this example involves a map too - may someday be a whole trace type',
+    // 'of its own. but the point is the size of the whole pie is important.)'
     scalegroup: {
         valType: 'string',
         dflt: '',
@@ -141,28 +134,30 @@ module.exports = {
         flags: ['label', 'text', 'value', 'percent'],
         extras: ['none'],
         editType: 'calc',
-        description: [
-            'Determines which trace information appear on the graph.'
-        ].join(' ')
+        description: ['Determines which trace information appear on the graph.'].join(' ')
     },
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: ['label', 'color', 'value', 'percent', 'text']
-    }),
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['label', 'color', 'value', 'percent', 'text']
-    }),
+    hovertemplate: hovertemplateAttrs(
+        {},
+        {
+            keys: ['label', 'color', 'value', 'percent', 'text']
+        }
+    ),
+    texttemplate: texttemplateAttrs(
+        { editType: 'plot' },
+        {
+            keys: ['label', 'color', 'value', 'percent', 'text']
+        }
+    ),
     textposition: {
         valType: 'enumerated',
         values: ['inside', 'outside', 'auto', 'none'],
         dflt: 'auto',
         arrayOk: true,
         editType: 'plot',
-        description: [
-            'Specifies the location of the `textinfo`.'
-        ].join(' ')
+        description: ['Specifies the location of the `textinfo`.'].join(' ')
     },
     textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo`.'
@@ -192,9 +187,7 @@ module.exports = {
         valType: 'boolean',
         dflt: false,
         editType: 'plot',
-        description: [
-            'Determines whether outside text labels can push the margins.'
-        ].join(' ')
+        description: ['Determines whether outside text labels can push the margins.'].join(' ')
     },
 
     title: {
@@ -202,10 +195,7 @@ module.exports = {
             valType: 'string',
             dflt: '',
             editType: 'plot',
-            description: [
-                'Sets the title of the chart.',
-                'If it is empty, no title is displayed.',
-            ].join(' ')
+            description: ['Sets the title of the chart.', 'If it is empty, no title is displayed.'].join(' ')
         },
         font: extendFlat({}, textFontAttrs, {
             description: 'Sets the font used for `title`.'
@@ -213,21 +203,23 @@ module.exports = {
         position: {
             valType: 'enumerated',
             values: [
-                'top left', 'top center', 'top right',
+                'top left',
+                'top center',
+                'top right',
                 'middle center',
-                'bottom left', 'bottom center', 'bottom right'
+                'bottom left',
+                'bottom center',
+                'bottom right'
             ],
             editType: 'plot',
-            description: [
-                'Specifies the location of the `title`.',
-            ].join(' ')
+            description: ['Specifies the location of the `title`.'].join(' ')
         },
 
         editType: 'plot'
     },
 
     // position and shape
-    domain: domainAttrs({name: 'pie', trace: true, editType: 'calc'}),
+    domain: domainAttrs({ name: 'pie', trace: true, editType: 'calc' }),
 
     hole: {
         valType: 'number',
@@ -235,10 +227,9 @@ module.exports = {
         max: 1,
         dflt: 0,
         editType: 'calc',
-        description: [
-            'Sets the fraction of the radius to cut out of the pie.',
-            'Use this to make a donut chart.'
-        ].join(' ')
+        description: ['Sets the fraction of the radius to cut out of the pie.', 'Use this to make a donut chart.'].join(
+            ' '
+        )
     },
 
     // ordering and direction
@@ -246,10 +237,7 @@ module.exports = {
         valType: 'boolean',
         dflt: true,
         editType: 'calc',
-        description: [
-            'Determines whether or not the sectors are reordered',
-            'from largest to smallest.'
-        ].join(' ')
+        description: ['Determines whether or not the sectors are reordered', 'from largest to smallest.'].join(' ')
     },
     direction: {
         /**
@@ -263,19 +251,13 @@ module.exports = {
         values: ['clockwise', 'counterclockwise'],
         dflt: 'counterclockwise',
         editType: 'calc',
-        description: [
-            'Specifies the direction at which succeeding sectors follow',
-            'one another.'
-        ].join(' ')
+        description: ['Specifies the direction at which succeeding sectors follow', 'one another.'].join(' ')
     },
     rotation: {
         valType: 'angle',
         dflt: 0,
         editType: 'calc',
-        description: [
-            'Instead of the first slice starting at 12 o\'clock,',
-            'rotate to some other angle.'
-        ].join(' ')
+        description: ["Instead of the first slice starting at 12 o'clock,", 'rotate to some other angle.'].join(' ')
     },
 
     pull: {
@@ -291,5 +273,5 @@ module.exports = {
             'to pull all slices apart from each other equally',
             'or an array to highlight one or more slices.'
         ].join(' ')
-    },
+    }
 };

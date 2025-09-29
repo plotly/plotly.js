@@ -18,7 +18,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     }
 
     var len = handleRThetaDefaults(traceIn, traceOut, layout, coerce);
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -27,26 +27,26 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('mode', len < PTS_LINESONLY ? 'lines+markers' : 'lines');
     coerce('text');
     coerce('hovertext');
-    if(traceOut.hoveron !== 'fills') coerce('hovertemplate');
+    if (traceOut.hoveron !== 'fills') coerce('hovertemplate');
 
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
+    if (subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { gradient: true });
     }
 
-    if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {backoff: true});
+    if (subTypes.hasLines(traceOut)) {
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, { backoff: true });
         handleLineShapeDefaults(traceIn, traceOut, coerce);
         coerce('connectgaps');
     }
 
-    if(subTypes.hasText(traceOut)) {
+    if (subTypes.hasText(traceOut)) {
         coerce('texttemplate');
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
     var dfltHoverOn = [];
 
-    if(subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
+    if (subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
         coerce('cliponaxis');
         coerce('marker.maxdisplayed');
         dfltHoverOn.push('points');
@@ -54,12 +54,12 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     coerce('fill');
 
-    if(traceOut.fill !== 'none') {
+    if (traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
-        if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
+        if (!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
     }
 
-    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
+    if (traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
         dfltHoverOn.push('fills');
     }
     coerce('hoveron', dfltHoverOn.join('+') || 'points');
@@ -72,17 +72,17 @@ function handleRThetaDefaults(traceIn, traceOut, layout, coerce) {
     var theta = coerce('theta');
 
     // TODO: handle this case outside supply defaults step
-    if(Lib.isTypedArray(r)) {
+    if (Lib.isTypedArray(r)) {
         traceOut.r = r = Array.from(r);
     }
-    if(Lib.isTypedArray(theta)) {
+    if (Lib.isTypedArray(theta)) {
         traceOut.theta = theta = Array.from(theta);
     }
 
     var len;
 
-    if(r) {
-        if(theta) {
+    if (r) {
+        if (theta) {
             len = Math.min(r.length, theta.length);
         } else {
             len = r.length;
@@ -90,7 +90,7 @@ function handleRThetaDefaults(traceIn, traceOut, layout, coerce) {
             coerce('dtheta');
         }
     } else {
-        if(!theta) return 0;
+        if (!theta) return 0;
         len = traceOut.theta.length;
         coerce('r0');
         coerce('dr');

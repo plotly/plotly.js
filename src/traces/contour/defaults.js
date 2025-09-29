@@ -10,7 +10,6 @@ var handleStyleDefaults = require('./style_defaults');
 var handleHeatmapLabelDefaults = require('../heatmap/label_defaults');
 var attributes = require('./attributes');
 
-
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -21,7 +20,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -35,20 +34,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hoverongaps');
     coerce('hovertemplate');
 
-    var isConstraint = (coerce('contours.type') === 'constraint');
+    var isConstraint = coerce('contours.type') === 'constraint';
     coerce('connectgaps', Lib.isArray1D(traceOut.z));
 
-    if(isConstraint) {
+    if (isConstraint) {
         handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor);
     } else {
         handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
         handleStyleDefaults(traceIn, traceOut, coerce, layout);
     }
 
-    if(
-        traceOut.contours &&
-        traceOut.contours.coloring === 'heatmap'
-    ) {
+    if (traceOut.contours && traceOut.contours.coloring === 'heatmap') {
         handleHeatmapLabelDefaults(coerce, layout);
     }
     coerce('zorder');

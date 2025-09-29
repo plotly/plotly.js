@@ -33,7 +33,7 @@ module.exports = {
         editType: 'calc',
         description: 'Sets the b-axis coordinates.'
     },
-    mode: extendFlat({}, scatterAttrs.mode, {dflt: 'markers'}),
+    mode: extendFlat({}, scatterAttrs.mode, { dflt: 'markers' }),
     text: extendFlat({}, scatterAttrs.text, {
         description: [
             'Sets text elements associated with each (a,b) point.',
@@ -45,9 +45,12 @@ module.exports = {
             'these elements will be seen in the hover labels.'
         ].join(' ')
     }),
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['a', 'b', 'text']
-    }),
+    texttemplate: texttemplateAttrs(
+        { editType: 'plot' },
+        {
+            keys: ['a', 'b', 'text']
+        }
+    ),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {
         description: [
             'Sets hover text elements associated with each (a,b) point.',
@@ -63,8 +66,7 @@ module.exports = {
         width: scatterLineAttrs.width,
         dash: scatterLineAttrs.dash,
         backoff: scatterLineAttrs.backoff,
-        shape: extendFlat({}, scatterLineAttrs.shape,
-            {values: ['linear', 'spline']}),
+        shape: extendFlat({}, scatterLineAttrs.shape, { values: ['linear', 'spline'] }),
         smoothing: scatterLineAttrs.smoothing,
         editType: 'calc'
     },
@@ -85,26 +87,28 @@ module.exports = {
         ].join(' ')
     }),
     fillcolor: makeFillcolorAttr(),
-    marker: extendFlat({
-        symbol: scatterMarkerAttrs.symbol,
-        opacity: scatterMarkerAttrs.opacity,
-        maxdisplayed: scatterMarkerAttrs.maxdisplayed,
-        angle: scatterMarkerAttrs.angle,
-        angleref: scatterMarkerAttrs.angleref,
-        standoff: scatterMarkerAttrs.standoff,
-        size: scatterMarkerAttrs.size,
-        sizeref: scatterMarkerAttrs.sizeref,
-        sizemin: scatterMarkerAttrs.sizemin,
-        sizemode: scatterMarkerAttrs.sizemode,
-        line: extendFlat({
-            width: scatterMarkerLineAttrs.width,
+    marker: extendFlat(
+        {
+            symbol: scatterMarkerAttrs.symbol,
+            opacity: scatterMarkerAttrs.opacity,
+            maxdisplayed: scatterMarkerAttrs.maxdisplayed,
+            angle: scatterMarkerAttrs.angle,
+            angleref: scatterMarkerAttrs.angleref,
+            standoff: scatterMarkerAttrs.standoff,
+            size: scatterMarkerAttrs.size,
+            sizeref: scatterMarkerAttrs.sizeref,
+            sizemin: scatterMarkerAttrs.sizemin,
+            sizemode: scatterMarkerAttrs.sizemode,
+            line: extendFlat(
+                {
+                    width: scatterMarkerLineAttrs.width,
+                    editType: 'calc'
+                },
+                colorScaleAttrs('marker.line')
+            ),
+            gradient: scatterMarkerAttrs.gradient,
             editType: 'calc'
         },
-            colorScaleAttrs('marker.line')
-        ),
-        gradient: scatterMarkerAttrs.gradient,
-        editType: 'calc'
-    },
         colorScaleAttrs('marker')
     ),
 

@@ -25,7 +25,7 @@ module.exports = {
                     'Defaults to the `paper_bgcolor` value.'
                 ].join(' ')
             }),
-            width: extendFlat({}, pieAttrs.marker.line.width, {dflt: 1}),
+            width: extendFlat({}, pieAttrs.marker.line.width, { dflt: 1 }),
             editType: 'calc'
         },
         pattern: pieAttrs.marker.pattern,
@@ -47,17 +47,23 @@ module.exports = {
         flags: ['label', 'text', 'value', 'percent']
     }),
 
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['label', 'color', 'value', 'text', 'percent']
-    }),
+    texttemplate: texttemplateAttrs(
+        { editType: 'plot' },
+        {
+            keys: ['label', 'color', 'value', 'text', 'percent']
+        }
+    ),
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
 
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: ['label', 'color', 'value', 'text', 'percent']
-    }),
+    hovertemplate: hovertemplateAttrs(
+        {},
+        {
+            keys: ['label', 'color', 'value', 'text', 'percent']
+        }
+    ),
 
     textposition: extendFlat({}, pieAttrs.textposition, {
         values: ['inside', 'none'],
@@ -77,16 +83,14 @@ module.exports = {
         editType: 'plot'
     },
 
-    domain: domainAttrs({name: 'funnelarea', trace: true, editType: 'calc'}),
+    domain: domainAttrs({ name: 'funnelarea', trace: true, editType: 'calc' }),
 
     aspectratio: {
         valType: 'number',
         min: 0,
         dflt: 1,
         editType: 'plot',
-        description: [
-            'Sets the ratio between height and width'
-        ].join(' ')
+        description: ['Sets the ratio between height and width'].join(' ')
     },
 
     baseratio: {
@@ -95,8 +99,6 @@ module.exports = {
         max: 1,
         dflt: 0.333,
         editType: 'plot',
-        description: [
-            'Sets the ratio between bottom length and maximum top length.'
-        ].join(' ')
+        description: ['Sets the ratio between bottom length and maximum top length.'].join(' ')
     }
 };

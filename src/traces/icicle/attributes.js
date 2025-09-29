@@ -37,7 +37,7 @@ module.exports = {
                 '`tiling.flip` is *y*, the root nodes appear at the bottom. If',
                 '`tiling.orientation` is *h* and `tiling.flip` is **, the',
                 'root nodes appear at the left. If `tiling.orientation` is *h*',
-                'and `tiling.flip` is *x*, the root nodes appear at the right.',
+                'and `tiling.flip` is *x*, the root nodes appear at the right.'
             ].join(' ')
         },
 
@@ -48,24 +48,22 @@ module.exports = {
             min: 0,
             dflt: 0,
             editType: 'plot',
-            description: [
-                'Sets the inner padding (in px).'
-            ].join(' ')
+            description: ['Sets the inner padding (in px).'].join(' ')
         },
-
-
-        editType: 'calc',
-    },
-
-    marker: extendFlat({
-        colors: sunburstAttrs.marker.colors,
-
-        line: sunburstAttrs.marker.line,
-
-        pattern: pattern,
 
         editType: 'calc'
     },
+
+    marker: extendFlat(
+        {
+            colors: sunburstAttrs.marker.colors,
+
+            line: sunburstAttrs.marker.line,
+
+            pattern: pattern,
+
+            editType: 'calc'
+        },
         colorScaleAttrs('marker', {
             colorAttr: 'colors',
             anim: false // TODO: set to anim: true?
@@ -79,15 +77,21 @@ module.exports = {
     text: pieAttrs.text,
     textinfo: sunburstAttrs.textinfo,
     // TODO: incorporate `label` and `value` in the eventData
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: constants.eventDataKeys.concat(['label', 'value'])
-    }),
+    texttemplate: texttemplateAttrs(
+        { editType: 'plot' },
+        {
+            keys: constants.eventDataKeys.concat(['label', 'value'])
+        }
+    ),
 
     hovertext: pieAttrs.hovertext,
     hoverinfo: sunburstAttrs.hoverinfo,
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: constants.eventDataKeys
-    }),
+    hovertemplate: hovertemplateAttrs(
+        {},
+        {
+            keys: constants.eventDataKeys
+        }
+    ),
 
     textfont: pieAttrs.textfont,
     insidetextfont: pieAttrs.insidetextfont,
@@ -97,5 +101,5 @@ module.exports = {
     sort: pieAttrs.sort,
     root: sunburstAttrs.root,
 
-    domain: domainAttrs({name: 'icicle', trace: true, editType: 'calc'}),
+    domain: domainAttrs({ name: 'icicle', trace: true, editType: 'calc' })
 };

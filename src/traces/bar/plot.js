@@ -27,9 +27,11 @@ var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPo
 
 var TEXTPAD = constants.TEXTPAD;
 
-function keyFunc(d) {return d.id;}
+function keyFunc(d) {
+    return d.id;
+}
 function getKeyFunc(trace) {
-    if(trace.ids) {
+    if (trace.ids) {
         return keyFunc;
     }
 }
@@ -42,7 +44,7 @@ function sign(v) {
 // Returns 1 if a < b and -1 otherwise
 // (For the purposes of this module we don't care about the case where a == b)
 function dirSign(a, b) {
-    return (a < b) ? 1 : -1;
+    return a < b ? 1 : -1;
 }
 
 function getXY(di, xa, ya, isHorizontal) {
@@ -62,17 +64,21 @@ function getXY(di, xa, ya, isHorizontal) {
 }
 
 function transition(selection, fullLayout, opts, makeOnCompleteCallback) {
-    if(!fullLayout.uniformtext.mode && hasTransition(opts)) {
+    if (!fullLayout.uniformtext.mode && hasTransition(opts)) {
         var onComplete;
-        if(makeOnCompleteCallback) {
+        if (makeOnCompleteCallback) {
             onComplete = makeOnCompleteCallback();
         }
         return selection
-          .transition()
-          .duration(opts.duration)
-          .ease(opts.easing)
-          .each('end', function() { onComplete && onComplete(); })
-          .each('interrupt', function() { onComplete && onComplete(); });
+            .transition()
+            .duration(opts.duration)
+            .ease(opts.easing)
+            .each('end', function () {
+                onComplete && onComplete();
+            })
+            .each('interrupt', function () {
+                onComplete && onComplete();
+            });
     } else {
         return selection;
     }
@@ -88,7 +94,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
     var fullLayout = gd._fullLayout;
     var isStatic = gd._context.staticPlot;
 
-    if(!opts) {
+    if (!opts) {
         opts = {
             mode: fullLayout.barmode,
             norm: fullLayout.barmode,
@@ -100,21 +106,21 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         clearMinTextSize('bar', fullLayout);
     }
 
-    var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
+    var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function (cd) {
         var plotGroup = d3.select(this);
         var trace = cd[0].trace;
         var t = cd[0].t;
-        var isWaterfall = (trace.type === 'waterfall');
-        var isFunnel = (trace.type === 'funnel');
-        var isHistogram = (trace.type === 'histogram');
-        var isBar = (trace.type === 'bar');
-        var shouldDisplayZeros = (isBar || isFunnel);
+        var isWaterfall = trace.type === 'waterfall';
+        var isFunnel = trace.type === 'funnel';
+        var isHistogram = trace.type === 'histogram';
+        var isBar = trace.type === 'bar';
+        var shouldDisplayZeros = isBar || isFunnel;
         var adjustPixel = 0;
-        if(isWaterfall && trace.connector.visible && trace.connector.mode === 'between') {
+        if (isWaterfall && trace.connector.visible && trace.connector.mode === 'between') {
             adjustPixel = trace.connector.line.width / 2;
         }
 
-        var isHorizontal = (trace.orientation === 'h');
+        var isHorizontal = trace.orientation === 'h';
         var withTransition = hasTransition(opts);
 
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
@@ -122,12 +128,11 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         var keyFunc = getKeyFunc(trace);
         var bars = pointGroup.selectAll('g.point').data(Lib.identity, keyFunc);
 
-        bars.enter().append('g')
-            .classed('point', true);
+        bars.enter().append('g').classed('point', true);
 
         bars.exit().remove();
 
-        bars.each(function(di, i) {
+        bars.each(function (di, i) {
             var bar = d3.select(this);
 
             // now display the bar
@@ -145,26 +150,21 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             var isBlank = (isHorizontal ? x1 - x0 : y1 - y0) === 0;
 
             // display zeros if line.width > 0
-            if(isBlank && shouldDisplayZeros && helpers.getLineWidth(trace, di)) {
+            if (isBlank && shouldDisplayZeros && helpers.getLineWidth(trace, di)) {
                 isBlank = false;
             }
 
             // skip nulls
-            if(!isBlank) {
-                isBlank = (
-                    !isNumeric(x0) ||
-                    !isNumeric(x1) ||
-                    !isNumeric(y0) ||
-                    !isNumeric(y1)
-                );
+            if (!isBlank) {
+                isBlank = !isNumeric(x0) || !isNumeric(x1) || !isNumeric(y0) || !isNumeric(y1);
             }
 
             // record isBlank
             di.isBlank = isBlank;
 
             // for blank bars, ensure start and end positions are equal - important for smooth transitions
-            if(isBlank) {
-                if(isHorizontal) {
+            if (isBlank) {
+                if (isHorizontal) {
                     x1 = x0;
                 } else {
                     y1 = y0;
@@ -172,8 +172,8 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             }
 
             // in waterfall mode `between` we need to adjust bar end points to match the connector width
-            if(adjustPixel && !isBlank) {
-                if(isHorizontal) {
+            if (adjustPixel && !isBlank) {
+                if (isHorizontal) {
                     x0 -= dirSign(x0, x1) * adjustPixel;
                     x1 += dirSign(x0, x1) * adjustPixel;
                 } else {
@@ -185,8 +185,8 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             var lw;
             var mc;
 
-            if(trace.type === 'waterfall') {
-                if(!isBlank) {
+            if (trace.type === 'waterfall') {
+                if (!isBlank) {
                     var cont = trace[di.dir].marker;
                     lw = cont.line.width;
                     mc = cont.color;
@@ -201,12 +201,11 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
 
                 // if there are explicit gaps, don't round,
                 // it can make the gaps look crappy
-                return (opts.gap === 0 && opts.groupgap === 0) ?
-                    d3.round(Math.round(v) - offset, 2) : v;
+                return opts.gap === 0 && opts.groupgap === 0 ? d3.round(Math.round(v) - offset, 2) : v;
             }
 
             function expandToVisible(v, vc, hideZeroSpan) {
-                if(hideZeroSpan && v === vc) {
+                if (hideZeroSpan && v === vc) {
                     // should not expand zero span bars
                     // when start and end positions are identical
                     // i.e. for vertical when y0 === y1
@@ -216,16 +215,19 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
 
                 // if it's not in danger of disappearing entirely,
                 // round more precisely
-                return Math.abs(v - vc) >= 2 ? roundWithLine(v) :
-                // but if it's very thin, expand it so it's
-                // necessarily visible, even if it might overlap
-                // its neighbor
-                (v > vc ? Math.ceil(v) : Math.floor(v));
+                return Math.abs(v - vc) >= 2
+                    ? roundWithLine(v)
+                    : // but if it's very thin, expand it so it's
+                      // necessarily visible, even if it might overlap
+                      // its neighbor
+                      v > vc
+                      ? Math.ceil(v)
+                      : Math.floor(v);
             }
 
             var op = Color.opacity(mc);
-            var fixpx = (op < 1 || lw > 0.01) ? roundWithLine : expandToVisible;
-            if(!gd._context.staticPlot) {
+            var fixpx = op < 1 || lw > 0.01 ? roundWithLine : expandToVisible;
+            if (!gd._context.staticPlot) {
                 // if bars are not fully opaque or they have a line
                 // around them, round to integer pixels, mainly for
                 // safari so we prevent overlaps from its expansive
@@ -244,9 +246,9 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             // Decide whether to use upper or lower bound of current bar stack
             // as reference point for rounding
             var outerBound;
-            if(di.s0 > 0) {
+            if (di.s0 > 0) {
                 outerBound = di._sMax;
-            } else if(di.s0 < 0) {
+            } else if (di.s0 < 0) {
                 outerBound = di._sMin;
             } else {
                 outerBound = di.s1 > 0 ? di._sMax : di._sMin;
@@ -254,15 +256,17 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
 
             // Calculate corner radius of bar in pixels
             function calcCornerRadius(crValue, crForm) {
-                if(!crValue) return 0;
+                if (!crValue) return 0;
 
                 var barWidth = isHorizontal ? Math.abs(y1 - y0) : Math.abs(x1 - x0);
                 var barLength = isHorizontal ? Math.abs(x1 - x0) : Math.abs(y1 - y0);
                 var stackedBarTotalLength = fixpx(Math.abs(c2p(outerBound, true) - c2p(0, true)));
-                var maxRadius = di.hasB ? Math.min(barWidth / 2, barLength / 2) : Math.min(barWidth / 2, stackedBarTotalLength);
+                var maxRadius = di.hasB
+                    ? Math.min(barWidth / 2, barLength / 2)
+                    : Math.min(barWidth / 2, stackedBarTotalLength);
                 var crPx;
 
-                if(crForm === '%') {
+                if (crForm === '%') {
                     // If radius is given as a % string, convert to number of pixels
                     var crPercent = Math.min(50, crValue);
                     crPx = barWidth * (crPercent / 100);
@@ -273,82 +277,219 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
                 return fixpx(Math.max(Math.min(crPx, maxRadius), 0));
             }
             // Exclude anything which is not explicitly a bar or histogram chart from rounding
-            var r = (isBar || isHistogram) ? calcCornerRadius(t.cornerradiusvalue, t.cornerradiusform) : 0;
+            var r = isBar || isHistogram ? calcCornerRadius(t.cornerradiusvalue, t.cornerradiusform) : 0;
             // Construct path string for bar
             var path, h;
             // Default rectangular path (used if no rounding)
             var rectanglePath = 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z';
             var overhead = 0;
-            if(r && di.s) {
+            if (r && di.s) {
                 // Bar has cornerradius, and nonzero size
                 // Check amount of 'overhead' (bars stacked above this one)
                 // to see whether we need to round or not
                 var refPoint = sign(di.s0) === 0 || sign(di.s) === sign(di.s0) ? di.s1 : di.s0;
                 overhead = fixpx(!di.hasB ? Math.abs(c2p(outerBound, true) - c2p(refPoint, true)) : 0);
-                if(overhead < r) {
+                if (overhead < r) {
                     // Calculate parameters for rounded corners
                     var xdir = dirSign(x0, x1);
                     var ydir = dirSign(y0, y1);
                     // Sweep direction for rounded corner arcs
-                    var cornersweep = (xdir === -ydir) ? 1 : 0;
-                    if(isHorizontal) {
+                    var cornersweep = xdir === -ydir ? 1 : 0;
+                    if (isHorizontal) {
                         // Horizontal bars
-                        if(di.hasB) {
+                        if (di.hasB) {
                             // Floating base: Round 1st & 2nd, and 3rd & 4th corners
-                            path = 'M' + (x0 + r * xdir) + ',' + y0 +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + x0 + ',' + (y0 + r * ydir) +
-                                'V' + (y1 - r * ydir) +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x0 + r * xdir) + ',' + y1 +
-                                'H' + (x1 - r * xdir) +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + x1 + ',' + (y1 - r * ydir) +
-                                'V' + (y0 + r * ydir) +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - r * xdir) + ',' + y0 +
+                            path =
+                                'M' +
+                                (x0 + r * xdir) +
+                                ',' +
+                                y0 +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                x0 +
+                                ',' +
+                                (y0 + r * ydir) +
+                                'V' +
+                                (y1 - r * ydir) +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                (x0 + r * xdir) +
+                                ',' +
+                                y1 +
+                                'H' +
+                                (x1 - r * xdir) +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                x1 +
+                                ',' +
+                                (y1 - r * ydir) +
+                                'V' +
+                                (y0 + r * ydir) +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                (x1 - r * xdir) +
+                                ',' +
+                                y0 +
                                 'Z';
                         } else {
                             // Base on axis: Round 3rd and 4th corners
 
                             // Helper variables to help with extending rounding down to lower bars
                             h = Math.abs(x1 - x0) + overhead;
-                            var dy1 = (h < r) ? r - Math.sqrt(h * (2 * r - h)) : 0;
-                            var dy2 = (overhead > 0) ? Math.sqrt(overhead * (2 * r - overhead)) : 0;
+                            var dy1 = h < r ? r - Math.sqrt(h * (2 * r - h)) : 0;
+                            var dy2 = overhead > 0 ? Math.sqrt(overhead * (2 * r - overhead)) : 0;
                             var xminfunc = xdir > 0 ? Math.max : Math.min;
 
-                            path = 'M' + x0 + ',' + y0 +
-                                'V' + (y1 - dy1 * ydir) +
-                                'H' + xminfunc(x1 - (r - overhead) * xdir, x0) +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + x1 + ',' + (y1 - r * ydir - dy2) +
-                                'V' + (y0 + r * ydir + dy2) +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + xminfunc(x1 - (r - overhead) * xdir, x0) + ',' + (y0 + dy1 * ydir) +
+                            path =
+                                'M' +
+                                x0 +
+                                ',' +
+                                y0 +
+                                'V' +
+                                (y1 - dy1 * ydir) +
+                                'H' +
+                                xminfunc(x1 - (r - overhead) * xdir, x0) +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                x1 +
+                                ',' +
+                                (y1 - r * ydir - dy2) +
+                                'V' +
+                                (y0 + r * ydir + dy2) +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                xminfunc(x1 - (r - overhead) * xdir, x0) +
+                                ',' +
+                                (y0 + dy1 * ydir) +
                                 'Z';
                         }
                     } else {
                         // Vertical bars
-                        if(di.hasB) {
+                        if (di.hasB) {
                             // Floating base: Round 1st & 4th, and 2nd & 3rd corners
-                            path = 'M' + (x0 + r * xdir) + ',' + y0 +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + x0 + ',' + (y0 + r * ydir) +
-                                'V' + (y1 - r * ydir) +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x0 + r * xdir) + ',' + y1 +
-                                'H' + (x1 - r * xdir) +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + x1 + ',' + (y1 - r * ydir) +
-                                'V' + (y0 + r * ydir) +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - r * xdir) + ',' + y0 +
+                            path =
+                                'M' +
+                                (x0 + r * xdir) +
+                                ',' +
+                                y0 +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                x0 +
+                                ',' +
+                                (y0 + r * ydir) +
+                                'V' +
+                                (y1 - r * ydir) +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                (x0 + r * xdir) +
+                                ',' +
+                                y1 +
+                                'H' +
+                                (x1 - r * xdir) +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                x1 +
+                                ',' +
+                                (y1 - r * ydir) +
+                                'V' +
+                                (y0 + r * ydir) +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                (x1 - r * xdir) +
+                                ',' +
+                                y0 +
                                 'Z';
                         } else {
                             // Base on axis: Round 2nd and 3rd corners
 
                             // Helper variables to help with extending rounding down to lower bars
                             h = Math.abs(y1 - y0) + overhead;
-                            var dx1 = (h < r) ? r - Math.sqrt(h * (2 * r - h)) : 0;
-                            var dx2 = (overhead > 0) ? Math.sqrt(overhead * (2 * r - overhead)) : 0;
+                            var dx1 = h < r ? r - Math.sqrt(h * (2 * r - h)) : 0;
+                            var dx2 = overhead > 0 ? Math.sqrt(overhead * (2 * r - overhead)) : 0;
                             var yminfunc = ydir > 0 ? Math.max : Math.min;
 
-                            path = 'M' + (x0 + dx1 * xdir) + ',' + y0 +
-                                'V' + yminfunc(y1 - (r - overhead) * ydir, y0) +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x0 + r * xdir - dx2) + ',' + y1 +
-                                'H' + (x1 - r * xdir + dx2) +
-                                'A ' + r + ',' + r + ' 0 0 ' + cornersweep + ' ' + (x1 - dx1 * xdir) + ',' + yminfunc(y1 - (r - overhead) * ydir, y0) +
-                                'V' + y0 + 'Z';
+                            path =
+                                'M' +
+                                (x0 + dx1 * xdir) +
+                                ',' +
+                                y0 +
+                                'V' +
+                                yminfunc(y1 - (r - overhead) * ydir, y0) +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                (x0 + r * xdir - dx2) +
+                                ',' +
+                                y1 +
+                                'H' +
+                                (x1 - r * xdir + dx2) +
+                                'A ' +
+                                r +
+                                ',' +
+                                r +
+                                ' 0 0 ' +
+                                cornersweep +
+                                ' ' +
+                                (x1 - dx1 * xdir) +
+                                ',' +
+                                yminfunc(y1 - (r - overhead) * ydir, y0) +
+                                'V' +
+                                y0 +
+                                'Z';
                         }
                     }
                 } else {
@@ -361,19 +502,18 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             }
 
             var sel = transition(Lib.ensureSingle(bar, 'path'), fullLayout, opts, makeOnCompleteCallback);
-            sel
-                .style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke')
-                .attr('d', (isNaN((x1 - x0) * (y1 - y0)) || (isBlank && gd._context.staticPlot)) ? 'M0,0Z' : path)
+            sel.style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke')
+                .attr('d', isNaN((x1 - x0) * (y1 - y0)) || (isBlank && gd._context.staticPlot) ? 'M0,0Z' : path)
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
 
-            if(!fullLayout.uniformtext.mode && withTransition) {
+            if (!fullLayout.uniformtext.mode && withTransition) {
                 var styleFns = Drawing.makePointStyleFns(trace);
                 Drawing.singlePointStyle(di, sel, trace, styleFns, gd);
             }
 
             appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, opts, makeOnCompleteCallback);
 
-            if(plotinfo.layerClipId) {
+            if (plotinfo.layerClipId) {
                 Drawing.hideOutsideRangePoint(di, bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
             }
         });
@@ -413,27 +553,25 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
 
     // get trace attributes
     var trace = cd[0].trace;
-    var isHorizontal = (trace.orientation === 'h');
+    var isHorizontal = trace.orientation === 'h';
 
     var text = getText(fullLayout, cd, i, xa, ya);
 
     textPosition = getTextPosition(trace, i);
 
     // compute text position
-    var inStackOrRelativeMode =
-        opts.mode === 'stack' ||
-        opts.mode === 'relative';
+    var inStackOrRelativeMode = opts.mode === 'stack' || opts.mode === 'relative';
 
     var calcBar = cd[i];
     var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
     var hasB = calcBar.hasB;
-    var barIsRounded = r && (r - overhead) > TEXTPAD;
+    var barIsRounded = r && r - overhead > TEXTPAD;
 
-    if(!text ||
+    if (
+        !text ||
         textPosition === 'none' ||
-        ((calcBar.isBlank || x0 === x1 || y0 === y1) && (
-            textPosition === 'auto' ||
-            textPosition === 'inside'))) {
+        ((calcBar.isBlank || x0 === x1 || y0 === y1) && (textPosition === 'auto' || textPosition === 'inside'))
+    ) {
         bar.select('text').remove();
         return;
     }
@@ -447,17 +585,17 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
     // Special case: don't use the c2p(v, true) value on log size axes,
     // so that we can get correctly inside text scaling
     var di = bar.datum();
-    if(isHorizontal) {
-        if(xa.type === 'log' && di.s0 <= 0) {
-            if(xa.range[0] < xa.range[1]) {
+    if (isHorizontal) {
+        if (xa.type === 'log' && di.s0 <= 0) {
+            if (xa.range[0] < xa.range[1]) {
                 x0 = 0;
             } else {
                 x0 = xa._length;
             }
         }
     } else {
-        if(ya.type === 'log' && di.s0 <= 0) {
-            if(ya.range[0] < ya.range[1]) {
+        if (ya.type === 'log' && di.s0 <= 0) {
+            if (ya.range[0] < ya.range[1]) {
                 y0 = ya._length;
             } else {
                 y0 = 0;
@@ -480,12 +618,12 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
     var textHeight;
     var font;
 
-    if(textPosition === 'outside') {
-        if(!isOutmostBar && !calcBar.hasB) textPosition = 'inside';
+    if (textPosition === 'outside') {
+        if (!isOutmostBar && !calcBar.hasB) textPosition = 'inside';
     }
 
-    if(textPosition === 'auto') {
-        if(isOutmostBar) {
+    if (textPosition === 'auto') {
+        if (isOutmostBar) {
             // draw text using insideTextFont and check if it fits inside bar
             textPosition = 'inside';
 
@@ -497,32 +635,41 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
             textWidth = textBB.width;
             textHeight = textBB.height;
 
-            var textHasSize = (textWidth > 0 && textHeight > 0);
+            var textHasSize = textWidth > 0 && textHeight > 0;
 
             var fitsInside;
-            if(barIsRounded) {
+            if (barIsRounded) {
                 // If bar is rounded, check if text fits between rounded corners
-                if(hasB) {
-                    fitsInside = (
+                if (hasB) {
+                    fitsInside =
                         textfitsInsideBar(barWidth - 2 * r, barHeight, textWidth, textHeight, isHorizontal) ||
-                        textfitsInsideBar(barWidth, barHeight - 2 * r, textWidth, textHeight, isHorizontal)
-                    );
-                } else if(isHorizontal) {
-                    fitsInside = (
+                        textfitsInsideBar(barWidth, barHeight - 2 * r, textWidth, textHeight, isHorizontal);
+                } else if (isHorizontal) {
+                    fitsInside =
                         textfitsInsideBar(barWidth - (r - overhead), barHeight, textWidth, textHeight, isHorizontal) ||
-                        textfitsInsideBar(barWidth, barHeight - 2 * (r - overhead), textWidth, textHeight, isHorizontal)
-                    );
+                        textfitsInsideBar(
+                            barWidth,
+                            barHeight - 2 * (r - overhead),
+                            textWidth,
+                            textHeight,
+                            isHorizontal
+                        );
                 } else {
-                    fitsInside = (
+                    fitsInside =
                         textfitsInsideBar(barWidth, barHeight - (r - overhead), textWidth, textHeight, isHorizontal) ||
-                        textfitsInsideBar(barWidth - 2 * (r - overhead), barHeight, textWidth, textHeight, isHorizontal)
-                    );
+                        textfitsInsideBar(
+                            barWidth - 2 * (r - overhead),
+                            barHeight,
+                            textWidth,
+                            textHeight,
+                            isHorizontal
+                        );
                 }
             } else {
                 fitsInside = textfitsInsideBar(barWidth, barHeight, textWidth, textHeight, isHorizontal);
             }
 
-            if(textHasSize && fitsInside) {
+            if (textHasSize && fitsInside) {
                 textPosition = 'inside';
             } else {
                 textPosition = 'outside';
@@ -534,19 +681,17 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
         }
     }
 
-    if(!textSelection) {
-        font = Lib.ensureUniformFontSize(gd, (textPosition === 'outside') ? outsideTextFont : insideTextFont);
+    if (!textSelection) {
+        font = Lib.ensureUniformFontSize(gd, textPosition === 'outside' ? outsideTextFont : insideTextFont);
 
         textSelection = appendTextNode(bar, text, font);
 
         var currentTransform = textSelection.attr('transform');
         textSelection.attr('transform', '');
-        textBB = Drawing.bBox(textSelection.node()),
-        textWidth = textBB.width,
-        textHeight = textBB.height;
+        (textBB = Drawing.bBox(textSelection.node())), (textWidth = textBB.width), (textHeight = textBB.height);
         textSelection.attr('transform', currentTransform);
 
-        if(textWidth <= 0 || textHeight <= 0) {
+        if (textWidth <= 0 || textHeight <= 0) {
             textSelection.remove();
             return;
         }
@@ -556,10 +701,8 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
 
     // compute text transform
     var transform, constrained;
-    if(textPosition === 'outside') {
-        constrained =
-            trace.constraintext === 'both' ||
-            trace.constraintext === 'outside';
+    if (textPosition === 'outside') {
+        constrained = trace.constraintext === 'both' || trace.constraintext === 'outside';
 
         transform = toMoveOutsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal: isHorizontal,
@@ -567,9 +710,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
             angle: angle
         });
     } else {
-        constrained =
-            trace.constraintext === 'both' ||
-            trace.constraintext === 'inside';
+        constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
 
         transform = toMoveInsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal: isHorizontal,
@@ -578,7 +719,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
             anchor: insidetextanchor,
             hasB: hasB,
             r: r,
-            overhead: overhead,
+            overhead: overhead
         });
     }
 
@@ -591,21 +732,21 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
 }
 
 function textfitsInsideBar(barWidth, barHeight, textWidth, textHeight, isHorizontal) {
-    if(barWidth < 0 || barHeight < 0) return false;
-    var fitsInside = (textWidth <= barWidth && textHeight <= barHeight);
-    var fitsInsideIfRotated = (textWidth <= barHeight && textHeight <= barWidth);
-    var fitsInsideIfShrunk = (isHorizontal) ?
-        (barWidth >= textWidth * (barHeight / textHeight)) :
-        (barHeight >= textHeight * (barWidth / textWidth));
+    if (barWidth < 0 || barHeight < 0) return false;
+    var fitsInside = textWidth <= barWidth && textHeight <= barHeight;
+    var fitsInsideIfRotated = textWidth <= barHeight && textHeight <= barWidth;
+    var fitsInsideIfShrunk = isHorizontal
+        ? barWidth >= textWidth * (barHeight / textHeight)
+        : barHeight >= textHeight * (barWidth / textWidth);
     return fitsInside || fitsInsideIfRotated || fitsInsideIfShrunk;
 }
 
 function getRotateFromAngle(angle) {
-    return (angle === 'auto') ? 0 : angle;
+    return angle === 'auto' ? 0 : angle;
 }
 
 function getRotatedTextSize(textBB, rotate) {
-    var a = Math.PI / 180 * rotate;
+    var a = (Math.PI / 180) * rotate;
     var absSin = Math.abs(Math.sin(a));
     var absCos = Math.abs(Math.cos(a));
 
@@ -636,21 +777,18 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
     var ly = Math.abs(y1 - y0);
 
     // compute remaining space
-    var textpad = (
-        lx > (2 * TEXTPAD) &&
-        ly > (2 * TEXTPAD)
-    ) ? TEXTPAD : 0;
+    var textpad = lx > 2 * TEXTPAD && ly > 2 * TEXTPAD ? TEXTPAD : 0;
 
     lx -= 2 * textpad;
     ly -= 2 * textpad;
 
     var rotate = getRotateFromAngle(angle);
-    if((angle === 'auto') &&
+    if (
+        angle === 'auto' &&
         !(textWidth <= lx && textHeight <= ly) &&
-        (textWidth > lx || textHeight > ly) && (
-            !(textWidth > ly || textHeight > lx) ||
-            ((textWidth < textHeight) !== (lx < ly))
-        )) {
+        (textWidth > lx || textHeight > ly) &&
+        (!(textWidth > ly || textHeight > lx) || textWidth < textHeight !== lx < ly)
+    ) {
         rotate += 90;
     }
 
@@ -658,47 +796,37 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
 
     var scale, padForRounding;
     // Scale text for rounded bars
-    if(r && (r - overhead) > TEXTPAD) {
+    if (r && r - overhead > TEXTPAD) {
         var scaleAndPad = scaleTextForRoundedBar(x0, x1, y0, y1, t, r, overhead, isHorizontal, hasB);
         scale = scaleAndPad.scale;
         padForRounding = scaleAndPad.pad;
-    // Scale text for non-rounded bars
+        // Scale text for non-rounded bars
     } else {
         scale = 1;
-        if(constrained) {
-            scale = Math.min(
-                1,
-                lx / t.x,
-                ly / t.y
-            );
+        if (constrained) {
+            scale = Math.min(1, lx / t.x, ly / t.y);
         }
         padForRounding = 0;
     }
 
     // compute text and target positions
-    var textX = (
-        textBB.left * toLeft +
-        textBB.right * toRight
-    );
+    var textX = textBB.left * toLeft + textBB.right * toRight;
     var textY = (textBB.top + textBB.bottom) / 2;
-    var targetX = (
-        (x0 + TEXTPAD) * toLeft +
-        (x1 - TEXTPAD) * toRight
-    );
+    var targetX = (x0 + TEXTPAD) * toLeft + (x1 - TEXTPAD) * toRight;
     var targetY = (y0 + y1) / 2;
     var anchorX = 0;
     var anchorY = 0;
-    if(isStart || isEnd) {
+    if (isStart || isEnd) {
         var extrapad = (isHorizontal ? t.x : t.y) / 2;
 
-        if(r && (isEnd || hasB)) {
+        if (r && (isEnd || hasB)) {
             textpad += padForRounding;
         }
 
         var dir = isHorizontal ? dirSign(x0, x1) : dirSign(y0, y1);
 
-        if(isHorizontal) {
-            if(isStart) {
+        if (isHorizontal) {
+            if (isStart) {
                 targetX = x0 + dir * textpad;
                 anchorX = -dir * extrapad;
             } else {
@@ -706,7 +834,7 @@ function toMoveInsideBar(x0, x1, y0, y1, textBB, opts) {
                 anchorX = dir * extrapad;
             }
         } else {
-            if(isStart) {
+            if (isStart) {
                 targetY = y0 + dir * textpad;
                 anchorY = -dir * extrapad;
             } else {
@@ -733,28 +861,27 @@ function scaleTextForRoundedBar(x0, x1, y0, y1, t, r, overhead, isHorizontal, ha
     var barHeight = Math.max(0, Math.abs(y1 - y0) - 2 * TEXTPAD);
     var R = r - TEXTPAD;
     var clippedR = overhead ? R - Math.sqrt(R * R - (R - overhead) * (R - overhead)) : R;
-    var rX = hasB ? R * 2 : (isHorizontal ? R - overhead : 2 * clippedR);
-    var rY = hasB ? R * 2 : (isHorizontal ? 2 * clippedR : R - overhead);
+    var rX = hasB ? R * 2 : isHorizontal ? R - overhead : 2 * clippedR;
+    var rY = hasB ? R * 2 : isHorizontal ? 2 * clippedR : R - overhead;
     var a, b, c;
     var scale, pad;
 
-
-    if(t.y / t.x >= barHeight / (barWidth - rX)) {
+    if (t.y / t.x >= barHeight / (barWidth - rX)) {
         // Case 1 (Tall text)
         scale = barHeight / t.y;
-    } else if(t.y / t.x <= (barHeight - rY) / barWidth) {
+    } else if (t.y / t.x <= (barHeight - rY) / barWidth) {
         // Case 2 (Wide text)
         scale = barWidth / t.x;
-    } else if(!hasB && isHorizontal) {
+    } else if (!hasB && isHorizontal) {
         // Case 3a (Quadratic case, two side corners are rounded)
-        a = t.x * t.x + t.y * t.y / 4;
+        a = t.x * t.x + (t.y * t.y) / 4;
         b = -2 * t.x * (barWidth - R) - t.y * (barHeight / 2 - R);
         c = (barWidth - R) * (barWidth - R) + (barHeight / 2 - R) * (barHeight / 2 - R) - R * R;
 
         scale = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
-    } else if(!hasB) {
+    } else if (!hasB) {
         // Case 3b (Quadratic case, two top/bottom corners are rounded)
-        a = t.x * t.x / 4 + t.y * t.y;
+        a = (t.x * t.x) / 4 + t.y * t.y;
         b = -t.x * (barWidth / 2 - R) - 2 * t.y * (barHeight - R);
         c = (barWidth / 2 - R) * (barWidth / 2 - R) + (barHeight - R) * (barHeight - R) - R * R;
 
@@ -770,10 +897,24 @@ function scaleTextForRoundedBar(x0, x1, y0, y1, t, r, overhead, isHorizontal, ha
     // Scale should not be larger than 1
     scale = Math.min(1, scale);
 
-    if(isHorizontal) {
-        pad = Math.max(0, R - Math.sqrt(Math.max(0, R * R - (R - (barHeight - t.y * scale) / 2) * (R - (barHeight - t.y * scale) / 2))) - overhead);
+    if (isHorizontal) {
+        pad = Math.max(
+            0,
+            R -
+                Math.sqrt(
+                    Math.max(0, R * R - (R - (barHeight - t.y * scale) / 2) * (R - (barHeight - t.y * scale) / 2))
+                ) -
+                overhead
+        );
     } else {
-        pad = Math.max(0, R - Math.sqrt(Math.max(0, R * R - (R - (barWidth - t.x * scale) / 2) * (R - (barWidth - t.x * scale) / 2))) - overhead);
+        pad = Math.max(
+            0,
+            R -
+                Math.sqrt(
+                    Math.max(0, R * R - (R - (barWidth - t.x * scale) / 2) * (R - (barWidth - t.x * scale) / 2))
+                ) -
+                overhead
+        );
     }
 
     return { scale: scale, pad: pad };
@@ -792,18 +933,16 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     var textpad;
     // Keep the padding so the text doesn't sit right against
     // the bars, but don't factor it into barWidth
-    if(isHorizontal) {
-        textpad = (ly > 2 * TEXTPAD) ? TEXTPAD : 0;
+    if (isHorizontal) {
+        textpad = ly > 2 * TEXTPAD ? TEXTPAD : 0;
     } else {
-        textpad = (lx > 2 * TEXTPAD) ? TEXTPAD : 0;
+        textpad = lx > 2 * TEXTPAD ? TEXTPAD : 0;
     }
 
     // compute rotate and scale
     var scale = 1;
-    if(constrained) {
-        scale = (isHorizontal) ?
-            Math.min(1, ly / textHeight) :
-            Math.min(1, lx / textWidth);
+    if (constrained) {
+        scale = isHorizontal ? Math.min(1, ly / textHeight) : Math.min(1, lx / textWidth);
     }
 
     var rotate = getRotateFromAngle(angle);
@@ -819,7 +958,7 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     var anchorY = 0;
 
     var dir = isHorizontal ? dirSign(x1, x0) : dirSign(y0, y1);
-    if(isHorizontal) {
+    if (isHorizontal) {
         targetX = x1 - dir * textpad;
         anchorX = dir * extrapad;
     } else {
@@ -844,9 +983,9 @@ function getText(fullLayout, cd, index, xa, ya) {
     var texttemplate = trace.texttemplate;
 
     var value;
-    if(texttemplate) {
+    if (texttemplate) {
         value = calcTexttemplate(fullLayout, cd, index, xa, ya);
-    } else if(trace.textinfo) {
+    } else if (trace.textinfo) {
         value = calcTextinfo(cd, index, xa, ya);
     } else {
         value = helpers.getValue(trace.text, index);
@@ -863,15 +1002,15 @@ function getTextPosition(trace, index) {
 function calcTexttemplate(fullLayout, cd, index, xa, ya) {
     var trace = cd[0].trace;
     var texttemplate = Lib.castOption(trace, index, 'texttemplate');
-    if(!texttemplate) return '';
-    var isHistogram = (trace.type === 'histogram');
-    var isWaterfall = (trace.type === 'waterfall');
-    var isFunnel = (trace.type === 'funnel');
+    if (!texttemplate) return '';
+    var isHistogram = trace.type === 'histogram';
+    var isWaterfall = trace.type === 'waterfall';
+    var isFunnel = trace.type === 'funnel';
     var isHorizontal = trace.orientation === 'h';
 
     var pLetter, pAxis;
     var vLetter, vAxis;
-    if(isHorizontal) {
+    if (isHorizontal) {
         pLetter = 'y';
         pAxis = ya;
         vLetter = 'x';
@@ -898,7 +1037,7 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
     obj.labelLabel = obj[pLetter + 'Label'] = formatLabel(cdi.p);
 
     var tx = Lib.castOption(trace, cdi.i, 'text');
-    if(tx === 0 || tx) obj.text = tx;
+    if (tx === 0 || tx) obj.text = tx;
 
     obj.value = cdi.s;
     obj.valueLabel = obj[vLetter + 'Label'] = formatNumber(cdi.s);
@@ -906,12 +1045,12 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
     var pt = {};
     appendArrayPointValue(pt, trace, cdi.i);
 
-    if(isHistogram || pt.x === undefined) pt.x = isHorizontal ? obj.value : obj.label;
-    if(isHistogram || pt.y === undefined) pt.y = isHorizontal ? obj.label : obj.value;
-    if(isHistogram || pt.xLabel === undefined) pt.xLabel = isHorizontal ? obj.valueLabel : obj.labelLabel;
-    if(isHistogram || pt.yLabel === undefined) pt.yLabel = isHorizontal ? obj.labelLabel : obj.valueLabel;
+    if (isHistogram || pt.x === undefined) pt.x = isHorizontal ? obj.value : obj.label;
+    if (isHistogram || pt.y === undefined) pt.y = isHorizontal ? obj.label : obj.value;
+    if (isHistogram || pt.xLabel === undefined) pt.xLabel = isHorizontal ? obj.valueLabel : obj.labelLabel;
+    if (isHistogram || pt.yLabel === undefined) pt.yLabel = isHorizontal ? obj.labelLabel : obj.valueLabel;
 
-    if(isWaterfall) {
+    if (isWaterfall) {
         obj.delta = +cdi.rawS || cdi.s;
         obj.deltaLabel = formatNumber(obj.delta);
         obj.final = cdi.v;
@@ -920,7 +1059,7 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
         obj.initialLabel = formatNumber(obj.initial);
     }
 
-    if(isFunnel) {
+    if (isFunnel) {
         obj.value = cdi.s;
         obj.valueLabel = formatNumber(obj.value);
 
@@ -933,15 +1072,15 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
     }
 
     var customdata = Lib.castOption(trace, cdi.i, 'customdata');
-    if(customdata) obj.customdata = customdata;
+    if (customdata) obj.customdata = customdata;
     return Lib.texttemplateString(texttemplate, obj, fullLayout._d3locale, pt, obj, trace._meta || {});
 }
 
 function calcTextinfo(cd, index, xa, ya) {
     var trace = cd[0].trace;
-    var isHorizontal = (trace.orientation === 'h');
-    var isWaterfall = (trace.type === 'waterfall');
-    var isFunnel = (trace.type === 'funnel');
+    var isHorizontal = trace.orientation === 'h';
+    var isWaterfall = trace.type === 'waterfall';
+    var isFunnel = trace.type === 'funnel';
 
     function formatLabel(u) {
         var pAxis = isHorizontal ? ya : xa;
@@ -960,50 +1099,52 @@ function calcTextinfo(cd, index, xa, ya) {
     var text = [];
     var tx;
 
-    var hasFlag = function(flag) { return parts.indexOf(flag) !== -1; };
+    var hasFlag = function (flag) {
+        return parts.indexOf(flag) !== -1;
+    };
 
-    if(hasFlag('label')) {
+    if (hasFlag('label')) {
         text.push(formatLabel(cd[index].p));
     }
 
-    if(hasFlag('text')) {
+    if (hasFlag('text')) {
         tx = Lib.castOption(trace, cdi.i, 'text');
-        if(tx === 0 || tx) text.push(tx);
+        if (tx === 0 || tx) text.push(tx);
     }
 
-    if(isWaterfall) {
+    if (isWaterfall) {
         var delta = +cdi.rawS || cdi.s;
         var final = cdi.v;
         var initial = final - delta;
 
-        if(hasFlag('initial')) text.push(formatNumber(initial));
-        if(hasFlag('delta')) text.push(formatNumber(delta));
-        if(hasFlag('final')) text.push(formatNumber(final));
+        if (hasFlag('initial')) text.push(formatNumber(initial));
+        if (hasFlag('delta')) text.push(formatNumber(delta));
+        if (hasFlag('final')) text.push(formatNumber(final));
     }
 
-    if(isFunnel) {
-        if(hasFlag('value')) text.push(formatNumber(cdi.s));
+    if (isFunnel) {
+        if (hasFlag('value')) text.push(formatNumber(cdi.s));
 
         var nPercent = 0;
-        if(hasFlag('percent initial')) nPercent++;
-        if(hasFlag('percent previous')) nPercent++;
-        if(hasFlag('percent total')) nPercent++;
+        if (hasFlag('percent initial')) nPercent++;
+        if (hasFlag('percent previous')) nPercent++;
+        if (hasFlag('percent total')) nPercent++;
 
         var hasMultiplePercents = nPercent > 1;
 
-        if(hasFlag('percent initial')) {
+        if (hasFlag('percent initial')) {
             tx = Lib.formatPercent(cdi.begR);
-            if(hasMultiplePercents) tx += ' of initial';
+            if (hasMultiplePercents) tx += ' of initial';
             text.push(tx);
         }
-        if(hasFlag('percent previous')) {
+        if (hasFlag('percent previous')) {
             tx = Lib.formatPercent(cdi.difR);
-            if(hasMultiplePercents) tx += ' of previous';
+            if (hasMultiplePercents) tx += ' of previous';
             text.push(tx);
         }
-        if(hasFlag('percent total')) {
+        if (hasFlag('percent total')) {
             tx = Lib.formatPercent(cdi.sumR);
-            if(hasMultiplePercents) tx += ' of total';
+            if (hasMultiplePercents) tx += ' of total';
             text.push(tx);
         }
     }

@@ -8,7 +8,6 @@ var handleStyleDefaults = require('../contour/style_defaults');
 var handleHeatmapLabelDefaults = require('../heatmap/label_defaults');
 var attributes = require('./attributes');
 
-
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -19,17 +18,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     handleSampleDefaults(traceIn, traceOut, coerce, layout);
-    if(traceOut.visible === false) return;
+    if (traceOut.visible === false) return;
 
     handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
     coerce('xhoverformat');
     coerce('yhoverformat');
     coerce('hovertemplate');
-    if(
-        traceOut.contours &&
-        traceOut.contours.coloring === 'heatmap'
-    ) {
+    if (traceOut.contours && traceOut.contours.coloring === 'heatmap') {
         handleHeatmapLabelDefaults(coerce, layout);
     }
 };

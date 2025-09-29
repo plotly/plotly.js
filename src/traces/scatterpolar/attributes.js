@@ -57,7 +57,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets the theta coordinate step.',
-            'By default, the `dtheta` step equals the subplot\'s period divided',
+            "By default, the `dtheta` step equals the subplot's period divided",
             'by the length of the `r` coordinates.'
         ].join(' ')
     },
@@ -74,9 +74,12 @@ module.exports = {
     },
 
     text: scatterAttrs.text,
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['r', 'theta', 'text']
-    }),
+    texttemplate: texttemplateAttrs(
+        { editType: 'plot' },
+        {
+            keys: ['r', 'theta', 'text']
+        }
+    ),
     hovertext: scatterAttrs.hovertext,
 
     line: {
@@ -93,7 +96,7 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
 
     marker: scatterAttrs.marker,
-    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, {dflt: false}),
+    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, { dflt: false }),
 
     textposition: scatterAttrs.textposition,
     textfont: scatterAttrs.textfont,
