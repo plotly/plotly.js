@@ -56801,10 +56801,16 @@
      "valType": "string"
     },
     "showlegend": {
+     "arrayOk": true,
      "description": "Determines whether or not an item corresponding to this trace is shown in the legend.",
      "dflt": true,
      "editType": "style",
      "valType": "boolean"
+    },
+    "showlegendsrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `showlegend`.",
+     "editType": "none",
+     "valType": "string"
     },
     "sort": {
      "description": "Determines whether or not the sectors are reordered from largest to smallest.",

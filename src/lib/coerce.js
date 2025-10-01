@@ -86,7 +86,7 @@ exports.valObjectMeta = {
     boolean: {
         description: 'A boolean (true/false) value.',
         requiredOpts: [],
-        otherOpts: ['dflt'],
+        otherOpts: ['dflt', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt) {
             if(v === true || v === false) propOut.set(v);
             else propOut.set(dflt);

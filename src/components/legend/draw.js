@@ -633,7 +633,11 @@ function textLayout(s, g, gd, legendObj, aTitle) {
 
 function computeTextDimensions(g, gd, legendObj, aTitle) {
     var legendItem = g.data()[0][0];
-    if(!legendObj._inHover && legendItem && !legendItem.trace.showlegend) {
+    var showlegend = legendItem && legendItem.trace.showlegend;
+    if (Array.isArray(showlegend)) {
+        showlegend = showlegend[legendItem.i] !== false;
+    }
+    if(!legendObj._inHover && legendItem && !showlegend) {
         g.remove();
         return;
     }

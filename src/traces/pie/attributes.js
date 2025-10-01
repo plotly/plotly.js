@@ -196,7 +196,9 @@ module.exports = {
             'Determines whether outside text labels can push the margins.'
         ].join(' ')
     },
-
+    showlegend: extendFlat({}, baseAttrs.showlegend, {
+        arrayOk: true
+    }),
     title: {
         text: {
             valType: 'string',

@@ -47,9 +47,13 @@ module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
         if(!inHover && (!trace.visible || !trace.showlegend)) continue;
 
         if(Registry.traceIs(trace, 'pie-like')) {
+            var showlegendPerSlice = Array.isArray(trace.showlegend);
             if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
 
             for(j = 0; j < cd.length; j++) {
+                if (showlegendPerSlice && trace.showlegend[cd[j].i] === false) {
+                    continue;
+                }
                 var labelj = cd[j].label;
 
                 if(!slicesShown[lgroup][labelj]) {
