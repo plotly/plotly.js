@@ -1073,7 +1073,13 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
 
     var customdata = Lib.castOption(trace, cdi.i, 'customdata');
     if (customdata) obj.customdata = customdata;
-    return Lib.texttemplateString(texttemplate, obj, fullLayout._d3locale, pt, obj, trace._meta || {});
+    return Lib.texttemplateString({
+        args: [pt, obj, trace._meta],
+        d3locale: fullLayout._d3locale,
+        fallback: trace.texttemplatefallback,
+        labels: obj,
+        string: texttemplate
+    });
 }
 
 function calcTextinfo(cd, index, xa, ya) {

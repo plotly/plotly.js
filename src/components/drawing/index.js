@@ -1299,8 +1299,13 @@ drawing.textPointStyle = function (s, trace, gd) {
             var labels = fn ? fn(d, trace, fullLayout) : {};
             var pointValues = {};
             appendArrayPointValue(pointValues, trace, d.i);
-            var meta = trace._meta || {};
-            text = Lib.texttemplateString(text, labels, fullLayout._d3locale, pointValues, d, meta);
+            text = Lib.texttemplateString({
+                args: [pointValues, d, trace._meta],
+                d3locale: fullLayout._d3locale,
+                fallback: trace.texttemplatefallback,
+                labels,
+                string: text
+            });
         }
 
         var pos = d.tp || trace.textposition;

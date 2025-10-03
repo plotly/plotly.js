@@ -141,8 +141,15 @@ function convertTextStyle(gd, trace) {
             var labels = trace._module.formatLabels(d, trace, fullLayout);
             var pointValues = {};
             appendArrayPointValue(pointValues, trace, i);
-            var meta = trace._meta || {};
-            optsOut.text.push(Lib.texttemplateString(txt(i), labels, d3locale, pointValues, d, meta));
+            optsOut.text.push(
+                Lib.texttemplateString({
+                    args: [pointValues, d, trace._meta],
+                    d3locale,
+                    fallback: trace.texttemplatefallback,
+                    labels,
+                    string: txt(i)
+                })
+            );
         }
     } else {
         if (isArrayOrTypedArray(trace.text) && trace.text.length < count) {

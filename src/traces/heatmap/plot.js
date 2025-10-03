@@ -450,13 +450,13 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
                     if (theText === undefined || theText === false) theText = '';
                     obj.text = theText;
 
-                    var _t = Lib.texttemplateString(
-                        texttemplate,
-                        obj,
-                        gd._fullLayout._d3locale,
-                        obj,
-                        trace._meta || {}
-                    );
+                    var _t = Lib.texttemplateString({
+                        args: [obj, trace._meta],
+                        d3locale: gd._fullLayout._d3locale,
+                        fallback: trace.texttemplatefallback,
+                        labels: obj,
+                        string: texttemplate
+                    });
                     if (!_t) continue;
 
                     var lines = _t.split('<br>');

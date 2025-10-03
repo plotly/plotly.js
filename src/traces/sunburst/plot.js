@@ -632,7 +632,13 @@ exports.formatSliceLabel = function (pt, entry, trace, cd, fullLayout) {
     var ptTx = Lib.castOption(trace, cdi.i, 'text');
     if (Lib.isValidTextValue(ptTx) || ptTx === '') obj.text = ptTx;
     obj.customdata = Lib.castOption(trace, cdi.i, 'customdata');
-    return Lib.texttemplateString(txt, obj, fullLayout._d3locale, obj, trace._meta || {});
+    return Lib.texttemplateString({
+        args: [obj, trace._meta],
+        d3locale: fullLayout._d3locale,
+        fallback: trace.texttemplatefallback,
+        labels: obj,
+        string: txt
+    });
 };
 
 function getInscribedRadiusFraction(pt) {

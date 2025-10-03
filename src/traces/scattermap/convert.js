@@ -300,8 +300,13 @@ function makeSymbolGeoJSON(calcTrace, gd) {
             var labels = trace._module.formatLabels(calcPt, trace, fullLayout);
             var pointValues = {};
             appendArrayPointValue(pointValues, trace, calcPt.i);
-            var meta = trace._meta || {};
-            text = Lib.texttemplateString(tt, labels, fullLayout._d3locale, pointValues, calcPt, meta);
+            text = Lib.texttemplateString({
+                args: [pointValues, calcPt, trace._meta],
+                d3locale: fullLayout._d3locale,
+                fallback: trace.texttemplatefallback,
+                labels,
+                string: tt
+            });
         } else {
             text = fillText(i);
         }
