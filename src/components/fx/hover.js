@@ -796,9 +796,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         var winningPoint = hoverData[0];
         // discard other points
         if (multipleHoverPoints[winningPoint.trace.type]) {
-            hoverData = hoverData.filter(function (d) {
-                return d.trace.index === winningPoint.trace.index;
-            });
+            hoverData = hoverData.filter((d) => d.trace.index === winningPoint.trace.index);
         } else {
             hoverData = [winningPoint];
         }
@@ -851,8 +849,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
 
     // pull out just the data that's useful to
     // other people and send it to the event
-    for (itemnum = 0; itemnum < hoverData.length; itemnum++) {
-        var pt = hoverData[itemnum];
+    for (const pt of hoverData) {
         var eventData = helpers.makeEventData(pt, pt.trace, pt.cd);
 
         if (pt.hovertemplate !== false) {
@@ -1237,9 +1234,7 @@ function createHoverText(hoverData, opts) {
     if (helpers.isUnifiedHover(hovermode)) {
         // Delete leftover hover labels from other hovermodes
         container.selectAll('g.hovertext').remove();
-        var groupedHoverData = hoverData.filter(function (data) {
-            return data.hoverinfo !== 'none';
-        });
+        const groupedHoverData = hoverData.filter((data) => data.hoverinfo !== 'none');
         // Return early if nothing is hovered on
         if (groupedHoverData.length === 0) return [];
 
@@ -1253,12 +1248,12 @@ function createHoverText(hoverData, opts) {
 
         var mainText = !unifiedhovertitleText
             ? t0
-            : Lib.hovertemplateString(
-                  unifiedhovertitleText,
-                  {},
-                  fullLayout._d3locale,
-                  hovermode === 'x unified' ? { xa: item0.xa, x: item0.xVal } : { ya: item0.ya, y: item0.yVal }
-              );
+            : Lib.hovertemplateString({
+                  args: hovermode === 'x unified' ? { xa: item0.xa, x: item0.xVal } : { ya: item0.ya, y: item0.yVal },
+                  d3locale: fullLayout._d3locale,
+                  fallback: item0.trace.hovertemplatefallback,
+                  string: unifiedhovertitleText
+              });
 
         var mockLayoutIn = {
             showlegend: true,
@@ -1624,9 +1619,7 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
     if (d.nameOverride !== undefined) d.name = d.nameOverride;
 
     if (d.name) {
-        if (d.trace._meta) {
-            d.name = Lib.templateString(d.name, d.trace._meta);
-        }
+        if (d.trace._meta) d.name = Lib.templateString(d.name, d.trace._meta);
         name = plainText(d.name, d.nameLength);
     }
 
@@ -1669,24 +1662,24 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
     }
 
     // hovertemplate
-    var hovertemplate = d.hovertemplate || false;
+    const { hovertemplate = false } = d;
     if (hovertemplate) {
-        var labels = d.hovertemplateLabels || d;
+        const labels = d.hovertemplateLabels || d;
 
         if (d[h0 + 'Label'] !== t0) {
             labels[h0 + 'other'] = labels[h0 + 'Val'];
             labels[h0 + 'otherLabel'] = labels[h0 + 'Label'];
         }
 
-        text = Lib.hovertemplateString(
-            hovertemplate,
+        text = Lib.hovertemplateString({
+            args: [d.eventData[0] || {}, d.trace._meta],
+            d3locale: fullLayout._d3locale,
+            fallback: d.trace.hovertemplatefallback,
             labels,
-            fullLayout._d3locale,
-            d.eventData[0] || {},
-            d.trace._meta
-        );
+            string: hovertemplate
+        });
 
-        text = text.replace(EXTRA_STRING_REGEX, function (match, extra) {
+        text = text.replace(EXTRA_STRING_REGEX, (_, extra) => {
             // assign name for secondary text label
             name = plainText(extra, d.nameLength);
             // remove from main text label
@@ -2487,12 +2480,8 @@ function getCoord(axLetter, winningPoint, fullLayout) {
 // Top/left hover offsets relative to graph div. As long as hover content is
 // a sibling of the graph div, it will be positioned correctly relative to
 // the offset parent, whatever that may be.
-function getTopOffset(gd) {
-    return gd.offsetTop + gd.clientTop;
-}
-function getLeftOffset(gd) {
-    return gd.offsetLeft + gd.clientLeft;
-}
+const getTopOffset = (gd) => gd.offsetTop + gd.clientTop;
+const getLeftOffset = (gd) => gd.offsetLeft + gd.clientLeft;
 
 function getBoundingClientRect(gd, node) {
     var fullLayout = gd._fullLayout;
