@@ -1074,23 +1074,19 @@ lib.templateString = function (string, obj) {
     });
 };
 
-var hovertemplateWarnings = {
+const hovertemplateWarnings = {
     max: 10,
     count: 0,
     name: 'hovertemplate'
 };
-lib.hovertemplateString = function () {
-    return templateFormatString.apply(hovertemplateWarnings, arguments);
-};
+lib.hovertemplateString = (params) => templateFormatString({ ...params, opts: hovertemplateWarnings });
 
-var texttemplateWarnings = {
+const texttemplateWarnings = {
     max: 10,
     count: 0,
     name: 'texttemplate'
 };
-lib.texttemplateString = function () {
-    return templateFormatString.apply(texttemplateWarnings, arguments);
-};
+lib.texttemplateString = (params) => templateFormatString({ ...params, opts: texttemplateWarnings });
 
 // Regex for parsing multiplication and division operations applied to a template key
 // Used for shape.label.texttemplate
@@ -1108,9 +1104,7 @@ var texttemplateWarningsForShapes = {
     name: 'texttemplate',
     parseMultDiv: true
 };
-lib.texttemplateStringForShapes = function () {
-    return templateFormatString.apply(texttemplateWarningsForShapes, arguments);
-};
+lib.texttemplateStringForShapes = (params) => templateFormatString({ ...params, opts: texttemplateWarningsForShapes });
 
 var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
 /**
@@ -1118,41 +1112,36 @@ var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
  * or fallback to associated labels.
  *
  * Examples:
- *  Lib.hovertemplateString('name: %{trace}', {trace: 'asdf'}) --> 'name: asdf'
- *  Lib.hovertemplateString('name: %{trace[0].name}', {trace: [{name: 'asdf'}]}) --> 'name: asdf'
- *  Lib.hovertemplateString('price: %{y:$.2f}', {y: 1}) --> 'price: $1.00'
+ *  Lib.hovertemplateString({ string 'name: %{trace}', labels: {trace: 'asdf'} }) --> 'name: asdf'
+ *  Lib.hovertemplateString({ string: 'name: %{trace[0].name}', labels: { trace: [{ name: 'asdf' }] } }) --> 'name: asdf'
+ *  Lib.hovertemplateString({ string: 'price: %{y:$.2f}', labels: { y: 1 } }) --> 'price: $1.00'
  *
- * @param {string}  input string containing %{...:...} template strings
- * @param {obj}     data object containing fallback text when no formatting is specified, ex.: {yLabel: 'formattedYValue'}
- * @param {obj}     d3 locale
- * @param {obj}     data objects containing substitution values
+ * @param {object}  options - Configuration object
+ * @param {array}   options.args - Data objects containing substitution values
+ * @param {object}  options.d3locale - D3 locale for formatting
+ * @param {string}  options.fallback - Fallback value when substitution fails
+ * @param {object}  options.labels - Data object containing fallback text when no formatting is specified, ex.: {yLabel: 'formattedYValue'}
+ * @param {object}  options.opts - Additional options
+ * @param {string}  options.string - Input string containing %{...:...} template strings
  *
  * @return {string} templated string
  */
-function templateFormatString(string, labels, d3locale) {
-    var opts = this;
-    var args = arguments;
-    if (!labels) labels = {};
+function templateFormatString({ args = [], d3locale, fallback, labels = {}, opts, string }) {
+    return string.replace(lib.TEMPLATE_STRING_REGEX, (_, rawKey, format) => {
+        const isOther = ['xother', 'yother'].includes(rawKey);
+        const isSpaceOther = ['_xother', '_yother'].includes(rawKey);
+        const isSpaceOtherSpace = ['_xother_', '_yother_'].includes(rawKey);
+        const isOtherSpace = ['xother_', 'yother_'].includes(rawKey);
+        const hasOther = isOther || isSpaceOther || isOtherSpace || isSpaceOtherSpace;
 
-    return string.replace(lib.TEMPLATE_STRING_REGEX, function (match, rawKey, format) {
-        var isOther = rawKey === 'xother' || rawKey === 'yother';
-
-        var isSpaceOther = rawKey === '_xother' || rawKey === '_yother';
-
-        var isSpaceOtherSpace = rawKey === '_xother_' || rawKey === '_yother_';
-
-        var isOtherSpace = rawKey === 'xother_' || rawKey === 'yother_';
-
-        var hasOther = isOther || isSpaceOther || isOtherSpace || isSpaceOtherSpace;
-
-        var key = rawKey;
+        let key = rawKey;
         if (isSpaceOther || isSpaceOtherSpace) key = key.substring(1);
         if (isOtherSpace || isSpaceOtherSpace) key = key.substring(0, key.length - 1);
 
         // Shape labels support * and / operators in template string
         // Parse these if the parseMultDiv param is set to true
-        var parsedOp = null;
-        var parsedNumber = null;
+        let parsedOp = null;
+        let parsedNumber = null;
         if (opts.parseMultDiv) {
             var _match = multDivParser(key);
             key = _match.key;
@@ -1160,14 +1149,12 @@ function templateFormatString(string, labels, d3locale) {
             parsedNumber = _match.number;
         }
 
-        var value;
+        let value;
         if (hasOther) {
+            if (labels[key] === undefined) return '';
             value = labels[key];
-            if (value === undefined) return '';
         } else {
-            var obj, i;
-            for (i = 3; i < args.length; i++) {
-                obj = args[i];
+            for (const obj of args) {
                 if (!obj) continue;
                 if (obj.hasOwnProperty(key)) {
                     value = obj[key];
@@ -1184,12 +1171,11 @@ function templateFormatString(string, labels, d3locale) {
 
         if (value === undefined) {
             const { count, max, name } = opts;
-            if (count < max) lib.warn(`Variable '${key}' in ${name} could not be found!`);
+            if (count < max) lib.warn(`Variable '${key}' in ${name} could not be found! Using fallback value.`);
             if (count === max) lib.warn(`Too many '${name}' warnings - additional warnings will be suppressed`);
             opts.count++;
 
-            // TODO: Make return valuable configurable with a reasonable default (like 'N/A')
-            return '';
+            return fallback;
         }
 
         if (parsedOp === '*') value *= parsedNumber;
