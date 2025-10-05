@@ -1,6 +1,6 @@
 'use strict';
 
-var colorMix = require('tinycolor2').mix;
+const Color = require('../../components/color');
 var colorAttrs = require('../../components/color/attributes');
 var Lib = require('../../lib');
 
@@ -32,7 +32,7 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
         delete containerOut.linewidth;
     }
 
-    var gridColorDflt = colorMix(dfltColor, opts.bgColor, opts.blend || colorAttrs.lightFraction).toRgbString();
+    var gridColorDflt = Color.mix(dfltColor, opts.bgColor, opts.blend || colorAttrs.lightFraction);
     var gridColor = coerce2('gridcolor', gridColorDflt);
     var gridWidth = coerce2('gridwidth');
     var gridDash = coerce2('griddash');
@@ -49,7 +49,7 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
     }
 
     if(opts.hasMinor) {
-        var minorGridColorDflt = colorMix(containerOut.gridcolor, opts.bgColor, 67).toRgbString();
+        var minorGridColorDflt = Color.mix(containerOut.gridcolor, opts.bgColor, 67);
         var minorGridColor = coerce2('minor.gridcolor', minorGridColorDflt);
         var minorGridWidth = coerce2('minor.gridwidth', containerOut.gridwidth || 1);
         var minorGridDash = coerce2('minor.griddash', containerOut.griddash || 'solid');
