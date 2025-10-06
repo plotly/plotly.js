@@ -87,6 +87,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
     coerce('xhoverformat');
     coerce('yhoverformat');
     coerce('zhoverformat');

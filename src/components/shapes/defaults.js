@@ -149,6 +149,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     var labelTextTemplate, labelText;
     if (noPath) {
         labelTextTemplate = coerce('label.texttemplate');
+        coerce('label.texttemplatefallback');
     }
     if (!labelTextTemplate) {
         labelText = coerce('label.text');

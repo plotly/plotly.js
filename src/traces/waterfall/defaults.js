@@ -46,6 +46,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     var textposition = coerce('textposition');
     handleText(traceIn, traceOut, layout, coerce, textposition, {
@@ -59,6 +60,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     if (traceOut.textposition !== 'none') {
         coerce('texttemplate');
+        coerce('texttemplatefallback');
         if (!traceOut.texttemplate) coerce('textinfo');
     }
 

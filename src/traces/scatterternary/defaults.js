@@ -49,7 +49,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
     coerce('hovertext');
-    if (traceOut.hoveron !== 'fills') coerce('hovertemplate');
+    if (traceOut.hoveron !== 'fills') {
+        coerce('hovertemplate');
+        coerce('hovertemplatefallback');
+    }
 
     var defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
     coerce('mode', defaultMode);
@@ -66,6 +69,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if (subTypes.hasText(traceOut)) {
         coerce('texttemplate');
+        coerce('texttemplatefallback');
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 

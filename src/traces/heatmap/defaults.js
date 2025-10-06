@@ -27,6 +27,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     handleHeatmapLabelDefaults(coerce, layout);
     handleStyleDefaults(traceIn, traceOut, coerce, layout);

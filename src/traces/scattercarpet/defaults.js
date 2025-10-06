@@ -36,6 +36,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
     coerce('texttemplate');
+    coerce('texttemplatefallback');
     coerce('hovertext');
 
     var defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
@@ -73,7 +74,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var hoverOn = coerce('hoveron', dfltHoverOn.join('+') || 'points');
-    if (hoverOn !== 'fills') coerce('hovertemplate');
+    if (hoverOn !== 'fills') {
+        coerce('hovertemplate');
+        coerce('hovertemplatefallback');
+    }
 
     coerce('zorder');
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);

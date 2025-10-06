@@ -41,10 +41,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var text = coerce('text');
     coerce('texttemplate');
+    coerce('texttemplatefallback');
     if (!traceOut.texttemplate) coerce('textinfo', Lib.isArrayOrTypedArray(text) ? 'text+label' : 'label');
 
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     var hasPathbar = coerce('pathbar.visible');
 

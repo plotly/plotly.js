@@ -55,6 +55,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if (subTypes.hasText(traceOut)) {
         coerce('texttemplate');
+        coerce('texttemplatefallback');
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
@@ -84,7 +85,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         dfltHoverOn.push('fills');
     }
     coerce('hoveron', dfltHoverOn.join('+') || 'points');
-    if (traceOut.hoveron !== 'fills') coerce('hovertemplate');
+    if (traceOut.hoveron !== 'fills') {
+        coerce('hovertemplate');
+        coerce('hovertemplatefallback');
+    }
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
     errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, { axis: 'y' });
     errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, { axis: 'x', inherit: 'y' });

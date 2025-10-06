@@ -27,7 +27,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('mode', len < PTS_LINESONLY ? 'lines+markers' : 'lines');
     coerce('text');
     coerce('hovertext');
-    if (traceOut.hoveron !== 'fills') coerce('hovertemplate');
+    if (traceOut.hoveron !== 'fills') {
+        coerce('hovertemplate');
+        coerce('hovertemplatefallback');
+    }
 
     if (subTypes.hasMarkers(traceOut)) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { gradient: true });
@@ -41,6 +44,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     if (subTypes.hasText(traceOut)) {
         coerce('texttemplate');
+        coerce('texttemplatefallback');
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 

@@ -37,11 +37,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var textData = coerce('text');
     var textTemplate = coerce('texttemplate');
+    coerce('texttemplatefallback');
     var textInfo;
     if (!textTemplate) textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
 
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     if (textTemplate || (textInfo && textInfo !== 'none')) {
         var textposition = coerce('textposition');

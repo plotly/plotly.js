@@ -45,6 +45,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     var mlw = coerce('marker.line.width');
     if (mlw) coerce('marker.line.color');

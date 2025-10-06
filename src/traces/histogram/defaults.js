@@ -35,6 +35,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
     coerce('xhoverformat');
     coerce('yhoverformat');
 

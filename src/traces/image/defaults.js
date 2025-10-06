@@ -43,6 +43,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     traceOut._length = null;
 

@@ -58,6 +58,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
     coerce('mode');
 
     if (subTypes.hasMarkers(traceOut)) {
@@ -71,6 +72,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if (subTypes.hasText(traceOut)) {
         coerce('texttemplate');
+        coerce('texttemplatefallback');
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 

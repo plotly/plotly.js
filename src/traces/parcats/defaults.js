@@ -13,6 +13,7 @@ var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     coerce('line.shape');
     coerce('line.hovertemplate');
+    coerce('line.hovertemplatefallback');
 
     var lineColor = coerce('line.color', layout.colorway[0]);
     if (hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(lineColor)) {
@@ -89,6 +90,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('hoveron');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
     coerce('arrangement');
     coerce('bundlecolors');
     coerce('sortpaths');

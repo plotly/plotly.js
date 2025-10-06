@@ -39,6 +39,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     var textposition = coerce('textposition');
     handleText(traceIn, traceOut, layout, coerce, textposition, {
@@ -152,6 +153,7 @@ function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
         if (moduleHasTextangle) coerce('textangle');
 
         coerce('texttemplate');
+        coerce('texttemplatefallback');
     }
 
     if (hasInside) {
