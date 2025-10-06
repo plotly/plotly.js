@@ -1,8 +1,7 @@
 'use strict';
 const { DATE_FORMAT_LINK, FORMAT_LINK } = require('../constants/docs');
 
-function templateFormatStringDescription(opts = {}) {
-    const { supportOther } = opts;
+function templateFormatStringDescription({ supportOther } = {}) {
     const supportOtherText =
         ' as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown.';
 
@@ -34,53 +33,43 @@ function describeVariables({ description, keys = [] }) {
     return descPart;
 }
 
-exports.hovertemplateAttrs = (opts = {}, extra = {}) => {
-    const hovertemplate = {
-        valType: 'string',
-        dflt: '',
-        editType: opts.editType || 'none',
-        description: [
-            'Template string used for rendering the information that appear on hover box.',
-            'Note that this will override `hoverinfo`.',
-            templateFormatStringDescription({ supportOther: true }),
-            'The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data.',
-            'Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
-            describeVariables(extra),
-            'Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`.',
-            'To hide the secondary box completely, use an empty tag `<extra></extra>`.'
-        ].join(' ')
-    };
-
-    if (opts.arrayOk !== false) hovertemplate.arrayOk = true;
-
-    return hovertemplate;
-};
-
-exports.texttemplateAttrs = (opts = {}, extra = {}) => {
-    const texttemplate = {
-        valType: 'string',
-        dflt: '',
-        editType: opts.editType || 'calc',
-        description: [
-            'Template string used for rendering the information text that appear on points.',
-            'Note that this will override `textinfo`.',
-            templateFormatStringDescription(),
-            'Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
-            describeVariables(extra)
-        ].join(' ')
-    };
-
-    if (opts.arrayOk !== false) texttemplate.arrayOk = true;
-
-    return texttemplate;
-};
-
-exports.shapeTexttemplateAttrs = (opts = {}, extra = {}) => ({
+exports.hovertemplateAttrs = ({ editType = 'none', arrayOk } = {}, extra = {}) => ({
     valType: 'string',
     dflt: '',
-    editType: opts.editType || 'arraydraw',
+    editType,
     description: [
-        `Template string used for rendering the ${opts.newshape ? 'new ' : ''}shape's label.`,
+        'Template string used for rendering the information that appear on hover box.',
+        'Note that this will override `hoverinfo`.',
+        templateFormatStringDescription({ supportOther: true }),
+        'The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data.',
+        'Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
+        describeVariables(extra),
+        'Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`.',
+        'To hide the secondary box completely, use an empty tag `<extra></extra>`.'
+    ].join(' '),
+    ...(arrayOk !== false ? { arrayOk: true } : {})
+});
+
+exports.texttemplateAttrs = ({ editType = 'calc', arrayOk } = {}, extra = {}) => ({
+    valType: 'string',
+    dflt: '',
+    editType,
+    description: [
+        'Template string used for rendering the information text that appears on points.',
+        'Note that this will override `textinfo`.',
+        templateFormatStringDescription(),
+        'Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
+        describeVariables(extra)
+    ].join(' '),
+    ...(arrayOk !== false ? { arrayOk: true } : {})
+});
+
+exports.shapeTexttemplateAttrs = ({ editType = 'arraydraw', newshape }, extra = {}) => ({
+    valType: 'string',
+    dflt: '',
+    editType,
+    description: [
+        `Template string used for rendering the ${newshape ? 'new ' : ''}shape's label.`,
         'Note that this will override `text`.',
         'Variables are inserted using %{variable},',
         'for example "x0: %{x0}".',
@@ -96,4 +85,11 @@ exports.shapeTexttemplateAttrs = (opts = {}, extra = {}) => ({
         'For date axes, x/y coordinate variables and center variables use datetimes, while all other variable values use values in ms.',
         describeVariables(extra)
     ].join(' ')
+});
+
+exports.templatefallbackAttrs = ({ editType = 'none' } = {}) => ({
+    valType: 'string',
+    dflt: '',
+    editType,
+    description: "Fallback value that's displayed when a variable referenced in a template can't be found."
 });
