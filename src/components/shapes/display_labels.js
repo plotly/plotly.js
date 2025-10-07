@@ -32,12 +32,13 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
                 if (val !== undefined) templateValues[key] = val;
             }
         }
-        text = Lib.texttemplateStringForShapes(
-            options.label.texttemplate,
-            {},
-            gd._fullLayout._d3locale,
-            templateValues
-        );
+        text = Lib.texttemplateStringForShapes({
+            args: [templateValues],
+            d3locale: gd._fullLayout._d3locale,
+            fallback: options.label.texttemplatefallback,
+            labels: {},
+            string: options.label.texttemplate
+        });
     } else {
         text = options.label.text;
     }
