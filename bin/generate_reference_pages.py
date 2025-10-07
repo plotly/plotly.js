@@ -1,11 +1,13 @@
+"""Generate reference pages to satisfy MkDocs."""
+
 import os
 from pathlib import Path
 import mkdocs_gen_files
 
 def generate_pages(path, output_dir, parent, nav=None):
     """
-    Walks through the path and generates markdown files that 
-    include the corresponding html snippets in it.
+    Walk through the a directory and generate Markdown files that 
+    include the corresponding HTML snippets.
     """
     with os.scandir(path) as it:
         entries = sorted(it, key= lambda e: e.name)
@@ -25,14 +27,13 @@ def generate_pages(path, output_dir, parent, nav=None):
 
 nav = mkdocs_gen_files.Nav()
 
-parent = Path(__file__).resolve().parents[1]
-ref_path = f"{parent}/docs/tmp/reference" 
+parent = Path(__file__).resolve().parent.parent
+ref_path = f"{parent}/tmp/reference" 
 ref_output_dir = f"{parent}/pages/reference/"
 
-examples_path = f"{parent}/docs/tmp/javascript" 
+examples_path = f"{parent}/tmp/javascript" 
 examples_output_dir = f"{parent}/pages/examples/"
 
-# Make directories if it doesn't exist
 os.makedirs(ref_output_dir, exist_ok=True)
 os.makedirs(examples_output_dir, exist_ok=True)
 

@@ -24,7 +24,7 @@ theme:
 markdown_extensions:
   - footnotes
   - pymdownx.snippets:
-        base_path: ["docs/tmp"]
+        base_path: ["tmp"]
 
 extra_css:
   - css/extra_css.css
