@@ -8,7 +8,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
 var basePlotAttributes = require('../../plots/attributes');
-var shapeTexttemplateAttrs = require('../../plots/template_attributes').shapeTexttemplateAttrs;
+const { shapeTexttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var shapeLabelTexttemplateVars = require('./label_texttemplate');
 
 module.exports = templatedArray('shape', {
@@ -331,6 +331,7 @@ module.exports = templatedArray('shape', {
             ].join(' ')
         },
         texttemplate: shapeTexttemplateAttrs({}, { keys: Object.keys(shapeLabelTexttemplateVars) }),
+        texttemplatefallback: templatefallbackAttrs(),
         font: fontAttrs({
             editType: 'calc+arraydraw',
             colorEditType: 'arraydraw',

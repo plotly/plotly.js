@@ -1,6 +1,6 @@
 'use strict';
 
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var scatterPolarAttrs = require('../scatterpolar/attributes');
 var barAttrs = require('../bar/attributes');
@@ -59,6 +59,7 @@ module.exports = {
 
     hoverinfo: scatterPolarAttrs.hoverinfo,
     hovertemplate: hovertemplateAttrs(),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     selected: barAttrs.selected,
     unselected: barAttrs.unselected

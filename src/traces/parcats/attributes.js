@@ -4,7 +4,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var baseAttrs = require('../../plots/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 
 var line = extendFlat({ editType: 'calc' }, colorScaleAttrs('line', { editTypeOverride: 'calc' }), {
@@ -29,7 +29,8 @@ var line = extendFlat({ editType: 'calc' }, colorScaleAttrs('line', { editTypeOv
             keys: ['count', 'probability'],
             description: ['This value here applies when hovering over lines.'].join(' ')
         }
-    )
+    ),
+    hovertemplatefallback: templatefallbackAttrs()
 });
 
 module.exports = {
@@ -66,6 +67,7 @@ module.exports = {
             ].join(' ')
         }
     ),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     arrangement: {
         valType: 'enumerated',

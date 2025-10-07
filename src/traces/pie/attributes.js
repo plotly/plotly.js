@@ -4,8 +4,7 @@ var baseAttrs = require('../../plots/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var pattern = require('../../components/drawing/attributes').pattern;
@@ -139,18 +138,10 @@ module.exports = {
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
-    hovertemplate: hovertemplateAttrs(
-        {},
-        {
-            keys: ['label', 'color', 'value', 'percent', 'text']
-        }
-    ),
-    texttemplate: texttemplateAttrs(
-        { editType: 'plot' },
-        {
-            keys: ['label', 'color', 'value', 'percent', 'text']
-        }
-    ),
+    hovertemplate: hovertemplateAttrs({}, { keys: ['label', 'color', 'value', 'percent', 'text'] }),
+    hovertemplatefallback: templatefallbackAttrs(),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['label', 'color', 'value', 'percent', 'text'] }),
+    texttemplatefallback: templatefallbackAttrs(),
     textposition: {
         valType: 'enumerated',
         values: ['inside', 'outside', 'auto', 'none'],

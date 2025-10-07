@@ -1,8 +1,7 @@
 'use strict';
 
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var dash = require('../../components/drawing/attributes').dash;
@@ -225,7 +224,8 @@ module.exports = {
         ].join(' ')
     },
 
-    texttemplate: texttemplateAttrs({}, {}),
+    texttemplate: texttemplateAttrs(),
+    texttemplatefallback: templatefallbackAttrs(),
     hovertext: {
         valType: 'string',
         dflt: '',
@@ -266,12 +266,8 @@ module.exports = {
             'or text, then the default is *fills*, otherwise it is *points*.'
         ].join(' ')
     },
-    hovertemplate: hovertemplateAttrs(
-        {},
-        {
-            keys: constants.eventDataKeys
-        }
-    ),
+    hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     line: {
         color: {

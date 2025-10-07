@@ -1,7 +1,6 @@
 'use strict';
 
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -94,12 +93,8 @@ module.exports = overrideAll(
                 'these elements will be seen in the hover labels.'
             ].join(' ')
         }),
-        texttemplate: texttemplateAttrs(
-            { editType: 'plot' },
-            {
-                keys: ['lat', 'lon', 'location', 'text']
-            }
-        ),
+        texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['lat', 'lon', 'location', 'text'] }),
+        texttemplatefallback: templatefallbackAttrs(),
         hovertext: extendFlat({}, scatterAttrs.hovertext, {
             description: [
                 'Sets hover text elements associated with each (lon,lat) pair',
@@ -172,7 +167,8 @@ module.exports = overrideAll(
         hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
             flags: ['lon', 'lat', 'location', 'text', 'name']
         }),
-        hovertemplate: hovertemplateAttrs()
+        hovertemplate: hovertemplateAttrs(),
+        hovertemplatefallback: templatefallbackAttrs()
     },
     'calc',
     'nested'

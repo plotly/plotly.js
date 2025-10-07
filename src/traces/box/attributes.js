@@ -5,7 +5,7 @@ var scatterAttrs = require('../scatter/attributes');
 var barAttrs = require('../bar/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterMarkerAttrs = scatterAttrs.marker;
@@ -410,6 +410,7 @@ module.exports = {
     }),
     hovertext: extendFlat({}, scatterAttrs.hovertext, { description: 'Same as `text`.' }),
     hovertemplate: hovertemplateAttrs({ description: 'N.B. This only has an effect when hovering on points.' }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     hoveron: {
         valType: 'flaglist',

@@ -109,4 +109,6 @@ var attrs = (module.exports = overrideAll(
 
 attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';
 attrs.hovertemplate = scatterAttrs.hovertemplate;
+attrs.hovertemplatefallback = scatterAttrs.hovertemplatefallback;
 attrs.texttemplate = scatterAttrs.texttemplate;
+attrs.texttemplatefallback = scatterAttrs.texttemplatefallback;

@@ -42,12 +42,14 @@ module.exports = extendFlat(
         yhoverformat: axisHoverFormat('y'),
         zhoverformat: axisHoverFormat('z', 1),
         hovertemplate: heatmapAttrs.hovertemplate,
+        hovertemplatefallback: heatmapAttrs.hovertemplatefallback,
         texttemplate: extendFlat({}, heatmapAttrs.texttemplate, {
             description: [
                 'For this trace it only has an effect if `coloring` is set to *heatmap*.',
                 heatmapAttrs.texttemplate.description
             ].join(' ')
         }),
+        texttemplatefallback: heatmapAttrs.texttemplatefallback,
         textfont: extendFlat({}, heatmapAttrs.textfont, {
             description: [
                 'For this trace it only has an effect if `coloring` is set to *heatmap*.',

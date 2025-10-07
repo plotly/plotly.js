@@ -4,8 +4,7 @@ var scatterAttrs = require('../scatter/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var baseAttrs = require('../../plots/attributes');
 var DASHES = require('../../constants/gl3d_dashes');
 
@@ -75,7 +74,8 @@ var attrs = (module.exports = overrideAll(
                 'these elements will be seen in the hover labels.'
             ].join(' ')
         }),
-        texttemplate: texttemplateAttrs({}, {}),
+        texttemplate: texttemplateAttrs(),
+        texttemplatefallback: templatefallbackAttrs(),
         hovertext: extendFlat({}, scatterAttrs.hovertext, {
             description: [
                 'Sets text elements associated with each (x,y,z) triplet.',
@@ -87,6 +87,7 @@ var attrs = (module.exports = overrideAll(
             ].join(' ')
         }),
         hovertemplate: hovertemplateAttrs(),
+        hovertemplatefallback: templatefallbackAttrs(),
 
         xhoverformat: axisHoverFormat('x'),
         yhoverformat: axisHoverFormat('y'),

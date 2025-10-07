@@ -153,6 +153,7 @@ module.exports = {
     text: boxAttrs.text,
     hovertext: boxAttrs.hovertext,
     hovertemplate: boxAttrs.hovertemplate,
+    hovertemplatefallback: boxAttrs.hovertemplatefallback,
 
     quartilemethod: boxAttrs.quartilemethod,
 

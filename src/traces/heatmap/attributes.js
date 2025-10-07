@@ -1,14 +1,12 @@
 'use strict';
 
-var scatterAttrs = require('../scatter/attributes');
-var baseAttrs = require('../../plots/attributes');
-var fontAttrs = require('../../plots/font_attributes');
-var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
-var colorScaleAttrs = require('../../components/colorscale/attributes');
-
-var extendFlat = require('../../lib/extend').extendFlat;
+const colorScaleAttrs = require('../../components/colorscale/attributes');
+const { extendFlat } = require('../../lib/extend');
+const baseAttrs = require('../../plots/attributes');
+const { axisHoverFormat } = require('../../plots/cartesian/axis_format_attributes');
+const fontAttrs = require('../../plots/font_attributes');
+const { hovertemplateAttrs, templatefallbackAttrs, texttemplateAttrs } = require('../../plots/template_attributes');
+const scatterAttrs = require('../scatter/attributes');
 
 module.exports = extendFlat(
     {
@@ -117,15 +115,9 @@ module.exports = extendFlat(
         zhoverformat: axisHoverFormat('z', 1),
 
         hovertemplate: hovertemplateAttrs(),
-        texttemplate: texttemplateAttrs(
-            {
-                arrayOk: false,
-                editType: 'plot'
-            },
-            {
-                keys: ['x', 'y', 'z', 'text']
-            }
-        ),
+        hovertemplatefallback: templatefallbackAttrs(),
+        texttemplate: texttemplateAttrs({ arrayOk: false, editType: 'plot' }, { keys: ['x', 'y', 'z', 'text'] }),
+        texttemplatefallback: templatefallbackAttrs(),
         textfont: fontAttrs({
             editType: 'plot',
             autoSize: true,

@@ -2,7 +2,7 @@
 
 var baseAttrs = require('../../plots/attributes');
 var zorder = require('../scatter/attributes').zorder;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var colormodel = require('./constants').colormodel;
 
@@ -130,12 +130,8 @@ module.exports = extendFlat({
         flags: ['x', 'y', 'z', 'color', 'name', 'text'],
         dflt: 'x+y+z+text+name'
     }),
-    hovertemplate: hovertemplateAttrs(
-        {},
-        {
-            keys: ['z', 'color', 'colormodel']
-        }
-    ),
+    hovertemplate: hovertemplateAttrs({}, { keys: ['z', 'color', 'colormodel'] }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     zorder: zorder
 });

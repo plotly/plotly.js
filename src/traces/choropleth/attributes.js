@@ -1,6 +1,6 @@
 'use strict';
 
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -84,6 +84,7 @@ module.exports = extendFlat(
             flags: ['location', 'z', 'text', 'name']
         }),
         hovertemplate: hovertemplateAttrs(),
+        hovertemplatefallback: templatefallbackAttrs(),
         showlegend: extendFlat({}, baseAttrs.showlegend, { dflt: false })
     },
 

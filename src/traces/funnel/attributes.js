@@ -4,8 +4,7 @@ var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var baseAttrs = require('../../plots/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 var Color = require('../../components/color');
@@ -28,12 +27,8 @@ module.exports = {
     yhoverformat: axisHoverFormat('y'),
 
     hovertext: barAttrs.hovertext,
-    hovertemplate: hovertemplateAttrs(
-        {},
-        {
-            keys: constants.eventDataKeys
-        }
-    ),
+    hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['name', 'x', 'y', 'text', 'percent initial', 'percent previous', 'percent total']
@@ -52,12 +47,8 @@ module.exports = {
         ].join(' ')
     },
     // TODO: incorporate `label` and `value` in the eventData
-    texttemplate: texttemplateAttrs(
-        { editType: 'plot' },
-        {
-            keys: constants.eventDataKeys.concat(['label', 'value'])
-        }
-    ),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: constants.eventDataKeys.concat(['label', 'value']) }),
+    texttemplatefallback: templatefallbackAttrs(),
 
     text: barAttrs.text,
     textposition: barAttrs.textposition,

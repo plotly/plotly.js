@@ -2,8 +2,7 @@
 
 var barAttrs = require('../bar/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var makeBinAttrs = require('./bin_attributes');
 var constants = require('./constants');
@@ -192,22 +191,11 @@ module.exports = {
         ].join(' ')
     },
 
-    hovertemplate: hovertemplateAttrs(
-        {},
-        {
-            keys: constants.eventDataKeys
-        }
-    ),
+    hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
-    texttemplate: texttemplateAttrs(
-        {
-            arrayOk: false,
-            editType: 'plot'
-        },
-        {
-            keys: ['label', 'value']
-        }
-    ),
+    texttemplate: texttemplateAttrs({ arrayOk: false, editType: 'plot' }, { keys: ['label', 'value'] }),
+    texttemplatefallback: templatefallbackAttrs(),
 
     textposition: extendFlat({}, barAttrs.textposition, {
         arrayOk: false

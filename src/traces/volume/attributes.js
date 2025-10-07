@@ -49,7 +49,8 @@ var attrs = (module.exports = overrideAll(
             yhoverformat: isosurfaceAttrs.yhoverformat,
             zhoverformat: isosurfaceAttrs.zhoverformat,
             valuehoverformat: isosurfaceAttrs.valuehoverformat,
-            hovertemplate: isosurfaceAttrs.hovertemplate
+            hovertemplate: isosurfaceAttrs.hovertemplate,
+            hovertemplatefallback: isosurfaceAttrs.hovertemplatefallback
         },
 
         colorScaleAttrs('', {

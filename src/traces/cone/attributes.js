@@ -2,7 +2,7 @@
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var mesh3dAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
 
@@ -146,6 +146,7 @@ var attrs = {
     },
 
     hovertemplate: hovertemplateAttrs({ editType: 'calc' }, { keys: ['norm'] }),
+    hovertemplatefallback: templatefallbackAttrs(),
     uhoverformat: axisHoverFormat('u', 1),
     vhoverformat: axisHoverFormat('v', 1),
     whoverformat: axisHoverFormat('w', 1),

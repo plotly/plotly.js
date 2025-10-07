@@ -5,7 +5,7 @@ var baseAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format_attributes').descriptionOnlyNumbers;
@@ -163,6 +163,7 @@ var attrs = (module.exports = overrideAll(
                     keys: ['value', 'label']
                 }
             ),
+            hovertemplatefallback: templatefallbackAttrs(),
             align: {
                 valType: 'enumerated',
                 values: ['justify', 'left', 'right', 'center'],
@@ -254,6 +255,7 @@ var attrs = (module.exports = overrideAll(
                     keys: ['value', 'label']
                 }
             ),
+            hovertemplatefallback: templatefallbackAttrs(),
             colorscales: templatedArray('concentrationscales', {
                 editType: 'calc',
                 label: {

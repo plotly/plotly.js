@@ -5,7 +5,7 @@ var basePlotAttributes = require('../../../plots/attributes');
 var fontAttrs = require('../../../plots/font_attributes');
 var dash = require('../../drawing/attributes').dash;
 var extendFlat = require('../../../lib/extend').extendFlat;
-var shapeTexttemplateAttrs = require('../../../plots/template_attributes').shapeTexttemplateAttrs;
+const { shapeTexttemplateAttrs, templatefallbackAttrs } = require('../../../plots/template_attributes');
 var shapeLabelTexttemplateVars = require('../label_texttemplate');
 
 module.exports = overrideAll(
@@ -150,6 +150,7 @@ module.exports = overrideAll(
                     { newshape: true },
                     { keys: Object.keys(shapeLabelTexttemplateVars) }
                 ),
+                texttemplatefallback: templatefallbackAttrs(),
                 font: fontAttrs({
                     description: 'Sets the new shape label text font.'
                 }),

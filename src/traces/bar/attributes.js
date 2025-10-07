@@ -2,8 +2,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var constants = require('./constants');
@@ -78,19 +77,11 @@ module.exports = {
     yhoverformat: axisHoverFormat('y'),
 
     text: scatterAttrs.text,
-    texttemplate: texttemplateAttrs(
-        { editType: 'plot' },
-        {
-            keys: constants.eventDataKeys
-        }
-    ),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: constants.eventDataKeys }),
+    texttemplatefallback: templatefallbackAttrs(),
     hovertext: scatterAttrs.hovertext,
-    hovertemplate: hovertemplateAttrs(
-        {},
-        {
-            keys: constants.eventDataKeys
-        }
-    ),
+    hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     textposition: {
         valType: 'enumerated',

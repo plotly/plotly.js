@@ -3,7 +3,7 @@
 var Color = require('../../components/color');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -140,6 +140,7 @@ var attrs = (module.exports = overrideAll(
                 description: 'Same as `text`.'
             },
             hovertemplate: hovertemplateAttrs(),
+            hovertemplatefallback: templatefallbackAttrs(),
 
             xhoverformat: axisHoverFormat('x'),
             yhoverformat: axisHoverFormat('y'),

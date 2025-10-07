@@ -3,8 +3,7 @@
 var pieAttrs = require('../pie/attributes');
 var baseAttrs = require('../../plots/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -47,23 +46,15 @@ module.exports = {
         flags: ['label', 'text', 'value', 'percent']
     }),
 
-    texttemplate: texttemplateAttrs(
-        { editType: 'plot' },
-        {
-            keys: ['label', 'color', 'value', 'text', 'percent']
-        }
-    ),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['label', 'color', 'value', 'text', 'percent'] }),
+    texttemplatefallback: templatefallbackAttrs(),
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
 
-    hovertemplate: hovertemplateAttrs(
-        {},
-        {
-            keys: ['label', 'color', 'value', 'text', 'percent']
-        }
-    ),
+    hovertemplate: hovertemplateAttrs({}, { keys: ['label', 'color', 'value', 'text', 'percent'] }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     textposition: extendFlat({}, pieAttrs.textposition, {
         values: ['inside', 'none'],

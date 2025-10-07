@@ -1,7 +1,6 @@
 'use strict';
 
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -73,12 +72,8 @@ module.exports = {
             'these elements will be seen in the hover labels.'
         ].join(' ')
     }),
-    texttemplate: texttemplateAttrs(
-        { editType: 'plot' },
-        {
-            keys: ['a', 'b', 'c', 'text']
-        }
-    ),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['a', 'b', 'c', 'text'] }),
+    texttemplatefallback: templatefallbackAttrs(),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {
         description: [
             'Sets hover text elements associated with each (a,b,c) point.',
@@ -151,5 +146,6 @@ module.exports = {
         flags: ['a', 'b', 'c', 'text', 'name']
     }),
     hoveron: scatterAttrs.hoveron,
-    hovertemplate: hovertemplateAttrs()
+    hovertemplate: hovertemplateAttrs(),
+    hovertemplatefallback: templatefallbackAttrs()
 };

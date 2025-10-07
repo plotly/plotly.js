@@ -1,7 +1,6 @@
 'use strict';
 
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
@@ -77,21 +76,13 @@ module.exports = {
     text: pieAttrs.text,
     textinfo: sunburstAttrs.textinfo,
     // TODO: incorporate `label` and `value` in the eventData
-    texttemplate: texttemplateAttrs(
-        { editType: 'plot' },
-        {
-            keys: constants.eventDataKeys.concat(['label', 'value'])
-        }
-    ),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: constants.eventDataKeys.concat(['label', 'value']) }),
+    texttemplatefallback: templatefallbackAttrs(),
 
     hovertext: pieAttrs.hovertext,
     hoverinfo: sunburstAttrs.hoverinfo,
-    hovertemplate: hovertemplateAttrs(
-        {},
-        {
-            keys: constants.eventDataKeys
-        }
-    ),
+    hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     textfont: pieAttrs.textfont,
     insidetextfont: pieAttrs.insidetextfont,
