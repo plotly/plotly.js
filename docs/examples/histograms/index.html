@@ -4950,6 +4950,61 @@ Plotly.newPlot('myDiv_4', data, layout);
 
 <div class="section">
   <div class="row auto-eg-padding">
+      <h3 id="cumulative-histogram">
+        <a class="no_underline plot-blue" href="#cumulative-histogram">cumulative-histogram</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var x = [];
+for (var i = 0; i &lt; 500; i ++) {
+    x[i] = Math.random();
+}
+
+var trace = {
+    x: x,
+    type: &#x27;histogram&#x27;,
+    cumulative: {enabled: true}
+  };
+var data = [trace];
+Plotly.newPlot(&#x27;myDiv&#x27;, data);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Cumulative Histogram&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var x = [];\nfor (var i = 0; i &lt; 500; i ++) {\n\tx[i] = Math.random();\n}\n\nvar trace = {\n    x: x,\n    type: &#x27;histogram&#x27;,\n\tcumulative: {enabled: true}\n  };\nvar data = [trace];\nPlotly.newPlot(&#x27;myDiv&#x27;, data);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_5"></div>
+              <script>
+                var x = [];
+for (var i = 0; i < 500; i ++) {
+    x[i] = Math.random();
+}
+
+var trace = {
+    x: x,
+    type: 'histogram',
+    cumulative: {enabled: true}
+  };
+var data = [trace];
+Plotly.newPlot('myDiv_5', data);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
       <h3 id="normalized-histogram">
         <a class="no_underline plot-blue" href="#normalized-histogram">normalized-histogram</a>
       </h3>
@@ -4988,7 +5043,7 @@ Plotly.newPlot(&#x27;myDiv&#x27;, data);</code></pre>
 &lt;/body&gt;&quot;,&quot;js&quot;:&quot;var x = [];\nfor (var i = 0; i &lt; 500; i ++) {\n\tx[i] = Math.random();\n}\n\nvar data = [\n  {\n    x: x,\n    type: &#x27;histogram&#x27;,\n\thistnorm: &#x27;probability&#x27;,\n\tmarker: {\n        color: &#x27;rgb(255,255,100)&#x27;,\n     },\n  }\n];\nPlotly.newPlot(&#x27;myDiv&#x27;, data);&quot;}">
                 <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
               </form>
-              <div style="max-width: 100%; margin: auto" id="myDiv_5"></div>
+              <div style="max-width: 100%; margin: auto" id="myDiv_6"></div>
               <script>
                 var x = [];
 for (var i = 0; i < 500; i ++) {
@@ -5005,61 +5060,6 @@ var data = [
      },
   }
 ];
-Plotly.newPlot('myDiv_5', data);
-              </script>
-    </div>
-  </div>
-</div>
-
-<div class="section">
-  <div class="row auto-eg-padding">
-      <h3 id="cumulative-histogram">
-        <a class="no_underline plot-blue" href="#cumulative-histogram">cumulative-histogram</a>
-      </h3>
-    <div class="row">
-
-          <div class="z-depth-1">
-        <pre><code class="javascript">var x = [];
-for (var i = 0; i &lt; 500; i ++) {
-    x[i] = Math.random();
-}
-
-var trace = {
-    x: x,
-    type: &#x27;histogram&#x27;,
-    cumulative: {enabled: true}
-  };
-var data = [trace];
-Plotly.newPlot(&#x27;myDiv&#x27;, data);</code></pre>
-      </div>
-
-
-              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
-                    action="https://codepen.io/pen/define" method="POST" target="_blank">
-                <input type="hidden" name="data"
-                  value="{&quot;title&quot;:&quot;Plotly.js Cumulative Histogram&quot;,&quot;html&quot;:&quot;&lt;head&gt;
-    &lt;!-- Load plotly.js into the DOM --&gt;
-    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
-&lt;/head>
-
-&lt;body&gt;
-    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
-&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var x = [];\nfor (var i = 0; i &lt; 500; i ++) {\n\tx[i] = Math.random();\n}\n\nvar trace = {\n    x: x,\n    type: &#x27;histogram&#x27;,\n\tcumulative: {enabled: true}\n  };\nvar data = [trace];\nPlotly.newPlot(&#x27;myDiv&#x27;, data);&quot;}">
-                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
-              </form>
-              <div style="max-width: 100%; margin: auto" id="myDiv_6"></div>
-              <script>
-                var x = [];
-for (var i = 0; i < 500; i ++) {
-    x[i] = Math.random();
-}
-
-var trace = {
-    x: x,
-    type: 'histogram',
-    cumulative: {enabled: true}
-  };
-var data = [trace];
 Plotly.newPlot('myDiv_6', data);
               </script>
     </div>
