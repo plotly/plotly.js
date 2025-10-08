@@ -1,7 +1,7 @@
 site_name: "Plotly.js Docs"
 site_url: 'https://plotly.com/javascript/'
 docs_dir: pages
-site_dir: doc
+site_dir: docs
 
 validation:
   absolute_links: relative_to_docs
