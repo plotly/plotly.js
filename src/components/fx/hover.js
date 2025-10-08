@@ -1249,7 +1249,8 @@ function createHoverText(hoverData, opts) {
         var mainText = !unifiedhovertitleText
             ? t0
             : Lib.hovertemplateString({
-                  args: hovermode === 'x unified' ? { xa: item0.xa, x: item0.xVal } : { ya: item0.ya, y: item0.yVal },
+                  args:
+                      hovermode === 'x unified' ? [{ xa: item0.xa, x: item0.xVal }] : [{ ya: item0.ya, y: item0.yVal }],
                   d3locale: fullLayout._d3locale,
                   fallback: item0.trace.hovertemplatefallback,
                   string: unifiedhovertitleText
