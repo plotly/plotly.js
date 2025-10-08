@@ -4815,6 +4815,12 @@
       "editType": "none",
       "valType": "string"
      },
+     "texttemplatefallback": {
+      "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+      "dflt": "",
+      "editType": "none",
+      "valType": "string"
+     },
      "xanchor": {
       "description": "Sets the label's horizontal position anchor This anchor binds the specified `textposition` to the *left*, *center* or *right* of the label text. For example, if `textposition` is set to *top right* and `xanchor` to *right* then the right-most portion of the label text lines up with the right-most edge of the new shape.",
       "dflt": "auto",
@@ -9603,6 +9609,12 @@
         "description": "Template string used for rendering the shape's label. Note that this will override `text`. Variables are inserted using %{variable}, for example \"x0: %{x0}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{x0:$.2f}\". See https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{x0|%m %b %Y}\". See https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. A single multiplication or division operation may be applied to numeric variables, and combined with d3 number formatting, for example \"Length in cm: %{x0*2.54}\", \"%{slope*60:.1f} meters per second.\" For log axes, variable values are given in log units. For date axes, x/y coordinate variables and center variables use datetimes, while all other variable values use values in ms. Finally, the template string has access to variables `x0`, `x1`, `y0`, `y1`, `slope`, `dx`, `dy`, `width`, `height`, `length`, `xcenter` and `ycenter`.",
         "dflt": "",
         "editType": "arraydraw",
+        "valType": "string"
+       },
+       "texttemplatefallback": {
+        "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+        "dflt": "",
+        "editType": "none",
         "valType": "string"
        },
        "xanchor": {
@@ -16808,6 +16820,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -18448,9 +18466,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `value` and `label`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `value` and `label`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -19009,6 +19033,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -20595,7 +20625,7 @@
      }
     },
     "hoveron": {
-     "description": "Do the hover effects highlight individual boxes  or sample points or both?",
+     "description": "Do the hover effects highlight individual boxes or sample points or both?",
      "dflt": "boxes+points",
      "editType": "style",
      "flags": [
@@ -20607,6 +20637,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -21412,7 +21448,7 @@
      "valType": "string"
     },
     "notchwidth": {
-     "description": "Sets the width of the notches relative to the box' width. For example, with 0, the notches are as wide as the box(es).",
+     "description": "Sets the width of the notches relative to the box width. For example, with 0, the notches are as wide as the box(es).",
      "dflt": 0.25,
      "editType": "calc",
      "max": 0.5,
@@ -21639,7 +21675,7 @@
      ]
     },
     "whiskerwidth": {
-     "description": "Sets the width of the whiskers relative to the box' width. For example, with 1, the whiskers are as wide as the box(es).",
+     "description": "Sets the width of the whiskers relative to the box width. For example, with 1, the whiskers are as wide as the box(es).",
      "dflt": 0.5,
      "editType": "calc",
      "max": 1,
@@ -22434,7 +22470,7 @@
      ]
     },
     "whiskerwidth": {
-     "description": "Sets the width of the whiskers relative to the box' width. For example, with 1, the whiskers are as wide as the box(es).",
+     "description": "Sets the width of the whiskers relative to the box width. For example, with 1, the whiskers are as wide as the box(es).",
      "dflt": 0,
      "editType": "calc",
      "max": 1,
@@ -25186,6 +25222,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -26473,6 +26515,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -27752,6 +27800,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variable `properties` Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -29070,6 +29124,12 @@
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variable `norm` Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
      "dflt": "",
      "editType": "calc",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "hovertemplatesrc": {
@@ -30645,6 +30705,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -31000,9 +31066,15 @@
      "valType": "string"
     },
     "texttemplate": {
-     "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
+     "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "transpose": {
@@ -33468,6 +33540,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -34689,6 +34767,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -35356,6 +35440,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `percentInitial`, `percentPrevious` and `percentTotal`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -36872,9 +36962,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `percentInitial`, `percentPrevious`, `percentTotal`, `label` and `value`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `percentInitial`, `percentPrevious`, `percentTotal`, `label` and `value`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -37390,6 +37486,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `label`, `color`, `value`, `text` and `percent`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -38090,9 +38192,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `label`, `color`, `value`, `text` and `percent`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `label`, `color`, `value`, `text` and `percent`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -39237,6 +39345,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -39548,9 +39662,15 @@
      "valType": "string"
     },
     "texttemplate": {
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "transpose": {
@@ -40394,6 +40514,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variable `binNumber` Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -41870,9 +41996,15 @@
      "valType": "string"
     },
     "texttemplate": {
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `label` and `value`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `label` and `value`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "type": "histogram",
@@ -43045,6 +43177,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -43364,9 +43502,15 @@
      }
     },
     "texttemplate": {
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variable `z`",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variable `z`",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "type": "histogram2d",
@@ -44741,6 +44885,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -45105,9 +45255,15 @@
      }
     },
     "texttemplate": {
-     "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
+     "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "type": "histogram2dcontour",
@@ -45669,6 +45825,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `currentPath`, `root`, `entry`, `percentRoot`, `percentEntry` and `percentParent`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -47397,9 +47559,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `currentPath`, `root`, `entry`, `percentRoot`, `percentEntry`, `percentParent`, `label` and `value`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `currentPath`, `root`, `entry`, `percentRoot`, `percentEntry`, `percentParent`, `label` and `value`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -47761,6 +47929,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `z`, `color` and `colormodel`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -50297,6 +50471,12 @@
      "editType": "calc",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -51844,6 +52024,12 @@
      "editType": "calc",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -53288,9 +53474,15 @@
      ]
     },
     "hovertemplate": {
-     "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  This value here applies when hovering over dimensions. Note that *categorycount*, *colorcount* and *bandcolorcount* are only available when `hoveron` contains the *color* flag. Finally, the template string has access to variables `count`, `probability`, `category`, `categorycount`, `colorcount` and `bandcolorcount`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Finally, the template string has access to variables `count`, `probability`, `category`, `categorycount`, `colorcount` and `bandcolorcount`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "labelfont": {
@@ -54162,9 +54354,15 @@
      },
      "editType": "calc",
      "hovertemplate": {
-      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  This value here applies when hovering over lines.Finally, the template string has access to variables `count` and `probability`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Finally, the template string has access to variables `count` and `probability`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
       "dflt": "",
       "editType": "plot",
+      "valType": "string"
+     },
+     "hovertemplatefallback": {
+      "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+      "dflt": "",
+      "editType": "none",
       "valType": "string"
      },
      "reversescale": {
@@ -56139,6 +56337,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -57018,9 +57222,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `label`, `color`, `value`, `percent` and `text`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `label`, `color`, `value`, `percent` and `text`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -58010,7 +58220,13 @@
      },
      "hovertemplate": {
       "arrayOk": true,
-      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Variables `source` and `target` are node objects.Finally, the template string has access to variables `value` and `label`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Finally, the template string has access to variables `value` and `label`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+      "dflt": "",
+      "editType": "calc",
+      "valType": "string"
+     },
+     "hovertemplatefallback": {
+      "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
       "dflt": "",
       "editType": "calc",
       "valType": "string"
@@ -58381,7 +58597,13 @@
      },
      "hovertemplate": {
       "arrayOk": true,
-      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Variables `sourceLinks` and `targetLinks` are arrays of link objects.Finally, the template string has access to variables `value` and `label`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Finally, the template string has access to variables `value` and `label`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+      "dflt": "",
+      "editType": "calc",
+      "valType": "string"
+     },
+     "hovertemplatefallback": {
+      "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
       "dflt": "",
       "editType": "calc",
       "valType": "string"
@@ -59272,6 +59494,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -61221,9 +61449,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. ",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. ",
      "dflt": "",
      "editType": "calc",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -62007,6 +62241,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "calc",
      "valType": "string"
@@ -64001,7 +64241,13 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. ",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. ",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "calc",
      "valType": "string"
@@ -64466,6 +64712,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -66364,9 +66616,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `a`, `b` and `text`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `a`, `b` and `text`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -66747,6 +67005,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "calc",
      "valType": "string"
@@ -68650,7 +68914,13 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `lat`, `lon`, `location` and `text`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `lat`, `lon`, `location` and `text`.",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "calc",
      "valType": "string"
@@ -69195,6 +69465,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -70955,9 +71231,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. ",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. ",
      "dflt": "",
      "editType": "calc",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -71524,6 +71806,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "calc",
      "valType": "string"
@@ -72657,7 +72945,13 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `lat`, `lon` and `text`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `lat`, `lon` and `text`.",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "calc",
      "valType": "string"
@@ -73067,6 +73361,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "calc",
      "valType": "string"
@@ -74200,7 +74500,13 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `lat`, `lon` and `text`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `lat`, `lon` and `text`.",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "calc",
      "valType": "string"
@@ -74564,6 +74870,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -76483,9 +76795,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `r`, `theta` and `text`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `r`, `theta` and `text`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -76871,6 +77189,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -78640,9 +78964,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `r`, `theta` and `text`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `r`, `theta` and `text`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -79030,6 +79360,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -80953,9 +81289,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `real`, `imag` and `text`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `real`, `imag` and `text`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -81345,6 +81687,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -83256,9 +83604,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `a`, `b`, `c` and `text`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `a`, `b`, `c` and `text`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -83652,6 +84006,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -86258,6 +86618,12 @@
      "editType": "calc",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -87071,6 +87437,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `currentPath`, `root`, `entry`, `percentRoot`, `percentEntry` and `percentParent`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -88618,9 +88990,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `currentPath`, `root`, `entry`, `percentRoot`, `percentEntry`, `percentParent`, `label` and `value`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `currentPath`, `root`, `entry`, `percentRoot`, `percentEntry`, `percentParent`, `label` and `value`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -89876,6 +90254,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "calc",
      "valType": "string"
@@ -91723,6 +92107,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -93481,9 +93871,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `currentPath`, `root`, `entry`, `percentRoot`, `percentEntry`, `percentParent`, `label` and `value`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `currentPath`, `root`, `entry`, `percentRoot`, `percentEntry`, `percentParent`, `label` and `value`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
@@ -93900,6 +94296,12 @@
     "hovertemplate": {
      "arrayOk": true,
      "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
      "dflt": "",
      "editType": "none",
      "valType": "string"
@@ -96010,6 +96412,12 @@
      "editType": "calc",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -96967,6 +97375,12 @@
      "editType": "none",
      "valType": "string"
     },
+    "hovertemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
      "editType": "none",
@@ -97735,9 +98149,15 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `initial`, `delta`, `final` and `label`.",
+     "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `initial`, `delta`, `final` and `label`.",
      "dflt": "",
      "editType": "plot",
+     "valType": "string"
+    },
+    "texttemplatefallback": {
+     "description": "Fallback value that's displayed when a variable referenced in a template can't be found.",
+     "dflt": "",
+     "editType": "none",
      "valType": "string"
     },
     "texttemplatesrc": {
