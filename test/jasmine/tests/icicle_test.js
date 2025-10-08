@@ -931,7 +931,7 @@ describe('Test icicle texttemplate without `values` should work at root level:',
             [
                 '%{percentParent} of %{parent}',
                 [
-                    '%{percentParent} of %{parent}',
+                    ' of ',
                     '100% of Seth',
                     '33% of Eve',
                     '17% of Eve',
@@ -957,7 +957,7 @@ describe('Test icicle texttemplate without `values` should work at root level:',
                 [
                     'label: Eve',
                     'text: fourteen',
-                    'value: %{value}', // N.B. there is no `values` array
+                    'value: ', // N.B. there is no `values` array
                     '17% of Eve',
                     '17% of Eve',
                     '17% of Eve',
@@ -1085,7 +1085,7 @@ describe('Test icicle texttemplate with *total* `values` should work at root lev
             [
                 '%{percentParent} of %{parent}',
                 [
-                    '%{percentParent} of %{parent}',
+                    ' of ',
                     '22% of Eve',
                     '18% of Eve',
                     '9% of Eve',

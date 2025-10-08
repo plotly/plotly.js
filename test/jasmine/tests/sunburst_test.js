@@ -2293,7 +2293,7 @@ describe('Test sunburst texttemplate without `values` should work at root level:
             [
                 '%{percentParent} of %{parent}',
                 [
-                    '%{percentParent} of %{parent}',
+                    ' of ',
                     '100% of Seth',
                     '33% of Eve',
                     '17% of Eve',
@@ -2319,7 +2319,7 @@ describe('Test sunburst texttemplate without `values` should work at root level:
                 [
                     'label: Eve',
                     'text: fourteen',
-                    'value: %{value}', // N.B. there is no `values` array
+                    'value: ', // N.B. there is no `values` array
                     '17% of Eve',
                     '17% of Eve',
                     '17% of Eve',
@@ -2447,7 +2447,7 @@ describe('Test sunburst texttemplate with *total* `values` should work at root l
             [
                 '%{percentParent} of %{parent}',
                 [
-                    '%{percentParent} of %{parent}',
+                    ' of ',
                     '22% of Eve',
                     '18% of Eve',
                     '9% of Eve',
@@ -2601,7 +2601,7 @@ describe('Test sunburst texttemplate with *remainder* `values` should work at ro
             [
                 '%{percentParent} of %{parent}',
                 [
-                    '%{percentParent} of %{parent}',
+                    ' of ',
                     '20% of Eve',
                     '12% of Eve',
                     '6% of Eve',

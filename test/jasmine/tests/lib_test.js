@@ -2522,56 +2522,94 @@ describe('Test lib.js:', function () {
     });
 
     describe('hovertemplateString', function () {
-        var locale = false;
         it('evaluates attributes', function () {
-            expect(Lib.hovertemplateString('foo %{bar}', {}, locale, { bar: 'baz' })).toEqual('foo baz');
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ bar: 'baz' }],
+                    fallback: '',
+                    string: 'foo %{bar}'
+                })
+            ).toEqual('foo baz');
         });
 
         it('evaluates attributes with a dot in their name', function () {
             expect(
-                Lib.hovertemplateString('%{marker.size}', {}, locale, { 'marker.size': 12 }, { marker: { size: 14 } })
+                Lib.hovertemplateString({
+                    args: [{ 'marker.size': 12 }, { marker: { size: 14 } }],
+                    fallback: '',
+                    string: '%{marker.size}'
+                })
             ).toEqual('12');
         });
 
         it('evaluates nested properties', function () {
-            expect(Lib.hovertemplateString('foo %{bar.baz}', {}, locale, { bar: { baz: 'asdf' } })).toEqual('foo asdf');
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ bar: { baz: 'asdf' } }],
+                    fallback: '',
+                    string: 'foo %{bar.baz}'
+                })
+            ).toEqual('foo asdf');
         });
 
         it('evaluates array nested properties', function () {
-            expect(Lib.hovertemplateString('foo %{bar[0].baz}', {}, locale, { bar: [{ baz: 'asdf' }] })).toEqual(
-                'foo asdf'
-            );
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ bar: [{ baz: 'asdf' }] }],
+                    fallback: '',
+                    string: 'foo %{bar[0].baz}'
+                })
+            ).toEqual('foo asdf');
         });
 
         it('should work with the number *0*', function () {
-            expect(Lib.hovertemplateString('%{group}', {}, locale, { group: 0 })).toEqual('0');
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ group: 0 }],
+                    fallback: '',
+                    string: '%{group}'
+                })
+            ).toEqual('0');
         });
 
         it('should work with the number *0* (nested case)', function () {
-            expect(Lib.hovertemplateString('%{x.y}', {}, locale, { x: { y: 0 } })).toEqual('0');
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ x: { y: 0 } }],
+                    fallback: '',
+                    string: '%{x.y}'
+                })
+            ).toEqual('0');
         });
 
         it('preserves null and NaN', function () {
             expect(
-                Lib.hovertemplateString('%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}', {}, locale, {
-                    a: null,
-                    b: NaN,
-                    c: { d: null, e: NaN },
-                    f: [null, NaN]
+                Lib.hovertemplateString({
+                    args: [{ a: null, b: NaN, c: { d: null, e: NaN }, f: [null, NaN] }],
+                    fallback: '',
+                    string: '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}'
                 })
             ).toEqual('null NaN null NaN null NaN');
         });
 
         it('subtitutes multiple matches', function () {
             expect(
-                Lib.hovertemplateString('foo %{group} %{trace}', {}, locale, { group: 'asdf', trace: 'jkl;' })
+                Lib.hovertemplateString({
+                    args: [{ group: 'asdf', trace: 'jkl;' }],
+                    fallback: '',
+                    string: 'foo %{group} %{trace}'
+                })
             ).toEqual('foo asdf jkl;');
         });
 
-        it('replaces missing matches with template string', function () {
-            expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, locale, { group: 1 })).toEqual(
-                'foo 1 %{trace}'
-            );
+        it('replaces missing matches with fallback value', function () {
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ group: 1 }],
+                    fallback: '',
+                    string: 'foo %{group} %{trace}'
+                })
+            ).toEqual('foo 1 ');
         });
 
         it('uses the value from the first object with the specified key', function () {
@@ -2579,77 +2617,150 @@ describe('Test lib.js:', function () {
             var obj2 = { a: 'second', foo: { bar: 'bar' } };
 
             // Simple key
-            expect(Lib.hovertemplateString('foo %{a}', {}, locale, obj1, obj2)).toEqual('foo first');
-            expect(Lib.hovertemplateString('foo %{a}', {}, locale, obj2, obj1)).toEqual('foo second');
+            expect(
+                Lib.hovertemplateString({
+                    args: [obj1, obj2],
+                    fallback: '',
+                    string: 'foo %{a}'
+                })
+            ).toEqual('foo first');
+            expect(
+                Lib.hovertemplateString({
+                    args: [obj2, obj1],
+                    fallback: '',
+                    string: 'foo %{a}'
+                })
+            ).toEqual('foo second');
 
             // Nested Keys
-            expect(Lib.hovertemplateString('foo %{foo.bar}', {}, locale, obj1, obj2)).toEqual('foo bar');
+            expect(
+                Lib.hovertemplateString({
+                    args: [obj1, obj2],
+                    fallback: '',
+                    string: 'foo %{foo.bar}'
+                })
+            ).toEqual('foo bar');
 
             // Nested keys with 0
-            expect(Lib.hovertemplateString('y: %{y}', {}, locale, { y: 0 }, { y: 1 })).toEqual('y: 0');
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ y: 0 }, { y: 1 }],
+                    fallback: '',
+                    string: 'y: %{y}'
+                })
+            ).toEqual('y: 0');
         });
 
         it('formats numbers using d3-format mini-language when `:`', function () {
-            expect(Lib.hovertemplateString('a: %{a:.0%}', {}, locale, { a: 0.123 })).toEqual('a: 12%');
-            expect(Lib.hovertemplateString('a: %{a:0.2%}', {}, locale, { a: 0.123 })).toEqual('a: 12.30%');
-            expect(Lib.hovertemplateString('b: %{b:2.2f}', {}, locale, { b: 43 })).toEqual('b: 43.00');
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ a: 0.123 }],
+                    fallback: '',
+                    string: 'a: %{a:.0%}'
+                })
+            ).toEqual('a: 12%');
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ a: 0.123 }],
+                    fallback: '',
+                    string: 'a: %{a:0.2%}'
+                })
+            ).toEqual('a: 12.30%');
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ b: 43 }],
+                    fallback: '',
+                    string: 'b: %{b:2.2f}'
+                })
+            ).toEqual('b: 43.00');
         });
 
         it('formats date using d3-time-format mini-language `|`', function () {
-            expect(Lib.hovertemplateString('a: %{a|%A}', {}, locale, { a: '2019-05-22' })).toEqual('a: Wednesday');
-            expect(Lib.hovertemplateString('%{x|%b %-d, %Y}', {}, locale, { x: '2019-01-01' })).toEqual('Jan 1, 2019');
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ a: '2019-05-22' }],
+                    fallback: '',
+                    string: 'a: %{a|%A}'
+                })
+            ).toEqual('a: Wednesday');
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ x: '2019-01-01' }],
+                    fallback: '',
+                    string: '%{x|%b %-d, %Y}'
+                })
+            ).toEqual('Jan 1, 2019');
         });
 
         it('looks for default label if no format is provided', function () {
-            expect(Lib.hovertemplateString('y: %{y}', { yLabel: '0.1' }, locale, { y: 0.123 })).toEqual('y: 0.1');
+            expect(
+                Lib.hovertemplateString({
+                    args: [{ y: 0.123 }],
+                    fallback: '',
+                    labels: { yLabel: '0.1' },
+                    string: 'y: %{y}'
+                })
+            ).toEqual('y: 0.1');
         });
 
         it('warns user up to 10 times if a variable cannot be found', function () {
             spyOn(Lib, 'warn').and.callThrough();
-            Lib.hovertemplateString('%{idontexist}', {});
+            Lib.hovertemplateString({
+                fallback: '',
+                string: '%{idontexist}'
+            });
             expect(Lib.warn.calls.count()).toBe(1);
 
             for (var i = 0; i < 15; i++) {
-                Lib.hovertemplateString('%{idontexist}', {});
+                Lib.hovertemplateString({
+                    fallback: '',
+                    string: '%{idontexist}'
+                });
             }
             expect(Lib.warn.calls.count()).toBe(10);
-        });
-
-        it('does not error out when arguments are undefined', function () {
-            expect(function () {
-                Lib.hovertemplateString('y: %{y}', undefined, locale, undefined);
-            }).not.toThrow();
         });
     });
 
     describe('texttemplateString', function () {
         var locale = false;
         it('evaluates attributes', function () {
-            expect(Lib.texttemplateString('foo %{bar}', {}, locale, { bar: 'baz' })).toEqual('foo baz');
+            expect(
+                Lib.texttemplateString({
+                    args: [{ bar: 'baz' }],
+                    fallback: '',
+                    string: 'foo %{bar}'
+                })
+            ).toEqual('foo baz');
         });
 
         it('looks for default label if no format is provided', function () {
-            expect(Lib.texttemplateString('y: %{y}', { yLabel: '0.1' }, locale, { y: 0.123 })).toEqual('y: 0.1');
+            expect(
+                Lib.texttemplateString({
+                    args: [{ y: 0.123 }],
+                    fallback: '',
+                    labels: { yLabel: '0.1' },
+                    string: 'y: %{y}'
+                })
+            ).toEqual('y: 0.1');
         });
 
         it('preserves null and NaN', function () {
             expect(
-                Lib.texttemplateString('%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}', {}, locale, {
-                    a: null,
-                    b: NaN,
-                    c: { d: null, e: NaN },
-                    f: [null, NaN]
+                Lib.texttemplateString({
+                    args: [{ a: null, b: NaN, c: { d: null, e: NaN }, f: [null, NaN] }],
+                    fallback: '',
+                    string: '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}'
                 })
             ).toEqual('null NaN null NaN null NaN');
         });
 
         it('warns user up to 10 times if a variable cannot be found', function () {
             spyOn(Lib, 'warn').and.callThrough();
-            Lib.texttemplateString('%{idontexist}', {});
+            Lib.texttemplateString({ fallback: '', string: '%{idontexist}' });
             expect(Lib.warn.calls.count()).toBe(1);
 
             for (var i = 0; i < 15; i++) {
-                Lib.texttemplateString('%{idontexist}', {});
+                Lib.texttemplateString({ fallback: '', string: '%{idontexist}' });
             }
             expect(Lib.warn.calls.count()).toBe(11);
         });
