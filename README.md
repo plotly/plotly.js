@@ -4,7 +4,7 @@
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.svg?style=shield)](https://circleci.com/gh/plotly/plotly.js)
 [![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/master/LICENSE)
 
-[Plotly.js](https://plotly.com/javascript) is a standalone Javascript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](http://plotly.com/r)).
+[Plotly.js](https://plotly.com/javascript) is a standalone Javascript data visualization library, and it also powers the Python module named `plotly` (referred to as [Plotly.py](https://plotly.com/python)).
 
 Plotly.js can be used to produce dozens of chart types and visualizations, including statistical charts, 3D graphs, scientific charts, SVG and tile maps, financial charts and more.
 
